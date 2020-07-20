@@ -21,7 +21,7 @@
         <module>zigbee</module>
         <module>cloud</module>
         <module>bluetooth</module>
-        <module>googleDrive</module>
+        <module>google-drive</module>
         <module>rf433</module>
         <module>xaomi</module>
         <module>nrf24i01</module>

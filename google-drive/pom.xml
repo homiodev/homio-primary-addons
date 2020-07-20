@@ -7,7 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bundle-googleDrive</artifactId>
+    <artifactId>bundle-google-drive</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
