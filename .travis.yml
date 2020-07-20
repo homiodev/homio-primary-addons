@@ -30,28 +30,7 @@ deploy:
   skip_cleanup: true
   user: $BINTRAY_USER
   key:  $BINTRAY_KEY
-  file: 'google-drive/target/bintray.json'
-  on:
-    tags: true
-- provider: bintray
-  skip_cleanup: true
-  user: $BINTRAY_USER
-  key:  $BINTRAY_KEY
-  file: 'nrf24i01/target/bintray.json'
-  on:
-    tags: true
-- provider: bintray
-  skip_cleanup: true
-  user: $BINTRAY_USER
-  key:  $BINTRAY_KEY
   file: 'raspberry/target/bintray.json'
-  on:
-    tags: true
-- provider: bintray
-  skip_cleanup: true
-  user: $BINTRAY_USER
-  key:  $BINTRAY_KEY
-  file: 'rf433/target/bintray.json'
   on:
     tags: true
 - provider: bintray
@@ -73,5 +52,12 @@ deploy:
   user: $BINTRAY_USER
   key:  $BINTRAY_KEY
   file: 'zigbee/target/bintray.json'
+  on:
+    tags: true
+- provider: bintray
+  skip_cleanup: true
+  user: $BINTRAY_USER
+  key:  $BINTRAY_KEY
+  file: 'target/bintray.json'
   on:
     tags: true

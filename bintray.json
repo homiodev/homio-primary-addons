@@ -24,13 +24,6 @@
       "matrixParams": {
         "override": 1
       }
-    },
-    {
-      "includePattern": "@project.basedir@/target/(.*\.jar)",
-      "uploadPattern": "org/touchhome/@project.artifactId@/@project.version@/$1",
-      "matrixParams": {
-        "override": 1
-      }
     }
   ],
   "publish": true
