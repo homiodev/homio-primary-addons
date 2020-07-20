@@ -3,9 +3,9 @@
     "name": "@project.artifactId@",
     "repo": "maven-repo",
     "subject": "touchhome",
-    "website_url": "@project.url@",
-    "issue_tracker_url": "@project.url@/issues",
-    "vcs_url": "@project.url@",
+    "website_url": "https://github.com/touchhome/touchhome-bundle",
+    "issue_tracker_url": "https://github.com/touchhome/touchhome-bundle/issues",
+    "vcs_url": "https://github.com/touchhome/touchhome-bundle",
     "licenses": [
       "MIT"
     ],
