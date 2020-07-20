@@ -30,7 +30,7 @@ deploy:
   skip_cleanup: true
   user: $BINTRAY_USER
   key:  $BINTRAY_KEY
-  file: 'google-Drive/target/bintray.json'
+  file: 'google-drive/target/bintray.json'
   on:
     tags: true
 - provider: bintray
