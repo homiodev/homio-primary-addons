@@ -20,7 +20,7 @@
   "files": [
     {
       "includePattern": "@project.basedir@/pom.xml",
-      "uploadPattern": "org/touchhome/@project.artifactId@/@project.version@/@project.artifactId@-@project.version@.pom",
+      "uploadPattern": "org/touchhome/bundle/@project.artifactId@/@project.version@/@project.artifactId@-@project.version@.pom",
       "matrixParams": {
         "override": 1
       }
