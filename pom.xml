@@ -3,7 +3,7 @@
     <url>https://github.com/touchhome/touchhome-bundle</url>
 
     <packaging>pom</packaging>
-    <version>1.0.6</version>
+    <version>1.0.7-SNAPSHOT</version>
 
     <artifactId>parent</artifactId>
     <groupId>org.touchhome.bundle</groupId>
@@ -146,7 +146,7 @@
         <connection>scm:git:git://github.com/github.com/touchhome/touchhome-bundle.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/touchhome/touchhome-bundle.git</developerConnection>
         <url>https://github.com/touchhome/touchhome-bundle</url>
-        <tag>parent-1.0.6</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <repositories>
