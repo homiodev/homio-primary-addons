@@ -5,8 +5,8 @@
     <packaging>pom</packaging>
     <version>1.0.6-SNAPSHOT</version>
 
-    <artifactId>touchhome-bundle</artifactId>
-    <groupId>org.touchhome</groupId>
+    <artifactId>parent</artifactId>
+    <groupId>org.touchhome.bundle</groupId>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
