@@ -27,7 +27,7 @@
     <properties>
         <jackson.version>2.11.1</jackson.version>
         <pi4j.version>1.2</pi4j.version>
-        <bundle-api.version>1.0.5</bundle-api.version>
+        <bundle-api.version>1.0.7</bundle-api.version>
     </properties>
 
     <dependencies>

@@ -15,7 +15,7 @@ import org.touchhome.bundle.cloud.netty.setting.CloudServerUrlSetting;
 import java.util.HashSet;
 import java.util.Set;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class NettyCloudProvider implements CloudProvider {
 

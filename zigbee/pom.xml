@@ -7,8 +7,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>ZigBee</name>
     <artifactId>bundle-zigbee</artifactId>
-
     <packaging>jar</packaging>
 
     <properties>

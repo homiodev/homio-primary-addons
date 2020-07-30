@@ -27,7 +27,7 @@ import java.util.concurrent.TimeoutException;
 import static org.touchhome.bundle.api.model.UserEntity.ADMIN_USER;
 
 @Log4j2
-@Component
+//@Component
 @RequiredArgsConstructor
 public class NettyClientService {
 
