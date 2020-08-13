@@ -8,9 +8,6 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.UserEntity;
 
-/**
- * https://github.com/rubenlagus/TelegramBots
- */
 @Log4j2
 public final class TelegramStartCommand extends TelegramBaseCommand {
 
@@ -21,14 +18,6 @@ public final class TelegramStartCommand extends TelegramBaseCommand {
         this.entityContext = entityContext;
     }
 
-    /**
-     * реализованный метод класса BotCommand, в котором обрабатывается команда, введенная пользователем
-     *
-     * @param absSender - отправляет ответ пользователю
-     * @param user      - пользователь, который выполнил команду
-     * @param chat      - чат бота и пользователя
-     * @param strings   - аргументы, переданные с командой
-     */
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
         StringBuilder sb = new StringBuilder();

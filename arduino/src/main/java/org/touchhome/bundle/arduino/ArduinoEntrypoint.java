@@ -8,7 +8,7 @@ import org.touchhome.bundle.api.BundleEntrypoint;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class ArduinoBundle implements BundleEntrypoint {
+public class ArduinoEntrypoint implements BundleEntrypoint {
 
     public void init() {
 

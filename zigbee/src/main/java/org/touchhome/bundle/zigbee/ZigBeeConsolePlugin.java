@@ -5,13 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.touchhome.bundle.api.BundleSettingPlugin;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePlugin;
 import org.touchhome.bundle.api.json.Option;
 import org.touchhome.bundle.api.model.BaseEntity;
 import org.touchhome.bundle.api.model.DeviceStatus;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
-import org.touchhome.bundle.api.ui.console.UIHeaderSettingAction;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldColorMatch;
 import org.touchhome.bundle.api.ui.method.UIFieldSelectValueOnEmpty;
@@ -24,6 +24,7 @@ import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ZigBeeConsolePlugin implements ConsolePlugin {
 
-    private final ZigBeeBundleEntrypoint zigbeeBundleContext;
+    private final ZigBeeEntrypoint zigbeeBundleContext;
     private final EntityContext entityContext;
 
     @Override
@@ -66,10 +67,14 @@ public class ZigBeeConsolePlugin implements ConsolePlugin {
         return res;
     }
 
+    @Override
+    public Map<String, Class<? extends BundleSettingPlugin>> getHeaderActions() {
+        return Collections.singletonMap("zigbee.start_discovery", ZigbeeDiscoveryButtonSetting.class);
+    }
+
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    @UIHeaderSettingAction(name = "zigbee.start_discovery", setting = ZigbeeDiscoveryButtonSetting.class)
     private static class ZigbeeConsoleDescription implements HasEntityIdentifier {
 
         @UIField(order = 1, inlineEdit = true)

@@ -5,11 +5,15 @@ import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.DeviceStatus;
-import org.touchhome.bundle.api.scratch.*;
+import org.touchhome.bundle.api.scratch.BlockType;
+import org.touchhome.bundle.api.scratch.MenuBlock;
+import org.touchhome.bundle.api.scratch.Scratch3Block;
+import org.touchhome.bundle.api.scratch.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
+import org.touchhome.bundle.zigbee.ZigBeeEntrypoint;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasFireIndicator;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasWaterSensor;
 import org.touchhome.bundle.zigbee.model.OnOffType;
@@ -21,7 +25,6 @@ import static org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlocks.*;
 
 @Getter
 @Component
-@Scratch3Extension("zigbee-sensor")
 public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigbeeExtensionBlocks {
 
     private static final String ALARM_SENSOR = "ALARM_SENSOR";
@@ -57,8 +60,9 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigbeeExtensionBlocks {
     private ZigBeeCoordinatorHandler coordinatorHandler;
 
     public Scratch3ZigBeeSensorsBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
-                                       ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
-        super("#8a6854", entityContext);
+                                       ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
+                                       ZigBeeEntrypoint zigBeeEntrypoint) {
+        super("zigbee-sensor", "#8a6854", entityContext, zigBeeEntrypoint);
         setName("Zigbee Sensors");
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;

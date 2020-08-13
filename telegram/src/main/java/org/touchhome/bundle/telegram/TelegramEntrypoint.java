@@ -9,7 +9,7 @@ import org.touchhome.bundle.telegram.service.TelegramService;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class TelegramBundle implements BundleEntrypoint {
+public class TelegramEntrypoint implements BundleEntrypoint {
 
     private final TelegramService telegramService;
 

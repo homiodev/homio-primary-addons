@@ -8,7 +8,7 @@ import org.touchhome.bundle.api.BundleEntrypoint;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class RaspberryBundle implements BundleEntrypoint {
+public class RaspberryEntrypoint implements BundleEntrypoint {
 
     private final RaspberryGPIOService raspberryGPIOService;
 

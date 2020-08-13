@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>touchhome-bundle</artifactId>
         <groupId>org.touchhome.bundle</groupId>
@@ -8,11 +9,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>Telegram</name>
-    <artifactId>bundle-telegram</artifactId>
+    <artifactId>touchhome-bundle-telegram</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <telegram.version>4.8.1</telegram.version>
+        <telegram.version>4.9.1</telegram.version>
     </properties>
 
     <dependencies>

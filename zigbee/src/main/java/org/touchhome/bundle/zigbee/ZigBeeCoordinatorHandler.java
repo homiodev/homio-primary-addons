@@ -160,13 +160,6 @@ public abstract class ZigBeeCoordinatorHandler
 
         log.debug("Initialising network");
 
-        if (channelId == 0) {
-            channelId = 11;
-            log.debug("Channel set to 11.");
-
-            entityContext.setSettingValueSilence(ZigbeeChannelIdSetting.class, channelId);
-        }
-
         if (panId == 0) {
             panId = (int) Math.floor((Math.random() * 65534));
             log.debug("Created random ZigBee PAN ID [{}].", String.format("%04X", panId));
@@ -334,7 +327,7 @@ public abstract class ZigBeeCoordinatorHandler
             log.debug("Network key initialise {}", networkKey);
             networkManager.setZigBeeLinkKey(linkKey);
             networkManager.setZigBeeNetworkKey(networkKey);
-            networkManager.setZigBeeChannel(ZigBeeChannel.create(channelId));
+            networkManager.setZigBeeChannel(ZigBeeChannel.create(channelId == 0 ? 11 : channelId));
             networkManager.setZigBeePanId(panId);
             networkManager.setZigBeeExtendedPanId(extendedPanId);
         }

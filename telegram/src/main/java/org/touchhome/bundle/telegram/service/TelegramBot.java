@@ -21,7 +21,6 @@ public final class TelegramBot extends TelegramLongPollingCommandBot {
 
         register(new TelegramStartCommand(entityContext));
 
-        // обработка неизвестной команды
         log.info("Registering default action'...");
         registerDefaultAction(((absSender, message) -> {
 

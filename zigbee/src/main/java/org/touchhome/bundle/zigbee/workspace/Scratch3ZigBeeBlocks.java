@@ -13,6 +13,7 @@ import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
+import org.touchhome.bundle.zigbee.ZigBeeEntrypoint;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.setting.ZigbeeCoordinatorHandlerSetting;
@@ -24,7 +25,6 @@ import java.util.function.Consumer;
 
 @Getter
 @Component
-@Scratch3Extension("zigbee")
 public class Scratch3ZigBeeBlocks extends Scratch3ZigbeeExtensionBlocks {
 
     public static final String ZIGBEE__BASE_URL = "rest/zigbee/option/";
@@ -42,8 +42,10 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigbeeExtensionBlocks {
     private ZigBeeCoordinatorHandler coordinatorHandler;
     private Scratch3ZigBeeButtonsBlocks scratch3ZigBeeButtonsBlocks;
 
-    public Scratch3ZigBeeBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
-        super("#6d4747", entityContext);
+    public Scratch3ZigBeeBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
+                                ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
+                                ZigBeeEntrypoint zigBeeEntrypoint) {
+        super("zigbee", "#6d4747", entityContext, zigBeeEntrypoint);
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
         this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, status -> {

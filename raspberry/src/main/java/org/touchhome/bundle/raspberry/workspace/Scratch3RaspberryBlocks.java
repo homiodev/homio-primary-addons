@@ -6,19 +6,19 @@ import com.pi4j.io.gpio.PinState;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.Hilo;
+import org.touchhome.bundle.api.json.HighLow;
 import org.touchhome.bundle.api.model.workspace.bool.WorkspaceBooleanEntity;
 import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
+import org.touchhome.bundle.raspberry.RaspberryEntrypoint;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
 
 import java.util.function.Consumer;
 
 @Getter
 @Component
-@Scratch3Extension("raspberry")
 public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
 
     private final MenuBlock hiloMenu;
@@ -37,8 +37,9 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
     private final BroadcastLockManager broadcastLockManager;
     private Scratch3Block writePwmPin;
 
-    public Scratch3RaspberryBlocks(RaspberryGPIOService raspberryGPIOService, BroadcastLockManager broadcastLockManager, EntityContext entityContext) {
-        super("#83be41", entityContext);
+    public Scratch3RaspberryBlocks(RaspberryGPIOService raspberryGPIOService, BroadcastLockManager broadcastLockManager,
+                                   EntityContext entityContext, RaspberryEntrypoint raspberryEntrypoint) {
+        super("raspberry", "#83be41", entityContext, raspberryEntrypoint);
         this.raspberryGPIOService = raspberryGPIOService;
         this.broadcastLockManager = broadcastLockManager;
 
@@ -48,7 +49,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
 
         this.rpiIdMenu = MenuBlock.ofServer("rpiIdMenu", "rest/item/type/RaspberryDeviceEntity",
                 "Select RPI", "-");
-        this.hiloMenu = MenuBlock.ofStatic("hiloMenu", Hilo.class);
+        this.hiloMenu = MenuBlock.ofStatic("hiloMenu", HighLow.class);
 
         this.pullMenu = MenuBlock.ofStatic("pullMenu", PinPullResistance.class);
 
@@ -58,7 +59,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
 
         this.writePin = Scratch3Block.ofHandler(0, "set_gpio", BlockType.command, "Set [HILO] to pin [PIN] of [RPI]", this::writePin);
         this.writePin.addArgument("PIN", ArgumentType.string, pin, this.allPinMenu);
-        this.writePin.addArgument("HILO", ArgumentType.string, Hilo.low.name(), this.hiloMenu);
+        this.writePin.addArgument("HILO", ArgumentType.string, HighLow.low.name(), this.hiloMenu);
         this.writePin.addArgumentServerSelection("RPI", this.rpiIdMenu);
 
         String pwmPin = this.pwmPinMenu.getFirstValue();
@@ -94,7 +95,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
         this.whenGpioInState = Scratch3Block.ofHandler(3, "when_gpio", BlockType.hat, "when [PIN] of [RPI] is [HILO]", this::whenGpioInState);
         this.whenGpioInState.addArgument("PIN", ArgumentType.string, pin, this.allPinMenu);
         this.whenGpioInState.addArgumentServerSelection("RPI", this.rpiIdMenu);
-        this.whenGpioInState.addArgument("HILO", ArgumentType.string, Hilo.low.name(), this.hiloMenu);
+        this.whenGpioInState.addArgument("HILO", ArgumentType.string, HighLow.low.name(), this.hiloMenu);
 
         this.set_pull = Scratch3Block.ofHandler(4, "set_pull", BlockType.command, "set [PULL] to [PIN] of [RPI]", this::setPullStateHandler);
         this.set_pull.addArgument("PIN", ArgumentType.string, pin, this.allPinMenu);
@@ -122,7 +123,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
 
     private void whenGpioInState(WorkspaceBlock workspaceBlock) {
         RaspberryGpioPin pin = getPin(workspaceBlock);
-        Hilo state = getHilo(workspaceBlock);
+        HighLow state = getHighLow(workspaceBlock);
         BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock.getId());
         raspberryGPIOService.addGpioListener(workspaceBlock.getId(), pin, state.getPinState(), lock::signalAll);
 
@@ -149,12 +150,12 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
 
     private void writePin(WorkspaceBlock workspaceBlock) {
         RaspberryGpioPin pin = getPin(workspaceBlock);
-        Hilo state = getHilo(workspaceBlock);
+        HighLow state = getHighLow(workspaceBlock);
         raspberryGPIOService.setValue(pin, state.getPinState());
     }
 
-    private Hilo getHilo(WorkspaceBlock workspaceBlock) {
-        return workspaceBlock.getMenuValue("HILO", this.hiloMenu, Hilo.class);
+    private HighLow getHighLow(WorkspaceBlock workspaceBlock) {
+        return workspaceBlock.getMenuValue("HILO", this.hiloMenu, HighLow.class);
     }
 
     private RaspberryGpioPin getPin(WorkspaceBlock workspaceBlock) {

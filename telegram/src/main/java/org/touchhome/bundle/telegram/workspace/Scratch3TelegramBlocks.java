@@ -7,6 +7,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.UserEntity;
 import org.touchhome.bundle.api.repository.impl.UserRepository;
 import org.touchhome.bundle.api.scratch.*;
+import org.touchhome.bundle.telegram.TelegramEntrypoint;
 import org.touchhome.bundle.telegram.service.TelegramService;
 
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ import java.util.stream.Collectors;
 
 @Getter
 @Component
-@Scratch3Extension("telegram")
 public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     public static final String URL = "rest/v2/telegram/";
 
@@ -36,8 +36,10 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     private final Scratch3Block sendMessageCommand;
 
 
-    public Scratch3TelegramBlocks(TelegramService telegramService, EntityContext entityContext, UserRepository userRepository) {
-        super("#73868c", entityContext);
+    public Scratch3TelegramBlocks(TelegramService telegramService, EntityContext entityContext,
+                                  UserRepository userRepository,
+                                  TelegramEntrypoint telegramEntrypoint) {
+        super("telegram", "#73868c", entityContext, telegramEntrypoint);
         this.telegramService = telegramService;
         this.userRepository = userRepository;
 

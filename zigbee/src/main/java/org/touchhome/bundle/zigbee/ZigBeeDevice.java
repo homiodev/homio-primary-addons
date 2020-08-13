@@ -150,6 +150,11 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
                 return;
             }
 
+            // If this is an RFD then we reduce polling to the max to avoid wasting battery
+            if (node.isReducedFunctionDevice()) {
+                pollingPeriod = 1800;
+            }
+
             int expectedUpdatePeriod = getExpectedUpdatePeriod(this.zigBeeConverterEndpoints.values());
             if (!ZigbeeRequireEndpoints.get().isDisablePooling(zigBeeNodeDescription.getModelIdentifier())
                     && expectedUpdatePeriod != Integer.MAX_VALUE) {

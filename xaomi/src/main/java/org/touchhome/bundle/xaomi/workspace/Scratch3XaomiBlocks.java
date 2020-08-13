@@ -9,6 +9,7 @@ import org.touchhome.bundle.api.model.DeviceStatus;
 import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
+import org.touchhome.bundle.xaomi.XaomiEntrypoint;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
@@ -24,7 +25,6 @@ import static org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlocks.ZIGBEE_
 
 @Getter
 @Component
-@Scratch3Extension("xaomi")
 public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
 
     private static final String CUBE_MODE_IDENTIFIER = "lumi.sensor_cube";
@@ -40,8 +40,9 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
     private ZigBeeCoordinatorHandler coordinatorHandler;
 
     public Scratch3XaomiBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
-                               ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
-        super("#856d21", entityContext);
+                               ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
+                               XaomiEntrypoint xaomiEntrypoint) {
+        super("xaomi", "#856d21", entityContext, xaomiEntrypoint);
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
         this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, status -> {

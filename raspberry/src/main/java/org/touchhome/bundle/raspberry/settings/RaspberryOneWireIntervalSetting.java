@@ -1,6 +1,8 @@
 package org.touchhome.bundle.raspberry.settings;
 
+import org.json.JSONObject;
 import org.touchhome.bundle.api.BundleSettingPlugin;
+import org.touchhome.bundle.api.EntityContext;
 
 public class RaspberryOneWireIntervalSetting implements BundleSettingPlugin<Integer> {
 
@@ -10,8 +12,8 @@ public class RaspberryOneWireIntervalSetting implements BundleSettingPlugin<Inte
     }
 
     @Override
-    public String[] getAvailableValues() {
-        return new String[]{"10", "120", "1", "S"};
+    public JSONObject getParameters(EntityContext entityContext, String value) {
+        return new JSONObject().put("min", 10).put("max", 120).put("step", 1).put("header", "S");
     }
 
     @Override

@@ -123,6 +123,7 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
             if (isLog) {
                 log.debug("{}: ZigBee saving network state complete.", node.getIeeeAddress());
             }
+            writer.close();
         } catch (Exception e) {
             log.error("{}: Error writing network state: ", node.getIeeeAddress(), e);
         }
@@ -130,7 +131,9 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
 
     private ZigBeeNodeDao readZigBeeNodeDao(Path path, XStream stream) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {
-            return (ZigBeeNodeDao) stream.fromXML(reader);
+            ZigBeeNodeDao nodeDao = (ZigBeeNodeDao) stream.fromXML(reader);
+            reader.close();
+            return nodeDao;
         }
     }
 

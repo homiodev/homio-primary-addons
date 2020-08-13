@@ -1,7 +1,6 @@
 package org.touchhome.bundle.cloud.netty;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.NotificationEntityJSON;
 import org.touchhome.bundle.api.model.UserEntity;

@@ -3,61 +3,61 @@ jdk: openjdk8
 install: mvn clean install -B -V
 cache:
   directories:
-  - $HOME/.m2
+    - $HOME/.m2
 deploy:
-- provider: bintray
-  skip_cleanup: true
-  user: $BINTRAY_USER
-  key:  $BINTRAY_KEY
-  file: 'arduino/target/bintray.json'
-  on:
-    tags: true
-- provider: bintray
-  skip_cleanup: true
-  user: $BINTRAY_USER
-  key:  $BINTRAY_KEY
-  file: 'bluetooth/target/bintray.json'
-  on:
-    tags: true
-- provider: bintray
-  skip_cleanup: true
-  user: $BINTRAY_USER
-  key:  $BINTRAY_KEY
-  file: 'cloud/target/bintray.json'
-  on:
-    tags: true
-- provider: bintray
-  skip_cleanup: true
-  user: $BINTRAY_USER
-  key:  $BINTRAY_KEY
-  file: 'raspberry/target/bintray.json'
-  on:
-    tags: true
-- provider: bintray
-  skip_cleanup: true
-  user: $BINTRAY_USER
-  key:  $BINTRAY_KEY
-  file: 'telegram/target/bintray.json'
-  on:
-    tags: true
-- provider: bintray
-  skip_cleanup: true
-  user: $BINTRAY_USER
-  key:  $BINTRAY_KEY
-  file: 'xaomi/target/bintray.json'
-  on:
-    tags: true
-- provider: bintray
-  skip_cleanup: true
-  user: $BINTRAY_USER
-  key:  $BINTRAY_KEY
-  file: 'zigbee/target/bintray.json'
-  on:
-    tags: true
-- provider: bintray
-  skip_cleanup: true
-  user: $BINTRAY_USER
-  key:  $BINTRAY_KEY
-  file: 'target/bintray.json'
-  on:
-    tags: true
+  - provider: bintray
+    skip_cleanup: true
+    user: $BINTRAY_USER
+    key:  $BINTRAY_KEY
+    file: 'arduino/target/bintray.json'
+    on:
+      tags: true
+  - provider: bintray
+    skip_cleanup: true
+    user: $BINTRAY_USER
+    key:  $BINTRAY_KEY
+    file: 'bluetooth/target/bintray.json'
+    on:
+      tags: true
+  - provider: bintray
+    skip_cleanup: true
+    user: $BINTRAY_USER
+    key:  $BINTRAY_KEY
+    file: 'cloud/target/bintray.json'
+    on:
+      tags: true
+  - provider: bintray
+    skip_cleanup: true
+    user: $BINTRAY_USER
+    key:  $BINTRAY_KEY
+    file: 'raspberry/target/bintray.json'
+    on:
+      tags: true
+  - provider: bintray
+    skip_cleanup: true
+    user: $BINTRAY_USER
+    key:  $BINTRAY_KEY
+    file: 'telegram/target/bintray.json'
+    on:
+      tags: true
+  - provider: bintray
+    skip_cleanup: true
+    user: $BINTRAY_USER
+    key:  $BINTRAY_KEY
+    file: 'xaomi/target/bintray.json'
+    on:
+      tags: true
+  - provider: bintray
+    skip_cleanup: true
+    user: $BINTRAY_USER
+    key:  $BINTRAY_KEY
+    file: 'zigbee/target/bintray.json'
+    on:
+      tags: true
+  - provider: bintray
+    skip_cleanup: true
+    user: $BINTRAY_USER
+    key:  $BINTRAY_KEY
+    file: 'target/bintray.json'
+    on:
+      tags: true

@@ -23,7 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 @Component
 @RequiredArgsConstructor
-public class ZigBeeBundleEntrypoint implements BundleEntrypoint {
+public class ZigBeeEntrypoint implements BundleEntrypoint {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 

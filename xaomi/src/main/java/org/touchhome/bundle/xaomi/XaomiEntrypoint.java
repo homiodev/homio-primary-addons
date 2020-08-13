@@ -8,7 +8,7 @@ import org.touchhome.bundle.api.BundleEntrypoint;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class XaomiBundleEntrypoint implements BundleEntrypoint {
+public class XaomiEntrypoint implements BundleEntrypoint {
 
     public void init() {
 

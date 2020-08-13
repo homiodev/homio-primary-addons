@@ -1,6 +1,7 @@
 package org.touchhome.bundle.bluetooth;
 
 import com.pi4j.system.SystemInfo;
+import com.pivovarit.function.ThrowingRunnable;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -15,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.touchhome.bundle.api.BundleEntrypoint;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.function.CheckedRunnable;
 import org.touchhome.bundle.api.hardware.other.LinuxHardwareRepository;
 import org.touchhome.bundle.api.hardware.wifi.Network;
 import org.touchhome.bundle.api.hardware.wifi.WirelessHardwareRepository;
@@ -264,7 +264,7 @@ public class BluetoothService implements BundleEntrypoint {
     }
 
     @SneakyThrows
-    private void writeSafeValue(CheckedRunnable runnable) {
+    private void writeSafeValue(ThrowingRunnable runnable) {
         if (hasAccess()) {
             runnable.run();
         }

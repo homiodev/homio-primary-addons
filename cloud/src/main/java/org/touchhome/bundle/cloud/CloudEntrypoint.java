@@ -13,7 +13,7 @@ import java.util.Set;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class CloudBundle implements BundleEntrypoint {
+public class CloudEntrypoint implements BundleEntrypoint {
 
     private final EntityContext entityContext;
 
@@ -34,5 +34,10 @@ public class CloudBundle implements BundleEntrypoint {
     @Override
     public Set<NotificationEntityJSON> getNotifications() {
         return entityContext.getSettingValue(CloudProviderSetting.class).getNotifications();
+    }
+
+    @Override
+    public BundleImageColorIndex getBundleImageColorIndex() {
+        return BundleImageColorIndex.THREE;
     }
 }

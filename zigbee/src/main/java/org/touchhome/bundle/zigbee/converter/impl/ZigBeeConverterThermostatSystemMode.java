@@ -87,7 +87,7 @@ public class ZigBeeConverterThermostatSystemMode extends ZigBeeBaseChannelConver
         options.add(new StateOption("8", "Dry"));
         options.add(new StateOption("9", "Sleep"));
 
-        stateDescription = new StateDescription(BigDecimal.ZERO, BigDecimal.valueOf(9), BigDecimal.valueOf(1), "", true,
+        stateDescription = new StateDescription(BigDecimal.ZERO, BigDecimal.valueOf(9), BigDecimal.valueOf(1), "", false,
                 options);*/
 
         // Add a listener, then request the status
