@@ -1,4 +1,4 @@
-package org.touchhome.bundle.zigbee.setting;
+package org.touchhome.bundle.zigbee.setting.advanced;
 
 import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 import org.touchhome.bundle.api.EntityContext;
@@ -39,6 +39,11 @@ public class ZigbeeTxPowerSetting implements BundleSettingPlugin<Integer> {
 
     @Override
     public boolean isAdvanced() {
+        return true;
+    }
+
+    @Override
+    public boolean isReverted() {
         return true;
     }
 }

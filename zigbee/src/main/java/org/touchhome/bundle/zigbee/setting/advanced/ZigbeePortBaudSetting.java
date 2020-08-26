@@ -1,14 +1,14 @@
-package org.touchhome.bundle.zigbee.setting;
+package org.touchhome.bundle.zigbee.setting.advanced;
 
-import com.zsmartsystems.zigbee.transport.TrustCentreJoinMode;
-import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.Option;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class ZigbeeTrustCenterModeSetting implements BundleSettingPlugin<TrustCentreJoinMode> {
+public class ZigbeePortBaudSetting implements BundleSettingPlugin<Integer> {
 
     @Override
     public SettingType getSettingType() {
@@ -16,18 +16,23 @@ public class ZigbeeTrustCenterModeSetting implements BundleSettingPlugin<TrustCe
     }
 
     @Override
-    public TrustCentreJoinMode parseValue(EntityContext entityContext, String value) {
-        return StringUtils.isEmpty(value) ? null : TrustCentreJoinMode.valueOf(value);
+    public String getDefaultValue() {
+        return "115200";
     }
 
     @Override
     public List<Option> loadAvailableValues(EntityContext entityContext) {
-        return Option.listWithEmpty(TrustCentreJoinMode.class);
+        return new ArrayList<>(Arrays.asList(Option.key("38400"), Option.key("57600"), Option.key("115200")));
+    }
+
+    @Override
+    public Integer parseValue(EntityContext entityContext, String value) {
+        return Integer.parseInt(value);
     }
 
     @Override
     public int order() {
-        return 1300;
+        return 750;
     }
 
     @Override

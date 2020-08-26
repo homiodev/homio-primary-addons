@@ -5,7 +5,7 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclMultistateInputBasicCluster;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.DeviceStatus;
+import org.touchhome.bundle.api.model.BundleStatus;
 import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
@@ -42,11 +42,11 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
     public Scratch3XaomiBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
                                ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
                                XaomiEntrypoint xaomiEntrypoint) {
-        super("xaomi", "#856d21", entityContext, xaomiEntrypoint);
+        super("#856d21", entityContext, xaomiEntrypoint);
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
         this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, status -> {
-            if (status == DeviceStatus.ONLINE) {
+            if (status.isOnline()) {
                 this.coordinatorHandler = this.entityContext.getSettingValue(ZigbeeCoordinatorHandlerSetting.class);
             } else {
                 this.coordinatorHandler = null;
@@ -85,36 +85,29 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
     }
 
     private void magicCubeEventHandler(WorkspaceBlock workspaceBlock) {
-        WorkspaceBlock substack = workspaceBlock.getNext();
-        if (substack == null) {
-            workspaceBlock.logErrorAndThrow("No next block found");
-            return;
-        }
-        String expectedMenuValueStr = workspaceBlock.getMenuValue(EVENT, this.cubeEventMenu, String.class);
-        MagicCubeEvent expectedMenuValue = MagicCubeEvent.getEvent(expectedMenuValueStr);
-        final TapSide tapSide = expectedMenuValue == MagicCubeEvent.TAP_TWICE ? TapSide.valueOf(expectedMenuValueStr) : null;
-        final MoveSide moveSide = expectedMenuValue == MagicCubeEvent.MOVE ? MoveSide.valueOf(expectedMenuValueStr) : null;
+        if(workspaceBlock.hasNext()) {
+            String expectedMenuValueStr = workspaceBlock.getMenuValue(EVENT, this.cubeEventMenu, String.class);
+            MagicCubeEvent expectedMenuValue = MagicCubeEvent.getEvent(expectedMenuValueStr);
+            final TapSide tapSide = expectedMenuValue == MagicCubeEvent.TAP_TWICE ? TapSide.valueOf(expectedMenuValueStr) : null;
+            final MoveSide moveSide = expectedMenuValue == MagicCubeEvent.MOVE ? MoveSide.valueOf(expectedMenuValueStr) : null;
 
-        String ieeeAddress = fetchIEEEAddress(workspaceBlock);
-        if (ieeeAddress == null) {
-            return;
-        }
-
-        BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock.getId());
-        Consumer<ScratchDeviceState> consumer = sds -> {
-            CubeValueDescriptor cubeValueDescriptor = new CubeValueDescriptor(sds);
-            if (cubeValueDescriptor.match(expectedMenuValue, tapSide, moveSide)) {
-                lock.signalAll();
+            String ieeeAddress = fetchIEEEAddress(workspaceBlock);
+            if (ieeeAddress == null) {
+                return;
             }
-        };
 
-        addZigbeeEventListener(ieeeAddress, ZclMultistateInputBasicCluster.CLUSTER_ID, consumer);
-        addZigbeeEventListener(ieeeAddress, ZclAnalogInputBasicCluster.CLUSTER_ID, consumer);
+            BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
+            Consumer<ScratchDeviceState> consumer = sds -> {
+                CubeValueDescriptor cubeValueDescriptor = new CubeValueDescriptor(sds);
+                if (cubeValueDescriptor.match(expectedMenuValue, tapSide, moveSide)) {
+                    lock.signalAll();
+                }
+            };
 
-        while (!Thread.currentThread().isInterrupted()) {
-            if (lock.await(workspaceBlock)) {
-                substack.handle();
-            }
+            addZigbeeEventListener(ieeeAddress, ZclMultistateInputBasicCluster.CLUSTER_ID, consumer);
+            addZigbeeEventListener(ieeeAddress, ZclAnalogInputBasicCluster.CLUSTER_ID, consumer);
+
+            workspaceBlock.subscribeToLock(lock);
         }
     }
 

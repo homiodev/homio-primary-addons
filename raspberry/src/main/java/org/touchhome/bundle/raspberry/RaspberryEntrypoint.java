@@ -23,7 +23,7 @@ public class RaspberryEntrypoint implements BundleEntrypoint {
 
     @Override
     public int order() {
-        return 3000;
+        return 300;
     }
 
     @Override

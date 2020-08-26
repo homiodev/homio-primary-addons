@@ -5,20 +5,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePlugin;
-import org.touchhome.bundle.api.json.Option;
 import org.touchhome.bundle.api.model.BaseEntity;
-import org.touchhome.bundle.api.model.DeviceStatus;
+import org.touchhome.bundle.api.model.BundleStatus;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
+import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldColorMatch;
-import org.touchhome.bundle.api.ui.method.UIFieldSelectValueOnEmpty;
+import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
+import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.ui.method.UIMethodAction;
 import org.touchhome.bundle.zigbee.model.State;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.requireEndpoint.ZigbeeRequireEndpoints;
 import org.touchhome.bundle.zigbee.setting.ZigbeeDiscoveryButtonSetting;
 import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
@@ -27,13 +26,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class ZigBeeConsolePlugin implements ConsolePlugin {
 
-    private final ZigBeeEntrypoint zigbeeBundleContext;
+    private final ZigBeeBundleEntrypoint zigbeeBundleContext;
     private final EntityContext entityContext;
 
     @Override
@@ -43,7 +41,7 @@ public class ZigBeeConsolePlugin implements ConsolePlugin {
 
     @Override
     public boolean isEnabled() {
-        return entityContext.getSettingValue(ZigbeeStatusSetting.class) == DeviceStatus.ONLINE;
+        return entityContext.getSettingValue(ZigbeeStatusSetting.class).isOnline();
     }
 
     @Override
@@ -87,13 +85,14 @@ public class ZigBeeConsolePlugin implements ConsolePlugin {
         @UIFieldColorMatch(value = "ONLINE", color = "#1F8D2D")
         @UIFieldColorMatch(value = "OFFLINE", color = "#B22020")
         @UIFieldColorMatch(value = "UNKNOWN", color = "#818744")
-        private DeviceStatus deviceStatus;
+        private BundleStatus deviceStatus;
 
         @UIField(order = 3, color = "#B22020")
         private String errorMessage;
 
         @UIField(order = 4)
-        @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier", color = "#A7D21E", method = "selectModelIdentifier")
+        @UIFieldSelection(SelectModelIdentifierDynamicLoader.class)
+        @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier", color = "#A7D21E")
         private String model;
 
         @UIField(order = 5)
@@ -139,11 +138,6 @@ public class ZigBeeConsolePlugin implements ConsolePlugin {
         @UIMethodAction(name = "ACTION.ZIGBEE_PULL_CHANNELS")
         public String pullChannels(ZigBeeDeviceEntity zigBeeDeviceEntity) {
             return zigBeeDeviceEntity.pullChannels();
-        }
-
-        public List<Option> selectModelIdentifier() {
-            return ZigbeeRequireEndpoints.get().getZigbeeRequireEndpoints().stream().map(c ->
-                    Option.of(c.getModelId(), c.getName()).setImageRef(c.getImage())).collect(Collectors.toList());
         }
     }
 }

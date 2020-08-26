@@ -1,11 +1,10 @@
 package org.touchhome.bundle.telegram.service;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
@@ -18,10 +17,7 @@ import org.telegram.telegrambots.meta.generics.BotSession;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.UserEntity;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
-import org.touchhome.bundle.telegram.commands.TelegramEventCommand;
-import org.touchhome.bundle.telegram.commands.TelegramHelpCommand;
-import org.touchhome.bundle.telegram.commands.TelegramRegisterUserCommand;
-import org.touchhome.bundle.telegram.commands.TelegramUnregisterUserCommand;
+import org.touchhome.bundle.telegram.commands.*;
 import org.touchhome.bundle.telegram.settings.TelegramBotNameSetting;
 import org.touchhome.bundle.telegram.settings.TelegramBotTokenSetting;
 import org.touchhome.bundle.telegram.settings.TelegramRestartBotButtonSetting;
@@ -49,7 +45,6 @@ public class TelegramService {
 
     private final EntityContext entityContext;
     private BotSession botSession;
-    private RestTemplate restTemplate = new RestTemplate();
 
     @Getter
     private TelegramBot telegramBot;
@@ -73,11 +68,12 @@ public class TelegramService {
         this.start();
     }
 
-    public void sendMessage(List<UserEntity> users, String message) {
+    public void sendMessage(List<UserEntity> users, String message) throws TelegramApiException {
         if (users != null && !users.isEmpty()) {
-            String token = entityContext.getSettingValue(TelegramBotTokenSetting.class);
             for (UserEntity user : users) {
-                restTemplate.postForObject("https://api.telegram.org/bot" + token + "/sendMessage", new SendMessageData(user.getUserId(), message), Object.class);
+                SendMessage sendMessage = new SendMessage(user.getJsonData().getString(CHAT_ID), message);
+                sendMessage.enableMarkdownV2(true);
+                this.telegramBot.execute(sendMessage);
             }
         }
     }
@@ -101,18 +97,12 @@ public class TelegramService {
         }
     }
 
-    @Getter
-    @AllArgsConstructor
-    private static class SendMessageData {
-        private String chat_id;
-        private String text;
-    }
-
     public final class TelegramBot extends TelegramLongPollingCommandBot {
 
         TelegramBot(DefaultBotOptions botOptions) {
             super(botOptions);
 
+            register(new TelegramStartCommand(this));
             register(new TelegramHelpCommand(this));
             register(new TelegramRegisterUserCommand(entityContext));
             register(new TelegramUnregisterUserCommand(entityContext));

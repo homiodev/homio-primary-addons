@@ -1,28 +1,31 @@
 package org.touchhome.bundle.zigbee.setting;
 
-import org.json.JSONObject;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
-import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.setting.BundleSettingPluginSlider;
 
-public class ZigbeeDiscoveryDurationSetting implements BundleSettingPlugin<Integer> {
+public class ZigbeeDiscoveryDurationSetting implements BundleSettingPluginSlider {
 
     @Override
-    public String getDefaultValue() {
-        return "254";
+    public int getMin() {
+        return 60;
     }
 
     @Override
-    public JSONObject getParameters(EntityContext entityContext, String value) {
-        return new JSONObject().put("min", 60).put("max", 254).put("step", 1);
+    public int getMax() {
+        return 254;
     }
 
     @Override
-    public SettingType getSettingType() {
-        return SettingType.Slider;
+    public int defaultValue() {
+        return 254;
     }
 
     @Override
     public int order() {
         return 200;
+    }
+
+    @Override
+    public boolean isReverted() {
+        return true;
     }
 }

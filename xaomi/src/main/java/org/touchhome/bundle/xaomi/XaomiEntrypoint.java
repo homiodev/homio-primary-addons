@@ -21,6 +21,6 @@ public class XaomiEntrypoint implements BundleEntrypoint {
 
     @Override
     public int order() {
-        return 500;
+        return 700;
     }
 }

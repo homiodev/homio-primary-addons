@@ -12,7 +12,7 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.setting.ZigbeeDiscoveryButtonSetting;
 import org.touchhome.bundle.zigbee.setting.ZigbeeDiscoveryDurationSetting;
-import org.touchhome.bundle.zigbee.setting.ZigbeeJoinDeviceDuringScanOnlySetting;
+import org.touchhome.bundle.zigbee.setting.advanced.ZigbeeJoinDeviceDuringScanOnlySetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 import java.util.concurrent.ScheduledExecutorService;

@@ -34,4 +34,9 @@ public class ZigbeeCoordinatorHandlerSetting implements BundleSettingPlugin<ZigB
     public ZigBeeCoordinatorHandler parseValue(EntityContext entityContext, String value) {
         return entityContext.getBean(value, ZigBeeCoordinatorHandler.class);
     }
+
+    @Override
+    public boolean isRequired() {
+        return true;
+    }
 }

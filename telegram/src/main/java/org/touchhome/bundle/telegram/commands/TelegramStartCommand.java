@@ -8,28 +8,17 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 @Log4j2
-public final class TelegramHelpCommand extends TelegramBaseCommand {
+public final class TelegramStartCommand extends TelegramBaseCommand {
 
     private final ICommandRegistry mCommandRegistry;
 
-    public TelegramHelpCommand(ICommandRegistry mCommandRegistry) {
-        super("help", "List all known commands");
+    public TelegramStartCommand(ICommandRegistry mCommandRegistry) {
+        super("start", "");
         this.mCommandRegistry = mCommandRegistry;
     }
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings, StringBuilder sb, SendMessage message) {
-        assembleCommands(mCommandRegistry, sb, message);
+        TelegramHelpCommand.assembleCommands(mCommandRegistry, sb, message);
     }
-
-    static void assembleCommands(ICommandRegistry mCommandRegistry, StringBuilder sb, SendMessage message) {
-        sb.append("<b>Available commands:</b>\n");
-        mCommandRegistry.getRegisteredCommands().forEach(cmd -> {
-            if (!cmd.getCommandIdentifier().equals("start")) {
-                sb.append(cmd.toString());
-            }
-        });
-        message.enableHtml(true);
-    }
-
 }

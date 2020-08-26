@@ -1,8 +1,8 @@
-package org.touchhome.bundle.zigbee.setting;
+package org.touchhome.bundle.zigbee.setting.advanced;
 
 import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 
-public class ZigbeeLinkKeySetting implements BundleSettingPlugin<String> {
+public class ZigbeeInstallCodeSetting implements BundleSettingPlugin<String> {
 
     @Override
     public SettingType getSettingType() {
@@ -11,7 +11,7 @@ public class ZigbeeLinkKeySetting implements BundleSettingPlugin<String> {
 
     @Override
     public int order() {
-        return 900;
+        return 800;
     }
 
     @Override

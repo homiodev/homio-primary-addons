@@ -6,24 +6,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntrypoint;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.NotificationEntityJSON;
-import org.touchhome.bundle.api.model.DeviceStatus;
-import org.touchhome.bundle.api.util.NotificationType;
+import org.touchhome.bundle.api.model.BundleStatus;
+import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPluginStatus;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.setting.ZigbeeCoordinatorHandlerSetting;
-import org.touchhome.bundle.zigbee.setting.ZigbeeStatusMessageSetting;
 import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
-import java.util.Collections;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 @Component
 @RequiredArgsConstructor
-public class ZigBeeEntrypoint implements BundleEntrypoint {
+public class ZigBeeBundleEntrypoint implements BundleEntrypoint {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
@@ -39,7 +36,6 @@ public class ZigBeeEntrypoint implements BundleEntrypoint {
 
     @Override
     public void init() {
-        this.entityContext.setSettingValueSilence(ZigbeeStatusSetting.class, DeviceStatus.UNKNOWN);
         this.coordinatorHandler = entityContext.getSettingValue(ZigbeeCoordinatorHandlerSetting.class);
         this.zigBeeDiscoveryService = new ZigBeeDiscoveryService(
                 entityContext, coordinatorHandler,
@@ -49,8 +45,7 @@ public class ZigBeeEntrypoint implements BundleEntrypoint {
                 deviceUpdateListener);
 
         this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, status -> {
-
-            if (status == DeviceStatus.ONLINE) {
+            if (status.isOnline()) {
                 for (ZigBeeDeviceEntity zigbeeDeviceEntity : entityContext.findAll(ZigBeeDeviceEntity.class)) {
                     zigBeeDiscoveryService.addZigBeeDevice(new IeeeAddress(zigbeeDeviceEntity.getIeeeAddress()));
                 }
@@ -72,15 +67,11 @@ public class ZigBeeEntrypoint implements BundleEntrypoint {
 
     @Override
     public int order() {
-        return 300;
+        return 600;
     }
 
     @Override
-    public Set<NotificationEntityJSON> getNotifications() {
-        DeviceStatus deviceStatus = entityContext.getSettingValue(ZigbeeStatusSetting.class);
-        return Collections.singleton(new NotificationEntityJSON("zigbee-status")
-                .setName("Zigbee status: " + deviceStatus)
-                .setDescription(entityContext.getSettingValue(ZigbeeStatusMessageSetting.class))
-                .setNotificationType(deviceStatus == DeviceStatus.ONLINE ? NotificationType.info : NotificationType.warning));
+    public Class<? extends BundleSettingPluginStatus> getBundleStatusSetting() {
+        return ZigbeeStatusSetting.class;
     }
 }

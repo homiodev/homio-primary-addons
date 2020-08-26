@@ -39,7 +39,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
 
     public Scratch3RaspberryBlocks(RaspberryGPIOService raspberryGPIOService, BroadcastLockManager broadcastLockManager,
                                    EntityContext entityContext, RaspberryEntrypoint raspberryEntrypoint) {
-        super("raspberry", "#83be41", entityContext, raspberryEntrypoint);
+        super("#83be41", entityContext, raspberryEntrypoint);
         this.raspberryGPIOService = raspberryGPIOService;
         this.broadcastLockManager = broadcastLockManager;
 
@@ -53,13 +53,13 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
 
         this.pullMenu = MenuBlock.ofStatic("pullMenu", PinPullResistance.class);
 
-        this.ds18b20Menu = MenuBlock.ofServer("ds18b20Menu", "rest/item/raspberry/DS18B20", "Select DS18B20", "-");
+        this.ds18b20Menu = MenuBlock.ofServer("ds18b20Menu", "rest/raspberry/DS18B20", "Select DS18B20", "-");
 
         String pin = this.allPinMenu.getFirstValue();
 
         this.writePin = Scratch3Block.ofHandler(0, "set_gpio", BlockType.command, "Set [HILO] to pin [PIN] of [RPI]", this::writePin);
         this.writePin.addArgument("PIN", ArgumentType.string, pin, this.allPinMenu);
-        this.writePin.addArgument("HILO", ArgumentType.string, HighLow.low.name(), this.hiloMenu);
+        this.writePin.addArgument("HIanLO", ArgumentType.string, HighLow.low.name(), this.hiloMenu);
         this.writePin.addArgumentServerSelection("RPI", this.rpiIdMenu);
 
         String pwmPin = this.pwmPinMenu.getFirstValue();
@@ -122,18 +122,13 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
     }
 
     private void whenGpioInState(WorkspaceBlock workspaceBlock) {
-        RaspberryGpioPin pin = getPin(workspaceBlock);
-        HighLow state = getHighLow(workspaceBlock);
-        BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock.getId());
-        raspberryGPIOService.addGpioListener(workspaceBlock.getId(), pin, state.getPinState(), lock::signalAll);
+        if(workspaceBlock.hasNext()) {
+            RaspberryGpioPin pin = getPin(workspaceBlock);
+            HighLow state = getHighLow(workspaceBlock);
+            BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
+            raspberryGPIOService.addGpioListener(workspaceBlock.getId(), pin, state.getPinState(), lock::signalAll);
 
-        WorkspaceBlock substack = workspaceBlock.getNext();
-        if (substack != null) {
-            while (!Thread.currentThread().isInterrupted()) {
-                if (lock.await(workspaceBlock)) {
-                    substack.handle();
-                }
-            }
+            workspaceBlock.subscribeToLock(lock);
         }
     }
 

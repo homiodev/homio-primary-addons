@@ -20,7 +20,9 @@ import org.touchhome.bundle.api.hardware.other.LinuxHardwareRepository;
 import org.touchhome.bundle.api.hardware.wifi.Network;
 import org.touchhome.bundle.api.hardware.wifi.WirelessHardwareRepository;
 import org.touchhome.bundle.api.model.UserEntity;
+import org.touchhome.bundle.api.setting.BundleSettingPluginStatus;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.bundle.bluetooth.setting.BluetoothStatusSetting;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerRestartSetting;
 import org.touchhome.bundle.cloud.setting.CloudProviderSetting;
 
@@ -36,7 +38,7 @@ import static org.touchhome.bundle.api.util.TouchHomeUtils.distinctByKey;
 @Log4j2
 @Controller
 @RequiredArgsConstructor
-public class BluetoothService implements BundleEntrypoint {
+public class BluetoothBundleEntrypoint implements BundleEntrypoint {
 
     public static final int MIN_WRITE_TIMEOUT = 5000;
     private static final String PREFIX = "13333333-3333-3333-3333-3333333330";
@@ -113,12 +115,13 @@ public class BluetoothService implements BundleEntrypoint {
         }
     }
 
+    @Override
+    public Class<? extends BundleSettingPluginStatus> getBundleStatusSetting() {
+        return BluetoothStatusSetting.class;
+    }
+
     public void init() {
         this.user = entityContext.getEntity(ADMIN_USER);
-        if (!EntityContext.isLinuxOrDockerEnvironment()) {
-            log.info("Bluetooth skipped for non linux env. Require unix sockets");
-            return;
-        }
         log.info("Starting bluetooth...");
 
         bluetoothApplication = new BluetoothApplication("touchHome", SERVICE_UUID, new BleApplicationListener() {
@@ -157,7 +160,9 @@ public class BluetoothService implements BundleEntrypoint {
             bluetoothApplication.start();
             log.info("Bluetooth successfully started");
             entityContext.setFeatureState("Bluetooth", true);
-        } catch (Exception ex) {
+            entityContext.setSettingValue(BluetoothStatusSetting.class, BundleSettingPluginStatus.ONLINE);
+        } catch (Throwable ex) {
+            entityContext.setSettingValue(BluetoothStatusSetting.class, BundleSettingPluginStatus.error(ex));
             entityContext.setFeatureState("Bluetooth", false);
             log.error("Unable to start bluetooth service", ex);
         }

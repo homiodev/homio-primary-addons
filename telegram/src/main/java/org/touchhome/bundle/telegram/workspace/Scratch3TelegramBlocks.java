@@ -1,7 +1,10 @@
 package org.touchhome.bundle.telegram.workspace;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.UserEntity;
 import org.touchhome.bundle.api.scratch.*;
@@ -12,11 +15,14 @@ import org.touchhome.bundle.telegram.service.TelegramService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Getter
 @Component
 public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
-    public static final String URL = "rest/v2/telegram/";
+    public static final String URL = "rest/telegram/";
+    private static final Pattern ESCAPE_PATTERN = Pattern.compile("[\\{\\}\\.\\+\\-\\#\\(\\)]");
 
     private static final String USER = "USER";
     private static final String MESSAGE = "MESSAGE";
@@ -35,7 +41,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     public Scratch3TelegramBlocks(TelegramService telegramService, EntityContext entityContext,
                                   BroadcastLockManager broadcastLockManager,
                                   TelegramEntrypoint telegramEntrypoint) {
-        super("telegram", "#73868c", entityContext, telegramEntrypoint);
+        super("#73868c", entityContext, telegramEntrypoint);
         this.telegramService = telegramService;
         this.broadcastLockManager = broadcastLockManager;
 
@@ -56,20 +62,13 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     }
 
     private void whenGetMessage(WorkspaceBlock workspaceBlock) {
-        WorkspaceBlock substack = workspaceBlock.getNext();
-        if (substack == null) {
-            workspaceBlock.logErrorAndThrow("No next block found");
-            return;
-        }
-        String command = workspaceBlock.getInputString(COMMAND);
-        String description = workspaceBlock.getInputString(DESCRIPTION);
-        BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock.getId());
-        this.telegramService.getTelegramBot().registerEvent(command, description, workspaceBlock.getId(), lock);
+        if(workspaceBlock.hasNext()) {
+            String command = workspaceBlock.getInputString(COMMAND);
+            String description = workspaceBlock.getInputString(DESCRIPTION);
+            BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
+            this.telegramService.getTelegramBot().registerEvent(command, description, workspaceBlock.getId(), lock);
 
-        while (!Thread.currentThread().isInterrupted()) {
-            if (lock.await(workspaceBlock)) {
-                substack.handle();
-            }
+            workspaceBlock.subscribeToLock(lock);
         }
     }
 
@@ -96,14 +95,41 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         for (UserEntity userEntity : users) {
             workspaceBlock.logInfo("Send event to telegram user <{}>. Message <{}>", userEntity.getName(), message);
         }
-        telegramService.sendMessage(users, level.format(message));
+        try {
+            try {
+                new JSONObject(message);
+                // wrap json into code block
+                message = "```" + message + "```";
+            } catch (Exception ignore) {
+            }
+            telegramService.sendMessage(users, level.format(escape(message)));
+        } catch (TelegramApiException ex) {
+            workspaceBlock.logError("Error send telegram message " + ex);
+        }
     }
 
+    private static String escape(String text) {
+        Matcher matcher = ESCAPE_PATTERN.matcher(text);
+        StringBuffer noteBuffer = new StringBuffer();
+        while (matcher.find()) {
+            String group = matcher.group();
+            matcher.appendReplacement(noteBuffer, "\\\\" + group);
+        }
+        matcher.appendTail(noteBuffer);
+        return noteBuffer.length() == 0 ? text : noteBuffer.toString();
+    }
+
+    @RequiredArgsConstructor
     private enum Level {
-        info, warn, error;
+        none(new byte[0]), info(new byte[]{-30, -124, -71, -17, -72, -113}), warn(new byte[]{-30, -102, -96, -17, -72, -113}), error(new byte[]{-16, -97, -122, -104});
+
+        private final byte[] emoji;
 
         public String format(String message) {
-            return "[" + name().toUpperCase() + "]. " + message;
+            if (this.emoji.length > 0) {
+                return new String(this.emoji) + " " + message;
+            }
+            return message;
         }
     }
 }

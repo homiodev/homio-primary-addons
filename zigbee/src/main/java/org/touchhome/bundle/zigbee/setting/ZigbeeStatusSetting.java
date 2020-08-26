@@ -1,25 +1,8 @@
 package org.touchhome.bundle.zigbee.setting;
 
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
-import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.DeviceStatus;
+import org.touchhome.bundle.api.setting.BundleSettingPluginStatus;
 
-public class ZigbeeStatusSetting implements BundleSettingPlugin<DeviceStatus> {
-
-    @Override
-    public SettingType getSettingType() {
-        return SettingType.Info;
-    }
-
-    @Override
-    public String getDefaultValue() {
-        return DeviceStatus.UNKNOWN.toString();
-    }
-
-    @Override
-    public DeviceStatus parseValue(EntityContext entityContext, String value) {
-        return value == null ? DeviceStatus.UNKNOWN : DeviceStatus.valueOf(value);
-    }
+public class ZigbeeStatusSetting implements BundleSettingPluginStatus {
 
     @Override
     public int order() {

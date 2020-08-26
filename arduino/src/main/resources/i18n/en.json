@@ -5,5 +5,8 @@
     "setting": {
       "label": "Arduino settings"
     }
+  },
+  "selection": {
+    "arduinoTxRxCommunicatorProvider": "Rx/Tx provider"
   }
 }

@@ -6,14 +6,14 @@ import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.DeviceStatus;
+import org.touchhome.bundle.api.model.BundleStatus;
 import org.touchhome.bundle.api.model.workspace.var.WorkspaceVariableEntity;
 import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
+import org.touchhome.bundle.zigbee.ZigBeeBundleEntrypoint;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
-import org.touchhome.bundle.zigbee.ZigBeeEntrypoint;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.setting.ZigbeeCoordinatorHandlerSetting;
@@ -44,12 +44,12 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigbeeExtensionBlocks {
 
     public Scratch3ZigBeeBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
                                 ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-                                ZigBeeEntrypoint zigBeeEntrypoint) {
-        super("zigbee", "#6d4747", entityContext, zigBeeEntrypoint);
+                                ZigBeeBundleEntrypoint zigBeeBundleEntrypoint) {
+        super("#6d4747", entityContext, zigBeeBundleEntrypoint, null);
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
         this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, status -> {
-            if (status == DeviceStatus.ONLINE) {
+            if (status.isOnline()) {
                 this.coordinatorHandler = this.entityContext.getSettingValue(ZigbeeCoordinatorHandlerSetting.class);
             } else {
                 this.coordinatorHandler = null;
@@ -169,7 +169,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigbeeExtensionBlocks {
             throw new IllegalStateException("Unable to find Zigbee device entity <" + ieeeAddress + ">");
         }
 
-        BroadcastLock<ScratchDeviceState> lock = broadcastLockManager.getOrCreateLock(workspaceBlock.getId());
+        BroadcastLock<ScratchDeviceState> lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
         boolean availableReceiveEvents = false;
 
         if (scratch3Block instanceof Scratch3ZigbeeBlock) {

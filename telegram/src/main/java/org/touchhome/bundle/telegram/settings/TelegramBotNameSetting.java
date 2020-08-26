@@ -13,4 +13,14 @@ public class TelegramBotNameSetting implements BundleSettingPlugin<String> {
     public int order() {
         return 100;
     }
+
+    @Override
+    public boolean isSecuredValue() {
+        return true;
+    }
+
+    @Override
+    public boolean isRequired() {
+        return true;
+    }
 }

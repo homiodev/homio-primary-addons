@@ -4,16 +4,16 @@ import com.zsmartsystems.zigbee.zcl.clusters.*;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.DeviceStatus;
+import org.touchhome.bundle.api.model.BundleStatus;
 import org.touchhome.bundle.api.scratch.BlockType;
 import org.touchhome.bundle.api.scratch.MenuBlock;
 import org.touchhome.bundle.api.scratch.Scratch3Block;
 import org.touchhome.bundle.api.scratch.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
+import org.touchhome.bundle.zigbee.ZigBeeBundleEntrypoint;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
-import org.touchhome.bundle.zigbee.ZigBeeEntrypoint;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasFireIndicator;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasWaterSensor;
 import org.touchhome.bundle.zigbee.model.OnOffType;
@@ -61,15 +61,15 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigbeeExtensionBlocks {
 
     public Scratch3ZigBeeSensorsBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
                                        ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-                                       ZigBeeEntrypoint zigBeeEntrypoint) {
-        super("zigbee-sensor", "#8a6854", entityContext, zigBeeEntrypoint);
+                                       ZigBeeBundleEntrypoint zigBeeBundleEntrypoint) {
+        super("#8a6854", entityContext, zigBeeBundleEntrypoint, "sensor");
         setName("Zigbee Sensors");
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
         this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, status -> {
-            if (status == DeviceStatus.ONLINE) {
+            if (status.isOnline()) {
                 this.coordinatorHandler = this.entityContext.getSettingValue(ZigbeeCoordinatorHandlerSetting.class);
-            } else {
+            } else{
                 this.coordinatorHandler = null;
             }
         });
@@ -152,14 +152,11 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigbeeExtensionBlocks {
     }
 
     private void whenAlarmEventDetectedHandler(WorkspaceBlock workspaceBlock) {
-        WorkspaceBlock substack = workspaceBlock.getNext();
-        if (substack == null) {
-            workspaceBlock.logErrorAndThrow("No next block found");
-        } else {
+        if (workspaceBlock.hasNext()) {
             String[] keys = workspaceBlock.getMenuValue(ALARM_SENSOR, alarmSensorMenu, String.class).split("/");
             ZigBeeDeviceEntity zigBeeDevice = getZigBeeDevice(workspaceBlock, keys[0]);
             String alarmCluster = keys[1];
-            BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock.getId());
+            BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
             ZigBeeDeviceStateUUID zigBeeDeviceStateUUID = ZigBeeDeviceStateUUID.require(zigBeeDevice.getIeeeAddress(),
                     ZclIasZoneCluster.CLUSTER_ID, null, alarmCluster);
             this.zigBeeDeviceUpdateValueListener.addListener(zigBeeDeviceStateUUID, deviceState -> {
@@ -168,11 +165,7 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigbeeExtensionBlocks {
                 }
             });
 
-            while (!Thread.currentThread().isInterrupted()) {
-                if (lock.await(workspaceBlock)) {
-                    substack.handle();
-                }
-            }
+            workspaceBlock.subscribeToLock(lock);
         }
     }
 

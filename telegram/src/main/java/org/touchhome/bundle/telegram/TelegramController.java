@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @RestController
-@RequestMapping("/rest/v2/telegram")
+@RequestMapping("/rest/telegram")
 @RequiredArgsConstructor
 public class TelegramController {
 

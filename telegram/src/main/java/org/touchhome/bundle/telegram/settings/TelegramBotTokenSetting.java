@@ -13,4 +13,14 @@ public class TelegramBotTokenSetting implements BundleSettingPlugin<String> {
     public int order() {
         return 200;
     }
+
+    @Override
+    public boolean isSecuredValue() {
+        return true;
+    }
+
+    @Override
+    public boolean isRequired() {
+        return true;
+    }
 }

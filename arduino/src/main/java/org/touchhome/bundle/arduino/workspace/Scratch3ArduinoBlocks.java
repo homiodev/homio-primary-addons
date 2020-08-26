@@ -26,7 +26,7 @@ public class Scratch3ArduinoBlocks extends Scratch3ExtensionBlocks {
     private final Scratch3Block digitalWrite;
 
     public Scratch3ArduinoBlocks(EntityContext entityContext, ArduinoEntrypoint arduinoEntrypoint) {
-        super("arduino", "#3cb6cd", entityContext, arduinoEntrypoint);
+        super("#3cb6cd", entityContext, arduinoEntrypoint);
 
         // Menu
         this.digitalPinMenu = MenuBlock.ofStatic("digitalPinMenu", ArduinoGpioPin.class, p -> p.getPinModes().contains(DIGITAL_INPUT));

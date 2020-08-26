@@ -20,10 +20,13 @@ import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.DeviceStatus;
+import org.touchhome.bundle.api.model.BundleStatus;
+import org.touchhome.bundle.api.setting.BundleSettingPluginStatus;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.internal.ZigBeeDataStore;
-import org.touchhome.bundle.zigbee.setting.*;
+import org.touchhome.bundle.zigbee.setting.ZigbeeNetworkIdSetting;
+import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
+import org.touchhome.bundle.zigbee.setting.advanced.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -220,7 +223,7 @@ public abstract class ZigBeeCoordinatorHandler
      * Called by bridge implementations after they have initialised their interfaces.
      */
     protected void startZigBee(ZigBeeTransportTransmit zigbeeTransport, TransportConfig transportConfig) {
-        updateStatus(DeviceStatus.UNKNOWN, "");
+        updateStatus(BundleStatus.UNKNOWN, "");
 
         this.zigBeeTransport = zigbeeTransport;
         this.transportConfig = transportConfig;
@@ -272,13 +275,13 @@ public abstract class ZigBeeCoordinatorHandler
             case SUCCESS:
                 break;
             case BAD_RESPONSE:
-                updateStatus(DeviceStatus.OFFLINE, "zigbee.OFFLINE_BAD_RESPONSE");
+                updateStatus(BundleStatus.OFFLINE, "zigbee.OFFLINE_BAD_RESPONSE");
                 return;
             case COMMUNICATION_ERROR:
-                updateStatus(DeviceStatus.OFFLINE, "zigbee.OFFLINE_COMMS_FAIL");
+                updateStatus(BundleStatus.OFFLINE, "zigbee.OFFLINE_COMMS_FAIL");
                 return;
             default:
-                updateStatus(DeviceStatus.OFFLINE, "zigbee.OFFLINE_INITIALIZE_FAIL");
+                updateStatus(BundleStatus.OFFLINE, "zigbee.OFFLINE_INITIALIZE_FAIL");
                 return;
         }
 
@@ -342,7 +345,7 @@ public abstract class ZigBeeCoordinatorHandler
 
         // Call startup. The setting of the bring to ONLINE will be done via the state listener.
         if (networkManager.startup(initializeNetwork) != ZigBeeStatus.SUCCESS) {
-            updateStatus(DeviceStatus.OFFLINE, "OFFLINE_STARTUP_FAIL");
+            updateStatus(BundleStatus.OFFLINE, "OFFLINE_STARTUP_FAIL");
             return;
         }
 
@@ -355,13 +358,12 @@ public abstract class ZigBeeCoordinatorHandler
         initializeDongleSpecific();
     }
 
-    protected void updateStatus(DeviceStatus deviceStatus, String statusMessage) {
+    protected void updateStatus(BundleStatus deviceStatus, String statusMessage) {
         log.info("Coordinator status: <{}>", deviceStatus);
-        entityContext.setSettingValue(ZigbeeStatusMessageSetting.class, statusMessage);
-        entityContext.setSettingValue(ZigbeeStatusSetting.class, deviceStatus);
+        entityContext.setSettingValue(ZigbeeStatusSetting.class, BundleSettingPluginStatus.of(deviceStatus, statusMessage));
 
         for (ZigBeeDevice zigBeeDevice : zigBeeDevices.values()) {
-            zigBeeDevice.tryInitializeDevice(entityContext.getSettingValue(ZigbeeStatusSetting.class));
+            zigBeeDevice.tryInitializeDevice(entityContext.getSettingValue(ZigbeeStatusSetting.class).getStatus());
         }
     }
 
@@ -521,13 +523,13 @@ public abstract class ZigBeeCoordinatorHandler
         log.debug("{}: networkStateUpdated called with state={}", nodeIeeeAddress, state);
         switch (state) {
             case ONLINE:
-                updateStatus(DeviceStatus.ONLINE, "");
+                updateStatus(BundleStatus.ONLINE, "");
                 break;
             case OFFLINE:
                 /*Bridge bridge = getThing();
 
                 // do not try to reconnect if there is a firmware update in progress
-                if (bridge.getStatus() == DeviceStatus.OFFLINE
+                if (bridge.getStatus() == BundleStatus.OFFLINE
                         && bridge.getStatusInfo().getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING) {
                     break;
                 }*/
@@ -536,12 +538,12 @@ public abstract class ZigBeeCoordinatorHandler
                 // documentation https://www.eclipse.org/smarthome/documentation/concepts/things.html#status-transitions
                 // the thing must not change from these statuses to OFFLINE
                 // - Do not try to reconnect if the bridge is being removed.
-              /*  if (Arrays.asList(DeviceStatus.UNINITIALIZED, DeviceStatus.REMOVING, DeviceStatus.REMOVED)
+              /*  if (Arrays.asList(BundleStatus.UNINITIALIZED, BundleStatus.REMOVING, BundleStatus.REMOVED)
                         .contains(bridge.getStatus())) {
                     break;
                 }*/
 
-                updateStatus(DeviceStatus.OFFLINE, "COMMUNICATION_ERROR");
+                updateStatus(BundleStatus.OFFLINE, "COMMUNICATION_ERROR");
 
                 break;
         }
@@ -661,7 +663,7 @@ public abstract class ZigBeeCoordinatorHandler
     }
 
     public void scanStart(int duration) {
-        if (!entityContext.getSettingValue(ZigbeeStatusSetting.class).equals(DeviceStatus.ONLINE)) {
+        if (!entityContext.getSettingValue(ZigbeeStatusSetting.class).isOnline()) {
             entityContext.sendNotification("DEVICE.OFFLINE", "Unable to ", warning);
             log.debug("ZigBee coordinator is offline - aborted scan for");
         } else {

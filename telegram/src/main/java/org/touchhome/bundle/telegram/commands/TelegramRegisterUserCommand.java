@@ -33,7 +33,7 @@ public final class TelegramRegisterUserCommand extends TelegramBaseCommand {
                     .setName(user.getFirstName())
                     .setUserType(UserEntity.UserType.OTHER)
                     .setUserId(String.valueOf(user.getId()))
-                    .setJsonData(new JSONObject().put(CHAT_ID, chat.getId()))
+                    .setJsonData(new JSONObject().put(CHAT_ID, String.valueOf(chat.getId())))
                     .setRoles(Collections.singleton(TouchHomeUtils.GUEST_ROLE))
                     .setEntityID(UserEntity.PREFIX + user.getId());
             entityContext.save(entity);

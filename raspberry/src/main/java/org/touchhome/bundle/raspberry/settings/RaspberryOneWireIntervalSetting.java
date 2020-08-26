@@ -1,28 +1,36 @@
 package org.touchhome.bundle.raspberry.settings;
 
-import org.json.JSONObject;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
-import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.setting.BundleSettingPluginSlider;
 
-public class RaspberryOneWireIntervalSetting implements BundleSettingPlugin<Integer> {
+public class RaspberryOneWireIntervalSetting implements BundleSettingPluginSlider {
 
     @Override
-    public String getDefaultValue() {
-        return "30";
+    public int getMin() {
+        return 1;
     }
 
     @Override
-    public JSONObject getParameters(EntityContext entityContext, String value) {
-        return new JSONObject().put("min", 10).put("max", 120).put("step", 1).put("header", "S");
+    public int getMax() {
+        return 120;
     }
 
     @Override
-    public BundleSettingPlugin.SettingType getSettingType() {
-        return BundleSettingPlugin.SettingType.Slider;
+    public String getHeader() {
+        return "S";
+    }
+
+    @Override
+    public int defaultValue() {
+        return 30;
     }
 
     @Override
     public int order() {
         return 100;
+    }
+
+    @Override
+    public boolean isReverted() {
+        return true;
     }
 }

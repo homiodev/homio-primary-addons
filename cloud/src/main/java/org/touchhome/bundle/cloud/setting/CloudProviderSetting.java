@@ -5,7 +5,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.exception.NotFoundException;
 import org.touchhome.bundle.api.json.Option;
 import org.touchhome.bundle.cloud.CloudProvider;
-import org.touchhome.bundle.cloud.ssh.SshCloudProvider;
+import org.touchhome.bundle.cloud.providers.SshCloudProvider;
 
 import java.util.List;
 

@@ -8,17 +8,15 @@ import lombok.experimental.Accessors;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.Option;
 import org.touchhome.bundle.api.manager.En;
+import org.touchhome.bundle.api.model.BundleStatus;
 import org.touchhome.bundle.api.model.DeviceBaseEntity;
-import org.touchhome.bundle.api.model.DeviceStatus;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.field.*;
+import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
+import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.ui.method.UIFieldCreateWorkspaceVariableOnEmpty;
-import org.touchhome.bundle.api.ui.method.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.method.UIMethodAction;
-import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
-import org.touchhome.bundle.zigbee.ZigBeeDevice;
-import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
-import org.touchhome.bundle.zigbee.ZigBeeNodeDescription;
+import org.touchhome.bundle.zigbee.*;
 import org.touchhome.bundle.zigbee.requireEndpoint.ZigbeeRequireEndpoint;
 import org.touchhome.bundle.zigbee.requireEndpoint.ZigbeeRequireEndpoints;
 import org.touchhome.bundle.zigbee.setting.ZigbeeCoordinatorHandlerSetting;
@@ -31,7 +29,6 @@ import javax.persistence.Transient;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -63,7 +60,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
     @UIFieldColorMatch(value = "ONLINE", color = "#1F8D2D")
     @UIFieldColorMatch(value = "OFFLINE", color = "#B22020")
     @UIFieldColorMatch(value = "UNKNOWN", color = "#818744")
-    private DeviceStatus status = DeviceStatus.UNKNOWN;
+    private BundleStatus status = BundleStatus.UNKNOWN;
 
     @Transient
     @UIField(readOnly = true, order = 100)
@@ -71,9 +68,9 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private ZigBeeNodeDescription zigBeeNodeDescription;
 
-    @UIField(order = 50)
-    @UIFieldTextWithSelection(method = "selectModelIdentifier")
-    @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier", color = "#A7D21E", method = "selectModelIdentifier")
+    @UIField(order = 50, type = UIFieldType.TextSelectBoxDynamic)
+    @UIFieldSelection(SelectModelIdentifierDynamicLoader.class)
+    @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier", color = "#A7D21E")
     private String modelIdentifier;
 
     @Transient
@@ -103,11 +100,6 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
             }
         }
         return this;
-    }
-
-    public List<Option> selectModelIdentifier() {
-        return ZigbeeRequireEndpoints.get().getZigbeeRequireEndpoints().stream().map(c ->
-                Option.of(c.getModelId(), c.getName()).setImageRef(c.getImage())).collect(Collectors.toList());
     }
 
     @UIMethodAction(name = "ACTION.INITIALIZE_ZIGBEE_NODE")
@@ -141,7 +133,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
 
     @UIMethodAction(name = "ACTION.PERMIT_JOIN")
     public String permitJoin(EntityContext entityContext) {
-        if (entityContext.getSettingValue(ZigbeeStatusSetting.class) != DeviceStatus.ONLINE) {
+        if (!entityContext.getSettingValue(ZigbeeStatusSetting.class).isOnline()) {
             throw new IllegalStateException("DEVICE_OFFLINE");
         }
         if (zigBeeDevice == null) {

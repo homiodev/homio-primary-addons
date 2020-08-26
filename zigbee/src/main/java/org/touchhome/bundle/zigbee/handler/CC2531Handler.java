@@ -9,12 +9,12 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.DeviceStatus;
+import org.touchhome.bundle.api.model.BundleStatus;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.internal.ZigBeeSerialPort;
-import org.touchhome.bundle.zigbee.setting.ZigbeePortBaudSetting;
 import org.touchhome.bundle.zigbee.setting.ZigbeePortSetting;
+import org.touchhome.bundle.zigbee.setting.advanced.ZigbeePortBaudSetting;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,7 +44,7 @@ public class CC2531Handler extends ZigBeeCoordinatorHandler {
                 entityContext.getSettingValue(ZigbeePortSetting.class),
                 entityContext.getSettingValue(ZigbeePortBaudSetting.class),
                 FlowControl.FLOWCONTROL_OUT_RTSCTS,
-                () -> this.updateStatus(DeviceStatus.OFFLINE, "PORT_COMMUNICATION_ERROR"));
+                () -> this.updateStatus(BundleStatus.OFFLINE, "PORT_COMMUNICATION_ERROR"));
         return new ZigBeeDongleTiCc2531(serialPort);
     }
 

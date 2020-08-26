@@ -32,7 +32,7 @@ public final class TelegramEventCommand extends TelegramBaseCommand {
             sb.append("User: <").append(user.getFirstName()).append("> not registered, please register user first");
         } else {
             for (BroadcastLock broadcastLock : handlers.values()) {
-                broadcastLock.signalAll(Arrays.asList(strings));
+                broadcastLock.signalAll(strings.length == 0 ? "" : strings.length == 1 ? strings[0] : Arrays.asList(strings));
             }
         }
     }

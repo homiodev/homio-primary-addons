@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static org.touchhome.bundle.bluetooth.BluetoothService.MIN_WRITE_TIMEOUT;
+import static org.touchhome.bundle.bluetooth.BluetoothBundleEntrypoint.MIN_WRITE_TIMEOUT;
 
 @Log4j2
 @RequiredArgsConstructor

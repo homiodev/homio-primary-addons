@@ -35,4 +35,9 @@ public class ZigbeePortSetting implements BundleSettingPlugin<SerialPort> {
     public int order() {
         return 100;
     }
+
+    @Override
+    public boolean isRequired() {
+        return true;
+    }
 }

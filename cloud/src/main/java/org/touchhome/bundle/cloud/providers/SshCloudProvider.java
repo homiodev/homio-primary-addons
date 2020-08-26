@@ -1,4 +1,4 @@
-package org.touchhome.bundle.cloud.ssh;
+package org.touchhome.bundle.cloud.providers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -28,16 +28,17 @@ public class SshCloudProvider implements CloudProvider {
     public Set<NotificationEntityJSON> getNotifications() {
         Set<NotificationEntityJSON> notifications = new HashSet<>();
         if (!Files.exists(TouchHomeUtils.getSshPath().resolve("id_rsa_touchhome"))) {
-            notifications.add(NotificationEntityJSON.danger("private-key").setName("Private Key not found"));
+            notifications.add(NotificationEntityJSON.danger("private-key").setName("Cloud").setDescription("Private Key not found"));
         }
         if (!Files.exists(TouchHomeUtils.getSshPath().resolve("id_rsa_touchhome.pub"))) {
-            notifications.add(NotificationEntityJSON.danger("public-key").setName("Public key not found"));
+            notifications.add(NotificationEntityJSON.danger("public-key").setName("Cloud").setDescription("Public key not found"));
         }
         int serviceStatus = linuxHardwareRepository.getServiceStatus("touchhome-tunnel");
         if (serviceStatus == 0) {
-            notifications.add(NotificationEntityJSON.info("cloud-status").setName("Cloud connected"));
+            notifications.add(NotificationEntityJSON.info("cloud-status").setName("Cloud").setDescription("Connected"));
         } else {
-            notifications.add(NotificationEntityJSON.warn("cloud-status").setName("Cloud connection status not active " + serviceStatus));
+            notifications.add(NotificationEntityJSON.warn("cloud-status").setName("Cloud")
+                    .setDescription("Connection status not active " + serviceStatus));
         }
         return notifications;
     }

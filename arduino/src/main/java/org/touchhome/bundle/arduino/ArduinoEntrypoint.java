@@ -21,6 +21,6 @@ public class ArduinoEntrypoint implements BundleEntrypoint {
 
     @Override
     public int order() {
-        return 700;
+        return 500;
     }
 }
