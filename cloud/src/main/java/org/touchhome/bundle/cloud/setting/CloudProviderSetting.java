@@ -1,6 +1,6 @@
 package org.touchhome.bundle.cloud.setting;
 
-import org.touchhome.bundle.api.BundleConsoleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleConsoleSettingPlugin;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.exception.NotFoundException;
 import org.touchhome.bundle.api.json.Option;

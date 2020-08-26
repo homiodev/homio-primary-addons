@@ -1,6 +1,6 @@
 package org.touchhome.bundle.cloud.netty.setting;
 
-import org.touchhome.bundle.api.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 
 public class CloudServerUrlSetting implements BundleSettingPlugin<String> {
 

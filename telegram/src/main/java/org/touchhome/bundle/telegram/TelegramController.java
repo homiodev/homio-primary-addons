@@ -6,8 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.model.UserEntity;
-import org.touchhome.bundle.api.repository.impl.UserRepository;
+import org.touchhome.bundle.telegram.service.TelegramService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,12 +17,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TelegramController {
 
-    private final UserRepository userRepository;
+    private final TelegramService telegramService;
 
     @GetMapping("user/options")
     public List<Option> getRegisteredUsers() {
-        return userRepository.listAll().stream()
-                .filter(u -> u.getUserType() == UserEntity.UserType.TELEGRAM)
+        return telegramService.getUsers().stream()
                 .map(u -> Option.of(u.getEntityID(), u.getName()))
                 .collect(Collectors.toList());
     }

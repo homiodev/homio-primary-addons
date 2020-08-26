@@ -1,6 +1,7 @@
 package org.touchhome.bundle.raspberry.repository;
 
 import com.pi4j.io.gpio.PinMode;
+import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 import org.touchhome.bundle.api.EntityContext;
@@ -67,6 +68,7 @@ public class RaspberryDeviceRepository extends AbstractDeviceRepository<Raspberr
     }
 
     @Override
+    @SneakyThrows
     public void createVariable(String entityID, String varGroup, String varName, String key) {
         RaspberryGpioPin raspberryGpioPin = RaspberryGpioPin.values(PinMode.DIGITAL_INPUT, null).stream().filter(p -> p.name().equals(key)).findAny().orElse(null);
         if (raspberryGpioPin != null) {

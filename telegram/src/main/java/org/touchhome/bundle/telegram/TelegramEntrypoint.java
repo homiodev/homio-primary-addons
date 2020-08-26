@@ -26,4 +26,9 @@ public class TelegramEntrypoint implements BundleEntrypoint {
     public int order() {
         return 200;
     }
+
+    @Override
+    public String getSettingDescription() {
+        return "telegram.setting.description";
+    }
 }

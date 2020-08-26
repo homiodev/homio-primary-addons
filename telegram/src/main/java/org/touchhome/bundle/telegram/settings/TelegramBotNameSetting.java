@@ -1,6 +1,6 @@
 package org.touchhome.bundle.telegram.settings;
 
-import org.touchhome.bundle.api.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 
 public class TelegramBotNameSetting implements BundleSettingPlugin<String> {
 

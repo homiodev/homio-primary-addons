@@ -1,7 +1,7 @@
 package org.touchhome.bundle.zigbee.setting;
 
 import org.json.JSONObject;
-import org.touchhome.bundle.api.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 import org.touchhome.bundle.api.EntityContext;
 
 public class ZigbeeDiscoveryDurationSetting implements BundleSettingPlugin<Integer> {
