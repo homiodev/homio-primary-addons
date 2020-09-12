@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntrypoint;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.BundleStatus;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 import org.touchhome.bundle.api.setting.BundleSettingPluginStatus;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
@@ -44,7 +42,7 @@ public class ZigBeeBundleEntrypoint implements BundleEntrypoint {
                 scheduler,
                 deviceUpdateListener);
 
-        this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, status -> {
+        this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, "zb-fetch-devices", status -> {
             if (status.isOnline()) {
                 for (ZigBeeDeviceEntity zigbeeDeviceEntity : entityContext.findAll(ZigBeeDeviceEntity.class)) {
                     zigBeeDiscoveryService.addZigBeeDevice(new IeeeAddress(zigbeeDeviceEntity.getIeeeAddress()));

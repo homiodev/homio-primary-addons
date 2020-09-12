@@ -20,7 +20,7 @@ import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.BundleStatus;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.setting.BundleSettingPluginStatus;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.internal.ZigBeeDataStore;
@@ -90,33 +90,33 @@ public abstract class ZigBeeCoordinatorHandler
         this.channelFactory = channelFactory;
         this.entityContext = entityContext;
 
-        entityContext.listenSettingValue(ZigbeePortBaudSetting.class, this::reInitialize);
-        entityContext.listenSettingValue(ZigbeeNetworkIdSetting.class, this::reInitialize);
-        entityContext.listenSettingValue(ZigbeeLinkKeySetting.class, this::reInitialize);
-        entityContext.listenSettingValue(ZigbeeExtendedPanIdSetting.class, this::reInitialize);
-        entityContext.listenSettingValue(ZigbeeNetworkKeySetting.class, this::reInitialize);
-        entityContext.listenSettingValue(ZigbeePanIdSetting.class, this::reInitialize);
-        entityContext.listenSettingValue(ZigbeeChannelIdSetting.class, this::reInitialize);
-        entityContext.listenSettingValue(ZigbeePowerModeSetting.class, this::reInitialize);
-        entityContext.listenSettingValue(ZigbeeResetNetworkButtonSetting.class, () -> {
+        entityContext.listenSettingValue(ZigbeePortBaudSetting.class, "zb-init", this::reInitialize);
+        entityContext.listenSettingValue(ZigbeeNetworkIdSetting.class, "zb-init", this::reInitialize);
+        entityContext.listenSettingValue(ZigbeeLinkKeySetting.class, "zb-init", this::reInitialize);
+        entityContext.listenSettingValue(ZigbeeExtendedPanIdSetting.class, "zb-init", this::reInitialize);
+        entityContext.listenSettingValue(ZigbeeNetworkKeySetting.class, "zb-init", this::reInitialize);
+        entityContext.listenSettingValue(ZigbeePanIdSetting.class, "zb-init", this::reInitialize);
+        entityContext.listenSettingValue(ZigbeeChannelIdSetting.class, "zb-init", this::reInitialize);
+        entityContext.listenSettingValue(ZigbeePowerModeSetting.class, "zb-init", this::reInitialize);
+        entityContext.listenSettingValue(ZigbeeResetNetworkButtonSetting.class, "zb-init", () -> {
             entityContext.setSettingValue(ZigbeeNetworkIdSetting.class, "");
             this.reInitialize();
         });
         // TODO: do we need this/????
 
-        entityContext.listenSettingValue(ZigbeeTrustCenterModeSetting.class, linkMode -> {
+        entityContext.listenSettingValue(ZigbeeTrustCenterModeSetting.class, "zb-init", linkMode -> {
             TransportConfig transportConfig = new TransportConfig();
             transportConfig.addOption(TransportConfigOption.TRUST_CENTRE_JOIN_MODE, linkMode);
             zigBeeTransport.updateTransportConfig(transportConfig);
         });
 
-        entityContext.listenSettingValue(ZigbeeTxPowerSetting.class, txPower -> {
+        entityContext.listenSettingValue(ZigbeeTxPowerSetting.class, "zb-init", txPower -> {
             TransportConfig transportConfig = new TransportConfig();
             transportConfig.addOption(TransportConfigOption.RADIO_TX_POWER, txPower);
             zigBeeTransport.updateTransportConfig(transportConfig);
         });
 
-        entityContext.listenSettingValue(ZigbeeInstallCodeSetting.class, this::addInstallCode);
+        entityContext.listenSettingValue(ZigbeeInstallCodeSetting.class, "zb-init", this::addInstallCode);
     }
 
     void initialize() {
@@ -223,7 +223,7 @@ public abstract class ZigBeeCoordinatorHandler
      * Called by bridge implementations after they have initialised their interfaces.
      */
     protected void startZigBee(ZigBeeTransportTransmit zigbeeTransport, TransportConfig transportConfig) {
-        updateStatus(BundleStatus.UNKNOWN, "");
+        updateStatus(Status.UNKNOWN, "");
 
         this.zigBeeTransport = zigbeeTransport;
         this.transportConfig = transportConfig;
@@ -275,13 +275,13 @@ public abstract class ZigBeeCoordinatorHandler
             case SUCCESS:
                 break;
             case BAD_RESPONSE:
-                updateStatus(BundleStatus.OFFLINE, "zigbee.OFFLINE_BAD_RESPONSE");
+                updateStatus(Status.OFFLINE, "zigbee.OFFLINE_BAD_RESPONSE");
                 return;
             case COMMUNICATION_ERROR:
-                updateStatus(BundleStatus.OFFLINE, "zigbee.OFFLINE_COMMS_FAIL");
+                updateStatus(Status.OFFLINE, "zigbee.OFFLINE_COMMS_FAIL");
                 return;
             default:
-                updateStatus(BundleStatus.OFFLINE, "zigbee.OFFLINE_INITIALIZE_FAIL");
+                updateStatus(Status.OFFLINE, "zigbee.OFFLINE_INITIALIZE_FAIL");
                 return;
         }
 
@@ -345,7 +345,7 @@ public abstract class ZigBeeCoordinatorHandler
 
         // Call startup. The setting of the bring to ONLINE will be done via the state listener.
         if (networkManager.startup(initializeNetwork) != ZigBeeStatus.SUCCESS) {
-            updateStatus(BundleStatus.OFFLINE, "OFFLINE_STARTUP_FAIL");
+            updateStatus(Status.OFFLINE, "OFFLINE_STARTUP_FAIL");
             return;
         }
 
@@ -358,7 +358,7 @@ public abstract class ZigBeeCoordinatorHandler
         initializeDongleSpecific();
     }
 
-    protected void updateStatus(BundleStatus deviceStatus, String statusMessage) {
+    protected void updateStatus(Status deviceStatus, String statusMessage) {
         log.info("Coordinator status: <{}>", deviceStatus);
         entityContext.setSettingValue(ZigbeeStatusSetting.class, BundleSettingPluginStatus.of(deviceStatus, statusMessage));
 
@@ -523,13 +523,13 @@ public abstract class ZigBeeCoordinatorHandler
         log.debug("{}: networkStateUpdated called with state={}", nodeIeeeAddress, state);
         switch (state) {
             case ONLINE:
-                updateStatus(BundleStatus.ONLINE, "");
+                updateStatus(Status.ONLINE, "");
                 break;
             case OFFLINE:
                 /*Bridge bridge = getThing();
 
                 // do not try to reconnect if there is a firmware update in progress
-                if (bridge.getStatus() == BundleStatus.OFFLINE
+                if (bridge.getStatus() == Status.OFFLINE
                         && bridge.getStatusInfo().getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING) {
                     break;
                 }*/
@@ -538,12 +538,12 @@ public abstract class ZigBeeCoordinatorHandler
                 // documentation https://www.eclipse.org/smarthome/documentation/concepts/things.html#status-transitions
                 // the thing must not change from these statuses to OFFLINE
                 // - Do not try to reconnect if the bridge is being removed.
-              /*  if (Arrays.asList(BundleStatus.UNINITIALIZED, BundleStatus.REMOVING, BundleStatus.REMOVED)
+              /*  if (Arrays.asList(Status.UNINITIALIZED, Status.REMOVING, Status.REMOVED)
                         .contains(bridge.getStatus())) {
                     break;
                 }*/
 
-                updateStatus(BundleStatus.OFFLINE, "COMMUNICATION_ERROR");
+                updateStatus(Status.OFFLINE, "COMMUNICATION_ERROR");
 
                 break;
         }

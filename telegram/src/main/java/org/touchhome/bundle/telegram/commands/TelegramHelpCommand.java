@@ -17,11 +17,6 @@ public final class TelegramHelpCommand extends TelegramBaseCommand {
         this.mCommandRegistry = mCommandRegistry;
     }
 
-    @Override
-    public void execute(AbsSender absSender, User user, Chat chat, String[] strings, StringBuilder sb, SendMessage message) {
-        assembleCommands(mCommandRegistry, sb, message);
-    }
-
     static void assembleCommands(ICommandRegistry mCommandRegistry, StringBuilder sb, SendMessage message) {
         sb.append("<b>Available commands:</b>\n");
         mCommandRegistry.getRegisteredCommands().forEach(cmd -> {
@@ -30,6 +25,11 @@ public final class TelegramHelpCommand extends TelegramBaseCommand {
             }
         });
         message.enableHtml(true);
+    }
+
+    @Override
+    public void execute(AbsSender absSender, User user, Chat chat, String[] strings, StringBuilder sb, SendMessage message) {
+        assembleCommands(mCommandRegistry, sb, message);
     }
 
 }

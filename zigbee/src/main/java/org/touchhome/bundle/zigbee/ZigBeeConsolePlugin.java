@@ -8,11 +8,12 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePlugin;
 import org.touchhome.bundle.api.model.BaseEntity;
-import org.touchhome.bundle.api.model.BundleStatus;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 import org.touchhome.bundle.api.ui.field.UIField;
-import org.touchhome.bundle.api.ui.field.UIFieldColorMatch;
+import org.touchhome.bundle.api.ui.field.color.UIFieldColorBooleanMatch;
+import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.ui.method.UIMethodAction;
@@ -82,10 +83,8 @@ public class ZigBeeConsolePlugin implements ConsolePlugin {
         private String ieeeAddress;
 
         @UIField(order = 2)
-        @UIFieldColorMatch(value = "ONLINE", color = "#1F8D2D")
-        @UIFieldColorMatch(value = "OFFLINE", color = "#B22020")
-        @UIFieldColorMatch(value = "UNKNOWN", color = "#818744")
-        private BundleStatus deviceStatus;
+        @UIFieldColorStatusMatch
+        private Status deviceStatus;
 
         @UIField(order = 3, color = "#B22020")
         private String errorMessage;
@@ -99,13 +98,11 @@ public class ZigBeeConsolePlugin implements ConsolePlugin {
         private ZigBeeNodeDescription.FetchInfoStatus fetchInfoStatus;
 
         @UIField(order = 6)
-        @UIFieldColorMatch(value = "true", color = "#1F8D2D")
-        @UIFieldColorMatch(value = "false", color = "#B22020")
+        @UIFieldColorBooleanMatch
         private boolean channelsInitialized;
 
         @UIField(order = 7)
-        @UIFieldColorMatch(value = "true", color = "#1F8D2D")
-        @UIFieldColorMatch(value = "false", color = "#B22020")
+        @UIFieldColorBooleanMatch
         private boolean initialized;
 
         private String entityID;

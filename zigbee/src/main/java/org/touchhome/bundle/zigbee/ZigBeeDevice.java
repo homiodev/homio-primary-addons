@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.api.model.BundleStatus;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.util.NotificationType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
@@ -63,15 +63,15 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         this.discoveryService.getDeviceUpdateListener().addIeeeAddressListener(this.nodeIeeeAddress.toString(), state ->
         {
             discoveryService.getZigBeeIsAliveTracker().resetTimer(this);
-            updateStatus(BundleStatus.ONLINE, "");
+            updateStatus(Status.ONLINE, "");
         });
     }
 
-    void tryInitializeDevice(BundleStatus coordinatorStatus) {
-        if (coordinatorStatus != BundleStatus.ONLINE) {
+    void tryInitializeDevice(Status coordinatorStatus) {
+        if (coordinatorStatus != Status.ONLINE) {
             log.trace("{}: Coordinator is unknown or not online.", nodeIeeeAddress);
             zigBeeNodeDescription.setNodeInitialized(false);
-            updateStatus(BundleStatus.OFFLINE, "Coordinator unknown status");
+            updateStatus(Status.OFFLINE, "Coordinator unknown status");
             stopPolling();
         } else if (!zigBeeNodeDescription.isNodeInitialized() && isInitializeFinished()) {
             log.debug("{}: Coordinator is ONLINE. Starting device initialisation.", nodeIeeeAddress);
@@ -95,14 +95,14 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
             ZigBeeNode node = this.discoveryService.getCoordinatorHandlers().getNode(nodeIeeeAddress);
             if (node == null) {
                 log.debug("{}: Node not found", nodeIeeeAddress);
-                updateStatus(BundleStatus.OFFLINE, "zigbee.error.OFFLINE_NODE_NOT_FOUND");
+                updateStatus(Status.OFFLINE, "zigbee.error.OFFLINE_NODE_NOT_FOUND");
                 return;
             }
 
             // Check if discovery is complete and we know all the services the node supports
             if (!node.isDiscovered()) {
                 log.debug("{}: Node has not finished discovery", nodeIeeeAddress);
-                updateStatus(BundleStatus.OFFLINE, "zigbee.error.OFFLINE_DISCOVERY_INCOMPLETE");
+                updateStatus(Status.OFFLINE, "zigbee.error.OFFLINE_DISCOVERY_INCOMPLETE");
                 return;
             }
 
@@ -146,7 +146,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
 
             if (this.zigBeeConverterEndpoints.isEmpty()) {
                 log.warn("{}: No supported clusters found", nodeIeeeAddress);
-                updateStatus(BundleStatus.OFFLINE, "zigbee.error.NO_CLUSTER_FOUND");
+                updateStatus(Status.OFFLINE, "zigbee.error.NO_CLUSTER_FOUND");
                 return;
             }
 
@@ -178,7 +178,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
             zigBeeNodeDescription.setNodeInitialized(true);
             zigBeeNodeDescription.setChannels(this.zigBeeConverterEndpoints);
 
-            updateStatus(BundleStatus.ONLINE, null);
+            updateStatus(Status.ONLINE, null);
 
             startPolling();
 
@@ -257,14 +257,14 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
             }
         } catch (Exception e) {
             log.error("{}: Exception creating zigBeeConverterEndpoints ", nodeIeeeAddress, e);
-            updateStatus(BundleStatus.OFFLINE, "zigbee.error.HANDLER_INITIALIZING_ERROR");
+            updateStatus(Status.OFFLINE, "zigbee.error.HANDLER_INITIALIZING_ERROR");
             return false;
         }
         log.debug("{}: Channel initialisation complete", nodeIeeeAddress);
         return true;
     }
 
-    private void updateStatus(BundleStatus deviceStatus, String deviceStatusMessage) {
+    private void updateStatus(Status deviceStatus, String deviceStatusMessage) {
         if (this.zigBeeNodeDescription.getDeviceStatus() != deviceStatus) {
             this.zigBeeNodeDescription.setDeviceStatus(deviceStatus);
             this.zigBeeNodeDescription.setDeviceStatusMessage(deviceStatusMessage);
@@ -284,7 +284,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
     }
 
     void aliveTimeoutReached() {
-        updateStatus(BundleStatus.OFFLINE, "zigbee.error.ALIVE_TIMEOUT_REACHED");
+        updateStatus(Status.OFFLINE, "zigbee.error.ALIVE_TIMEOUT_REACHED");
     }
 
     private ZigBeeBaseChannelConverter createZigBeeBaseChannelConverter(ZigBeeConverterEndpoint zigBeeConverterEndpoint) {
@@ -398,7 +398,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         if (!node.getIeeeAddress().equals(nodeIeeeAddress)) {
             return;
         }
-        updateStatus(BundleStatus.OFFLINE, "zigbee.error.REMOVED_BY_DONGLE");
+        updateStatus(Status.OFFLINE, "zigbee.error.REMOVED_BY_DONGLE");
     }
 
     @Override

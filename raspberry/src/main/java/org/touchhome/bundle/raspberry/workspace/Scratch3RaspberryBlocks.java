@@ -122,7 +122,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
     }
 
     private void whenGpioInState(WorkspaceBlock workspaceBlock) {
-        if(workspaceBlock.hasNext()) {
+        if (workspaceBlock.hasNext()) {
             RaspberryGpioPin pin = getPin(workspaceBlock);
             HighLow state = getHighLow(workspaceBlock);
             BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);

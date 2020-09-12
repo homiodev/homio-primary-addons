@@ -6,7 +6,6 @@ import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.BundleStatus;
 import org.touchhome.bundle.api.model.workspace.var.WorkspaceVariableEntity;
 import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
@@ -48,7 +47,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigbeeExtensionBlocks {
         super("#6d4747", entityContext, zigBeeBundleEntrypoint, null);
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
-        this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, status -> {
+        this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, "zb-wp-status", status -> {
             if (status.isOnline()) {
                 this.coordinatorHandler = this.entityContext.getSettingValue(ZigbeeCoordinatorHandlerSetting.class);
             } else {

@@ -64,8 +64,11 @@ const uint8_t ARDUINO_DEVICE_TYPE = 17;
 
 const uint8_t EXECUTED = 0;
 const uint8_t FAILED_EXECUTED = 1;
+
 const uint8_t REGISTER_COMMAND = 2;
-const uint8_t SET_UNIQUE_READ_ADDRESS = 3;
+const uint8_t REGISTER_SUCCESS_COMMAND = 3;
+const uint8_t READY_COMMAND = 21;
+
 const uint8_t GET_ID_COMMAND = 4;
 const uint8_t GET_TIME_COMMAND = 5;
 const uint8_t SET_PIN_VALUE_ON_HANDLER_REQUEST_COMMAND = 6;
@@ -416,7 +419,7 @@ bool executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cm
             ERROR(arduinoConfig.deviceID); // deviceID not match
             return false;
         }
-        if (cmd == SET_UNIQUE_READ_ADDRESS) {
+        if (cmd == REGISTER_SUCCESS_COMMAND) {
             return setUniqueReadAddressCommand(messageID, cmd);
         } else {
             ERROR(cmd); // "\nErr exec cmd <%d> Cmd must SET_ADDRESS",
@@ -438,7 +441,7 @@ bool executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cm
                 ERROR(cmd);
                 sendErrorCallback(messageID, cmd);
                 break;
-            case SET_UNIQUE_READ_ADDRESS:
+            case REGISTER_SUCCESS_COMMAND:
                 ERROR(cmd);
                 sendErrorCallback(messageID, cmd);
                 break;
@@ -600,7 +603,7 @@ void clearPinHandlers() {
 
 void setup() {
     Serial.begin(9600);
-    printf_begin();
+    onSetup();
     setOffsetWrite(OFFSET_WRITE_INDEX);
     if (CLEAR_EEPROM) {
         for (uint8_t i = 0; i < EEPROM.length(); i++) {
@@ -630,6 +633,8 @@ void setup() {
         EEPROM.put(1, arduinoConfig);
         EEPROM.write(0, EEPROM_CONFIGURED);
     }
+
+    afterSetup();
 }
 
 uint8_t generateID() {
@@ -662,7 +667,7 @@ void registerDevice() {
             writeByte(ARDUINO_DEVICE_TYPE);
             messageID = generateID();
             writeMessage(messageID, REGISTER_COMMAND, getCurrentIndex());
-            PRINTF("\nRead...");
+            PRINTF("\nreg...");
 
             while (readingPipe == 0 && readMessageNSeconds(5)) { // while because if internet latency
                 executeCommand(messageID);
@@ -840,4 +845,12 @@ void printBuffer(uint8_t length, uint8_t bufferPtr[]) {
          PRINTF("%d, ", bufferPtr[i]);
      }
      PRINTF("]");
+}
+
+void afterSetup() {
+
+}
+
+void onSetup() {
+
 }

@@ -22,12 +22,11 @@ import java.util.regex.Pattern;
 @Component
 public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     public static final String URL = "rest/telegram/";
-    private static final Pattern ESCAPE_PATTERN = Pattern.compile("[\\{\\}\\.\\+\\-\\#\\(\\)]");
-
-    private static final String USER = "USER";
-    private static final String MESSAGE = "MESSAGE";
     public static final String COMMAND = "COMMAND";
     public static final String DESCRIPTION = "DESCRIPTION";
+    private static final Pattern ESCAPE_PATTERN = Pattern.compile("[\\{\\}\\.\\+\\-\\#\\(\\)]");
+    private static final String USER = "USER";
+    private static final String MESSAGE = "MESSAGE";
     private static final String LEVEL = "LEVEL";
 
     private final TelegramService telegramService;
@@ -61,8 +60,19 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         this.postConstruct();
     }
 
+    private static String escape(String text) {
+        Matcher matcher = ESCAPE_PATTERN.matcher(text);
+        StringBuffer noteBuffer = new StringBuffer();
+        while (matcher.find()) {
+            String group = matcher.group();
+            matcher.appendReplacement(noteBuffer, "\\\\" + group);
+        }
+        matcher.appendTail(noteBuffer);
+        return noteBuffer.length() == 0 ? text : noteBuffer.toString();
+    }
+
     private void whenGetMessage(WorkspaceBlock workspaceBlock) {
-        if(workspaceBlock.hasNext()) {
+        if (workspaceBlock.hasNext()) {
             String command = workspaceBlock.getInputString(COMMAND);
             String description = workspaceBlock.getInputString(DESCRIPTION);
             BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
@@ -106,17 +116,6 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         } catch (TelegramApiException ex) {
             workspaceBlock.logError("Error send telegram message " + ex);
         }
-    }
-
-    private static String escape(String text) {
-        Matcher matcher = ESCAPE_PATTERN.matcher(text);
-        StringBuffer noteBuffer = new StringBuffer();
-        while (matcher.find()) {
-            String group = matcher.group();
-            matcher.appendReplacement(noteBuffer, "\\\\" + group);
-        }
-        matcher.appendTail(noteBuffer);
-        return noteBuffer.length() == 0 ? text : noteBuffer.toString();
     }
 
     @RequiredArgsConstructor

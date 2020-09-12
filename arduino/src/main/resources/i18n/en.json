@@ -3,10 +3,11 @@
     "name": "Arduino",
     "extensionDescription": "Arduino extension",
     "setting": {
-      "label": "Arduino settings"
+      "label": "Arduino settings",
+      "st_ArduinoUsbPortSetting": "Usb provider port"
     }
   },
   "selection": {
-    "arduinoTxRxCommunicatorProvider": "Rx/Tx provider"
+    "arduinoUsbCommunicatorProvider": "USB serial port provider"
   }
 }

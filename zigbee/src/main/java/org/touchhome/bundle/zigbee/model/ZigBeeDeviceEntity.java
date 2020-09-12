@@ -8,10 +8,11 @@ import lombok.experimental.Accessors;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.Option;
 import org.touchhome.bundle.api.manager.En;
-import org.touchhome.bundle.api.model.BundleStatus;
 import org.touchhome.bundle.api.model.DeviceBaseEntity;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.field.*;
+import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.ui.method.UIFieldCreateWorkspaceVariableOnEmpty;
@@ -57,10 +58,8 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
     @Transient
     @UIField(readOnly = true, order = 10, type = UIFieldType.String)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @UIFieldColorMatch(value = "ONLINE", color = "#1F8D2D")
-    @UIFieldColorMatch(value = "OFFLINE", color = "#B22020")
-    @UIFieldColorMatch(value = "UNKNOWN", color = "#818744")
-    private BundleStatus status = BundleStatus.UNKNOWN;
+    @UIFieldColorStatusMatch
+    private Status status = Status.UNKNOWN;
 
     @Transient
     @UIField(readOnly = true, order = 100)

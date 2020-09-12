@@ -1,8 +1,8 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.Option;
+import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;

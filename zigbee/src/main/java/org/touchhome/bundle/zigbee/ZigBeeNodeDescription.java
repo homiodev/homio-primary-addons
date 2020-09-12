@@ -16,7 +16,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.api.model.BundleStatus;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
 
@@ -61,7 +61,7 @@ public class ZigBeeNodeDescription {
     @Setter
     private String deviceStatusMessage;
     @Setter
-    private BundleStatus deviceStatus = BundleStatus.UNKNOWN;
+    private Status deviceStatus = Status.UNKNOWN;
     private FetchInfoStatus fetchInfoStatus = FetchInfoStatus.UNKNOWN;
     private Collection<ChannelDescription> channels;
     @Setter

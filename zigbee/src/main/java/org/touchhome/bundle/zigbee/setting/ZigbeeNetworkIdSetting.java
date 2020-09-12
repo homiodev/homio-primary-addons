@@ -1,9 +1,9 @@
 package org.touchhome.bundle.zigbee.setting;
 
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.Option;
+import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 
 import java.nio.file.Files;

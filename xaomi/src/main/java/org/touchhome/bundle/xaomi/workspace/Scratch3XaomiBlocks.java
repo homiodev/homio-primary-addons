@@ -5,7 +5,6 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclMultistateInputBasicCluster;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.BundleStatus;
 import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
@@ -45,7 +44,7 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
         super("#856d21", entityContext, xaomiEntrypoint);
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
-        this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, status -> {
+        this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, "zb-wp-xaomi-workspace", status -> {
             if (status.isOnline()) {
                 this.coordinatorHandler = this.entityContext.getSettingValue(ZigbeeCoordinatorHandlerSetting.class);
             } else {
@@ -85,7 +84,7 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
     }
 
     private void magicCubeEventHandler(WorkspaceBlock workspaceBlock) {
-        if(workspaceBlock.hasNext()) {
+        if (workspaceBlock.hasNext()) {
             String expectedMenuValueStr = workspaceBlock.getMenuValue(EVENT, this.cubeEventMenu, String.class);
             MagicCubeEvent expectedMenuValue = MagicCubeEvent.getEvent(expectedMenuValueStr);
             final TapSide tapSide = expectedMenuValue == MagicCubeEvent.TAP_TWICE ? TapSide.valueOf(expectedMenuValueStr) : null;

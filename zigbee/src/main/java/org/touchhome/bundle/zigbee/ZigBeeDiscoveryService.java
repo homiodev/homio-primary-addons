@@ -42,7 +42,7 @@ class ZigBeeDiscoveryService {
         this.zigBeeChannelConverterFactory = zigBeeChannelConverterFactory;
         this.scheduler = scheduler;
         this.deviceUpdateListener = deviceUpdateListener;
-        this.entityContext.listenSettingValue(ZigbeeDiscoveryButtonSetting.class, this::startScan);
+        this.entityContext.listenSettingValue(ZigbeeDiscoveryButtonSetting.class, "zb-start-scan", this::startScan);
 
         ZigBeeNetworkNodeListener listener = new ZigBeeNetworkNodeListener() {
             @Override

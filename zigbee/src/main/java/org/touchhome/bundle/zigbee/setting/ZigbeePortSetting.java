@@ -1,35 +1,8 @@
 package org.touchhome.bundle.zigbee.setting;
 
-import com.fazecast.jSerialComm.SerialPort;
-import org.apache.commons.lang3.StringUtils;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
-import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
+import org.touchhome.bundle.api.setting.BundleSettingPluginPort;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-public class ZigbeePortSetting implements BundleSettingPlugin<SerialPort> {
-
-    @Override
-    public SettingType getSettingType() {
-        return SettingType.SelectBoxDynamic;
-    }
-
-    @Override
-    public List<Option> loadAvailableValues(EntityContext entityContext) {
-        return Arrays.stream(SerialPort.getCommPorts()).map(p ->
-                new Option(p.getSystemPortName(), p.getSystemPortName())).collect(Collectors.toList());
-    }
-
-    @Override
-    public SerialPort parseValue(EntityContext entityContext, String value) {
-        return StringUtils.isEmpty(value) ? null :
-                Stream.of(SerialPort.getCommPorts())
-                        .filter(p -> p.getSystemPortName().equals(value)).findAny().orElse(null);
-    }
+public class ZigbeePortSetting implements BundleSettingPluginPort {
 
     @Override
     public int order() {

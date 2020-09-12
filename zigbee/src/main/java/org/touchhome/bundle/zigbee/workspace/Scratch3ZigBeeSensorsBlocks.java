@@ -4,7 +4,6 @@ import com.zsmartsystems.zigbee.zcl.clusters.*;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.BundleStatus;
 import org.touchhome.bundle.api.scratch.BlockType;
 import org.touchhome.bundle.api.scratch.MenuBlock;
 import org.touchhome.bundle.api.scratch.Scratch3Block;
@@ -66,10 +65,10 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigbeeExtensionBlocks {
         setName("Zigbee Sensors");
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
-        this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, status -> {
+        this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, "zb-wp-sensor-status", status -> {
             if (status.isOnline()) {
                 this.coordinatorHandler = this.entityContext.getSettingValue(ZigbeeCoordinatorHandlerSetting.class);
-            } else{
+            } else {
                 this.coordinatorHandler = null;
             }
         });

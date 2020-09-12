@@ -1,8 +1,8 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
 import com.zsmartsystems.zigbee.ExtendedPanId;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 
 public class ZigbeeExtendedPanIdSetting implements BundleSettingPlugin<ExtendedPanId> {
 
