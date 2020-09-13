@@ -1,6 +1,4 @@
 #include <printf.h>
-#include <RF24.h>
-#include <RF24_config.h>
 #include <EEPROM.h>
 #include "SparkFunBME280.h"
 #include "Buffer.h"
@@ -10,22 +8,6 @@
 // Spark fun block initialization
 BME280 bme280Sensor;
 DHT2 dht(DHT22);
-
-#define DEBUG              1
-
-#ifdef DEBUG
-  #define  INFO(arg0)            { printf("\nInfo[M:%s, L:%d, V: %d", __func__, __LINE__, arg0); }
-  #define  INFO_MANY(arg0, arg1) { printf("\nInfo[M:%s, L:%d, V1: %d, V2: %d", __func__, __LINE__, arg0, arg1); }
-  #define  EXEC(arg0)            { printf("\nExec[M:%s, L:%d, V: %i", __func__, __LINE__, arg0); }
-  #define  ERROR(arg0)           { printf("\nErr[M:%s, L:%d, V: %d", __func__, __LINE__, arg0); }
-  #define  PRINTF(...)           { printf(__VA_ARGS__); }
-#else
-  #define  INFO(arg0)            { }
-  #define  INFO_MANY(arg0, arg1) { }
-  #define  EXEC(arg0)            { }
-  #define  ERROR(arg0)           { }
-  #define  PRINTF(...)           { }
-#endif
 
 #define CLEAR_EEPROM       0
 #define HARDCODE_DEVICE_ID 1
@@ -41,10 +23,25 @@ DHT2 dht(DHT22);
 #define INVERT_PIN_N_SECONDS 3
 #define REQUEST_PIN          4
 #define PLAY_TONE            5
-int gg = 0;
 
 #define PIN_REQUEST_TYPE_DHT               1
 #define PIN_REQUEST_TYPE_SPARK_FUN_BME280  2
+
+/*
+   Payload protocol
+   payload[0] = 0x24
+   payload[1] = 0x24
+   payload[2] = writtenLength (1)
+   payload[3] = crc
+   payload[4] = crc
+   payload[5] = messageID
+   payload[6] = deviceID
+   payload[7] = deviceID
+   payload[8] = commandID
+
+   payload[9] = content
+   payload[xx]= content
+*/
 
 // handlers command sizes
 uint8_t FIRST_LEVEL_SIZES[]{
@@ -65,25 +62,26 @@ const uint8_t ARDUINO_DEVICE_TYPE = 17;
 const uint8_t EXECUTED = 0;
 const uint8_t FAILED_EXECUTED = 1;
 
-const uint8_t REGISTER_COMMAND = 2;
-const uint8_t REGISTER_SUCCESS_COMMAND = 3;
-const uint8_t READY_COMMAND = 21;
+const uint8_t REGISTER_COMMAND = 10;
+const uint8_t REGISTER_SUCCESS_COMMAND = 11;
 
-const uint8_t GET_ID_COMMAND = 4;
-const uint8_t GET_TIME_COMMAND = 5;
-const uint8_t SET_PIN_VALUE_ON_HANDLER_REQUEST_COMMAND = 6;
-const uint8_t GET_PIN_VALUE_COMMAND = 7;
+const uint8_t GET_ID_COMMAND = 20;
+const uint8_t GET_TIME_COMMAND = 21;
 
-const uint8_t SET_PIN_DIGITAL_VALUE_COMMAND = 8;
-const uint8_t SET_PIN_ANALOG_VALUE_COMMAND = 9;
-const uint8_t RESPONSE_COMMAND = 10;
-const uint8_t PING = 11;
+const uint8_t SET_PIN_VALUE_ON_HANDLER_REQUEST_COMMAND = 30;
+const uint8_t GET_PIN_VALUE_COMMAND = 31;
 
-const uint8_t GET_PIN_VALUE_REQUEST_COMMAND = 14;
-const uint8_t REMOVE_GET_PIN_VALUE_REQUEST_COMMAND = 15;
+const uint8_t SET_PIN_DIGITAL_VALUE_COMMAND = 40;
+const uint8_t SET_PIN_ANALOG_VALUE_COMMAND = 41;
 
-const uint8_t HANDLER_REQUEST_WHEN_PIN_VALUE_OP_THAN = 29;
-const uint8_t REMOVE_HANDLER_REQUEST_WHEN_PIN_VALUE_OP_THAN = 30;
+const uint8_t RESPONSE_COMMAND = 50;
+const uint8_t PING = 51;
+
+const uint8_t GET_PIN_VALUE_REQUEST_COMMAND = 60;
+const uint8_t REMOVE_GET_PIN_VALUE_REQUEST_COMMAND = 61;
+
+const uint8_t HANDLER_REQUEST_WHEN_PIN_VALUE_OP_THAN = 70;
+const uint8_t REMOVE_HANDLER_REQUEST_WHEN_PIN_VALUE_OP_THAN = 71;
 
 
 uint32_t modes = 0; // store pin modes
@@ -94,7 +92,7 @@ struct ArduinoConfig {
     unsigned int deviceID;
 } arduinoConfig;
 
-uint64_t readingPipe = 0;
+uint64_t uniqueID = 0;
 
 uint8_t handler_buf[MAX_HANDLER_SIZE]; // assume we have no data more than 12 bytes
 uint8_t handler_buf_2[MAX_HANDLER_SIZE];
@@ -118,8 +116,6 @@ unsigned int calcCRC(uint8_t messageID, uint8_t commandID, uint8_t length, uint8
 }
 
 void writeMessage(uint8_t messageID, uint8_t commandID, uint8_t writtenLength) {
-    INFO(writtenLength);
-
     // CRC
     unsigned int crc = calcCRC(messageID, commandID, writtenLength, OFFSET_WRITE_INDEX);
     resetAll();
@@ -136,12 +132,9 @@ void writeMessage(uint8_t messageID, uint8_t commandID, uint8_t writtenLength) {
     writeUInt(arduinoConfig.deviceID);
     // Command ID
     writeByte(commandID);
-    /*for (int i = 9 + writtenLength; i < 32; i++) {
-        writeByteAt(i, 0x30); // bad approach
-    }*/
-    printPayload(writtenLength);
-    uint8_t len = OFFSET_WRITE_INDEX + writtenLength;
-    Serial.write(payload, len);
+    writeTail();
+
+    Serial.write(payload, 32);
     beginWrite(); // reset written length to 0
 }
 
@@ -183,7 +176,6 @@ void sendErrorCallback(uint8_t messageID, uint8_t commandID) {
 uint8_t readPinID(uint8_t messageID, uint8_t cmd) {
     uint8_t pinID = readByte(); // [0] pinID A0-14,A1-15,A2-16,A3-17,A4-18,A5-19,A6-20,A7-21
     if (pinID < 0 || pinID > 21) {
-        ERROR(pinID);
         pinID = static_cast<uint8_t>(-1);
         sendErrorCallback(messageID, cmd);
     }
@@ -193,17 +185,14 @@ uint8_t readPinID(uint8_t messageID, uint8_t cmd) {
 // LOW - 0, HIGH - 1
 boolean setDigitalValue(uint8_t pinID, uint8_t value) {
     if (value == LOW || value == HIGH) {
-        INFO_MANY(pinID, value);
-    setOutputMode(pinID);
+        setOutputMode(pinID);
         digitalWrite(pinID, value);
         return true;
     }
-    ERROR(pinID);
     return false;
 }
 
 boolean setAnalogValue(uint8_t pinID, uint8_t value) {
-    INFO_MANY(pinID, value);
     setOutputMode(pinID);
     analogWrite(pinID, value);
     return true;
@@ -217,9 +206,8 @@ void setOutputMode(uint8_t pinID) {
 }
 
 bool setUniqueReadAddressCommand(uint8_t messageID, uint8_t cmd) {
-    uint64_t uniqueID = readULong();
-    PRINTF("\nSP<%lu>", uniqueID);
-    readingPipe = uniqueID;
+    uint64_t id = readULong();
+    uniqueID = id;
     lastPing = millis();
     sendSuccessCallback(messageID, cmd);
     return true;
@@ -289,7 +277,6 @@ void addHandler(uint8_t handlerType, uint8_t handler[], uint8_t handlerSize) {
         existedHandler = getNextHandler(index, sizeOfHandler);
     }
     if (index + handlerSize + 1 > HANDLER_SIZE) {
-        ERROR(handlerSize);
         return;
     }
     // here index is index for next slot
@@ -299,42 +286,11 @@ void addHandler(uint8_t handlerType, uint8_t handler[], uint8_t handlerSize) {
         handlers[i] = handler[j++];
 }
 
-void printPinsHandlers(uint8_t *handler) {
-    PRINTF("\nAll Pin Handlers");
-    uint8_t handlerType = handler[0];
-    if (handlerType == HANDLER_REQUEST_WHEN_PIN_VALUE_OP_THAN) { // WHEN_VALUE_COMPARE_TO_VALUE
-        PRINTF("\nFH:W.P:%d.V:%d.O:%d.L1:%d",
-               handler[1], handler[2], handler[3], handler[4]);
-               uint8_t length = FIRST_LEVEL_SIZES[handler[4]];
-               PRINTF(" a[");
-               for(uint8_t i = 0; i < length; i++) {
-                 PRINTF("%d, ", handler[5 + i]);
-               }
-               PRINTF("]");
-    } else
-        ERROR(handlerType);
-    PRINTF("\n\n");
-}
-
-void printAllPinsHandlers() {
-        PRINTF("\nAll Handlers");
-        int index = 0;
-        uint8_t sizeOfHandler = 0;
-        uint8_t *handler = getNextHandler(index, sizeOfHandler);
-        while (handler != nullptr) {
-            index += sizeOfHandler;
-            printPinsHandlers(handler);
-            handler = getNextHandler(index, sizeOfHandler);
-        }
-        PRINTF("\n------------");
-}
-
 void removeHandler(uint8_t handlerType, uint8_t handler[], uint8_t handlerSize) {
     int index = 0;
     uint8_t sizeOfHandler = 0;
     uint8_t *existedHandler = getNextHandler(index, sizeOfHandler);
     while (existedHandler != nullptr) {
-        printPinsHandlers(existedHandler);
         bool match = handlersMatch(handlerType, existedHandler, sizeOfHandler, handler, handlerSize);
 
         if (match) {
@@ -349,7 +305,6 @@ void removeHandler(uint8_t handlerType, uint8_t handler[], uint8_t handlerSize) 
 }
 
 void requestPinValueDHT(uint8_t pinID, uint8_t handlerID) {
-   INFO_MANY(pinID, handlerID);
    dht.begin(pinID); // if pinID already begin - dht just ignore this call
    float h = dht.readHumidity();
    float t = dht.readTemperature();
@@ -362,7 +317,6 @@ void requestPinValueDHT(uint8_t pinID, uint8_t handlerID) {
 }
 
 void requestPinValueBME280(uint8_t pinID, uint8_t handlerID) {
-   INFO_MANY(pinID, handlerID);
    float h = bme280Sensor.readFloatHumidity();
    float t = bme280Sensor.readTempC();
   // float p = bme280Sensor.readFloatPressure();
@@ -376,7 +330,6 @@ void requestPinValueBME280(uint8_t pinID, uint8_t handlerID) {
 }
 
 void requestPinFunc(uint32_t ts, uint8_t pinID, uint8_t handlerID, uint8_t pinRequestType) {
-    INFO_MANY(pinID, pinRequestType);
     switch (pinRequestType) {
         case PIN_REQUEST_TYPE_DHT:
              requestPinValueDHT(pinID, handlerID);
@@ -401,8 +354,6 @@ void readPinValueRequestCommand(uint8_t messageID, uint8_t cmd, bool remove) {
         uint8_t handlerID = readByte();
         uint8_t pinRequestType = readByte();
         int interval = val == 0 ? 1 : val * 10;
-        INFO_MANY(pinID, remove);
-        INFO_MANY(handlerID, pinRequestType);
         if(remove) {
             timer.cancelBy2Params(pinID, handlerID, pinRequestType);
         } else {
@@ -412,17 +363,13 @@ void readPinValueRequestCommand(uint8_t messageID, uint8_t cmd, bool remove) {
 }
 
 bool executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cmd) {
-    EXEC(cmd);
     uint8_t pinID;
-    if (readingPipe == 0) {
+    if (uniqueID == 0) {
         if (target != arduinoConfig.deviceID) {
-            ERROR(arduinoConfig.deviceID); // deviceID not match
             return false;
         }
         if (cmd == REGISTER_SUCCESS_COMMAND) {
             return setUniqueReadAddressCommand(messageID, cmd);
-        } else {
-            ERROR(cmd); // "\nErr exec cmd <%d> Cmd must SET_ADDRESS",
         }
         return false;
     }
@@ -430,27 +377,21 @@ bool executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cm
     if (target == 0 || target == arduinoConfig.deviceID) {
         switch (cmd) {
             case EXECUTED:
-                ERROR(cmd);
                 sendErrorCallback(messageID, cmd);
                 break;
             case FAILED_EXECUTED:
-                ERROR(cmd);
                 sendErrorCallback(messageID, cmd);
                 break;
             case REGISTER_COMMAND:
-                ERROR(cmd);
                 sendErrorCallback(messageID, cmd);
                 break;
             case REGISTER_SUCCESS_COMMAND:
-                ERROR(cmd);
                 sendErrorCallback(messageID, cmd);
                 break;
             case GET_ID_COMMAND:
-                ERROR(cmd);
                 sendResponseUInt(messageID, cmd, arduinoConfig.deviceID);
                 break;
             case GET_TIME_COMMAND:
-                ERROR(cmd);
                 sendResponseULong(messageID, cmd, millis());
                 break;
             case GET_PIN_VALUE_COMMAND:
@@ -480,12 +421,9 @@ bool executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cm
                 removeHandlerWhenPinValueOpThan(messageID, cmd);
                 break;
             default:
-                ERROR(cmd);
                 return false;
         }
         return true;
-    } else {
-        ERROR(target);
     }
     return false;
 }
@@ -500,18 +438,15 @@ void getPinValueCommand(uint8_t messageID, uint8_t cmd) {
 void handlerRequestWhenPinValueOpThan(uint8_t messageID, uint8_t cmd) {
     uint8_t pinID = readPinID(messageID, cmd);
     if (pinID > -1) {
-        INFO_MANY(pinID, REMOVE_HANDLER_REQUEST_WHEN_PIN_VALUE_OP_THAN);
         uint8_t handlerSize = getFirstLevelHandlerSize();
         if(handlerSize > -1) {
             uint8_t *handler = subArray(OFFSET_WRITE_INDEX, handlerSize, false, getUPayload());
             //printBuffer(handlerSize, handler);
             if(handler == nullptr) {
-               ERROR(handlerSize);
                return false;
             }
             addHandler(HANDLER_REQUEST_WHEN_PIN_VALUE_OP_THAN, handler, handlerSize);
             EEPROM.put(1, arduinoConfig);
-            printAllPinsHandlers();
         }
     }
 }
@@ -519,13 +454,11 @@ void handlerRequestWhenPinValueOpThan(uint8_t messageID, uint8_t cmd) {
 void removeHandlerWhenPinValueOpThan(uint8_t messageID, uint8_t cmd) {
     uint8_t pinID = readPinID(messageID, cmd);
     if (pinID > -1) {
-        INFO_MANY(pinID, REMOVE_HANDLER_REQUEST_WHEN_PIN_VALUE_OP_THAN);
         uint8_t handlerSize = getFirstLevelHandlerSize();
         if(handlerSize > -1) {
             uint8_t *handler = subArray(OFFSET_WRITE_INDEX, handlerSize, false, getUPayload());
             removeHandler(HANDLER_REQUEST_WHEN_PIN_VALUE_OP_THAN, handler, handlerSize);
             EEPROM.put(1, arduinoConfig);
-            printAllPinsHandlers();
         }
     }
 }
@@ -533,7 +466,6 @@ void removeHandlerWhenPinValueOpThan(uint8_t messageID, uint8_t cmd) {
 uint8_t getFirstLevelHandlerSize() {
   uint8_t firstLevelType = peekCharAbsolute(OFFSET_WRITE_INDEX + 3);
   if(firstLevelType > sizeof(FIRST_LEVEL_SIZES)) {
-     ERROR(firstLevelType);
     // sendErrorCallback
     return -1;
   }
@@ -543,7 +475,6 @@ uint8_t getFirstLevelHandlerSize() {
 boolean executeCommand(uint8_t expectedMessageID) {
     resetAll(); // reset indexes for reading
     if (!(readChar() == 0x25 && (readChar() == 0x25))) {
-        ERROR(0);
         return false;
     }
     char length = readChar(); // 2
@@ -551,21 +482,16 @@ boolean executeCommand(uint8_t expectedMessageID) {
     char messageID = readChar(); // 5
     unsigned int target = readUInt(); // 6
     char commandID = readChar(); // 8
-    INFO(getCurrentIndex());
-    PRINTF("\nGot Length <%d>. M_id <%d>. T <%d>. Cmd <%d>. Crc <%d> ", length, messageID, target, commandID, crc);
 
     unsigned int calcCrc = calcCRC(messageID, commandID, length, getCurrentIndex()); // start calc CRC from current position - getWrittenLength();
 
     if (expectedMessageID != 255 && expectedMessageID != messageID) {
-        ERROR(expectedMessageID);
         return false;
     }
     if (target != arduinoConfig.deviceID) {
-        ERROR(target);
         return false;
     }
     if (calcCrc != crc) {
-        ERROR(crc);
         return false;
     }
     return executeCommandInternally(messageID, target, commandID);
@@ -576,10 +502,8 @@ boolean readMessage() {
     if (Serial.available()) {
         boolean done = false;
         Serial.readBytes(getPayload(), 32);
-        printPayload(31);
         return true;
     }
-    INFO(gg++);
     return false;
 }
 
@@ -603,7 +527,7 @@ void clearPinHandlers() {
 
 void setup() {
     Serial.begin(9600);
-    onSetup();
+    printf_begin();
     setOffsetWrite(OFFSET_WRITE_INDEX);
     if (CLEAR_EEPROM) {
         for (uint8_t i = 0; i < EEPROM.length(); i++) {
@@ -618,10 +542,6 @@ void setup() {
 
     if (EEPROM.read(0) == EEPROM_CONFIGURED) {
         EEPROM.get(1, arduinoConfig);
-        EXEC(arduinoConfig.deviceID);
-        // print all handlers
-        printAllPinsHandlers();
-        // detect min interval
     } else {
         randomSeed(analogRead(0));
         long randNumber = random(99, 65535);
@@ -633,8 +553,6 @@ void setup() {
         EEPROM.put(1, arduinoConfig);
         EEPROM.write(0, EEPROM_CONFIGURED);
     }
-
-    afterSetup();
 }
 
 uint8_t generateID() {
@@ -650,8 +568,7 @@ void setPinValue(uint8_t pinID, uint8_t value) {
 
 void registerDevice() {
     if (millis() - lastPing > MAX_PING_BEFORE_REMOVE_DEVICE) { // if device pinged too ago
-        ERROR(MAX_PING_BEFORE_REMOVE_DEVICE);
-        readingPipe = 0;
+        uniqueID = 0;
         EEPROM.put(1, arduinoConfig);
         for (uint8_t i = 0; i < 21; i++)
             settedUpValuesByHandler[i] = 255;
@@ -660,20 +577,19 @@ void registerDevice() {
         for (uint8_t i = 0; i < 21; i++)
             settedUpValuesByHandler[i] = 255;
     }
-    if (readingPipe == 0) {
+    if (uniqueID == 0) {
         uint8_t messageID = 0;
-        while (readingPipe == 0) {
+        while (uniqueID == 0) {
             beginWrite();
             writeByte(ARDUINO_DEVICE_TYPE);
             messageID = generateID();
             writeMessage(messageID, REGISTER_COMMAND, getCurrentIndex());
-            PRINTF("\nreg...");
 
-            while (readingPipe == 0 && readMessageNSeconds(5)) { // while because if internet latency
+            while (uniqueID == 0 && readMessageNSeconds(5)) { // while because if internet latency
                 executeCommand(messageID);
             }
             clearPayload();
-            if (readingPipe == 0) {
+            if (uniqueID == 0) {
                 //PRINTF("\nWait %ds", TIMEOUT_BETWEEN_REGISTER);
                 delay(TIMEOUT_BETWEEN_REGISTER * 1000);
             }
@@ -690,7 +606,6 @@ uint8_t getInvertedValue(uint8_t pinID) {
 
 // invert state
 void invertPinTimerFunc(uint32_t ts, uint8_t pinID, uint8_t pinValue, uint8_t ignore2) {
-    INFO_MANY(pinID, pinValue);
     setPinValue(pinID, pinValue);
     settedUpValuesByHandler[pinID] = false;
 }
@@ -738,7 +653,6 @@ void invokeDigitalPinHandleCommand(const uint8_t handler[], uint8_t value, uint8
             if (isConditionMatch && settedUpValuesByHandler[handlePin] == 255) {
                 unsigned long duration = (handler[startCmdIndex + 3] * 0.5 + 0.5) * 1000;
                 int frequency = handlePin * 80 + 80;
-                INFO_MANY(handlePin, frequency);
                 tone(handlePin, frequency, duration);
                 settedUpValuesByHandler[handlePin] = 1;
             } else if (settedUpValuesByHandler[handlePin] == 1) {
@@ -753,21 +667,17 @@ void invokeDigitalPinHandleCommand(const uint8_t handler[], uint8_t value, uint8
                   uint8_t pinRequestType = handler[startCmdIndex + 3]; // 7
 
                   requestPinFunc(0, handlePin, handlerID, pinRequestType);
-                  INFO_MANY(interval, handlerID);
                   uint8_t timerID = timer.everyTwo(interval, requestPinFunc, handlePin, handlerID, pinRequestType);
 
                   settedUpValuesByHandler[handlePin] = timerID;
               }
             } else {
                 if(settedUpValuesByHandler[handlePin] != 255) {
-                    INFO(settedUpValuesByHandler[handlePin]);
                     timer.cancel(settedUpValuesByHandler[handlePin]); // cancel timer with index from array
                     settedUpValuesByHandler[handlePin] = 255;
                 }
             }
             break;
-        default:
-            ERROR(-1);
     }
 }
 
@@ -783,7 +693,6 @@ void HandleFunc_WhenValueOpValue(uint8_t handler[]) {
     bool match = (op % 3 == 0 && pinValue > val) ||
                  (op % 3 == 1 && pinValue < val) ||
                  (op % 3 == 2 && pinValue == val);
-    PRINTF("\nfgww:pin_id%d. op:%d. val:%d. actval:%d. match:%d", pinID, op, val, pinValue, match);
     invokeDigitalPinHandleCommand(handler, pinValue, 4, isAnalog, match);
 }
 
@@ -828,29 +737,4 @@ void writeFloat(float value) {
     dtostrf(value, 6, 2, floatBuf);
     copy(floatBuf, getPayload(), 0, getCurrentIndex() + OFFSET_WRITE_INDEX, 8);
     addToCurrentIndex(8);
-}
-
-void printFloat(float value) {
-   dtostrf(value, 6, 2, floatBuf);
-   PRINTF("\nVal::%s", floatBuf);
-}
-
-void printPayload(uint8_t length) {
-  printBuffer(OFFSET_WRITE_INDEX + length, getUPayload());
-}
-
-void printBuffer(uint8_t length, uint8_t bufferPtr[]) {
-     PRINTF("\nPL. [");
-     for (uint8_t i = 0; i < length; i++) {
-         PRINTF("%d, ", bufferPtr[i]);
-     }
-     PRINTF("]");
-}
-
-void afterSetup() {
-
-}
-
-void onSetup() {
-
 }
