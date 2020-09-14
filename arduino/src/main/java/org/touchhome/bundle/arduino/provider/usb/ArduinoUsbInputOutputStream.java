@@ -2,10 +2,10 @@ package org.touchhome.bundle.arduino.provider.usb;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortInvalidPortException;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoInputStream;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoOutputStream;
 
@@ -15,6 +15,7 @@ import java.nio.ByteBuffer;
 @Component
 public class ArduinoUsbInputOutputStream implements ArduinoInputStream, ArduinoOutputStream<Void> {
 
+    @Getter
     private SerialPort serialPort;
 
     @Override
@@ -47,25 +48,24 @@ public class ArduinoUsbInputOutputStream implements ArduinoInputStream, ArduinoO
     @Override
     public void close() {
         serialPort.closePort();
+        serialPort = null;
     }
 
-    public boolean initialize(SerialPort port) {
+    public void initialize(SerialPort port) {
         this.serialPort = port;
         // port.setComPortParameters(9600, 8, 1, 0);
         // this.portStream.getSerialPort().setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 0, 0);
 
         // sleep 2 sec for full initialization
         if (!this.serialPort.openPort(2000)) {
-            this.updateStatus(Status.ERROR, "UNABLE_OPEN_PORT");
-            return false;
+            this.serialPort = null;
+            throw new IllegalStateException("Unable to open port: " + port);
         }
         // read func wait until at least one byte available, but release after 10 sec.
         this.serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 10000, 0);
 
         // clear old data from port
         clearOldPortData();
-
-        return true;
     }
 
     private void clearOldPortData() {
@@ -74,11 +74,5 @@ public class ArduinoUsbInputOutputStream implements ArduinoInputStream, ArduinoO
             serialPort.readBytes(array, array.length);
         }
         serialPort.readBytes(array, array.length);
-    }
-
-    private void updateStatus(Status status, String error) {
-        if (status == Status.ERROR) {
-            this.serialPort = null;
-        }
     }
 }

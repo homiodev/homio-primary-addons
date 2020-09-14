@@ -14,7 +14,6 @@ import org.touchhome.bundle.arduino.setting.ArduinoUsbPortSetting;
 public class ArduinoUsbCommunicatorProvider extends ArduinoCommunicationProvider<Void> {
 
     private final ArduinoUsbInputOutputStream stream;
-    private String systemPortName;
 
     public ArduinoUsbCommunicatorProvider(ArduinoCommandPlugins arduinoCommandPlugins, ArduinoUsbInputOutputStream stream, EntityContext entityContext) {
         super(entityContext, arduinoCommandPlugins, stream, stream, true);
@@ -23,7 +22,7 @@ public class ArduinoUsbCommunicatorProvider extends ArduinoCommunicationProvider
 
     @Override
     protected void onCommunicationError() {
-        this.systemPortName = null;
+        this.stream.close();
     }
 
     @Override
@@ -32,16 +31,16 @@ public class ArduinoUsbCommunicatorProvider extends ArduinoCommunicationProvider
     }
 
     @Override
-    public long onRegistrationSuccess(ArduinoDeviceEntity entity) {
-        return 0;
+    public long getUniqueIDOnRegistrationSuccess(ArduinoDeviceEntity entity) {
+        return 1;
     }
 
     @Override
     protected boolean beforeStart() {
         SerialPort port = this.entityContext.getSettingValue(ArduinoUsbPortSetting.class);
-        if (port != null && !port.getSystemPortName().equals(this.systemPortName)) {
-            this.systemPortName = port.getSystemPortName();
-            return this.stream.initialize(port);
+        if (port != null && (this.stream.getSerialPort() == null || !port.getSystemPortName().equals(this.stream.getSerialPort().getSystemPortName()))) {
+            this.stream.initialize(port);
+            return true;
         }
         return false;
     }

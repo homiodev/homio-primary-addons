@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.arduino.provider.ArduinoCommandPlugins;
-import org.touchhome.bundle.arduino.provider.communication.ArduinoBaseCommand;
+import org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoMessage;
 import org.touchhome.bundle.arduino.provider.communication.SendCommand;
 
-import static org.touchhome.bundle.arduino.provider.communication.ArduinoBaseCommand.EXECUTED;
+import static org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType.EXECUTED;
 
 @Log4j2
 @Component
@@ -18,7 +18,7 @@ public class ArduinoExecutedCommand implements ArduinoCommandPlugin {
     private final ArduinoCommandPlugins arduinoCommandPlugins;
 
     @Override
-    public ArduinoBaseCommand getCommand() {
+    public ArduinoCommandType getCommand() {
         return EXECUTED;
     }
 

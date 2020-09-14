@@ -1,12 +1,12 @@
 package org.touchhome.bundle.arduino.provider.command;
 
-import org.touchhome.bundle.arduino.provider.communication.ArduinoBaseCommand;
+import org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoMessage;
 import org.touchhome.bundle.arduino.provider.communication.SendCommand;
 
 public interface ArduinoCommandPlugin {
 
-    ArduinoBaseCommand getCommand();
+    ArduinoCommandType getCommand();
 
     default String getName() {
         return getCommand().name();

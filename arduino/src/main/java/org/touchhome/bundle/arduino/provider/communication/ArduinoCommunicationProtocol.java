@@ -19,8 +19,6 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -32,7 +30,7 @@ public final class ArduinoCommunicationProtocol<T> {
     protected final EntityContext entityContext;
     protected final ByteBuffer readBuffer = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
     protected final ByteBuffer sendBuffer = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
-    final ArduinoCommunicationProvider provider;
+    final ArduinoCommunicationProvider<?> provider;
     @Getter
     final ArduinoCommandPlugins arduinoCommandPlugins;
     private final ArduinoInputStream inputStream;
@@ -40,37 +38,65 @@ public final class ArduinoCommunicationProtocol<T> {
     private final boolean supportAsyncReadWrite;
     private final Runnable onCommunicationError;
     private final Object waitForAllowGlobalReading = new Object();
-    private final ReentrantLock closeLock = new ReentrantLock();
-    private final Condition closeConditional = closeLock.newCondition();
+    private final Object closeLock = new Object();
     private final BlockingQueue<SendDescriptor> sendQueue = new LinkedBlockingQueue<>();
     private final Map<ReadListener, Long> readingSubscriptions = new ConcurrentHashMap<>();
     private Thread globalReadingThread;
     private Thread globalWritingThread;
-    private Thread globalCloseThread;
     private volatile boolean isReadingDone = false;
     private volatile boolean isAllowGlobalReading = true;
 
-    static short calcCRC(byte messageID, short target, byte commandID, byte[] payload) {
-        int calcCRC = messageID + target + commandID;
-        for (byte value : payload) {
-            calcCRC += Math.abs(value);
-        }
-        return (short) ((0xbeaf + calcCRC) & 0x0FFFF);
-    }
-
-    public void subscribeForReading(ReadListener readListener) {
+    void subscribeForReading(ReadListener readListener) {
         readingSubscriptions.put(readListener, System.currentTimeMillis());
     }
 
-    public void send(SendDescriptor sendDescriptor) {
-        send(sendDescriptor.getSendCommand().getCommandID(),
-                sendDescriptor.getMessage().getTarget(),
-                sendDescriptor.getMessage().getMessageID(),
-                sendDescriptor.getSendCommand().getPayload(),
+    void send(SendDescriptor sendDescriptor) {
+        SendCommand sendCommand = sendDescriptor.getSendCommand();
+        send(sendCommand.getArduinoCommandType().getValue(),
+                sendCommand.getTarget(),
+                sendCommand.getMessageID(),
+                sendCommand.getPayload(),
                 sendDescriptor.getParam());
     }
 
-    void send(byte commandId, short target, byte messageId, byte[] payload, T param) {
+    void close() {
+        log.warn("Close arduino communicator: <{}>", getClass().getSimpleName());
+        readingSubscriptions.clear();
+        inputStream.close();
+        outputStream.close();
+        try {
+            waitThreadToFinish(globalReadingThread);
+            waitThreadToFinish(globalWritingThread);
+        } catch (Exception ex) {
+            throw new IllegalStateException("Unable to stop communication read/write threads", ex);
+        }
+    }
+
+    void sendToQueue(SendCommand sendCommand, T param) {
+        sendQueue.offer(new SendDescriptor(sendCommand, param));
+    }
+
+    void startReadWriteThreads() {
+        globalReadingThread = new Thread(() -> {
+            inputStream.prepareForRead();
+            executeIO(this::tryReadFromPipe);
+        }, "Global reading thread");
+        globalReadingThread.start();
+        globalWritingThread = new Thread(() -> executeIO(this::writeToPipe), "Global writing thread");
+        globalWritingThread.start();
+        this.entityContext.run("arduino-close-thread", () -> {
+            synchronized (closeLock) {
+                try {
+                    closeLock.wait();
+                    onCommunicationError.run();
+                } catch (InterruptedException e) {
+                    log.error("Got interrupt while await close event");
+                }
+            }
+        }, false);
+    }
+
+    private void send(byte commandId, short target, byte messageId, byte[] payload, T param) {
         // prepare buffer
         ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
         buffer.put((byte) 0x25);
@@ -87,49 +113,29 @@ public final class ArduinoCommunicationProtocol<T> {
         }
 
         // actual send
-        sendBuffer.clear();
+        clearBuffer(sendBuffer);
         sendBuffer.put(buffer.array());
         try {
             if (!outputStream.write(param, sendBuffer.array())) {
                 log.error("Failed sending!. Command <{}>. MessageId <{}>. Payload <{}>", commandId, messageId, payload);
             } else {
-                log.info("Success send message");
+                log.debug("Success send message");
             }
         } catch (Exception ex) {
             log.error("Failed sending.", ex);
         }
         String cmd = String.valueOf(commandId);
-        for (ArduinoBaseCommand arduinoBaseCommand : ArduinoBaseCommand.values()) {
-            if (arduinoBaseCommand.getValue() == commandId) {
-                cmd = arduinoBaseCommand.name();
+        for (ArduinoCommandType arduinoCommandType : ArduinoCommandType.values()) {
+            if (arduinoCommandType.getValue() == commandId) {
+                cmd = arduinoCommandType.name();
             }
         }
-        log.info("Send: Cmd <{}>. Target: <{}>. MessageID: <{}>. Payload <{}>", cmd, target, messageId, payload);
+        log.debug("Send: Cmd <{}>. Target: <{}>. MessageID: <{}>. Payload <{}>", cmd, target, messageId, payload);
     }
 
-    void startReadWriteThreads() {
-        globalReadingThread = new Thread(() -> {
-            inputStream.prepareForRead();
-            executeIO(this::tryReadFromPipe);
-        }, "Global reading thread");
-        globalReadingThread.start();
-        globalWritingThread = new Thread(() -> {
-            executeIO(this::writeToPipe);
-        }, "Global writing thread");
-        globalWritingThread.start();
-        globalCloseThread = new Thread(() -> {
-            this.closeLock.lock();
-            try {
-                this.closeConditional.await();
-                this.close();
-                this.onCommunicationError.run();
-            } catch (InterruptedException e) {
-                log.error("Got interrupt while await close event");
-            } finally {
-                this.closeLock.unlock();
-            }
-        });
-        globalCloseThread.start();
+    private void clearBuffer(ByteBuffer byteBuffer) {
+        // need cast to Buffer
+        ((Buffer) byteBuffer).clear();
     }
 
     private void executeIO(ThrowingRunnable<Exception> runnable) {
@@ -137,9 +143,9 @@ public final class ArduinoCommunicationProtocol<T> {
             try {
                 runnable.run();
             } catch (SerialPortInvalidPortException se) {
-                this.closeLock.lock();
-                this.closeConditional.signal();
-                this.closeLock.unlock();
+                synchronized (closeLock) {
+                    closeLock.notify();
+                }
                 return;
             } catch (InterruptedException ie) {
                 return;
@@ -166,23 +172,23 @@ public final class ArduinoCommunicationProtocol<T> {
         synchronized (waitForAllowGlobalReading) {
             waitForAllowGlobalReading.notify();
         }
-        log.info("Sending done.");
+        log.debug("Sending done.");
     }
 
     private void tryReadFromPipe() throws Exception {
-        if (isAllowGlobalReading || supportAsyncReadWrite) {
+        if (isAllowGlobalReading) {
             // in case of async reading support we may skip available and call blocking reading
             if (supportAsyncReadWrite || inputStream.available()) {
                 readFromPipe();
             }
             removeOldReadListeners();
         } else {
-            log.info("Reading suspended");
+            log.debug("Reading suspended");
             isReadingDone = true;
             synchronized (waitForAllowGlobalReading) {
                 waitForAllowGlobalReading.wait();
             }
-            log.info("Reading resumed");
+            log.debug("Reading resumed");
             inputStream.prepareForRead();
         }
     }
@@ -204,12 +210,7 @@ public final class ArduinoCommunicationProtocol<T> {
     }
 
     private void readFromPipe() throws Exception {
-        // require cast to avoid runtime NoSuchMethodException
-        ((Buffer) readBuffer).clear();
-        for (int i = 0; i < 32; i++) {
-            readBuffer.put((byte) 0);
-        }
-        ((Buffer) readBuffer).clear();
+        clearBuffer(readBuffer);
         int readCount = inputStream.read(readBuffer);
         if (readCount == 0) {
             return;
@@ -258,19 +259,6 @@ public final class ArduinoCommunicationProtocol<T> {
         return message;
     }
 
-    public void close() {
-        log.warn("Close arduino communicator: <{}>", getClass().getSimpleName());
-        readingSubscriptions.clear();
-        inputStream.close();
-        outputStream.close();
-        try {
-            waitThreadToFinish(globalReadingThread);
-            waitThreadToFinish(globalWritingThread);
-        } catch (Exception ex) {
-            throw new IllegalStateException("Unable to stop communication read/write threads", ex);
-        }
-    }
-
     private void waitThreadToFinish(Thread thread) {
         if (thread != null) {
             thread.interrupt();
@@ -286,11 +274,7 @@ public final class ArduinoCommunicationProtocol<T> {
         }
     }
 
-    public void sendToQueue(SendCommand sendCommand, ArduinoMessage message, T param) {
-        sendQueue.offer(new SendDescriptor(sendCommand, message, param));
-    }
-
-    public class ArduinoRawMessage {
+    private class ArduinoRawMessage {
         private ByteBuffer payloadBuffer;
         private byte messageID; // 2 bytes messageID
         private short target; // 2 byte target
@@ -307,18 +291,25 @@ public final class ArduinoCommunicationProtocol<T> {
 
         public ArduinoMessage toParsedMessage() {
             ArduinoDeviceEntity deviceEntity = entityContext.findAll(ArduinoDeviceEntity.class).stream()
-                    .filter(a -> a.getJsonData().optInt("target", 0) == this.target).findAny().orElse(null);
+                    .filter(a -> a.getTarget() == this.target).findAny().orElse(null);
 
             ArduinoCommandPlugin commandPlugin = ArduinoCommunicationProtocol.this.arduinoCommandPlugins.getArduinoCommandPlugin(commandID);
-            return new ArduinoMessage(messageID, commandPlugin, payloadBuffer, deviceEntity, provider);
+            return new ArduinoMessage(messageID, commandPlugin, payloadBuffer, deviceEntity, provider, target);
         }
     }
 
     @Data
     @AllArgsConstructor
-    public class SendDescriptor {
+    private class SendDescriptor {
         SendCommand sendCommand;
-        ArduinoMessage message;
         T param;
+    }
+
+    private static short calcCRC(byte messageID, short target, byte commandID, byte[] payload) {
+        int calcCRC = messageID + target + commandID;
+        for (byte value : payload) {
+            calcCRC += Math.abs(value);
+        }
+        return (short) ((0xbeaf + calcCRC) & 0x0FFFF);
     }
 }

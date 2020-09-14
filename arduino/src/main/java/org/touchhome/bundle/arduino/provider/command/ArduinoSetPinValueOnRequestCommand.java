@@ -3,11 +3,11 @@ package org.touchhome.bundle.arduino.provider.command;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import org.touchhome.bundle.arduino.provider.communication.ArduinoBaseCommand;
+import org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoMessage;
 import org.touchhome.bundle.arduino.provider.communication.SendCommand;
 
-import static org.touchhome.bundle.arduino.provider.communication.ArduinoBaseCommand.SET_PIN_VALUE_ON_HANDLER_REQUEST_COMMAND;
+import static org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType.SET_PIN_VALUE_ON_HANDLER_REQUEST_COMMAND;
 
 @Log4j2
 @Component
@@ -15,7 +15,7 @@ import static org.touchhome.bundle.arduino.provider.communication.ArduinoBaseCom
 public class ArduinoSetPinValueOnRequestCommand implements ArduinoCommandPlugin {
 
     @Override
-    public ArduinoBaseCommand getCommand() {
+    public ArduinoCommandType getCommand() {
         return SET_PIN_VALUE_ON_HANDLER_REQUEST_COMMAND;
     }
 

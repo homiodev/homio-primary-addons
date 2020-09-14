@@ -8,33 +8,31 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.arduino.model.ArduinoDeviceEntity;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoMessage;
-import org.touchhome.bundle.arduino.provider.communication.SendCommand;
 
-import static org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType.PING;
+import static org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType.REGISTER_CONFIRM_COMMAND;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class ArduinoPingCommand implements ArduinoCommandPlugin {
+public class ArduinoRegisterConfirmCommand implements ArduinoCommandPlugin {
 
     private final EntityContext entityContext;
 
     @Override
     public ArduinoCommandType getCommand() {
-        return PING;
+        return REGISTER_CONFIRM_COMMAND;
     }
 
     @Override
-    public SendCommand messageReceived(ArduinoMessage message) {
+    public void onRemoteExecuted(ArduinoMessage message) {
         ArduinoDeviceEntity entity = message.getArduinoDeviceEntity();
-        entity.setMissedPings(0);
+        if (entity == null) {
+            log.error("Got registration confirm command for unknown entity with target: <{}>", message.getTarget());
+            return;
+        }
+        log.info("Arduino registration confirmation succedded for: <{}>", entity.getTitle());
         entity.setLiveStatus(Status.ONLINE);
+        entity.setMissedPings(0);
         entityContext.saveDelayed(entity);
-        return null;
-    }
-
-    @Override
-    public boolean canReceiveGeneral() {
-        return true;
     }
 }

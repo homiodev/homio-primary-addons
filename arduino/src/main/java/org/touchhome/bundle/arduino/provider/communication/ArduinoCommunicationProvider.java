@@ -1,15 +1,18 @@
 package org.touchhome.bundle.arduino.provider.communication;
 
 import com.pi4j.io.gpio.Pin;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.json.NotificationEntityJSON;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.arduino.model.ArduinoDeviceEntity;
 import org.touchhome.bundle.arduino.provider.ArduinoCommandPlugins;
 import org.touchhome.bundle.arduino.provider.command.ArduinoGetPinValueCommand;
 
 import java.nio.ByteBuffer;
 
-import static org.touchhome.bundle.arduino.provider.communication.ArduinoBaseCommand.*;
+import static org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType.*;
 
 @Log4j2
 public abstract class ArduinoCommunicationProvider<T> {
@@ -17,6 +20,8 @@ public abstract class ArduinoCommunicationProvider<T> {
     protected final EntityContext entityContext;
     private final ArduinoCommunicationProtocol<T> arduinoCommunicationProtocol;
     private byte messageID = 0;
+    @Getter
+    private String error;
 
     public ArduinoCommunicationProvider(EntityContext entityContext, ArduinoCommandPlugins arduinoCommandPlugins,
                                         ArduinoInputStream inputStream, ArduinoOutputStream<T> outputStream, boolean supportAsyncReadWrite) {
@@ -29,9 +34,9 @@ public abstract class ArduinoCommunicationProvider<T> {
 
     protected abstract T createParameter(ArduinoDeviceEntity arduinoDeviceEntity);
 
-    public abstract long onRegistrationSuccess(ArduinoDeviceEntity entity);
+    public abstract long getUniqueIDOnRegistrationSuccess(ArduinoDeviceEntity entity);
 
-    protected abstract boolean beforeStart();
+    protected abstract boolean beforeStart() throws Exception;
 
     public final void subscribeForReading(ReadListener readListener) {
         arduinoCommunicationProtocol.subscribeForReading(readListener);
@@ -41,25 +46,26 @@ public abstract class ArduinoCommunicationProvider<T> {
         ByteBuffer buffer = ByteBuffer.allocate(2);
         buffer.put((byte) pin.getAddress());
         buffer.put(value);
-        sendCommand(arduinoDeviceEntity, SendCommand.sendPayload(analog ? SET_PIN_ANALOG_VALUE_COMMAND : SET_PIN_DIGITAL_VALUE_COMMAND, buffer));
+        sendCommand(arduinoDeviceEntity, SendCommand.sendPayload(analog ? SET_PIN_ANALOG_VALUE_COMMAND : SET_PIN_DIGITAL_VALUE_COMMAND, buffer, arduinoDeviceEntity.getTarget()));
     }
 
     public final Integer getValueSync(ArduinoDeviceEntity arduinoDeviceEntity, Pin pin, boolean analog) {
         ByteBuffer buffer = ByteBuffer.allocate(2);
         buffer.put((byte) pin.getAddress());
         buffer.put((byte) (analog ? 1 : 0));
-        ArduinoMessage arduinoMessage = sendCommand(arduinoDeviceEntity, SendCommand.sendPayload(GET_PIN_VALUE_COMMAND, buffer));
+        SendCommand sendCommand = SendCommand.sendPayload(GET_PIN_VALUE_COMMAND, buffer, arduinoDeviceEntity.getTarget());
+        sendCommand(arduinoDeviceEntity, sendCommand);
 
         return ((ArduinoGetPinValueCommand) this.arduinoCommunicationProtocol.getArduinoCommandPlugins().getArduinoCommandPlugin(GET_PIN_VALUE_COMMAND))
-                .waitForValue(arduinoMessage);
+                .waitForValue(sendCommand.getMessageID());
     }
 
-    private ArduinoMessage generateCommand(ArduinoDeviceEntity arduinoDeviceEntity) {
+    public byte nextMessageId() {
         if (messageID > 125) {
             messageID = 0;
         }
         messageID++;
-        return new ArduinoMessage(messageID, null, null, arduinoDeviceEntity, this);
+        return messageID;
     }
 
     @Override
@@ -67,19 +73,37 @@ public abstract class ArduinoCommunicationProvider<T> {
         return this.getClass().equals(obj.getClass());
     }
 
-    private ArduinoMessage sendCommand(ArduinoDeviceEntity arduinoDeviceEntity, SendCommand sendCommand) {
-        ArduinoMessage arduinoMessage = generateCommand(arduinoDeviceEntity);
-        arduinoCommunicationProtocol.sendToQueue(sendCommand, arduinoMessage, this.createParameter(arduinoDeviceEntity));
-        return arduinoMessage;
+    public void sendCommand(ArduinoDeviceEntity arduinoDeviceEntity, SendCommand sendCommand) {
+        if (sendCommand.getMessageID() == null) {
+            sendCommand.setMessageID(nextMessageId());
+        }
+        arduinoCommunicationProtocol.sendToQueue(sendCommand, this.createParameter(arduinoDeviceEntity));
     }
 
-    public final boolean restart() {
-        if (this.beforeStart()) {
-            log.info("Restarting arduino communicator: <{}>", this.getClass().getSimpleName());
-            this.start();
+    public final boolean restart(ArduinoDeviceEntity arduinoDeviceEntity) {
+        try {
+            if (this.beforeStart()) {
+                log.info("Restarting arduino communicator: <{}>", this.getClass().getSimpleName());
+                this.start();
+            }
+            updateDeviceStatus(arduinoDeviceEntity, Status.ONLINE);
             return true;
+        } catch (Exception ex) {
+            this.error = ex.getMessage();
         }
+        updateDeviceStatus(arduinoDeviceEntity, Status.ERROR);
         return false;
+    }
+
+    private void updateDeviceStatus(ArduinoDeviceEntity arduinoDeviceEntity, Status status) {
+        if (arduinoDeviceEntity.getStatus() != status) {
+            arduinoDeviceEntity.setStatus(status);
+            entityContext.saveDelayed(arduinoDeviceEntity);
+
+            entityContext.addHeaderNotification(NotificationEntityJSON.warn(arduinoDeviceEntity.getEntityID())
+                    .setName("Arduino-" + arduinoDeviceEntity.getIeeeAddress()).setDescription("Communicator status: " + status));
+
+        }
     }
 
     private void start() {
@@ -102,9 +126,7 @@ public abstract class ArduinoCommunicationProvider<T> {
         public void received(ArduinoMessage arduinoMessage) {
             SendCommand sendCommand = arduinoMessage.getCommandPlugin().messageReceived(arduinoMessage);
             if (sendCommand != null) {
-                arduinoCommunicationProtocol.sendToQueue(sendCommand, arduinoMessage, null);
-                //  provider.scheduleSend(sendCommand, arduinoMessage, null); // TODO:???????????
-                // TODO: rf24CommunicationProtocol.sendToQueue(sendCommand, arduinoMessage, GLOBAL_WRITE_PIPE);
+                arduinoCommunicationProtocol.sendToQueue(sendCommand, null);
             }
         }
 

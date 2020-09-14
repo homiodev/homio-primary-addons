@@ -1,31 +1,28 @@
 package org.touchhome.bundle.arduino.provider.command;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoMessage;
 import org.touchhome.bundle.arduino.provider.communication.SendCommand;
 
-import static org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType.GET_PIN_VALUE_COMMAND;
+import static org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType.DEBUG;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
-public class ArduinoGetPinValueCommand implements ArduinoCommandPlugin {
-
-    private final LockManager<Integer> lockManager = new LockManager<>();
+public class ArduinoDebugCommand implements ArduinoCommandPlugin {
 
     @Override
     public ArduinoCommandType getCommand() {
-        return GET_PIN_VALUE_COMMAND;
-    }
-
-    public Integer waitForValue(byte messageID) {
-        return lockManager.await(String.valueOf(messageID), 10000);
+        return DEBUG;
     }
 
     @Override
     public SendCommand messageReceived(ArduinoMessage message) {
-        lockManager.signalAll(String.valueOf(message.getMessageID()), (int) message.getPayloadBuffer().get());
+        byte executedCommand = message.getPayloadBuffer().get();
+        log.warn("Arduino DEBUG value: " + executedCommand);
         return null;
     }
 
