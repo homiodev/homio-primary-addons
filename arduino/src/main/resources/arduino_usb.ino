@@ -64,6 +64,7 @@ const uint8_t FAILED_EXECUTED = 1;
 
 const uint8_t REGISTER_COMMAND = 10;
 const uint8_t REGISTER_SUCCESS_COMMAND = 11;
+const uint8_t REGISTER_CONFIRM_COMMAND = 12;
 
 const uint8_t GET_ID_COMMAND = 20;
 const uint8_t GET_TIME_COMMAND = 21;
@@ -93,6 +94,7 @@ struct ArduinoConfig {
 } arduinoConfig;
 
 uint64_t uniqueID = 0;
+bool requireConfirmRegistration = true;
 
 uint8_t handler_buf[MAX_HANDLER_SIZE]; // assume we have no data more than 12 bytes
 uint8_t handler_buf_2[MAX_HANDLER_SIZE];
@@ -208,6 +210,8 @@ void setOutputMode(uint8_t pinID) {
 bool setUniqueReadAddressCommand(uint8_t messageID, uint8_t cmd) {
     uint64_t id = readULong();
     uniqueID = id;
+    requireConfirmRegistration = readBool();
+
     lastPing = millis();
     sendSuccessCallback(messageID, cmd);
     return true;
@@ -374,6 +378,13 @@ bool executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cm
         return false;
     }
 
+    if(requireConfirmRegistration) {
+        if (cmd == REGISTER_CONFIRM_COMMAND) {
+           requireConfirmRegistration = false;
+        }
+        return false;
+    }
+
     if (target == 0 || target == arduinoConfig.deviceID) {
         switch (cmd) {
             case EXECUTED:
@@ -472,7 +483,7 @@ uint8_t getFirstLevelHandlerSize() {
   return 4 + FIRST_LEVEL_SIZES[firstLevelType];
 }
 
-boolean executeCommand(uint8_t expectedMessageID) {
+bool executeCommand(uint8_t expectedMessageID) {
     resetAll(); // reset indexes for reading
     if (!(readChar() == 0x25 && (readChar() == 0x25))) {
         return false;
@@ -498,9 +509,9 @@ boolean executeCommand(uint8_t expectedMessageID) {
 }
 
 
-boolean readMessage() {
+bool readMessage() {
     if (Serial.available()) {
-        boolean done = false;
+        bool done = false;
         Serial.readBytes(getPayload(), 32);
         return true;
     }
@@ -508,9 +519,9 @@ boolean readMessage() {
 }
 
 // Wait here until we get a response, or timeout (250ms)
-boolean readMessageNSeconds(int seconds) {
+bool readMessageNSeconds(int seconds) {
     unsigned long started_waiting_at = millis();
-    boolean timeout = false;
+    bool timeout = false;
     while (!Serial.available() && !timeout) {
         if (millis() - started_waiting_at > seconds * 1000) {
             timeout = true;
