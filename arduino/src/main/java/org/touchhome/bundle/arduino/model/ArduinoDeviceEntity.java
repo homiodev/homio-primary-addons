@@ -22,14 +22,16 @@ import org.touchhome.bundle.api.ui.method.UIMethodAction;
 import org.touchhome.bundle.arduino.provider.command.ArduinoRegisterCommand;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoCommunicationProvider;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
 @UISidebarMenu(icon = "fas fa-tablet-alt", parent = UISidebarMenu.TopSidebarMenu.HARDWARE, order = 5, bg = "#7482d0", allowCreateNewItems = true)
 @Accessors(chain = true)
+@NamedQueries({
+        @NamedQuery(name = "ArduinoDeviceEntity.resetStatuses", query = "UPDATE ArduinoDeviceEntity set status = 'UNKNOWN', liveStatus = 'UNKNOWN'")
+})
 public class ArduinoDeviceEntity extends DeviceBaseEntity<ArduinoDeviceEntity> {
 
     public static final String PREFIX = "ad_";
@@ -47,6 +49,7 @@ public class ArduinoDeviceEntity extends DeviceBaseEntity<ArduinoDeviceEntity> {
     @Getter
     @Setter
     @UIField(order = 22, readOnly = true)
+    @Enumerated(EnumType.STRING)
     private Status liveStatus = Status.UNKNOWN;
 
     @Override

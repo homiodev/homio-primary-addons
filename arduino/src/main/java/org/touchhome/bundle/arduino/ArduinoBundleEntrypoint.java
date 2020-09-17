@@ -11,6 +11,7 @@ import org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoCommunicationProvider;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoMessage;
 import org.touchhome.bundle.arduino.provider.communication.SendCommand;
+import org.touchhome.bundle.arduino.repository.ArduinoDeviceRepository;
 import org.touchhome.bundle.arduino.setting.ArduinoUsbPortSetting;
 
 import java.util.concurrent.TimeUnit;
@@ -22,8 +23,10 @@ import java.util.stream.Stream;
 public class ArduinoBundleEntrypoint implements BundleEntrypoint {
 
     private final EntityContext entityContext;
+    private final ArduinoDeviceRepository arduinoDeviceRepository;
 
     public void init() {
+        this.arduinoDeviceRepository.resetStatuses();
         startArduinoCommunicators();
     }
 

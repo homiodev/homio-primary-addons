@@ -61,22 +61,19 @@ const uint8_t ARDUINO_DEVICE_TYPE = 17;
 
 const uint8_t EXECUTED = 0;
 const uint8_t FAILED_EXECUTED = 1;
+const uint8_t DEBUG = 2;
 
 const uint8_t REGISTER_COMMAND = 10;
-const uint8_t REGISTER_SUCCESS_COMMAND = 11;
-const uint8_t REGISTER_CONFIRM_COMMAND = 12;
+const uint8_t REGISTER_CONFIRM_COMMAND = 11;
 
 const uint8_t GET_ID_COMMAND = 20;
 const uint8_t GET_TIME_COMMAND = 21;
+const uint8_t PING = 22;
 
 const uint8_t SET_PIN_VALUE_ON_HANDLER_REQUEST_COMMAND = 30;
 const uint8_t GET_PIN_VALUE_COMMAND = 31;
 
-const uint8_t SET_PIN_DIGITAL_VALUE_COMMAND = 40;
-const uint8_t SET_PIN_ANALOG_VALUE_COMMAND = 41;
-
-const uint8_t RESPONSE_COMMAND = 50;
-const uint8_t PING = 51;
+const uint8_t SET_PIN_VALUE_COMMAND = 40;
 
 const uint8_t GET_PIN_VALUE_REQUEST_COMMAND = 60;
 const uint8_t REMOVE_GET_PIN_VALUE_REQUEST_COMMAND = 61;
@@ -140,31 +137,28 @@ void writeMessage(uint8_t messageID, uint8_t commandID, uint8_t writtenLength) {
     beginWrite(); // reset written length to 0
 }
 
-void sendNoPayloadCallback(uint8_t messageID, uint8_t commandID, uint8_t CMD) {
+void sendNoPayloadCallback(uint8_t messageID, uint8_t commandID, uint8_t sendCommandID) {
     beginWrite();
     writeByte(commandID);
-    writeMessage(messageID, CMD, getCurrentIndex());
+    writeMessage(messageID, sendCommandID, getCurrentIndex());
 }
 
-void sendResponse(uint8_t messageID, uint8_t commandID, uint8_t value) {
+void sendResponseByte(uint8_t messageID, uint8_t commandID, uint8_t value) {
     beginWrite();
-    writeByte(commandID);
     writeByte(value);
-    writeMessage(messageID, RESPONSE_COMMAND, getCurrentIndex());
+    writeMessage(messageID, commandID, getCurrentIndex());
 }
 
 void sendResponseULong(uint8_t messageID, uint8_t commandID, unsigned long value) {
     beginWrite();
-    writeByte(commandID);
     writeULong(value);
-    writeMessage(messageID, RESPONSE_COMMAND, getCurrentIndex());
+    writeMessage(messageID, commandID, getCurrentIndex());
 }
 
 void sendResponseUInt(uint8_t messageID, uint8_t commandID, unsigned int value) {
     beginWrite();
-    writeByte(commandID);
     writeUInt(value);
-    writeMessage(messageID, RESPONSE_COMMAND, getCurrentIndex());
+    writeMessage(messageID, commandID, getCurrentIndex());
 }
 
 void sendSuccessCallback(uint8_t messageID, uint8_t commandID) {
@@ -208,9 +202,12 @@ void setOutputMode(uint8_t pinID) {
 }
 
 bool setUniqueReadAddressCommand(uint8_t messageID, uint8_t cmd) {
+    sendNoPayloadCallback(messageID, 96, DEBUG);
     uint64_t id = readULong();
+    sendNoPayloadCallback(messageID, 97, DEBUG);
     uniqueID = id;
     requireConfirmRegistration = readBool();
+    sendNoPayloadCallback(messageID, 98, DEBUG);
 
     lastPing = millis();
     sendSuccessCallback(messageID, cmd);
@@ -370,35 +367,26 @@ bool executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cm
     uint8_t pinID;
     if (uniqueID == 0) {
         if (target != arduinoConfig.deviceID) {
+            sendNoPayloadCallback(messageID, 94, DEBUG);
             return false;
         }
-        if (cmd == REGISTER_SUCCESS_COMMAND) {
+        if (cmd == REGISTER_COMMAND) {
             return setUniqueReadAddressCommand(messageID, cmd);
         }
+        sendNoPayloadCallback(messageID, 95, DEBUG);
         return false;
     }
 
     if(requireConfirmRegistration) {
         if (cmd == REGISTER_CONFIRM_COMMAND) {
            requireConfirmRegistration = false;
+           sendSuccessCallback(messageID, cmd);
         }
         return false;
     }
 
     if (target == 0 || target == arduinoConfig.deviceID) {
         switch (cmd) {
-            case EXECUTED:
-                sendErrorCallback(messageID, cmd);
-                break;
-            case FAILED_EXECUTED:
-                sendErrorCallback(messageID, cmd);
-                break;
-            case REGISTER_COMMAND:
-                sendErrorCallback(messageID, cmd);
-                break;
-            case REGISTER_SUCCESS_COMMAND:
-                sendErrorCallback(messageID, cmd);
-                break;
             case GET_ID_COMMAND:
                 sendResponseUInt(messageID, cmd, arduinoConfig.deviceID);
                 break;
@@ -408,19 +396,11 @@ bool executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cm
             case GET_PIN_VALUE_COMMAND:
                 getPinValueCommand(messageID, cmd);
                 break;
-            case SET_PIN_DIGITAL_VALUE_COMMAND:
-                setDigitalValue(readPinID(messageID, cmd), readByte());
-                break;
-            case SET_PIN_ANALOG_VALUE_COMMAND:
-                setAnalogValue(readPinID(messageID, cmd), readByte());
+            case SET_PIN_VALUE_COMMAND:
+                setPinValue(readPinID(messageID, cmd), readByte(), readByte());
                 break;
             case PING:
                 lastPing = millis();
-                beginWrite();
-                writeMessage(messageID, PING, getCurrentIndex());
-                break;
-            case HANDLER_REQUEST_WHEN_PIN_VALUE_OP_THAN:
-                handlerRequestWhenPinValueOpThan(messageID, cmd);
                 break;
             case REMOVE_GET_PIN_VALUE_REQUEST_COMMAND:
                 readPinValueRequestCommand(messageID, cmd, true);
@@ -428,12 +408,16 @@ bool executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cm
             case GET_PIN_VALUE_REQUEST_COMMAND:
                 readPinValueRequestCommand(messageID, cmd, false);
                 break;
+            case HANDLER_REQUEST_WHEN_PIN_VALUE_OP_THAN:
+                handlerRequestWhenPinValueOpThan(messageID, cmd);
+                break;
             case REMOVE_HANDLER_REQUEST_WHEN_PIN_VALUE_OP_THAN:
                 removeHandlerWhenPinValueOpThan(messageID, cmd);
                 break;
             default:
                 return false;
         }
+        sendSuccessCallback(messageID, cmd);
         return true;
     }
     return false;
@@ -443,7 +427,7 @@ void getPinValueCommand(uint8_t messageID, uint8_t cmd) {
     uint8_t pinID = readPinID(messageID, cmd);
     uint8_t analog = readByte();
     uint8_t value = analog == 1 ? map(analogRead(pinID), 0, 1023, 0, 255) : digitalRead(pinID);
-    sendResponse(messageID, cmd, value);
+    sendResponseByte(messageID, cmd, value);
 }
 
 void handlerRequestWhenPinValueOpThan(uint8_t messageID, uint8_t cmd) {
@@ -497,12 +481,15 @@ bool executeCommand(uint8_t expectedMessageID) {
     unsigned int calcCrc = calcCRC(messageID, commandID, length, getCurrentIndex()); // start calc CRC from current position - getWrittenLength();
 
     if (expectedMessageID != 255 && expectedMessageID != messageID) {
+        sendNoPayloadCallback(messageID, 91, DEBUG);
         return false;
     }
     if (target != arduinoConfig.deviceID) {
+      sendNoPayloadCallback(messageID, 92, DEBUG);
         return false;
     }
     if (calcCrc != crc) {
+        sendNoPayloadCallback(messageID, 93, DEBUG);
         return false;
     }
     return executeCommandInternally(messageID, target, commandID);
@@ -571,15 +558,18 @@ uint8_t generateID() {
     return genID;
 }
 
-void setPinValue(uint8_t pinID, uint8_t value) {
-    bool isAnalog = value > 1 ? true : false;
-    if (isAnalog) setAnalogValue(pinID, value);
-    else setDigitalValue(pinID, value);
+void setPinValue(uint8_t pinID, uint8_t value, bool isAnalog) {
+    if(isAnalog) {
+        setAnalogValue(pinID, value);
+    } else {
+        setDigitalValue(pinID, value);
+    }
 }
 
 void registerDevice() {
     if (millis() - lastPing > MAX_PING_BEFORE_REMOVE_DEVICE) { // if device pinged too ago
         uniqueID = 0;
+        requireConfirmRegistration = true;
         EEPROM.put(1, arduinoConfig);
         for (uint8_t i = 0; i < 21; i++)
             settedUpValuesByHandler[i] = 255;
@@ -616,8 +606,8 @@ uint8_t getInvertedValue(uint8_t pinID) {
 }
 
 // invert state
-void invertPinTimerFunc(uint32_t ts, uint8_t pinID, uint8_t pinValue, uint8_t ignore2) {
-    setPinValue(pinID, pinValue);
+void invertPinTimerFunc(uint32_t ts, uint8_t pinID, uint8_t pinValue, uint8_t isAnalog) {
+    setPinValue(pinID, pinValue, isAnalog);
     settedUpValuesByHandler[pinID] = false;
 }
 
@@ -631,32 +621,32 @@ void invokeDigitalPinHandleCommand(const uint8_t handler[], uint8_t value, uint8
             if (isConditionMatch && settedUpValuesByHandler[handlePin] != 255) {
                 settedUpValuesByHandler[handlePin] = 1;
                 timer.everyOnceOne(handler[startCmdIndex + 2], invertPinTimerFunc, handlePin, getPinValue(handlePin));
-                setPinValue(handlePin, getInvertedValue(handlePin));
+                setPinValue(handlePin, getInvertedValue(handlePin), isAnalog);
             }
             break;
         case INVERT_PIN:
             if (isConditionMatch && settedUpValuesByHandler[handlePin] != 255) {
-                setPinValue(handlePin, getInvertedValue(handlePin));
+                setPinValue(handlePin, getInvertedValue(handlePin), isAnalog);
                 settedUpValuesByHandler[handlePin] = 1;
             } else if (settedUpValuesByHandler[handlePin] == 1) {
                 settedUpValuesByHandler[handlePin] = 255;
-                setPinValue(handlePin, getInvertedValue(handlePin));
+                setPinValue(handlePin, getInvertedValue(handlePin), isAnalog);
             }
             break;
         case SET_PIN_N_SECONDS: // uint8_t payload3[] = {CMDID, 3, 123, 4, SET_PIN_N_SECONDS, 9, 1, 2}; // (pin, value, interval)
             if (isConditionMatch && settedUpValuesByHandler[handlePin] == 255) {
-                setPinValue(handlePin, setValue);
+                setPinValue(handlePin, setValue, isAnalog);
                 settedUpValuesByHandler[handlePin] = 1;
                 timer.everyOnceOne(handler[startCmdIndex + 3], invertPinTimerFunc, handlePin,getPinValue(handlePin));
             }
             break;
         case SET_PIN:
             if (isConditionMatch && settedUpValuesByHandler[handlePin] != 255) {
-                setPinValue(handlePin, setValue);
+                setPinValue(handlePin, setValue, isAnalog);
                 settedUpValuesByHandler[handlePin] = 1;
             } else if (settedUpValuesByHandler[handlePin] == 1) {
                 settedUpValuesByHandler[handlePin] = 255;
-                setPinValue(handlePin, 0);
+                setPinValue(handlePin, 0, isAnalog);
             }
             break;
         // TODO: not works WELL
