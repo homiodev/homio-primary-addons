@@ -8,7 +8,6 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.arduino.model.ArduinoDeviceEntity;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoMessage;
-import org.touchhome.bundle.arduino.provider.communication.SendCommand;
 
 import static org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType.PING;
 
@@ -25,16 +24,10 @@ public class ArduinoPingCommand implements ArduinoCommandPlugin {
     }
 
     @Override
-    public SendCommand messageReceived(ArduinoMessage message) {
+    public void onRemoteExecuted(ArduinoMessage message) {
         ArduinoDeviceEntity entity = message.getArduinoDeviceEntity();
         entity.setMissedPings(0);
         entity.setLiveStatus(Status.ONLINE);
         entityContext.saveDelayed(entity);
-        return null;
-    }
-
-    @Override
-    public boolean canReceiveGeneral() {
-        return true;
     }
 }

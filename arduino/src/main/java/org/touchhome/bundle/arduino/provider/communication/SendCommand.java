@@ -1,34 +1,37 @@
 package org.touchhome.bundle.arduino.provider.communication;
 
+import lombok.Getter;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+@Getter
 public class SendCommand {
-    public static SendCommand SEND_ERROR = new SendCommand(true, null, ArduinoBaseCommand.FAILED_EXECUTED);
+    public static SendCommand SEND_ERROR = new SendCommand(true, null, ArduinoCommandType.FAILED_EXECUTED, (short) 0, null);
     private final boolean isError;
     private final byte[] payload;
-    private final byte commandID;
+    private final ArduinoCommandType arduinoCommandType;
+    private final short target;
+    private Byte messageID;
 
-    private SendCommand(boolean isError, byte[] payload, ArduinoBaseCommand arduinoBaseCommand) {
+    private SendCommand(boolean isError, byte[] payload, ArduinoCommandType arduinoCommandType, short target, Byte messageID) {
         this.isError = isError;
         this.payload = payload;
-        this.commandID = (byte) arduinoBaseCommand.getValue();
+        this.arduinoCommandType = arduinoCommandType;
+        this.target = target;
+        this.messageID = messageID;
     }
 
-    public static SendCommand sendPayload(ArduinoBaseCommand arduinoBaseCommand, ByteBuffer buffer) {
-        return new SendCommand(false, buffer.array(), arduinoBaseCommand);
+    public static SendCommand sendPayload(ArduinoCommandType arduinoCommandType, ByteBuffer buffer, short target) {
+        return sendPayload(arduinoCommandType, buffer, target, null);
     }
 
-    public byte[] getPayload() {
-        return payload;
+    public static SendCommand sendPayload(ArduinoCommandType arduinoCommandType, ByteBuffer buffer, short target, Byte messageID) {
+        return new SendCommand(false, buffer.array(), arduinoCommandType, target, messageID);
     }
 
-    public byte getCommandID() {
-        return commandID;
-    }
-
-    public boolean isError() {
-        return isError;
+    void setMessageID(byte messageID) {
+        this.messageID = messageID;
     }
 
     @Override
@@ -36,7 +39,7 @@ public class SendCommand {
         return "SendCommand{" +
                 "isError=" + isError +
                 ", payload=" + Arrays.toString(payload) +
-                ", command=" + commandID +
+                ", command=" + arduinoCommandType.name() +
                 '}';
     }
 }

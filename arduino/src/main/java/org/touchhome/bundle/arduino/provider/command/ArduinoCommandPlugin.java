@@ -20,8 +20,4 @@ public interface ArduinoCommandPlugin {
     default void onRemoteExecuted(ArduinoMessage message) {
         throw new IllegalStateException("onRemoteExecuted not implemented for command" + getName());
     }
-
-    default boolean canReceiveGeneral() {
-        return false;
-    }
 }

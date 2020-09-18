@@ -120,18 +120,18 @@ void writeMessage(uint8_t messageID, uint8_t commandID, uint8_t writtenLength) {
     resetAll();
 
     // header
-    writeByte(0x24);
-    writeByte(0x24);
+    writeByte(0x24);                     // 0
+    writeByte(0x24);                     // 1
     // length
-    writeByte(writtenLength);
-    writeUInt(crc);
+    writeByte(writtenLength);            // 2
+    writeUInt(crc);                      // 3,4
     // messageID
-    writeByte(messageID);
+    writeByte(messageID);                // 5
     // device ID
-    writeUInt(arduinoConfig.deviceID);
+    writeUInt(arduinoConfig.deviceID);   // 6,7
     // Command ID
-    writeByte(commandID);
-    writeTail();
+    writeByte(commandID);                // 8
+    fillPayload(OFFSET_WRITE_INDEX + writtenLength, 0);
 
     Serial.write(payload, 32);
     beginWrite(); // reset written length to 0
@@ -146,18 +146,6 @@ void sendNoPayloadCallback(uint8_t messageID, uint8_t commandID, uint8_t sendCom
 void sendResponseByte(uint8_t messageID, uint8_t commandID, uint8_t value) {
     beginWrite();
     writeByte(value);
-    writeMessage(messageID, commandID, getCurrentIndex());
-}
-
-void sendResponseULong(uint8_t messageID, uint8_t commandID, unsigned long value) {
-    beginWrite();
-    writeULong(value);
-    writeMessage(messageID, commandID, getCurrentIndex());
-}
-
-void sendResponseUInt(uint8_t messageID, uint8_t commandID, unsigned int value) {
-    beginWrite();
-    writeUInt(value);
     writeMessage(messageID, commandID, getCurrentIndex());
 }
 
@@ -202,12 +190,9 @@ void setOutputMode(uint8_t pinID) {
 }
 
 bool setUniqueReadAddressCommand(uint8_t messageID, uint8_t cmd) {
-    sendNoPayloadCallback(messageID, 96, DEBUG);
     uint64_t id = readULong();
-    sendNoPayloadCallback(messageID, 97, DEBUG);
     uniqueID = id;
     requireConfirmRegistration = readBool();
-    sendNoPayloadCallback(messageID, 98, DEBUG);
 
     lastPing = millis();
     sendSuccessCallback(messageID, cmd);
@@ -363,18 +348,17 @@ void readPinValueRequestCommand(uint8_t messageID, uint8_t cmd, bool remove) {
     }
 }
 
-bool executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cmd) {
+void executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cmd) {
     uint8_t pinID;
     if (uniqueID == 0) {
         if (target != arduinoConfig.deviceID) {
-            sendNoPayloadCallback(messageID, 94, DEBUG);
-            return false;
+            return;
         }
         if (cmd == REGISTER_COMMAND) {
-            return setUniqueReadAddressCommand(messageID, cmd);
+            setUniqueReadAddressCommand(messageID, cmd);
+            return;
         }
-        sendNoPayloadCallback(messageID, 95, DEBUG);
-        return false;
+        return;
     }
 
     if(requireConfirmRegistration) {
@@ -382,19 +366,22 @@ bool executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cm
            requireConfirmRegistration = false;
            sendSuccessCallback(messageID, cmd);
         }
-        return false;
+        return;
     }
 
     if (target == 0 || target == arduinoConfig.deviceID) {
+        beginWrite();
+        writeByte(cmd);
         switch (cmd) {
             case GET_ID_COMMAND:
-                sendResponseUInt(messageID, cmd, arduinoConfig.deviceID);
+                writeUInt(arduinoConfig.deviceID);
                 break;
             case GET_TIME_COMMAND:
-                sendResponseULong(messageID, cmd, millis());
+                writeULong(millis());
                 break;
             case GET_PIN_VALUE_COMMAND:
-                getPinValueCommand(messageID, cmd);
+                pinID = readPinID(messageID, cmd);
+                writeByte(readBool() ? map(analogRead(pinID), 0, 1023, 0, 255) : digitalRead(pinID));
                 break;
             case SET_PIN_VALUE_COMMAND:
                 setPinValue(readPinID(messageID, cmd), readByte(), readByte());
@@ -415,19 +402,10 @@ bool executeCommandInternally(uint8_t messageID, unsigned int target, uint8_t cm
                 removeHandlerWhenPinValueOpThan(messageID, cmd);
                 break;
             default:
-                return false;
+                return;
         }
-        sendSuccessCallback(messageID, cmd);
-        return true;
+        writeMessage(messageID, EXECUTED, getCurrentIndex());
     }
-    return false;
-}
-
-void getPinValueCommand(uint8_t messageID, uint8_t cmd) {
-    uint8_t pinID = readPinID(messageID, cmd);
-    uint8_t analog = readByte();
-    uint8_t value = analog == 1 ? map(analogRead(pinID), 0, 1023, 0, 255) : digitalRead(pinID);
-    sendResponseByte(messageID, cmd, value);
 }
 
 void handlerRequestWhenPinValueOpThan(uint8_t messageID, uint8_t cmd) {
@@ -467,10 +445,10 @@ uint8_t getFirstLevelHandlerSize() {
   return 4 + FIRST_LEVEL_SIZES[firstLevelType];
 }
 
-bool executeCommand(uint8_t expectedMessageID) {
+void executeCommand(uint8_t expectedMessageID) {
     resetAll(); // reset indexes for reading
     if (!(readChar() == 0x25 && (readChar() == 0x25))) {
-        return false;
+        return;
     }
     char length = readChar(); // 2
     int crc = readUInt(); // 3
@@ -481,20 +459,16 @@ bool executeCommand(uint8_t expectedMessageID) {
     unsigned int calcCrc = calcCRC(messageID, commandID, length, getCurrentIndex()); // start calc CRC from current position - getWrittenLength();
 
     if (expectedMessageID != 255 && expectedMessageID != messageID) {
-        sendNoPayloadCallback(messageID, 91, DEBUG);
-        return false;
+        return;
     }
     if (target != arduinoConfig.deviceID) {
-      sendNoPayloadCallback(messageID, 92, DEBUG);
-        return false;
+        return;
     }
     if (calcCrc != crc) {
-        sendNoPayloadCallback(messageID, 93, DEBUG);
-        return false;
+        return;
     }
-    return executeCommandInternally(messageID, target, commandID);
+    executeCommandInternally(messageID, target, commandID);
 }
-
 
 bool readMessage() {
     if (Serial.available()) {

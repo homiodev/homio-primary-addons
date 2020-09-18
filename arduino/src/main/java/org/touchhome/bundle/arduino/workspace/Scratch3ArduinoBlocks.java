@@ -5,9 +5,12 @@ import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.HighLow;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.arduino.ArduinoBundleEntrypoint;
 import org.touchhome.bundle.arduino.model.ArduinoDeviceEntity;
+
+import java.util.function.Function;
 
 import static com.pi4j.io.gpio.PinMode.DIGITAL_INPUT;
 
@@ -17,6 +20,7 @@ public class Scratch3ArduinoBlocks extends Scratch3ExtensionBlocks {
 
     private static final String PIN = "PIN";
     private static final String ARDUINO = "ARDUINO";
+    public static final String ASYNC = "ASYNC";
 
     private final MenuBlock onOffMenu;
     private final MenuBlock.ServerMenuBlock arduinoIdMenu;
@@ -29,6 +33,7 @@ public class Scratch3ArduinoBlocks extends Scratch3ExtensionBlocks {
     private final Scratch3Block invertPin;
     private final Scratch3Block invertPinNSec;
     private final Scratch3Block digitalWrite;
+    private final Scratch3Block getTime;
 
     public Scratch3ArduinoBlocks(EntityContext entityContext, ArduinoBundleEntrypoint arduinoBundleEntrypoint) {
         super("#3cb6cd", entityContext, arduinoBundleEntrypoint);
@@ -53,41 +58,46 @@ public class Scratch3ArduinoBlocks extends Scratch3ExtensionBlocks {
         this.invertPinNSec.addArgumentServerSelection(ARDUINO, this.arduinoIdMenu);
 
 
-        this.digitalWrite = Scratch3Block.ofHandler(2, "digital_write", BlockType.command, "Write(D) Pin [PIN] [ON_OFF] to [ARDUINO]", this::digitalWriteHandler);
+        this.digitalWrite = Scratch3Block.ofHandler(2, "digital_write", BlockType.command, "Set(D) Pin [PIN] [ON_OFF] to [ARDUINO] | async: [ASYNC]", this::digitalWriteHandler);
         this.digitalWrite.addArgument(PIN, ArgumentType.number, "2", this.digitalPinMenu);
-        this.digitalWrite.addArgument("ON_OFF", ArgumentType.number, "0", this.onOffMenu);
+        this.digitalWrite.addArgument("ON_OFF", ArgumentType.number, HighLow.low, this.onOffMenu);
+        this.digitalWrite.addArgument(ASYNC, ArgumentType.checkbox, "true");
         this.digitalWrite.addArgumentServerSelection(ARDUINO, this.arduinoIdMenu);
 
-        this.pwmWrite = Scratch3Block.ofHandler(3, "pwmWrite", BlockType.command, "Write(PWM) Pin [PIN] [VALUE] to [ARDUINO]", this::pwmWriteHandler);
+        this.pwmWrite = Scratch3Block.ofHandler(3, "pwmWrite", BlockType.command, "Set(W) Pin [PIN] [VALUE] to [ARDUINO] | async: [ASYNC]", this::pwmWriteHandler);
         this.pwmWrite.addArgument(PIN, ArgumentType.number, "3", this.pwmPinMenu);
         this.pwmWrite.addArgument("VALUE", ArgumentType.number, "50");
+        this.pwmWrite.addArgument(ASYNC, ArgumentType.checkbox, "true");
         this.pwmWrite.addArgumentServerSelection(ARDUINO, this.arduinoIdMenu);
 
-        this.pinRead = Scratch3Block.ofEvaluate(4, "pinRead", BlockType.reporter, "Read Pin [PIN] from [ARDUINO]", this::pinReadHandler);
+        this.pinRead = Scratch3Block.ofEvaluate(4, "pinRead", BlockType.reporter, "Read Pin [PIN] from [ARDUINO]", this::readPinEvaluate);
         this.pinRead.addArgument(PIN, ArgumentType.number, "2", this.allPinMenu);
         this.pinRead.addArgumentServerSelection(ARDUINO, this.arduinoIdMenu);
+
+        this.getTime = Scratch3Block.ofEvaluate(5, "getTime", BlockType.reporter, "time of [ARDUINO]", this::getTimeEvaluate);
+        this.getTime.addArgumentServerSelection(ARDUINO, this.arduinoIdMenu);
 
         this.postConstruct();
     }
 
-    private Object pinReadHandler(WorkspaceBlock workspaceBlock) {
-        ArduinoGpioPin pin = workspaceBlock.getMenuValue(PIN, this.allPinMenu, ArduinoGpioPin.class);
+    private Object getTimeEvaluate(WorkspaceBlock workspaceBlock) {
+        return execute(workspaceBlock, entity -> entity.getCommunicationProvider().getTimeSync(entity));
+    }
 
-        String arduinoId = workspaceBlock.getMenuValue(ARDUINO, this.arduinoIdMenu, String.class);
-        ArduinoDeviceEntity entity = entityContext.getEntity(arduinoId, ArduinoDeviceEntity.class);
-        if (entity.getCommunicationProvider() != null) {
-            return entity.getCommunicationProvider().getValueSync(entity, NanoPiPin.GPIO_03, false);
-        }
-        return null;
+    private Object readPinEvaluate(WorkspaceBlock workspaceBlock) {
+        // TODO: ???????????????????
+        ArduinoGpioPin pin = workspaceBlock.getMenuValue(PIN, this.allPinMenu, ArduinoGpioPin.class);
+        return execute(workspaceBlock, entity -> entity.getCommunicationProvider().getValueSync(entity, NanoPiPin.GPIO_03, false));
     }
 
     private void digitalWriteHandler(WorkspaceBlock workspaceBlock) {
         String arduinoId = workspaceBlock.getMenuValue(ARDUINO, this.arduinoIdMenu, String.class);
+        boolean async = workspaceBlock.getInputBoolean(ASYNC);
 
         HighLow onOff = workspaceBlock.getMenuValue("ON_OFF", this.onOffMenu, HighLow.class);
-        ArduinoDeviceEntity entity = entityContext.getEntity(arduinoId, ArduinoDeviceEntity.class);
+        ArduinoDeviceEntity entity = entityContext.getEntity(arduinoId);
         if (entity.getCommunicationProvider() != null) {
-            entity.getCommunicationProvider().setValue(entity, NanoPiPin.GPIO_03, (byte) onOff.getPinState().getValue(), false);
+            entity.getCommunicationProvider().setValue(entity, NanoPiPin.GPIO_03, (byte) onOff.getPinState().getValue(), false, async);
         }
     }
 
@@ -101,5 +111,15 @@ public class Scratch3ArduinoBlocks extends Scratch3ExtensionBlocks {
 
     private void invertPinHandler(WorkspaceBlock workspaceBlock) {
 
+    }
+
+    private <T> T execute(WorkspaceBlock workspaceBlock, Function<ArduinoDeviceEntity, T> consumer) {
+        String arduinoId = workspaceBlock.getMenuValue(ARDUINO, this.arduinoIdMenu, String.class);
+        ArduinoDeviceEntity entity = entityContext.getEntity(arduinoId);
+
+        if (entity.getLiveStatus() == Status.ONLINE) {
+            return consumer.apply(entity);
+        }
+        return null;
     }
 }

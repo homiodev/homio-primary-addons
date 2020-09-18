@@ -31,9 +31,4 @@ public class ArduinoExecutedCommand implements ArduinoCommandPlugin {
         commandPlugin.onRemoteExecuted(message);
         return null;
     }
-
-    @Override
-    public boolean canReceiveGeneral() {
-        return true;
-    }
 }

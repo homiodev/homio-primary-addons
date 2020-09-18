@@ -25,9 +25,4 @@ public class ArduinoDebugCommand implements ArduinoCommandPlugin {
         log.warn("Arduino DEBUG value: " + executedCommand);
         return null;
     }
-
-    @Override
-    public boolean canReceiveGeneral() {
-        return true;
-    }
 }

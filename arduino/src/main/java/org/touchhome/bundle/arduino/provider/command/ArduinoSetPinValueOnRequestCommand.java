@@ -41,9 +41,4 @@ public class ArduinoSetPinValueOnRequestCommand implements ArduinoCommandPlugin 
         manager.sendNotification("-scratch-updates", scratchUpdateValues);*/
         return null;
     }
-
-    @Override
-    public boolean canReceiveGeneral() {
-        return true;
-    }
 }

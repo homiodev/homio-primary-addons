@@ -5,25 +5,25 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType;
 import org.touchhome.bundle.arduino.provider.communication.ArduinoMessage;
 
-import static org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType.GET_PIN_VALUE_COMMAND;
+import static org.touchhome.bundle.arduino.provider.communication.ArduinoCommandType.GET_TIME_COMMAND;
 
 @Component
 @RequiredArgsConstructor
-public class ArduinoGetPinValueCommand implements ArduinoCommandPlugin {
+public class ArduinoGetTimeValueCommand implements ArduinoCommandPlugin {
 
-    private final LockManager<Integer> lockManager = new LockManager<>();
+    private final LockManager<Long> lockManager = new LockManager<>();
 
     @Override
     public ArduinoCommandType getCommand() {
-        return GET_PIN_VALUE_COMMAND;
+        return GET_TIME_COMMAND;
     }
 
-    public Integer waitForValue(byte messageID) {
+    public Long waitForValue(byte messageID) {
         return lockManager.await(String.valueOf(messageID), 10000);
     }
 
     @Override
     public void onRemoteExecuted(ArduinoMessage message) {
-        lockManager.signalAll(String.valueOf(message.getMessageID()), (int) message.getPayloadBuffer().get());
+        lockManager.signalAll(String.valueOf(message.getMessageID()), message.getPayloadBuffer().getLong());
     }
 }

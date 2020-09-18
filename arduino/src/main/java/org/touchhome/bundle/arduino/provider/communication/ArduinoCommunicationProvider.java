@@ -9,6 +9,8 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.arduino.model.ArduinoDeviceEntity;
 import org.touchhome.bundle.arduino.provider.ArduinoCommandPlugins;
 import org.touchhome.bundle.arduino.provider.command.ArduinoGetPinValueCommand;
+import org.touchhome.bundle.arduino.provider.command.ArduinoGetTimeValueCommand;
+import org.touchhome.bundle.arduino.provider.command.ArduinoSetPinValueCommand;
 
 import java.nio.ByteBuffer;
 
@@ -42,19 +44,34 @@ public abstract class ArduinoCommunicationProvider<T> {
         arduinoCommunicationProtocol.subscribeForReading(readListener);
     }
 
-    public final void setValue(ArduinoDeviceEntity arduinoDeviceEntity, Pin pin, Byte value, boolean analog) {
+    public void setValue(ArduinoDeviceEntity arduinoDeviceEntity, Pin pin, Byte value, boolean analog, boolean async) {
         ByteBuffer buffer = ByteBuffer.allocate(2);
         buffer.put((byte) pin.getAddress());
         buffer.put(value);
-        sendCommand(arduinoDeviceEntity, SendCommand.sendPayload(analog ? SET_PIN_ANALOG_VALUE_COMMAND : SET_PIN_DIGITAL_VALUE_COMMAND, buffer, arduinoDeviceEntity.getTarget()));
+        buffer.put((byte) (analog ? 1 : 0));
+        SendCommand sendCommand = SendCommand.sendPayload(SET_PIN_VALUE_COMMAND, buffer, arduinoDeviceEntity.getTarget());
+        sendCommand(arduinoDeviceEntity, sendCommand);
+
+        if (!async) {
+            ((ArduinoSetPinValueCommand) this.arduinoCommunicationProtocol.getArduinoCommandPlugins().getArduinoCommandPlugin(SET_PIN_VALUE_COMMAND))
+                    .waitForValue(sendCommand.getMessageID());
+        }
     }
 
-    public final Integer getValueSync(ArduinoDeviceEntity arduinoDeviceEntity, Pin pin, boolean analog) {
+    public Long getTimeSync(ArduinoDeviceEntity entity) {
+        SendCommand sendCommand = SendCommand.sendPayload(GET_TIME_COMMAND, ArduinoMessage.empty(), entity.getTarget());
+        sendCommand(entity, sendCommand);
+
+        return ((ArduinoGetTimeValueCommand) this.arduinoCommunicationProtocol.getArduinoCommandPlugins().getArduinoCommandPlugin(GET_TIME_COMMAND))
+                .waitForValue(sendCommand.getMessageID());
+    }
+
+    public final Integer getValueSync(ArduinoDeviceEntity entity, Pin pin, boolean analog) {
         ByteBuffer buffer = ByteBuffer.allocate(2);
         buffer.put((byte) pin.getAddress());
         buffer.put((byte) (analog ? 1 : 0));
-        SendCommand sendCommand = SendCommand.sendPayload(GET_PIN_VALUE_COMMAND, buffer, arduinoDeviceEntity.getTarget());
-        sendCommand(arduinoDeviceEntity, sendCommand);
+        SendCommand sendCommand = SendCommand.sendPayload(GET_PIN_VALUE_COMMAND, buffer, entity.getTarget());
+        sendCommand(entity, sendCommand);
 
         return ((ArduinoGetPinValueCommand) this.arduinoCommunicationProtocol.getArduinoCommandPlugins().getArduinoCommandPlugin(GET_PIN_VALUE_COMMAND))
                 .waitForValue(sendCommand.getMessageID());
@@ -119,7 +136,7 @@ public abstract class ArduinoCommunicationProvider<T> {
 
         @Override
         public boolean canReceive(ArduinoMessage arduinoMessage) {
-            return arduinoMessage.getCommandPlugin().canReceiveGeneral();
+            return true;
         }
 
         @Override

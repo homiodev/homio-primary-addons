@@ -93,11 +93,6 @@ public class ArduinoRegisterCommand implements ArduinoCommandPlugin {
         }
     }
 
-    @Override
-    public boolean canReceiveGeneral() {
-        return true;
-    }
-
     @Getter
     @AllArgsConstructor
     private static class RegistrationPendingContext {
