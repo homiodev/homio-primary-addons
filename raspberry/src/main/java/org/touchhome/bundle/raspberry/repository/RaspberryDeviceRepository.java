@@ -9,7 +9,7 @@ import org.touchhome.bundle.api.json.Option;
 import org.touchhome.bundle.api.link.HasWorkspaceVariableLinkAbility;
 import org.touchhome.bundle.api.model.workspace.bool.WorkspaceBooleanEntity;
 import org.touchhome.bundle.api.model.workspace.bool.WorkspaceBooleanGroupEntity;
-import org.touchhome.bundle.api.repository.AbstractDeviceRepository;
+import org.touchhome.bundle.api.repository.AbstractRepository;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
 import org.touchhome.bundle.raspberry.model.RaspberryDeviceEntity;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class RaspberryDeviceRepository extends AbstractDeviceRepository<RaspberryDeviceEntity> implements HasWorkspaceVariableLinkAbility {
+public class RaspberryDeviceRepository extends AbstractRepository<RaspberryDeviceEntity> implements HasWorkspaceVariableLinkAbility {
 
     public static final String PREFIX = "rd_";
     private final Scratch3RaspberryBlocks scratch3RaspberryBlocks;
@@ -44,8 +44,9 @@ public class RaspberryDeviceRepository extends AbstractDeviceRepository<Raspberr
         List<Map<Option, String>> links = new ArrayList<>();
         for (RaspberryGpioPin gpioPin : RaspberryGpioPin.values(PinMode.DIGITAL_INPUT, null)) {
             Map<Option, String> map = new HashMap<>();
-            map.put(Option.key(gpioPin.name())
+            map.put(Option.of(gpioPin.name(), gpioPin.toString())
                     .addJson("group", WorkspaceBooleanGroupEntity.PREFIX)
+                    .addJson("color", gpioPin.getColor())
                     .addJson("var", WorkspaceBooleanEntity.PREFIX), getLinkedWorkspaceBooleanVariable(gpioPin));
             links.add(map);
         }

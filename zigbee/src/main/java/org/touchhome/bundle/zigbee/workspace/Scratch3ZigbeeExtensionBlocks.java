@@ -9,4 +9,9 @@ public abstract class Scratch3ZigbeeExtensionBlocks extends Scratch3ExtensionBlo
     public Scratch3ZigbeeExtensionBlocks(String color, EntityContext entityContext, BundleEntrypoint bundleEntrypoint, String idSuffix) {
         super(color, entityContext, bundleEntrypoint, idSuffix);
     }
+
+    Scratch3ZigbeeBlock of(Scratch3ZigbeeBlock scratch3ZigbeeBlock, String color) {
+        scratch3ZigbeeBlock.overrideColor(color);
+        return scratch3ZigbeeBlock;
+    }
 }

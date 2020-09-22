@@ -9,8 +9,8 @@ import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.touchhome.bundle.api.measure.QuantityType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.model.QuantityType;
 import tec.uom.se.unit.Units;
 
 import java.math.BigDecimal;

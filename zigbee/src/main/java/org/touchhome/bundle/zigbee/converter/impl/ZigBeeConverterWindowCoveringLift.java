@@ -9,8 +9,8 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclWindowCoveringCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.windowcovering.ZclWindowCoveringCommand;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.link.DeviceChannelLinkType;
+import org.touchhome.bundle.api.measure.DecimalType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.model.DecimalType;
 
 import java.util.concurrent.Future;
 

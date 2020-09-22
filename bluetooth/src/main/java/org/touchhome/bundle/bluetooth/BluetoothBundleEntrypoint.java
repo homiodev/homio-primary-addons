@@ -71,7 +71,7 @@ public class BluetoothBundleEntrypoint implements BundleEntrypoint {
         map.put(CPU_LOAD_UUID, readSafeValueStr(linuxHardwareRepository::getCpuLoad));
         map.put(CPU_TEMP_UUID, readSafeValueStr(this::getCpuTemp));
         map.put(MEMORY_UUID, readSafeValueStr(linuxHardwareRepository::getMemory));
-        map.put(SD_MEMORY_UUID, readSafeValueStr(() -> linuxHardwareRepository.getSDCardMemory().toFineString()));
+        map.put(SD_MEMORY_UUID, readSafeValueStr(() -> linuxHardwareRepository.getSDCardMemory().toString()));
         map.put(UPTIME_UUID, readSafeValueStr(linuxHardwareRepository::getUptime));
         map.put(IP_ADDRESS_UUID, readSafeValueStrIT(linuxHardwareRepository::getIpAddress));
         map.put(WRITE_BAN_UUID, gatherWriteBan());
@@ -141,7 +141,7 @@ public class BluetoothBundleEntrypoint implements BundleEntrypoint {
         bluetoothApplication.newReadCharacteristic("cpu_load", CPU_LOAD_UUID, () -> readSafeValue(linuxHardwareRepository::getCpuLoad));
         bluetoothApplication.newReadCharacteristic("cpu_temp", CPU_TEMP_UUID, () -> readSafeValue(this::getCpuTemp));
         bluetoothApplication.newReadCharacteristic("memory", MEMORY_UUID, () -> readSafeValue(linuxHardwareRepository::getMemory));
-        bluetoothApplication.newReadCharacteristic("sd_memory", SD_MEMORY_UUID, () -> readSafeValue(() -> linuxHardwareRepository.getSDCardMemory().toFineString()));
+        bluetoothApplication.newReadCharacteristic("sd_memory", SD_MEMORY_UUID, () -> readSafeValue(() -> linuxHardwareRepository.getSDCardMemory().toString()));
         bluetoothApplication.newReadCharacteristic("uptime", UPTIME_UUID, () -> readSafeValue(linuxHardwareRepository::getUptime));
         bluetoothApplication.newReadCharacteristic("ip", IP_ADDRESS_UUID, () -> readSafeValue(linuxHardwareRepository::getIpAddress));
         bluetoothApplication.newReadCharacteristic("write_ban", WRITE_BAN_UUID, () -> bluetoothApplication.gatherWriteBan().getBytes());
@@ -269,7 +269,7 @@ public class BluetoothBundleEntrypoint implements BundleEntrypoint {
     }
 
     @SneakyThrows
-    private void writeSafeValue(ThrowingRunnable runnable) {
+    private void writeSafeValue(ThrowingRunnable<Exception> runnable) {
         if (hasAccess()) {
             runnable.run();
         }

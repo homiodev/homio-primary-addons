@@ -98,7 +98,7 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
                 log.error("{}: Error reading network state from backup file", address);
                 // try restore minimal node from db
                 ZigBeeDeviceEntity zigBeeDeviceEntity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + address.toString());
-                if (zigBeeDeviceEntity != null && zigBeeDeviceEntity.getNetworkAddress() != null) {
+                if (zigBeeDeviceEntity != null && zigBeeDeviceEntity.getNetworkAddress() != 0) {
                     log.warn("{}: Restore minimal information", address);
                     node = new ZigBeeNodeDao();
                     node.setIeeeAddress(address);

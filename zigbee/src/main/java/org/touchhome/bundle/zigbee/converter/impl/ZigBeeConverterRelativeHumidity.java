@@ -8,8 +8,8 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclRelativeHumidityMeasurementClust
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.link.DeviceChannelLinkType;
+import org.touchhome.bundle.api.measure.DecimalType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.model.DecimalType;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ExecutionException;

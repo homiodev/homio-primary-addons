@@ -5,8 +5,8 @@ import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.*;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclScenesCluster;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.measure.ButtonState;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.model.ButtonState;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

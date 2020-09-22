@@ -3,9 +3,9 @@ package org.touchhome.bundle.zigbee.workspace;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.touchhome.bundle.api.measure.State;
 import org.touchhome.bundle.zigbee.ZigBeeDevice;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
-import org.touchhome.bundle.zigbee.model.State;
 
 @Setter
 @Getter

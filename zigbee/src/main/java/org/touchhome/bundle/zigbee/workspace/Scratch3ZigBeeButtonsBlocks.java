@@ -10,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.workspace.bool.WorkspaceBooleanEntity;
-import org.touchhome.bundle.api.scratch.*;
+import org.touchhome.bundle.api.scratch.BlockType;
+import org.touchhome.bundle.api.scratch.MenuBlock;
+import org.touchhome.bundle.api.scratch.Scratch3Block;
+import org.touchhome.bundle.api.scratch.WorkspaceBlock;
 import org.touchhome.bundle.api.util.UpdatableValue;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.ZigBeeNodeDescription;
@@ -36,9 +39,9 @@ final class Scratch3ZigBeeButtonsBlocks {
 
     private final MenuBlock.ServerMenuBlock buttonSensorMenu;
     private final MenuBlock.ServerMenuBlock doubleButtonSensorMenu;
-    private final MenuBlock.StaticMenuBlock buttonSendSignalValueMenu;
-    private final MenuBlock.StaticMenuBlock buttonEndpointValueMenu;
-    private final MenuBlock.StaticMenuBlock buttonEndpointGetterValueMenu;
+    private final MenuBlock.StaticMenuBlock<ButtonFireSignal> buttonSendSignalValueMenu;
+    private final MenuBlock.StaticMenuBlock<ButtonEndpoint> buttonEndpointValueMenu;
+    private final MenuBlock.StaticMenuBlock<ButtonEndpointGetter> buttonEndpointGetterValueMenu;
 
     private final Scratch3Block turnOnOfButtonCommand;
     private final Scratch3Block turnOnOf2XButtonCommand;
@@ -57,17 +60,18 @@ final class Scratch3ZigBeeButtonsBlocks {
         this.buttonSensorMenu = MenuBlock.ofServer("buttonSensorMenu", ZIGBEE__BASE_URL + "buttons", "Button Sensor", "-", ZclOnOffCluster.CLUSTER_ID);
         this.doubleButtonSensorMenu = MenuBlock.ofServer("doubleButtonSensorMenu", ZIGBEE__BASE_URL + "doubleButtons", "Button Sensor", "-");
 
-        this.buttonSendSignalValueMenu = MenuBlock.ofStatic("buttonSendSignalValueMenu", ButtonFireSignal.class);
-        this.buttonEndpointValueMenu = MenuBlock.ofStatic("buttonEndpointValueMenu", ButtonEndpoint.class);
-        this.buttonEndpointGetterValueMenu = MenuBlock.ofStatic("buttonEndpointGetterValueMenu", ButtonEndpointGetter.class);
+        this.buttonSendSignalValueMenu = MenuBlock.ofStatic("buttonSendSignalValueMenu", ButtonFireSignal.class, ButtonFireSignal.on);
+        this.buttonEndpointValueMenu = MenuBlock.ofStatic("buttonEndpointValueMenu", ButtonEndpoint.class, ButtonEndpoint.Left);
+        this.buttonEndpointGetterValueMenu = MenuBlock.ofStatic("buttonEndpointGetterValueMenu", ButtonEndpointGetter.class, ButtonEndpointGetter.Left);
 
         this.buttonStatus = Scratch3Block.ofEvaluate(70, "button_value", BlockType.reporter, "button value [BUTTON_SENSOR]", this::buttonStatusEvaluate, Scratch3ZigbeeBlock.class);
-        this.buttonStatus.addArgumentServerSelection(BUTTON_SENSOR, this.buttonSensorMenu);
+        this.buttonStatus.addArgument(BUTTON_SENSOR, this.buttonSensorMenu);
         this.buttonStatus.overrideColor("#853139");
         this.buttonStatus.addZigBeeEventHandler((ieeeAddress, endpointRef, consumer) -> zigBeeDeviceUpdateValueListener.addModelIdentifierListener("lumi.remote", consumer));
         this.buttonStatus.allowLinkBoolean((varId, workspaceBlock) -> {
             ZigBeeDeviceEntity zigBeeDevice = getZigBeeDevice(workspaceBlock, BUTTON_SENSOR, buttonSensorMenu);
-            allowButtonLinkBoolean(zigBeeDeviceUpdateValueListener, varId, workspaceBlock, zigBeeDevice.getIeeeAddress(), null);
+            allowButtonLinkBoolean(zigBeeDeviceUpdateValueListener, varId, workspaceBlock, zigBeeDevice.getIeeeAddress(),
+                    null, null);
         });
         this.buttonStatus.setZigBeeLinkGenerator((endpoint, zigBeeDevice, varGroup, varName) ->
                 this.buttonStatus.codeGenerator("zigbee")
@@ -75,15 +79,15 @@ final class Scratch3ZigBeeButtonsBlocks {
                         .generateBooleanLink(varGroup, varName, entityContext), ZclOnOffCluster.CLUSTER_ID, 1);
 
         this.turnOnOfButtonCommand = Scratch3Block.ofHandler(90, "button_turn_on_off_button", BlockType.command, "turn [BUTTON_SIGNAL] button [BUTTON_SENSOR]", this::turnOnOffButtonHandler);
-        this.turnOnOfButtonCommand.addArgumentServerSelection(BUTTON_SENSOR, this.buttonSensorMenu);
-        this.turnOnOfButtonCommand.addArgument(BUTTON_SIGNAL, ArgumentType.string, ButtonFireSignal.on, this.buttonSendSignalValueMenu);
+        this.turnOnOfButtonCommand.addArgument(BUTTON_SENSOR, this.buttonSensorMenu);
+        this.turnOnOfButtonCommand.addArgument(BUTTON_SIGNAL, this.buttonSendSignalValueMenu);
         this.turnOnOfButtonCommand.appendSpace();
         this.turnOnOfButtonCommand.overrideColor("#853139");
 
         this.button2XStatus = Scratch3Block.ofEvaluate(100, "double_button_value", BlockType.reporter,
                 "button [BUTTON_ENDPOINT] value [DOUBLE_BUTTON_SENSOR]", this::doubleButtonStatusEvaluate, Scratch3ZigbeeBlock.class);
-        this.button2XStatus.addArgumentServerSelection(DOUBLE_BUTTON_SENSOR, this.doubleButtonSensorMenu);
-        this.button2XStatus.addArgument(BUTTON_ENDPOINT, ArgumentType.string, ButtonEndpoint.Left, this.buttonEndpointGetterValueMenu);
+        this.button2XStatus.addArgument(DOUBLE_BUTTON_SENSOR, this.doubleButtonSensorMenu);
+        this.button2XStatus.addArgument(BUTTON_ENDPOINT, this.buttonEndpointGetterValueMenu);
         this.button2XStatus.overrideColor("#A70F1D");
         this.button2XStatus.addZigBeeEventHandler((ieeeAddress, endpointRef, consumer) -> {
             ButtonEndpointGetter buttonEndpoint = ButtonEndpointGetter.valueOf(endpointRef);
@@ -92,8 +96,9 @@ final class Scratch3ZigBeeButtonsBlocks {
         // add link boolean value
         this.button2XStatus.allowLinkBoolean((varId, workspaceBlock) -> {
             ZigBeeDeviceEntity zigBeeDevice = getZigBeeDevice(workspaceBlock, DOUBLE_BUTTON_SENSOR, doubleButtonSensorMenu);
-            ButtonEndpoint buttonEndpoint = workspaceBlock.getMenuValue(BUTTON_ENDPOINT, this.buttonEndpointGetterValueMenu, ButtonEndpoint.class);
-            allowButtonLinkBoolean(zigBeeDeviceUpdateValueListener, varId, workspaceBlock, zigBeeDevice.getIeeeAddress(), buttonEndpoint);
+            ButtonEndpointGetter buttonEndpointGetter = workspaceBlock.getMenuValue(BUTTON_ENDPOINT, this.buttonEndpointGetterValueMenu);
+            allowButtonLinkBoolean(zigBeeDeviceUpdateValueListener, varId, workspaceBlock, zigBeeDevice.getIeeeAddress(),
+                    buttonEndpointGetter.value, buttonEndpointGetter.name());
         });
         this.button2XStatus.setZigBeeLinkGenerator((endpoint, zigBeeDevice, varGroup, varName) ->
                 this.button2XStatus.codeGenerator("zigbee")
@@ -103,9 +108,9 @@ final class Scratch3ZigBeeButtonsBlocks {
 
         this.turnOnOf2XButtonCommand = Scratch3Block.ofHandler(110, "double_button_turn_on_off_button",
                 BlockType.command, "turn [BUTTON_SIGNAL] [BUTTON_ENDPOINT] button [DOUBLE_BUTTON_SENSOR]", this::turnOnOffDoubleButtonHandler);
-        this.turnOnOf2XButtonCommand.addArgumentServerSelection(DOUBLE_BUTTON_SENSOR, this.doubleButtonSensorMenu);
-        this.turnOnOf2XButtonCommand.addArgument(BUTTON_SIGNAL, ArgumentType.string, ButtonFireSignal.on, this.buttonSendSignalValueMenu);
-        this.turnOnOf2XButtonCommand.addArgument(BUTTON_ENDPOINT, ArgumentType.string, ButtonEndpoint.Left, this.buttonEndpointValueMenu);
+        this.turnOnOf2XButtonCommand.addArgument(DOUBLE_BUTTON_SENSOR, this.doubleButtonSensorMenu);
+        this.turnOnOf2XButtonCommand.addArgument(BUTTON_SIGNAL, this.buttonSendSignalValueMenu);
+        this.turnOnOf2XButtonCommand.addArgument(BUTTON_ENDPOINT, this.buttonEndpointValueMenu);
         this.turnOnOf2XButtonCommand.appendSpace();
         this.turnOnOf2XButtonCommand.overrideColor("#A70F1D");
 
@@ -122,14 +127,14 @@ final class Scratch3ZigBeeButtonsBlocks {
     private void turnOnOffDoubleButtonHandler(WorkspaceBlock workspaceBlock) {
         ZigBeeDeviceEntity zigBeeDeviceEntity = getZigBeeDevice(workspaceBlock, DOUBLE_BUTTON_SENSOR, doubleButtonSensorMenu);
         ButtonFireSignal buttonSignal = getButtonFireSignal(workspaceBlock);
-        ButtonEndpoint buttonEndpoint = workspaceBlock.getMenuValue(BUTTON_ENDPOINT, this.buttonEndpointValueMenu, ButtonEndpoint.class);
-        switchButton(workspaceBlock, buttonSignal, zigBeeDeviceEntity, buttonEndpoint);
+        ButtonEndpoint buttonEndpoint = workspaceBlock.getMenuValue(BUTTON_ENDPOINT, this.buttonEndpointValueMenu);
+        switchButton(workspaceBlock, buttonSignal, zigBeeDeviceEntity, buttonEndpoint.value);
     }
 
     private ButtonFireSignal getButtonFireSignal(WorkspaceBlock workspaceBlock) {
         ButtonFireSignal buttonSignal;
         try {
-            buttonSignal = workspaceBlock.getMenuValue(BUTTON_SIGNAL, this.buttonSendSignalValueMenu, ButtonFireSignal.class);
+            buttonSignal = workspaceBlock.getMenuValue(BUTTON_SIGNAL, this.buttonSendSignalValueMenu);
         } catch (Exception ex) {
             buttonSignal = workspaceBlock.getInputBoolean(BUTTON_SIGNAL) ? ButtonFireSignal.on : ButtonFireSignal.off;
         }
@@ -137,7 +142,8 @@ final class Scratch3ZigBeeButtonsBlocks {
     }
 
     @SneakyThrows
-    private void switchButton(WorkspaceBlock workspaceBlock, ButtonFireSignal buttonFireSignal, ZigBeeDeviceEntity zigBeeDeviceEntity, ButtonEndpoint buttonEndpoint) {
+    private void switchButton(WorkspaceBlock workspaceBlock, ButtonFireSignal buttonFireSignal,
+                              ZigBeeDeviceEntity zigBeeDeviceEntity, Integer buttonEndpointValue) {
         ZclOnOffCommand zclOnOffCommand = buttonFireSignal.zclOnOffCommand.newInstance();
         workspaceBlock.logInfo("Switch button {}", zclOnOffCommand.getClass().getSimpleName());
         ZigBeeNodeDescription zigBeeNodeDescription = zigBeeDeviceEntity.getZigBeeNodeDescription();
@@ -155,8 +161,8 @@ final class Scratch3ZigBeeButtonsBlocks {
 
         if (onOffChannels.isEmpty()) {
             workspaceBlock.logErrorAndThrow("Unable to find channel with On/Off ability for device: " + zigBeeDeviceEntity);
-        } else if (buttonEndpoint != null && buttonEndpoint.value != null) {
-            onOffChannels = onOffChannels.stream().filter(c -> c.getChannelUUID().getEndpointId().equals(buttonEndpoint.value)).collect(Collectors.toList());
+        } else if (buttonEndpointValue != null) {
+            onOffChannels = onOffChannels.stream().filter(c -> c.getChannelUUID().getEndpointId().equals(buttonEndpointValue)).collect(Collectors.toList());
         }
 
         if (onOffChannels.isEmpty()) {
@@ -216,10 +222,12 @@ final class Scratch3ZigBeeButtonsBlocks {
         }, false);
     }
 
-    private void allowButtonLinkBoolean(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener, String varId, WorkspaceBlock workspaceBlock, String ieeeAddress, ButtonEndpoint buttonEndpoint) {
-        ZigBeeDeviceStateUUID zigBeeDeviceStateUUID = ZigBeeDeviceStateUUID.require(ieeeAddress, ZclOnOffCluster.CLUSTER_ID, buttonEndpoint == null ? null : buttonEndpoint.value, null);
+    private void allowButtonLinkBoolean(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener, String varId,
+                                        WorkspaceBlock workspaceBlock, String ieeeAddress, Integer buttonEndpointValue,
+                                        String buttonEndpointName) {
+        ZigBeeDeviceStateUUID zigBeeDeviceStateUUID = ZigBeeDeviceStateUUID.require(ieeeAddress, ZclOnOffCluster.CLUSTER_ID, buttonEndpointValue, null);
         // listen from device and write to variable
-        zigBeeDeviceUpdateValueListener.addLinkListener(zigBeeDeviceStateUUID, varId, "On/Off" + (buttonEndpoint == null ? "" : " " + buttonEndpoint.name()), state -> {
+        zigBeeDeviceUpdateValueListener.addLinkListener(zigBeeDeviceStateUUID, varId, "On/Off" + buttonEndpointName, state -> {
             WorkspaceBooleanEntity workspaceBooleanEntity = workspaceBlock.getEntityContext().getEntity(WorkspaceBooleanEntity.PREFIX + varId);
             if (workspaceBooleanEntity.getValue() != state.getState().boolValue()) {
                 workspaceBlock.getEntityContext().save(workspaceBooleanEntity.inverseValue());
@@ -230,7 +238,7 @@ final class Scratch3ZigBeeButtonsBlocks {
             Boolean val = workspaceBooleanEntity.getValue();
             ScratchDeviceState deviceState = zigBeeDeviceUpdateValueListener.getDeviceState(zigBeeDeviceStateUUID);
             if (deviceState == null || deviceState.getState().boolValue() != val) {
-                switchButton(workspaceBlock, ButtonFireSignal.of(val), getZigBeeDevice(workspaceBlock, ieeeAddress), buttonEndpoint);
+                switchButton(workspaceBlock, ButtonFireSignal.of(val), getZigBeeDevice(workspaceBlock, ieeeAddress), buttonEndpointValue);
             }
         });
     }

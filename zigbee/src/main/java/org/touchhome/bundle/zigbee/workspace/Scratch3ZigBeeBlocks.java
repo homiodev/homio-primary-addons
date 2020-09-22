@@ -79,7 +79,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigbeeExtensionBlocks {
 
     static void linkVariable(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
                              String varId, String description, WorkspaceBlock workspaceBlock, String key, MenuBlock.ServerMenuBlock menuBlock, Integer clusterID, String clusterName) {
-        String ieeeAddress = workspaceBlock.getMenuValue(key, menuBlock, String.class);
+        String ieeeAddress = workspaceBlock.getMenuValue(key, menuBlock);
         ZigBeeDeviceStateUUID zigBeeDeviceStateUUID = ZigBeeDeviceStateUUID.require(ieeeAddress, clusterID, null, clusterName);
         // listen from device and write to variable
         zigBeeDeviceUpdateValueListener.addLinkListener(zigBeeDeviceStateUUID, varId, description, state -> {
@@ -90,15 +90,20 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigbeeExtensionBlocks {
         });
     }
 
-    static ScratchDeviceState fetchValueFromDevice(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener, WorkspaceBlock workspaceBlock, Integer clusterID, String clusterName, String sensor, MenuBlock menuBlock) {
+    static ScratchDeviceState fetchValueFromDevice(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
+                                                   WorkspaceBlock workspaceBlock, Integer clusterID, String clusterName,
+                                                   String sensor, MenuBlock.ServerMenuBlock menuBlock) {
         return fetchValueFromDevice(zigBeeDeviceUpdateValueListener, workspaceBlock, new Integer[]{clusterID}, clusterName, sensor, menuBlock);
     }
 
-    static ScratchDeviceState fetchValueFromDevice(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener, WorkspaceBlock workspaceBlock, Integer[] clusters, String sensor, MenuBlock menuBlock) {
+    static ScratchDeviceState fetchValueFromDevice(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
+                                                   WorkspaceBlock workspaceBlock, Integer[] clusters, String sensor, MenuBlock.ServerMenuBlock menuBlock) {
         return fetchValueFromDevice(zigBeeDeviceUpdateValueListener, workspaceBlock, clusters, null, sensor, menuBlock);
     }
 
-    static ScratchDeviceState fetchValueFromDevice(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener, WorkspaceBlock workspaceBlock, Integer[] clusters, String clusterName, String sensor, MenuBlock menuBlock) {
+    static ScratchDeviceState fetchValueFromDevice(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
+                                                   WorkspaceBlock workspaceBlock, Integer[] clusters, String clusterName,
+                                                   String sensor, MenuBlock.ServerMenuBlock menuBlock) {
         ZigBeeDeviceEntity zigBeeDeviceEntity = getZigBeeDevice(workspaceBlock, sensor, menuBlock);
         for (Integer clusterId : clusters) {
             ScratchDeviceState deviceState = zigBeeDeviceUpdateValueListener.getDeviceState(ZigBeeDeviceStateUUID.require(zigBeeDeviceEntity.getIeeeAddress(), clusterId, null, clusterName));
@@ -132,8 +137,8 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigbeeExtensionBlocks {
         return scratchDeviceState == null ? 0 : scratchDeviceState.getState().intValue();
     }
 
-    static ZigBeeDeviceEntity getZigBeeDevice(WorkspaceBlock workspaceBlock, String key, MenuBlock menuBlock) {
-        return getZigBeeDevice(workspaceBlock, workspaceBlock.getMenuValue(key, menuBlock, String.class));
+    static ZigBeeDeviceEntity getZigBeeDevice(WorkspaceBlock workspaceBlock, String key, MenuBlock.ServerMenuBlock menuBlock) {
+        return getZigBeeDevice(workspaceBlock, workspaceBlock.getMenuValue(key, menuBlock));
     }
 
     static ZigBeeDeviceEntity getZigBeeDevice(WorkspaceBlock workspaceBlock, String ieeeAddress) {
@@ -211,7 +216,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigbeeExtensionBlocks {
         Integer[] clusters = ((MenuBlock.ServerMenuBlock) menuBlock.getValue()).getClusters();
 
         ScratchDeviceState scratchDeviceState = fetchValueFromDevice(zigBeeDeviceUpdateValueListener,
-                workspaceEventBlock, clusters, menuBlock.getKey(), menuBlock.getValue());
+                workspaceEventBlock, clusters, menuBlock.getKey(), (MenuBlock.ServerMenuBlock) menuBlock.getValue());
         if (scratchDeviceState != null) {
             return (System.currentTimeMillis() - scratchDeviceState.getDate()) / 1000;
         }

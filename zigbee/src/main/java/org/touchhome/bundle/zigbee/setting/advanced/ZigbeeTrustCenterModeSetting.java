@@ -22,7 +22,7 @@ public class ZigbeeTrustCenterModeSetting implements BundleSettingPlugin<TrustCe
 
     @Override
     public List<Option> loadAvailableValues(EntityContext entityContext) {
-        return Option.listWithEmpty(TrustCentreJoinMode.class);
+        return Option.enumWithEmpty(TrustCentreJoinMode.class);
     }
 
     @Override

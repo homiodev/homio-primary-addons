@@ -9,7 +9,7 @@ deploy:
     skip_cleanup: true
     user: $BINTRAY_USER
     key:  $BINTRAY_KEY
-    file: 'arduino/target/bintray.json'
+    file: 'firmata/target/bintray.json'
     on:
       tags: true
   - provider: bintray

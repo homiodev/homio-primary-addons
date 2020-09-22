@@ -5,11 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.measure.State;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.util.NotificationType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
-import org.touchhome.bundle.zigbee.model.State;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.requireEndpoint.RequireEndpoint;
 import org.touchhome.bundle.zigbee.requireEndpoint.ZigbeeRequireEndpoints;
@@ -268,10 +267,8 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         if (this.zigBeeNodeDescription.getDeviceStatus() != deviceStatus) {
             this.zigBeeNodeDescription.setDeviceStatus(deviceStatus);
             this.zigBeeNodeDescription.setDeviceStatusMessage(deviceStatusMessage);
-            this.discoveryService.getEntityContext().sendNotification(
-                    "Zigbee device status",
-                    this.nodeIeeeAddress.toString() + " - " + deviceStatus,
-                    NotificationType.info);
+            this.discoveryService.getEntityContext().sendInfoMessage(
+                    "Zigbee device status", this.nodeIeeeAddress.toString() + " - " + deviceStatus);
         }
     }
 

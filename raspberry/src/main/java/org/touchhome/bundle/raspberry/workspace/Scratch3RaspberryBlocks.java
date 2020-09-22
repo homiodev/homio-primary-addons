@@ -6,7 +6,7 @@ import com.pi4j.io.gpio.PinState;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.HighLow;
+import org.touchhome.bundle.api.measure.OnOffType;
 import org.touchhome.bundle.api.model.workspace.bool.WorkspaceBooleanEntity;
 import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
@@ -21,12 +21,13 @@ import java.util.function.Consumer;
 @Component
 public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
 
-    private final MenuBlock hiloMenu;
-    private final MenuBlock.ServerMenuBlock rpiIdMenu;
-    private final MenuBlock.StaticMenuBlock allPinMenu;
+    private final MenuBlock.StaticMenuBlock<OnOffType> onOffMenu;
+    private final MenuBlock.StaticMenuBlock<RaspberryGpioPin> allPinMenu;
     private final MenuBlock.StaticMenuBlock pwmPinMenu;
-    private final MenuBlock pullMenu;
-    private final MenuBlock ds18b20Menu;
+    private final MenuBlock.StaticMenuBlock<PinPullResistance> pullMenu;
+
+    private final MenuBlock.ServerMenuBlock rpiIdMenu;
+    private final MenuBlock.ServerMenuBlock ds18b20Menu;
 
     private final Scratch3Block isGpioInState;
     private final Scratch3Block writePin;
@@ -43,36 +44,26 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
         this.raspberryGPIOService = raspberryGPIOService;
         this.broadcastLockManager = broadcastLockManager;
 
-        this.allPinMenu = MenuBlock.ofStatic("allPinMenu", RaspberryGpioPin.class, p ->
+        this.allPinMenu = MenuBlock.ofStatic("allPinMenu", RaspberryGpioPin.class, RaspberryGpioPin.PIN3, p ->
                 p.getPin().getSupportedPinModes().contains(PinMode.DIGITAL_INPUT));
-        this.pwmPinMenu = MenuBlock.ofStatic("pwmPinMenu", RaspberryGpioPin.class, p -> p.name().equals("PIN12") || p.name().equals("PIN33"));
+        this.pwmPinMenu = MenuBlock.ofStatic("pwmPinMenu", RaspberryGpioPin.class, RaspberryGpioPin.PIN12, p -> p.name().equals("PIN12") || p.name().equals("PIN33"));
 
         this.rpiIdMenu = MenuBlock.ofServer("rpiIdMenu", "rest/item/type/RaspberryDeviceEntity",
                 "Select RPI", "-");
-        this.hiloMenu = MenuBlock.ofStatic("hiloMenu", HighLow.class);
+        this.onOffMenu = MenuBlock.ofStatic("onOffMenu", OnOffType.class, OnOffType.ON);
 
-        this.pullMenu = MenuBlock.ofStatic("pullMenu", PinPullResistance.class);
+        this.pullMenu = MenuBlock.ofStatic("pullMenu", PinPullResistance.class, PinPullResistance.PULL_UP);
 
-        this.ds18b20Menu = MenuBlock.ofServer("ds18b20Menu", "rest/raspberry/DS18B20", "Select DS18B20", "-");
+        this.ds18b20Menu = MenuBlock.ofServer("ds18b20Menu", "rest/raspberry/DS18B20", "-", "-");
 
-        String pin = this.allPinMenu.getFirstValue();
+        this.writePin = of(Scratch3Block.ofHandler(0, "set_gpio", BlockType.command, "Set [ONOFF] to pin [PIN] of [RPI]", this::writePin), this.allPinMenu);
+        this.writePin.addArgument("ONOFF", this.onOffMenu);
 
-        this.writePin = Scratch3Block.ofHandler(0, "set_gpio", BlockType.command, "Set [HILO] to pin [PIN] of [RPI]", this::writePin);
-        this.writePin.addArgument("PIN", ArgumentType.string, pin, this.allPinMenu);
-        this.writePin.addArgument("HIanLO", ArgumentType.string, HighLow.low.name(), this.hiloMenu);
-        this.writePin.addArgumentServerSelection("RPI", this.rpiIdMenu);
+        this.writePwmPin = of(Scratch3Block.ofHandler(0, "set_pwm_gpio", BlockType.command, "Set  pwm [VALUE] to pin [PIN] of [RPI]", this::writePwmPin), this.pwmPinMenu);
+        this.writePwmPin.addArgument("PIN", this.pwmPinMenu);
+        this.writePwmPin.addArgument("VALUE", 255);
 
-        String pwmPin = this.pwmPinMenu.getFirstValue();
-        if (pwmPin != null) {
-            this.writePwmPin = Scratch3Block.ofHandler(0, "set_pwm_gpio", BlockType.command, "Set  pwm [VALUE] to pin [PIN] of [RPI]", this::writePwmPin);
-            this.writePwmPin.addArgument("PIN", ArgumentType.string, pwmPin, this.pwmPinMenu);
-            this.writePwmPin.addArgument("VALUE", ArgumentType.number, "255");
-            this.writePwmPin.addArgumentServerSelection("RPI", this.rpiIdMenu);
-        }
-
-        this.isGpioInState = Scratch3Block.ofEvaluate(2, "get_gpio", BlockType.reporter, "[PIN] of [RPI]", this::isGpioInStateHandler);
-        this.isGpioInState.addArgument("PIN", ArgumentType.string, pin, this.allPinMenu);
-        this.isGpioInState.addArgumentServerSelection("RPI", this.rpiIdMenu);
+        this.isGpioInState = of(Scratch3Block.ofEvaluate(2, "get_gpio", BlockType.reporter, "[PIN] of [RPI]", this::isGpioInStateHandler), this.allPinMenu);
         this.isGpioInState.allowLinkBoolean((varId, workspaceBlock) -> {
             RaspberryGpioPin raspberryGpioPin = getPin(workspaceBlock);
             WorkspaceBooleanEntity workspaceBooleanEntity = workspaceBlock.getEntityContext().getEntity(WorkspaceBooleanEntity.PREFIX + varId);
@@ -92,44 +83,45 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
                         .setMenu(this.rpiIdMenu, parameter.get("entityID"))
                         .generateBooleanLink(varGroup, varName, entityContext));
 
-        this.whenGpioInState = Scratch3Block.ofHandler(3, "when_gpio", BlockType.hat, "when [PIN] of [RPI] is [HILO]", this::whenGpioInState);
-        this.whenGpioInState.addArgument("PIN", ArgumentType.string, pin, this.allPinMenu);
-        this.whenGpioInState.addArgumentServerSelection("RPI", this.rpiIdMenu);
-        this.whenGpioInState.addArgument("HILO", ArgumentType.string, HighLow.low.name(), this.hiloMenu);
+        this.whenGpioInState = of(Scratch3Block.ofHandler(3, "when_gpio", BlockType.hat, "when [PIN] of [RPI] is [ONOFF]", this::whenGpioInState), this.allPinMenu);
+        this.whenGpioInState.addArgument("ONOFF", this.onOffMenu);
 
-        this.set_pull = Scratch3Block.ofHandler(4, "set_pull", BlockType.command, "set [PULL] to [PIN] of [RPI]", this::setPullStateHandler);
-        this.set_pull.addArgument("PIN", ArgumentType.string, pin, this.allPinMenu);
-        this.set_pull.addArgumentServerSelection("RPI", this.rpiIdMenu);
-        this.set_pull.addArgument("PULL", ArgumentType.string, PinPullResistance.PULL_DOWN.name(), this.pullMenu);
+        this.set_pull = of(Scratch3Block.ofHandler(4, "set_pull", BlockType.command, "set [PULL] to [PIN] of [RPI]", this::setPullStateHandler), this.allPinMenu);
+        this.set_pull.addArgument("PULL", this.pullMenu);
 
         this.ds18b20Value = Scratch3Block.ofEvaluate(4, "ds18B20_status", BlockType.reporter, "DS18B20 [DS18B20] of [RPI]", this::getDS18B20ValueHandler);
-        this.ds18b20Value.addArgument("DS18B20", ArgumentType.string, "-", this.ds18b20Menu);
-        this.ds18b20Value.addArgumentServerSelection("RPI", this.rpiIdMenu);
+        this.ds18b20Value.addArgument("DS18B20", this.ds18b20Menu);
+        this.ds18b20Value.addArgument("RPI", this.rpiIdMenu);
 
         this.postConstruct();
     }
 
+    private Scratch3Block of(Scratch3Block scratch3Block, MenuBlock.StaticMenuBlock pinMenu) {
+        scratch3Block.addArgument("PIN", pinMenu);
+        scratch3Block.addArgument("RPI", this.rpiIdMenu);
+        return scratch3Block;
+    }
+
     private Float getDS18B20ValueHandler(WorkspaceBlock workspaceBlock) {
-        String ds18b20Id = workspaceBlock.getMenuValue("DS18B20", ds18b20Menu, String.class);
+        String ds18b20Id = workspaceBlock.getMenuValue("DS18B20", ds18b20Menu);
         return raspberryGPIOService.getDS18B20Value(ds18b20Id);
     }
 
     private void setPullStateHandler(WorkspaceBlock workspaceBlock) {
-        PinPullResistance pullResistance = workspaceBlock.getMenuValue("PULL", pullMenu, PinPullResistance.class);
+        PinPullResistance pullResistance = workspaceBlock.getMenuValue("PULL", pullMenu);
         RaspberryGpioPin pin = getPin(workspaceBlock);
 
         raspberryGPIOService.setPullResistance(pin, pullResistance);
     }
 
     private void whenGpioInState(WorkspaceBlock workspaceBlock) {
-        if (workspaceBlock.hasNext()) {
-            RaspberryGpioPin pin = getPin(workspaceBlock);
-            HighLow state = getHighLow(workspaceBlock);
-            BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
-            raspberryGPIOService.addGpioListener(workspaceBlock.getId(), pin, state.getPinState(), lock::signalAll);
+        workspaceBlock.getNextOrThrow();
+        RaspberryGpioPin pin = getPin(workspaceBlock);
+        PinState state = getHighLow(workspaceBlock);
+        BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
+        raspberryGPIOService.addGpioListener(workspaceBlock.getId(), pin, state, lock::signalAll);
 
-            workspaceBlock.subscribeToLock(lock);
-        }
+        workspaceBlock.subscribeToLock(lock);
     }
 
     private boolean isGpioInStateHandler(WorkspaceBlock workspaceBlock) {
@@ -145,15 +137,15 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
 
     private void writePin(WorkspaceBlock workspaceBlock) {
         RaspberryGpioPin pin = getPin(workspaceBlock);
-        HighLow state = getHighLow(workspaceBlock);
-        raspberryGPIOService.setValue(pin, state.getPinState());
+        PinState state = getHighLow(workspaceBlock);
+        raspberryGPIOService.setValue(pin, state);
     }
 
-    private HighLow getHighLow(WorkspaceBlock workspaceBlock) {
-        return workspaceBlock.getMenuValue("HILO", this.hiloMenu, HighLow.class);
+    private PinState getHighLow(WorkspaceBlock workspaceBlock) {
+        return workspaceBlock.getMenuValue("ONOFF", this.onOffMenu) == OnOffType.ON ? PinState.HIGH : PinState.LOW;
     }
 
     private RaspberryGpioPin getPin(WorkspaceBlock workspaceBlock) {
-        return workspaceBlock.getMenuValue("PIN", allPinMenu, RaspberryGpioPin.class);
+        return workspaceBlock.getMenuValue("PIN", allPinMenu);
     }
 }

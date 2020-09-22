@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.model.DeviceBaseEntity;
-import org.touchhome.bundle.api.ui.UISidebarMenu;
+import org.touchhome.bundle.api.model.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldExpand;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
@@ -18,10 +17,10 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
-@UISidebarMenu(icon = "fab fa-raspberry-pi", parent = UISidebarMenu.TopSidebarMenu.HARDWARE, bg = "#c4d24f")
-public class RaspberryDeviceEntity extends DeviceBaseEntity<RaspberryDeviceEntity> {
+public class RaspberryDeviceEntity extends MicroControllerBaseEntity<RaspberryDeviceEntity> {
 
     public static final String DEFAULT_DEVICE_ENTITY_ID = RaspberryDeviceRepository.PREFIX + "LocalRaspberry";
+
     @Getter
     @Setter
     @Transient

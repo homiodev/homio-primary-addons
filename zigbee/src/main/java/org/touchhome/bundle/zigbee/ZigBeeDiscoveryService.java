@@ -86,7 +86,7 @@ class ZigBeeDiscoveryService {
         coordinatorHandlers.scanStart(duration);
 
         NotificationEntityJSON zigbeeScanEntity = new NotificationEntityJSON("zigbee-scan").setName("zigbee.start_scan");
-        this.entityContext.showAlwaysOnViewNotification(zigbeeScanEntity, duration, "#e65100");
+        this.entityContext.showAlwaysOnViewNotification(zigbeeScanEntity, duration, "#e65100", null);
 
         scheduler.schedule(() -> {
             log.info("Scanning stopped");

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePlugin;
+import org.touchhome.bundle.api.measure.State;
 import org.touchhome.bundle.api.model.BaseEntity;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
 import org.touchhome.bundle.api.model.Status;
@@ -17,7 +18,6 @@ import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.ui.method.UIMethodAction;
-import org.touchhome.bundle.zigbee.model.State;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.setting.ZigbeeDiscoveryButtonSetting;
 import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
@@ -107,34 +107,39 @@ public class ZigBeeConsolePlugin implements ConsolePlugin {
 
         private String entityID;
 
-        @UIMethodAction(name = "ACTION.INITIALIZE_ZIGBEE_NODE")
+        @UIMethodAction("ACTION.INITIALIZE_ZIGBEE_NODE")
         public String initializeZigbeeNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
             return zigBeeDeviceEntity.initializeZigbeeNode();
         }
 
-        @UIMethodAction(name = "ACTION.SHOW_NODE_DESCRIPTION", responseAction = UIMethodAction.ResponseAction.ShowJson)
+        @UIMethodAction(value = "ACTION.SHOW_NODE_DESCRIPTION", responseAction = UIMethodAction.ResponseAction.ShowJson)
         public ZigBeeNodeDescription showNodeDescription(ZigBeeDeviceEntity zigBeeDeviceEntity) {
             return zigBeeDeviceEntity.getZigBeeNodeDescription();
         }
 
-        @UIMethodAction(name = "ACTION.SHOW_LAST_VALUES", responseAction = UIMethodAction.ResponseAction.ShowJson)
+        @UIMethodAction(value = "ACTION.SHOW_LAST_VALUES", responseAction = UIMethodAction.ResponseAction.ShowJson)
         public Map<ZigBeeDeviceStateUUID, State> showLastValues(ZigBeeDeviceEntity zigBeeDeviceEntity, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
             return zigBeeDeviceEntity.showLastValues(zigBeeDeviceEntity, zigBeeDeviceUpdateValueListener);
         }
 
-        @UIMethodAction(name = "ACTION.REDISCOVERY")
+        @UIMethodAction("ACTION.REDISCOVERY")
         public String rediscoveryNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
             return zigBeeDeviceEntity.rediscoveryNode();
         }
 
-        @UIMethodAction(name = "ACTION.PERMIT_JOIN")
+        @UIMethodAction("ACTION.PERMIT_JOIN")
         public String permitJoin(ZigBeeDeviceEntity zigBeeDeviceEntity, EntityContext entityContext) {
             return zigBeeDeviceEntity.permitJoin(entityContext);
         }
 
-        @UIMethodAction(name = "ACTION.ZIGBEE_PULL_CHANNELS")
+        @UIMethodAction("ACTION.ZIGBEE_PULL_CHANNELS")
         public String pullChannels(ZigBeeDeviceEntity zigBeeDeviceEntity) {
             return zigBeeDeviceEntity.pullChannels();
+        }
+
+        @Override
+        public Integer getId() {
+            return 0;
         }
     }
 }

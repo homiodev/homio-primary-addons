@@ -4,6 +4,7 @@ import com.zsmartsystems.zigbee.zcl.clusters.*;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.measure.OnOffType;
 import org.touchhome.bundle.api.scratch.BlockType;
 import org.touchhome.bundle.api.scratch.MenuBlock;
 import org.touchhome.bundle.api.scratch.Scratch3Block;
@@ -15,7 +16,6 @@ import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasFireIndicator;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasWaterSensor;
-import org.touchhome.bundle.zigbee.model.OnOffType;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.setting.ZigbeeCoordinatorHandlerSetting;
 import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
@@ -85,52 +85,51 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigbeeExtensionBlocks {
         this.humiditySensorMenu = MenuBlock.ofServer("humiditySensorMenu", ZIGBEE_CLUSTER_ID_URL + ZclRelativeHumidityMeasurementCluster.CLUSTER_ID, "Humidity Sensor", "-", ZclRelativeHumidityMeasurementCluster.CLUSTER_ID);
 
         // illuminance sensor
-        this.illuminanceValue = Scratch3Block.ofEvaluate(10, "illuminance_value", BlockType.reporter, "illuminance [ILLUMINANCE_SENSOR]", this::illuminanceValueEvaluate, Scratch3ZigbeeBlock.class);
-        this.illuminanceValue.addArgumentServerSelection(ILLUMINANCE_SENSOR, illuminanceSensorMenu);
+        this.illuminanceValue = of(Scratch3Block.ofEvaluate(10, "illuminance_value", BlockType.reporter,
+                "illuminance [ILLUMINANCE_SENSOR]", this::illuminanceValueEvaluate, Scratch3ZigbeeBlock.class), "#802F59");
+        this.illuminanceValue.addArgument(ILLUMINANCE_SENSOR, illuminanceSensorMenu);
         this.illuminanceValue.setDefaultLinkFloatHandler(entityContext, zigBeeDeviceUpdateValueListener,
                 "Illuminance", ILLUMINANCE_SENSOR, illuminanceSensorMenu, ZclIlluminanceMeasurementCluster.CLUSTER_ID,
                 null, "zigbee-sensor");
-        this.illuminanceValue.overrideColor("#802F59");
 
         // motion sensor
-        this.motionDetected = Scratch3Block.ofEvaluate(20, "motion_value", BlockType.reporter, "motion detected [OCCUPANCY_SENSOR]", this::motionDetectedEvaluate, Scratch3ZigbeeBlock.class);
-        this.motionDetected.addArgumentServerSelection(OCCUPANCY_SENSOR, occupancySensorMenu);
+        this.motionDetected = of(Scratch3Block.ofEvaluate(20, "motion_value", BlockType.reporter,
+                "motion detected [OCCUPANCY_SENSOR]", this::motionDetectedEvaluate, Scratch3ZigbeeBlock.class), "#802F59");
+        this.motionDetected.addArgument(OCCUPANCY_SENSOR, occupancySensorMenu);
         this.motionDetected.setDefaultLinkFloatHandler(entityContext, zigBeeDeviceUpdateValueListener,
                 "Occupancy", OCCUPANCY_SENSOR, occupancySensorMenu, ZclOccupancySensingCluster.CLUSTER_ID,
                 null, "zigbee-sensor");
-        this.motionDetected.overrideColor("#802F59");
         this.motionDetected.appendSpace();
 
         // temperature sensor
-        this.temperatureValue = Scratch3Block.ofEvaluate(30, "temperature_value", BlockType.reporter, "temperature value [TEMPERATURE_SENSOR]", this::temperatureValueEvaluate, Scratch3ZigbeeBlock.class);
-        this.temperatureValue.addArgumentServerSelection(TEMPERATURE_SENSOR, temperatureSensorMenu);
+        this.temperatureValue = of(Scratch3Block.ofEvaluate(30, "temperature_value", BlockType.reporter,
+                "temperature value [TEMPERATURE_SENSOR]", this::temperatureValueEvaluate, Scratch3ZigbeeBlock.class), "#633582");
+        this.temperatureValue.addArgument(TEMPERATURE_SENSOR, temperatureSensorMenu);
         this.temperatureValue.setDefaultLinkFloatHandler(entityContext, zigBeeDeviceUpdateValueListener,
                 "Temperature", TEMPERATURE_SENSOR, temperatureSensorMenu, ZclTemperatureMeasurementCluster.CLUSTER_ID,
                 null, "zigbee-sensor");
-        this.temperatureValue.overrideColor("#633582");
 
         // pressure sensor
-        this.pressureValue = Scratch3Block.ofEvaluate(50, "pressure_value", BlockType.reporter, "pressure value[PRESSURE_SENSOR]", this::pressureValueEvaluate, Scratch3ZigbeeBlock.class);
-        this.pressureValue.addArgumentServerSelection(PRESSURE_SENSOR, pressureSensorMenu);
+        this.pressureValue = of(Scratch3Block.ofEvaluate(50, "pressure_value", BlockType.reporter,
+                "pressure value[PRESSURE_SENSOR]", this::pressureValueEvaluate, Scratch3ZigbeeBlock.class), "#633582");
+        this.pressureValue.addArgument(PRESSURE_SENSOR, pressureSensorMenu);
         this.pressureValue.setDefaultLinkFloatHandler(entityContext, zigBeeDeviceUpdateValueListener,
                 "Pressure", PRESSURE_SENSOR, pressureSensorMenu, ZclPressureMeasurementCluster.CLUSTER_ID,
                 null, "zigbee-sensor");
-        this.pressureValue.overrideColor("#633582");
 
         // humidity sensor
-        this.humidityValue = Scratch3Block.ofEvaluate(60, "humidity_value", BlockType.reporter, "humidity value [HUMIDITY_SENSOR]", this::humidityValueEvaluate, Scratch3ZigbeeBlock.class);
-        this.humidityValue.addArgumentServerSelection(HUMIDITY_SENSOR, humiditySensorMenu);
+        this.humidityValue = of(Scratch3Block.ofEvaluate(60, "humidity_value", BlockType.reporter,
+                "humidity value [HUMIDITY_SENSOR]", this::humidityValueEvaluate, Scratch3ZigbeeBlock.class), "#633582");
+        this.humidityValue.addArgument(HUMIDITY_SENSOR, humiditySensorMenu);
         this.humidityValue.setDefaultLinkFloatHandler(entityContext, zigBeeDeviceUpdateValueListener,
                 "Humidity", HUMIDITY_SENSOR, humiditySensorMenu, ZclRelativeHumidityMeasurementCluster.CLUSTER_ID,
                 null, "zigbee-sensor");
-
-        this.humidityValue.overrideColor("#633582");
         this.humidityValue.appendSpace();
 
         // smoke sensor
         this.smokeSensorValue = Scratch3Block.ofEvaluate(70, "smoke_sensor_value", BlockType.reporter,
                 "Smoke sensor [SMOKE_SENSOR]", this::smokeSensorValueEval, Scratch3ZigbeeBlock.class);
-        this.smokeSensorValue.addArgumentServerSelection(SMOKE_SENSOR, this.smokeSensorMenu);
+        this.smokeSensorValue.addArgument(SMOKE_SENSOR, this.smokeSensorMenu);
         this.smokeSensorValue.setDefaultLinkBooleanHandler(entityContext, zigBeeDeviceUpdateValueListener,
                 "Smoke sensor", SMOKE_SENSOR, smokeSensorMenu, ZclIasZoneCluster.CLUSTER_ID,
                 ZigBeeConverterIasFireIndicator.CLUSTER_NAME, "zigbee-sensor");
@@ -138,34 +137,33 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigbeeExtensionBlocks {
         // water sensor
         this.waterSensorValue = Scratch3Block.ofEvaluate(80, "water_sensor_value", BlockType.reporter,
                 "water sensor [WATER_SENSOR]", this::waterSensorValueEval, Scratch3ZigbeeBlock.class);
-        this.waterSensorValue.addArgumentServerSelection(WATER_SENSOR, this.waterSensorMenu);
+        this.waterSensorValue.addArgument(WATER_SENSOR, this.waterSensorMenu);
         this.waterSensorValue.setDefaultLinkBooleanHandler(entityContext, zigBeeDeviceUpdateValueListener,
                 "Water sensor", WATER_SENSOR, waterSensorMenu, ZclIasZoneCluster.CLUSTER_ID,
                 ZigBeeConverterIasWaterSensor.CLUSTER_NAME, "zigbee-sensor");
 
         this.alarmSensorEvent = Scratch3Block.ofHandler(90, "when_alarm_event_detected", BlockType.hat,
                 "alarm [ALARM_SENSOR] detected", this::whenAlarmEventDetectedHandler);
-        this.alarmSensorEvent.addArgumentServerSelection(ALARM_SENSOR, this.alarmSensorMenu);
+        this.alarmSensorEvent.addArgument(ALARM_SENSOR, this.alarmSensorMenu);
 
         this.postConstruct();
     }
 
     private void whenAlarmEventDetectedHandler(WorkspaceBlock workspaceBlock) {
-        if (workspaceBlock.hasNext()) {
-            String[] keys = workspaceBlock.getMenuValue(ALARM_SENSOR, alarmSensorMenu, String.class).split("/");
-            ZigBeeDeviceEntity zigBeeDevice = getZigBeeDevice(workspaceBlock, keys[0]);
-            String alarmCluster = keys[1];
-            BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
-            ZigBeeDeviceStateUUID zigBeeDeviceStateUUID = ZigBeeDeviceStateUUID.require(zigBeeDevice.getIeeeAddress(),
-                    ZclIasZoneCluster.CLUSTER_ID, null, alarmCluster);
-            this.zigBeeDeviceUpdateValueListener.addListener(zigBeeDeviceStateUUID, deviceState -> {
-                if (deviceState.getState() == OnOffType.ON) {
-                    lock.signalAll();
-                }
-            });
+        workspaceBlock.getNextOrThrow();
+        String[] keys = workspaceBlock.getMenuValue(ALARM_SENSOR, alarmSensorMenu).split("/");
+        ZigBeeDeviceEntity zigBeeDevice = getZigBeeDevice(workspaceBlock, keys[0]);
+        String alarmCluster = keys[1];
+        BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
+        ZigBeeDeviceStateUUID zigBeeDeviceStateUUID = ZigBeeDeviceStateUUID.require(zigBeeDevice.getIeeeAddress(),
+                ZclIasZoneCluster.CLUSTER_ID, null, alarmCluster);
+        this.zigBeeDeviceUpdateValueListener.addListener(zigBeeDeviceStateUUID, deviceState -> {
+            if (deviceState.getState() == OnOffType.ON) {
+                lock.signalAll();
+            }
+        });
 
-            workspaceBlock.subscribeToLock(lock);
-        }
+        workspaceBlock.subscribeToLock(lock);
     }
 
     private Float waterSensorValueEval(WorkspaceBlock workspaceBlock) {
@@ -178,7 +176,7 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigbeeExtensionBlocks {
                 ZclIasZoneCluster.CLUSTER_ID, ZigBeeConverterIasFireIndicator.CLUSTER_NAME, SMOKE_SENSOR, smokeSensorMenu));
     }
 
-    private ScratchDeviceState fetchValueFromDevice(WorkspaceBlock workspaceBlock, int clustersId, String sensor, MenuBlock menuBlock) {
+    private ScratchDeviceState fetchValueFromDevice(WorkspaceBlock workspaceBlock, int clustersId, String sensor, MenuBlock.ServerMenuBlock menuBlock) {
         return Scratch3ZigBeeBlocks.fetchValueFromDevice(zigBeeDeviceUpdateValueListener, workspaceBlock, new Integer[]{clustersId}, sensor, menuBlock);
     }
 

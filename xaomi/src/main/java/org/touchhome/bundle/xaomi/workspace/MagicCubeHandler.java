@@ -4,7 +4,7 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclAnalogInputBasicCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclMultistateInputBasicCluster;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.touchhome.bundle.zigbee.model.State;
+import org.touchhome.bundle.api.measure.State;
 import org.touchhome.bundle.zigbee.workspace.ScratchDeviceState;
 
 import java.util.function.BiPredicate;

@@ -8,8 +8,8 @@ import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneStatusChangeNotificatio
 import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.measure.OnOffType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.model.OnOffType;
 
 import java.util.concurrent.ExecutionException;
 

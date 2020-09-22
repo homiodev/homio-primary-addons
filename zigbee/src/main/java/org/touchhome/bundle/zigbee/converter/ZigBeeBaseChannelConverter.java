@@ -4,12 +4,12 @@ import com.zsmartsystems.zigbee.*;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.measure.DecimalType;
+import org.touchhome.bundle.api.measure.QuantityType;
+import org.touchhome.bundle.api.measure.State;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDevice;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
-import org.touchhome.bundle.zigbee.model.DecimalType;
-import org.touchhome.bundle.zigbee.model.QuantityType;
-import org.touchhome.bundle.zigbee.model.State;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import tec.uom.se.unit.Units;
 

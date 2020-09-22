@@ -52,7 +52,7 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
             }
         });
 
-        this.cubeEventMenu = MenuBlock.ofStatic("cubeEventMenu", MagicCubeEvent.class);
+        this.cubeEventMenu = MenuBlock.ofStatic("cubeEventMenu", MagicCubeEvent.class, MagicCubeEvent.ANY_EVENT);
         this.cubeEventMenu.subMenu(MagicCubeEvent.MOVE, MoveSide.class);
         this.cubeEventMenu.subMenu(MagicCubeEvent.TAP_TWICE, TapSide.class);
 
@@ -60,12 +60,12 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
 
         this.magicCubeEvent = Scratch3Block.ofHandler(1, "when_cube_event", BlockType.hat,
                 "Cube [CUBE_SENSOR] event [EVENT]", this::magicCubeEventHandler);
-        this.magicCubeEvent.addArgumentServerSelection(CUBE_SENSOR, this.cubeSensorMenu);
-        this.magicCubeEvent.addArgument(EVENT, ArgumentType.string, MagicCubeEvent.ANY_EVENT, this.cubeEventMenu);
+        this.magicCubeEvent.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
+        this.magicCubeEvent.addArgument(EVENT, this.cubeEventMenu);
 
         this.magicCubeLastValue = Scratch3Block.ofEvaluate(2, "cube_value", BlockType.reporter, "Cube [CUBE_SENSOR] last value [EVENT]", this::cubeLastValueEvaluate);
-        this.magicCubeLastValue.addArgumentServerSelection(CUBE_SENSOR, this.cubeSensorMenu);
-        this.magicCubeLastValue.addArgument(EVENT, ArgumentType.string, MagicCubeEvent.ANY_EVENT, this.cubeEventMenu);
+        this.magicCubeLastValue.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
+        this.magicCubeLastValue.addArgument(EVENT, this.cubeEventMenu);
 
         this.postConstruct();
 
@@ -84,34 +84,33 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
     }
 
     private void magicCubeEventHandler(WorkspaceBlock workspaceBlock) {
-        if (workspaceBlock.hasNext()) {
-            String expectedMenuValueStr = workspaceBlock.getMenuValue(EVENT, this.cubeEventMenu, String.class);
-            MagicCubeEvent expectedMenuValue = MagicCubeEvent.getEvent(expectedMenuValueStr);
-            final TapSide tapSide = expectedMenuValue == MagicCubeEvent.TAP_TWICE ? TapSide.valueOf(expectedMenuValueStr) : null;
-            final MoveSide moveSide = expectedMenuValue == MagicCubeEvent.MOVE ? MoveSide.valueOf(expectedMenuValueStr) : null;
+        workspaceBlock.getNextOrThrow();
+        String expectedMenuValueStr = workspaceBlock.getMenuValue(EVENT, this.cubeEventMenu, String.class);
+        MagicCubeEvent expectedMenuValue = MagicCubeEvent.getEvent(expectedMenuValueStr);
+        final TapSide tapSide = expectedMenuValue == MagicCubeEvent.TAP_TWICE ? TapSide.valueOf(expectedMenuValueStr) : null;
+        final MoveSide moveSide = expectedMenuValue == MagicCubeEvent.MOVE ? MoveSide.valueOf(expectedMenuValueStr) : null;
 
-            String ieeeAddress = fetchIEEEAddress(workspaceBlock);
-            if (ieeeAddress == null) {
-                return;
-            }
-
-            BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
-            Consumer<ScratchDeviceState> consumer = sds -> {
-                CubeValueDescriptor cubeValueDescriptor = new CubeValueDescriptor(sds);
-                if (cubeValueDescriptor.match(expectedMenuValue, tapSide, moveSide)) {
-                    lock.signalAll();
-                }
-            };
-
-            addZigbeeEventListener(ieeeAddress, ZclMultistateInputBasicCluster.CLUSTER_ID, consumer);
-            addZigbeeEventListener(ieeeAddress, ZclAnalogInputBasicCluster.CLUSTER_ID, consumer);
-
-            workspaceBlock.subscribeToLock(lock);
+        String ieeeAddress = fetchIEEEAddress(workspaceBlock);
+        if (ieeeAddress == null) {
+            return;
         }
+
+        BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
+        Consumer<ScratchDeviceState> consumer = sds -> {
+            CubeValueDescriptor cubeValueDescriptor = new CubeValueDescriptor(sds);
+            if (cubeValueDescriptor.match(expectedMenuValue, tapSide, moveSide)) {
+                lock.signalAll();
+            }
+        };
+
+        addZigbeeEventListener(ieeeAddress, ZclMultistateInputBasicCluster.CLUSTER_ID, consumer);
+        addZigbeeEventListener(ieeeAddress, ZclAnalogInputBasicCluster.CLUSTER_ID, consumer);
+
+        workspaceBlock.subscribeToLock(lock);
     }
 
     private String fetchIEEEAddress(WorkspaceBlock workspaceBlock) {
-        String ieeeAddress = workspaceBlock.getMenuValue(CUBE_SENSOR, this.cubeSensorMenu, String.class);
+        String ieeeAddress = workspaceBlock.getMenuValue(CUBE_SENSOR, this.cubeSensorMenu);
         ZigBeeDeviceEntity device = entityContext.getEntity(ZigBeeDeviceEntity
                 .PREFIX + ieeeAddress);
         if (device == null) {
