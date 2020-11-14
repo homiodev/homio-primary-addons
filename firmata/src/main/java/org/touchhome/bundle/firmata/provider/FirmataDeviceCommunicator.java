@@ -81,15 +81,15 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
         }
     }
 
-    public final boolean restart() {
+    public final String restart() {
         // skip restart if status ONLINE
         if (entity.getStatus() == Status.ONLINE && entity.getJoined() == Status.ONLINE) {
-            return true;
+            return "ACTION.COMMUNICATOR.ALREADY_RUN";
         }
 
         // try restart not often that once per minute
         if (System.currentTimeMillis() - lastRestartAttempt < 60000) {
-            return false;
+            throw new RuntimeException("ACTION.COMMUNICATOR.RESTART_TOO_OFTEN");
         }
         lastRestartAttempt = System.currentTimeMillis();
 
@@ -99,7 +99,7 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
 
             this.ioDevice = this.createIODevice(this.entity);
             if (ioDevice == null) {
-                return false;
+                throw new RuntimeException("ACTION.COMMUNICATOR.UNABLE_CREATE");
             }
             this.device = new IODeviceWrapper(ioDevice, this);
             ioDevice.addProtocolMessageHandler("sysexCustomMessage", this);
@@ -122,12 +122,12 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
                 this.device.sendMessage(FirmataCommand.SYSEX_REGISTER);
             }
 
-            return true;
+            return "ACTION.COMMUNICATOR.SUCCESS";
         } catch (Exception ex) {
             updateDeviceStatus(entity, Status.ERROR, TouchHomeUtils.getErrorMessage(ex));
             log.error("Error while initialize device: {} for device type: {}", entity.getTitle(), getClass().getSimpleName(), ex);
+            throw new RuntimeException("ACTION.COMMUNICATOR.UNKNOWN_ERROR");
         }
-        return false;
     }
 
     @Override

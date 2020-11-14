@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.model.MicroControllerBaseEntity;
+import org.touchhome.bundle.api.model.micro.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldExpand;
 import org.touchhome.bundle.api.ui.field.UIFieldType;

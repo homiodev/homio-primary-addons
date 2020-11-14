@@ -73,7 +73,7 @@ public class BluetoothBundleEntrypoint implements BundleEntrypoint {
         map.put(MEMORY_UUID, readSafeValueStr(linuxHardwareRepository::getMemory));
         map.put(SD_MEMORY_UUID, readSafeValueStr(() -> linuxHardwareRepository.getSDCardMemory().toString()));
         map.put(UPTIME_UUID, readSafeValueStr(linuxHardwareRepository::getUptime));
-        map.put(IP_ADDRESS_UUID, readSafeValueStrIT(linuxHardwareRepository::getIpAddress));
+        map.put(IP_ADDRESS_UUID, readSafeValueStrIT(wirelessHardwareRepository::getIPAddress));
         map.put(WRITE_BAN_UUID, gatherWriteBan());
         map.put(DEVICE_MODEL_UUID, readSafeValueStr(linuxHardwareRepository::getDeviceModel));
         map.put(SERVER_CONNECTED_UUID, readSafeValueStrIT(this::readServerConnected));
@@ -143,7 +143,7 @@ public class BluetoothBundleEntrypoint implements BundleEntrypoint {
         bluetoothApplication.newReadCharacteristic("memory", MEMORY_UUID, () -> readSafeValue(linuxHardwareRepository::getMemory));
         bluetoothApplication.newReadCharacteristic("sd_memory", SD_MEMORY_UUID, () -> readSafeValue(() -> linuxHardwareRepository.getSDCardMemory().toString()));
         bluetoothApplication.newReadCharacteristic("uptime", UPTIME_UUID, () -> readSafeValue(linuxHardwareRepository::getUptime));
-        bluetoothApplication.newReadCharacteristic("ip", IP_ADDRESS_UUID, () -> readSafeValue(linuxHardwareRepository::getIpAddress));
+        bluetoothApplication.newReadCharacteristic("ip", IP_ADDRESS_UUID, () -> readSafeValue(wirelessHardwareRepository::getIPAddress));
         bluetoothApplication.newReadCharacteristic("write_ban", WRITE_BAN_UUID, () -> bluetoothApplication.gatherWriteBan().getBytes());
         bluetoothApplication.newReadWriteCharacteristic("device_model", DEVICE_MODEL_UUID, this::rebootDevice, () -> readSafeValue(linuxHardwareRepository::getDeviceModel));
         bluetoothApplication.newReadCharacteristic("server_connected", SERVER_CONNECTED_UUID, () -> readSafeValue(this::readServerConnected));

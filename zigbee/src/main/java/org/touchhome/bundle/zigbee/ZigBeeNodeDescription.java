@@ -1,7 +1,6 @@
 package org.touchhome.bundle.zigbee;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.zsmartsystems.zigbee.IeeeAddress;
 import com.zsmartsystems.zigbee.ZigBeeNode;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
@@ -30,7 +29,6 @@ import static com.zsmartsystems.zigbee.zcl.clusters.ZclBasicCluster.*;
 @Log4j2
 @Getter
 @ToString
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ZigBeeNodeDescription {
 
     private final String ieeeAddress;
@@ -38,9 +36,11 @@ public class ZigBeeNodeDescription {
     @Setter
     @JsonIgnore
     private Integer expectedUpdateInterval;
+
     @Setter
     @JsonIgnore
     private Long expectedUpdateIntervalTimer;
+
     private NodeDescriptor.LogicalType logicalType;
     private Integer networkAddress;
     private NodeDescriptor nodeDescription;
@@ -52,20 +52,27 @@ public class ZigBeeNodeDescription {
     private String dateCode;
     private Integer zclVersion;
     private Integer stackVersion;
+
     @Setter
     private String modelIdentifier;
+
     private Integer hwVersion;
     private Integer appVersion;
     private String manufacturer;
     private String firmwareVersion;
+
     @Setter
     private String deviceStatusMessage;
+
     @Setter
     private Status deviceStatus = Status.UNKNOWN;
+
     private FetchInfoStatus fetchInfoStatus = FetchInfoStatus.UNKNOWN;
     private Collection<ChannelDescription> channels;
+
     @Setter
     private boolean nodeInitialized;
+
     @Setter
     private NodeInitializationStatus nodeInitializationStatus;
 

@@ -15,12 +15,10 @@ import org.touchhome.bundle.firmata.model.FirmataNetworkEntity;
 import org.touchhome.bundle.firmata.provider.FirmataCommandPlugins;
 import org.touchhome.bundle.firmata.repository.FirmataDeviceRepository;
 
-import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.touchhome.bundle.firmata.provider.command.FirmataCommand.SYSEX_PING;
 
 @Log4j2
@@ -47,7 +45,7 @@ public class FirmataBundleEntrypoint implements BundleEntrypoint {
             if (payload.startsWith("th:")) {
                 String[] parts = payload.split(":");
                 if (parts.length == 3) {
-                    this.foundController(parts[1].trim(), parts[2].trim(), datagramPacket.getAddress());
+                    foundController(entityContext, parts[1].trim(), parts[2].trim(), datagramPacket.getAddress().getHostAddress());
                     return;
                 }
             }
@@ -56,7 +54,7 @@ public class FirmataBundleEntrypoint implements BundleEntrypoint {
 
         // ping firmata device if live status is online
         this.entityContext.schedule("firmata-device-ping", 3, TimeUnit.MINUTES, () -> {
-            for (FirmataBaseEntity firmataBaseEntity : entityContext.findAll(FirmataBaseEntity.class)) {
+            for (FirmataBaseEntity<?> firmataBaseEntity : entityContext.findAll(FirmataBaseEntity.class)) {
                 if (firmataBaseEntity.getJoined() == Status.ONLINE) {
                     log.debug("Ping firmata device: <{}>", firmataBaseEntity.getTitle());
                     firmataBaseEntity.getDevice().sendMessage(SYSEX_PING);
@@ -66,12 +64,18 @@ public class FirmataBundleEntrypoint implements BundleEntrypoint {
     }
 
     // this method fires only from devices that support internet access
-    private void foundController(String board, String deviceID, InetAddress address) {
-        String hostAddress = address.getHostAddress();
+    public static void foundController(EntityContext entityContext, String board, String deviceID, String hostAddress) {
         // check if we already have firmata device with deviceID
-        FirmataBaseEntity<?> device = entityContext.findAll(FirmataBaseEntity.class).stream()
-                .filter(d -> Objects.equals(d.getIeeeAddress(), deviceID))
-                .findAny().orElse(null);
+        FirmataBaseEntity<?> device;
+        if (deviceID != null) {
+            device = entityContext.findAll(FirmataBaseEntity.class).stream()
+                    .filter(d -> Objects.equals(d.getIeeeAddress(), deviceID))
+                    .findAny().orElse(null);
+        } else {
+            device = entityContext.findAll(FirmataNetworkEntity.class).stream()
+                    .filter(d -> Objects.equals(d.getIp(), hostAddress))
+                    .findAny().orElse(null);
+        }
 
         if (device != null) {
             if (device instanceof FirmataNetworkEntity) {
@@ -81,22 +85,33 @@ public class FirmataBundleEntrypoint implements BundleEntrypoint {
                             FlowMap.of("DEVICE", device.getTitle(), "OLD", ae.getIp(), "NEW", hostAddress));
                     // update device ip address and try restart it
                     entityContext.save(ae.setIp(hostAddress)).restartCommunicator();
+                } else {
+                    log.info("Firmata device <{}> up to date.", device.getTitle());
                 }
             } else {
-                this.entityContext.sendWarningMessage("FIRMATA.EVENT.FIRMATA_WRONG_DEVICE_TYPE", FlowMap.of("ID",
+                entityContext.sendWarningMessage("FIRMATA.EVENT.FIRMATA_WRONG_DEVICE_TYPE", FlowMap.of("ID",
                         deviceID, "NAME", device.getTitle()));
             }
         } else {
+            List<String> messages = new ArrayList<>();
+            messages.add(En.getServerMessage("FIRMATA.NEW_DEVICE_QUESTION"));
+            if (board != null) {
+                messages.add(En.getServerMessage("FIRMATA.NEW_DEVICE_BOARD", "BOARD", board));
+            }
+            if (deviceID != null) {
+                messages.add(En.getServerMessage("FIRMATA.NEW_DEVICE_ID", "DEVICE_ID", deviceID));
+            }
+            messages.add(En.getServerMessage("FIRMATA.NEW_DEVICE_ADDRESS", "ADDRESS", hostAddress));
+
             entityContext.sendConfirmation("Confirm-Firmata-" + deviceID, "TITLE.NEW_DEVICE", () -> {
-                        // save device and try restart it
-                        entityContext.save(new FirmataNetworkEntity().setIp(hostAddress)).restartCommunicator();
-                    }, En.getServerMessage("FIRMATA.NEW_DEVICE_QUESTION"),
-                    En.getServerMessage("FIRMATA.NEW_DEVICE_BOARD", "BOARD", board),
-                    En.getServerMessage("FIRMATA.NEW_DEVICE_ID", "DEVICE_ID", deviceID),
-                    En.getServerMessage("FIRMATA.NEW_DEVICE_ADDRESS", "ADDRESS", hostAddress));
-            this.entityContext.sendInfoMessage("FIRMATA.EVENT.FOUND_UDP_FIRMATA_DEVICE",
-                    FlowMap.of("ID", deviceID, "IP", hostAddress, "BOARD", board));
-            udpFoundDevices.put(hostAddress, new UdpPayload(hostAddress, Short.parseShort(deviceID), board));
+                // save device and try restart it
+                entityContext.save(new FirmataNetworkEntity().setIp(hostAddress)).restartCommunicator();
+            }, messages);
+            entityContext.sendInfoMessage("FIRMATA.EVENT.FOUND_FIRMATA_DEVICE",
+                    FlowMap.of("ID", defaultString(deviceID, "-"), "IP", hostAddress,
+                            "BOARD", defaultString(board, "-")));
+            udpFoundDevices.put(hostAddress,
+                    new UdpPayload(hostAddress, deviceID == null ? null : Short.parseShort(deviceID), board));
         }
     }
 

@@ -4,10 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.firmata4j.IODevice;
 import org.firmata4j.firmata.FirmataDevice;
 import org.firmata4j.transport.NetworkTransport;
-import org.touchhome.bundle.api.DynamicOptionLoader;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.Option;
 import org.touchhome.bundle.api.model.BaseEntity;
+import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
@@ -69,7 +69,7 @@ public class FirmataNetworkEntity extends FirmataBaseEntity<FirmataNetworkEntity
         @Override
         protected IODevice createIODevice(FirmataNetworkEntity entity) {
             String ip = entity.getIp();
-            return StringUtils.isEmpty(ip) ? null : new FirmataDevice(new NetworkTransport(ip + ":3030"));
+            return StringUtils.isEmpty(ip) ? null : new FirmataDevice(new NetworkTransport(ip + ":3132"));
         }
 
         @Override

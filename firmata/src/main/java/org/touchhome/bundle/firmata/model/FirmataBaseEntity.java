@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.touchhome.bundle.api.DynamicOptionLoader;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.NotificationEntityJSON;
 import org.touchhome.bundle.api.json.Option;
 import org.touchhome.bundle.api.model.BaseEntity;
-import org.touchhome.bundle.api.model.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.api.model.micro.MicroControllerBaseEntity;
+import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldName;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
@@ -66,12 +66,14 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
     @UIMethodAction("ACTION.COMMUNICATOR.RESTART")
     public NotificationEntityJSON restartCommunicator() {
         if (firmataDeviceCommunicator != null) {
-            if (firmataDeviceCommunicator.restart()) {
-                return NotificationEntityJSON.success(getTitle()).setDescription("ACTION.COMMUNICATOR.SUCCESS");
+            try {
+                String response = firmataDeviceCommunicator.restart();
+                return NotificationEntityJSON.success(getTitle()).setDescription(response);
+            } catch (Exception ex) {
+                return NotificationEntityJSON.danger(getTitle()).setDescription(ex.getMessage());
             }
-            return NotificationEntityJSON.danger(getTitle()).setDescription("ACTION.COMMUNICATOR.FAILED");
         }
-        return NotificationEntityJSON.warn(getTitle()).setDescription("ACTION.COMMUNICATOR_NOT_SET");
+        return NotificationEntityJSON.warn(getTitle()).setDescription("ACTION.COMMUNICATOR.NOT_FOUND");
     }
 
     @JsonIgnore

@@ -94,10 +94,19 @@ public class ZigBeeController {
     private List<ZigBeeConverterEndpoint> getZigBeeConverterEndpointsByClusterId(ZigBeeDevice zigBeeDevice, Integer clusterId) {
         List<ZigBeeConverterEndpoint> endpoints = new ArrayList<>();
         for (ZigBeeConverterEndpoint zigBeeConverterEndpoint : zigBeeDevice.getZigBeeConverterEndpoints().keySet()) {
-            if (TouchHomeUtils.containsAny(zigBeeConverterEndpoint.getZigBeeConverter().clientClusters(), clusterId)) {
+            if (containsAny(zigBeeConverterEndpoint.getZigBeeConverter().clientClusters(), clusterId)) {
                 endpoints.add(zigBeeConverterEndpoint);
             }
         }
         return endpoints;
+    }
+
+    public static boolean containsAny(int[] array, Integer value) {
+        for (int i : array) {
+            if (i == value) {
+                return true;
+            }
+        }
+        return false;
     }
 }

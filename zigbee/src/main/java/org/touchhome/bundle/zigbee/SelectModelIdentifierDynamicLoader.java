@@ -1,9 +1,9 @@
 package org.touchhome.bundle.zigbee;
 
-import org.touchhome.bundle.api.DynamicOptionLoader;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.Option;
 import org.touchhome.bundle.api.model.BaseEntity;
+import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.zigbee.requireEndpoint.ZigbeeRequireEndpoints;
 
 import java.util.List;
