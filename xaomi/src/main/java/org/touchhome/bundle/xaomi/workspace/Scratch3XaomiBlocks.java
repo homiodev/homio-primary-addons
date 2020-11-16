@@ -44,9 +44,9 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
         super("#856d21", entityContext, xaomiEntrypoint);
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
-        this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, "zb-wp-xaomi-workspace", status -> {
+        this.entityContext.setting().listenValue(ZigbeeStatusSetting.class, "zb-wp-xaomi-workspace", status -> {
             if (status.isOnline()) {
-                this.coordinatorHandler = this.entityContext.getSettingValue(ZigbeeCoordinatorHandlerSetting.class);
+                this.coordinatorHandler = this.entityContext.setting().getValue(ZigbeeCoordinatorHandlerSetting.class);
             } else {
                 this.coordinatorHandler = null;
             }

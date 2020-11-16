@@ -99,7 +99,7 @@ public class ZigBeeDeviceRepository extends AbstractRepository<ZigBeeDeviceEntit
     @Override
     public ZigBeeDeviceEntity deleteByEntityID(String entityID) {
         ZigBeeDeviceEntity entity = super.deleteByEntityID(entityID);
-        ZigBeeCoordinatorHandler zigBeeCoordinatorHandler = entityContext.getSettingValue(ZigbeeCoordinatorHandlerSetting.class);
+        ZigBeeCoordinatorHandler zigBeeCoordinatorHandler = entityContext.setting().getValue(ZigbeeCoordinatorHandlerSetting.class);
         zigBeeCoordinatorHandler.removeNode(new IeeeAddress(entity.getIeeeAddress()));
 
         return entity;

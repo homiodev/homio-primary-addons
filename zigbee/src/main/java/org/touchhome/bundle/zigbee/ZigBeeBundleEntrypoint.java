@@ -34,7 +34,7 @@ public class ZigBeeBundleEntrypoint implements BundleEntrypoint {
 
     @Override
     public void init() {
-        this.coordinatorHandler = entityContext.getSettingValue(ZigbeeCoordinatorHandlerSetting.class);
+        this.coordinatorHandler = entityContext.setting().getValue(ZigbeeCoordinatorHandlerSetting.class);
         this.zigBeeDiscoveryService = new ZigBeeDiscoveryService(
                 entityContext, coordinatorHandler,
                 zigBeeIsAliveTracker,
@@ -42,7 +42,7 @@ public class ZigBeeBundleEntrypoint implements BundleEntrypoint {
                 scheduler,
                 deviceUpdateListener);
 
-        this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, "zb-fetch-devices", status -> {
+        this.entityContext.setting().listenValue(ZigbeeStatusSetting.class, "zb-fetch-devices", status -> {
             if (status.isOnline()) {
                 for (ZigBeeDeviceEntity zigbeeDeviceEntity : entityContext.findAll(ZigBeeDeviceEntity.class)) {
                     zigBeeDiscoveryService.addZigBeeDevice(new IeeeAddress(zigbeeDeviceEntity.getIeeeAddress()));

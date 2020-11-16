@@ -33,7 +33,7 @@
     </modules>
 
     <properties>
-        <bundle-api.version>1.0.9</bundle-api.version>
+        <bundle-api.version>1.0.10-SNAPSHOT</bundle-api.version>
     </properties>
 
     <dependencies>

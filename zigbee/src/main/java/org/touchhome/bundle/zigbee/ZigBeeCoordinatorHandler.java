@@ -88,43 +88,43 @@ public abstract class ZigBeeCoordinatorHandler
         this.channelFactory = channelFactory;
         this.entityContext = entityContext;
 
-        entityContext.listenSettingValue(ZigbeePortBaudSetting.class, "zb-init", this::reInitialize);
-        entityContext.listenSettingValue(ZigbeeNetworkIdSetting.class, "zb-init", this::reInitialize);
-        entityContext.listenSettingValue(ZigbeeLinkKeySetting.class, "zb-init", this::reInitialize);
-        entityContext.listenSettingValue(ZigbeeExtendedPanIdSetting.class, "zb-init", this::reInitialize);
-        entityContext.listenSettingValue(ZigbeeNetworkKeySetting.class, "zb-init", this::reInitialize);
-        entityContext.listenSettingValue(ZigbeePanIdSetting.class, "zb-init", this::reInitialize);
-        entityContext.listenSettingValue(ZigbeeChannelIdSetting.class, "zb-init", this::reInitialize);
-        entityContext.listenSettingValue(ZigbeePowerModeSetting.class, "zb-init", this::reInitialize);
-        entityContext.listenSettingValue(ZigbeeResetNetworkButtonSetting.class, "zb-init", () -> {
-            entityContext.setSettingValue(ZigbeeNetworkIdSetting.class, "");
+        entityContext.setting().listenValue(ZigbeePortBaudSetting.class, "zb-init", this::reInitialize);
+        entityContext.setting().listenValue(ZigbeeNetworkIdSetting.class, "zb-init", this::reInitialize);
+        entityContext.setting().listenValue(ZigbeeLinkKeySetting.class, "zb-init", this::reInitialize);
+        entityContext.setting().listenValue(ZigbeeExtendedPanIdSetting.class, "zb-init", this::reInitialize);
+        entityContext.setting().listenValue(ZigbeeNetworkKeySetting.class, "zb-init", this::reInitialize);
+        entityContext.setting().listenValue(ZigbeePanIdSetting.class, "zb-init", this::reInitialize);
+        entityContext.setting().listenValue(ZigbeeChannelIdSetting.class, "zb-init", this::reInitialize);
+        entityContext.setting().listenValue(ZigbeePowerModeSetting.class, "zb-init", this::reInitialize);
+        entityContext.setting().listenValue(ZigbeeResetNetworkButtonSetting.class, "zb-init", () -> {
+            entityContext.setting().setValue(ZigbeeNetworkIdSetting.class, "");
             this.reInitialize();
         });
         // TODO: do we need this/????
 
-        entityContext.listenSettingValue(ZigbeeTrustCenterModeSetting.class, "zb-init", linkMode -> {
+        entityContext.setting().listenValue(ZigbeeTrustCenterModeSetting.class, "zb-init", linkMode -> {
             TransportConfig transportConfig = new TransportConfig();
             transportConfig.addOption(TransportConfigOption.TRUST_CENTRE_JOIN_MODE, linkMode);
             zigBeeTransport.updateTransportConfig(transportConfig);
         });
 
-        entityContext.listenSettingValue(ZigbeeTxPowerSetting.class, "zb-init", txPower -> {
+        entityContext.setting().listenValue(ZigbeeTxPowerSetting.class, "zb-init", txPower -> {
             TransportConfig transportConfig = new TransportConfig();
             transportConfig.addOption(TransportConfigOption.RADIO_TX_POWER, txPower);
             zigBeeTransport.updateTransportConfig(transportConfig);
         });
 
-        entityContext.listenSettingValue(ZigbeeInstallCodeSetting.class, "zb-init", this::addInstallCode);
+        entityContext.setting().listenValue(ZigbeeInstallCodeSetting.class, "zb-init", this::addInstallCode);
     }
 
     void initialize() {
         log.info("Initializing ZigBee network.");
 
-        panId = entityContext.getSettingValue(ZigbeePanIdSetting.class);
-        channelId = entityContext.getSettingValue(ZigbeeChannelIdSetting.class);
-        extendedPanId = entityContext.getSettingValue(ZigbeeExtendedPanIdSetting.class);
-        String linkKeyString = entityContext.getSettingValue(ZigbeeLinkKeySetting.class);
-        String networkKeyString = entityContext.getSettingValue(ZigbeeNetworkKeySetting.class);
+        panId = entityContext.setting().getValue(ZigbeePanIdSetting.class);
+        channelId = entityContext.setting().getValue(ZigbeeChannelIdSetting.class);
+        extendedPanId = entityContext.setting().getValue(ZigbeeExtendedPanIdSetting.class);
+        String linkKeyString = entityContext.setting().getValue(ZigbeeLinkKeySetting.class);
+        String networkKeyString = entityContext.setting().getValue(ZigbeeNetworkKeySetting.class);
 
         if (extendedPanId == null || extendedPanId.equals(new ExtendedPanId()) || panId == 0) {
             initializeNetwork = true;
@@ -143,7 +143,7 @@ public abstract class ZigBeeCoordinatorHandler
         // If no key exists, generateBooleanLink a random key and save it back to the configuration
         if (!networkKey.isValid()) {
             networkKey = ZigBeeKey.createRandom();
-            entityContext.setSettingValueSilence(ZigbeeNetworkKeySetting.class, networkKey.toString());
+            entityContext.setting().setValueSilence(ZigbeeNetworkKeySetting.class, networkKey.toString());
             log.debug("Network key initialised {}", networkKey);
         }
 
@@ -155,7 +155,7 @@ public abstract class ZigBeeCoordinatorHandler
             linkKey = new ZigBeeKey(linkKeyString);
         } catch (IllegalArgumentException e) {
             linkKey = KEY_ZIGBEE_ALLIANCE_O9;
-            entityContext.setSettingValueSilence(ZigbeeLinkKeySetting.class, linkKey.toString());
+            entityContext.setting().setValueSilence(ZigbeeLinkKeySetting.class, linkKey.toString());
             log.debug("Link Key String has invalid format. Revert to default key.");
         }
 
@@ -164,7 +164,7 @@ public abstract class ZigBeeCoordinatorHandler
         if (panId == 0) {
             panId = (int) Math.floor((Math.random() * 65534));
             log.debug("Created random ZigBee PAN ID [{}].", String.format("%04X", panId));
-            entityContext.setSettingValueSilence(ZigbeePanIdSetting.class, panId);
+            entityContext.setting().setValueSilence(ZigbeePanIdSetting.class, panId);
         }
 
         if (extendedPanId != null && !extendedPanId.isValid()) {
@@ -175,7 +175,7 @@ public abstract class ZigBeeCoordinatorHandler
             extendedPanId = new ExtendedPanId(pan);
             log.debug("Created random ZigBee extended PAN ID [{}].", extendedPanId);
 
-            entityContext.setSettingValueSilence(ZigbeeExtendedPanIdSetting.class, extendedPanId);
+            entityContext.setting().setValueSilence(ZigbeeExtendedPanIdSetting.class, extendedPanId);
         }
 
         log.debug("Link key final array {}", linkKey);
@@ -243,10 +243,10 @@ public abstract class ZigBeeCoordinatorHandler
     private synchronized void initialiseZigBee() {
         log.debug("Initialising ZigBee coordinator");
 
-        String networkId = entityContext.getSettingValue(ZigbeeNetworkIdSetting.class);
+        String networkId = entityContext.setting().getValue(ZigbeeNetworkIdSetting.class);
         if (StringUtils.isEmpty(networkId)) {
             networkId = UUID.randomUUID().toString();
-            entityContext.setSettingValueSilence(ZigbeeNetworkIdSetting.class, networkId);
+            entityContext.setting().setValueSilence(ZigbeeNetworkIdSetting.class, networkId);
         }
 
         log.warn("ZigBee use networkID: <{}>", networkId);
@@ -283,7 +283,7 @@ public abstract class ZigBeeCoordinatorHandler
                 return;
         }
 
-        int meshUpdateTime = entityContext.getSettingValue(ZigbeeMeshUpdatePeriodSetting.class);
+        int meshUpdateTime = entityContext.setting().getValue(ZigbeeMeshUpdatePeriodSetting.class);
 
         // Add the extensions to the network
         ZigBeeDiscoveryExtension discoveryExtension = new ZigBeeDiscoveryExtension();
@@ -333,7 +333,7 @@ public abstract class ZigBeeCoordinatorHandler
             networkManager.setZigBeeExtendedPanId(extendedPanId);
         }
 
-        TrustCentreJoinMode linkMode = entityContext.getSettingValue(ZigbeeTrustCenterModeSetting.class);
+        TrustCentreJoinMode linkMode = entityContext.setting().getValue(ZigbeeTrustCenterModeSetting.class);
         if (linkMode != null) {
             log.debug("Config zigbee trustcentremode: {}", linkMode);
             transportConfig.addOption(TransportConfigOption.TRUST_CENTRE_JOIN_MODE, linkMode);
@@ -358,10 +358,10 @@ public abstract class ZigBeeCoordinatorHandler
 
     protected void updateStatus(Status deviceStatus, String statusMessage) {
         log.info("Coordinator status: <{}>", deviceStatus);
-        entityContext.setSettingValue(ZigbeeStatusSetting.class, BundleSettingPluginStatus.of(deviceStatus, statusMessage));
+        entityContext.setting().setValue(ZigbeeStatusSetting.class, BundleSettingPluginStatus.of(deviceStatus, statusMessage));
 
         for (ZigBeeDevice zigBeeDevice : zigBeeDevices.values()) {
-            zigBeeDevice.tryInitializeDevice(entityContext.getSettingValue(ZigbeeStatusSetting.class).getStatus());
+            zigBeeDevice.tryInitializeDevice(entityContext.setting().getValue(ZigbeeStatusSetting.class).getStatus());
         }
     }
 
@@ -661,8 +661,8 @@ public abstract class ZigBeeCoordinatorHandler
     }
 
     public void scanStart(int duration) {
-        if (!entityContext.getSettingValue(ZigbeeStatusSetting.class).isOnline()) {
-            entityContext.sendWarningMessage("DEVICE.OFFLINE", "Unable to ");
+        if (!entityContext.setting().getValue(ZigbeeStatusSetting.class).isOnline()) {
+            entityContext.ui().sendWarningMessage("DEVICE.OFFLINE", "Unable to ");
             log.debug("ZigBee coordinator is offline - aborted scan for");
         } else {
             networkManager.permitJoin(duration);

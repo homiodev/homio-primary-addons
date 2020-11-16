@@ -92,7 +92,7 @@ public final class ZigBeeDeviceUpdateValueListener implements WorkspaceEventList
     }
 
     private void logZigbeeEvent(ZigBeeDevice zigBeeDevice, ZigBeeDeviceStateUUID uuid, ScratchDeviceState scratchDeviceState) {
-        if (entityContext.getSettingValue(ZigbeeLogEventsButtonsSetting.class)) {
+        if (entityContext.setting().getValue(ZigbeeLogEventsButtonsSetting.class)) {
             if (logZigbeeEvent(scratchDeviceState, deviceStateDescribeEventHandlerByClusterID.get(uuid.getClusterId()))) {
                 return;
             }

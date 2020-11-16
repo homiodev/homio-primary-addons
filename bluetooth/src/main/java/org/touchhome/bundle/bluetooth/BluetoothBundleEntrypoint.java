@@ -160,9 +160,9 @@ public class BluetoothBundleEntrypoint implements BundleEntrypoint {
             bluetoothApplication.start();
             log.info("Bluetooth successfully started");
             entityContext.setFeatureState("Bluetooth", true);
-            entityContext.setSettingValue(BluetoothStatusSetting.class, BundleSettingPluginStatus.ONLINE);
+            entityContext.setting().setValue(BluetoothStatusSetting.class, BundleSettingPluginStatus.ONLINE);
         } catch (Throwable ex) {
-            entityContext.setSettingValue(BluetoothStatusSetting.class, BundleSettingPluginStatus.error(ex));
+            entityContext.setting().setValue(BluetoothStatusSetting.class, BundleSettingPluginStatus.error(ex));
             entityContext.setFeatureState("Bluetooth", false);
             log.error("Unable to start bluetooth service", ex);
         }
@@ -181,7 +181,7 @@ public class BluetoothBundleEntrypoint implements BundleEntrypoint {
                 case 3:
                     log.warn("Writing keystore");
                     entityContext.save(user.setKeystore(content));
-                    entityContext.setSettingValue(CloudServerRestartSetting.class, null);
+                    entityContext.setting().setValue(CloudServerRestartSetting.class, null);
                     break;
                 case 5:
                     log.warn("Writing private key");
@@ -210,13 +210,13 @@ public class BluetoothBundleEntrypoint implements BundleEntrypoint {
         if (user.isPasswordNotSet()) {
             log.warn("Set primary admin password for user: <{}>", email);
             entityContext.save(user.setUserId(email).setPassword(encodedPassword));
-            this.entityContext.setSettingValue(CloudServerRestartSetting.class, null);
+            this.entityContext.setting().setValue(CloudServerRestartSetting.class, null);
         } else if (StringUtils.isNotEmpty(encodedPreviousPassword) &&
                 Objects.equals(user.getUserId(), email) &&
                 user.matchPassword(encodedPreviousPassword)) {
             log.warn("Reset primary admin password for user: <{}>", email);
             entityContext.save(user.setPassword(encodedPassword));
-            this.entityContext.setSettingValue(CloudServerRestartSetting.class, null);
+            this.entityContext.setting().setValue(CloudServerRestartSetting.class, null);
         }
 
         if (user.matchPassword(encodedPassword)) {
@@ -265,7 +265,7 @@ public class BluetoothBundleEntrypoint implements BundleEntrypoint {
     }
 
     private String readServerConnected() {
-        return entityContext.getSettingValue(CloudProviderSetting.class).getStatus();
+        return entityContext.setting().getValue(CloudProviderSetting.class).getStatus();
     }
 
     @SneakyThrows

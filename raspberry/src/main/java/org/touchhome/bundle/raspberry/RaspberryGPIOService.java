@@ -247,7 +247,7 @@ public class RaspberryGPIOService {
     public Float getDS18B20Value(String sensorID) {
         DefaultKeyValue<Long, Float> pair = ds18B20Values.get(sensorID);
         if (pair != null) {
-            if (System.currentTimeMillis() - pair.getKey() < entityContext.getSettingValue(RaspberryOneWireIntervalSetting.class) * 1000) {
+            if (System.currentTimeMillis() - pair.getKey() < entityContext.setting().getValue(RaspberryOneWireIntervalSetting.class) * 1000) {
                 return pair.getValue();
             }
         } else {

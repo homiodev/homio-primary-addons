@@ -41,8 +41,8 @@ public class CC2531Handler extends ZigBeeCoordinatorHandler {
         ZigBeeSerialPort serialPort = new ZigBeeSerialPort(
                 "cc2531",
                 entityContext,
-                entityContext.getSettingValue(ZigbeePortSetting.class),
-                entityContext.getSettingValue(ZigbeePortBaudSetting.class),
+                entityContext.setting().getValue(ZigbeePortSetting.class),
+                entityContext.setting().getValue(ZigbeePortBaudSetting.class),
                 FlowControl.FLOWCONTROL_OUT_RTSCTS,
                 () -> this.updateStatus(Status.OFFLINE, "PORT_COMMUNICATION_ERROR"));
         return new ZigBeeDongleTiCc2531(serialPort);

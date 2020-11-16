@@ -33,7 +33,7 @@ public class CloudEntrypoint implements BundleEntrypoint {
 
     @Override
     public Set<NotificationEntityJSON> getNotifications() {
-        return entityContext.getSettingValue(CloudProviderSetting.class).getNotifications();
+        return entityContext.setting().getValue(CloudProviderSetting.class).getNotifications();
     }
 
     @Override

@@ -42,12 +42,12 @@ class ZigBeeDiscoveryService {
         this.zigBeeChannelConverterFactory = zigBeeChannelConverterFactory;
         this.scheduler = scheduler;
         this.deviceUpdateListener = deviceUpdateListener;
-        this.entityContext.listenSettingValue(ZigbeeDiscoveryButtonSetting.class, "zb-start-scan", this::startScan);
+        this.entityContext.setting().listenValue(ZigbeeDiscoveryButtonSetting.class, "zb-start-scan", this::startScan);
 
         ZigBeeNetworkNodeListener listener = new ZigBeeNetworkNodeListener() {
             @Override
             public void nodeAdded(ZigBeeNode node) {
-                boolean forceAdd = !entityContext.getSettingValue(ZigbeeJoinDeviceDuringScanOnlySetting.class);
+                boolean forceAdd = !entityContext.setting().getValue(ZigbeeJoinDeviceDuringScanOnlySetting.class);
                 if (forceAdd || scanStarted) {
                     ZigBeeDiscoveryService.this.nodeDiscovered(coordinatorHandlers, node);
                 }
@@ -82,16 +82,16 @@ class ZigBeeDiscoveryService {
             nodeDiscovered(coordinatorHandlers, node);
         }
 
-        Integer duration = entityContext.getSettingValue(ZigbeeDiscoveryDurationSetting.class);
+        Integer duration = entityContext.setting().getValue(ZigbeeDiscoveryDurationSetting.class);
         coordinatorHandlers.scanStart(duration);
 
         NotificationEntityJSON zigbeeScanEntity = new NotificationEntityJSON("zigbee-scan").setName("zigbee.start_scan");
-        this.entityContext.showAlwaysOnViewNotification(zigbeeScanEntity, duration, "#e65100", null);
+        this.entityContext.ui().showAlwaysOnViewNotification(zigbeeScanEntity, duration, "#e65100", null);
 
         scheduler.schedule(() -> {
             log.info("Scanning stopped");
             scanStarted = false;
-            this.entityContext.hideAlwaysOnViewNotification(zigbeeScanEntity);
+            this.entityContext.ui().hideAlwaysOnViewNotification(zigbeeScanEntity);
         }, duration, TimeUnit.SECONDS);
     }
 

@@ -105,7 +105,7 @@ public class NettyClientService {
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
 
-        String host = entityContext.getSettingValue(CloudServerUrlSetting.class);
+        String host = entityContext.setting().getValue(CloudServerUrlSetting.class);
         Integer port = 8888;
 
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
@@ -139,7 +139,7 @@ public class NettyClientService {
 
     private void updateConnectionStatus(ServerConnectionStatus serverConnectionStatus, String errorStatus) {
         this.serverConnectionStatus = serverConnectionStatus;
-        this.entityContext.setSettingValue(CloudServerConnectionMessageSetting.class, errorStatus);
-        this.entityContext.setSettingValue(CloudServerConnectionStatusSetting.class, serverConnectionStatus);
+        this.entityContext.setting().setValue(CloudServerConnectionMessageSetting.class, errorStatus);
+        this.entityContext.setting().setValue(CloudServerConnectionStatusSetting.class, serverConnectionStatus);
     }
 }

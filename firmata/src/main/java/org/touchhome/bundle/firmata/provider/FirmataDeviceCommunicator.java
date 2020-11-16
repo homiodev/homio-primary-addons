@@ -12,7 +12,6 @@ import org.firmata4j.firmata.FirmataWatchdog;
 import org.firmata4j.firmata.parser.FirmataEventType;
 import org.firmata4j.fsm.Event;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.hardware.HardwareEvents;
 import org.touchhome.bundle.api.json.NotificationEntityJSON;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.util.FlowMap;
@@ -38,7 +37,6 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
     private final EntityContext entityContext;
     private final FirmataCommandPlugins firmataCommandPlugins;
     private final BroadcastLockManager broadcastLockManager;
-    private final HardwareEvents hardwareEvents;
     private T entity;
 
     @Getter
@@ -56,7 +54,6 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
         this.oneWireCommand = entityContext.getBean(FirmataOneWireResponseDataCommand.class);
         this.firmataCommandPlugins = entityContext.getBean(FirmataCommandPlugins.class);
         this.broadcastLockManager = entityContext.getBean(BroadcastLockManager.class);
-        this.hardwareEvents = entityContext.getBean(HardwareEvents.class);
 
         this.entityContext.addEntityUpdateListener(entity.getEntityID(), t -> this.entityUpdated((T) t, false));
         this.entityContext.addEntityRemovedListener(entity.getEntityID(), t -> this.entityUpdated((T) t, true));
@@ -110,11 +107,11 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
             ioDevice.ensureInitializationIsDone();
             updateDeviceStatus(entity, Status.ONLINE, null);
 
-            FirmataWatchdog watchdog = new FirmataWatchdog(TimeUnit.MINUTES.toMillis(entityContext.getSettingValue(FirmataWatchDogIntervalSetting.class)), () -> {
+            FirmataWatchdog watchdog = new FirmataWatchdog(TimeUnit.MINUTES.toMillis(entityContext.setting().getValue(FirmataWatchDogIntervalSetting.class)), () -> {
                 entityContext.updateDelayed(entity, t -> t.setJoined(Status.ERROR));
-                entityContext.addHeaderNotification(NotificationEntityJSON.warn(entity.getEntityID())
+                entityContext.ui().addHeaderNotification(NotificationEntityJSON.warn(entity.getEntityID())
                         .setName("Firmata-" + entity.getEntityID()).setDescription("Firmata Watchdog error"));
-                this.hardwareEvents.fireEvent(firmataErrorEvent);
+                this.entityContext.event().fireEvent(firmataErrorEvent);
             });
 
             ioDevice.addProtocolMessageHandler(FirmataEventType.ANY, watchdog);
@@ -151,13 +148,13 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
     @Override
     public void onStart(IOEvent event) {
         log.info("Firmata device: " + entity.getTitle() + " communication started");
-        hardwareEvents.fireEvent(firmataStartEvent);
+        entityContext.event().fireEvent(firmataStartEvent);
     }
 
     @Override
     public void onStop(IOEvent event) {
         log.info("Firmata device: " + entity.getTitle() + " communication stopped");
-        hardwareEvents.fireEvent(firmataErrorEvent);
+        entityContext.event().fireEvent(firmataErrorEvent);
     }
 
     @Override
@@ -175,13 +172,13 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
     private void entityUpdated(T entity, boolean remove) {
         if (remove) {
             this.destroy();
-            this.hardwareEvents.removeEvents(firmataErrorEvent, firmataStartEvent);
+            this.entityContext.event().removeEvents(firmataErrorEvent, firmataStartEvent);
         } else {
             if (!this.entity.getTitle().equals(entity.getTitle())) {
-                this.firmataErrorEvent = this.hardwareEvents.addEvent("firmata-comm-error-" + entity.getEntityID(),
+                this.firmataErrorEvent = this.entityContext.event().addEvent("firmata-comm-error-" + entity.getEntityID(),
                         "FIRMATA.EVENT.FIRMATA_COMM_FAILED", FlowMap.of("NAME", entity.getTitle()));
 
-                this.firmataStartEvent = this.hardwareEvents.addEvent("firmata-comm-start-" + entity.getEntityID(),
+                this.firmataStartEvent = this.entityContext.event().addEvent("firmata-comm-start-" + entity.getEntityID(),
                         "FIRMATA.EVENT.FIRMATA_COMM_STARTED", FlowMap.of("NAME", entity.getTitle()));
             }
             this.entity = entity;
@@ -192,11 +189,11 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
         if (entity.getStatus() != status) {
             entityContext.updateDelayed(entity, t -> t.setStatus(status).setStatusMessage(statusMessage));
 
-            entityContext.addHeaderNotification(NotificationEntityJSON.warn(entity.getEntityID())
+            entityContext.ui().addHeaderNotification(NotificationEntityJSON.warn(entity.getEntityID())
                     .setName("A-" + entity.getEntityID()).setDescription("Communicator status: " + status));
         }
         if (status == Status.OFFLINE || status == Status.ERROR) {
-            this.hardwareEvents.fireEvent(firmataErrorEvent);
+            this.entityContext.event().fireEvent(firmataErrorEvent);
         }
     }
 }

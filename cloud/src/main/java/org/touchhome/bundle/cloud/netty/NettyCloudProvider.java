@@ -22,9 +22,9 @@ public class NettyCloudProvider implements CloudProvider {
 
     @Override
     public String getStatus() {
-        String error = entityContext.getSettingValue(CloudServerConnectionMessageSetting.class);
-        ServerConnectionStatus status = entityContext.getSettingValue(CloudServerConnectionStatusSetting.class);
-        return (status == null ? "Unknown" : status.name()) + ". Errors: " + error + ". Url: " + entityContext.getSettingValue(CloudServerUrlSetting.class);
+        String error = entityContext.setting().getValue(CloudServerConnectionMessageSetting.class);
+        ServerConnectionStatus status = entityContext.setting().getValue(CloudServerConnectionStatusSetting.class);
+        return (status == null ? "Unknown" : status.name()) + ". Errors: " + error + ". Url: " + entityContext.setting().getValue(CloudServerUrlSetting.class);
     }
 
     @Override
@@ -34,10 +34,10 @@ public class NettyCloudProvider implements CloudProvider {
         if (user != null && user.getKeystore() == null) {
             notifications.add(NotificationEntityJSON.danger("keystore").setName("Keystore").setDescription("Keystore not found"));
         }
-        ServerConnectionStatus serverConnectionStatus = entityContext.getSettingValue(CloudServerConnectionStatusSetting.class);
+        ServerConnectionStatus serverConnectionStatus = entityContext.setting().getValue(CloudServerConnectionStatusSetting.class);
         notifications.add(new NotificationEntityJSON("cloud-status")
                 .setName("Cloud status")
-                .setDescription(entityContext.getSettingValue(CloudServerConnectionMessageSetting.class))
+                .setDescription(entityContext.setting().getValue(CloudServerConnectionMessageSetting.class))
                 .setNotificationType(serverConnectionStatus == ServerConnectionStatus.CONNECTED ? NotificationType.info : NotificationType.warning));
 
         return notifications;

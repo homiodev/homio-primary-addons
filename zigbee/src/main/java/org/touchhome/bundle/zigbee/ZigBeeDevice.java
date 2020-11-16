@@ -56,7 +56,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         this.discoveryService.getCoordinatorHandlers().addNetworkNodeListener(this);
         this.discoveryService.getCoordinatorHandlers().addAnnounceListener(this);
 
-        tryInitializeDevice(discoveryService.getEntityContext().getSettingValue(ZigbeeStatusSetting.class).getStatus());
+        tryInitializeDevice(discoveryService.getEntityContext().setting().getValue(ZigbeeStatusSetting.class).getStatus());
 
         // register listener for reset timer if any updates from any endpoint
         this.discoveryService.getDeviceUpdateListener().addIeeeAddressListener(this.nodeIeeeAddress.toString(), state ->
@@ -267,7 +267,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         if (this.zigBeeNodeDescription.getDeviceStatus() != deviceStatus) {
             this.zigBeeNodeDescription.setDeviceStatus(deviceStatus);
             this.zigBeeNodeDescription.setDeviceStatusMessage(deviceStatusMessage);
-            this.discoveryService.getEntityContext().sendInfoMessage(
+            this.discoveryService.getEntityContext().ui().sendInfoMessage(
                     "Zigbee device status", this.nodeIeeeAddress.toString() + " - " + deviceStatus);
         }
     }

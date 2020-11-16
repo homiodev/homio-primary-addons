@@ -50,7 +50,7 @@ public class TelegramService {
 
     public void postConstruct() {
         ApiContextInitializer.init();
-        entityContext.listenSettingValue(TelegramRestartBotButtonSetting.class, "tm-fire-restart", this::restart);
+        entityContext.setting().listenValue(TelegramRestartBotButtonSetting.class, "tm-fire-restart", this::restart);
         start();
     }
 
@@ -79,19 +79,19 @@ public class TelegramService {
 
     private void start() {
         try {
-            if (isNotEmpty(entityContext.getSettingValue(TelegramBotNameSetting.class)) &&
-                    isNotEmpty(entityContext.getSettingValue(TelegramBotTokenSetting.class))) {
+            if (isNotEmpty(entityContext.setting().getValue(TelegramBotNameSetting.class)) &&
+                    isNotEmpty(entityContext.setting().getValue(TelegramBotTokenSetting.class))) {
                 this.telegramBot = new TelegramBot(botOptions);
                 this.botSession = botsApi.registerBot(this.telegramBot);
                 log.info("Telegram bot started");
-                entityContext.sendInfoMessage("Telegram bot started");
+                entityContext.ui().sendInfoMessage("Telegram bot started");
             } else {
                 log.warn("Telegram bot not started. Requires settings.");
-                entityContext.sendInfoMessage("Telegram bot started. Requires settings.");
+                entityContext.ui().sendInfoMessage("Telegram bot started. Requires settings.");
 
             }
         } catch (Exception ex) {
-            entityContext.sendErrorMessage("Unable to start telegram bot: ", ex);
+            entityContext.ui().sendErrorMessage("Unable to start telegram bot: ", ex);
             log.error("Unable to start telegram bot", ex);
         }
     }
@@ -125,12 +125,12 @@ public class TelegramService {
 
         @Override
         public String getBotUsername() {
-            return entityContext.getSettingValue(TelegramBotNameSetting.class);
+            return entityContext.setting().getValue(TelegramBotNameSetting.class);
         }
 
         @Override
         public String getBotToken() {
-            return entityContext.getSettingValue(TelegramBotTokenSetting.class);
+            return entityContext.setting().getValue(TelegramBotTokenSetting.class);
         }
 
         // handle message not started with '/'

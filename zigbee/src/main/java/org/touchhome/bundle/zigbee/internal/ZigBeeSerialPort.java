@@ -105,7 +105,7 @@ public class ZigBeeSerialPort implements ZigBeePort, SerialPortDataListener {
                         log.error("Serial Error: Port does not exist.");
                         return false;
                     } else {
-                        entityContext.setSettingValueSilenceRaw(ZigbeePortSetting.class, serialPort.getSystemPortName());
+                        entityContext.setting().setValueSilenceRaw(ZigbeePortSetting.class, serialPort.getSystemPortName());
                     }
                 }
                 switch (flowControl) {

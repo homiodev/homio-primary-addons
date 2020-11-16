@@ -65,9 +65,9 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigbeeExtensionBlocks {
         setName("Zigbee Sensors");
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
-        this.entityContext.listenSettingValue(ZigbeeStatusSetting.class, "zb-wp-sensor-status", status -> {
+        this.entityContext.setting().listenValue(ZigbeeStatusSetting.class, "zb-wp-sensor-status", status -> {
             if (status.isOnline()) {
-                this.coordinatorHandler = this.entityContext.getSettingValue(ZigbeeCoordinatorHandlerSetting.class);
+                this.coordinatorHandler = this.entityContext.setting().getValue(ZigbeeCoordinatorHandlerSetting.class);
             } else {
                 this.coordinatorHandler = null;
             }

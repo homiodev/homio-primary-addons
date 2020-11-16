@@ -146,14 +146,14 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
 
     @UIMethodAction("ACTION.PERMIT_JOIN")
     public String permitJoin(EntityContext entityContext) {
-        if (!entityContext.getSettingValue(ZigbeeStatusSetting.class).isOnline()) {
+        if (!entityContext.setting().getValue(ZigbeeStatusSetting.class).isOnline()) {
             throw new IllegalStateException("DEVICE_OFFLINE");
         }
         if (zigBeeDevice == null) {
             throw new IllegalStateException("Unable to find zigbee node with ieeeAddress: " + getIeeeAddress());
         }
-        ZigBeeCoordinatorHandler zigBeeCoordinatorHandler = entityContext.getSettingValue(ZigbeeCoordinatorHandlerSetting.class);
-        boolean join = zigBeeCoordinatorHandler.permitJoin(zigBeeDevice.getNodeIeeeAddress(), entityContext.getSettingValue(ZigbeeDiscoveryDurationSetting.class));
+        ZigBeeCoordinatorHandler zigBeeCoordinatorHandler = entityContext.setting().getValue(ZigbeeCoordinatorHandlerSetting.class);
+        boolean join = zigBeeCoordinatorHandler.permitJoin(zigBeeDevice.getNodeIeeeAddress(), entityContext.setting().getValue(ZigbeeDiscoveryDurationSetting.class));
         return join ? "ACTION.RESPONSE.STARTED" : "ACTION.RESPONSE.ERROR";
     }
 

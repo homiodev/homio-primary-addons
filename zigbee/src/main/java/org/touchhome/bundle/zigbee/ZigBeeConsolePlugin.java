@@ -42,7 +42,7 @@ public class ZigBeeConsolePlugin implements ConsolePlugin {
 
     @Override
     public boolean isEnabled() {
-        return entityContext.getSettingValue(ZigbeeStatusSetting.class).isOnline();
+        return entityContext.setting().getValue(ZigbeeStatusSetting.class).isOnline();
     }
 
     @Override

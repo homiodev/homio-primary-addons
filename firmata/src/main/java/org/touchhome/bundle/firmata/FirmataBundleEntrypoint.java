@@ -41,7 +41,7 @@ public class FirmataBundleEntrypoint implements BundleEntrypoint {
         restartFirmataProviders();
         this.entityContext.addEntityUpdateListener(FirmataBaseEntity.class, FirmataBaseEntity::restartCommunicator);
 
-        this.entityContext.listenUdp("listen-firmata-udp", null, 8266, (datagramPacket, payload) -> {
+        this.entityContext.udp().listenUdp("listen-firmata-udp", null, 8266, (datagramPacket, payload) -> {
             if (payload.startsWith("th:")) {
                 String[] parts = payload.split(":");
                 if (parts.length == 3) {
@@ -53,7 +53,7 @@ public class FirmataBundleEntrypoint implements BundleEntrypoint {
         });
 
         // ping firmata device if live status is online
-        this.entityContext.schedule("firmata-device-ping", 3, TimeUnit.MINUTES, () -> {
+        this.entityContext.bgp().schedule("firmata-device-ping", 3, TimeUnit.MINUTES, () -> {
             for (FirmataBaseEntity<?> firmataBaseEntity : entityContext.findAll(FirmataBaseEntity.class)) {
                 if (firmataBaseEntity.getJoined() == Status.ONLINE) {
                     log.debug("Ping firmata device: <{}>", firmataBaseEntity.getTitle());
@@ -81,7 +81,7 @@ public class FirmataBundleEntrypoint implements BundleEntrypoint {
             if (device instanceof FirmataNetworkEntity) {
                 FirmataNetworkEntity ae = (FirmataNetworkEntity) device;
                 if (!hostAddress.equals(ae.getIp())) {
-                    entityContext.sendWarningMessage("FIRMATA.EVENT.CHANGED_IP",
+                    entityContext.ui().sendWarningMessage("FIRMATA.EVENT.CHANGED_IP",
                             FlowMap.of("DEVICE", device.getTitle(), "OLD", ae.getIp(), "NEW", hostAddress));
                     // update device ip address and try restart it
                     entityContext.save(ae.setIp(hostAddress)).restartCommunicator();
@@ -89,7 +89,7 @@ public class FirmataBundleEntrypoint implements BundleEntrypoint {
                     log.info("Firmata device <{}> up to date.", device.getTitle());
                 }
             } else {
-                entityContext.sendWarningMessage("FIRMATA.EVENT.FIRMATA_WRONG_DEVICE_TYPE", FlowMap.of("ID",
+                entityContext.ui().sendWarningMessage("FIRMATA.EVENT.FIRMATA_WRONG_DEVICE_TYPE", FlowMap.of("ID",
                         deviceID, "NAME", device.getTitle()));
             }
         } else {
@@ -103,11 +103,11 @@ public class FirmataBundleEntrypoint implements BundleEntrypoint {
             }
             messages.add(En.getServerMessage("FIRMATA.NEW_DEVICE_ADDRESS", "ADDRESS", hostAddress));
 
-            entityContext.sendConfirmation("Confirm-Firmata-" + deviceID, "TITLE.NEW_DEVICE", () -> {
+            entityContext.ui().sendConfirmation("Confirm-Firmata-" + deviceID, "TITLE.NEW_DEVICE", () -> {
                 // save device and try restart it
                 entityContext.save(new FirmataNetworkEntity().setIp(hostAddress)).restartCommunicator();
             }, messages);
-            entityContext.sendInfoMessage("FIRMATA.EVENT.FOUND_FIRMATA_DEVICE",
+            entityContext.ui().sendInfoMessage("FIRMATA.EVENT.FOUND_FIRMATA_DEVICE",
                     FlowMap.of("ID", defaultString(deviceID, "-"), "IP", hostAddress,
                             "BOARD", defaultString(board, "-")));
             udpFoundDevices.put(hostAddress,
