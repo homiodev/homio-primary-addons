@@ -5,6 +5,11 @@ import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 public class CloudServerConnectionMessageSetting implements BundleSettingPlugin<String> {
 
     @Override
+    public Class<String> getType() {
+        return String.class;
+    }
+
+    @Override
     public SettingType getSettingType() {
         return SettingType.Info;
     }

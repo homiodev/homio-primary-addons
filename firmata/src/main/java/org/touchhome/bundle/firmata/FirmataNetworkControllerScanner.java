@@ -8,10 +8,10 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.hardware.wifi.WirelessHardwareRepository;
 import org.touchhome.bundle.api.model.micro.MicroControllerScanner;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Log4j2
 @Component
@@ -30,13 +30,20 @@ public class FirmataNetworkControllerScanner implements MicroControllerScanner {
         if (gatewayIpAddress != null) {
             log.info("Starting scan for ip addresses {} and port: {}", gatewayIpAddress, port);
             String scanIp = gatewayIpAddress.substring(0, gatewayIpAddress.lastIndexOf(".") + 1);
-            ForkJoinPool forkJoinPool = new ForkJoinPool(8);
-            List<Integer> availableIpAddresses = forkJoinPool.submit(() ->
-                    IntStream.range(0, 255).parallel().filter(i -> {
-                        log.info("Check for ip: {}", scanIp + i);
-                        return wirelessHardwareRepository.pingAddress(scanIp + i, port, timeout);
-                    }).boxed().collect(Collectors.toList())
-            ).get();
+            ExecutorService executor = Executors.newFixedThreadPool(8);
+            List<Integer> availableIpAddresses = new ArrayList<>();
+            for (int i = 0; i < 255; i++) {
+                int ipSuffix = i;
+                executor.submit(() -> {
+                    log.info("Check for ip: {}", scanIp + ipSuffix);
+                    if (wirelessHardwareRepository.pingAddress(scanIp + ipSuffix, port, timeout)) {
+                        availableIpAddresses.add(ipSuffix);
+                    }
+                });
+            }
+            executor.shutdown();
+            while (!executor.isTerminated()) {
+            }
             for (int ipSuffix : availableIpAddresses) {
                 FirmataBundleEntrypoint.foundController(entityContext, null, null, scanIp + ipSuffix);
             }

@@ -1,13 +1,8 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPluginBoolean;
 
-public class ZigbeeJoinDeviceDuringScanOnlySetting implements BundleSettingPlugin<Boolean> {
-
-    @Override
-    public SettingType getSettingType() {
-        return SettingType.Boolean;
-    }
+public class ZigbeeJoinDeviceDuringScanOnlySetting implements BundleSettingPluginBoolean {
 
     @Override
     public int order() {

@@ -44,10 +44,9 @@ public class RaspberryDeviceRepository extends AbstractRepository<RaspberryDevic
         List<Map<Option, String>> links = new ArrayList<>();
         for (RaspberryGpioPin gpioPin : RaspberryGpioPin.values(PinMode.DIGITAL_INPUT, null)) {
             Map<Option, String> map = new HashMap<>();
-            map.put(Option.of(gpioPin.name(), gpioPin.toString())
-                    .addJson("group", WorkspaceBooleanGroupEntity.PREFIX)
-                    .addJson("color", gpioPin.getColor())
-                    .addJson("var", WorkspaceBooleanEntity.PREFIX), getLinkedWorkspaceBooleanVariable(gpioPin));
+            map.put(Option.of(gpioPin.name(), gpioPin.toString()).json(json ->
+                    json.put("group", WorkspaceBooleanGroupEntity.PREFIX).put("color", gpioPin.getColor())
+                            .put("var", WorkspaceBooleanEntity.PREFIX)), getLinkedWorkspaceBooleanVariable(gpioPin));
             links.add(map);
         }
         entity.setAvailableLinks(links);

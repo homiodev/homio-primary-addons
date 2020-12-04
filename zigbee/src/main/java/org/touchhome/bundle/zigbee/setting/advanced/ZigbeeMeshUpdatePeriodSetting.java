@@ -2,22 +2,17 @@ package org.touchhome.bundle.zigbee.setting.advanced;
 
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPluginSelectBoxInteger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ZigbeeMeshUpdatePeriodSetting implements BundleSettingPlugin<Integer> {
+public class ZigbeeMeshUpdatePeriodSetting implements BundleSettingPluginSelectBoxInteger {
 
     @Override
-    public SettingType getSettingType() {
-        return SettingType.SelectBox;
-    }
-
-    @Override
-    public String getDefaultValue() {
-        return "86400";
+    public int defaultValue() {
+        return 86400;
     }
 
     @Override
@@ -33,6 +28,11 @@ public class ZigbeeMeshUpdatePeriodSetting implements BundleSettingPlugin<Intege
     }
 
     @Override
+    public int[] availableValues() {
+        return new int[0];
+    }
+
+    @Override
     public int order() {
         return 1100;
     }
@@ -40,11 +40,6 @@ public class ZigbeeMeshUpdatePeriodSetting implements BundleSettingPlugin<Intege
     @Override
     public boolean isAdvanced() {
         return true;
-    }
-
-    @Override
-    public Integer parseValue(EntityContext entityContext, String value) {
-        return Integer.parseInt(value);
     }
 
     @Override

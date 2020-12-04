@@ -1,17 +1,12 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPluginText;
 
-public class ZigbeeNetworkKeySetting implements BundleSettingPlugin<String> {
+public class ZigbeeNetworkKeySetting implements BundleSettingPluginText {
 
     @Override
     public String getDefaultValue() {
         return "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
-    }
-
-    @Override
-    public SettingType getSettingType() {
-        return SettingType.Text;
     }
 
     @Override

@@ -1,0 +1,9 @@
+{
+  "SERIAL": {
+    "PORT_CLOSED": "Port <{{PORT}}> closed",
+    "NO_PORT": "Unable to find serial port with name <{{PORT}}>",
+    "NO_OPEN_PORT": "Serial port <{{PORT}}> not opened to communicate",
+    "UNABLE_OPEN": "Unable to open com port <{{PORT}}>",
+    "OPEN_SUCCESS": "Com port <{{PORT}}> opened"
+  }
+}

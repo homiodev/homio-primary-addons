@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.console.ConsolePlugin;
+import org.touchhome.bundle.api.console.TableConsolePlugin;
 import org.touchhome.bundle.api.measure.State;
 import org.touchhome.bundle.api.model.BaseEntity;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
@@ -23,14 +23,11 @@ import org.touchhome.bundle.zigbee.setting.ZigbeeDiscoveryButtonSetting;
 import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
-public class ZigBeeConsolePlugin implements ConsolePlugin {
+public class ZigBeeConsolePlugin implements TableConsolePlugin<ZigBeeConsolePlugin.ZigbeeConsoleDescription> {
 
     private final ZigBeeBundleEntrypoint zigbeeBundleContext;
     private final EntityContext entityContext;
@@ -46,11 +43,11 @@ public class ZigBeeConsolePlugin implements ConsolePlugin {
     }
 
     @Override
-    public List<? extends HasEntityIdentifier> drawEntity() {
+    public Collection<ZigbeeConsoleDescription> getValue() {
         List<ZigbeeConsoleDescription> res = new ArrayList<>();
         for (ZigBeeDevice zigBeeDevice : zigbeeBundleContext.getCoordinatorHandler().getZigBeeDevices().values()) {
             ZigBeeNodeDescription desc = zigBeeDevice.getZigBeeNodeDescription();
-            BaseEntity entity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + zigBeeDevice.getNodeIeeeAddress().toString());
+            ZigBeeDeviceEntity entity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + zigBeeDevice.getNodeIeeeAddress().toString());
             res.add(new ZigbeeConsoleDescription(
                     entity.getName(),
                     zigBeeDevice.getNodeIeeeAddress().toString(),
@@ -67,14 +64,19 @@ public class ZigBeeConsolePlugin implements ConsolePlugin {
     }
 
     @Override
-    public Map<String, Class<? extends BundleSettingPlugin>> getHeaderActions() {
+    public Map<String, Class<? extends BundleSettingPlugin<?>>> getHeaderActions() {
         return Collections.singletonMap("zigbee.start_discovery", ZigbeeDiscoveryButtonSetting.class);
+    }
+
+    @Override
+    public Class<ZigbeeConsoleDescription> getEntityClass() {
+        return ZigbeeConsoleDescription.class;
     }
 
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    private static class ZigbeeConsoleDescription implements HasEntityIdentifier {
+    public static class ZigbeeConsoleDescription implements HasEntityIdentifier {
 
         @UIField(order = 1, inlineEdit = true)
         private String name;

@@ -1,4 +1,7 @@
 {
+  "placeholder": {
+    "st_CloudProviderSetting": "Select cloud provider"
+  },
   "cloud": {
     "name": "Cloud",
     "setting": {

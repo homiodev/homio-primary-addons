@@ -1,4 +1,8 @@
 {
+  "placeholder": {
+    "st_ZigbeePortSetting": "Select ZigBee port",
+    "st_ZigbeeCoordinatorHandlerSetting": "ZigBee Coordinator"
+  },
   "zigbee:ias_fire": "Fire",
   "field": {
     "zigBeeNodeDescription": "Node Descriptor",

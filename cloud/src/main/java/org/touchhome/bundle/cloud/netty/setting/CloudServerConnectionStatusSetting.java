@@ -8,6 +8,11 @@ import org.touchhome.bundle.cloud.netty.impl.ServerConnectionStatus;
 public class CloudServerConnectionStatusSetting implements BundleSettingPlugin<ServerConnectionStatus> {
 
     @Override
+    public Class<ServerConnectionStatus> getType() {
+        return ServerConnectionStatus.class;
+    }
+
+    @Override
     public SettingType getSettingType() {
         return SettingType.Info;
     }

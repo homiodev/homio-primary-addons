@@ -12,6 +12,11 @@ import java.util.List;
 public class CloudProviderSetting implements BundleConsoleSettingPlugin<CloudProvider> {
 
     @Override
+    public Class<CloudProvider> getType() {
+        return CloudProvider.class;
+    }
+
+    @Override
     public String getDefaultValue() {
         return SshCloudProvider.class.getSimpleName();
     }

@@ -2,20 +2,15 @@ package org.touchhome.bundle.zigbee.setting.advanced;
 
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPluginSelectBoxInteger;
 
 import java.util.List;
 
-public class ZigbeePowerModeSetting implements BundleSettingPlugin<Integer> {
+public class ZigbeePowerModeSetting implements BundleSettingPluginSelectBoxInteger {
 
     @Override
-    public SettingType getSettingType() {
-        return SettingType.SelectBox;
-    }
-
-    @Override
-    public String getDefaultValue() {
-        return "1";
+    public int defaultValue() {
+        return 1;
     }
 
     @Override
@@ -24,8 +19,8 @@ public class ZigbeePowerModeSetting implements BundleSettingPlugin<Integer> {
     }
 
     @Override
-    public Integer parseValue(EntityContext entityContext, String value) {
-        return Integer.parseInt(value);
+    public int[] availableValues() {
+        return new int[0];
     }
 
     @Override

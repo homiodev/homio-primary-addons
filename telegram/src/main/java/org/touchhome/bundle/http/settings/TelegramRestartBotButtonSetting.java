@@ -1,13 +1,8 @@
 package org.touchhome.bundle.http.settings;
 
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPluginButton;
 
-public class TelegramRestartBotButtonSetting implements BundleSettingPlugin<Void> {
-
-    @Override
-    public SettingType getSettingType() {
-        return SettingType.Button;
-    }
+public class TelegramRestartBotButtonSetting implements BundleSettingPluginButton {
 
     @Override
     public int order() {

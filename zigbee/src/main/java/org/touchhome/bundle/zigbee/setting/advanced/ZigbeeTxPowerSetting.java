@@ -1,40 +1,31 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
-import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
-
-import java.util.List;
+import org.touchhome.bundle.api.setting.BundleSettingPluginSlider;
 
 /**
  * <option value="8">High</option>
  * <option value="0">Normal</option>
  */
-public class ZigbeeTxPowerSetting implements BundleSettingPlugin<Integer> {
-
-    @Override
-    public SettingType getSettingType() {
-        return SettingType.SelectBox;
-    }
-
-    @Override
-    public String getDefaultValue() {
-        return "0";
-    }
-
-    @Override
-    public List<Option> loadAvailableValues(EntityContext entityContext) {
-        return Option.range(0, 8);
-    }
-
-    @Override
-    public Integer parseValue(EntityContext entityContext, String value) {
-        return Integer.parseInt(value);
-    }
+public class ZigbeeTxPowerSetting implements BundleSettingPluginSlider {
 
     @Override
     public int order() {
         return 1400;
+    }
+
+    @Override
+    public int getMin() {
+        return 0;
+    }
+
+    @Override
+    public int getMax() {
+        return 8;
+    }
+
+    @Override
+    public int defaultValue() {
+        return 0;
     }
 
     @Override

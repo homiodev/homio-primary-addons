@@ -3,13 +3,13 @@ package org.touchhome.bundle.zigbee.handler;
 import com.zsmartsystems.zigbee.dongle.cc2531.ZigBeeDongleTiCc2531;
 import com.zsmartsystems.zigbee.transport.TransportConfig;
 import com.zsmartsystems.zigbee.transport.TransportConfigOption;
-import com.zsmartsystems.zigbee.transport.ZigBeePort.FlowControl;
 import com.zsmartsystems.zigbee.transport.ZigBeeTransportTransmit;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.api.port.PortFlowControl;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.internal.ZigBeeSerialPort;
@@ -43,8 +43,9 @@ public class CC2531Handler extends ZigBeeCoordinatorHandler {
                 entityContext,
                 entityContext.setting().getValue(ZigbeePortSetting.class),
                 entityContext.setting().getValue(ZigbeePortBaudSetting.class),
-                FlowControl.FLOWCONTROL_OUT_RTSCTS,
-                () -> this.updateStatus(Status.OFFLINE, "PORT_COMMUNICATION_ERROR"));
+                PortFlowControl.FLOWCONTROL_OUT_RTSCTS,
+                () -> this.updateStatus(Status.OFFLINE, "PORT_COMMUNICATION_ERROR"),
+                (port -> entityContext.setting().setValueSilenceRaw(ZigbeePortSetting.class, port.getSystemPortName())));
         return new ZigBeeDongleTiCc2531(serialPort);
     }
 

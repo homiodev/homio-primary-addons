@@ -1,13 +1,8 @@
 package org.touchhome.bundle.cloud.netty.setting;
 
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPluginButton;
 
-public class CloudServerRestartSetting implements BundleSettingPlugin<Void> {
-
-    @Override
-    public SettingType getSettingType() {
-        return SettingType.Button;
-    }
+public class CloudServerRestartSetting implements BundleSettingPluginButton {
 
     @Override
     public int order() {

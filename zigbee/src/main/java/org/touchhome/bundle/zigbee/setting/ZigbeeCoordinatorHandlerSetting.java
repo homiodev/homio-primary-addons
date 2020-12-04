@@ -16,6 +16,11 @@ public class ZigbeeCoordinatorHandlerSetting implements BundleSettingPlugin<ZigB
     }
 
     @Override
+    public Class<ZigBeeCoordinatorHandler> getType() {
+        return ZigBeeCoordinatorHandler.class;
+    }
+
+    @Override
     public String getDefaultValue() {
         return CC2531Handler.class.getSimpleName();
     }

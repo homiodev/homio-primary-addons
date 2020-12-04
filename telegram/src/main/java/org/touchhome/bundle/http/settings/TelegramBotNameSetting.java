@@ -1,13 +1,8 @@
 package org.touchhome.bundle.http.settings;
 
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPluginText;
 
-public class TelegramBotNameSetting implements BundleSettingPlugin<String> {
-
-    @Override
-    public SettingType getSettingType() {
-        return SettingType.Text;
-    }
+public class TelegramBotNameSetting implements BundleSettingPluginText {
 
     @Override
     public int order() {

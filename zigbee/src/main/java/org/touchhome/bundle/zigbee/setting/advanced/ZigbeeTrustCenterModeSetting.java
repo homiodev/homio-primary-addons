@@ -1,28 +1,18 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
 import com.zsmartsystems.zigbee.transport.TrustCentreJoinMode;
-import org.apache.commons.lang3.StringUtils;
-import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPluginSelectBoxEnum;
 
-import java.util.List;
-
-public class ZigbeeTrustCenterModeSetting implements BundleSettingPlugin<TrustCentreJoinMode> {
+public class ZigbeeTrustCenterModeSetting implements BundleSettingPluginSelectBoxEnum<TrustCentreJoinMode> {
 
     @Override
-    public SettingType getSettingType() {
-        return SettingType.SelectBox;
+    public Class<TrustCentreJoinMode> getType() {
+        return TrustCentreJoinMode.class;
     }
 
     @Override
-    public TrustCentreJoinMode parseValue(EntityContext entityContext, String value) {
-        return StringUtils.isEmpty(value) ? null : TrustCentreJoinMode.valueOf(value);
-    }
-
-    @Override
-    public List<Option> loadAvailableValues(EntityContext entityContext) {
-        return Option.enumWithEmpty(TrustCentreJoinMode.class);
+    public boolean allowEmpty() {
+        return true;
     }
 
     @Override

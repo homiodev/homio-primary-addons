@@ -1,17 +1,12 @@
 package org.touchhome.bundle.zigbee.setting;
 
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPluginButton;
 
-public class ZigbeeDiscoveryButtonSetting implements BundleSettingPlugin<String> {
+public class ZigbeeDiscoveryButtonSetting implements BundleSettingPluginButton {
 
     @Override
     public String getIcon() {
         return "fas fa-search-location";
-    }
-
-    @Override
-    public SettingType getSettingType() {
-        return SettingType.Button;
     }
 
     @Override

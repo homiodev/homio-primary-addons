@@ -1,0 +1,23 @@
+{
+  "placeholder": {
+    "st_SerialPortSetting": "Serial port",
+    "st_SerialPortSetting_unavailable": "Serial ports not found",
+    "st_SerialPortBaudRateSetting": "Baud Rate",
+    "st_SerialPortFlowControlSetting": "Flow control",
+    "st_SerialPortSendEndLine": "End line"
+  },
+  "serial": {
+    "setting": {
+      "st_SerialPortSetting": "Select serial port to communicate with",
+      "st_SerialPortBaudRateSetting": "Select desired baud rate for port",
+      "st_SerialPortFlowControlSetting": "Select desired flow control for port",
+      "st_SerialOpenPortSetting": "Open/Close port to communicate"
+    }
+  },
+  "selection": {
+    "NO_LINE_ENDING": "No line ending",
+    "NEW_LINE": "New line",
+    "CARRIAGE_RETURN": "Carriage return",
+    "BOTH_NL_CR": "Both NL & CR"
+  }
+}

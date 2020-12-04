@@ -1,18 +1,14 @@
 package org.touchhome.bundle.zigbee.setting;
 
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.BundleSettingPluginBoolean;
 
-public class ZigbeeLogEventsButtonsSetting implements BundleSettingPlugin<Boolean> {
+public class ZigbeeLogEventsButtonsSetting implements BundleSettingPluginBoolean {
 
     @Override
     public String getDefaultValue() {
         return Boolean.TRUE.toString();
     }
 
-    @Override
-    public SettingType getSettingType() {
-        return SettingType.Boolean;
-    }
 
     @Override
     public int order() {

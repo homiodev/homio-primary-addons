@@ -18,6 +18,8 @@ import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static org.touchhome.bundle.api.util.TouchHomeUtils.RED_COLOR;
+
 @Log4j2
 @Getter
 class ZigBeeDiscoveryService {
@@ -86,12 +88,12 @@ class ZigBeeDiscoveryService {
         coordinatorHandlers.scanStart(duration);
 
         NotificationEntityJSON zigbeeScanEntity = new NotificationEntityJSON("zigbee-scan").setName("zigbee.start_scan");
-        this.entityContext.ui().showAlwaysOnViewNotification(zigbeeScanEntity, duration, "#e65100", null);
+        this.entityContext.ui().showAlwaysOnViewNotification(zigbeeScanEntity, duration, RED_COLOR, null);
 
         scheduler.schedule(() -> {
             log.info("Scanning stopped");
             scanStarted = false;
-            this.entityContext.ui().hideAlwaysOnViewNotification(zigbeeScanEntity);
+            this.entityContext.ui().hideAlwaysOnViewNotification(zigbeeScanEntity.getEntityID());
         }, duration, TimeUnit.SECONDS);
     }
 

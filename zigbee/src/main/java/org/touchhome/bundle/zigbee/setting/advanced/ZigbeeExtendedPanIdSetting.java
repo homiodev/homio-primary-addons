@@ -7,6 +7,11 @@ import org.touchhome.bundle.api.setting.BundleSettingPlugin;
 public class ZigbeeExtendedPanIdSetting implements BundleSettingPlugin<ExtendedPanId> {
 
     @Override
+    public Class<ExtendedPanId> getType() {
+        return ExtendedPanId.class;
+    }
+
+    @Override
     public String getDefaultValue() {
         return "0000000000000000";
     }

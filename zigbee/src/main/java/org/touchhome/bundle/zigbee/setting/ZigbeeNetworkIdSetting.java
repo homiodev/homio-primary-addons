@@ -15,6 +15,11 @@ import java.util.stream.Collectors;
 public class ZigbeeNetworkIdSetting implements BundleSettingPlugin<String> {
 
     @Override
+    public Class<String> getType() {
+        return String.class;
+    }
+
+    @Override
     public SettingType getSettingType() {
         return SettingType.TextSelectBoxDynamic;
     }
