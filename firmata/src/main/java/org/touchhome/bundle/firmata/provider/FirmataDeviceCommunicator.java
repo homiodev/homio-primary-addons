@@ -110,7 +110,7 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
             FirmataWatchdog watchdog = new FirmataWatchdog(TimeUnit.MINUTES.toMillis(entityContext.setting().getValue(FirmataWatchDogIntervalSetting.class)), () -> {
                 entityContext.updateDelayed(entity, t -> t.setJoined(Status.ERROR));
                 entityContext.ui().addHeaderNotification(NotificationEntityJSON.warn(entity.getEntityID())
-                        .setName("Firmata-" + entity.getEntityID()).setDescription("Firmata Watchdog error"));
+                        .setName("Firmata-" + entity.getEntityID()).setValue("Firmata Watchdog error"));
                 this.entityContext.event().fireEvent(firmataErrorEvent);
             });
 
@@ -190,7 +190,7 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
             entityContext.updateDelayed(entity, t -> t.setStatus(status).setStatusMessage(statusMessage));
 
             entityContext.ui().addHeaderNotification(NotificationEntityJSON.warn(entity.getEntityID())
-                    .setName("A-" + entity.getEntityID()).setDescription("Communicator status: " + status));
+                    .setName("A-" + entity.getEntityID()).setValue("Communicator status: " + status));
         }
         if (status == Status.OFFLINE || status == Status.ERROR) {
             this.entityContext.event().fireEvent(firmataErrorEvent);

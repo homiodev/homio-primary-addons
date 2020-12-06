@@ -1,0 +1,19 @@
+{
+  "placeholder": {
+    "st_ArduinoPortSetting": "Arduino port",
+    "st_ArduinoPortSetting_unavailable": "No ports available",
+    "st_ArduinoGetBoardsSetting": "Board"
+  },
+  "arduino": {
+    "setting": {
+      "st_ArduinoPortSetting": "Select arduino port",
+      "st_ArduinoGetBoardInfoSetting": "Get board info",
+      "st_ArduinoGetBoardsSetting": "Select board"
+    }
+  },
+  "setting": {
+    "console": {
+      "st_ConsoleArduinoFetchEsp8266PackagesSetting": "Download esp8266 boards"
+    }
+  }
+}

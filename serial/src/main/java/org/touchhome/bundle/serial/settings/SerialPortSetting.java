@@ -1,9 +1,10 @@
 package org.touchhome.bundle.serial.settings;
 
-import org.touchhome.bundle.api.EntityContext;
+import com.fazecast.jSerialComm.SerialPort;
 import org.touchhome.bundle.api.setting.BundleSettingPluginPort;
+import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
 
-public class SerialPortSetting implements BundleSettingPluginPort {
+public class SerialPortSetting implements BundleHeaderSettingPlugin<SerialPort>, BundleSettingPluginPort {
 
     @Override
     public String getIcon() {
@@ -13,16 +14,6 @@ public class SerialPortSetting implements BundleSettingPluginPort {
     @Override
     public int order() {
         return 100;
-    }
-
-    @Override
-    public boolean transientState() {
-        return true;
-    }
-
-    @Override
-    public boolean isVisible(EntityContext entityContext) {
-        return false;
     }
 
     @Override

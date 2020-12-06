@@ -1,13 +1,18 @@
 package org.touchhome.bundle.serial.settings;
 
-import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.setting.BundleSettingPluginSelectBoxInteger;
+import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
 
-public class SerialPortBaudRateSetting implements BundleSettingPluginSelectBoxInteger {
+public class SerialPortBaudRateSetting implements BundleHeaderSettingPlugin<Integer>, BundleSettingPluginSelectBoxInteger {
 
     @Override
     public String getIcon() {
         return "fas fa-tachometer-alt";
+    }
+
+    @Override
+    public Integer getMaxWidth() {
+        return 85;
     }
 
     @Override
@@ -26,17 +31,12 @@ public class SerialPortBaudRateSetting implements BundleSettingPluginSelectBoxIn
     }
 
     @Override
+    public boolean transientState() {
+        return false;
+    }
+
+    @Override
     public int[] availableValues() {
         return new int[]{300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 31250, 38400, 57600, 115200};
-    }
-
-    @Override
-    public boolean transientState() {
-        return true;
-    }
-
-    @Override
-    public boolean isVisible(EntityContext entityContext) {
-        return false;
     }
 }

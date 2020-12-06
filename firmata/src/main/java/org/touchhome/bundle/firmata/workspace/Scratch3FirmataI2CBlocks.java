@@ -9,7 +9,7 @@ import org.touchhome.bundle.api.scratch.MenuBlock;
 import org.touchhome.bundle.api.scratch.Scratch3Block;
 import org.touchhome.bundle.api.scratch.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
-import org.touchhome.bundle.firmata.FirmataBundleEntrypoint;
+import org.touchhome.bundle.firmata.FirmataBundleEntryPoint;
 
 @Log4j2
 @Getter
@@ -22,9 +22,9 @@ public class Scratch3FirmataI2CBlocks extends Scratch3FirmataBaseBlock {
     private final Scratch3Block getBME280Value;
 
     public Scratch3FirmataI2CBlocks(EntityContext entityContext,
-                                    FirmataBundleEntrypoint firmataBundleEntrypoint,
+                                    FirmataBundleEntryPoint firmataBundleEntryPoint,
                                     BroadcastLockManager broadcastLockManager) {
-        super("#E0D225", entityContext, firmataBundleEntrypoint, broadcastLockManager, "ic");
+        super("#E0D225", entityContext, firmataBundleEntryPoint, broadcastLockManager, "ic");
 
         this.bme280ValueMenu = MenuBlock.ofStatic("bme280ValueMenu", BME280ValueMenu.class, BME280ValueMenu.Temp);
 

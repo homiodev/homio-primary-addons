@@ -32,12 +32,12 @@ public class NettyCloudProvider implements CloudProvider {
         UserEntity user = entityContext.getUser();
         Set<NotificationEntityJSON> notifications = new HashSet<>();
         if (user != null && user.getKeystore() == null) {
-            notifications.add(NotificationEntityJSON.danger("keystore").setName("Keystore").setDescription("Keystore not found"));
+            notifications.add(NotificationEntityJSON.danger("keystore").setName("Keystore").setValue("Keystore not found"));
         }
         ServerConnectionStatus serverConnectionStatus = entityContext.setting().getValue(CloudServerConnectionStatusSetting.class);
         notifications.add(new NotificationEntityJSON("cloud-status")
                 .setName("Cloud status")
-                .setDescription(entityContext.setting().getValue(CloudServerConnectionMessageSetting.class))
+                .setValue(entityContext.setting().getValue(CloudServerConnectionMessageSetting.class))
                 .setNotificationType(serverConnectionStatus == ServerConnectionStatus.CONNECTED ? NotificationType.info : NotificationType.warning));
 
         return notifications;

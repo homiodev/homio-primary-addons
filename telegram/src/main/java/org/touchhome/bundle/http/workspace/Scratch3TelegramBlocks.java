@@ -10,7 +10,7 @@ import org.touchhome.bundle.api.model.UserEntity;
 import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
-import org.touchhome.bundle.http.TelegramEntrypoint;
+import org.touchhome.bundle.http.TelegramEntryPoint;
 import org.touchhome.bundle.http.service.TelegramService;
 
 import java.util.ArrayList;
@@ -39,8 +39,8 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
 
     public Scratch3TelegramBlocks(TelegramService telegramService, EntityContext entityContext,
                                   BroadcastLockManager broadcastLockManager,
-                                  TelegramEntrypoint telegramEntrypoint) {
-        super("#73868c", entityContext, telegramEntrypoint);
+                                  TelegramEntryPoint telegramEntryPoint) {
+        super("#73868c", entityContext, telegramEntryPoint);
         this.telegramService = telegramService;
         this.broadcastLockManager = broadcastLockManager;
 

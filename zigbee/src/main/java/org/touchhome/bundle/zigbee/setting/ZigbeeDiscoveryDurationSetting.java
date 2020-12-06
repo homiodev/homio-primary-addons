@@ -5,12 +5,12 @@ import org.touchhome.bundle.api.setting.BundleSettingPluginSlider;
 public class ZigbeeDiscoveryDurationSetting implements BundleSettingPluginSlider {
 
     @Override
-    public int getMin() {
+    public Integer getMin() {
         return 60;
     }
 
     @Override
-    public int getMax() {
+    public Integer getMax() {
         return 254;
     }
 

@@ -8,7 +8,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
-import org.touchhome.bundle.xaomi.XaomiEntrypoint;
+import org.touchhome.bundle.xaomi.XaomiEntryPoint;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
@@ -40,8 +40,8 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
 
     public Scratch3XaomiBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
                                ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-                               XaomiEntrypoint xaomiEntrypoint) {
-        super("#856d21", entityContext, xaomiEntrypoint);
+                               XaomiEntryPoint xaomiEntryPoint) {
+        super("#856d21", entityContext, xaomiEntryPoint);
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
         this.entityContext.setting().listenValue(ZigbeeStatusSetting.class, "zb-wp-xaomi-workspace", status -> {

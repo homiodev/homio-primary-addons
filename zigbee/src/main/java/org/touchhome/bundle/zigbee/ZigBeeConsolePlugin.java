@@ -6,9 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.console.TableConsolePlugin;
+import org.touchhome.bundle.api.console.ConsolePluginTable;
 import org.touchhome.bundle.api.measure.State;
-import org.touchhome.bundle.api.model.BaseEntity;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.setting.BundleSettingPlugin;
@@ -27,9 +26,9 @@ import java.util.*;
 
 @Component
 @RequiredArgsConstructor
-public class ZigBeeConsolePlugin implements TableConsolePlugin<ZigBeeConsolePlugin.ZigbeeConsoleDescription> {
+public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlugin.ZigbeeConsoleDescription> {
 
-    private final ZigBeeBundleEntrypoint zigbeeBundleContext;
+    private final ZigBeeBundleEntryPoint zigbeeBundleContext;
     private final EntityContext entityContext;
 
     @Override

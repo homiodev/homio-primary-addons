@@ -7,7 +7,7 @@ import com.pivovarit.function.ThrowingFunction;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.firmata4j.Pin;
-import org.touchhome.bundle.api.BundleEntrypoint;
+import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.scratch.MenuBlock;
@@ -32,9 +32,9 @@ public abstract class Scratch3FirmataBaseBlock extends Scratch3ExtensionBlocks {
     final MenuBlock.ServerMenuBlock firmataIdMenu;
     final BroadcastLockManager broadcastLockManager;
 
-    public Scratch3FirmataBaseBlock(String color, EntityContext entityContext, BundleEntrypoint bundleEntrypoint,
+    public Scratch3FirmataBaseBlock(String color, EntityContext entityContext, BundleEntryPoint bundleEntryPoint,
                                     BroadcastLockManager broadcastLockManager, String idSuffix) {
-        super(color, entityContext, bundleEntrypoint, idSuffix);
+        super(color, entityContext, bundleEntryPoint, idSuffix);
         this.entityContext = entityContext;
         this.broadcastLockManager = broadcastLockManager;
         this.firmataIdMenu = MenuBlock.ofServer(FIRMATA_ID_MENU, "rest/item/type/" + FirmataBaseEntity.class.getSimpleName(),

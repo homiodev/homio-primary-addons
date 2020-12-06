@@ -45,8 +45,8 @@ final class Scratch3ZigBeeButtonsBlocks {
 
     private final Scratch3Block turnOnOfButtonCommand;
     private final Scratch3Block turnOnOf2XButtonCommand;
-    private final Scratch3ZigbeeBlock buttonStatus;
-    private final Scratch3ZigbeeBlock button2XStatus;
+    private final Scratch3ZigBeeBlock buttonStatus;
+    private final Scratch3ZigBeeBlock button2XStatus;
 
     private final ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener;
     private final EntityContext entityContext;
@@ -64,7 +64,7 @@ final class Scratch3ZigBeeButtonsBlocks {
         this.buttonEndpointValueMenu = MenuBlock.ofStatic("buttonEndpointValueMenu", ButtonEndpoint.class, ButtonEndpoint.Left);
         this.buttonEndpointGetterValueMenu = MenuBlock.ofStatic("buttonEndpointGetterValueMenu", ButtonEndpointGetter.class, ButtonEndpointGetter.Left);
 
-        this.buttonStatus = Scratch3Block.ofEvaluate(70, "button_value", BlockType.reporter, "button value [BUTTON_SENSOR]", this::buttonStatusEvaluate, Scratch3ZigbeeBlock.class);
+        this.buttonStatus = Scratch3Block.ofEvaluate(70, "button_value", BlockType.reporter, "button value [BUTTON_SENSOR]", this::buttonStatusEvaluate, Scratch3ZigBeeBlock.class);
         this.buttonStatus.addArgument(BUTTON_SENSOR, this.buttonSensorMenu);
         this.buttonStatus.overrideColor("#853139");
         this.buttonStatus.addZigBeeEventHandler((ieeeAddress, endpointRef, consumer) -> zigBeeDeviceUpdateValueListener.addModelIdentifierListener("lumi.remote", consumer));
@@ -85,7 +85,7 @@ final class Scratch3ZigBeeButtonsBlocks {
         this.turnOnOfButtonCommand.overrideColor("#853139");
 
         this.button2XStatus = Scratch3Block.ofEvaluate(100, "double_button_value", BlockType.reporter,
-                "button [BUTTON_ENDPOINT] value [DOUBLE_BUTTON_SENSOR]", this::doubleButtonStatusEvaluate, Scratch3ZigbeeBlock.class);
+                "button [BUTTON_ENDPOINT] value [DOUBLE_BUTTON_SENSOR]", this::doubleButtonStatusEvaluate, Scratch3ZigBeeBlock.class);
         this.button2XStatus.addArgument(DOUBLE_BUTTON_SENSOR, this.doubleButtonSensorMenu);
         this.button2XStatus.addArgument(BUTTON_ENDPOINT, this.buttonEndpointGetterValueMenu);
         this.button2XStatus.overrideColor("#A70F1D");

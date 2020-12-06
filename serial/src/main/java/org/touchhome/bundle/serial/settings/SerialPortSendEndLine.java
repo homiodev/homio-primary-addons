@@ -2,14 +2,20 @@ package org.touchhome.bundle.serial.settings;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.setting.BundleSettingPluginSelectBoxEnum;
+import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
 
-public class SerialPortSendEndLine implements BundleSettingPluginSelectBoxEnum<SerialPortSendEndLine.EndLineType> {
+public class SerialPortSendEndLine implements BundleHeaderSettingPlugin<SerialPortSendEndLine.EndLineType>,
+        BundleSettingPluginSelectBoxEnum<SerialPortSendEndLine.EndLineType> {
 
     @Override
     public String getIcon() {
         return "fas fa-digital-tachograph";
+    }
+
+    @Override
+    public Integer getMaxWidth() {
+        return 135;
     }
 
     @Override
@@ -24,11 +30,6 @@ public class SerialPortSendEndLine implements BundleSettingPluginSelectBoxEnum<S
 
     @Override
     public boolean transientState() {
-        return true;
-    }
-
-    @Override
-    public boolean isVisible(EntityContext entityContext) {
         return false;
     }
 

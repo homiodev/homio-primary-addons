@@ -13,8 +13,8 @@ import org.touchhome.bundle.zigbee.*;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
 import org.touchhome.bundle.zigbee.setting.ZigbeeCoordinatorHandlerSetting;
-import org.touchhome.bundle.zigbee.workspace.Scratch3ZigbeeBlock;
-import org.touchhome.bundle.zigbee.workspace.Scratch3ZigbeeExtensionBlocks;
+import org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlock;
+import org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeExtensionBlocks;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 import java.util.*;
@@ -25,14 +25,14 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 @Repository
 public class ZigBeeDeviceRepository extends AbstractRepository<ZigBeeDeviceEntity> implements HasWorkspaceVariableLinkAbility {
 
-    private final ZigBeeBundleEntrypoint zigbeeBundleContext;
+    private final ZigBeeBundleEntryPoint zigbeeBundleContext;
     private final EntityContext entityContext;
     private final ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener;
     private final List<Scratch3Block> zigbeeBlocks;
 
-    public ZigBeeDeviceRepository(ZigBeeBundleEntrypoint zigbeeBundleContext, EntityContext entityContext,
+    public ZigBeeDeviceRepository(ZigBeeBundleEntryPoint zigbeeBundleContext, EntityContext entityContext,
                                   ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-                                  List<Scratch3ZigbeeExtensionBlocks> scratch3ZigbeeExtensionBlocks) {
+                                  List<Scratch3ZigBeeExtensionBlocks> scratch3ZigbeeExtensionBlocks) {
         super(ZigBeeDeviceEntity.class, ZigBeeDeviceEntity.PREFIX);
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
         this.zigbeeBundleContext = zigbeeBundleContext;
@@ -107,8 +107,8 @@ public class ZigBeeDeviceRepository extends AbstractRepository<ZigBeeDeviceEntit
 
     private void createVariableLink(ZigBeeConverterEndpoint zigBeeConverterEndpoint, ZigBeeDevice zigBeeDevice, String varGroup, String varName) {
         for (Scratch3Block scratch3Block : this.zigbeeBlocks) {
-            if (scratch3Block instanceof Scratch3ZigbeeBlock) {
-                Scratch3ZigbeeBlock scratch3ZigbeeBlock = (Scratch3ZigbeeBlock) scratch3Block;
+            if (scratch3Block instanceof Scratch3ZigBeeBlock) {
+                Scratch3ZigBeeBlock scratch3ZigbeeBlock = (Scratch3ZigBeeBlock) scratch3Block;
                 if (scratch3ZigbeeBlock.matchLink(zigBeeConverterEndpoint, zigBeeDevice)) {
                     scratch3ZigbeeBlock.getZigBeeLinkGenerator().handle(zigBeeConverterEndpoint, zigBeeDevice, varGroup, varName);
                     return;

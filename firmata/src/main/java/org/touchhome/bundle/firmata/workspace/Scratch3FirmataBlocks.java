@@ -16,7 +16,7 @@ import org.touchhome.bundle.api.scratch.Scratch3Block;
 import org.touchhome.bundle.api.scratch.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
-import org.touchhome.bundle.firmata.FirmataBundleEntrypoint;
+import org.touchhome.bundle.firmata.FirmataBundleEntryPoint;
 import org.touchhome.bundle.firmata.model.FirmataBaseEntity;
 import org.touchhome.bundle.firmata.provider.command.FirmataCommand;
 import org.touchhome.bundle.firmata.provider.command.FirmataGetTimeValueCommand;
@@ -56,10 +56,10 @@ public class Scratch3FirmataBlocks extends Scratch3FirmataBaseBlock {
     private final Scratch3Block setServoConfig;
     private final Scratch3Block delay;
 
-    public Scratch3FirmataBlocks(EntityContext entityContext, FirmataBundleEntrypoint firmataBundleEntrypoint,
+    public Scratch3FirmataBlocks(EntityContext entityContext, FirmataBundleEntryPoint firmataBundleEntryPoint,
                                  BroadcastLockManager broadcastLockManager,
                                  FirmataGetTimeValueCommand getTimeValueCommand) {
-        super("#C9BF43", entityContext, firmataBundleEntrypoint, broadcastLockManager, null);
+        super("#C9BF43", entityContext, firmataBundleEntryPoint, broadcastLockManager, null);
         this.getTimeValueCommand = getTimeValueCommand;
 
         // Menu

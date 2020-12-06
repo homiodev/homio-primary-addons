@@ -12,7 +12,7 @@ import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
-import org.touchhome.bundle.raspberry.RaspberryEntrypoint;
+import org.touchhome.bundle.raspberry.RaspberryEntryPoint;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
 
 import java.util.function.Consumer;
@@ -39,8 +39,8 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
     private Scratch3Block writePwmPin;
 
     public Scratch3RaspberryBlocks(RaspberryGPIOService raspberryGPIOService, BroadcastLockManager broadcastLockManager,
-                                   EntityContext entityContext, RaspberryEntrypoint raspberryEntrypoint) {
-        super("#83be41", entityContext, raspberryEntrypoint);
+                                   EntityContext entityContext, RaspberryEntryPoint raspberryEntryPoint) {
+        super("#83be41", entityContext, raspberryEntryPoint);
         this.raspberryGPIOService = raspberryGPIOService;
         this.broadcastLockManager = broadcastLockManager;
 

@@ -2,7 +2,6 @@ package org.touchhome.bundle.serial.settings;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.port.PortFlowControl;
 import org.touchhome.bundle.api.setting.BundleSettingPluginSelectBoxEnum;
 
@@ -11,6 +10,11 @@ public class SerialPortFlowControlSetting implements BundleSettingPluginSelectBo
     @Override
     public String getIcon() {
         return "fas fa-wind";
+    }
+
+    @Override
+    public Integer getMaxWidth() {
+        return 110;
     }
 
     @Override
@@ -25,11 +29,6 @@ public class SerialPortFlowControlSetting implements BundleSettingPluginSelectBo
 
     @Override
     public boolean transientState() {
-        return true;
-    }
-
-    @Override
-    public boolean isVisible(EntityContext entityContext) {
         return false;
     }
 

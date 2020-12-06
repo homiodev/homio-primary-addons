@@ -68,7 +68,7 @@ public class NettyClientService {
 
     private void connectToServer() {
         UserEntity user = entityContext.getEntity(ADMIN_USER);
-        if (user.isPasswordNotSet()) {
+        if (user.isPasswordNotSet(null)) {
             updateConnectionStatus(serverConnectionStatus, "CLOUD.USER_HAS_NO_PASSWORD");
             log.warn("Unable start server discovering. User password is empty");
             return;

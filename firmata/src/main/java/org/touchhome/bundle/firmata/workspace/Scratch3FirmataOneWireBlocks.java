@@ -10,7 +10,7 @@ import org.touchhome.bundle.api.scratch.MenuBlock;
 import org.touchhome.bundle.api.scratch.Scratch3Block;
 import org.touchhome.bundle.api.scratch.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
-import org.touchhome.bundle.firmata.FirmataBundleEntrypoint;
+import org.touchhome.bundle.firmata.FirmataBundleEntryPoint;
 import org.touchhome.bundle.firmata.provider.util.OneWireDevice;
 
 import java.nio.ByteBuffer;
@@ -28,9 +28,9 @@ public class Scratch3FirmataOneWireBlocks extends Scratch3FirmataBaseBlock {
     boolean sendConfig = false;
 
     public Scratch3FirmataOneWireBlocks(EntityContext entityContext,
-                                        FirmataBundleEntrypoint firmataBundleEntrypoint,
+                                        FirmataBundleEntryPoint firmataBundleEntryPoint,
                                         BroadcastLockManager broadcastLockManager) {
-        super("#83A044", entityContext, firmataBundleEntrypoint, broadcastLockManager, "onewire");
+        super("#83A044", entityContext, firmataBundleEntryPoint, broadcastLockManager, "onewire");
 
         this.pinMenu1Wire = MenuBlock.ofServer(PIN, REST_PIN + Pin.Mode.ONEWIRE).setDependency(firmataIdMenu);
         this.menuTemperatureAddress = MenuBlock.ofServer("pinMenu1WireAddress", ONE_REST + ONE_WIRE.DS18B20.TEMPERATURE_FAMILY).setDependency(firmataIdMenu, this.pinMenu1Wire);

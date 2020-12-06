@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.console.CommunicatorConsolePlugin;
+import org.touchhome.bundle.api.console.ConsolePluginCommunicator;
+import org.touchhome.bundle.api.json.ActionResponse;
 import org.touchhome.bundle.api.setting.BundleSettingPlugin;
-import org.touchhome.bundle.api.ui.ToastrException;
 import org.touchhome.bundle.api.util.FlowMap;
 import org.touchhome.bundle.serial.settings.*;
 
@@ -20,7 +20,7 @@ import static org.touchhome.bundle.api.util.TouchHomeUtils.RED_COLOR;
 
 @Component
 @RequiredArgsConstructor
-public class SerialPortConsolePlugin implements CommunicatorConsolePlugin {
+public class SerialPortConsolePlugin implements ConsolePluginCommunicator {
 
     private final EntityContext entityContext;
     private RawSerialPortCommunicator rawSerialPortCommunicator;
@@ -99,7 +99,7 @@ public class SerialPortConsolePlugin implements CommunicatorConsolePlugin {
 
     @Override
     @SneakyThrows
-    public void commandReceived(String value) {
+    public ActionResponse commandReceived(String value) {
         if (rawSerialPortCommunicator != null) {
             ComplexString data = ComplexString.of(value, System.currentTimeMillis(), "#81A986", true);
             try {
@@ -111,8 +111,9 @@ public class SerialPortConsolePlugin implements CommunicatorConsolePlugin {
             }
         } else {
             SerialPort commPort = entityContext.setting().getValue(SerialPortSetting.class);
-            throw new ToastrException("SERIAL.NO_OPEN_PORT", "PORT", commPort == null ? "-" : commPort.getSystemPortName());
+            return new ActionResponse("SERIAL.NO_OPEN_PORT", "PORT", commPort == null ? "-" : commPort.getSystemPortName(), ActionResponse.ResponseAction.ShowErrorMsg);
         }
+        return null;
     }
 
     @Override

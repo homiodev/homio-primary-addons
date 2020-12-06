@@ -45,7 +45,7 @@ public class FirmataNetworkControllerScanner implements MicroControllerScanner {
             while (!executor.isTerminated()) {
             }
             for (int ipSuffix : availableIpAddresses) {
-                FirmataBundleEntrypoint.foundController(entityContext, null, null, scanIp + ipSuffix);
+                FirmataBundleEntryPoint.foundController(entityContext, null, null, scanIp + ipSuffix);
             }
             log.info("Done scan for ip addresses {} and port: {}. Found {} devices",
                     gatewayIpAddress, port, availableIpAddresses.size());

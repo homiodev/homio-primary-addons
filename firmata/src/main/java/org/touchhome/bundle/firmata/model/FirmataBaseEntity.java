@@ -68,12 +68,12 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
         if (firmataDeviceCommunicator != null) {
             try {
                 String response = firmataDeviceCommunicator.restart();
-                return NotificationEntityJSON.success(getTitle()).setDescription(response);
+                return NotificationEntityJSON.success(getTitle()).setValue(response);
             } catch (Exception ex) {
-                return NotificationEntityJSON.danger(getTitle()).setDescription(ex.getMessage());
+                return NotificationEntityJSON.danger(getTitle()).setValue(ex.getMessage());
             }
         }
-        return NotificationEntityJSON.warn(getTitle()).setDescription("ACTION.COMMUNICATOR.NOT_FOUND");
+        return NotificationEntityJSON.warn(getTitle()).setValue("ACTION.COMMUNICATOR.NOT_FOUND");
     }
 
     @JsonIgnore

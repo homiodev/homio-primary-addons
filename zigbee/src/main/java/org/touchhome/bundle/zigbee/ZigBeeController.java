@@ -7,7 +7,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 
@@ -20,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ZigBeeController {
     private final EntityContext entityContext;
-    private final ZigBeeBundleEntrypoint zigbeeBundleContext;
+    private final ZigBeeBundleEntryPoint zigbeeBundleContext;
 
     @GetMapping("option/zcl/{clusterId}")
     public List<Option> filterByClusterId(@PathVariable("clusterId") int clusterId,

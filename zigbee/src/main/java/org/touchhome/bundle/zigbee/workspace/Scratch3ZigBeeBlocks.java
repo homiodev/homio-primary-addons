@@ -10,7 +10,7 @@ import org.touchhome.bundle.api.model.workspace.var.WorkspaceVariableEntity;
 import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
-import org.touchhome.bundle.zigbee.ZigBeeBundleEntrypoint;
+import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 @Getter
 @Component
-public class Scratch3ZigBeeBlocks extends Scratch3ZigbeeExtensionBlocks {
+public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
 
     public static final String ZIGBEE__BASE_URL = "rest/zigbee/option/";
 
@@ -43,8 +43,8 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigbeeExtensionBlocks {
 
     public Scratch3ZigBeeBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
                                 ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-                                ZigBeeBundleEntrypoint zigBeeBundleEntrypoint) {
-        super("#6d4747", entityContext, zigBeeBundleEntrypoint, null);
+                                ZigBeeBundleEntryPoint zigBeeBundleEntryPoint) {
+        super("#6d4747", entityContext, zigBeeBundleEntryPoint, null);
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
         this.entityContext.setting().listenValue(ZigbeeStatusSetting.class, "zb-wp-status", status -> {
@@ -176,8 +176,8 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigbeeExtensionBlocks {
         BroadcastLock<ScratchDeviceState> lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
         boolean availableReceiveEvents = false;
 
-        if (scratch3Block instanceof Scratch3ZigbeeBlock) {
-            for (Scratch3ZigbeeBlock.ZigBeeEventHandler eventConsumer : ((Scratch3ZigbeeBlock) scratch3Block).getEventConsumers()) {
+        if (scratch3Block instanceof Scratch3ZigBeeBlock) {
+            for (Scratch3ZigBeeBlock.ZigBeeEventHandler eventConsumer : ((Scratch3ZigBeeBlock) scratch3Block).getEventConsumers()) {
                 availableReceiveEvents = true;
                 eventConsumer.handle(ieeeAddress, endpointRef, state -> lock.signalAll());
             }

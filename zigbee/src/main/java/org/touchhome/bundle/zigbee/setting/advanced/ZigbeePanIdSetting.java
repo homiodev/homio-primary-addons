@@ -5,12 +5,12 @@ import org.touchhome.bundle.api.setting.BundleSettingPluginInteger;
 public class ZigbeePanIdSetting implements BundleSettingPluginInteger {
 
     @Override
-    public int getMin() {
+    public Integer getMin() {
         return 1;
     }
 
     @Override
-    public int getMax() {
+    public Integer getMax() {
         return 65535;
     }
 

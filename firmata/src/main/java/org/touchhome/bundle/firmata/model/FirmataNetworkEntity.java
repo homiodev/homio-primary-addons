@@ -12,7 +12,7 @@ import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
-import org.touchhome.bundle.firmata.FirmataBundleEntrypoint;
+import org.touchhome.bundle.firmata.FirmataBundleEntryPoint;
 import org.touchhome.bundle.firmata.provider.FirmataDeviceCommunicator;
 import org.touchhome.bundle.firmata.provider.command.PendingRegistrationContext;
 
@@ -36,7 +36,7 @@ public class FirmataNetworkEntity extends FirmataBaseEntity<FirmataNetworkEntity
     public FirmataNetworkEntity setIp(String ip) {
         setJsonData("ip", ip);
 
-        FirmataBundleEntrypoint.UdpPayload udpPayload = FirmataBundleEntrypoint.getUdpFoundDevices().get(ip);
+        FirmataBundleEntryPoint.UdpPayload udpPayload = FirmataBundleEntryPoint.getUdpFoundDevices().get(ip);
         if (udpPayload != null) {
             setTarget(udpPayload.getDeviceID());
             setBoardType(udpPayload.getBoard());
@@ -82,7 +82,7 @@ public class FirmataNetworkEntity extends FirmataBaseEntity<FirmataNetworkEntity
 
         @Override
         public List<Option> loadOptions(Object parameter, BaseEntity baseEntity, EntityContext entityContext) {
-            Map<String, FirmataBundleEntrypoint.UdpPayload> udpFoundDevices = FirmataBundleEntrypoint.getUdpFoundDevices();
+            Map<String, FirmataBundleEntryPoint.UdpPayload> udpFoundDevices = FirmataBundleEntryPoint.getUdpFoundDevices();
             return udpFoundDevices.entrySet().stream().map(e -> Option.of(e.getKey(), e.getValue().toString())).collect(Collectors.toList());
         }
     }
