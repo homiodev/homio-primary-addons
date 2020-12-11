@@ -10,7 +10,7 @@ import org.touchhome.bundle.api.console.ConsolePluginTable;
 import org.touchhome.bundle.api.measure.State;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorBooleanMatch;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
@@ -18,15 +18,15 @@ import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.ui.method.UIMethodAction;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.ZigbeeDiscoveryButtonSetting;
-import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
+import org.touchhome.bundle.zigbee.setting.header.ConsoleHeaderZigBeeDiscoveryButtonSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 import java.util.*;
 
 @Component
 @RequiredArgsConstructor
-public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlugin.ZigbeeConsoleDescription> {
+public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlugin.ZigBeeConsoleDescription> {
 
     private final ZigBeeBundleEntryPoint zigbeeBundleContext;
     private final EntityContext entityContext;
@@ -38,16 +38,16 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
     @Override
     public boolean isEnabled() {
-        return entityContext.setting().getValue(ZigbeeStatusSetting.class).isOnline();
+        return entityContext.setting().getValue(ZigBeeStatusSetting.class).isOnline();
     }
 
     @Override
-    public Collection<ZigbeeConsoleDescription> getValue() {
-        List<ZigbeeConsoleDescription> res = new ArrayList<>();
+    public Collection<ZigBeeConsoleDescription> getValue() {
+        List<ZigBeeConsoleDescription> res = new ArrayList<>();
         for (ZigBeeDevice zigBeeDevice : zigbeeBundleContext.getCoordinatorHandler().getZigBeeDevices().values()) {
             ZigBeeNodeDescription desc = zigBeeDevice.getZigBeeNodeDescription();
             ZigBeeDeviceEntity entity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + zigBeeDevice.getNodeIeeeAddress().toString());
-            res.add(new ZigbeeConsoleDescription(
+            res.add(new ZigBeeConsoleDescription(
                     entity.getName(),
                     zigBeeDevice.getNodeIeeeAddress().toString(),
                     desc.getDeviceStatus(),
@@ -63,19 +63,19 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
     }
 
     @Override
-    public Map<String, Class<? extends BundleSettingPlugin<?>>> getHeaderActions() {
-        return Collections.singletonMap("zigbee.start_discovery", ZigbeeDiscoveryButtonSetting.class);
+    public Map<String, Class<? extends BundleHeaderSettingPlugin<?>>> getHeaderActions() {
+        return Collections.singletonMap("zigbee.start_discovery", ConsoleHeaderZigBeeDiscoveryButtonSetting.class);
     }
 
     @Override
-    public Class<ZigbeeConsoleDescription> getEntityClass() {
-        return ZigbeeConsoleDescription.class;
+    public Class<ZigBeeConsoleDescription> getEntityClass() {
+        return ZigBeeConsoleDescription.class;
     }
 
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ZigbeeConsoleDescription implements HasEntityIdentifier {
+    public static class ZigBeeConsoleDescription implements HasEntityIdentifier {
 
         @UIField(order = 1, inlineEdit = true)
         private String name;
@@ -109,8 +109,8 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
         private String entityID;
 
         @UIMethodAction("ACTION.INITIALIZE_ZIGBEE_NODE")
-        public String initializeZigbeeNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return zigBeeDeviceEntity.initializeZigbeeNode();
+        public String initializeZigBeeNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
+            return zigBeeDeviceEntity.initializeZigBeeNode();
         }
 
         @UIMethodAction(value = "ACTION.SHOW_NODE_DESCRIPTION", responseAction = UIMethodAction.ResponseAction.ShowJson)

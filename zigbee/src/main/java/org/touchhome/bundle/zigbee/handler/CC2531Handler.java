@@ -13,8 +13,8 @@ import org.touchhome.bundle.api.port.PortFlowControl;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.internal.ZigBeeSerialPort;
-import org.touchhome.bundle.zigbee.setting.ZigbeePortSetting;
-import org.touchhome.bundle.zigbee.setting.advanced.ZigbeePortBaudSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeePortSetting;
+import org.touchhome.bundle.zigbee.setting.advanced.ZigBeePortBaudSetting;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,11 +41,11 @@ public class CC2531Handler extends ZigBeeCoordinatorHandler {
         ZigBeeSerialPort serialPort = new ZigBeeSerialPort(
                 "cc2531",
                 entityContext,
-                entityContext.setting().getValue(ZigbeePortSetting.class),
-                entityContext.setting().getValue(ZigbeePortBaudSetting.class),
+                entityContext.setting().getValue(ZigBeePortSetting.class),
+                entityContext.setting().getValue(ZigBeePortBaudSetting.class),
                 PortFlowControl.FLOWCONTROL_OUT_RTSCTS,
                 () -> this.updateStatus(Status.OFFLINE, "PORT_COMMUNICATION_ERROR"),
-                (port -> entityContext.setting().setValueSilenceRaw(ZigbeePortSetting.class, port.getSystemPortName())));
+                (port -> entityContext.setting().setValueSilenceRaw(ZigBeePortSetting.class, port.getSystemPortName())));
         return new ZigBeeDongleTiCc2531(serialPort);
     }
 

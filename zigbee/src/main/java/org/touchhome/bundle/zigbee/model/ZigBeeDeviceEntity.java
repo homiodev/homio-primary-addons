@@ -17,11 +17,11 @@ import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.ui.method.UIFieldCreateWorkspaceVariableOnEmpty;
 import org.touchhome.bundle.api.ui.method.UIMethodAction;
 import org.touchhome.bundle.zigbee.*;
-import org.touchhome.bundle.zigbee.requireEndpoint.ZigbeeRequireEndpoint;
-import org.touchhome.bundle.zigbee.requireEndpoint.ZigbeeRequireEndpoints;
-import org.touchhome.bundle.zigbee.setting.ZigbeeCoordinatorHandlerSetting;
-import org.touchhome.bundle.zigbee.setting.ZigbeeDiscoveryDurationSetting;
-import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
+import org.touchhome.bundle.zigbee.requireEndpoint.ZigBeeRequireEndpoint;
+import org.touchhome.bundle.zigbee.requireEndpoint.ZigBeeRequireEndpoints;
+import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryDurationSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 import javax.persistence.Entity;
@@ -96,7 +96,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
         tryEvaluateImageIdentifier();
 
         if (this.getTitle().equals(this.getIeeeAddress())) {
-            Optional<ZigbeeRequireEndpoint> zigbeeRequireEndpoint = ZigbeeRequireEndpoints.get().getZigbeeRequireEndpoint(modelIdentifier);
+            Optional<ZigBeeRequireEndpoint> zigbeeRequireEndpoint = ZigBeeRequireEndpoints.get().getZigBeeRequireEndpoint(modelIdentifier);
             if (zigbeeRequireEndpoint.isPresent()) {
                 String describeName = En.findPathText(zigbeeRequireEndpoint.get().getName());
                 if (describeName != null) {
@@ -116,7 +116,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
     }
 
     @UIMethodAction("ACTION.INITIALIZE_ZIGBEE_NODE")
-    public String initializeZigbeeNode() {
+    public String initializeZigBeeNode() {
         zigBeeDevice.initialiseZigBeeNode();
         return "ACTION.RESPONSE.NODE_INITIALIZATION_STARTED";
     }
@@ -146,14 +146,14 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
 
     @UIMethodAction("ACTION.PERMIT_JOIN")
     public String permitJoin(EntityContext entityContext) {
-        if (!entityContext.setting().getValue(ZigbeeStatusSetting.class).isOnline()) {
+        if (!entityContext.setting().getValue(ZigBeeStatusSetting.class).isOnline()) {
             throw new IllegalStateException("DEVICE_OFFLINE");
         }
         if (zigBeeDevice == null) {
             throw new IllegalStateException("Unable to find zigbee node with ieeeAddress: " + getIeeeAddress());
         }
-        ZigBeeCoordinatorHandler zigBeeCoordinatorHandler = entityContext.setting().getValue(ZigbeeCoordinatorHandlerSetting.class);
-        boolean join = zigBeeCoordinatorHandler.permitJoin(zigBeeDevice.getNodeIeeeAddress(), entityContext.setting().getValue(ZigbeeDiscoveryDurationSetting.class));
+        ZigBeeCoordinatorHandler zigBeeCoordinatorHandler = entityContext.setting().getValue(ZigBeeCoordinatorHandlerSetting.class);
+        boolean join = zigBeeCoordinatorHandler.permitJoin(zigBeeDevice.getNodeIeeeAddress(), entityContext.setting().getValue(ZigBeeDiscoveryDurationSetting.class));
         return join ? "ACTION.RESPONSE.STARTED" : "ACTION.RESPONSE.ERROR";
     }
 
@@ -171,7 +171,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
 
     private void tryEvaluateModelDescription(ZigBeeNodeDescription zigBeeNodeDescription) {
         if (zigBeeNodeDescription != null && zigBeeNodeDescription.getChannels() != null && this.getModelIdentifier() == null) {
-            ZigbeeRequireEndpoint property = ZigbeeRequireEndpoints.get().findByNode(zigBeeNodeDescription);
+            ZigBeeRequireEndpoint property = ZigBeeRequireEndpoints.get().findByNode(zigBeeNodeDescription);
             setJsonData("modelIdentifier", property == null ? null : property.getModelId());
         }
     }
@@ -179,7 +179,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
     private void tryEvaluateImageIdentifier() {
         String modelIdentifier = getModelIdentifier();
         if (this.getImageIdentifier() == null && modelIdentifier != null) {
-            this.setImageIdentifier(ZigbeeRequireEndpoints.get().getImage(modelIdentifier));
+            this.setImageIdentifier(ZigBeeRequireEndpoints.get().getImage(modelIdentifier));
         }
     }
 }

@@ -1,19 +1,22 @@
 {
   "placeholder": {
-    "st_ArduinoPortSetting": "Arduino port",
-    "st_ArduinoPortSetting_unavailable": "No ports available",
-    "st_ArduinoGetBoardsSetting": "Board"
+    "st_ConsoleHeaderArduinoPortSetting": "Arduino port",
+    "st_ConsoleHeaderArduinoPortSetting_unavailable": "No ports available",
+    "st_ConsoleHeaderArduinoGetBoardsSetting": "Board"
   },
   "arduino": {
     "setting": {
-      "st_ArduinoPortSetting": "Select arduino port",
-      "st_ArduinoGetBoardInfoSetting": "Get board info",
-      "st_ArduinoGetBoardsSetting": "Select board"
+      "st_ConsoleHeaderArduinoPortSetting": "Select arduino port",
+      "st_ConsoleHeaderArduinoGetBoardInfoSetting": "Get board info",
+      "st_ConsoleHeaderArduinoBuildSketchSetting": "Verify/Compile sketch",
+      "st_ConsoleHeaderArduinoGetBoardsSetting": "Select board"
     }
   },
   "setting": {
     "console": {
-      "st_ConsoleArduinoFetchEsp8266PackagesSetting": "Download esp8266 boards"
+      "st_ConsoleArduinoFetchEsp8266PackagesSetting": "Download esp8266 boards",
+      "st_ConsoleArduinoLibraryManagerSetting": "Library Manager",
+      "st_ConsoleArduinoBoardManagerSetting": "Boards Manager"
     }
   }
 }

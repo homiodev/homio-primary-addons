@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePluginCommunicator;
 import org.touchhome.bundle.api.json.ActionResponse;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
 import org.touchhome.bundle.api.util.FlowMap;
-import org.touchhome.bundle.serial.settings.*;
+import org.touchhome.bundle.serial.settings.header.*;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -24,7 +24,7 @@ public class SerialPortConsolePlugin implements ConsolePluginCommunicator {
 
     private final EntityContext entityContext;
     private RawSerialPortCommunicator rawSerialPortCommunicator;
-    private SerialPortSendEndLine.EndLineType endLineType;
+    private ConsoleHeaderSerialPortSendEndLine.EndLineType endLineType;
 
     @Override
     public Collection<ComplexString> getComplexValue() {
@@ -32,18 +32,18 @@ public class SerialPortConsolePlugin implements ConsolePluginCommunicator {
     }
 
     public void init() {
-        entityContext.setting().listenValue(SerialPortBaudRateSetting.class, "serial-baud-rate", () -> {
+        entityContext.setting().listenValue(ConsoleHeaderSerialPortBaudRateSetting.class, "serial-baud-rate", () -> {
             if (this.rawSerialPortCommunicator != null) {
                 this.reopen(true);
             }
         });
-        entityContext.setting().listenValue(SerialPortFlowControlSetting.class, "serial-flow-control", () -> {
+        entityContext.setting().listenValue(ConsoleHeaderSerialPortFlowControlSetting.class, "serial-flow-control", () -> {
             if (this.rawSerialPortCommunicator != null) {
                 this.reopen(true);
             }
         });
-        entityContext.setting().listenValueAndGet(SerialPortSendEndLine.class, "serial-end-line", endLineType -> this.endLineType = endLineType);
-        entityContext.setting().listenValue(SerialOpenPortSetting.class, "serial-open-port", this::reopen);
+        entityContext.setting().listenValueAndGet(ConsoleHeaderSerialPortSendEndLine.class, "serial-end-line", endLineType -> this.endLineType = endLineType);
+        entityContext.setting().listenValue(ConsoleHeaderSerialOpenPortSetting.class, "serial-open-port", this::reopen);
     }
 
     private void reopen(Boolean open) {
@@ -54,11 +54,11 @@ public class SerialPortConsolePlugin implements ConsolePluginCommunicator {
         }
 
         if (open) {
-            SerialPort commPort = entityContext.setting().getValue(SerialPortSetting.class);
+            SerialPort commPort = entityContext.setting().getValue(ConsoleHeaderSerialPortSetting.class);
             if (commPort == null) {
                 entityContext.ui().sendErrorMessage("SERIAL.NO_PORT", FlowMap.of("PORT",
-                        defaultIfEmpty(entityContext.setting().getRawValue(SerialPortSetting.class), "-")));
-                entityContext.setting().setValue(SerialOpenPortSetting.class, false);
+                        defaultIfEmpty(entityContext.setting().getRawValue(ConsoleHeaderSerialPortSetting.class), "-")));
+                entityContext.setting().setValue(ConsoleHeaderSerialOpenPortSetting.class, false);
                 return;
             }
             try {
@@ -66,14 +66,14 @@ public class SerialPortConsolePlugin implements ConsolePluginCommunicator {
             } catch (Exception ex) {
                 rawSerialPortCommunicator = null;
                 entityContext.ui().sendErrorMessage("SERIAL.UNABLE_OPEN", FlowMap.of("PORT", commPort.getSystemPortName()), ex);
-                entityContext.setting().setValue(SerialOpenPortSetting.class, false);
+                entityContext.setting().setValue(ConsoleHeaderSerialOpenPortSetting.class, false);
             }
         }
     }
 
     private void openPort(SerialPort commPort) {
-        Integer baudRate = entityContext.setting().getValue(SerialPortBaudRateSetting.class);
-        SerialPortFlowControlSetting.FlowControl flowControl = entityContext.setting().getValue(SerialPortFlowControlSetting.class);
+        Integer baudRate = entityContext.setting().getValue(ConsoleHeaderSerialPortBaudRateSetting.class);
+        ConsoleHeaderSerialPortFlowControlSetting.FlowControl flowControl = entityContext.setting().getValue(ConsoleHeaderSerialPortFlowControlSetting.class);
 
         this.rawSerialPortCommunicator = new RawSerialPortCommunicator(commPort, entityContext, this);
         boolean opened = this.rawSerialPortCommunicator.open(baudRate, flowControl.getPortFlowControl());
@@ -85,14 +85,14 @@ public class SerialPortConsolePlugin implements ConsolePluginCommunicator {
     }
 
     @Override
-    public Map<String, Class<? extends BundleSettingPlugin<?>>> getHeaderActions() {
-        Map<String, Class<? extends BundleSettingPlugin<?>>> headerActions = new LinkedHashMap<>();
+    public Map<String, Class<? extends BundleHeaderSettingPlugin<?>>> getHeaderActions() {
+        Map<String, Class<? extends BundleHeaderSettingPlugin<?>>> headerActions = new LinkedHashMap<>();
 
-        headerActions.put("openPort", SerialOpenPortSetting.class);
-        headerActions.put("port", SerialPortSetting.class);
-        headerActions.put("baudRate", SerialPortBaudRateSetting.class);
-        headerActions.put("flowControl", SerialPortFlowControlSetting.class);
-        headerActions.put("endLine", SerialPortSendEndLine.class);
+        headerActions.put("openPort", ConsoleHeaderSerialOpenPortSetting.class);
+        headerActions.put("port", ConsoleHeaderSerialPortSetting.class);
+        headerActions.put("baudRate", ConsoleHeaderSerialPortBaudRateSetting.class);
+        headerActions.put("flowControl", ConsoleHeaderSerialPortFlowControlSetting.class);
+        headerActions.put("endLine", ConsoleHeaderSerialPortSendEndLine.class);
 
         return headerActions;
     }
@@ -110,7 +110,7 @@ public class SerialPortConsolePlugin implements ConsolePluginCommunicator {
                 throw ex;
             }
         } else {
-            SerialPort commPort = entityContext.setting().getValue(SerialPortSetting.class);
+            SerialPort commPort = entityContext.setting().getValue(ConsoleHeaderSerialPortSetting.class);
             return new ActionResponse("SERIAL.NO_OPEN_PORT", "PORT", commPort == null ? "-" : commPort.getSystemPortName(), ActionResponse.ResponseAction.ShowErrorMsg);
         }
         return null;

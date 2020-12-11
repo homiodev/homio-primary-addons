@@ -15,8 +15,8 @@ import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.ZigbeeCoordinatorHandlerSetting;
-import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -47,9 +47,9 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
         super("#6d4747", entityContext, zigBeeBundleEntryPoint, null);
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
-        this.entityContext.setting().listenValue(ZigbeeStatusSetting.class, "zb-wp-status", status -> {
+        this.entityContext.setting().listenValue(ZigBeeStatusSetting.class, "zb-wp-status", status -> {
             if (status.isOnline()) {
-                this.coordinatorHandler = this.entityContext.setting().getValue(ZigbeeCoordinatorHandlerSetting.class);
+                this.coordinatorHandler = this.entityContext.setting().getValue(ZigBeeCoordinatorHandlerSetting.class);
             } else {
                 this.coordinatorHandler = null;
             }
@@ -170,7 +170,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
 
         ZigBeeDeviceEntity zigBeeDeviceEntity = getZigBeeDevice(workspaceBlock, ieeeAddress);
         if (zigBeeDeviceEntity == null) {
-            throw new IllegalStateException("Unable to find Zigbee device entity <" + ieeeAddress + ">");
+            throw new IllegalStateException("Unable to find ZigBee device entity <" + ieeeAddress + ">");
         }
 
         BroadcastLock<ScratchDeviceState> lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
@@ -186,7 +186,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
         Integer[] clusters = ((MenuBlock.ServerMenuBlock) sensorMenuBlock.getValue()).getClusters();
         if (clusters != null) {
             availableReceiveEvents = true;
-            addZigbeeEventListener(ieeeAddress, clusters, null, lock::signalAll);
+            addZigBeeEventListener(ieeeAddress, clusters, null, lock::signalAll);
         }
 
         if (!availableReceiveEvents) {
@@ -223,7 +223,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
         return Long.MAX_VALUE;
     }
 
-    private void addZigbeeEventListener(String nodeIEEEAddress, Integer[] clusters, Integer endpoint, Consumer<ScratchDeviceState> consumer) {
+    private void addZigBeeEventListener(String nodeIEEEAddress, Integer[] clusters, Integer endpoint, Consumer<ScratchDeviceState> consumer) {
         for (Integer clusterId : clusters) {
             ZigBeeDeviceStateUUID zigBeeDeviceStateUUID = ZigBeeDeviceStateUUID.require(nodeIEEEAddress, clusterId, endpoint, null);
             this.zigBeeDeviceUpdateValueListener.addListener(zigBeeDeviceStateUUID, consumer);

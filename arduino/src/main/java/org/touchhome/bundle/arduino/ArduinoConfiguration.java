@@ -1,5 +1,6 @@
 package org.touchhome.bundle.arduino;
 
+import cc.arduino.Constants;
 import cc.arduino.contributions.GPGDetachedSignatureVerifier;
 import cc.arduino.contributions.libraries.LibraryInstaller;
 import cc.arduino.contributions.packages.ContributionInstaller;
@@ -14,9 +15,13 @@ import processing.app.PreferencesData;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 @Configuration
 public class ArduinoConfiguration {
+
+    public static final String ESP_8266_URL = "http://arduino.esp8266.com/stable/package_esp8266com_index.json";
 
     @Bean
     public Platform getPlatform() throws Exception {
@@ -35,13 +40,19 @@ public class ArduinoConfiguration {
         File hardwareFolder = BaseNoGui.getHardwareFolder();
         PreferencesData.set("runtime.ide.path", hardwareFolder.getParentFile().getAbsolutePath());
         PreferencesData.set("runtime.ide.version", "" + BaseNoGui.REVISION);
-        PreferencesData.set("sketchbook.path", "scetches");
+        PreferencesData.set("build.path", arduinoPath.resolve("build").toString());
+        PreferencesData.set("sketchbook.path", "sketchbook");
+
+        Set<String> packageIndexURLs = new HashSet<>(PreferencesData.getCollection(Constants.PREF_BOARDS_MANAGER_ADDITIONAL_URLS));
+        packageIndexURLs.add(ESP_8266_URL);
+        PreferencesData.setCollection(Constants.PREF_BOARDS_MANAGER_ADDITIONAL_URLS, packageIndexURLs);
 
         BaseNoGui.checkInstallationFolder();
 
         BaseNoGui.initVersion();
 
         BaseNoGui.initPackages();
+        BaseNoGui.onBoardOrPortChange();
 
         return BaseNoGui.getPlatform();
     }
@@ -58,7 +69,7 @@ public class ArduinoConfiguration {
     }
 
     @Bean
-    public GPGDetachedSignatureVerifier gpgDetachedSignatureVerifier() throws Exception {
+    public GPGDetachedSignatureVerifier gpgDetachedSignatureVerifier() {
         return new GPGDetachedSignatureVerifier();
     }
 

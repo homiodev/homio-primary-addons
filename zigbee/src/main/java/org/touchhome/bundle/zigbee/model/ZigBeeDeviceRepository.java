@@ -12,7 +12,7 @@ import org.touchhome.bundle.api.scratch.Scratch3Block;
 import org.touchhome.bundle.zigbee.*;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
-import org.touchhome.bundle.zigbee.setting.ZigbeeCoordinatorHandlerSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
 import org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlock;
 import org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeExtensionBlocks;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
@@ -32,12 +32,12 @@ public class ZigBeeDeviceRepository extends AbstractRepository<ZigBeeDeviceEntit
 
     public ZigBeeDeviceRepository(ZigBeeBundleEntryPoint zigbeeBundleContext, EntityContext entityContext,
                                   ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-                                  List<Scratch3ZigBeeExtensionBlocks> scratch3ZigbeeExtensionBlocks) {
+                                  List<Scratch3ZigBeeExtensionBlocks> scratch3ZigBeeExtensionBlocks) {
         super(ZigBeeDeviceEntity.class, ZigBeeDeviceEntity.PREFIX);
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
         this.zigbeeBundleContext = zigbeeBundleContext;
         this.entityContext = entityContext;
-        this.zigbeeBlocks = scratch3ZigbeeExtensionBlocks.stream().flatMap(map -> map.getBlocksMap().values().stream())
+        this.zigbeeBlocks = scratch3ZigBeeExtensionBlocks.stream().flatMap(map -> map.getBlocksMap().values().stream())
                 .collect(Collectors.toList());
     }
 
@@ -99,7 +99,7 @@ public class ZigBeeDeviceRepository extends AbstractRepository<ZigBeeDeviceEntit
     @Override
     public ZigBeeDeviceEntity deleteByEntityID(String entityID) {
         ZigBeeDeviceEntity entity = super.deleteByEntityID(entityID);
-        ZigBeeCoordinatorHandler zigBeeCoordinatorHandler = entityContext.setting().getValue(ZigbeeCoordinatorHandlerSetting.class);
+        ZigBeeCoordinatorHandler zigBeeCoordinatorHandler = entityContext.setting().getValue(ZigBeeCoordinatorHandlerSetting.class);
         zigBeeCoordinatorHandler.removeNode(new IeeeAddress(entity.getIeeeAddress()));
 
         return entity;
@@ -108,9 +108,9 @@ public class ZigBeeDeviceRepository extends AbstractRepository<ZigBeeDeviceEntit
     private void createVariableLink(ZigBeeConverterEndpoint zigBeeConverterEndpoint, ZigBeeDevice zigBeeDevice, String varGroup, String varName) {
         for (Scratch3Block scratch3Block : this.zigbeeBlocks) {
             if (scratch3Block instanceof Scratch3ZigBeeBlock) {
-                Scratch3ZigBeeBlock scratch3ZigbeeBlock = (Scratch3ZigBeeBlock) scratch3Block;
-                if (scratch3ZigbeeBlock.matchLink(zigBeeConverterEndpoint, zigBeeDevice)) {
-                    scratch3ZigbeeBlock.getZigBeeLinkGenerator().handle(zigBeeConverterEndpoint, zigBeeDevice, varGroup, varName);
+                Scratch3ZigBeeBlock scratch3ZigBeeBlock = (Scratch3ZigBeeBlock) scratch3Block;
+                if (scratch3ZigBeeBlock.matchLink(zigBeeConverterEndpoint, zigBeeDevice)) {
+                    scratch3ZigBeeBlock.getZigBeeLinkGenerator().handle(zigBeeConverterEndpoint, zigBeeDevice, varGroup, varName);
                     return;
                 }
             }

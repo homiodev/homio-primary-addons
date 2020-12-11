@@ -11,8 +11,8 @@ import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.requireEndpoint.RequireEndpoint;
-import org.touchhome.bundle.zigbee.requireEndpoint.ZigbeeRequireEndpoints;
-import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
+import org.touchhome.bundle.zigbee.requireEndpoint.ZigBeeRequireEndpoints;
+import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -56,7 +56,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         this.discoveryService.getCoordinatorHandlers().addNetworkNodeListener(this);
         this.discoveryService.getCoordinatorHandlers().addAnnounceListener(this);
 
-        tryInitializeDevice(discoveryService.getEntityContext().setting().getValue(ZigbeeStatusSetting.class).getStatus());
+        tryInitializeDevice(discoveryService.getEntityContext().setting().getValue(ZigBeeStatusSetting.class).getStatus());
 
         // register listener for reset timer if any updates from any endpoint
         this.discoveryService.getDeviceUpdateListener().addIeeeAddressListener(this.nodeIeeeAddress.toString(), state ->
@@ -155,7 +155,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
             }
 
             int expectedUpdatePeriod = getExpectedUpdatePeriod(this.zigBeeConverterEndpoints.values());
-            if (!ZigbeeRequireEndpoints.get().isDisablePooling(zigBeeNodeDescription.getModelIdentifier())
+            if (!ZigBeeRequireEndpoints.get().isDisablePooling(zigBeeNodeDescription.getModelIdentifier())
                     && expectedUpdatePeriod != Integer.MAX_VALUE) {
                 expectedUpdatePeriod = (expectedUpdatePeriod * 2) + 30;
                 log.debug("{}: Setting ONLINE/OFFLINE timeout interval to: {}", nodeIeeeAddress, expectedUpdatePeriod);
@@ -215,7 +215,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
 
     private Collection<ZigBeeConverterEndpoint> findMissingRequireEndpointClusters(List<ZigBeeConverterEndpoint> zigBeeConverterEndpoints) {
         List<ZigBeeConverterEndpoint> endpoints = new ArrayList<>();
-        ZigbeeRequireEndpoints.get().getRequireEndpoints(zigBeeNodeDescription.getModelIdentifier()).forEach(requireEndpoint -> {
+        ZigBeeRequireEndpoints.get().getRequireEndpoints(zigBeeNodeDescription.getModelIdentifier()).forEach(requireEndpoint -> {
             if (getRequireEndpoint(zigBeeConverterEndpoints, requireEndpoint) == null) {
                 log.info("Add zigbee node <{}> missed require endpoint: <{}>", nodeIeeeAddress, requireEndpoint);
                 endpoints.addAll(discoveryService.getZigBeeChannelConverterFactory().createConverterEndpoint(requireEndpoint, nodeIeeeAddress.toString()));
@@ -268,7 +268,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
             this.zigBeeNodeDescription.setDeviceStatus(deviceStatus);
             this.zigBeeNodeDescription.setDeviceStatusMessage(deviceStatusMessage);
             this.discoveryService.getEntityContext().ui().sendInfoMessage(
-                    "Zigbee device status", this.nodeIeeeAddress.toString() + " - " + deviceStatus);
+                    "ZigBee device status", this.nodeIeeeAddress.toString() + " - " + deviceStatus);
         }
     }
 

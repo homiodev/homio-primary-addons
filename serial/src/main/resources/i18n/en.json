@@ -1,17 +1,17 @@
 {
   "placeholder": {
-    "st_SerialPortSetting": "Serial port",
-    "st_SerialPortSetting_unavailable": "Serial ports not found",
-    "st_SerialPortBaudRateSetting": "Baud Rate",
-    "st_SerialPortFlowControlSetting": "Flow control",
-    "st_SerialPortSendEndLine": "End line"
+    "st_ConsoleHeaderSerialPortSetting": "Serial port",
+    "st_ConsoleHeaderSerialPortSetting_unavailable": "Serial ports not found",
+    "st_ConsoleHeaderSerialPortBaudRateSetting": "Baud Rate",
+    "st_ConsoleHeaderSerialPortFlowControlSetting": "Flow control",
+    "st_ConsoleHeaderSerialPortSendEndLine": "End line"
   },
   "serial": {
     "setting": {
-      "st_SerialPortSetting": "Select serial port to communicate with",
-      "st_SerialPortBaudRateSetting": "Select desired baud rate for port",
-      "st_SerialPortFlowControlSetting": "Select desired flow control for port",
-      "st_SerialOpenPortSetting": "Open/Close port to communicate"
+      "st_ConsoleHeaderSerialPortSetting": "Select serial port to communicate with",
+      "st_ConsoleHeaderSerialPortBaudRateSetting": "Select desired baud rate for port",
+      "st_ConsoleHeaderSerialPortFlowControlSetting": "Select desired flow control for port",
+      "st_ConsoleHeaderSerialOpenPortSetting": "Open/Close port to communicate"
     }
   },
   "selection": {

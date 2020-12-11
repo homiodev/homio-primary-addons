@@ -94,7 +94,7 @@ public class ZigBeeNodeDescription {
 
     @SneakyThrows
     void updateFromNode(ZigBeeNode node) {
-        log.info("Starting fetch info from ZigbeeNode: <{}>", node.getIeeeAddress().toString());
+        log.info("Starting fetch info from ZigBeeNode: <{}>", node.getIeeeAddress().toString());
         this.fetchInfoStatus = FetchInfoStatus.STARTED;
         this.logicalType = node.getLogicalType();
         this.networkAddress = node.getNetworkAddress();
@@ -113,7 +113,7 @@ public class ZigBeeNodeDescription {
 
         if (basicCluster == null) {
             this.fetchInfoStatus = FetchInfoStatus.NOT_COMPLETED;
-            log.warn("Fetch info from ZigbeeNode: <{}> not completed", node.getIeeeAddress().toString());
+            log.warn("Fetch info from ZigBeeNode: <{}> not completed", node.getIeeeAddress().toString());
             return;
         }
 
@@ -138,7 +138,7 @@ public class ZigBeeNodeDescription {
         this.zclVersion = (Integer) basicCluster.getAttribute(ATTR_ZCLVERSION).readValue(Long.MAX_VALUE);
         this.dateCode = (String) basicCluster.getAttribute(ATTR_DATECODE).readValue(Long.MAX_VALUE);
 
-        log.info("Finished fetch info from ZigbeeNode: <{}>", node.getIeeeAddress().toString());
+        log.info("Finished fetch info from ZigBeeNode: <{}>", node.getIeeeAddress().toString());
         this.fetchInfoStatus = FetchInfoStatus.FINISHED;
     }
 

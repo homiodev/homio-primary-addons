@@ -11,7 +11,7 @@ import org.touchhome.bundle.api.measure.State;
 import org.touchhome.bundle.api.scratch.WorkspaceEventListener;
 import org.touchhome.bundle.zigbee.ZigBeeDevice;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
-import org.touchhome.bundle.zigbee.setting.ZigbeeLogEventsButtonsSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeLogEventsButtonsSetting;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +75,7 @@ public final class ZigBeeDeviceUpdateValueListener implements WorkspaceEventList
             }
         }
 
-        logZigbeeEvent(zigBeeDevice, uuid, scratchDeviceState);
+        logZigBeeEvent(zigBeeDevice, uuid, scratchDeviceState);
     }
 
     private void fireListeners(Holder holder, ZigBeeDevice zigBeeDevice, ZigBeeDeviceStateUUID uuid, boolean pooling) {
@@ -91,12 +91,12 @@ public final class ZigBeeDeviceUpdateValueListener implements WorkspaceEventList
         }
     }
 
-    private void logZigbeeEvent(ZigBeeDevice zigBeeDevice, ZigBeeDeviceStateUUID uuid, ScratchDeviceState scratchDeviceState) {
-        if (entityContext.setting().getValue(ZigbeeLogEventsButtonsSetting.class)) {
-            if (logZigbeeEvent(scratchDeviceState, deviceStateDescribeEventHandlerByClusterID.get(uuid.getClusterId()))) {
+    private void logZigBeeEvent(ZigBeeDevice zigBeeDevice, ZigBeeDeviceStateUUID uuid, ScratchDeviceState scratchDeviceState) {
+        if (entityContext.setting().getValue(ZigBeeLogEventsButtonsSetting.class)) {
+            if (logZigBeeEvent(scratchDeviceState, deviceStateDescribeEventHandlerByClusterID.get(uuid.getClusterId()))) {
                 return;
             }
-            if (logZigbeeEvent(scratchDeviceState, deviceStateDescribeEventHandlerByClusterName.get(uuid.getClusterName()))) {
+            if (logZigBeeEvent(scratchDeviceState, deviceStateDescribeEventHandlerByClusterName.get(uuid.getClusterName()))) {
                 return;
             }
             String modelIdentifier = zigBeeDevice.getZigBeeNodeDescription().getModelIdentifier();
@@ -113,7 +113,7 @@ public final class ZigBeeDeviceUpdateValueListener implements WorkspaceEventList
         }
     }
 
-    private boolean logZigbeeEvent(ScratchDeviceState scratchDeviceState, Pair<Function<ScratchDeviceState, String>, Boolean> handler) {
+    private boolean logZigBeeEvent(ScratchDeviceState scratchDeviceState, Pair<Function<ScratchDeviceState, String>, Boolean> handler) {
         if (handler != null) {
             logZigBeeEvent(handler, scratchDeviceState);
             return true;

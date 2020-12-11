@@ -17,8 +17,8 @@ import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasFireIndicator;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasWaterSensor;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.ZigbeeCoordinatorHandlerSetting;
-import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
 
 import static org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlocks.*;
 
@@ -62,12 +62,12 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
                                        ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
                                        ZigBeeBundleEntryPoint zigBeeBundleEntryPoint) {
         super("#8a6854", entityContext, zigBeeBundleEntryPoint, "sensor");
-        setName("Zigbee Sensors");
+        setName("ZigBee Sensors");
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
-        this.entityContext.setting().listenValue(ZigbeeStatusSetting.class, "zb-wp-sensor-status", status -> {
+        this.entityContext.setting().listenValue(ZigBeeStatusSetting.class, "zb-wp-sensor-status", status -> {
             if (status.isOnline()) {
-                this.coordinatorHandler = this.entityContext.setting().getValue(ZigbeeCoordinatorHandlerSetting.class);
+                this.coordinatorHandler = this.entityContext.setting().getValue(ZigBeeCoordinatorHandlerSetting.class);
             } else {
                 this.coordinatorHandler = null;
             }

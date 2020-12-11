@@ -12,8 +12,8 @@ import org.touchhome.bundle.xaomi.XaomiEntryPoint;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.ZigbeeCoordinatorHandlerSetting;
-import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
 import org.touchhome.bundle.zigbee.workspace.ScratchDeviceState;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
@@ -44,9 +44,9 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
         super("#856d21", entityContext, xaomiEntryPoint);
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
-        this.entityContext.setting().listenValue(ZigbeeStatusSetting.class, "zb-wp-xaomi-workspace", status -> {
+        this.entityContext.setting().listenValue(ZigBeeStatusSetting.class, "zb-wp-xaomi-workspace", status -> {
             if (status.isOnline()) {
-                this.coordinatorHandler = this.entityContext.setting().getValue(ZigbeeCoordinatorHandlerSetting.class);
+                this.coordinatorHandler = this.entityContext.setting().getValue(ZigBeeCoordinatorHandlerSetting.class);
             } else {
                 this.coordinatorHandler = null;
             }
@@ -103,8 +103,8 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
             }
         };
 
-        addZigbeeEventListener(ieeeAddress, ZclMultistateInputBasicCluster.CLUSTER_ID, consumer);
-        addZigbeeEventListener(ieeeAddress, ZclAnalogInputBasicCluster.CLUSTER_ID, consumer);
+        addZigBeeEventListener(ieeeAddress, ZclMultistateInputBasicCluster.CLUSTER_ID, consumer);
+        addZigBeeEventListener(ieeeAddress, ZclAnalogInputBasicCluster.CLUSTER_ID, consumer);
 
         workspaceBlock.subscribeToLock(lock);
     }
@@ -119,7 +119,7 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
         return ieeeAddress;
     }
 
-    private void addZigbeeEventListener(String nodeIEEEAddress, int clusterId, Consumer<ScratchDeviceState> consumer) {
+    private void addZigBeeEventListener(String nodeIEEEAddress, int clusterId, Consumer<ScratchDeviceState> consumer) {
         ZigBeeDeviceStateUUID zigBeeDeviceStateUUID = ZigBeeDeviceStateUUID.require(nodeIEEEAddress, clusterId, null, null);
         this.zigBeeDeviceUpdateValueListener.addListener(zigBeeDeviceStateUUID, consumer);
     }

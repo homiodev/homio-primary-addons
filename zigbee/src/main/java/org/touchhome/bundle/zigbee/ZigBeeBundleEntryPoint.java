@@ -9,8 +9,8 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.setting.BundleSettingPluginStatus;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.ZigbeeCoordinatorHandlerSetting;
-import org.touchhome.bundle.zigbee.setting.ZigbeeStatusSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 import java.util.concurrent.Executors;
@@ -34,7 +34,7 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
 
     @Override
     public void init() {
-        this.coordinatorHandler = entityContext.setting().getValue(ZigbeeCoordinatorHandlerSetting.class);
+        this.coordinatorHandler = entityContext.setting().getValue(ZigBeeCoordinatorHandlerSetting.class);
         this.zigBeeDiscoveryService = new ZigBeeDiscoveryService(
                 entityContext, coordinatorHandler,
                 zigBeeIsAliveTracker,
@@ -42,7 +42,7 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
                 scheduler,
                 deviceUpdateListener);
 
-        this.entityContext.setting().listenValue(ZigbeeStatusSetting.class, "zb-fetch-devices", status -> {
+        this.entityContext.setting().listenValue(ZigBeeStatusSetting.class, "zb-fetch-devices", status -> {
             if (status.isOnline()) {
                 for (ZigBeeDeviceEntity zigbeeDeviceEntity : entityContext.findAll(ZigBeeDeviceEntity.class)) {
                     zigBeeDiscoveryService.addZigBeeDevice(new IeeeAddress(zigbeeDeviceEntity.getIeeeAddress()));
@@ -70,6 +70,6 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
 
     @Override
     public Class<? extends BundleSettingPluginStatus> getBundleStatusSetting() {
-        return ZigbeeStatusSetting.class;
+        return ZigBeeStatusSetting.class;
     }
 }

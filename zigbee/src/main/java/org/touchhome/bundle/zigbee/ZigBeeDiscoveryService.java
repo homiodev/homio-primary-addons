@@ -10,9 +10,9 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.json.NotificationEntityJSON;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.ZigbeeDiscoveryButtonSetting;
-import org.touchhome.bundle.zigbee.setting.ZigbeeDiscoveryDurationSetting;
-import org.touchhome.bundle.zigbee.setting.advanced.ZigbeeJoinDeviceDuringScanOnlySetting;
+import org.touchhome.bundle.zigbee.setting.header.ConsoleHeaderZigBeeDiscoveryButtonSetting;
+import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryDurationSetting;
+import org.touchhome.bundle.zigbee.setting.advanced.ZigBeeJoinDeviceDuringScanOnlySetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 import java.util.concurrent.ScheduledExecutorService;
@@ -44,12 +44,12 @@ class ZigBeeDiscoveryService {
         this.zigBeeChannelConverterFactory = zigBeeChannelConverterFactory;
         this.scheduler = scheduler;
         this.deviceUpdateListener = deviceUpdateListener;
-        this.entityContext.setting().listenValue(ZigbeeDiscoveryButtonSetting.class, "zb-start-scan", this::startScan);
+        this.entityContext.setting().listenValue(ConsoleHeaderZigBeeDiscoveryButtonSetting.class, "zb-start-scan", this::startScan);
 
         ZigBeeNetworkNodeListener listener = new ZigBeeNetworkNodeListener() {
             @Override
             public void nodeAdded(ZigBeeNode node) {
-                boolean forceAdd = !entityContext.setting().getValue(ZigbeeJoinDeviceDuringScanOnlySetting.class);
+                boolean forceAdd = !entityContext.setting().getValue(ZigBeeJoinDeviceDuringScanOnlySetting.class);
                 if (forceAdd || scanStarted) {
                     ZigBeeDiscoveryService.this.nodeDiscovered(coordinatorHandlers, node);
                 }
@@ -84,7 +84,7 @@ class ZigBeeDiscoveryService {
             nodeDiscovered(coordinatorHandlers, node);
         }
 
-        Integer duration = entityContext.setting().getValue(ZigbeeDiscoveryDurationSetting.class);
+        Integer duration = entityContext.setting().getValue(ZigBeeDiscoveryDurationSetting.class);
         coordinatorHandlers.scanStart(duration);
 
         NotificationEntityJSON zigbeeScanEntity = new NotificationEntityJSON("zigbee-scan").setName("zigbee.start_scan");
