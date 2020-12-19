@@ -16,11 +16,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.hardware.other.LinuxHardwareRepository;
-import org.touchhome.bundle.api.hardware.wifi.Network;
-import org.touchhome.bundle.api.hardware.wifi.WirelessHardwareRepository;
-import org.touchhome.bundle.api.model.UserEntity;
-import org.touchhome.bundle.api.setting.BundleSettingPluginStatus;
+import org.touchhome.bundle.api.hardware.other.MachineHardwareRepository;
+import org.touchhome.bundle.api.hardware.network.Network;
+import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
+import org.touchhome.bundle.api.entity.UserEntity;
+import org.touchhome.bundle.api.setting.SettingPluginStatus;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.bluetooth.setting.BluetoothStatusSetting;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerRestartSetting;
@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static org.touchhome.bundle.api.model.UserEntity.ADMIN_USER;
+import static org.touchhome.bundle.api.entity.UserEntity.ADMIN_USER;
 import static org.touchhome.bundle.api.util.TouchHomeUtils.distinctByKey;
 
 @Log4j2
@@ -60,8 +60,8 @@ public class BluetoothBundleEntryPoint implements BundleEntryPoint {
     private static final int TIME_REFRESH_PASSWORD = 5 * 60000; // 5 minute for session
     private static long timeSinceLastCheckPassword = -1;
     private final EntityContext entityContext;
-    private final LinuxHardwareRepository linuxHardwareRepository;
-    private final WirelessHardwareRepository wirelessHardwareRepository;
+    private final MachineHardwareRepository machineHardwareRepository;
+    private final NetworkHardwareRepository networkHardwareRepository;
     private final PasswordEncoder passwordEncoder;
     private final Map<String, Long> wifiWriteProtect = new ConcurrentHashMap<>();
     private BluetoothApplication bluetoothApplication;
@@ -70,21 +70,21 @@ public class BluetoothBundleEntryPoint implements BundleEntryPoint {
     public String getDeviceCharacteristic(String uuid) {
         switch (uuid) {
             case CPU_LOAD_UUID:
-                return readIfLinux(linuxHardwareRepository::getCpuLoad);
+                return readIfLinux(machineHardwareRepository::getCpuLoad);
             case CPU_TEMP_UUID:
                 return readIfLinux(this::getCpuTemp);
             case MEMORY_UUID:
-                return readIfLinux(linuxHardwareRepository::getMemory);
+                return readIfLinux(machineHardwareRepository::getMemory);
             case SD_MEMORY_UUID:
-                return readIfLinux(() -> linuxHardwareRepository.getSDCardMemory().toString());
+                return readIfLinux(() -> machineHardwareRepository.getSDCardMemory().toString());
             case UPTIME_UUID:
-                return readIfLinux(linuxHardwareRepository::getUptime);
+                return readIfLinux(machineHardwareRepository::getUptime);
             case IP_ADDRESS_UUID:
                 return getUserIPAddress();
             case WRITE_BAN_UUID:
                 return gatherWriteBan();
             case DEVICE_MODEL_UUID:
-                return readIfLinux(linuxHardwareRepository::getDeviceModel);
+                return readIfLinux(machineHardwareRepository::getDeviceModel);
             case SERVER_CONNECTED_UUID:
                 return readSafeValue(this::readServerConnected);
             case WIFI_LIST_UUID:
@@ -131,7 +131,7 @@ public class BluetoothBundleEntryPoint implements BundleEntryPoint {
     }
 
     @Override
-    public Class<? extends BundleSettingPluginStatus> getBundleStatusSetting() {
+    public Class<? extends SettingPluginStatus> getBundleStatusSetting() {
         return BluetoothStatusSetting.class;
     }
 
@@ -152,14 +152,14 @@ public class BluetoothBundleEntryPoint implements BundleEntryPoint {
             }
         });
 
-        bluetoothApplication.newReadCharacteristic("cpu_load", CPU_LOAD_UUID, () -> readIfLinux(linuxHardwareRepository::getCpuLoad).getBytes());
+        bluetoothApplication.newReadCharacteristic("cpu_load", CPU_LOAD_UUID, () -> readIfLinux(machineHardwareRepository::getCpuLoad).getBytes());
         bluetoothApplication.newReadCharacteristic("cpu_temp", CPU_TEMP_UUID, () -> readIfLinux(this::getCpuTemp).getBytes());
-        bluetoothApplication.newReadCharacteristic("memory", MEMORY_UUID, () -> readIfLinux(linuxHardwareRepository::getMemory).getBytes());
-        bluetoothApplication.newReadCharacteristic("sd_memory", SD_MEMORY_UUID, () -> readIfLinux(() -> linuxHardwareRepository.getSDCardMemory().toString()).getBytes());
-        bluetoothApplication.newReadCharacteristic("uptime", UPTIME_UUID, () -> readIfLinux(linuxHardwareRepository::getUptime).getBytes());
+        bluetoothApplication.newReadCharacteristic("memory", MEMORY_UUID, () -> readIfLinux(machineHardwareRepository::getMemory).getBytes());
+        bluetoothApplication.newReadCharacteristic("sd_memory", SD_MEMORY_UUID, () -> readIfLinux(() -> machineHardwareRepository.getSDCardMemory().toString()).getBytes());
+        bluetoothApplication.newReadCharacteristic("uptime", UPTIME_UUID, () -> readIfLinux(machineHardwareRepository::getUptime).getBytes());
         bluetoothApplication.newReadCharacteristic("ip", IP_ADDRESS_UUID, () -> getUserIPAddress().getBytes());
         bluetoothApplication.newReadCharacteristic("write_ban", WRITE_BAN_UUID, () -> bluetoothApplication.gatherWriteBan().getBytes());
-        bluetoothApplication.newReadWriteCharacteristic("device_model", DEVICE_MODEL_UUID, this::rebootDevice, () -> readIfLinux(linuxHardwareRepository::getDeviceModel).getBytes());
+        bluetoothApplication.newReadWriteCharacteristic("device_model", DEVICE_MODEL_UUID, this::rebootDevice, () -> readIfLinux(machineHardwareRepository::getDeviceModel).getBytes());
         bluetoothApplication.newReadCharacteristic("server_connected", SERVER_CONNECTED_UUID, () -> readSafeValue(this::readServerConnected).getBytes());
         bluetoothApplication.newReadCharacteristic("wifi_list", WIFI_LIST_UUID, () -> readIfLinux(this::readWifiList).getBytes());
         bluetoothApplication.newReadWriteCharacteristic("wifi_name", WIFI_NAME_UUID, this::writeWifiSSID, () -> readIfLinux(this::getWifiName).getBytes());
@@ -174,9 +174,9 @@ public class BluetoothBundleEntryPoint implements BundleEntryPoint {
             bluetoothApplication.start();
             log.info("Bluetooth successfully started");
             entityContext.setFeatureState("Bluetooth", true);
-            entityContext.setting().setValue(BluetoothStatusSetting.class, BundleSettingPluginStatus.ONLINE);
+            entityContext.setting().setValue(BluetoothStatusSetting.class, SettingPluginStatus.ONLINE);
         } catch (Throwable ex) {
-            entityContext.setting().setValue(BluetoothStatusSetting.class, BundleSettingPluginStatus.error(ex));
+            entityContext.setting().setValue(BluetoothStatusSetting.class, SettingPluginStatus.error(ex));
             entityContext.setFeatureState("Bluetooth", false);
             log.error("Unable to start bluetooth service", ex);
         }
@@ -201,20 +201,20 @@ public class BluetoothBundleEntryPoint implements BundleEntryPoint {
                     log.warn("Writing private key");
                     Path privateKey = TouchHomeUtils.getSshPath().resolve("id_rsa_touchhome");
                     FileUtils.writeByteArrayToFile(privateKey.toFile(), content);
-                    linuxHardwareRepository.setPermissions(privateKey, 600);
+                    machineHardwareRepository.setPermissions(privateKey, 600);
                     break;
                 case 7:
                     log.warn("Writing public key");
                     Path publicKey = TouchHomeUtils.getSshPath().resolve("id_rsa_touchhome.pub");
                     FileUtils.writeByteArrayToFile(publicKey.toFile(), content);
-                    linuxHardwareRepository.setPermissions(publicKey, 600);
+                    machineHardwareRepository.setPermissions(publicKey, 600);
                     break;
             }
         });
     }
 
     private String getUserIPAddress() {
-        return readIfLinux(wirelessHardwareRepository::getIPAddress) + "%&%" + this.loginUser;
+        return readIfLinux(networkHardwareRepository::getIPAddress) + "%&%" + this.loginUser;
     }
 
     private UserEntity getUser() {
@@ -251,19 +251,14 @@ public class BluetoothBundleEntryPoint implements BundleEntryPoint {
             String[] split = new String(bytes).split("%&%");
             if (split.length == 3 && split[1].length() >= 8) {
                 log.info("Writing wifi credentials");
-                wirelessHardwareRepository.setWifiCredentials(split[0], split[1], split[2]);
-                wirelessHardwareRepository.restartNetworkInterface();
+                networkHardwareRepository.setWifiCredentials(split[0], split[1], split[2]);
+                networkHardwareRepository.restartNetworkInterface();
             }
         });
     }
 
     private void rebootDevice(byte[] ignore) {
-        writeSafeValue(linuxHardwareRepository::reboot);
-    }
-
-    @Override
-    public String getBundleId() {
-        return "bluetooth";
+        writeSafeValue(machineHardwareRepository::reboot);
     }
 
     @Override
@@ -281,7 +276,7 @@ public class BluetoothBundleEntryPoint implements BundleEntryPoint {
     }
 
     private String readWifiList() {
-        return wirelessHardwareRepository.scan(wirelessHardwareRepository.getActiveNetworkInterface()).stream()
+        return networkHardwareRepository.scan(networkHardwareRepository.getActiveNetworkInterface()).stream()
                 .filter(distinctByKey(Network::getSsid))
                 .map(n -> n.getSsid() + "%&%" + n.getStrength()).collect(Collectors.joining("%#%"));
     }
@@ -320,7 +315,7 @@ public class BluetoothBundleEntryPoint implements BundleEntryPoint {
     }
 
     private String getWifiName() {
-        return linuxHardwareRepository.getWifiName();
+        return machineHardwareRepository.getWifiName();
     }
 
     @SneakyThrows

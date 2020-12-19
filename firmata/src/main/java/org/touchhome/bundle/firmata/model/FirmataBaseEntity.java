@@ -6,17 +6,20 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.NotificationEntityJSON;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.model.BaseEntity;
+import org.touchhome.bundle.api.entity.BaseEntity;
+import org.touchhome.bundle.api.entity.micro.MicroControllerBaseEntity;
+import org.touchhome.bundle.api.model.ActionResponseModel;
+import org.touchhome.bundle.api.model.FileModel;
+import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.model.micro.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldName;
+import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
-import org.touchhome.bundle.api.ui.method.UIMethodAction;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.bundle.arduino.ArduinoConsolePlugin;
 import org.touchhome.bundle.firmata.provider.FirmataDeviceCommunicator;
 import org.touchhome.bundle.firmata.provider.IODeviceWrapper;
 import org.touchhome.bundle.firmata.provider.command.FirmataRegisterCommand;
@@ -24,14 +27,16 @@ import org.touchhome.bundle.firmata.provider.command.PendingRegistrationContext;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Entity
 @Accessors(chain = true)
 public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends MicroControllerBaseEntity<T> {
 
-    public static final String PREFIX = "fm_";
+    private static final Map<String, FirmataDeviceCommunicator> entityIDToDeviceCommunicator = new HashMap<>();
 
     @Setter
     @Getter
@@ -63,18 +68,36 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
         return super.getStatus();
     }
 
-    @UIMethodAction("ACTION.COMMUNICATOR.RESTART")
-    public NotificationEntityJSON restartCommunicator() {
+    @UIContextMenuAction("ACTION.COMMUNICATOR.RESTART")
+    public ActionResponseModel restartCommunicator() {
         if (firmataDeviceCommunicator != null) {
             try {
                 String response = firmataDeviceCommunicator.restart();
-                return NotificationEntityJSON.success(getTitle()).setValue(response);
+                return ActionResponseModel.showSuccess(response);
             } catch (Exception ex) {
-                return NotificationEntityJSON.danger(getTitle()).setValue(ex.getMessage());
+                return ActionResponseModel.showError(ex.getMessage());
             }
         }
-        return NotificationEntityJSON.warn(getTitle()).setValue("ACTION.COMMUNICATOR.NOT_FOUND");
+        return ActionResponseModel.showWarn("ACTION.COMMUNICATOR.NOT_FOUND");
     }
+
+    @UIContextMenuAction("ACTION.UPLOAD_SKETCH")
+    public void uploadSketch(EntityContext entityContext) {
+
+    }
+
+    @UIContextMenuAction("ACTION.UPLOAD_SKETCH_MANUALLY")
+    public void uploadSketchManually(EntityContext entityContext) {
+        ArduinoConsolePlugin arduinoConsolePlugin = entityContext.getBean(ArduinoConsolePlugin.class);
+        String content = TouchHomeUtils.getResourceAsString("firmata", "arduino_firmata.ino");
+        String commName = this.getCommunicatorName();
+        String sketch = "#define COMM_" + commName + "\n" + content;
+        arduinoConsolePlugin.save(new FileModel("arduino_firmata_" + commName + ".ino", sketch, null, false));
+        arduinoConsolePlugin.syncContentToUI();
+        entityContext.ui().openConsole(arduinoConsolePlugin);
+    }
+
+    protected abstract String getCommunicatorName();
 
     @JsonIgnore
     public short getTarget() {
@@ -116,11 +139,25 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
     public static class SelectTargetFirmataDeviceLoader implements DynamicOptionLoader {
 
         @Override
-        public List<Option> loadOptions(Object parameter, BaseEntity baseEntity, EntityContext entityContext) {
+        public List<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext) {
             return entityContext.getBean(FirmataRegisterCommand.class).getPendingRegistrations().entrySet().stream()
                     .filter(entry -> ((FirmataBaseEntity) baseEntity).allowRegistrationType(entry.getValue()))
-                    .map(entry -> Option.of(Short.toString(entry.getKey()), entry.getKey() + "/" + entry.getValue()))
+                    .map(entry -> OptionModel.of(Short.toString(entry.getKey()), entry.getKey() + "/" + entry.getValue()))
                     .collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    public void afterFetch(EntityContext entityContext) {
+        setFirmataDeviceCommunicator(entityIDToDeviceCommunicator.computeIfAbsent(getEntityID(),
+                ignore -> createFirmataDeviceType(entityContext)));
+    }
+
+    @Override
+    protected void beforeRemove() {
+        FirmataDeviceCommunicator firmataDeviceCommunicator = entityIDToDeviceCommunicator.remove(getEntityID());
+        if (firmataDeviceCommunicator != null) {
+            firmataDeviceCommunicator.destroy();
         }
     }
 }

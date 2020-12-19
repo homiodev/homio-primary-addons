@@ -1,0 +1,8 @@
+{
+  "camera": {
+    "name": "Camera",
+    "setting": {
+      "label": "Camera settings"
+    }
+  }
+}

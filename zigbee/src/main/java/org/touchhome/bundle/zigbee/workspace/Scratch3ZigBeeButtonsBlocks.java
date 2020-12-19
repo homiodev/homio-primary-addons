@@ -9,12 +9,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.workspace.bool.WorkspaceBooleanEntity;
-import org.touchhome.bundle.api.scratch.BlockType;
-import org.touchhome.bundle.api.scratch.MenuBlock;
-import org.touchhome.bundle.api.scratch.Scratch3Block;
-import org.touchhome.bundle.api.scratch.WorkspaceBlock;
+import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanEntity;
 import org.touchhome.bundle.api.util.UpdatableValue;
+import org.touchhome.bundle.api.workspace.WorkspaceBlock;
+import org.touchhome.bundle.api.workspace.scratch.BlockType;
+import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
+import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.ZigBeeNodeDescription;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
@@ -234,13 +234,15 @@ final class Scratch3ZigBeeButtonsBlocks {
             }
         });
         // listen boolean variable and fire events to device
-        workspaceBlock.getEntityContext().addEntityUpdateListener(WorkspaceBooleanEntity.PREFIX + varId, (Consumer<WorkspaceBooleanEntity>) workspaceBooleanEntity -> {
-            Boolean val = workspaceBooleanEntity.getValue();
-            ScratchDeviceState deviceState = zigBeeDeviceUpdateValueListener.getDeviceState(zigBeeDeviceStateUUID);
-            if (deviceState == null || deviceState.getState().boolValue() != val) {
-                switchButton(workspaceBlock, ButtonFireSignal.of(val), getZigBeeDevice(workspaceBlock, ieeeAddress), buttonEndpointValue);
-            }
-        });
+        workspaceBlock.getEntityContext().event().addEntityUpdateListener(WorkspaceBooleanEntity.PREFIX + varId,
+                "workspace-zigbee-boolean-listen-" + varId,
+                (Consumer<WorkspaceBooleanEntity>) workspaceBooleanEntity -> {
+                    Boolean val = workspaceBooleanEntity.getValue();
+                    ScratchDeviceState deviceState = zigBeeDeviceUpdateValueListener.getDeviceState(zigBeeDeviceStateUUID);
+                    if (deviceState == null || deviceState.getState().boolValue() != val) {
+                        switchButton(workspaceBlock, ButtonFireSignal.of(val), getZigBeeDevice(workspaceBlock, ieeeAddress), buttonEndpointValue);
+                    }
+                });
     }
 
     @RequiredArgsConstructor

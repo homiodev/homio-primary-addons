@@ -1,8 +1,8 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginButton;
+import org.touchhome.bundle.api.setting.SettingPluginButton;
 
-public class ZigBeeResetNetworkButtonSetting implements BundleSettingPluginButton {
+public class ZigBeeResetNetworkButtonSetting implements SettingPluginButton {
 
     @Override
     public int order() {

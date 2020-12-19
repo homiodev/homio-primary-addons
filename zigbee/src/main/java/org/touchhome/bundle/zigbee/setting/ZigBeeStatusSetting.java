@@ -1,8 +1,8 @@
 package org.touchhome.bundle.zigbee.setting;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginStatus;
+import org.touchhome.bundle.api.setting.SettingPluginStatus;
 
-public class ZigBeeStatusSetting implements BundleSettingPluginStatus {
+public class ZigBeeStatusSetting implements SettingPluginStatus {
 
     @Override
     public int order() {

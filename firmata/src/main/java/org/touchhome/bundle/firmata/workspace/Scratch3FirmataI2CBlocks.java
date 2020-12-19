@@ -4,10 +4,10 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.firmata4j.I2CDevice;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.scratch.BlockType;
-import org.touchhome.bundle.api.scratch.MenuBlock;
-import org.touchhome.bundle.api.scratch.Scratch3Block;
-import org.touchhome.bundle.api.scratch.WorkspaceBlock;
+import org.touchhome.bundle.api.workspace.scratch.BlockType;
+import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
+import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
+import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.firmata.FirmataBundleEntryPoint;
 

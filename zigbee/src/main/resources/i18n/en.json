@@ -1,4 +1,8 @@
 {
+  "WORKSPACE": {
+    "zigbee": "ZigBee",
+    "zigbee-sensor": "ZigBee sensors"
+  },
   "placeholder": {
     "st_ZigBeePortSetting": "Select ZigBee port",
     "st_ZigBeeCoordinatorHandlerSetting": "ZigBee Coordinator"
@@ -14,18 +18,14 @@
   "SIDEBAR": {
     "ZigBeeDeviceEntity": "ZigBee"
   },
-  "zigbee-sensor": {
-    "name": "ZigBee sensors",
-    "extensionDescription": "ZigBee sensors extension"
-  },
   "zigbee": {
+    "name": "ZigBee",
     "device_reinitialise": "Node rediscovery started",
     "start_scan": "ZigBee discovery started",
     "extensionDescription": "ZigBee extension",
     "OFFLINE_COMMS_FAIL": "Communication failed",
     "OFFLINE_BAD_RESPONSE": "Bad response",
     "OFFLINE_INITIALIZE_FAIL": "Initialize failed",
-    "name": "ZigBee",
     "setting": {
       "label": "ZigBee settings",
       "st_ZigBeeLogEventsButtonsSetting": "Log events",

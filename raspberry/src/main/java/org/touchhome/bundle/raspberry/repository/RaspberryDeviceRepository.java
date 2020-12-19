@@ -5,12 +5,12 @@ import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.link.HasWorkspaceVariableLinkAbility;
-import org.touchhome.bundle.api.model.workspace.bool.WorkspaceBooleanEntity;
-import org.touchhome.bundle.api.model.workspace.bool.WorkspaceBooleanGroupEntity;
+import org.touchhome.bundle.api.model.OptionModel;
+import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanEntity;
+import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanGroupEntity;
 import org.touchhome.bundle.api.repository.AbstractRepository;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
+import org.touchhome.bundle.api.workspace.HasWorkspaceVariableLinkAbility;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
 import org.touchhome.bundle.raspberry.model.RaspberryDeviceEntity;
 import org.touchhome.bundle.raspberry.workspace.Scratch3RaspberryBlocks;
@@ -23,48 +23,15 @@ import java.util.Map;
 @Repository
 public class RaspberryDeviceRepository extends AbstractRepository<RaspberryDeviceEntity> implements HasWorkspaceVariableLinkAbility {
 
-    public static final String PREFIX = "rd_";
     private final Scratch3RaspberryBlocks scratch3RaspberryBlocks;
     private final RaspberryGPIOService raspberryGPIOService;
     private final EntityContext entityContext;
 
     public RaspberryDeviceRepository(Scratch3RaspberryBlocks scratch3RaspberryBlocks, RaspberryGPIOService raspberryGPIOService, EntityContext entityContext) {
-        super(RaspberryDeviceEntity.class, PREFIX);
+        super(RaspberryDeviceEntity.class);
         this.scratch3RaspberryBlocks = scratch3RaspberryBlocks;
         this.raspberryGPIOService = raspberryGPIOService;
         this.entityContext = entityContext;
-    }
-
-    @Override
-    public void updateEntityAfterFetch(RaspberryDeviceEntity entity) {
-        gatherAvailableLinks(entity);
-    }
-
-    private void gatherAvailableLinks(RaspberryDeviceEntity entity) {
-        List<Map<Option, String>> links = new ArrayList<>();
-        for (RaspberryGpioPin gpioPin : RaspberryGpioPin.values(PinMode.DIGITAL_INPUT, null)) {
-            Map<Option, String> map = new HashMap<>();
-            map.put(Option.of(gpioPin.name(), gpioPin.toString()).json(json ->
-                    json.put("group", WorkspaceBooleanGroupEntity.PREFIX).put("color", gpioPin.getColor())
-                            .put("var", WorkspaceBooleanEntity.PREFIX)), getLinkedWorkspaceBooleanVariable(gpioPin));
-            links.add(map);
-        }
-        entity.setAvailableLinks(links);
-    }
-
-    private String getLinkedWorkspaceBooleanVariable(RaspberryGpioPin gpioPin) {
-        List<RaspberryGPIOService.PinListener> pinListeners = raspberryGPIOService.getDigitalListeners().get(gpioPin);
-        if (pinListeners != null) {
-            for (RaspberryGPIOService.PinListener pinListener : pinListeners) {
-                if (pinListener.getName().startsWith(WorkspaceBooleanEntity.PREFIX)) {
-                    WorkspaceBooleanEntity variableEntity = entityContext.getEntity(pinListener.getName());
-                    if (variableEntity != null) {
-                        return variableEntity.getTitle();
-                    }
-                }
-            }
-        }
-        return "";
     }
 
     @Override

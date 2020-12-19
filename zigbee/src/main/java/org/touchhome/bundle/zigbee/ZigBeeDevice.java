@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 
 @Log4j2
 public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceListener {
@@ -44,7 +43,6 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
     private ZigBeeDeviceEntity zigBeeDeviceEntity;
 
     private Thread nodeDiscoveryThread;
-    private BiConsumer<ZigBeeDeviceEntity, ZigBeeDeviceEntity> devicePropertiesUpdateListener;
 
     ZigBeeDevice(ZigBeeDiscoveryService discoveryService, IeeeAddress nodeIeeeAddress) {
         log.info("{}: Creating zigBee device", nodeIeeeAddress);
@@ -201,16 +199,16 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
 
     private void addDevicePropertiesUpdateListener() {
         // for remove old one if exists
-        this.discoveryService.getEntityContext().removeEntityUpdateListener(this.zigBeeDeviceEntity.getEntityID(), this.devicePropertiesUpdateListener);
-        this.devicePropertiesUpdateListener = (zb, old) -> {
-            this.zigBeeDeviceEntity = zb;
-            if (!zb.getPoolingPeriod().equals(old.getPoolingPeriod())
-                    || !zb.getReportingTimeMin().equals(old.getReportingTimeMin())
-                    || !zb.getReportingTimeMax().equals(old.getReportingTimeMax())) {
-                getZigBeeConverterEndpoints().values().forEach(ZigBeeBaseChannelConverter::updateConfiguration);
-            }
-        };
-        this.discoveryService.getEntityContext().addEntityUpdateListener(this.zigBeeDeviceEntity.getEntityID(), this.devicePropertiesUpdateListener);
+        this.discoveryService.getEntityContext().event().removeEntityUpdateListener(this.zigBeeDeviceEntity.getEntityID(), "zigbee-change-listener");
+        this.discoveryService.getEntityContext().event().addEntityUpdateListener(this.zigBeeDeviceEntity.getEntityID(),
+                "zigbee-change-listener", (ZigBeeDeviceEntity zb, ZigBeeDeviceEntity old) -> {
+                    this.zigBeeDeviceEntity = zb;
+                    if (!zb.getPoolingPeriod().equals(old.getPoolingPeriod())
+                            || !zb.getReportingTimeMin().equals(old.getReportingTimeMin())
+                            || !zb.getReportingTimeMax().equals(old.getReportingTimeMax())) {
+                        getZigBeeConverterEndpoints().values().forEach(ZigBeeBaseChannelConverter::updateConfiguration);
+                    }
+                });
     }
 
     private Collection<ZigBeeConverterEndpoint> findMissingRequireEndpointClusters(List<ZigBeeConverterEndpoint> zigBeeConverterEndpoints) {

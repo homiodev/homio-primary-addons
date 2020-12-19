@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.touchhome.bundle.api.model.BaseEntity;
+import org.touchhome.bundle.api.entity.BaseEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +19,11 @@ public class RaspberryController {
     @GetMapping("DS18B20")
     public List<BaseEntity> getRaspberryDS18B20() {
         return raspberryGPIOService.getDS18B20()
-                .stream().map(s -> BaseEntity.of(s, s)).collect(Collectors.toList());
+                .stream().map(s -> new BaseEntity() {
+                    @Override
+                    public String getEntityPrefix() {
+                        return "ds18b20_";
+                    }
+                }.setName(s).setEntityID(s)).collect(Collectors.toList());
     }
 }

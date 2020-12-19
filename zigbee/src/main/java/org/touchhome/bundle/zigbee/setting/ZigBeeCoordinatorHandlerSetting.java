@@ -1,19 +1,10 @@
 package org.touchhome.bundle.zigbee.setting;
 
-import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.SettingPluginOptionsBean;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.handler.CC2531Handler;
 
-import java.util.List;
-
-public class ZigBeeCoordinatorHandlerSetting implements BundleSettingPlugin<ZigBeeCoordinatorHandler> {
-
-    @Override
-    public SettingType getSettingType() {
-        return SettingType.SelectBoxDynamic;
-    }
+public class ZigBeeCoordinatorHandlerSetting implements SettingPluginOptionsBean<ZigBeeCoordinatorHandler> {
 
     @Override
     public Class<ZigBeeCoordinatorHandler> getType() {
@@ -26,18 +17,8 @@ public class ZigBeeCoordinatorHandlerSetting implements BundleSettingPlugin<ZigB
     }
 
     @Override
-    public List<Option> loadAvailableValues(EntityContext entityContext) {
-        return Option.simpleNamelist(entityContext.getBeansOfType(ZigBeeCoordinatorHandler.class));
-    }
-
-    @Override
     public int order() {
         return 400;
-    }
-
-    @Override
-    public ZigBeeCoordinatorHandler parseValue(EntityContext entityContext, String value) {
-        return entityContext.getBean(value, ZigBeeCoordinatorHandler.class);
     }
 
     @Override

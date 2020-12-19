@@ -3,9 +3,9 @@ package org.touchhome.bundle.zigbee.workspace;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.scratch.BlockType;
-import org.touchhome.bundle.api.scratch.MenuBlock;
-import org.touchhome.bundle.api.scratch.Scratch3Block;
+import org.touchhome.bundle.api.workspace.scratch.BlockType;
+import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
+import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.zigbee.ZigBeeDevice;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
 

@@ -11,7 +11,7 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.UserEntity;
+import org.touchhome.bundle.api.entity.UserEntity;
 import org.touchhome.bundle.api.util.SslUtil;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerConnectionMessageSetting;
@@ -23,7 +23,7 @@ import javax.net.ssl.SSLEngine;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.touchhome.bundle.api.model.UserEntity.ADMIN_USER;
+import static org.touchhome.bundle.api.entity.UserEntity.ADMIN_USER;
 
 @Log4j2
 //@Component

@@ -17,7 +17,9 @@ import org.touchhome.bundle.firmata.provider.command.PendingRegistrationContext;
 import javax.persistence.Entity;
 
 @Entity
-public class FirmataUsbEntity extends FirmataBaseEntity<FirmataUsbEntity> {
+public final class FirmataUsbEntity extends FirmataBaseEntity<FirmataUsbEntity> {
+
+    public static final String PREFIX = "fmusb_";
 
     @UIField(order = 22)
     @JsonSerialPort
@@ -33,6 +35,11 @@ public class FirmataUsbEntity extends FirmataBaseEntity<FirmataUsbEntity> {
     }
 
     @Override
+    protected String getCommunicatorName() {
+        return "SERIAL";
+    }
+
+    @Override
     public FirmataDeviceCommunicator createFirmataDeviceType(EntityContext entityContext) {
         SerialPort serialPort = getSerialPort();
         return serialPort == null ? null : new FirmataUSBFirmataDeviceCommunicator(entityContext, this, serialPort.getSystemPortName());
@@ -41,6 +48,11 @@ public class FirmataUsbEntity extends FirmataBaseEntity<FirmataUsbEntity> {
     @Override
     protected boolean allowRegistrationType(PendingRegistrationContext pendingRegistrationContext) {
         return pendingRegistrationContext.getEntity() instanceof FirmataUsbEntity;
+    }
+
+    @Override
+    public String getEntityPrefix() {
+        return PREFIX;
     }
 
     private static class FirmataUSBFirmataDeviceCommunicator extends FirmataDeviceCommunicator<FirmataUsbEntity> {

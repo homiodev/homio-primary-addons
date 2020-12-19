@@ -1,8 +1,8 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginText;
+import org.touchhome.bundle.api.setting.SettingPluginText;
 
-public class ZigBeeLinkKeySetting implements BundleSettingPluginText {
+public class ZigBeeLinkKeySetting implements SettingPluginText {
 
     @Override
     public int order() {

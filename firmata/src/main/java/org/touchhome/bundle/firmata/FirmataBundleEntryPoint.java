@@ -7,7 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.manager.En;
+import org.touchhome.bundle.api.Lang;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.util.FlowMap;
 import org.touchhome.bundle.firmata.model.FirmataBaseEntity;
@@ -39,13 +39,13 @@ public class FirmataBundleEntryPoint implements BundleEntryPoint {
 
     public void init() {
         restartFirmataProviders();
-        this.entityContext.addEntityUpdateListener(FirmataBaseEntity.class, FirmataBaseEntity::restartCommunicator);
+        this.entityContext.event().addEntityUpdateListener(FirmataBaseEntity.class, "firmata-restart-comm-listen", FirmataBaseEntity::restartCommunicator);
 
         this.entityContext.udp().listenUdp("listen-firmata-udp", null, 8266, (datagramPacket, payload) -> {
             if (payload.startsWith("th:")) {
                 String[] parts = payload.split(":");
                 if (parts.length == 3) {
-                    foundController(entityContext, parts[1].trim(), parts[2].trim(), datagramPacket.getAddress().getHostAddress());
+                    foundController(entityContext, parts[1].trim(), parts[2].trim(), datagramPacket.getAddress().getHostAddress(), null);
                     return;
                 }
             }
@@ -64,7 +64,7 @@ public class FirmataBundleEntryPoint implements BundleEntryPoint {
     }
 
     // this method fires only from devices that support internet access
-    public static void foundController(EntityContext entityContext, String board, String deviceID, String hostAddress) {
+    public static boolean foundController(EntityContext entityContext, String board, String deviceID, String hostAddress, String headerConfirmItemsKey) {
         // check if we already have firmata device with deviceID
         FirmataBaseEntity<?> device;
         if (deviceID != null) {
@@ -92,36 +92,33 @@ public class FirmataBundleEntryPoint implements BundleEntryPoint {
                 entityContext.ui().sendWarningMessage("FIRMATA.EVENT.FIRMATA_WRONG_DEVICE_TYPE", FlowMap.of("ID",
                         deviceID, "NAME", device.getTitle()));
             }
+            return false;
         } else {
             List<String> messages = new ArrayList<>();
-            messages.add(En.getServerMessage("FIRMATA.NEW_DEVICE_QUESTION"));
+            messages.add(Lang.getServerMessage("FIRMATA.NEW_DEVICE_QUESTION"));
             if (board != null) {
-                messages.add(En.getServerMessage("FIRMATA.NEW_DEVICE_BOARD", "BOARD", board));
+                messages.add(Lang.getServerMessage("FIRMATA.NEW_DEVICE_BOARD", "BOARD", board));
             }
             if (deviceID != null) {
-                messages.add(En.getServerMessage("FIRMATA.NEW_DEVICE_ID", "DEVICE_ID", deviceID));
+                messages.add(Lang.getServerMessage("FIRMATA.NEW_DEVICE_ID", "DEVICE_ID", deviceID));
             }
-            messages.add(En.getServerMessage("FIRMATA.NEW_DEVICE_ADDRESS", "ADDRESS", hostAddress));
+            messages.add(Lang.getServerMessage("FIRMATA.NEW_DEVICE_ADDRESS", "ADDRESS", hostAddress));
 
             entityContext.ui().sendConfirmation("Confirm-Firmata-" + deviceID, "TITLE.NEW_DEVICE", () -> {
                 // save device and try restart it
                 entityContext.save(new FirmataNetworkEntity().setIp(hostAddress)).restartCommunicator();
-            }, messages);
+            }, messages, headerConfirmItemsKey);
             entityContext.ui().sendInfoMessage("FIRMATA.EVENT.FOUND_FIRMATA_DEVICE",
                     FlowMap.of("ID", defaultString(deviceID, "-"), "IP", hostAddress,
                             "BOARD", defaultString(board, "-")));
             udpFoundDevices.put(hostAddress,
                     new UdpPayload(hostAddress, deviceID == null ? null : Short.parseShort(deviceID), board));
+            return true;
         }
     }
 
     private void restartFirmataProviders() {
         this.entityContext.findAll(FirmataBaseEntity.class).forEach(FirmataBaseEntity::restartCommunicator);
-    }
-
-    @Override
-    public String getBundleId() {
-        return "firmata";
     }
 
     @Override

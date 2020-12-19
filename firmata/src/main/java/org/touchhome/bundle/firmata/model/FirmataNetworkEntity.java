@@ -5,8 +5,8 @@ import org.firmata4j.IODevice;
 import org.firmata4j.firmata.FirmataDevice;
 import org.firmata4j.transport.NetworkTransport;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.model.BaseEntity;
+import org.touchhome.bundle.api.entity.BaseEntity;
+import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
@@ -18,12 +18,14 @@ import org.touchhome.bundle.firmata.provider.command.PendingRegistrationContext;
 
 import javax.persistence.Entity;
 import javax.validation.constraints.Pattern;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Entity
-public class FirmataNetworkEntity extends FirmataBaseEntity<FirmataNetworkEntity> {
+public final class FirmataNetworkEntity extends FirmataBaseEntity<FirmataNetworkEntity> {
+
+    public static final String PREFIX = "fmntw_";
 
     @UIField(order = 22, type = UIFieldType.TextSelectBoxDynamic)
     @Pattern(regexp = "(\\d{1,3}\\.){3}\\d{1,3}", message = "validation.host_port")
@@ -51,6 +53,11 @@ public class FirmataNetworkEntity extends FirmataBaseEntity<FirmataNetworkEntity
     }
 
     @Override
+    protected String getCommunicatorName() {
+        return "ESP8266_WIFI";
+    }
+
+    @Override
     public FirmataDeviceCommunicator createFirmataDeviceType(EntityContext entityContext) {
         return new FirmataNetworkFirmataDeviceCommunicator(entityContext, this);
     }
@@ -58,6 +65,11 @@ public class FirmataNetworkEntity extends FirmataBaseEntity<FirmataNetworkEntity
     @Override
     protected boolean allowRegistrationType(PendingRegistrationContext pendingRegistrationContext) {
         return pendingRegistrationContext.getEntity() instanceof FirmataNetworkEntity;
+    }
+
+    @Override
+    public String getEntityPrefix() {
+        return PREFIX;
     }
 
     private static class FirmataNetworkFirmataDeviceCommunicator extends FirmataDeviceCommunicator<FirmataNetworkEntity> {
@@ -81,9 +93,9 @@ public class FirmataNetworkEntity extends FirmataBaseEntity<FirmataNetworkEntity
     public static class SelectFirmataIpDeviceLoader implements DynamicOptionLoader {
 
         @Override
-        public List<Option> loadOptions(Object parameter, BaseEntity baseEntity, EntityContext entityContext) {
+        public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext) {
             Map<String, FirmataBundleEntryPoint.UdpPayload> udpFoundDevices = FirmataBundleEntryPoint.getUdpFoundDevices();
-            return udpFoundDevices.entrySet().stream().map(e -> Option.of(e.getKey(), e.getValue().toString())).collect(Collectors.toList());
+            return udpFoundDevices.entrySet().stream().map(e -> OptionModel.of(e.getKey(), e.getValue().toString())).collect(Collectors.toList());
         }
     }
 }

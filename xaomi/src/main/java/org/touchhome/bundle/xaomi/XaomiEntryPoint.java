@@ -15,11 +15,6 @@ public class XaomiEntryPoint implements BundleEntryPoint {
     }
 
     @Override
-    public String getBundleId() {
-        return "xaomi";
-    }
-
-    @Override
     public int order() {
         return 700;
     }

@@ -1,7 +1,8 @@
 {
+  "WORKSPACE": {
+    "xaomi": "Xaomi"
+  },
   "xaomi": {
-    "name": "Xaomi",
-    "extensionDescription": "Xaomi extension",
     "setting": {
       "label": "Xaomi settings"
     }

@@ -4,22 +4,26 @@ import cc.arduino.contributions.ConsoleProgressListener;
 import cc.arduino.contributions.ProgressListener;
 import cc.arduino.contributions.libraries.ContributedLibrary;
 import cc.arduino.contributions.libraries.ContributedLibraryReleases;
-import cc.arduino.contributions.libraries.LibrariesIndexer;
 import cc.arduino.contributions.libraries.LibraryInstaller;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePlugin;
-import org.touchhome.bundle.api.setting.BundlePackageInstallSettingPlugin;
-import org.touchhome.bundle.api.setting.console.BundleConsoleSettingPlugin;
+import org.touchhome.bundle.api.model.ProgressBar;
+import org.touchhome.bundle.api.setting.SettingPluginPackageInstall;
+import org.touchhome.bundle.api.setting.console.ConsoleSettingPlugin;
+import org.touchhome.bundle.arduino.ArduinoConfiguration;
 import org.touchhome.bundle.arduino.ArduinoConsolePlugin;
 import processing.app.BaseNoGui;
+import processing.app.packages.UserLibrary;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-public class ConsoleArduinoLibraryManagerSetting implements BundlePackageInstallSettingPlugin, BundleConsoleSettingPlugin<JSONObject> {
+public class ConsoleArduinoLibraryManagerSetting implements SettingPluginPackageInstall, ConsoleSettingPlugin<JSONObject> {
 
     private static Map<String, ContributedLibraryReleases> releases;
 
@@ -33,88 +37,67 @@ public class ConsoleArduinoLibraryManagerSetting implements BundlePackageInstall
         return consolePlugin instanceof ArduinoConsolePlugin;
     }
 
-    @SneakyThrows
-    private synchronized Map<String, ContributedLibraryReleases> getReleases(EntityContext entityContext, String progressKey) {
-        if (releases == null) {
-            releases = new HashMap<>();
-
-            BaseNoGui.onBoardOrPortChange();
-
-            ProgressListener progressListener = progressKey != null ? progress -> entityContext.ui().progress(progressKey, progress.getProgress(), progress.getStatus()) :
-                    new ConsoleProgressListener();
-
-            LibraryInstaller libraryInstaller = entityContext.getBean(LibraryInstaller.class);
-            libraryInstaller.updateIndex(progressListener);
-
-            LibrariesIndexer indexer = new LibrariesIndexer(BaseNoGui.getSettingsFolder());
-            indexer.parseIndex();
-            indexer.setLibrariesFolders(BaseNoGui.getLibrariesFolders());
-            indexer.rescanLibraries();
-
-            for (ContributedLibrary lib : BaseNoGui.librariesIndexer.getIndex().getLibraries()) {
-                if (releases.containsKey(lib.getName())) {
-                    releases.get(lib.getName()).add(lib);
-                } else {
-                    releases.put(lib.getName(), new ContributedLibraryReleases(lib));
-                }
+    @Override
+    public PackageContext installedPackages(EntityContext entityContext) {
+        Collection<PackageModel> bundleEntities = new ArrayList<>();
+        if (BaseNoGui.packages != null) {
+            for (UserLibrary library : BaseNoGui.librariesIndexer.getInstalledLibraries()) {
+                bundleEntities.add(buildBundleEntity(library));
             }
         }
-        return releases;
+        return new PackageContext(null, bundleEntities);
     }
 
     @Override
-    public Collection<PackageEntity> installedBundles(EntityContext entityContext) {
-        Map<String, ContributedLibraryReleases> releases = getReleases(entityContext, null);
-        Collection<PackageEntity> bundleEntities = new ArrayList<>();
-        for (ContributedLibraryReleases release : releases.values()) {
-            if (release.getInstalled().isPresent()) {
-                ContributedLibrary library = release.getInstalled().get();
-                bundleEntities.add(buildBundleEntity(null, library));
-            }
-        }
-
-        return bundleEntities;
-    }
-
-    @SneakyThrows
-    @Override
-    public Collection<PackageEntity> allBundles(EntityContext entityContext) {
+    public PackageContext allPackages(EntityContext entityContext) {
         releases = null;
-        Collection<PackageEntity> bundleEntities = new ArrayList<>();
-        for (ContributedLibraryReleases release : getReleases(entityContext, null).values()) {
-            ContributedLibrary latest = release.getLatest();
-            bundleEntities.add(buildBundleEntity(release.getReleases().stream().map(ContributedLibrary::getVersion).collect(Collectors.toList()), latest));
+        AtomicReference<String> error = new AtomicReference<>();
+        Collection<PackageModel> bundleEntities = new ArrayList<>();
+        if (BaseNoGui.packages != null) {
+            for (ContributedLibraryReleases release : getReleases(null, error).values()) {
+                ContributedLibrary latest = release.getLatest();
+                bundleEntities.add(buildBundleEntity(release.getReleases().stream().map(ContributedLibrary::getVersion).collect(Collectors.toList()), latest));
+            }
         }
 
-        return bundleEntities;
-    }
-
-    private PackageEntity buildBundleEntity(List<String> versions, ContributedLibrary latest) {
-        return new PackageEntity()
-                .setName(latest.getName())
-                .setTitle(latest.getSentence())
-                .setVersions(versions)
-                .setVersion(latest.getVersion())
-                .setSize(latest.getSize())
-                .setWebsite(latest.getWebsite())
-                .setAuthor(latest.getAuthor())
-                .setCategory(latest.getCategory())
-                .setReadme(latest.getParagraph());
+        return new PackageContext(error.get(), bundleEntities);
     }
 
     @Override
-    public void install(EntityContext entityContext, PackageRequest packageRequest, String progressKey) throws Exception {
-        LibraryInstaller installer = entityContext.getBean(LibraryInstaller.class);
-        ContributedLibrary lib = searchLibrary(getReleases(entityContext, progressKey), packageRequest.getName(), packageRequest.getVersion());
-        List<ContributedLibrary> deps = BaseNoGui.librariesIndexer.getIndex().resolveDependeciesOf(lib);
-        boolean depsInstalled = deps.stream().allMatch(l -> l.getInstalledLibrary().isPresent() || l.getName().equals(lib != null ? lib.getName() : null));
+    public void installPackage(EntityContext entityContext, PackageRequest packageRequest, ProgressBar progressBar) throws Exception {
+        if (BaseNoGui.packages != null) {
+            LibraryInstaller installer = ArduinoConfiguration.getLibraryInstaller();
+            ContributedLibrary lib = searchLibrary(getReleases(progressBar, null), packageRequest.getName(), packageRequest.getVersion());
+            List<ContributedLibrary> deps = BaseNoGui.librariesIndexer.getIndex().resolveDependeciesOf(lib);
+            boolean depsInstalled = deps.stream().allMatch(l -> l.getInstalledLibrary().isPresent() || l.getName().equals(lib != null ? lib.getName() : null));
 
-        ProgressListener progressListener = progress -> entityContext.ui().progress(progressKey, progress.getProgress(), progress.getStatus());
-        if (!depsInstalled) {
-            installer.install(deps, progressListener);
+            ProgressListener progressListener = progress -> progressBar.progress(progress.getProgress(), progress.getStatus());
+            if (!depsInstalled) {
+                installer.install(deps, progressListener);
+            }
+            installer.install(lib, progressListener);
+            reBuildLibraries(entityContext, progressBar);
         }
-        installer.install(lib, progressListener);
-        reBuildLibraries(entityContext, progressKey);
+    }
+
+    @Override
+    public void unInstallPackage(EntityContext entityContext, PackageRequest packageRequest, ProgressBar progressBar) throws IOException {
+        if (BaseNoGui.packages != null) {
+            ContributedLibrary lib = getReleases(progressBar, null).values().stream()
+                    .filter(r -> r.getInstalled().isPresent() && r.getInstalled().get().getName().equals(packageRequest.getName()))
+                    .map(r -> r.getInstalled().get()).findAny().orElse(null);
+
+            if (lib == null) {
+                entityContext.ui().sendErrorMessage("Library '" + packageRequest.getName() + "' not found");
+            } else if (lib.isIDEBuiltIn()) {
+                entityContext.ui().sendErrorMessage("Unable remove built-in library: '" + packageRequest.getName() + "'");
+            } else {
+                ProgressListener progressListener = progress -> progressBar.progress(progress.getProgress(), progress.getStatus());
+                LibraryInstaller installer = ArduinoConfiguration.getLibraryInstaller();
+                installer.remove(lib, progressListener);
+                reBuildLibraries(entityContext, progressBar);
+            }
+        }
     }
 
     private ContributedLibrary searchLibrary(Map<String, ContributedLibraryReleases> releases, String name, String version) {
@@ -125,25 +108,83 @@ public class ConsoleArduinoLibraryManagerSetting implements BundlePackageInstall
         return null;
     }
 
-    @Override
-    public void unInstall(EntityContext entityContext, PackageRequest packageRequest, String progressKey) throws IOException {
-        ContributedLibrary lib = getReleases(entityContext, progressKey).values().stream()
-                .filter(r -> r.getInstalled().isPresent() && r.getInstalled().get().getName().equals(packageRequest.getName()))
-                .map(r -> r.getInstalled().get()).findAny().orElse(null);
-
-        if (lib == null) {
-            entityContext.ui().sendErrorMessage("Library " + packageRequest.getName() + " not found");
-            return;
+    @SneakyThrows
+    private PackageModel buildBundleEntity(UserLibrary library) {
+        PackageModel packageModel = new PackageModel()
+                .setName(library.getName())
+                .setTitle(library.getSentence())
+                .setVersion(library.getVersion())
+                .setWebsite(library.getWebsite())
+                .setAuthor(library.getAuthor())
+                .setCategory(library.getCategory())
+                .setReadme(library.getParagraph());
+        String[] readmeFiles = library.getInstalledFolder().list((dir, name) -> name.toLowerCase().startsWith("readme."));
+        if (readmeFiles != null && readmeFiles.length > 0) {
+            packageModel.setReadme(packageModel.getReadme() + "<br/><br/>" +
+                    new String(Files.readAllBytes(library.getInstalledFolder().toPath().resolve(readmeFiles[0]))));
         }
 
-        ProgressListener progressListener = progress -> entityContext.ui().progress(progressKey, progress.getProgress(), progress.getStatus());
-        LibraryInstaller installer = entityContext.getBean(LibraryInstaller.class);
-        installer.remove(lib, progressListener);
-        reBuildLibraries(entityContext, progressKey);
+        if (library.isIDEBuiltIn()) {
+            packageModel.setTags(Collections.singleton("Built-In")).setRemovable(false);
+        }
+
+        return packageModel;
     }
 
-    private void reBuildLibraries(EntityContext entityContext, String progressKey) {
+    private PackageModel buildBundleEntity(List<String> versions, ContributedLibrary library) {
+        PackageModel packageModel = new PackageModel()
+                .setName(library.getName())
+                .setTitle(library.getSentence())
+                .setVersions(versions)
+                .setVersion(library.getVersion())
+                .setSize(library.getSize())
+                .setWebsite(library.getWebsite())
+                .setAuthor(library.getAuthor())
+                .setCategory(library.getCategory())
+                .setReadme(library.getParagraph());
+        if (library.isIDEBuiltIn()) {
+            packageModel.setTags(Collections.singleton("Built-In")).setRemovable(false);
+        }
+
+        return packageModel;
+    }
+
+    private void reBuildLibraries(EntityContext entityContext, ProgressBar progressBar) {
         ConsoleArduinoLibraryManagerSetting.releases = null;
-        getReleases(entityContext, progressKey);
+        getReleases(progressBar, null);
+        entityContext.ui().reloadWindow("Re-Initialize page after library installation");
+    }
+
+    @SneakyThrows
+    private synchronized Map<String, ContributedLibraryReleases> getReleases(ProgressBar progressBar, AtomicReference<String> error) {
+        if (releases == null) {
+            releases = new HashMap<>();
+
+            BaseNoGui.onBoardOrPortChange();
+
+            ProgressListener progressListener = progressBar != null ? progress -> progressBar.progress(progress.getProgress(), progress.getStatus()) :
+                    new ConsoleProgressListener();
+
+            try {
+                LibraryInstaller libraryInstaller = ArduinoConfiguration.getLibraryInstaller();
+                libraryInstaller.updateIndex(progressListener);
+            } catch (Exception ex) {
+                if (error == null) {
+                    throw ex;
+                }
+                error.set(ex.getMessage());
+                BaseNoGui.librariesIndexer.parseIndex();
+                BaseNoGui.librariesIndexer.rescanLibraries();
+            }
+
+            for (ContributedLibrary lib : BaseNoGui.librariesIndexer.getIndex().getLibraries()) {
+                if (releases.containsKey(lib.getName())) {
+                    releases.get(lib.getName()).add(lib);
+                } else {
+                    releases.put(lib.getName(), new ContributedLibraryReleases(lib));
+                }
+            }
+        }
+        return releases;
     }
 }

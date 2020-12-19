@@ -1,140 +1,251 @@
 package org.touchhome.bundle.arduino;
 
-import cc.arduino.contributions.packages.ContributionInstaller;
-import cc.arduino.contributions.packages.ContributionsIndexer;
-import cc.arduino.packages.BoardPort;
-import com.fazecast.jSerialComm.SerialPort;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePluginEditor;
-import org.touchhome.bundle.api.console.InlineLogsConsolePlugin;
-import org.touchhome.bundle.api.json.ActionResponse;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
-import org.touchhome.bundle.api.setting.header.ShowInlineReadOnlyConsoleHeaderSetting;
-import org.touchhome.bundle.api.setting.header.dynamic.BundleDynamicHeaderSettingPlugin;
+import org.touchhome.bundle.api.console.dependency.ConsolePluginRequireZipDependency;
+import org.touchhome.bundle.api.exception.ServerException;
+import org.touchhome.bundle.api.model.ActionResponseModel;
+import org.touchhome.bundle.api.model.FileContentType;
+import org.touchhome.bundle.api.model.FileModel;
+import org.touchhome.bundle.api.model.OptionModel;
+import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
+import org.touchhome.bundle.api.setting.console.header.ShowInlineReadOnlyConsoleConsoleHeaderSetting;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.bundle.arduino.setting.ConsoleArduinoUploadUsingProgrammerSetting;
+import org.touchhome.bundle.arduino.setting.ConsoleArduinoVerboseSetting;
 import org.touchhome.bundle.arduino.setting.header.*;
 import processing.app.BaseNoGui;
+import processing.app.PreferencesData;
 import processing.app.Sketch;
 import processing.app.SketchFile;
-import processing.app.debug.TargetBoard;
-import processing.app.debug.TargetPackage;
-import processing.app.debug.TargetPlatform;
-import processing.app.helpers.PreferencesMap;
+import processing.app.packages.UserLibrary;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
-public class ArduinoConsolePlugin implements ConsolePluginEditor, SketchFile.TextStorage {
+public class ArduinoConsolePlugin implements ConsolePluginEditor, SketchFile.TextStorage,
+        ConsolePluginRequireZipDependency<FileModel> {
+
+    public static final String DEFAULT_SKETCH_NAME = "sketch_default.ino";
+
+    static {
+        System.setProperty("APP_DIR", TouchHomeUtils.getFilesPath().resolve("arduino").toString());
+        ArduinoConfiguration.getPlatform();
+    }
 
     private final EntityContext entityContext;
-    private final InlineLogsConsolePlugin inlineLogsConsolePlugin;
+    private final ArduinoSketchService arduinoSketchService;
     private Sketch sketch;
-    private EditorContent content = new EditorContent("sketch_default.ino", "");
+    private FileModel content = new FileModel(DEFAULT_SKETCH_NAME, "", null, false);
     private String prevContent = "";
 
-    private final ContributionInstaller contributionInstaller;
-    private final ContributionsIndexer contributionsIndexer;
-    private SketchController sketchController;
+    @Override
+    public Path getRootPath() {
+        return Paths.get(System.getProperty("APP_DIR"));
+    }
+
+    @Override
+    public void afterDependencyInstalled() {
+        // try initialise platform
+        ArduinoConfiguration.getPlatform();
+        entityContext.ui().reloadWindow("Re-Initialize page after install dependencies");
+    }
+
+    @Override
+    public String getDependencyURL() {
+        if (TouchHomeUtils.OS_NAME.isWindows()) {
+            return "https://bintray.com/touchhome/touchhome/download_file?file_path=arduino-ide-setup-win.7z";
+        } else {
+            return "https://bintray.com/touchhome/touchhome/download_file?file_path=arduino-ide-setup-linux.7z";
+        }
+    }
 
     public void init() {
         this.open(this.content.getName(), true);
-        createBoardChangeListener();
-        entityContext.setting().listenValue(ConsoleHeaderArduinoSketchNameSetting.class, "avr-file-name", name -> {
-            this.open(name, false);
-            this.sendContentToUI(entityContext, "arduino");
+
+        entityContext.setting().listenValueAndGet(ConsoleHeaderArduinoGetBoardsSetting.class, "avr-board",
+                this.arduinoSketchService::selectBoard);
+
+        entityContext.setting().listenValue(ConsoleHeaderArduinoSketchNameSetting.class, "avr-file-name", path -> {
+            this.open(path.getFileName().toString(), false);
+            this.syncContentToUI();
         });
 
-        entityContext.setting().listenValueAsync(ConsoleHeaderArduinoBuildSketchSetting.class, "avr-build", () ->
-                sketchController.build());
+        entityContext.setting().listenValueAndGet(ConsoleArduinoVerboseSetting.class, "avr-verbose",
+                value -> {
+                    PreferencesData.setBoolean("upload.verbose", value);
+                    PreferencesData.setBoolean("build.verbose", value);
+                });
+
+        entityContext.setting().listenValueAsync(ConsoleHeaderArduinoBuildSketchSetting.class, "avr-build",
+                arduinoSketchService::build);
+
+        entityContext.setting().listenValueAsync(ConsoleHeaderArduinoDeploySketchSetting.class, "avr-upload",
+                () -> arduinoSketchService.upload(false));
+
+        entityContext.setting().listenValueAsync(ConsoleArduinoUploadUsingProgrammerSetting.class, "avr-upload-using-programmer",
+                () -> arduinoSketchService.upload(true));
+
+        entityContext.setting().listenValue(ConsoleHeaderGetBoardInfoSetting.class, "avr-get-board-info",
+                arduinoSketchService::getBoardInfo);
 
         entityContext.setting().listenValue(ConsoleHeaderArduinoPortSetting.class, "avr-select-port", serialPort -> {
             BaseNoGui.selectSerialPort(serialPort.getSystemPortName());
             BaseNoGui.onBoardOrPortChange();
         });
 
-        entityContext.setting().listenValue(ConsoleHeaderGetBoardInfoSetting.class, "avr-get-board-info", () -> {
-            SerialPort serialPort = entityContext.setting().getValue(ConsoleHeaderArduinoPortSetting.class);
-            if (serialPort != null) {
-                List<BoardPort> ports = BaseNoGui.getDiscoveryManager().discovery();
-                BoardPort boardPort = ports.stream().filter(p -> p.getAddress().equals(serialPort.getSystemPortName())).findAny().orElse(null);
-                if (boardPort != null) {
-                    entityContext.ui().sendJsonMessage("ARDUINO.BOARD_INFO", boardPort);
-                }
-            } else {
-                entityContext.ui().sendErrorMessage("ARDUINO.PORT_NOT_SELECTED");
-            }
+        entityContext.setting().listenValue(ConsoleHeaderArduinoIncludeLibrarySetting.class, "avr-include-lib", s -> {
+            UserLibrary userLibrary = BaseNoGui.librariesIndexer.getInstalledLibraries().getByName(s);
+            this.arduinoSketchService.importLibrary(userLibrary, this.content);
+            this.syncContentToUI();
         });
     }
 
     @Override
-    public Class<? extends BundleHeaderSettingPlugin<?>> getFileNameHeaderAction() {
+    public Class<? extends ConsoleHeaderSettingPlugin<?>> getFileNameHeaderAction() {
         return ConsoleHeaderArduinoSketchNameSetting.class;
     }
 
     @Override
-    public Map<String, Class<? extends BundleHeaderSettingPlugin<?>>> getHeaderActions() {
-        Map<String, Class<? extends BundleHeaderSettingPlugin<?>>> headerActions = new LinkedHashMap<>();
+    public Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> getHeaderActions() {
+        Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> headerActions = new LinkedHashMap<>();
         headerActions.put("verify", ConsoleHeaderArduinoBuildSketchSetting.class);
+        headerActions.put("upload", ConsoleHeaderArduinoDeploySketchSetting.class);
         headerActions.put("getBoardInfo", ConsoleHeaderGetBoardInfoSetting.class);
         headerActions.put("arduinoPort", ConsoleHeaderArduinoPortSetting.class);
         headerActions.put("boards", ConsoleHeaderArduinoGetBoardsSetting.class);
         headerActions.put("dynamicBoardsInfo", ConsoleHeaderGetBoardsDynamicSetting.class);
-        headerActions.put("console", ShowInlineReadOnlyConsoleHeaderSetting.class);
+        headerActions.put("incl_library", ConsoleHeaderArduinoIncludeLibrarySetting.class);
+        headerActions.put("console", ShowInlineReadOnlyConsoleConsoleHeaderSetting.class);
         return headerActions;
     }
 
     @SneakyThrows
     @Override
-    public ActionResponse save(EditorContent content) {
+    public ActionResponseModel save(FileModel content) {
+        if (BaseNoGui.packages == null) {
+            return ActionResponseModel.showWarn("REQUIRE_UPDATES");
+        }
+        if (content.getName() == null) {
+            content.setName(this.content.getName());
+        }
         if (!content.getName().endsWith(".ino")) {
             content.setName(content.getName() + ".ino");
         }
+        this.content = content;
+        this.updateSketch();
+        return ActionResponseModel.showSuccess("SAVED");
+    }
+
+    public void updateSketch() throws IOException {
         String properParent = content.getName().substring(0, content.getName().length() - 4);
         if (this.sketch == null || !this.sketch.getName().equals(properParent)) {
-            Path sketchDir = BaseNoGui.getSketchbookFolder().toPath().resolve(properParent);
-            Files.createDirectories(sketchDir);
-            Path sketchFile = sketchDir.resolve(content.getName());
-
-            Files.write(sketchFile, content.getContent().getBytes());
+            Path sketchFile = BaseNoGui.getSketchbookFolder().toPath().resolve(properParent).resolve(content.getName());
+            Files.createDirectories(sketchFile.getParent());
+            if (!Files.exists(sketchFile)) {
+                Files.createFile(sketchFile);
+                // update ui part
+                entityContext.setting().reloadSettings(ConsoleHeaderArduinoSketchNameSetting.class);
+                this.prevContent = ""; // uses for save content;
+            }
             this.sketch = new Sketch(sketchFile.toFile());
             this.sketch.getPrimaryFile().setStorage(this);
-            this.sketchController = new SketchController(sketch, entityContext, inlineLogsConsolePlugin);
+            this.arduinoSketchService.setSketch(this.sketch);
         }
-        this.content = content;
-        sketch.save();
+        // somehow file was removed
+        if (!sketch.getPrimaryFile().getFile().exists()) {
+            sketch.save();
+            entityContext.setting().reloadSettings(ConsoleHeaderArduinoSketchNameSetting.class);
+        } else {
+            sketch.save();
+        }
+    }
 
-        return new ActionResponse("SAVED", ActionResponse.ResponseAction.ShowSuccessMsg);
+    @SneakyThrows
+    @Override
+    public ActionResponseModel glyphClicked(String line) {
+        Pattern pattern = Pattern.compile("#include( +)[<\"](.*)\\.h[>\"]");
+        Matcher matcher = pattern.matcher(line);
+        Set<FileModel> files = new HashSet<>();
+        if (matcher.find()) {
+            String includeSource = matcher.group(2);
+            for (UserLibrary library : BaseNoGui.librariesIndexer.getInstalledLibraries()) {
+                Path hFile = library.getSrcFolder().toPath().resolve(includeSource + ".h");
+                if (Files.exists(hFile)) {
+                    files.add(new FileModel(includeSource + ".h", new String(Files.readAllBytes(hFile)), FileContentType.cpp, true));
+
+                    Path cppFile = library.getSrcFolder().toPath().resolve(includeSource + ".cpp");
+                    if (Files.exists(cppFile)) {
+                        files.add(new FileModel(includeSource + ".cpp", new String(Files.readAllBytes(cppFile)), FileContentType.cpp, true));
+                    }
+                }
+            }
+        }
+        if (files.isEmpty()) {
+            return null;
+        }
+        return ActionResponseModel.showFiles(files);
+    }
+
+    @Override
+    public MonacoGlyphAction getGlyphAction() {
+        return new MonacoGlyphAction("fas fa-external-link-square-alt", null, "#include( +)[<\"]\\w*\\.h[\">]");
+    }
+
+    public void syncContentToUI() {
+        this.sendValueToConsoleEditor(entityContext);
     }
 
     @SneakyThrows
     private void open(String fileName, boolean createIfNotExists) {
-        if (!fileName.endsWith(".ino")) {
-            throw new IllegalArgumentException("Arduino file " + fileName + " must ends with .ino");
+        if (BaseNoGui.getSketchbookFolder() == null) {
+            return;
         }
-        String properParent = fileName.substring(0, fileName.length() - 4);
-        Path sketchFile = BaseNoGui.getSketchbookFolder().toPath().resolve(properParent).resolve(fileName);
-        if (!Files.exists(sketchFile) && !createIfNotExists) {
-            throw new IllegalStateException("Unable to find file: " + sketchFile.toString());
+        Path sketchFile = null;
+        if (fileName.contains("~~~")) { // contains example path. Read full content and copy to example file
+            OptionModel foundModel = Optional.ofNullable(ConsoleHeaderArduinoSketchNameSetting.buildExamplePath(true)).map(e -> e.findByKey(fileName)).orElse(null);
+            if (foundModel != null) {
+                Path path = Paths.get(foundModel.getJson().getString("path"));
+                save(new FileModel(path.getFileName().toString(), new String(Files.readAllBytes(path)), FileContentType.cpp, false));
+                return;
+            }
+        } else {
+            if (!fileName.endsWith(".ino")) {
+                throw new ServerException("Arduino file " + fileName + " must ends with .ino");
+            }
+            String properParent = fileName.substring(0, fileName.length() - 4);
+            sketchFile = BaseNoGui.getSketchbookFolder().toPath().resolve(properParent).resolve(fileName);
+        }
+
+
+        if (!Files.exists(sketchFile)) {
+            if (createIfNotExists) {
+                Files.createDirectories(sketchFile.getParent());
+                Files.copy(BaseNoGui.getPortableFolder().toPath().resolve("default_sketch.txt"), sketchFile);
+            } else {
+                throw new ServerException("Unable to find file: " + sketchFile.toString());
+            }
         }
 
         this.content.setName(fileName);
         this.content.setContent(new String(Files.readAllBytes(sketchFile)));
-        if (StringUtils.isEmpty(this.prevContent)) {
-            this.prevContent = this.content.getContent();
-        }
-        this.save(this.content);
+        this.prevContent = this.content.getContent();
+        this.updateSketch();
     }
 
     @Override
-    public ContentType getContentType() {
-        return ContentType.cpp;
+    public FileContentType getContentType() {
+        return FileContentType.cpp;
     }
 
     @Override
@@ -143,7 +254,7 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor, SketchFile.Tex
     }
 
     @Override
-    public EditorContent getValue() {
+    public FileModel getValue() {
         return content;
     }
 
@@ -160,101 +271,5 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor, SketchFile.Tex
     @Override
     public void clearModified() {
         this.prevContent = content.getContent();
-    }
-
-    private void createBoardChangeListener() {
-        entityContext.setting().listenValueAndGet(ConsoleHeaderArduinoGetBoardsSetting.class, "avr-board", board -> {
-            if (StringUtils.isNotEmpty(board)) {
-                String[] values = board.split("~~~");
-                TargetPackage targetPackage = BaseNoGui.packages.values().stream().filter(p -> p.getId().equals(values[0])).findAny().orElseThrow(() -> new RuntimeException("NO_BOARD_SELECTED"));
-                TargetPlatform targetPlatform = targetPackage.platforms().stream().filter(p -> p.getId().equals(values[1])).findAny().orElseThrow(() -> new RuntimeException("NO_BOARD_SELECTED"));
-                TargetBoard targetBoard = targetPlatform.getBoards().values().stream().filter(b -> b.getId().equals(values[2])).findAny().orElseThrow(() -> new RuntimeException("NO_BOARD_SELECTED"));
-
-                BaseNoGui.selectBoard(targetBoard);
-                BaseNoGui.onBoardOrPortChange();
-
-                List<BundleDynamicHeaderSettingPlugin> dynamicSettings = new ArrayList<>();
-                if (!targetBoard.getMenuIds().isEmpty()) {
-                    for (Map.Entry<String, String> customMenuEntry : targetPlatform.getCustomMenus().entrySet()) {
-                        if (targetBoard.getMenuIds().contains(customMenuEntry.getKey())) {
-                            PreferencesMap preferencesMap = targetBoard.getMenuLabels(customMenuEntry.getKey());
-                            if (!preferencesMap.isEmpty()) {
-                                BundleDynamicHeaderSettingPlugin plugin = new BundleDynamicHeaderSettingPlugin() {
-
-                                    @Override
-                                    public String getKey() {
-                                        return customMenuEntry.getKey();
-                                    }
-
-                                    @Override
-                                    public String getIcon() {
-                                        switch (customMenuEntry.getKey()) {
-                                            case "cpu":
-                                                return "fas fa-microchip";
-                                            case "baud":
-                                                return "fas fa-tachometer-alt";
-                                            case "xtal":
-                                            case "CrystalFreq":
-                                                return "fas fa-wave-square";
-                                            case "eesz":
-                                                return "fas fa-flask";
-                                            case "ResetMethod":
-                                                return "fas fa-trash-restore-alt";
-                                            case "dbg":
-                                                return "fab fa-hubspot";
-                                            case "lvl":
-                                                return "fas fa-level-up-alt";
-                                            case "ip":
-                                                return "fas fa-superscript";
-                                            case "vt":
-                                                return "fas fa-table";
-                                            case "exception":
-                                                return "fas fa-exclamation-circle";
-                                            case "wipe":
-                                                return "fas fa-eraser";
-                                            case "ssl":
-                                                return "fab fa-expeditedssl";
-                                        }
-                                        return "fas fa-wrench";
-                                    }
-
-                                    @Override
-                                    public String getTitle() {
-                                        return customMenuEntry.getValue();
-                                    }
-
-                                    @Override
-                                    public Class getType() {
-                                        return String.class;
-                                    }
-
-                                    @Override
-                                    public String getDefaultValue() {
-                                        return preferencesMap.keySet().iterator().next();
-                                    }
-
-                                    @Override
-                                    public SettingType getSettingType() {
-                                        return SettingType.SelectBox;
-                                    }
-
-                                    @Override
-                                    public Collection<Option> loadAvailableValues(EntityContext entityContext) {
-                                        return Option.list(preferencesMap);
-                                    }
-
-                                    @Override
-                                    public int order() {
-                                        return 0;
-                                    }
-                                };
-                                dynamicSettings.add(plugin);
-                            }
-                        }
-                    }
-                }
-                entityContext.setting().updateDynamicSettings(ConsoleHeaderGetBoardsDynamicSetting.class, dynamicSettings);
-            }
-        });
     }
 }

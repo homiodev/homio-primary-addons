@@ -7,7 +7,7 @@ import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclTemperatureMeasurementCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.api.link.DeviceChannelLinkType;
+import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 
 import java.util.concurrent.ExecutionException;

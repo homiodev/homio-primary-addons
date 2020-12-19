@@ -1,6 +1,6 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
-import org.touchhome.bundle.api.link.DeviceChannelLinkType;
+import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

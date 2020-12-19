@@ -1,8 +1,9 @@
 package org.touchhome.bundle.arduino.setting.header;
 
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
+import org.touchhome.bundle.api.model.OptionModel;
+import org.touchhome.bundle.api.setting.SettingPluginOptions;
+import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
 import processing.app.BaseNoGui;
 import processing.app.debug.TargetBoard;
 import processing.app.debug.TargetPackage;
@@ -12,36 +13,39 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ConsoleHeaderArduinoGetBoardsSetting implements BundleHeaderSettingPlugin<String> {
+public class ConsoleHeaderArduinoGetBoardsSetting implements ConsoleHeaderSettingPlugin<String>,
+        SettingPluginOptions<String> {
 
     @Override
-    public Collection<Option> loadAvailableValues(EntityContext entityContext) {
-        List<Option> options = new ArrayList<>();
+    public Collection<OptionModel> getOptions(EntityContext entityContext) {
+        List<OptionModel> options = new ArrayList<>();
         // Cycle through all packages
-        for (TargetPackage targetPackage : BaseNoGui.packages.values()) {
-            // For every package cycle through all platform
-            for (TargetPlatform targetPlatform : targetPackage.platforms()) {
+        if (BaseNoGui.packages != null) {
+            for (TargetPackage targetPackage : BaseNoGui.packages.values()) {
+                // For every package cycle through all platform
+                for (TargetPlatform targetPlatform : targetPackage.platforms()) {
 
-                // Add a title for each platform
-                String platformLabel = targetPlatform.getPreferences().get("name");
-                if (platformLabel == null)
-                    platformLabel = targetPackage.getId() + "-" + targetPlatform.getId();
+                    // Add a title for each platform
+                    String platformLabel = targetPlatform.getPreferences().get("name");
+                    if (platformLabel == null)
+                        platformLabel = targetPackage.getId() + "-" + targetPlatform.getId();
 
-                // add an hint that this core lives in sketchbook
-                if (targetPlatform.isInSketchbook())
-                    platformLabel += " (in sketchbook)";
+                    // add an hint that this core lives in sketchbook
+                    if (targetPlatform.isInSketchbook())
+                        platformLabel += " (in sketchbook)";
 
-                Option boardFamily = new Option(targetPackage.getId() + "~~~" + targetPlatform.getId(), platformLabel);
+                    OptionModel boardFamily = OptionModel.of(targetPackage.getId() + "~~~" + targetPlatform.getId(), platformLabel);
 
-                for (TargetBoard board : targetPlatform.getBoards().values()) {
-                    if (board.getPreferences().get("hide") != null) {
-                        continue;
+                    for (TargetBoard board : targetPlatform.getBoards().values()) {
+                        if (board.getPreferences().get("hide") != null) {
+                            continue;
+                        }
+                        OptionModel boardType = OptionModel.of(board.getId(), board.getName());
+                        boardFamily.addChild(boardType);
                     }
-                    Option boardType = Option.of(board.getId(), board.getName());
-                    boardFamily.addChild(boardType);
-                }
-                if (boardFamily.getChildren() != null) {
-                    options.add(boardFamily);
+                    if (boardFamily.hasChildren()) {
+                        options.add(boardFamily);
+                    }
                 }
             }
         }
@@ -66,11 +70,6 @@ public class ConsoleHeaderArduinoGetBoardsSetting implements BundleHeaderSetting
     @Override
     public SettingType getSettingType() {
         return SettingType.SelectBoxDynamic;
-    }
-
-    @Override
-    public int order() {
-        return 100;
     }
 
     @Override

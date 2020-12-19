@@ -1,10 +1,10 @@
 package org.touchhome.bundle.zigbee.setting.header;
 
 import org.json.JSONObject;
-import org.touchhome.bundle.api.setting.BundleSettingPluginButton;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
+import org.touchhome.bundle.api.setting.SettingPluginButton;
+import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
 
-public class ConsoleHeaderZigBeeDiscoveryButtonSetting implements BundleSettingPluginButton, BundleHeaderSettingPlugin<JSONObject> {
+public class ConsoleHeaderZigBeeDiscoveryButtonSetting implements ConsoleHeaderSettingPlugin<JSONObject>, SettingPluginButton {
 
     @Override
     public String getIcon() {
@@ -14,5 +14,10 @@ public class ConsoleHeaderZigBeeDiscoveryButtonSetting implements BundleSettingP
     @Override
     public int order() {
         return 100;
+    }
+
+    @Override
+    public String getConfirmMsg() {
+        return null;
     }
 }

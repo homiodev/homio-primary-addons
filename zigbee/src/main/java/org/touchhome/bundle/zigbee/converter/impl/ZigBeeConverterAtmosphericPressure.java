@@ -8,7 +8,7 @@ import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclPressureMeasurementCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.api.link.DeviceChannelLinkType;
+import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 import org.touchhome.bundle.api.measure.QuantityType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import tec.uom.se.unit.Units;

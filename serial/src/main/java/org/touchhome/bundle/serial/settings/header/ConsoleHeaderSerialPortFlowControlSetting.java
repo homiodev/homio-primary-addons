@@ -3,11 +3,11 @@ package org.touchhome.bundle.serial.settings.header;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.touchhome.bundle.api.port.PortFlowControl;
-import org.touchhome.bundle.api.setting.BundleSettingPluginSelectBoxEnum;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
+import org.touchhome.bundle.api.setting.SettingPluginOptionsEnum;
+import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
 
-public class ConsoleHeaderSerialPortFlowControlSetting implements BundleSettingPluginSelectBoxEnum<ConsoleHeaderSerialPortFlowControlSetting.FlowControl>,
-        BundleHeaderSettingPlugin<ConsoleHeaderSerialPortFlowControlSetting.FlowControl> {
+public class ConsoleHeaderSerialPortFlowControlSetting implements SettingPluginOptionsEnum<ConsoleHeaderSerialPortFlowControlSetting.FlowControl>,
+        ConsoleHeaderSettingPlugin<ConsoleHeaderSerialPortFlowControlSetting.FlowControl> {
 
     @Override
     public String getIcon() {
@@ -17,11 +17,6 @@ public class ConsoleHeaderSerialPortFlowControlSetting implements BundleSettingP
     @Override
     public Integer getMaxWidth() {
         return 110;
-    }
-
-    @Override
-    public int order() {
-        return 300;
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclOnOffCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.onoff.*;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.api.link.DeviceChannelLinkType;
+import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 import org.touchhome.bundle.api.measure.OnOffType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.config.ZclOnOffSwitchConfig;

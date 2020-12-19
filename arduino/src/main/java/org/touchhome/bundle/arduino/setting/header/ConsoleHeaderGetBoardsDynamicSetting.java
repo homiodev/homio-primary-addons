@@ -1,8 +1,8 @@
 package org.touchhome.bundle.arduino.setting.header;
 
-import org.touchhome.bundle.api.setting.header.dynamic.BundleHeaderDynamicContainerSettingPlugin;
+import org.touchhome.bundle.api.setting.console.header.dynamic.DynamicConsoleHeaderContainerSettingPlugin;
 
-public class ConsoleHeaderGetBoardsDynamicSetting implements BundleHeaderDynamicContainerSettingPlugin {
+public class ConsoleHeaderGetBoardsDynamicSetting implements DynamicConsoleHeaderContainerSettingPlugin {
 
     @Override
     public String getIcon() {
@@ -12,10 +12,5 @@ public class ConsoleHeaderGetBoardsDynamicSetting implements BundleHeaderDynamic
     @Override
     public String getIconColor() {
         return "#1C9CB0";
-    }
-
-    @Override
-    public int order() {
-        return 100;
     }
 }

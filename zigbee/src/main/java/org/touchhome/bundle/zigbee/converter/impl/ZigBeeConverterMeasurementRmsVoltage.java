@@ -22,7 +22,6 @@ import java.util.concurrent.ExecutionException;
 @Log4j2
 @ZigBeeConverter(name = "zigbee:electrical_rmsvoltage", clientClusters = {ZclElectricalMeasurementCluster.CLUSTER_ID})
 public class ZigBeeConverterMeasurementRmsVoltage extends ZigBeeBaseChannelConverter implements ZclAttributeListener {
-    private Logger logger = LoggerFactory.getLogger(ZigBeeConverterMeasurementRmsVoltage.class);
 
     private ZclElectricalMeasurementCluster clusterMeasurement;
 

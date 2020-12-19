@@ -10,12 +10,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.collections4.keyvalue.DefaultKeyValue;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.hardware.WirelessManager;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.api.util.UpdatableValue;
 import org.touchhome.bundle.raspberry.settings.RaspberryOneWireIntervalSetting;
@@ -34,8 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RaspberryGPIOService {
     private final EntityContext entityContext;
-    private final WirelessManager wirelessManager;
-    private final Map<String, DefaultKeyValue<Long, Float>> ds18B20Values = new HashMap<>();
+    private final Map<String, MutablePair<Long, Float>> ds18B20Values = new HashMap<>();
     @Getter
     private final Map<RaspberryGpioPin, List<PinListener>> digitalListeners = new ConcurrentHashMap<>();
     private final Map<RaspberryGpioPin, UpdatableValue<Boolean>> inputGpioValues = new ConcurrentHashMap<>();
@@ -245,16 +243,16 @@ public class RaspberryGPIOService {
     }
 
     public Float getDS18B20Value(String sensorID) {
-        DefaultKeyValue<Long, Float> pair = ds18B20Values.get(sensorID);
+        MutablePair<Long, Float> pair = ds18B20Values.get(sensorID);
         if (pair != null) {
             if (System.currentTimeMillis() - pair.getKey() < entityContext.setting().getValue(RaspberryOneWireIntervalSetting.class) * 1000) {
                 return pair.getValue();
             }
         } else {
-            pair = new DefaultKeyValue<>(-1L, -1F);
+            pair = MutablePair.of(-1L, -1F);
             ds18B20Values.put(sensorID, pair);
         }
-        pair.setKey(System.currentTimeMillis());
+        pair.setLeft(System.currentTimeMillis());
 
         List<String> rawDataAsLines = getRawDataAsLines(sensorID);
         float value = -1;

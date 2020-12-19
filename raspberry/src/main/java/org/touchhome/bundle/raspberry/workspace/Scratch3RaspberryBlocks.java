@@ -6,12 +6,16 @@ import com.pi4j.io.gpio.PinState;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanEntity;
 import org.touchhome.bundle.api.measure.OnOffType;
-import org.touchhome.bundle.api.model.workspace.bool.WorkspaceBooleanEntity;
-import org.touchhome.bundle.api.scratch.*;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
+import org.touchhome.bundle.api.workspace.WorkspaceBlock;
+import org.touchhome.bundle.api.workspace.scratch.BlockType;
+import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
+import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
+import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.raspberry.RaspberryEntryPoint;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
 
@@ -74,8 +78,9 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
                 }
             });
             // listen boolean variable and fire events to device
-            workspaceBlock.getEntityContext().addEntityUpdateListener(WorkspaceBooleanEntity.PREFIX + varId, (Consumer<WorkspaceBooleanEntity>)
-                    wbe -> raspberryGPIOService.setValue(raspberryGpioPin, PinState.getState(wbe.getValue())));
+            workspaceBlock.getEntityContext().event().addEntityUpdateListener(WorkspaceBooleanEntity.PREFIX + varId,
+                    "workspace-rpi-bool-listen" + varId, (Consumer<WorkspaceBooleanEntity>)
+                            wbe -> raspberryGPIOService.setValue(raspberryGpioPin, PinState.getState(wbe.getValue())));
         });
         this.isGpioInState.setLinkGenerator((varGroup, varName, parameter) ->
                 this.isGpioInState.codeGenerator("raspberry")

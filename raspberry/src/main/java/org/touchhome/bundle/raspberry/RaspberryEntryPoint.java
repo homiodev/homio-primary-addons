@@ -25,11 +25,6 @@ public class RaspberryEntryPoint implements BundleEntryPoint {
     }
 
     @Override
-    public String getBundleId() {
-        return "raspberry";
-    }
-
-    @Override
     public int order() {
         return 300;
     }

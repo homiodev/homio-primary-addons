@@ -2,9 +2,9 @@ package org.touchhome.bundle.cloud.netty;
 
 import lombok.RequiredArgsConstructor;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.NotificationEntityJSON;
-import org.touchhome.bundle.api.model.UserEntity;
-import org.touchhome.bundle.api.util.NotificationType;
+import org.touchhome.bundle.api.entity.UserEntity;
+import org.touchhome.bundle.api.ui.BellNotification;
+import org.touchhome.bundle.api.util.NotificationLevel;
 import org.touchhome.bundle.cloud.CloudProvider;
 import org.touchhome.bundle.cloud.netty.impl.ServerConnectionStatus;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerConnectionMessageSetting;
@@ -28,17 +28,17 @@ public class NettyCloudProvider implements CloudProvider {
     }
 
     @Override
-    public Set<NotificationEntityJSON> getNotifications() {
-        UserEntity user = entityContext.getUser();
-        Set<NotificationEntityJSON> notifications = new HashSet<>();
+    public Set<BellNotification> getBellNotifications() {
+        UserEntity user = entityContext.getUser(false);
+        Set<BellNotification> notifications = new HashSet<>();
         if (user != null && user.getKeystore() == null) {
-            notifications.add(NotificationEntityJSON.danger("keystore").setName("Keystore").setValue("Keystore not found"));
+            notifications.add(BellNotification.danger("keystore").setTitle("Keystore").setValue("Keystore not found"));
         }
         ServerConnectionStatus serverConnectionStatus = entityContext.setting().getValue(CloudServerConnectionStatusSetting.class);
-        notifications.add(new NotificationEntityJSON("cloud-status")
-                .setName("Cloud status")
+        notifications.add(new BellNotification("cloud-status")
+                .setTitle("Cloud status")
                 .setValue(entityContext.setting().getValue(CloudServerConnectionMessageSetting.class))
-                .setNotificationType(serverConnectionStatus == ServerConnectionStatus.CONNECTED ? NotificationType.info : NotificationType.warning));
+                .setLevel(serverConnectionStatus == ServerConnectionStatus.CONNECTED ? NotificationLevel.info : NotificationLevel.warning));
 
         return notifications;
     }

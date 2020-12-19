@@ -5,7 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.NotificationEntityJSON;
+import org.touchhome.bundle.api.ui.BellNotification;
 import org.touchhome.bundle.cloud.setting.ConsoleCloudProviderSetting;
 
 import java.util.Set;
@@ -22,18 +22,14 @@ public class CloudEntryPoint implements BundleEntryPoint {
     }
 
     @Override
-    public String getBundleId() {
-        return "cloud";
-    }
-
-    @Override
     public int order() {
         return 800;
     }
 
+
     @Override
-    public Set<NotificationEntityJSON> getNotifications() {
-        return entityContext.setting().getValue(ConsoleCloudProviderSetting.class).getNotifications();
+    public Set<BellNotification> getBellNotifications() {
+        return entityContext.setting().getValue(ConsoleCloudProviderSetting.class).getBellNotifications();
     }
 
     @Override

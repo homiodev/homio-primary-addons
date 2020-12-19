@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 import com.zsmartsystems.zigbee.IeeeAddress;
+import com.zsmartsystems.zigbee.ZigBeeNode;
 import com.zsmartsystems.zigbee.database.*;
 import com.zsmartsystems.zigbee.zdo.field.BindingTable;
 import com.zsmartsystems.zigbee.zdo.field.NodeDescriptor.FrequencyBandType;
@@ -38,6 +39,8 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
 
     private XStream openStream() {
         XStream stream = new XStream(new StaxDriver());
+        XStream.setupDefaultSecurity(stream);
+        stream.allowTypesByWildcard(new String[]{ZigBeeNode.class.getPackage().getName() + ".**"});
         stream.setClassLoader(this.getClass().getClassLoader());
 
         stream.alias("ZigBeeNode", ZigBeeNodeDao.class);
@@ -123,7 +126,7 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
             if (isLog) {
                 log.debug("{}: ZigBee saving network state complete.", node.getIeeeAddress());
             }
-            writer.close();
+            writer.close(); // do not delete this
         } catch (Exception e) {
             log.error("{}: Error writing network state: ", node.getIeeeAddress(), e);
         }

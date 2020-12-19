@@ -10,11 +10,4 @@
     <name>Cloud</name>
     <artifactId>touchhome-bundle-cloud</artifactId>
     <packaging>jar</packaging>
-
-    <dependencies>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-        </dependency>
-    </dependencies>
 </project>

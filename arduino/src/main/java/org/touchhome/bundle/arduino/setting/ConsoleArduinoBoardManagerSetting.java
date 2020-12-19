@@ -4,28 +4,79 @@ import cc.arduino.contributions.ProgressListener;
 import cc.arduino.contributions.packages.ContributedBoard;
 import cc.arduino.contributions.packages.ContributedPackage;
 import cc.arduino.contributions.packages.ContributedPlatform;
-import cc.arduino.contributions.packages.ContributionInstaller;
-import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePlugin;
-import org.touchhome.bundle.api.setting.BundlePackageInstallSettingPlugin;
-import org.touchhome.bundle.api.setting.console.BundleConsoleSettingPlugin;
+import org.touchhome.bundle.api.exception.ServerException;
+import org.touchhome.bundle.api.model.ProgressBar;
+import org.touchhome.bundle.api.setting.SettingPluginPackageInstall;
+import org.touchhome.bundle.api.setting.console.ConsoleSettingPlugin;
+import org.touchhome.bundle.arduino.ArduinoConfiguration;
 import org.touchhome.bundle.arduino.ArduinoConsolePlugin;
 import processing.app.BaseNoGui;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ConsoleArduinoBoardManagerSetting implements BundlePackageInstallSettingPlugin, BundleConsoleSettingPlugin<JSONObject> {
+public class ConsoleArduinoBoardManagerSetting implements SettingPluginPackageInstall, ConsoleSettingPlugin<JSONObject> {
 
     private static List<ContributedPlatformReleases> contributions;
 
     @Override
     public String getIcon() {
         return "fas fa-tasks";
+    }
+
+    @Override
+    public PackageContext allPackages(EntityContext entityContext) {
+        Collection<PackageModel> bundleEntities = new ArrayList<>();
+        if (BaseNoGui.packages != null) {
+            for (ContributedPlatformReleases release : getContributions()) {
+                bundleEntities.add(buildBundleEntity(release.getReleases().stream().map(ContributedPlatform::getVersion).collect(Collectors.toList()), release.getLatest()));
+            }
+        }
+
+        return new PackageContext(null, bundleEntities);
+    }
+
+    @Override
+    public PackageContext installedPackages(EntityContext entityContext) {
+        Collection<PackageModel> bundleEntities = new ArrayList<>();
+        if (BaseNoGui.packages != null) {
+            for (ContributedPlatformReleases release : getContributions()) {
+                if (release.getInstalled() != null) {
+                    bundleEntities.add(buildBundleEntity(null, release.getInstalled()));
+                }
+            }
+        }
+
+        return new PackageContext(null, bundleEntities);
+    }
+
+    @Override
+    public void installPackage(EntityContext entityContext, PackageRequest packageRequest, ProgressBar progressBar) throws Exception {
+        if (BaseNoGui.packages != null) {
+            ContributedPlatform platform = searchContributedPlatform(packageRequest.getName(), packageRequest.getVersion());
+            ProgressListener progressListener = progress ->
+                    progressBar.progress(progress.getProgress(), progress.getStatus());
+            ArduinoConfiguration.getContributionInstaller().install(platform, progressListener);
+            boardUpdated(entityContext);
+        }
+    }
+
+    @Override
+    public void unInstallPackage(EntityContext entityContext, PackageRequest packageRequest, ProgressBar progressBar) throws Exception {
+        if (BaseNoGui.packages != null) {
+            ContributedPlatformReleases release = getContributedPlatformReleases(packageRequest.getName());
+            if (release.getInstalled().isBuiltIn()) {
+                throw new RuntimeException("Unable to remove build-in board");
+            }
+            ArduinoConfiguration.getContributionInstaller().remove(release.getInstalled());
+            boardUpdated(entityContext);
+        }
     }
 
     @Override
@@ -38,34 +89,11 @@ public class ConsoleArduinoBoardManagerSetting implements BundlePackageInstallSe
         return consolePlugin instanceof ArduinoConsolePlugin;
     }
 
-    @Override
-    public Collection<PackageEntity> installedBundles(EntityContext entityContext) throws Exception {
-        Collection<PackageEntity> bundleEntities = new ArrayList<>();
-        for (ContributedPlatformReleases release : getContributions()) {
-            if (release.getInstalled() != null) {
-                bundleEntities.add(buildBundleEntity(null, release.getInstalled()));
-            }
-        }
-
-        return bundleEntities;
-    }
-
-    @SneakyThrows
-    @Override
-    public Collection<PackageEntity> allBundles(EntityContext entityContext) {
-        Collection<PackageEntity> bundleEntities = new ArrayList<>();
-        for (ContributedPlatformReleases release : getContributions()) {
-            bundleEntities.add(buildBundleEntity(release.getReleases().stream().map(ContributedPlatform::getVersion).collect(Collectors.toList()), release.getLatest()));
-        }
-
-        return bundleEntities;
-    }
-
-    private PackageEntity buildBundleEntity(List<String> versions, ContributedPlatform latest) {
+    private PackageModel buildBundleEntity(List<String> versions, ContributedPlatform latest) {
         String desc = versions == null ? "" : "<pre>Boards included in this package:<br/><br/>" +
                 latest.getBoards().stream().map(ContributedBoard::getName).collect(Collectors.joining("<br/>")) + "" +
                 "</pre>";
-        return new PackageEntity()
+        PackageModel packageModel = new PackageModel()
                 .setName(latest.getName())
                 .setTitle(latest.getName())
                 .setVersions(versions)
@@ -75,27 +103,16 @@ public class ConsoleArduinoBoardManagerSetting implements BundlePackageInstallSe
                 .setAuthor(latest.getParentPackage().getMaintainer())
                 .setCategory(latest.getCategory())
                 .setReadme(desc);
+        if (latest.isBuiltIn()) {
+            packageModel.setTags(Collections.singleton("Built-In")).setRemovable(false);
+        }
+        return packageModel;
     }
 
-    @Override
-    public void install(EntityContext entityContext, PackageRequest packageRequest, String progressKey) throws Exception {
-        ContributedPlatform platform = searchContributedPlatform(packageRequest.getName(), packageRequest.getVersion());
-        ProgressListener progressListener = progress ->
-                entityContext.ui().progress(progressKey, progress.getProgress(), progress.getStatus());
-        entityContext.getBean(ContributionInstaller.class).install(platform, progressListener);
-        onIndexesUpdated();
-    }
-
-    @Override
-    public void unInstall(EntityContext entityContext, PackageRequest packageRequest, String progressKey) throws Exception {
-        ContributedPlatformReleases release = getContributedPlatformReleases(packageRequest.getName());
-        entityContext.getBean(ContributionInstaller.class).remove(release.getInstalled());
-        onIndexesUpdated();
-    }
-
-    private void onIndexesUpdated() throws Exception {
+    private void boardUpdated(EntityContext entityContext) throws Exception {
         BaseNoGui.initPackages();
         contributions = null;
+        entityContext.ui().reloadWindow("Re-Initialize page after board installation");
     }
 
     private ContributedPlatform searchContributedPlatform(String name, String version) {
@@ -105,19 +122,22 @@ public class ConsoleArduinoBoardManagerSetting implements BundlePackageInstallSe
                 return contributedPlatform;
             }
         }
-        throw new RuntimeException("Unable to find board: " + name + " with version: " + version);
+        throw new ServerException("Unable to find board: " + name + " with version: " + version);
     }
 
     private ContributedPlatformReleases getContributedPlatformReleases(String name) {
         ContributedPlatformReleases release = getContributions().stream().filter(c -> c.getLatest().getName().equals(name)).findFirst().orElse(null);
         if (release == null) {
-            throw new RuntimeException("Unable to find board with name: " + name);
+            throw new ServerException("Unable to find board with name: " + name);
         }
         return release;
     }
 
     public static List<ContributedPlatformReleases> getContributions() {
         if (contributions == null) {
+            // update indexes
+            ArduinoConfiguration.getContributionInstaller();
+
             contributions = new ArrayList<>();
             for (ContributedPackage pack : BaseNoGui.indexer.getPackages()) {
                 for (ContributedPlatform platform : pack.getPlatforms()) {

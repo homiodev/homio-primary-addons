@@ -1,8 +1,8 @@
 package org.touchhome.bundle.zigbee.setting;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginPort;
+import org.touchhome.bundle.api.setting.SettingPluginOptionsPort;
 
-public class ZigBeePortSetting implements BundleSettingPluginPort {
+public class ZigBeePortSetting implements SettingPluginOptionsPort {
 
     @Override
     public int order() {

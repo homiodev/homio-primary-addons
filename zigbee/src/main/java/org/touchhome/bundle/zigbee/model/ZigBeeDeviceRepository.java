@@ -3,39 +3,29 @@ package org.touchhome.bundle.zigbee.model;
 import com.zsmartsystems.zigbee.IeeeAddress;
 import org.springframework.stereotype.Repository;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.link.DeviceChannelLinkType;
-import org.touchhome.bundle.api.link.HasWorkspaceVariableLinkAbility;
-import org.touchhome.bundle.api.model.BaseEntity;
 import org.touchhome.bundle.api.repository.AbstractRepository;
-import org.touchhome.bundle.api.scratch.Scratch3Block;
-import org.touchhome.bundle.zigbee.*;
+import org.touchhome.bundle.api.workspace.HasWorkspaceVariableLinkAbility;
+import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
+import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
+import org.touchhome.bundle.zigbee.ZigBeeDevice;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
 import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
 import org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlock;
 import org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeExtensionBlocks;
-import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 @Repository
 public class ZigBeeDeviceRepository extends AbstractRepository<ZigBeeDeviceEntity> implements HasWorkspaceVariableLinkAbility {
 
-    private final ZigBeeBundleEntryPoint zigbeeBundleContext;
     private final EntityContext entityContext;
-    private final ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener;
     private final List<Scratch3Block> zigbeeBlocks;
 
-    public ZigBeeDeviceRepository(ZigBeeBundleEntryPoint zigbeeBundleContext, EntityContext entityContext,
-                                  ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-                                  List<Scratch3ZigBeeExtensionBlocks> scratch3ZigBeeExtensionBlocks) {
-        super(ZigBeeDeviceEntity.class, ZigBeeDeviceEntity.PREFIX);
-        this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
-        this.zigbeeBundleContext = zigbeeBundleContext;
+    public ZigBeeDeviceRepository(EntityContext entityContext, List<Scratch3ZigBeeExtensionBlocks> scratch3ZigBeeExtensionBlocks) {
+        super(ZigBeeDeviceEntity.class);
         this.entityContext = entityContext;
         this.zigbeeBlocks = scratch3ZigBeeExtensionBlocks.stream().flatMap(map -> map.getBlocksMap().values().stream())
                 .collect(Collectors.toList());
@@ -44,56 +34,13 @@ public class ZigBeeDeviceRepository extends AbstractRepository<ZigBeeDeviceEntit
     @Override
     public void createVariable(String entityID, String varGroup, String varName, String key) {
         ZigBeeDeviceEntity zigBeeDeviceEntity = entityContext.getEntity(entityID);
-        List<Map.Entry<ZigBeeConverterEndpoint, ZigBeeBaseChannelConverter>> availableLinks = getAvailableLinks(zigBeeDeviceEntity.getZigBeeDevice());
+        List<Map.Entry<ZigBeeConverterEndpoint, ZigBeeBaseChannelConverter>> availableLinks = zigBeeDeviceEntity.gatherAvailableLinks();
         for (Map.Entry<ZigBeeConverterEndpoint, ZigBeeBaseChannelConverter> availableLink : availableLinks) {
             ZigBeeConverterEndpoint converterEndpoint = availableLink.getKey();
             if (converterEndpoint.toUUID().asKey().equals(key)) {
                 this.createVariableLink(converterEndpoint, zigBeeDeviceEntity.getZigBeeDevice(), varGroup, varName);
             }
         }
-    }
-
-    @Override
-    public void updateEntityAfterFetch(ZigBeeDeviceEntity entity) {
-        ZigBeeDevice device = zigbeeBundleContext.getCoordinatorHandler().getZigBeeDevices().get(entity.getIeeeAddress());
-        entity.setZigBeeDevice(device);
-        if (device != null) {
-            ZigBeeNodeDescription zigBeeNodeDescription = device.getZigBeeNodeDescription();
-            if (entity.getModelIdentifier() == null && zigBeeNodeDescription.getModelIdentifier() != null) {
-                save(entity.setModelIdentifier(zigBeeNodeDescription.getModelIdentifier()));
-            } else if (entity.getModelIdentifier() != null && zigBeeNodeDescription.getModelIdentifier() == null) {
-                zigBeeNodeDescription.setModelIdentifier(entity.getModelIdentifier());
-            }
-
-            entity.setZigBeeNodeDescription(zigBeeNodeDescription);
-        }
-
-        gatherAvailableLinks(entity, device);
-    }
-
-    private void gatherAvailableLinks(ZigBeeDeviceEntity entity, ZigBeeDevice device) {
-        List<Map<Option, String>> links = new ArrayList<>();
-        for (Map.Entry<ZigBeeConverterEndpoint, ZigBeeBaseChannelConverter> availableLinkEntry : getAvailableLinks(device)) {
-            ZigBeeConverterEndpoint converterEndpoint = availableLinkEntry.getKey();
-            ZigBeeDeviceStateUUID uuid = converterEndpoint.toUUID();
-
-            Map<Option, String> map = new HashMap<>();
-            DeviceChannelLinkType deviceChannelLinkType = availableLinkEntry.getKey().getZigBeeConverter().linkType();
-
-            ZigBeeDeviceUpdateValueListener.LinkDescription linkDescription = zigBeeDeviceUpdateValueListener.getLinkListeners().get(uuid);
-
-            if (linkDescription != null) {
-                BaseEntity variableEntity = entityContext.getEntity(deviceChannelLinkType.getEntityPrefix() + linkDescription.getVarId());
-                if (variableEntity != null) {
-                    map.put(Option.key(linkDescription.getDescription()), variableEntity.getTitle());
-                }
-            } else {
-                String name = defaultIfEmpty(availableLinkEntry.getValue().getDescription(), converterEndpoint.getClusterDescription());
-                map.put(Option.of(uuid.asKey(), name), "");
-            }
-            links.add(map);
-        }
-        entity.setAvailableLinks(links);
     }
 
     @Override
@@ -116,11 +63,5 @@ public class ZigBeeDeviceRepository extends AbstractRepository<ZigBeeDeviceEntit
             }
         }
         throw new RuntimeException("Unable to create variable link. Cluster not match.");
-    }
-
-    private List<Map.Entry<ZigBeeConverterEndpoint, ZigBeeBaseChannelConverter>> getAvailableLinks(ZigBeeDevice zigBeeDevice) {
-        return zigBeeDevice == null ? Collections.emptyList() : zigBeeDevice.getZigBeeConverterEndpoints().entrySet()
-                .stream().filter(c -> c.getKey().getZigBeeConverter().linkType() != DeviceChannelLinkType.None)
-                .collect(Collectors.toList());
     }
 }

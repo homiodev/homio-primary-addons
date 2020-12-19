@@ -1,14 +1,9 @@
 package org.touchhome.bundle.serial.settings.header;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginToggle;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
+import org.touchhome.bundle.api.setting.SettingPluginToggle;
+import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
 
-public class ConsoleHeaderSerialOpenPortSetting implements BundleHeaderSettingPlugin<Boolean>, BundleSettingPluginToggle {
-
-    @Override
-    public int order() {
-        return 100;
-    }
+public class ConsoleHeaderSerialOpenPortSetting implements ConsoleHeaderSettingPlugin<Boolean>, SettingPluginToggle {
 
     @Override
     public String getIcon() {

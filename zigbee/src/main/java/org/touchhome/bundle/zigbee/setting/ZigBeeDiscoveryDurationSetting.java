@@ -1,8 +1,8 @@
 package org.touchhome.bundle.zigbee.setting;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginSlider;
+import org.touchhome.bundle.api.setting.SettingPluginSlider;
 
-public class ZigBeeDiscoveryDurationSetting implements BundleSettingPluginSlider {
+public class ZigBeeDiscoveryDurationSetting implements SettingPluginSlider {
 
     @Override
     public Integer getMin() {

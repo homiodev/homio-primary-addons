@@ -1,8 +1,8 @@
 package org.touchhome.bundle.raspberry.settings;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginSlider;
+import org.touchhome.bundle.api.setting.SettingPluginSlider;
 
-public class RaspberryOneWireIntervalSetting implements BundleSettingPluginSlider {
+public class RaspberryOneWireIntervalSetting implements SettingPluginSlider {
 
     @Override
     public Integer getMin() {

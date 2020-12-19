@@ -1,22 +1,22 @@
 {
+  "WORKSPACE": {
+    "firmata": "Firmata",
+    "firmata-onewire": "Firmata 1-Wire sensors",
+    "firmata-ic": "Firmata I2C devices"
+  },
   "firmata": {
     "name": "Firmata",
-    "extensionDescription": "Firmata extension",
     "setting": {
       "label": "Firmata settings",
       "st_FirmataWatchDogIntervalSetting": "Watch dog max inactivity"
     }
   },
-  "firmata-onewire": {
-    "name": "Firmata 1-W",
-    "extensionDescription": "1-Wire sensors"
-  },
-  "firmata-ic": {
-    "name": "Firmata I2C",
-    "extensionDescription": "I2C devices"
-  },
   "selection": {
     "FirmataUsbEntity": "Firmata Usb device",
     "FirmataNetworkEntity": "Firmata Network device"
+  },
+  "ACTION": {
+    "UPLOAD_SKETCH": "Upload sketch automatically",
+    "UPLOAD_SKETCH_MANUALLY": "Upload sketch manually"
   }
 }

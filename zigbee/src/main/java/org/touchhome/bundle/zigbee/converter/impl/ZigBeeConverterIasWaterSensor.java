@@ -3,7 +3,7 @@ package org.touchhome.bundle.zigbee.converter.impl;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
-import org.touchhome.bundle.api.link.DeviceChannelLinkType;
+import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 
 /**
  * Converter for the IAS water sensor.

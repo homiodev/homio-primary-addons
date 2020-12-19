@@ -17,11 +17,6 @@ public class SerialEntryPoint implements BundleEntryPoint {
     }
 
     @Override
-    public String getBundleId() {
-        return "serial";
-    }
-
-    @Override
     public int order() {
         return 2000;
     }

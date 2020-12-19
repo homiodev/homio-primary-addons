@@ -7,22 +7,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePluginTable;
-import org.touchhome.bundle.api.measure.State;
+import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
+import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
 import org.touchhome.bundle.api.ui.field.UIField;
+import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorBooleanMatch;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
-import org.touchhome.bundle.api.ui.method.UIMethodAction;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.header.ConsoleHeaderZigBeeDiscoveryButtonSetting;
 import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
+import org.touchhome.bundle.zigbee.setting.header.ConsoleHeaderZigBeeDiscoveryButtonSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 import java.util.*;
+
+import static org.touchhome.bundle.api.util.Constants.DANGER_COLOR;
 
 @Component
 @RequiredArgsConstructor
@@ -63,7 +65,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
     }
 
     @Override
-    public Map<String, Class<? extends BundleHeaderSettingPlugin<?>>> getHeaderActions() {
+    public Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> getHeaderActions() {
         return Collections.singletonMap("zigbee.start_discovery", ConsoleHeaderZigBeeDiscoveryButtonSetting.class);
     }
 
@@ -87,7 +89,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
         @UIFieldColorStatusMatch
         private Status deviceStatus;
 
-        @UIField(order = 3, color = "#B22020")
+        @UIField(order = 3, color = DANGER_COLOR)
         private String errorMessage;
 
         @UIField(order = 4)
@@ -108,39 +110,34 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
         private String entityID;
 
-        @UIMethodAction("ACTION.INITIALIZE_ZIGBEE_NODE")
-        public String initializeZigBeeNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return zigBeeDeviceEntity.initializeZigBeeNode();
+        @UIContextMenuAction("ACTION.INITIALIZE_ZIGBEE_NODE")
+        public ActionResponseModel initializeZigBeeNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
+            return ActionResponseModel.showSuccess(zigBeeDeviceEntity.initializeZigBeeNode());
         }
 
-        @UIMethodAction(value = "ACTION.SHOW_NODE_DESCRIPTION", responseAction = UIMethodAction.ResponseAction.ShowJson)
-        public ZigBeeNodeDescription showNodeDescription(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return zigBeeDeviceEntity.getZigBeeNodeDescription();
+        @UIContextMenuAction("ACTION.SHOW_NODE_DESCRIPTION")
+        public ActionResponseModel showNodeDescription(ZigBeeDeviceEntity zigBeeDeviceEntity) {
+            return ActionResponseModel.showJson(zigBeeDeviceEntity.getZigBeeNodeDescription());
         }
 
-        @UIMethodAction(value = "ACTION.SHOW_LAST_VALUES", responseAction = UIMethodAction.ResponseAction.ShowJson)
-        public Map<ZigBeeDeviceStateUUID, State> showLastValues(ZigBeeDeviceEntity zigBeeDeviceEntity, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
+        @UIContextMenuAction("ACTION.SHOW_LAST_VALUES")
+        public ActionResponseModel showLastValues(ZigBeeDeviceEntity zigBeeDeviceEntity, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
             return zigBeeDeviceEntity.showLastValues(zigBeeDeviceEntity, zigBeeDeviceUpdateValueListener);
         }
 
-        @UIMethodAction("ACTION.REDISCOVERY")
-        public String rediscoveryNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return zigBeeDeviceEntity.rediscoveryNode();
+        @UIContextMenuAction("ACTION.REDISCOVERY")
+        public ActionResponseModel rediscoveryNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
+            return ActionResponseModel.showSuccess(zigBeeDeviceEntity.rediscoveryNode());
         }
 
-        @UIMethodAction("ACTION.PERMIT_JOIN")
-        public String permitJoin(ZigBeeDeviceEntity zigBeeDeviceEntity, EntityContext entityContext) {
-            return zigBeeDeviceEntity.permitJoin(entityContext);
+        @UIContextMenuAction("ACTION.PERMIT_JOIN")
+        public ActionResponseModel permitJoin(ZigBeeDeviceEntity zigBeeDeviceEntity, EntityContext entityContext) {
+            return ActionResponseModel.showSuccess(zigBeeDeviceEntity.permitJoin(entityContext));
         }
 
-        @UIMethodAction("ACTION.ZIGBEE_PULL_CHANNELS")
-        public String pullChannels(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return zigBeeDeviceEntity.pullChannels();
-        }
-
-        @Override
-        public Integer getId() {
-            return 0;
+        @UIContextMenuAction("ACTION.ZIGBEE_PULL_CHANNELS")
+        public ActionResponseModel pullChannels(ZigBeeDeviceEntity zigBeeDeviceEntity) {
+            return ActionResponseModel.showSuccess(zigBeeDeviceEntity.pullChannels());
         }
     }
 }
