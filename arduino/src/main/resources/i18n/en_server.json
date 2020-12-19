@@ -1,8 +1,5 @@
 {
   "INSTALL_ERROR": "Error during installation",
-  "ARDUINO": {
-    "BOARD_INFO": "Board info",
-    "PORT_NOT_SELECTED": "Select port first"
-  },
+  "BOARD_INFO": "Board info",
   "NO_BOARD_SELECTED": "No selected board"
 }

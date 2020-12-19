@@ -1,9 +1,9 @@
 package org.touchhome.bundle.serial.settings.header;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginSelectBoxInteger;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
+import org.touchhome.bundle.api.setting.SettingPluginOptionsInteger;
+import org.touchhome.bundle.api.setting.header.HeaderSettingPlugin;
 
-public class ConsoleHeaderSerialPortBaudRateSetting implements BundleHeaderSettingPlugin<Integer>, BundleSettingPluginSelectBoxInteger {
+public class ConsoleHeaderSerialPortBaudRateSetting implements HeaderSettingPlugin<Integer>, SettingPluginOptionsInteger {
 
     @Override
     public String getIcon() {
@@ -13,11 +13,6 @@ public class ConsoleHeaderSerialPortBaudRateSetting implements BundleHeaderSetti
     @Override
     public Integer getMaxWidth() {
         return 85;
-    }
-
-    @Override
-    public int order() {
-        return 200;
     }
 
     @Override

@@ -1,8 +1,8 @@
 package org.touchhome.bundle.firmata.setting;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginSlider;
+import org.touchhome.bundle.api.setting.SettingPluginSlider;
 
-public class FirmataWatchDogIntervalSetting implements BundleSettingPluginSlider {
+public class FirmataWatchDogIntervalSetting implements SettingPluginSlider {
 
     @Override
     public Integer getMin() {

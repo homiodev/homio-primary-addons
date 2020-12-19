@@ -12,7 +12,6 @@ import org.firmata4j.firmata.FirmataWatchdog;
 import org.firmata4j.firmata.parser.FirmataEventType;
 import org.firmata4j.fsm.Event;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.NotificationEntityJSON;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.util.FlowMap;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
@@ -109,8 +108,7 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
 
             FirmataWatchdog watchdog = new FirmataWatchdog(TimeUnit.MINUTES.toMillis(entityContext.setting().getValue(FirmataWatchDogIntervalSetting.class)), () -> {
                 entityContext.updateDelayed(entity, t -> t.setJoined(Status.ERROR));
-                entityContext.ui().addHeaderNotification(NotificationEntityJSON.warn(entity.getEntityID())
-                        .setName("Firmata-" + entity.getEntityID()).setValue("Firmata Watchdog error"));
+                entityContext.ui().addHeaderWarningNotification(entity.getEntityID(), "Firmata-" + entity.getEntityID(), "Firmata Watchdog error");
                 this.entityContext.event().fireEvent(firmataErrorEvent);
             });
 
@@ -188,9 +186,7 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
     private void updateDeviceStatus(T entity, Status status, String statusMessage) {
         if (entity.getStatus() != status) {
             entityContext.updateDelayed(entity, t -> t.setStatus(status).setStatusMessage(statusMessage));
-
-            entityContext.ui().addHeaderNotification(NotificationEntityJSON.warn(entity.getEntityID())
-                    .setName("A-" + entity.getEntityID()).setValue("Communicator status: " + status));
+            entityContext.ui().addHeaderWarningNotification(entity.getEntityID(), "A-" + entity.getEntityID(), "Communicator status: " + status);
         }
         if (status == Status.OFFLINE || status == Status.ERROR) {
             this.entityContext.event().fireEvent(firmataErrorEvent);

@@ -1,10 +1,10 @@
 package org.touchhome.bundle.arduino.setting.header;
 
 import org.json.JSONObject;
-import org.touchhome.bundle.api.setting.BundleSettingPluginButton;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
+import org.touchhome.bundle.api.setting.SettingPluginButton;
+import org.touchhome.bundle.api.setting.header.HeaderSettingPlugin;
 
-public class ConsoleHeaderGetBoardInfoSetting implements BundleHeaderSettingPlugin<JSONObject>, BundleSettingPluginButton {
+public class ConsoleHeaderGetBoardInfoSetting implements HeaderSettingPlugin<JSONObject>, SettingPluginButton {
 
     @Override
     public String getIconColor() {
@@ -17,7 +17,7 @@ public class ConsoleHeaderGetBoardInfoSetting implements BundleHeaderSettingPlug
     }
 
     @Override
-    public int order() {
-        return 100;
+    public String getConfirmMsg() {
+        return null;
     }
 }

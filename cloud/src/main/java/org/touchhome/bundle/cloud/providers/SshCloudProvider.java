@@ -3,7 +3,7 @@ package org.touchhome.bundle.cloud.providers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.hardware.other.LinuxHardwareRepository;
-import org.touchhome.bundle.api.json.NotificationEntityJSON;
+import org.touchhome.bundle.api.model.NotificationModel;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.cloud.CloudProvider;
 import org.touchhome.bundle.cloud.netty.impl.ServerConnectionStatus;
@@ -25,19 +25,19 @@ public class SshCloudProvider implements CloudProvider {
     }
 
     @Override
-    public Set<NotificationEntityJSON> getNotifications() {
-        Set<NotificationEntityJSON> notifications = new HashSet<>();
+    public Set<NotificationModel> getNotifications() {
+        Set<NotificationModel> notifications = new HashSet<>();
         if (!Files.exists(TouchHomeUtils.getSshPath().resolve("id_rsa_touchhome"))) {
-            notifications.add(NotificationEntityJSON.danger("private-key").setName("Cloud").setValue("Private Key not found"));
+            notifications.add(NotificationModel.danger("private-key").setTitle("Cloud").setValue("Private Key not found"));
         }
         if (!Files.exists(TouchHomeUtils.getSshPath().resolve("id_rsa_touchhome.pub"))) {
-            notifications.add(NotificationEntityJSON.danger("public-key").setName("Cloud").setValue("Public key not found"));
+            notifications.add(NotificationModel.danger("public-key").setTitle("Cloud").setValue("Public key not found"));
         }
         int serviceStatus = linuxHardwareRepository.getServiceStatus("touchhome-tunnel");
         if (serviceStatus == 0) {
-            notifications.add(NotificationEntityJSON.info("cloud-status").setName("Cloud").setValue("Connected"));
+            notifications.add(NotificationModel.info("cloud-status").setTitle("Cloud").setValue("Connected"));
         } else {
-            notifications.add(NotificationEntityJSON.warn("cloud-status").setName("Cloud")
+            notifications.add(NotificationModel.warn("cloud-status").setTitle("Cloud")
                     .setValue("Connection status not active " + serviceStatus));
         }
         return notifications;

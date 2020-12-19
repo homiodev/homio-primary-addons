@@ -33,6 +33,11 @@ public class FirmataUsbEntity extends FirmataBaseEntity<FirmataUsbEntity> {
     }
 
     @Override
+    protected String getCommunicatorName() {
+        return "SERIAL";
+    }
+
+    @Override
     public FirmataDeviceCommunicator createFirmataDeviceType(EntityContext entityContext) {
         SerialPort serialPort = getSerialPort();
         return serialPort == null ? null : new FirmataUSBFirmataDeviceCommunicator(entityContext, this, serialPort.getSystemPortName());

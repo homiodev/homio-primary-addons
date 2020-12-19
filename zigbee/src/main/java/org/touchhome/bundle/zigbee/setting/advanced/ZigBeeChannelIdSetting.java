@@ -1,15 +1,16 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.setting.BundleSettingPluginSelectBoxInteger;
+import org.touchhome.bundle.api.model.OptionModel;
+import org.touchhome.bundle.api.setting.SettingPluginOptionsInteger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class ZigBeeChannelIdSetting implements BundleSettingPluginSelectBoxInteger {
+public class ZigBeeChannelIdSetting implements SettingPluginOptionsInteger {
 
     @Override
     public int defaultValue() {
@@ -17,11 +18,11 @@ public class ZigBeeChannelIdSetting implements BundleSettingPluginSelectBoxInteg
     }
 
     @Override
-    public List<Option> loadAvailableValues(EntityContext entityContext) {
-        List<Option> options = new ArrayList<>();
-        options.add(Option.of("0", "AUTO"));
+    public Collection<OptionModel> getOptions(EntityContext entityContext) {
+        List<OptionModel> options = new ArrayList<>();
+        options.add(OptionModel.of("0", "AUTO"));
         options.addAll(IntStream.range(11, 25)
-                .mapToObj(value -> Option.of(String.valueOf(value), "Channel " + value)).collect(Collectors.toList()));
+                .mapToObj(value -> OptionModel.of(String.valueOf(value), "Channel " + value)).collect(Collectors.toList()));
         return options;
     }
 

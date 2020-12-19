@@ -1,8 +1,8 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginText;
+import org.touchhome.bundle.api.setting.SettingPluginText;
 
-public class ZigBeeNetworkKeySetting implements BundleSettingPluginText {
+public class ZigBeeNetworkKeySetting implements SettingPluginText {
 
     @Override
     public String getDefaultValue() {

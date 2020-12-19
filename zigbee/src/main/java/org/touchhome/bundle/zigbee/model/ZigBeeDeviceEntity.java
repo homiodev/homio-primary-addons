@@ -6,17 +6,20 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
+import org.touchhome.bundle.api.entity.DeviceBaseEntity;
 import org.touchhome.bundle.api.manager.En;
-import org.touchhome.bundle.api.measure.State;
-import org.touchhome.bundle.api.model.DeviceBaseEntity;
+import org.touchhome.bundle.api.model.ActionResponseModel;
+import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.field.*;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.ui.method.UIFieldCreateWorkspaceVariableOnEmpty;
 import org.touchhome.bundle.api.ui.method.UIMethodAction;
-import org.touchhome.bundle.zigbee.*;
+import org.touchhome.bundle.zigbee.SelectModelIdentifierDynamicLoader;
+import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
+import org.touchhome.bundle.zigbee.ZigBeeDevice;
+import org.touchhome.bundle.zigbee.ZigBeeNodeDescription;
 import org.touchhome.bundle.zigbee.requireEndpoint.ZigBeeRequireEndpoint;
 import org.touchhome.bundle.zigbee.requireEndpoint.ZigBeeRequireEndpoints;
 import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
@@ -51,7 +54,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
     @UIFieldExpand
     @UIFieldCreateWorkspaceVariableOnEmpty
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<Map<Option, String>> availableLinks;
+    private List<Map<OptionModel, String>> availableLinks;
 
     // The minimum time period in seconds between device state updates
     @UIField(onlyEdit = true, order = 100)
@@ -116,36 +119,36 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
     }
 
     @UIMethodAction("ACTION.INITIALIZE_ZIGBEE_NODE")
-    public String initializeZigBeeNode() {
+    public ActionResponseModel initializeZigBeeNode() {
         zigBeeDevice.initialiseZigBeeNode();
-        return "ACTION.RESPONSE.NODE_INITIALIZATION_STARTED";
+        return ActionResponseModel.showSuccess("ACTION.RESPONSE.NODE_INITIALIZATION_STARTED");
     }
 
-    @UIMethodAction(value = "ACTION.SHOW_LAST_VALUES", responseAction = UIMethodAction.ResponseAction.ShowJson)
-    public Map<ZigBeeDeviceStateUUID, State> showLastValues(ZigBeeDeviceEntity zigBeeDeviceEntity, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
-        return zigBeeDeviceUpdateValueListener.getDeviceStates(zigBeeDeviceEntity.getIeeeAddress());
+    @UIMethodAction("ACTION.SHOW_LAST_VALUES")
+    public ActionResponseModel showLastValues(ZigBeeDeviceEntity zigBeeDeviceEntity, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
+        return ActionResponseModel.showJson(zigBeeDeviceUpdateValueListener.getDeviceStates(zigBeeDeviceEntity.getIeeeAddress()));
     }
 
     @UIMethodAction("ACTION.REDISCOVERY")
-    public String rediscoveryNode() {
+    public ActionResponseModel rediscoveryNode() {
         if (zigBeeDevice == null) {
             throw new IllegalStateException("Unable to find zigbee node with ieeeAddress: " + getIeeeAddress());
         }
         zigBeeDevice.discoveryNodeDescription(this.getModelIdentifier());
-        return "ACTION.RESPONSE.REDISCOVERY_STARTED";
+        return ActionResponseModel.showSuccess("ACTION.RESPONSE.REDISCOVERY_STARTED");
     }
 
     @UIMethodAction("ACTION.ZIGBEE_PULL_CHANNELS")
-    public String pullChannels() {
+    public ActionResponseModel pullChannels() {
         if (zigBeeDevice == null) {
             throw new IllegalStateException("Unable to find zigbee node with ieeeAddress: " + getIeeeAddress());
         }
         new Thread(zigBeeDevice.getPoolingThread()).start();
-        return "ACTION.RESPONSE.ZIGBEE_PULL_CHANNELS_STARTED";
+        return ActionResponseModel.showSuccess("ACTION.RESPONSE.ZIGBEE_PULL_CHANNELS_STARTED");
     }
 
     @UIMethodAction("ACTION.PERMIT_JOIN")
-    public String permitJoin(EntityContext entityContext) {
+    public ActionResponseModel permitJoin(EntityContext entityContext) {
         if (!entityContext.setting().getValue(ZigBeeStatusSetting.class).isOnline()) {
             throw new IllegalStateException("DEVICE_OFFLINE");
         }
@@ -154,7 +157,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
         }
         ZigBeeCoordinatorHandler zigBeeCoordinatorHandler = entityContext.setting().getValue(ZigBeeCoordinatorHandlerSetting.class);
         boolean join = zigBeeCoordinatorHandler.permitJoin(zigBeeDevice.getNodeIeeeAddress(), entityContext.setting().getValue(ZigBeeDiscoveryDurationSetting.class));
-        return join ? "ACTION.RESPONSE.STARTED" : "ACTION.RESPONSE.ERROR";
+        return join ? ActionResponseModel.showSuccess("ACTION.RESPONSE.STARTED") : ActionResponseModel.showError("ACTION.RESPONSE.ERROR");
     }
 
     @Override

@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.workspace.bool.WorkspaceBooleanEntity;
+import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanEntity;
 import org.touchhome.bundle.api.scratch.BlockType;
 import org.touchhome.bundle.api.scratch.MenuBlock;
 import org.touchhome.bundle.api.scratch.Scratch3Block;

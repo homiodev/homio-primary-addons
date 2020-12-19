@@ -21,7 +21,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.setting.BundleSettingPluginStatus;
+import org.touchhome.bundle.api.setting.SettingPluginStatus;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.internal.ZigBeeDataStore;
 import org.touchhome.bundle.zigbee.setting.ZigBeeNetworkIdSetting;
@@ -122,7 +122,7 @@ public abstract class ZigBeeCoordinatorHandler
 
         panId = entityContext.setting().getValue(ZigBeePanIdSetting.class);
         channelId = entityContext.setting().getValue(ZigBeeChannelIdSetting.class);
-        extendedPanId = entityContext.setting().getValue(ZigBeeExtendedPanIdSetting.class);
+        extendedPanId = new ExtendedPanId(entityContext.setting().getValue(ZigBeeExtendedPanIdSetting.class));
         String linkKeyString = entityContext.setting().getValue(ZigBeeLinkKeySetting.class);
         String networkKeyString = entityContext.setting().getValue(ZigBeeNetworkKeySetting.class);
 
@@ -175,7 +175,7 @@ public abstract class ZigBeeCoordinatorHandler
             extendedPanId = new ExtendedPanId(pan);
             log.debug("Created random ZigBee extended PAN ID [{}].", extendedPanId);
 
-            entityContext.setting().setValueSilence(ZigBeeExtendedPanIdSetting.class, extendedPanId);
+            entityContext.setting().setValueSilence(ZigBeeExtendedPanIdSetting.class, extendedPanId.toString());
         }
 
         log.debug("Link key final array {}", linkKey);
@@ -358,7 +358,7 @@ public abstract class ZigBeeCoordinatorHandler
 
     protected void updateStatus(Status deviceStatus, String statusMessage) {
         log.info("Coordinator status: <{}>", deviceStatus);
-        entityContext.setting().setValue(ZigBeeStatusSetting.class, BundleSettingPluginStatus.of(deviceStatus, statusMessage));
+        entityContext.setting().setValue(ZigBeeStatusSetting.class, SettingPluginStatus.of(deviceStatus, statusMessage));
 
         for (ZigBeeDevice zigBeeDevice : zigBeeDevices.values()) {
             zigBeeDevice.tryInitializeDevice(entityContext.setting().getValue(ZigBeeStatusSetting.class).getStatus());

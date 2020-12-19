@@ -4,7 +4,6 @@ import cc.arduino.Constants;
 import cc.arduino.contributions.GPGDetachedSignatureVerifier;
 import cc.arduino.contributions.libraries.LibraryInstaller;
 import cc.arduino.contributions.packages.ContributionInstaller;
-import cc.arduino.contributions.packages.ContributionsIndexer;
 import cc.arduino.files.DeleteFilesOnShutdown;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,8 +39,15 @@ public class ArduinoConfiguration {
         File hardwareFolder = BaseNoGui.getHardwareFolder();
         PreferencesData.set("runtime.ide.path", hardwareFolder.getParentFile().getAbsolutePath());
         PreferencesData.set("runtime.ide.version", "" + BaseNoGui.REVISION);
+
         PreferencesData.set("build.path", arduinoPath.resolve("build").toString());
         PreferencesData.set("sketchbook.path", "sketchbook");
+
+        PreferencesData.set("compiler.warning_level", "none");
+        PreferencesData.setBoolean("compiler.cache_core", true);
+        PreferencesData.setBoolean("cache.enable", true);
+        PreferencesData.setInteger("build.warn_data_percentage", 75);
+
 
         Set<String> packageIndexURLs = new HashSet<>(PreferencesData.getCollection(Constants.PREF_BOARDS_MANAGER_ADDITIONAL_URLS));
         packageIndexURLs.add(ESP_8266_URL);
@@ -55,17 +61,6 @@ public class ArduinoConfiguration {
         BaseNoGui.onBoardOrPortChange();
 
         return BaseNoGui.getPlatform();
-    }
-
-    @Bean
-    public ContributionsIndexer contributionsIndexer() throws Exception {
-        Platform platform = getPlatform();
-        ContributionsIndexer contributionsIndexer = new ContributionsIndexer(BaseNoGui.getSettingsFolder(), BaseNoGui.getHardwareFolder(),
-                platform, new GPGDetachedSignatureVerifier());
-        contributionsIndexer.parseIndex();
-        contributionsIndexer.syncWithFilesystem();
-
-        return contributionsIndexer;
     }
 
     @Bean

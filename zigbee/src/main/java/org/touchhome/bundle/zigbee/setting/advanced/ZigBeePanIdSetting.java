@@ -1,8 +1,8 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginInteger;
+import org.touchhome.bundle.api.setting.SettingPluginInteger;
 
-public class ZigBeePanIdSetting implements BundleSettingPluginInteger {
+public class ZigBeePanIdSetting implements SettingPluginInteger {
 
     @Override
     public Integer getMin() {

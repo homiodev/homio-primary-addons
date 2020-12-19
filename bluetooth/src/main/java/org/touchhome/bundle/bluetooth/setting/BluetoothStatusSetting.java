@@ -1,8 +1,8 @@
 package org.touchhome.bundle.bluetooth.setting;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginStatus;
+import org.touchhome.bundle.api.setting.SettingPluginStatus;
 
-public class BluetoothStatusSetting implements BundleSettingPluginStatus {
+public class BluetoothStatusSetting implements SettingPluginStatus {
 
     @Override
     public int order() {

@@ -3,10 +3,10 @@ package org.touchhome.bundle.zigbee.model;
 import com.zsmartsystems.zigbee.IeeeAddress;
 import org.springframework.stereotype.Repository;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
+import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.link.DeviceChannelLinkType;
 import org.touchhome.bundle.api.link.HasWorkspaceVariableLinkAbility;
-import org.touchhome.bundle.api.model.BaseEntity;
+import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.repository.AbstractRepository;
 import org.touchhome.bundle.api.scratch.Scratch3Block;
 import org.touchhome.bundle.zigbee.*;
@@ -72,12 +72,12 @@ public class ZigBeeDeviceRepository extends AbstractRepository<ZigBeeDeviceEntit
     }
 
     private void gatherAvailableLinks(ZigBeeDeviceEntity entity, ZigBeeDevice device) {
-        List<Map<Option, String>> links = new ArrayList<>();
+        List<Map<OptionModel, String>> links = new ArrayList<>();
         for (Map.Entry<ZigBeeConverterEndpoint, ZigBeeBaseChannelConverter> availableLinkEntry : getAvailableLinks(device)) {
             ZigBeeConverterEndpoint converterEndpoint = availableLinkEntry.getKey();
             ZigBeeDeviceStateUUID uuid = converterEndpoint.toUUID();
 
-            Map<Option, String> map = new HashMap<>();
+            Map<OptionModel, String> map = new HashMap<>();
             DeviceChannelLinkType deviceChannelLinkType = availableLinkEntry.getKey().getZigBeeConverter().linkType();
 
             ZigBeeDeviceUpdateValueListener.LinkDescription linkDescription = zigBeeDeviceUpdateValueListener.getLinkListeners().get(uuid);
@@ -85,11 +85,11 @@ public class ZigBeeDeviceRepository extends AbstractRepository<ZigBeeDeviceEntit
             if (linkDescription != null) {
                 BaseEntity variableEntity = entityContext.getEntity(deviceChannelLinkType.getEntityPrefix() + linkDescription.getVarId());
                 if (variableEntity != null) {
-                    map.put(Option.key(linkDescription.getDescription()), variableEntity.getTitle());
+                    map.put(OptionModel.key(linkDescription.getDescription()), variableEntity.getTitle());
                 }
             } else {
                 String name = defaultIfEmpty(availableLinkEntry.getValue().getDescription(), converterEndpoint.getClusterDescription());
-                map.put(Option.of(uuid.asKey(), name), "");
+                map.put(OptionModel.of(uuid.asKey(), name), "");
             }
             links.add(map);
         }

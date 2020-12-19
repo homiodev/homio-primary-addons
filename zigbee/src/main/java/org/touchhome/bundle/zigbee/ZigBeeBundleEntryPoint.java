@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.setting.BundleSettingPluginStatus;
+import org.touchhome.bundle.api.setting.SettingPluginStatus;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
@@ -59,17 +59,12 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
     }
 
     @Override
-    public String getBundleId() {
-        return "zigbee";
-    }
-
-    @Override
     public int order() {
         return 600;
     }
 
     @Override
-    public Class<? extends BundleSettingPluginStatus> getBundleStatusSetting() {
+    public Class<? extends SettingPluginStatus> getBundleStatusSetting() {
         return ZigBeeStatusSetting.class;
     }
 }

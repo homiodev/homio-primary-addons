@@ -1,8 +1,8 @@
 package org.touchhome.bundle.cloud.netty.setting;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginText;
+import org.touchhome.bundle.api.setting.SettingPluginText;
 
-public class CloudServerUrlSetting implements BundleSettingPluginText {
+public class CloudServerUrlSetting implements SettingPluginText {
 
     @Override
     public String getDefaultValue() {

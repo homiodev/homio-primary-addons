@@ -1,10 +1,15 @@
 package org.touchhome.bundle.arduino.setting.header;
 
 import org.json.JSONObject;
-import org.touchhome.bundle.api.setting.BundleSettingPluginButton;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
+import org.touchhome.bundle.api.setting.SettingPluginButton;
+import org.touchhome.bundle.api.setting.header.HeaderSettingPlugin;
 
-public class ConsoleHeaderArduinoBuildSketchSetting implements BundleHeaderSettingPlugin<JSONObject>, BundleSettingPluginButton {
+public class ConsoleHeaderArduinoBuildSketchSetting implements HeaderSettingPlugin<JSONObject>, SettingPluginButton {
+
+    @Override
+    public String getConfirmMsg() {
+        return null;
+    }
 
     @Override
     public String getIconColor() {
@@ -14,11 +19,6 @@ public class ConsoleHeaderArduinoBuildSketchSetting implements BundleHeaderSetti
     @Override
     public String getIcon() {
         return "fas fa-check";
-    }
-
-    @Override
-    public int order() {
-        return 200;
     }
 
     @Override

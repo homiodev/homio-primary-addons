@@ -1,11 +1,11 @@
 package org.touchhome.bundle.cloud;
 
-import org.touchhome.bundle.api.json.NotificationEntityJSON;
+import org.touchhome.bundle.api.model.NotificationModel;
 
 import java.util.Set;
 
 public interface CloudProvider {
     String getStatus();
 
-    Set<NotificationEntityJSON> getNotifications();
+    Set<NotificationModel> getNotifications();
 }

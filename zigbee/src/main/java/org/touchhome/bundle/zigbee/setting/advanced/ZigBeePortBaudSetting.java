@@ -1,8 +1,8 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginSelectBoxInteger;
+import org.touchhome.bundle.api.setting.SettingPluginOptionsInteger;
 
-public class ZigBeePortBaudSetting implements BundleSettingPluginSelectBoxInteger {
+public class ZigBeePortBaudSetting implements SettingPluginOptionsInteger {
 
     @Override
     public int defaultValue() {

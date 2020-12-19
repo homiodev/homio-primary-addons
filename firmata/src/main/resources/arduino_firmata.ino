@@ -1,7 +1,7 @@
-#include <ConfigurableFirmata.h>
-
-#define COMM_WIFI
+//#define COMM_ESP8266_WIFI
 //#define COMM_SERIAL
+
+#include <ConfigurableFirmata.h>
 
 #include "Touchhome.h"
 Touchhome touchhome;

@@ -120,11 +120,6 @@ public class FirmataBundleEntryPoint implements BundleEntryPoint {
     }
 
     @Override
-    public String getBundleId() {
-        return "firmata";
-    }
-
-    @Override
     public int order() {
         return 500;
     }

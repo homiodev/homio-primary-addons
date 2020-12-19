@@ -17,11 +17,6 @@ public class ArduinoBundleEntryPoint implements BundleEntryPoint {
     }
 
     @Override
-    public String getBundleId() {
-        return "arduino";
-    }
-
-    @Override
     public int order() {
         return 700;
     }

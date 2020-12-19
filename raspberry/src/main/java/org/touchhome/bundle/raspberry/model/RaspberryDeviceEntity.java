@@ -3,8 +3,8 @@ package org.touchhome.bundle.raspberry.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.model.micro.MicroControllerBaseEntity;
+import org.touchhome.bundle.api.entity.micro.MicroControllerBaseEntity;
+import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldExpand;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
@@ -28,7 +28,7 @@ public class RaspberryDeviceEntity extends MicroControllerBaseEntity<RaspberryDe
     @UIFieldExpand
     @UIFieldCreateWorkspaceVariableOnEmpty
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<Map<Option, String>> availableLinks;
+    private List<Map<OptionModel, String>> availableLinks;
 
     @Override
     public String getShortTitle() {

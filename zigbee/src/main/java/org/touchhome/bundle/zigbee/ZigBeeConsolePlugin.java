@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePluginTable;
-import org.touchhome.bundle.api.measure.State;
+import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
+import org.touchhome.bundle.api.setting.header.HeaderSettingPlugin;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorBooleanMatch;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
@@ -18,8 +18,8 @@ import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.ui.method.UIMethodAction;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.header.ConsoleHeaderZigBeeDiscoveryButtonSetting;
 import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
+import org.touchhome.bundle.zigbee.setting.header.ConsoleHeaderZigBeeDiscoveryButtonSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 import java.util.*;
@@ -63,7 +63,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
     }
 
     @Override
-    public Map<String, Class<? extends BundleHeaderSettingPlugin<?>>> getHeaderActions() {
+    public Map<String, Class<? extends HeaderSettingPlugin<?>>> getHeaderActions() {
         return Collections.singletonMap("zigbee.start_discovery", ConsoleHeaderZigBeeDiscoveryButtonSetting.class);
     }
 
@@ -109,33 +109,33 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
         private String entityID;
 
         @UIMethodAction("ACTION.INITIALIZE_ZIGBEE_NODE")
-        public String initializeZigBeeNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return zigBeeDeviceEntity.initializeZigBeeNode();
+        public ActionResponseModel initializeZigBeeNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
+            return ActionResponseModel.showSuccess(zigBeeDeviceEntity.initializeZigBeeNode());
         }
 
-        @UIMethodAction(value = "ACTION.SHOW_NODE_DESCRIPTION", responseAction = UIMethodAction.ResponseAction.ShowJson)
-        public ZigBeeNodeDescription showNodeDescription(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return zigBeeDeviceEntity.getZigBeeNodeDescription();
+        @UIMethodAction("ACTION.SHOW_NODE_DESCRIPTION")
+        public ActionResponseModel showNodeDescription(ZigBeeDeviceEntity zigBeeDeviceEntity) {
+            return ActionResponseModel.showJson(zigBeeDeviceEntity.getZigBeeNodeDescription());
         }
 
-        @UIMethodAction(value = "ACTION.SHOW_LAST_VALUES", responseAction = UIMethodAction.ResponseAction.ShowJson)
-        public Map<ZigBeeDeviceStateUUID, State> showLastValues(ZigBeeDeviceEntity zigBeeDeviceEntity, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
+        @UIMethodAction("ACTION.SHOW_LAST_VALUES")
+        public ActionResponseModel showLastValues(ZigBeeDeviceEntity zigBeeDeviceEntity, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
             return zigBeeDeviceEntity.showLastValues(zigBeeDeviceEntity, zigBeeDeviceUpdateValueListener);
         }
 
         @UIMethodAction("ACTION.REDISCOVERY")
-        public String rediscoveryNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return zigBeeDeviceEntity.rediscoveryNode();
+        public ActionResponseModel rediscoveryNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
+            return ActionResponseModel.showSuccess(zigBeeDeviceEntity.rediscoveryNode());
         }
 
         @UIMethodAction("ACTION.PERMIT_JOIN")
-        public String permitJoin(ZigBeeDeviceEntity zigBeeDeviceEntity, EntityContext entityContext) {
-            return zigBeeDeviceEntity.permitJoin(entityContext);
+        public ActionResponseModel permitJoin(ZigBeeDeviceEntity zigBeeDeviceEntity, EntityContext entityContext) {
+            return ActionResponseModel.showSuccess(zigBeeDeviceEntity.permitJoin(entityContext));
         }
 
         @UIMethodAction("ACTION.ZIGBEE_PULL_CHANNELS")
-        public String pullChannels(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return zigBeeDeviceEntity.pullChannels();
+        public ActionResponseModel pullChannels(ZigBeeDeviceEntity zigBeeDeviceEntity) {
+            return ActionResponseModel.showSuccess(zigBeeDeviceEntity.pullChannels());
         }
 
         @Override

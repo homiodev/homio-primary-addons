@@ -1,14 +1,14 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.setting.BundleSettingPluginSelectBoxInteger;
+import org.touchhome.bundle.api.model.OptionModel;
+import org.touchhome.bundle.api.setting.SettingPluginOptionsInteger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
-public class ZigBeeMeshUpdatePeriodSetting implements BundleSettingPluginSelectBoxInteger {
+public class ZigBeeMeshUpdatePeriodSetting implements SettingPluginOptionsInteger {
 
     @Override
     public int defaultValue() {
@@ -16,15 +16,15 @@ public class ZigBeeMeshUpdatePeriodSetting implements BundleSettingPluginSelectB
     }
 
     @Override
-    public List<Option> loadAvailableValues(EntityContext entityContext) {
+    public Collection<OptionModel> getOptions(EntityContext entityContext) {
         return new ArrayList<>(Arrays.asList(
-                Option.of("0", "NEVER"),
-                Option.of("300", "5 Minutes"),
-                Option.of("1800", "30 Minutes"),
-                Option.of("3600", "1 Hour"),
-                Option.of("21600", "6 Minutes"),
-                Option.of("86400", "1 Day"),
-                Option.of("604800", "1 Week")));
+                OptionModel.of("0", "NEVER"),
+                OptionModel.of("300", "5 Minutes"),
+                OptionModel.of("1800", "30 Minutes"),
+                OptionModel.of("3600", "1 Hour"),
+                OptionModel.of("21600", "6 Minutes"),
+                OptionModel.of("86400", "1 Day"),
+                OptionModel.of("604800", "1 Week")));
     }
 
     @Override

@@ -1,10 +1,10 @@
 package org.touchhome.bundle.arduino.setting.header;
 
 import com.fazecast.jSerialComm.SerialPort;
-import org.touchhome.bundle.api.setting.BundleSettingPluginPort;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
+import org.touchhome.bundle.api.setting.SettingPluginOptionsPort;
+import org.touchhome.bundle.api.setting.header.HeaderSettingPlugin;
 
-public class ConsoleHeaderArduinoPortSetting implements BundleHeaderSettingPlugin<SerialPort>, BundleSettingPluginPort {
+public class ConsoleHeaderArduinoPortSetting implements HeaderSettingPlugin<SerialPort>, SettingPluginOptionsPort {
 
     @Override
     public Integer getMaxWidth() {
@@ -14,11 +14,6 @@ public class ConsoleHeaderArduinoPortSetting implements BundleHeaderSettingPlugi
     @Override
     public String getIcon() {
         return "fas fa-project-diagram";
-    }
-
-    @Override
-    public int order() {
-        return 100;
     }
 
     @Override

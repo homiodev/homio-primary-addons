@@ -1,9 +1,9 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
 import com.zsmartsystems.zigbee.transport.TrustCentreJoinMode;
-import org.touchhome.bundle.api.setting.BundleSettingPluginSelectBoxEnum;
+import org.touchhome.bundle.api.setting.SettingPluginOptionsEnum;
 
-public class ZigBeeTrustCenterModeSetting implements BundleSettingPluginSelectBoxEnum<TrustCentreJoinMode> {
+public class ZigBeeTrustCenterModeSetting implements SettingPluginOptionsEnum<TrustCentreJoinMode> {
 
     @Override
     public Class<TrustCentreJoinMode> getType() {

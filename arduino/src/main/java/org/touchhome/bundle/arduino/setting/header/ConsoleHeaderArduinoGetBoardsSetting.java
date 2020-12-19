@@ -1,8 +1,9 @@
 package org.touchhome.bundle.arduino.setting.header;
 
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
+import org.touchhome.bundle.api.model.OptionModel;
+import org.touchhome.bundle.api.setting.SettingPluginOptions;
+import org.touchhome.bundle.api.setting.header.HeaderSettingPlugin;
 import processing.app.BaseNoGui;
 import processing.app.debug.TargetBoard;
 import processing.app.debug.TargetPackage;
@@ -12,11 +13,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ConsoleHeaderArduinoGetBoardsSetting implements BundleHeaderSettingPlugin<String> {
+public class ConsoleHeaderArduinoGetBoardsSetting implements HeaderSettingPlugin<String>,
+        SettingPluginOptions<String> {
 
     @Override
-    public Collection<Option> loadAvailableValues(EntityContext entityContext) {
-        List<Option> options = new ArrayList<>();
+    public Collection<OptionModel> getOptions(EntityContext entityContext) {
+        List<OptionModel> options = new ArrayList<>();
         // Cycle through all packages
         for (TargetPackage targetPackage : BaseNoGui.packages.values()) {
             // For every package cycle through all platform
@@ -31,13 +33,13 @@ public class ConsoleHeaderArduinoGetBoardsSetting implements BundleHeaderSetting
                 if (targetPlatform.isInSketchbook())
                     platformLabel += " (in sketchbook)";
 
-                Option boardFamily = new Option(targetPackage.getId() + "~~~" + targetPlatform.getId(), platformLabel);
+                OptionModel boardFamily = OptionModel.of(targetPackage.getId() + "~~~" + targetPlatform.getId(), platformLabel);
 
                 for (TargetBoard board : targetPlatform.getBoards().values()) {
                     if (board.getPreferences().get("hide") != null) {
                         continue;
                     }
-                    Option boardType = Option.of(board.getId(), board.getName());
+                    OptionModel boardType = OptionModel.of(board.getId(), board.getName());
                     boardFamily.addChild(boardType);
                 }
                 if (boardFamily.getChildren() != null) {
@@ -66,11 +68,6 @@ public class ConsoleHeaderArduinoGetBoardsSetting implements BundleHeaderSetting
     @Override
     public SettingType getSettingType() {
         return SettingType.SelectBoxDynamic;
-    }
-
-    @Override
-    public int order() {
-        return 100;
     }
 
     @Override

@@ -5,8 +5,8 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.entity.micro.MicroControllerScanner;
 import org.touchhome.bundle.api.hardware.wifi.WirelessHardwareRepository;
-import org.touchhome.bundle.api.model.micro.MicroControllerScanner;
 
 import java.util.ArrayList;
 import java.util.List;

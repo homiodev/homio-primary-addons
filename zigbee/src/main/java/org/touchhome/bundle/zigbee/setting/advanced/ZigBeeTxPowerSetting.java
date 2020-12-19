@@ -1,12 +1,12 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
-import org.touchhome.bundle.api.setting.BundleSettingPluginSlider;
+import org.touchhome.bundle.api.setting.SettingPluginSlider;
 
 /**
  * <option value="8">High</option>
  * <option value="0">Normal</option>
  */
-public class ZigBeeTxPowerSetting implements BundleSettingPluginSlider {
+public class ZigBeeTxPowerSetting implements SettingPluginSlider {
 
     @Override
     public int order() {

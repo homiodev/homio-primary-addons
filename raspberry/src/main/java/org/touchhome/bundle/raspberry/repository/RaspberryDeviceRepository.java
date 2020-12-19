@@ -5,10 +5,10 @@ import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.Option;
+import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.link.HasWorkspaceVariableLinkAbility;
-import org.touchhome.bundle.api.model.workspace.bool.WorkspaceBooleanEntity;
-import org.touchhome.bundle.api.model.workspace.bool.WorkspaceBooleanGroupEntity;
+import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanEntity;
+import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanGroupEntity;
 import org.touchhome.bundle.api.repository.AbstractRepository;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
@@ -41,10 +41,10 @@ public class RaspberryDeviceRepository extends AbstractRepository<RaspberryDevic
     }
 
     private void gatherAvailableLinks(RaspberryDeviceEntity entity) {
-        List<Map<Option, String>> links = new ArrayList<>();
+        List<Map<OptionModel, String>> links = new ArrayList<>();
         for (RaspberryGpioPin gpioPin : RaspberryGpioPin.values(PinMode.DIGITAL_INPUT, null)) {
-            Map<Option, String> map = new HashMap<>();
-            map.put(Option.of(gpioPin.name(), gpioPin.toString()).json(json ->
+            Map<OptionModel, String> map = new HashMap<>();
+            map.put(OptionModel.of(gpioPin.name(), gpioPin.toString()).json(json ->
                     json.put("group", WorkspaceBooleanGroupEntity.PREFIX).put("color", gpioPin.getColor())
                             .put("var", WorkspaceBooleanEntity.PREFIX)), getLinkedWorkspaceBooleanVariable(gpioPin));
             links.add(map);

@@ -7,18 +7,17 @@ import com.zsmartsystems.zigbee.zdo.field.NodeDescriptor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.json.NotificationEntityJSON;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.header.ConsoleHeaderZigBeeDiscoveryButtonSetting;
 import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryDurationSetting;
 import org.touchhome.bundle.zigbee.setting.advanced.ZigBeeJoinDeviceDuringScanOnlySetting;
+import org.touchhome.bundle.zigbee.setting.header.ConsoleHeaderZigBeeDiscoveryButtonSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static org.touchhome.bundle.api.util.TouchHomeUtils.RED_COLOR;
+import static org.touchhome.bundle.api.util.TouchHomeUtils.PRIMARY_COLOR;
 
 @Log4j2
 @Getter
@@ -87,13 +86,12 @@ class ZigBeeDiscoveryService {
         Integer duration = entityContext.setting().getValue(ZigBeeDiscoveryDurationSetting.class);
         coordinatorHandlers.scanStart(duration);
 
-        NotificationEntityJSON zigbeeScanEntity = new NotificationEntityJSON("zigbee-scan").setName("zigbee.start_scan");
-        this.entityContext.ui().showAlwaysOnViewNotification(zigbeeScanEntity, duration, RED_COLOR, null);
+        this.entityContext.ui().showAlwaysOnViewNotification("zigbee-scan", null, null, PRIMARY_COLOR, duration, null);
 
         scheduler.schedule(() -> {
             log.info("Scanning stopped");
             scanStarted = false;
-            this.entityContext.ui().hideAlwaysOnViewNotification(zigbeeScanEntity.getEntityID());
+            this.entityContext.ui().hideAlwaysOnViewNotification("zigbee-scan");
         }, duration, TimeUnit.SECONDS);
     }
 

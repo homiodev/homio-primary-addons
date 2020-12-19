@@ -2,10 +2,10 @@ package org.touchhome.bundle.cloud.netty.setting;
 
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.setting.BundleSettingPlugin;
+import org.touchhome.bundle.api.setting.SettingPlugin;
 import org.touchhome.bundle.cloud.netty.impl.ServerConnectionStatus;
 
-public class CloudServerConnectionStatusSetting implements BundleSettingPlugin<ServerConnectionStatus> {
+public class CloudServerConnectionStatusSetting implements SettingPlugin<ServerConnectionStatus> {
 
     @Override
     public Class<ServerConnectionStatus> getType() {

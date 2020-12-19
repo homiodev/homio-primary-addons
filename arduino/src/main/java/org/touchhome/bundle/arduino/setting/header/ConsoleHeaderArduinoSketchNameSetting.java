@@ -1,8 +1,9 @@
 package org.touchhome.bundle.arduino.setting.header;
 
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.api.setting.BundleSettingPluginFileExplorer;
-import org.touchhome.bundle.api.setting.header.BundleHeaderSettingPlugin;
+import org.touchhome.bundle.api.model.OptionModel;
+import org.touchhome.bundle.api.setting.SettingPluginOptionsFileExplorer;
+import org.touchhome.bundle.api.setting.header.HeaderSettingPlugin;
 import processing.app.BaseNoGui;
 
 import java.nio.file.Files;
@@ -10,7 +11,7 @@ import java.nio.file.Path;
 import java.util.function.Predicate;
 
 @Log4j2
-public class ConsoleHeaderArduinoSketchNameSetting implements BundleHeaderSettingPlugin<String>, BundleSettingPluginFileExplorer {
+public class ConsoleHeaderArduinoSketchNameSetting implements HeaderSettingPlugin<String>, SettingPluginOptionsFileExplorer {
 
     @Override
     public Path rootPath() {
@@ -28,7 +29,7 @@ public class ConsoleHeaderArduinoSketchNameSetting implements BundleHeaderSettin
     }
 
     @Override
-    public int order() {
-        return 200;
+    public boolean removableOption(OptionModel optionModel) {
+        return true;
     }
 }
