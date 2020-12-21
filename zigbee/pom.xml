@@ -13,7 +13,7 @@
 
     <properties>
         <zsmartsystems.version>1.3.7</zsmartsystems.version>
-        <xstream.version>1.4.12</xstream.version>
+        <xstream.version>1.4.15</xstream.version>
     </properties>
 
     <dependencies>
