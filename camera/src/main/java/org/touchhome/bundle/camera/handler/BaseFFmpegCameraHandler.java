@@ -11,6 +11,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.compress.utils.IOUtils;
@@ -49,7 +50,8 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
 
     public boolean ffmpegSnapshotGeneration = false;
     public Ffmpeg ffmpegHLS;
-    public String rtspUri = "";
+    @Setter
+    protected String rtspUri = "";
     @Getter
     protected boolean motionDetected = false;
     protected Ffmpeg ffmpegGIF;

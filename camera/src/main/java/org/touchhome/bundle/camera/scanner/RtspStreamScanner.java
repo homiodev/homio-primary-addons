@@ -27,9 +27,9 @@ import org.touchhome.bundle.camera.CameraCoordinator;
 import org.touchhome.bundle.camera.entity.RtspVideoStreamEntity;
 import org.touchhome.bundle.camera.rtsp.message.sdp.SdpMessage;
 import org.touchhome.bundle.camera.rtsp.message.sdp.SdpParser;
-import org.touchhome.bundle.camera.setting.rtsp.RtspDiscoveryIpAddressPingTimeoutSetting;
-import org.touchhome.bundle.camera.setting.rtsp.RtspScanPortsSetting;
-import org.touchhome.bundle.camera.setting.rtsp.RtspScanUrlsSetting;
+import org.touchhome.bundle.camera.setting.rtsp.ScanRtspIpAddressMaxPingTimeoutSetting;
+import org.touchhome.bundle.camera.setting.rtsp.ScanRtspPortsSetting;
+import org.touchhome.bundle.camera.setting.rtsp.ScanRtspUrlsSetting;
 
 import java.net.URI;
 import java.util.List;
@@ -54,16 +54,13 @@ public class RtspStreamScanner implements VideoStreamScanner {
     private static final int BOOTSTRAP_AWAIT_TERMINATION_SEC = 60;
     private final EntityContext entityContext;
     private final ChannelFutureListener ON_CLOSED = future -> log.debug("Channel closed: {}", future.channel());
-    private final ChannelFutureListener ON_CONNECTED = new ChannelFutureListener() {
-        @Override
-        public void operationComplete(ChannelFuture future) {
-            if (future.isSuccess()) {
-                Channel channel = future.channel();
-                log.debug("Channel connected: {}", channel);
-                channel.closeFuture().addListener(ON_CLOSED);
-            } else {
-                log.warn("Unable connect to {}. Error: {}", future.channel().attr(URL).get(), future);
-            }
+    private final ChannelFutureListener ON_CONNECTED = future -> {
+        if (future.isSuccess()) {
+            Channel channel = future.channel();
+            log.debug("Channel connected: {}", channel);
+            channel.closeFuture().addListener(ON_CLOSED);
+        } else {
+            log.warn("Unable connect to {}. Error: {}", future.channel().attr(URL).get(), future);
         }
     };
     private int cseq = 1;
@@ -138,9 +135,9 @@ public class RtspStreamScanner implements VideoStreamScanner {
         NioEventLoopGroup mainEventLoopGroup = reCreateBootstrap();
         NetworkHardwareRepository networkHardwareRepository = entityContext.getBean(NetworkHardwareRepository.class);
 
-        Set<Integer> ports = entityContext.setting().getValue(RtspScanPortsSetting.class);
-        int pingTimeout = entityContext.setting().getValue(RtspDiscoveryIpAddressPingTimeoutSetting.class);
-        Set<String> urls = entityContext.setting().getValue(RtspScanUrlsSetting.class);
+        Set<Integer> ports = entityContext.setting().getValue(ScanRtspPortsSetting.class);
+        int pingTimeout = entityContext.setting().getValue(ScanRtspIpAddressMaxPingTimeoutSetting.class);
+        Set<String> urls = entityContext.setting().getValue(ScanRtspUrlsSetting.class);
 
         Map<String, Callable<Integer>> tasks = networkHardwareRepository.buildPingIpAddressTasks(log, ports, pingTimeout, (ipAddress, port) -> {
             log.info("Rtsp ip alive: <{}:{}>. Send 'DESCRIBE' request to all possible urls {}...", ipAddress, port, urls.size());

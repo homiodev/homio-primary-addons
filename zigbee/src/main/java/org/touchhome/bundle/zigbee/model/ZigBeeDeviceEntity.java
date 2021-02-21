@@ -2,6 +2,7 @@ package org.touchhome.bundle.zigbee.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -55,11 +56,11 @@ public final class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntit
     private ZigBeeDevice zigBeeDevice;
 
     @Transient
-    @UIField(order = 40, type = UIFieldType.Selection, readOnly = true, color = "#7FBBCC")
+    @UIField(order = 1000, type = UIFieldType.Selection, readOnly = true, color = "#7FBBCC")
     @UIFieldExpand
     @UIFieldCreateWorkspaceVariableOnEmpty
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<Map<OptionModel, String>> availableLinks;
+    private List<AvailableLink> availableLinks;
 
     // The minimum time period in seconds between device state updates
     @UIField(onlyEdit = true, order = 100)
@@ -219,28 +220,28 @@ public final class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntit
     }
 
     private void gatherAvailableLinks(EntityContext entityContext, ZigBeeDeviceEntity entity) {
-        List<Map<OptionModel, String>> links = new ArrayList<>();
+        List<AvailableLink> links = new ArrayList<>();
         ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener = entityContext.getBean(ZigBeeDeviceUpdateValueListener.class);
 
         for (Map.Entry<ZigBeeConverterEndpoint, ZigBeeBaseChannelConverter> availableLinkEntry : gatherAvailableLinks()) {
             ZigBeeConverterEndpoint converterEndpoint = availableLinkEntry.getKey();
             ZigBeeDeviceStateUUID uuid = converterEndpoint.toUUID();
 
-            Map<OptionModel, String> map = new HashMap<>();
             DeviceChannelLinkType deviceChannelLinkType = availableLinkEntry.getKey().getZigBeeConverter().linkType();
 
             ZigBeeDeviceUpdateValueListener.LinkDescription linkDescription = zigBeeDeviceUpdateValueListener.getLinkListeners().get(uuid);
 
+            AvailableLink link = null;
             if (linkDescription != null) {
                 BaseEntity variableEntity = entityContext.getEntity(deviceChannelLinkType.getEntityPrefix() + linkDescription.getVarId());
                 if (variableEntity != null) {
-                    map.put(OptionModel.key(linkDescription.getDescription()), variableEntity.getTitle());
+                    link = new AvailableLink(OptionModel.key(linkDescription.getDescription()), variableEntity.getTitle());
                 }
             } else {
                 String name = defaultIfEmpty(availableLinkEntry.getValue().getDescription(), converterEndpoint.getClusterDescription());
-                map.put(OptionModel.of(uuid.asKey(), name), "");
+                link = new AvailableLink(OptionModel.of(uuid.asKey(), name), "");
             }
-            links.add(map);
+            links.add(link);
         }
         entity.setAvailableLinks(links);
     }
@@ -249,5 +250,12 @@ public final class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntit
         return zigBeeDevice == null ? Collections.emptyList() : zigBeeDevice.getZigBeeConverterEndpoints().entrySet()
                 .stream().filter(c -> c.getKey().getZigBeeConverter().linkType() != DeviceChannelLinkType.None)
                 .collect(Collectors.toList());
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public final class AvailableLink {
+        private OptionModel key;
+        private String value;
     }
 }

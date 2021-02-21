@@ -58,7 +58,7 @@ public class Ffmpeg {
         Collections.addAll(commandArrayList, String.join(" ", builder).split("\\s+"));
         // ffmpegLocation may have a space in its folder
         commandArrayList.add(0, ffmpegLocation);
-        log.info("\n\nGenerated ffmpeg command for: {}.\n{}\n\n", format, String.join(" ", commandArrayList));
+        log.warn("\n\nGenerated ffmpeg command for: {}.\n{}\n\n", format, String.join(" ", commandArrayList));
     }
 
     public void setKeepAlive(int seconds) {

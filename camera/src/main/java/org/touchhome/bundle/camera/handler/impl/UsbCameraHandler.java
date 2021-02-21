@@ -44,7 +44,7 @@ public class UsbCameraHandler extends BaseFFmpegCameraHandler<UsbCameraEntity> {
         }
 
         outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + cameraEntity.getStreamStartPort());
-        outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + cameraEntity.getStreamStartPort() + 1);
+        outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + (cameraEntity.getStreamStartPort() + 1));
 
         ffmpegUsbStream = new Ffmpeg(this, log, IpCameraBindingConstants.FFmpegFormat.GENERAL, ffmpegLocation,
                 "-loglevel warning " + (TouchHomeUtils.OS_NAME.isLinux() ? "-f v4l2" : "-f dshow"), url,

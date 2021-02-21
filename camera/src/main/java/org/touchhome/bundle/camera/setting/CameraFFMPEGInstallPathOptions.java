@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 public class CameraFFMPEGInstallPathOptions implements SettingPluginOptionsFileExplorer {
     @Override
     public int order() {
-        return 200;
+        return 80;
     }
 
     @Override

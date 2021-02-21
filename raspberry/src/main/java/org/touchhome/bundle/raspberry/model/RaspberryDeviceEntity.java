@@ -37,7 +37,7 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
     @Getter
     @Setter
     @Transient
-    @UIField(order = 40, type = UIFieldType.Selection, readOnly = true, color = "#7FBBCC")
+    @UIField(order = 1000, type = UIFieldType.Selection, readOnly = true, color = "#7FBBCC")
     @UIFieldExpand
     @UIFieldCreateWorkspaceVariableOnEmpty
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -50,11 +50,11 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
 
     @UIField(order = 200)
     public String getFileSystemRoot() {
-        return getJsonData("value", SystemUtils.getUserHome().toString());
+        return getJsonData("fs_root", SystemUtils.getUserHome().toString());
     }
 
     public void setFileSystemRoot(String value) {
-        setJsonData("root", value);
+        setJsonData("fs_root", value);
     }
 
     @Override
@@ -132,8 +132,8 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
         return null;
     }
 
-    @AllArgsConstructor
     @Getter
+    @AllArgsConstructor
     public final class AvailableLink {
         private OptionModel key;
         private String value;

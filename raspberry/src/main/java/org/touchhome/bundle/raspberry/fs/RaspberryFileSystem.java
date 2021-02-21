@@ -25,6 +25,13 @@ public class RaspberryFileSystem extends VendorFileSystem<RaspberryDeviceEntity,
         this.dispose();
     }
 
+    @Override
+    protected void onEntityUpdated() {
+        if (!this.getRoot().getSource().file.getPath().equals(getEntity().getFileSystemRoot())) {
+            this.dispose();
+        }
+    }
+
     public void dispose() {
         setRoot(new RaspberryCacheFileSystem(new RaspberryFile(new File(getEntity().getFileSystemRoot())), null));
     }

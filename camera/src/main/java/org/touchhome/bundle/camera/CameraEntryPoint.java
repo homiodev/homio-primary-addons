@@ -63,9 +63,13 @@ public class CameraEntryPoint implements BundleEntryPoint {
             } else if (!cameraEntity.isStart() && cameraHandler.isHandlerInitialized()) {
                 cameraHandler.disposeAndSetStatus(Status.OFFLINE, "Camera not started");
             } else if (detectIfRequireRestartHandler(oldCameraEntity, cameraEntity)) {
-                cameraHandler.restart("Restart camera handler", cameraEntity);
+                cameraHandler.restart("Restart camera handler", cameraEntity, true);
             } else {
                 cameraHandler.setCameraEntity(cameraEntity); // to avoid optimistic lock
+            }
+            // change camera name if possible
+            if (!Objects.equals(cameraEntity.getName(), oldCameraEntity.getName())) {
+                cameraHandler.changeName(cameraEntity.getName());
             }
         });
 

@@ -49,13 +49,6 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>bintray-touchhome-maven-repo</id>
-            <url>https://dl.bintray.com/touchhome/maven-repo</url>
-        </repository>
-    </repositories>
-
     <build>
         <plugins>
             <plugin>

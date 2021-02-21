@@ -60,9 +60,10 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     private EntityContextBGP.ThreadContext<Void> cameraConnectionJob;
     private EntityContextBGP.ThreadContext<Void> pollCameraJob;
     private Set<StatefulContextMenuAction> actions;
+    private Map<String, Consumer<Status>> stateListeners = new HashMap<>();
 
     public BaseCameraHandler(T cameraEntity, EntityContext entityContext) {
-        this.cameraEntity = cameraEntity;
+        setCameraEntity(cameraEntity);
         this.cameraEntityID = cameraEntity.getEntityID();
 
         this.entityContext = entityContext;
@@ -85,7 +86,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         entityContext.setting().listenValueAndGet(CameraFFMPEGInstallPathOptions.class, "listen-ffmpeg-path-" + cameraEntityID,
                 path -> {
                     this.ffmpegLocation = path.toString();
-                    this.restart("ffmpeg location changed", null);
+                    this.restart("ffmpeg location changed", null, false);
                 });
     }
 
@@ -126,6 +127,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
 
             entityContext.updateDelayed(this.cameraEntity, e -> e.setStart(false).setStatus(status).setStatusMessage(reason));
             entityContext.ui().sendEntityUpdated(this.cameraEntity);
+            this.stateListeners.values().forEach(h -> h.accept(status));
             dispose();
         }
     }
@@ -181,10 +183,11 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
 
     }
 
-    public final void restart(String reason, T cameraEntity) {
-        // will try to reconnect again as camera may be rebooting.
-        if (isCameraOnline) { // if already offline dont try reconnecting in 6 seconds, we want 30sec wait.
-            updateStatus(Status.OFFLINE, reason);
+    public final void restart(String reason, T cameraEntity, boolean force) {
+        if (force && !this.isHandlerInitialized) {
+            initialize(cameraEntity);
+        } else if (isCameraOnline) { // if already offline dont try reconnecting in 6 seconds, we want 30sec wait.
+            updateStatus(Status.OFFLINE, reason); // will try to reconnect again as camera may be rebooting.
             dispose();
             initialize(cameraEntity);
         }
@@ -239,5 +242,17 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     @Override
     public String getName() {
         return cameraEntity.getTitle();
+    }
+
+    public void addCameraChangeState(String key, Consumer<Status> handler) {
+        this.stateListeners.put(key, handler);
+    }
+
+    public void removeCameraChangeState(String key) {
+        this.stateListeners.remove(key);
+    }
+
+    public void changeName(String name) {
+
     }
 }

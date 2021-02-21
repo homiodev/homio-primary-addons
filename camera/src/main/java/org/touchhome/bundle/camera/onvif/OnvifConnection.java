@@ -9,14 +9,20 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.timeout.IdleStateHandler;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.state.ObjectType;
 import org.touchhome.bundle.api.state.OnOffType;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.bundle.camera.handler.impl.OnvifCameraActions;
 import org.touchhome.bundle.camera.onvif.util.Helper;
 
 import java.net.InetSocketAddress;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -49,7 +55,8 @@ public class OnvifConnection {
     private int mediaProfileIndex = 0;
     private String snapshotUri = "";
     private String rtspUri = "";
-    private OnvifCameraHandler onvifCameraHandler;
+    @Setter
+    private OnvifCameraActions onvifCameraActions;
     private boolean usingEvents = false;
     // These hold the cameras PTZ position in the range that the camera uses, ie
     // mine is -1 to +1
@@ -73,14 +80,15 @@ public class OnvifConnection {
     private List<String> presetNames = new LinkedList<>();
     private List<String> mediaProfileTokens = new LinkedList<>();
     private boolean ptzDevice = true;
+    private GetDeviceInformationResponse deviceInformation;
+    private String name;
 
-    public OnvifConnection(OnvifCameraHandler onvifCameraHandler, String ipAddress, String user, String password) {
-        this.onvifCameraHandler = onvifCameraHandler;
-        if (!ipAddress.isEmpty()) {
-            this.user = user;
-            this.password = password;
-            getIPandPortFromUrl(ipAddress);
-        }
+    public OnvifConnection(OnvifCameraActions onvifCameraActions, String ip, int port, String user, String password) {
+        this.onvifCameraActions = onvifCameraActions;
+        this.user = user;
+        this.password = password;
+        this.ipAddress = ip;
+        this.onvifPort = port;
     }
 
     String getXml(RequestType requestType) {
@@ -127,35 +135,16 @@ public class OnvifConnection {
                 return "<ContinuousMove xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex)
                         + "</ProfileToken><Velocity><Zoom x=\"-0.5\" xmlns=\"http://www.onvif.org/ver10/schema\"/></Velocity></ContinuousMove>";
-            case CreatePullPointSubscription:
-                return "<CreatePullPointSubscription xmlns=\"http://www.onvif.org/ver10/events/wsdl\"><InitialTerminationTime>PT600S</InitialTerminationTime></CreatePullPointSubscription>";
-            case GetCapabilities:
-                return "<GetCapabilities xmlns=\"http://www.onvif.org/ver10/device/wsdl\"><Category>All</Category></GetCapabilities>";
-
-            case GetDeviceInformation:
-                return "<GetDeviceInformation xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>";
-            case GetProfiles:
-                return "<GetProfiles xmlns=\"http://www.onvif.org/ver10/media/wsdl\"/>";
-            case GetServiceCapabilities:
-                return "<GetServiceCapabilities xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"></GetServiceCapabilities>";
             case GetSnapshotUri:
                 return "<GetSnapshotUri xmlns=\"http://www.onvif.org/ver10/media/wsdl\"><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex) + "</ProfileToken></GetSnapshotUri>";
             case GetStreamUri:
                 return "<GetStreamUri xmlns=\"http://www.onvif.org/ver10/media/wsdl\"><StreamSetup><Stream xmlns=\"http://www.onvif.org/ver10/schema\">RTP-Unicast</Stream><Transport xmlns=\"http://www.onvif.org/ver10/schema\"><Protocol>RTSP</Protocol></Transport></StreamSetup><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex) + "</ProfileToken></GetStreamUri>";
-            case GetSystemDateAndTime:
-                return "<GetSystemDateAndTime xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>";
             case Subscribe:
                 return "<Subscribe xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"><ConsumerReference><Address>http://"
-                        + MACHINE_IP_ADDRESS + ":" + onvifCameraHandler.getServerPort()
+                        + MACHINE_IP_ADDRESS + ":" + onvifCameraActions.getServerPort()
                         + "/OnvifEvent</Address></ConsumerReference></Subscribe>";
-            case Unsubscribe:
-                return "<Unsubscribe xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"></Unsubscribe>";
-            case PullMessages:
-                return "<PullMessages xmlns=\"http://www.onvif.org/ver10/events/wsdl\"><Timeout>PT8S</Timeout><MessageLimit>1</MessageLimit></PullMessages>";
-            case GetEventProperties:
-                return "<GetEventProperties xmlns=\"http://www.onvif.org/ver10/events/wsdl\"/>";
             case RelativeMoveLeft:
                 return "<RelativeMove xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex)
@@ -180,10 +169,6 @@ public class OnvifConnection {
                 return "<RelativeMove xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex)
                         + "</ProfileToken><Translation><Zoom x=\"-0.0240506344\" xmlns=\"http://www.onvif.org/ver10/schema\"/></Translation></RelativeMove>";
-            case Renew:
-                return "<Renew xmlns=\"http://docs.oasis-open.org/wsn/b-2\"><TerminationTime>PT1M</TerminationTime></Renew>";
-            case GetConfigurations:
-                return "<GetConfigurations xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"></GetConfigurations>";
             case GetConfigurationOptions:
                 return "<GetConfigurationOptions xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><ConfigurationToken>"
                         + ptzConfigToken + "</ConfigurationToken></GetConfigurationOptions>";
@@ -194,8 +179,6 @@ public class OnvifConnection {
                 return "<SetConfiguration xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><PTZConfiguration><NodeToken>"
                         + ptzNodeToken
                         + "</NodeToken><DefaultAbsolutePantTiltPositionSpace>AbsolutePanTiltPositionSpace</DefaultAbsolutePantTiltPositionSpace><DefaultAbsoluteZoomPositionSpace>AbsoluteZoomPositionSpace</DefaultAbsoluteZoomPositionSpace></PTZConfiguration></SetConfiguration>";
-            case GetNodes:
-                return "<GetNodes xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"></GetNodes>";
             case GetStatus:
                 return "<GetStatus xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex) + "</ProfileToken></GetStatus>";
@@ -206,21 +189,25 @@ public class OnvifConnection {
             case GetPresets:
                 return "<GetPresets xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex) + "</ProfileToken></GetPresets>";
+            case SetScopes:
+                return "<SetScopes xmlns=\"http://www.onvif.org/ver10/device/wsdl\"><Scopes>"
+                        + "<ScopeItem>odm:name:camera test</ScopeItem>" + "</Scopes></SetScopes>";
+            default:
+                return requestType.request;
         }
-        return "notfound";
     }
 
-    public void processReply(String message) {
+    @SneakyThrows
+    public void processReply(String message, int code) {
         log.trace("Onvif reply is:{}", message);
         if (message.contains("PullMessagesResponse")) {
-            eventRecieved(message);
+            eventReceived(message);
         } else if (message.contains("RenewResponse")) {
             sendOnvifRequest(requestBuilder(RequestType.PullMessages, subscriptionXAddr));
         } else if (message.contains("GetSystemDateAndTimeResponse")) {// 1st to be sent.
             isConnected = true;
             sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
             parseDateAndTime(message);
-            log.debug("Openhabs UTC dateTime is:{}", getUTCdateTime());
         } else if (message.contains("GetCapabilitiesResponse")) {// 2nd to be sent.
             parseXAddr(message);
             sendOnvifRequest(requestBuilder(RequestType.GetProfiles, mediaXAddr));
@@ -262,19 +249,27 @@ public class OnvifConnection {
             log.debug("ptzNodeToken={}", ptzNodeToken);
             sendPTZRequest(RequestType.GetConfigurations);
         } else if (message.contains("GetDeviceInformationResponse")) {
-            log.debug("GetDeviceInformationResponse recieved");
+            this.deviceInformation = new GetDeviceInformationResponse(message);
+            this.onvifCameraActions.onDeviceInformationReceived(this.deviceInformation);
+            log.debug("GetDeviceInformationResponse received");
+        } else if (message.contains("GetScopesResponse")) {
+            this.name = URLDecoder.decode(Helper.fetchXML(message, "odm:name:", ""), "UTF-8");
+            this.onvifCameraActions.onCameraNameReceived(this.name);
         } else if (message.contains("GetSnapshotUriResponse")) {
             snapshotUri = removeIPfromUrl(Helper.fetchXML(message, ":MediaUri", ":Uri"));
             log.debug("GetSnapshotUri:{}", snapshotUri);
-            if (onvifCameraHandler.snapshotUri.isEmpty()) {
-                onvifCameraHandler.snapshotUri = snapshotUri;
+            if (onvifCameraActions.getSnapshotUri().isEmpty()) {
+                onvifCameraActions.setSnapshotUri(snapshotUri);
             }
         } else if (message.contains("GetStreamUriResponse")) {
             rtspUri = Helper.fetchXML(message, ":MediaUri", ":Uri>");
             log.debug("GetStreamUri:{}", rtspUri);
-            if (onvifCameraHandler.getCameraEntity().getFfmpegInput().isEmpty()) {
-                onvifCameraHandler.rtspUri = rtspUri;
+            if (onvifCameraActions.getCameraEntity().getFfmpegInput().isEmpty()) {
+                onvifCameraActions.setRtspUri(rtspUri);
             }
+        } else if (message.contains(":Fault")) {
+            String reason = Helper.fetchXML(message, ":Text", ">");
+            onvifCameraActions.cameraFaultResponse(code, reason);
         }
     }
 
@@ -381,7 +376,7 @@ public class OnvifConnection {
         String day = Helper.fetchXML(message, "UTCDateTime", "Day>");
         String month = Helper.fetchXML(message, "UTCDateTime", "Month>");
         String year = Helper.fetchXML(message, "UTCDateTime", "Year>");
-        log.debug("Cameras  UTC dateTime is:{}-{}-{}T{}:{}:{}", year, month, day, hour, minute, second);
+        log.info("Cameras  UTC dateTime is:{}-{}-{}T{}:{}:{}", year, month, day, hour, minute, second);
     }
 
     private String getUTCdateTime() {
@@ -414,7 +409,7 @@ public class OnvifConnection {
     }
 
     @SuppressWarnings("null")
-    public void sendOnvifRequest(HttpRequest request) {
+    private void sendOnvifRequest(HttpRequest request) {
         if (bootstrap == null) {
             bootstrap = new Bootstrap();
             bootstrap.group(mainEventLoopGroup);
@@ -446,6 +441,7 @@ public class OnvifConnection {
                 if (isConnected) {
                     disconnect();
                 }
+                onvifCameraActions.cameraUnreachable(future.cause() == null ? "" : TouchHomeUtils.getErrorMessage(future.cause()));
             }
         });
     }
@@ -454,7 +450,7 @@ public class OnvifConnection {
         return this;
     }
 
-    void getIPandPortFromUrl(String url) {
+   /* void getIPandPortFromUrl(String url) {
         int beginIndex = url.indexOf(":");
         int endIndex = url.indexOf("/", beginIndex);
         if (beginIndex >= 0 && endIndex == -1) {// 192.168.1.1:8080
@@ -467,7 +463,7 @@ public class OnvifConnection {
             ipAddress = url;
             log.debug("No Onvif Port found when parsing:{}", url);
         }
-    }
+    }*/
 
     public void gotoPreset(int index) {
         if (ptzDevice) {
@@ -483,7 +479,7 @@ public class OnvifConnection {
         }
     }
 
-    public void eventRecieved(String eventMessage) {
+    public void eventReceived(String eventMessage) {
         String topic = Helper.fetchXML(eventMessage, "Topic", "tns1:");
         String dataName = Helper.fetchXML(eventMessage, "tt:Data", "Name=\"");
         String dataValue = Helper.fetchXML(eventMessage, "tt:Data", "Value=\"");
@@ -492,72 +488,72 @@ public class OnvifConnection {
         }
         switch (topic) {
             case "RuleEngine/CellMotionDetector/Motion":
-                onvifCameraHandler.motionDetected(dataValue.equals("true"), CHANNEL_CELL_MOTION_ALARM);
+                onvifCameraActions.motionDetected(dataValue.equals("true"), CHANNEL_CELL_MOTION_ALARM);
                 break;
             case "VideoSource/MotionAlarm":
-                onvifCameraHandler.motionDetected(dataValue.equals("true"), CHANNEL_MOTION_ALARM);
+                onvifCameraActions.motionDetected(dataValue.equals("true"), CHANNEL_MOTION_ALARM);
                 break;
             case "AudioAnalytics/Audio/DetectedSound":
                 if (dataValue.equals("true")) {
-                    onvifCameraHandler.audioDetected(true);
+                    onvifCameraActions.audioDetected(true);
                 } else if (dataValue.equals("false")) {
-                    onvifCameraHandler.audioDetected(false);
+                    onvifCameraActions.audioDetected(false);
                 }
                 break;
             case "RuleEngine/FieldDetector/ObjectsInside":
-                onvifCameraHandler.motionDetected(dataValue.equals("true"), CHANNEL_FIELD_DETECTION_ALARM);
+                onvifCameraActions.motionDetected(dataValue.equals("true"), CHANNEL_FIELD_DETECTION_ALARM);
                 break;
             case "RuleEngine/LineDetector/Crossed":
-                onvifCameraHandler.motionDetected(dataName.equals("ObjectId"), CHANNEL_LINE_CROSSING_ALARM);
+                onvifCameraActions.motionDetected(dataName.equals("ObjectId"), CHANNEL_LINE_CROSSING_ALARM);
                 break;
             case "RuleEngine/TamperDetector/Tamper":
                 if (dataValue.equals("true")) {
-                    onvifCameraHandler.setAttribute(CHANNEL_TAMPER_ALARM, OnOffType.ON);
+                    onvifCameraActions.setAttribute(CHANNEL_TAMPER_ALARM, OnOffType.ON);
                 } else if (dataValue.equals("false")) {
-                    onvifCameraHandler.setAttribute(CHANNEL_TAMPER_ALARM, OnOffType.OFF);
+                    onvifCameraActions.setAttribute(CHANNEL_TAMPER_ALARM, OnOffType.OFF);
                 }
                 break;
             case "Device/HardwareFailure/StorageFailure":
                 if (dataValue.equals("true")) {
-                    onvifCameraHandler.setAttribute(CHANNEL_STORAGE_ALARM, OnOffType.ON);
+                    onvifCameraActions.setAttribute(CHANNEL_STORAGE_ALARM, OnOffType.ON);
                 } else if (dataValue.equals("false")) {
-                    onvifCameraHandler.setAttribute(CHANNEL_STORAGE_ALARM, OnOffType.OFF);
+                    onvifCameraActions.setAttribute(CHANNEL_STORAGE_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoSource/ImageTooDark/AnalyticsService":
             case "VideoSource/ImageTooDark/ImagingService":
             case "VideoSource/ImageTooDark/RecordingService":
                 if (dataValue.equals("true")) {
-                    onvifCameraHandler.setAttribute(CHANNEL_TOO_DARK_ALARM, OnOffType.ON);
+                    onvifCameraActions.setAttribute(CHANNEL_TOO_DARK_ALARM, OnOffType.ON);
                 } else if (dataValue.equals("false")) {
-                    onvifCameraHandler.setAttribute(CHANNEL_TOO_DARK_ALARM, OnOffType.OFF);
+                    onvifCameraActions.setAttribute(CHANNEL_TOO_DARK_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoSource/GlobalSceneChange/AnalyticsService":
             case "VideoSource/GlobalSceneChange/ImagingService":
             case "VideoSource/GlobalSceneChange/RecordingService":
                 if (dataValue.equals("true")) {
-                    onvifCameraHandler.setAttribute(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.ON);
+                    onvifCameraActions.setAttribute(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.ON);
                 } else if (dataValue.equals("false")) {
-                    onvifCameraHandler.setAttribute(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.OFF);
+                    onvifCameraActions.setAttribute(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoSource/ImageTooBright/AnalyticsService":
             case "VideoSource/ImageTooBright/ImagingService":
             case "VideoSource/ImageTooBright/RecordingService":
                 if (dataValue.equals("true")) {
-                    onvifCameraHandler.setAttribute(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.ON);
+                    onvifCameraActions.setAttribute(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.ON);
                 } else if (dataValue.equals("false")) {
-                    onvifCameraHandler.setAttribute(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.OFF);
+                    onvifCameraActions.setAttribute(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoSource/ImageTooBlurry/AnalyticsService":
             case "VideoSource/ImageTooBlurry/ImagingService":
             case "VideoSource/ImageTooBlurry/RecordingService":
                 if (dataValue.equals("true")) {
-                    onvifCameraHandler.setAttribute(CHANNEL_TOO_BLURRY_ALARM, OnOffType.ON);
+                    onvifCameraActions.setAttribute(CHANNEL_TOO_BLURRY_ALARM, OnOffType.ON);
                 } else if (dataValue.equals("false")) {
-                    onvifCameraHandler.setAttribute(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
+                    onvifCameraActions.setAttribute(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
                 }
                 break;
             default:
@@ -649,7 +645,7 @@ public class OnvifConnection {
         for (String value : presetNames) {
             presets.add(OptionModel.of(Integer.toString(counter++), value));
         }
-        this.onvifCameraHandler.setAttribute(CHANNEL_GOTO_PRESET, new ObjectType(presets));
+        this.onvifCameraActions.setAttribute(CHANNEL_GOTO_PRESET, new ObjectType(presets));
     }
 
     void parseProfiles(String message) {
@@ -705,6 +701,10 @@ public class OnvifConnection {
         sendOnvifRequest(requestBuilder(requestType, ptzXAddr));
     }
 
+    public void sendOnvifDeviceServiceRequest(RequestType requestType) {
+        sendOnvifRequest(requestBuilder(requestType, deviceXAddr));
+    }
+
     public void sendEventRequest(RequestType requestType) {
         sendOnvifRequest(requestBuilder(requestType, eventXAddr));
     }
@@ -743,42 +743,69 @@ public class OnvifConnection {
         }
     }
 
+    @AllArgsConstructor
     public enum RequestType {
-        AbsoluteMove,
-        AddPTZConfiguration,
-        ContinuousMoveLeft,
-        ContinuousMoveRight,
-        ContinuousMoveUp,
-        ContinuousMoveDown,
-        Stop,
-        ContinuousMoveIn,
-        ContinuousMoveOut,
-        CreatePullPointSubscription,
-        GetCapabilities,
-        GetDeviceInformation,
-        GetProfiles,
-        GetServiceCapabilities,
-        GetSnapshotUri,
-        GetStreamUri,
-        GetSystemDateAndTime,
-        Subscribe,
-        Unsubscribe,
-        PullMessages,
-        GetEventProperties,
-        RelativeMoveLeft,
-        RelativeMoveRight,
-        RelativeMoveUp,
-        RelativeMoveDown,
-        RelativeMoveIn,
-        RelativeMoveOut,
-        Renew,
-        GetConfigurations,
-        GetConfigurationOptions,
-        GetConfiguration,
-        SetConfiguration,
-        GetNodes,
-        GetStatus,
-        GotoPreset,
-        GetPresets
+        AbsoluteMove(""),
+        AddPTZConfiguration(""),
+        ContinuousMoveLeft(""),
+        ContinuousMoveRight(""),
+        ContinuousMoveUp(""),
+        ContinuousMoveDown(""),
+        Stop(""),
+        ContinuousMoveIn(""),
+        ContinuousMoveOut(""),
+        CreatePullPointSubscription("<CreatePullPointSubscription xmlns=\"http://www.onvif.org/ver10/events/wsdl\"><InitialTerminationTime>PT600S</InitialTerminationTime></CreatePullPointSubscription>"),
+        GetCapabilities("<GetCapabilities xmlns=\"http://www.onvif.org/ver10/device/wsdl\"><Category>All</Category></GetCapabilities>"),
+        GetDeviceInformation("<GetDeviceInformation xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>"),
+        GetProfiles("<GetProfiles xmlns=\"http://www.onvif.org/ver10/media/wsdl\"/>"),
+        GetServiceCapabilities("<GetServiceCapabilities xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"></GetServiceCapabilities>"),
+        GetSnapshotUri(""),
+        GetStreamUri(""),
+        GetSystemDateAndTime("<GetSystemDateAndTime xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>"),
+        Subscribe(""),
+        Unsubscribe("<Unsubscribe xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"></Unsubscribe>"),
+        PullMessages("<PullMessages xmlns=\"http://www.onvif.org/ver10/events/wsdl\"><Timeout>PT8S</Timeout><MessageLimit>1</MessageLimit></PullMessages>"),
+        GetEventProperties("<GetEventProperties xmlns=\"http://www.onvif.org/ver10/events/wsdl\"/>"),
+        RelativeMoveLeft(""),
+        RelativeMoveRight(""),
+        RelativeMoveUp(""),
+        RelativeMoveDown(""),
+        RelativeMoveIn(""),
+        RelativeMoveOut(""),
+        Renew("<Renew xmlns=\"http://docs.oasis-open.org/wsn/b-2\"><TerminationTime>PT1M</TerminationTime></Renew>"),
+        GetConfigurations("<GetConfigurations xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"></GetConfigurations>"),
+        GetConfigurationOptions(""),
+        GetConfiguration(""),
+        SetConfiguration(""),
+        GetNodes("<GetNodes xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"></GetNodes>"),
+        GetStatus(""),
+        GotoPreset(""),
+        GetPresets(""),
+        SystemReboot("<SystemReboot xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>"),
+        GetScopes("<GetScopes xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>"),
+        SetScopes("");
+
+        private final String request;
+    }
+
+    @Getter
+    public static class GetDeviceInformationResponse {
+        private String hardwareID;
+        private String serialNumber;
+        private String firmwareVersion;
+        private String model;
+        private String manufacturer;
+
+        public GetDeviceInformationResponse(String message) {
+            this.hardwareID = Helper.fetchXML(message, "HardwareId", ">");
+            this.serialNumber = Helper.fetchXML(message, "SerialNumber", ">");
+            this.firmwareVersion = Helper.fetchXML(message, "FirmwareVersion", ">");
+            this.model = Helper.fetchXML(message, "Model", ">");
+            this.manufacturer = Helper.fetchXML(message, "Manufacturer", ">");
+        }
+
+        public String getIeeeAddress() {
+            return model + "~" + serialNumber;
+        }
     }
 }

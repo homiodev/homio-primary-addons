@@ -22,8 +22,8 @@ public abstract class BaseFFmpegStreamEntity<T extends BaseFFmpegStreamEntity, H
         return getJsonData("user", "");
     }
 
-    public void setUser(String value) {
-        setJsonData("user", value);
+    public T setUser(String value) {
+        return setJsonData("user", value);
     }
 
     // not all entity has password
@@ -31,8 +31,8 @@ public abstract class BaseFFmpegStreamEntity<T extends BaseFFmpegStreamEntity, H
         return getJsonData("password", "");
     }
 
-    public void setPassword(String value) {
-        setJsonData("password", value);
+    public T setPassword(String value) {
+        return setJsonData("password", value);
     }
 
     public String getAlarmInputUrl() {
