@@ -28,6 +28,11 @@ public class ConsoleArduinoLibraryManagerSetting implements SettingPluginPackage
     private static Map<String, ContributedLibraryReleases> releases;
 
     @Override
+    public String getIcon() {
+        return SettingPluginPackageInstall.super.getIcon();
+    }
+
+    @Override
     public int order() {
         return 90;
     }

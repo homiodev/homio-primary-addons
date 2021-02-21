@@ -4,11 +4,11 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.firmata4j.I2CDevice;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.workspace.BroadcastLockManager;
+import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
-import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.firmata.FirmataBundleEntryPoint;
 
 @Log4j2
@@ -31,8 +31,6 @@ public class Scratch3FirmataI2CBlocks extends Scratch3FirmataBaseBlock {
         this.getBME280Value = of(Scratch3Block.ofEvaluate(9, "BME280", BlockType.reporter,
                 "BME280 [TYPE] of [FIRMATA]", this::getBME280ValueEvaluate));
         this.getBME280Value.addArgument("TYPE", this.bme280ValueMenu);
-
-        postConstruct();
     }
 
     private Object getBME280ValueEvaluate(WorkspaceBlock workspaceBlock) {

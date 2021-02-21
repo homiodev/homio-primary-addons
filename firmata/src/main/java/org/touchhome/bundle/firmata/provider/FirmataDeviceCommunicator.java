@@ -109,7 +109,7 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
 
             // this method throws exception if unable to get any notifications from
             ioDevice.ensureInitializationIsDone();
-            updateDeviceStatus(entity, Status.ONLINE, null);
+            updateStatus(entity, Status.ONLINE, null);
 
             FirmataWatchdog watchdog = new FirmataWatchdog(TimeUnit.MINUTES.toMillis(entityContext.setting().getValue(FirmataWatchDogIntervalSetting.class)), () -> {
                 entityContext.updateDelayed(entity, t -> t.setJoined(Status.ERROR));
@@ -124,7 +124,7 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
 
             return "ACTION.COMMUNICATOR.SUCCESS";
         } catch (Exception ex) {
-            updateDeviceStatus(entity, Status.ERROR, TouchHomeUtils.getErrorMessage(ex));
+            updateStatus(entity, Status.ERROR, TouchHomeUtils.getErrorMessage(ex));
             log.error("Error while initialize device: {} for device type: {}", entity.getTitle(), getClass().getSimpleName(), ex);
             throw new RuntimeException("ACTION.COMMUNICATOR.UNKNOWN_ERROR");
         }
@@ -188,9 +188,9 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
         }
     }
 
-    private void updateDeviceStatus(T entity, Status status, String statusMessage) {
+    private void updateStatus(T entity, Status status, String statusMessage) {
         if (entity.getStatus() != status) {
-            entityContext.updateDeviceStatus(entity, status, statusMessage);
+            entityContext.updateStatus(entity, status, statusMessage);
             entityContext.ui().addBellWarningNotification(entity.getEntityID(), "A-" + entity.getEntityID(), "Communicator status: " + status);
         }
         if (status == Status.OFFLINE || status == Status.ERROR) {

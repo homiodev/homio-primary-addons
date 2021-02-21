@@ -2,32 +2,37 @@ package org.touchhome.bundle.raspberry.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pi4j.io.gpio.PinMode;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.SystemUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.micro.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanEntity;
 import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanGroupEntity;
+import org.touchhome.bundle.api.fs.BaseFileSystemEntity;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldExpand;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
+import org.touchhome.bundle.api.ui.field.action.impl.DynamicContextMenuAction;
 import org.touchhome.bundle.api.ui.method.UIFieldCreateWorkspaceVariableOnEmpty;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
+import org.touchhome.bundle.raspberry.fs.RaspberryFileSystem;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
-public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<RaspberryDeviceEntity> {
+public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<RaspberryDeviceEntity>
+        implements BaseFileSystemEntity<RaspberryDeviceEntity, RaspberryFileSystem> {
 
     public static final String PREFIX = "raspb_";
     public static final String DEFAULT_DEVICE_ENTITY_ID = PREFIX + "LocalRaspberry";
+
+    private static Map<String, RaspberryFileSystem> fileSystemMap = new HashMap<>();
 
     @Getter
     @Setter
@@ -36,11 +41,20 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
     @UIFieldExpand
     @UIFieldCreateWorkspaceVariableOnEmpty
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<Map<OptionModel, String>> availableLinks;
+    private List<AvailableLink> availableLinks;
 
     @Override
     public String getShortTitle() {
         return "Rpi";
+    }
+
+    @UIField(order = 200)
+    public String getFileSystemRoot() {
+        return getJsonData("value", SystemUtils.getUserHome().toString());
+    }
+
+    public void setFileSystemRoot(String value) {
+        setJsonData("root", value);
     }
 
     @Override
@@ -60,15 +74,14 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
     }
 
     private void gatherAvailableLinks(EntityContext entityContext) {
-        List<Map<OptionModel, String>> links = new ArrayList<>();
+        List<AvailableLink> links = new ArrayList<>();
         RaspberryGPIOService raspberryGPIOService = entityContext.getBean(RaspberryGPIOService.class);
         for (RaspberryGpioPin gpioPin : RaspberryGpioPin.values(PinMode.DIGITAL_INPUT, null)) {
-            Map<OptionModel, String> map = new HashMap<>();
-            map.put(OptionModel.of(gpioPin.name(), gpioPin.toString()).json(json ->
-                            json.put("group", WorkspaceBooleanGroupEntity.PREFIX).put("color", gpioPin.getColor())
-                                    .put("var", WorkspaceBooleanEntity.PREFIX)),
+            AvailableLink link = new AvailableLink(OptionModel.of(gpioPin.name(), gpioPin.toString()).json(json ->
+                    json.put("group", WorkspaceBooleanGroupEntity.PREFIX).put("color", gpioPin.getColor())
+                            .put("var", WorkspaceBooleanEntity.PREFIX)),
                     getLinkedWorkspaceBooleanVariable(gpioPin, entityContext, raspberryGPIOService));
-            links.add(map);
+            links.add(link);
         }
         setAvailableLinks(links);
     }
@@ -87,5 +100,42 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
             }
         }
         return "";
+    }
+
+    @Override
+    public boolean requireConfigure() {
+        return false;
+    }
+
+    @Override
+    public RaspberryFileSystem getFileSystem(EntityContext entityContext) {
+        return fileSystemMap.computeIfAbsent(getEntityID(), s -> new RaspberryFileSystem(this, entityContext));
+    }
+
+    @Override
+    public Map<String, RaspberryFileSystem> getFileSystemMap() {
+        return fileSystemMap;
+    }
+
+    @Override
+    public long getConnectionHashCode() {
+        return 0;
+    }
+
+    @Override
+    public String getDefaultName() {
+        return getShortTitle();
+    }
+
+    @Override
+    public Set<DynamicContextMenuAction> getActions(EntityContext entityContext) {
+        return null;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public final class AvailableLink {
+        private OptionModel key;
+        private String value;
     }
 }

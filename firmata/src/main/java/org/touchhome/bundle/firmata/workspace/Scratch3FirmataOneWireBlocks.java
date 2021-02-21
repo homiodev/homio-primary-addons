@@ -38,8 +38,6 @@ public class Scratch3FirmataOneWireBlocks extends Scratch3FirmataBaseBlock {
         this.ds18b20Value = ofPin(Scratch3Block.ofEvaluate(10, "DS18B20", BlockType.reporter,
                 "DS18B20(1-Wire) on [PIN] address [ADDRESS] of [FIRMATA]", this::getDS18B20Value), this.pinMenu1Wire);
         this.ds18b20Value.addArgument("ADDRESS", this.menuTemperatureAddress);
-
-        postConstruct();
     }
 
     private float getDS18B20Value(WorkspaceBlock workspaceBlock) {

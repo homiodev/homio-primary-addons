@@ -9,6 +9,13 @@ deploy:
     skip_cleanup: true
     user: $BINTRAY_USER
     key:  $BINTRAY_KEY
+    file: 'camera/target/bintray.json'
+    on:
+      tags: true
+  - provider: bintray
+    skip_cleanup: true
+    user: $BINTRAY_USER
+    key:  $BINTRAY_KEY
     file: 'firmata/target/bintray.json'
     on:
       tags: true

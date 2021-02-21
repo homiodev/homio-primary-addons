@@ -25,6 +25,32 @@ public class ConsoleArduinoBoardManagerSetting implements SettingPluginPackageIn
 
     private static List<ContributedPlatformReleases> contributions;
 
+    public static List<ContributedPlatformReleases> getContributions() {
+        if (contributions == null) {
+            // update indexes
+            ArduinoConfiguration.getContributionInstaller();
+
+            contributions = new ArrayList<>();
+            for (ContributedPackage pack : BaseNoGui.indexer.getPackages()) {
+                for (ContributedPlatform platform : pack.getPlatforms()) {
+                    addContribution(platform);
+                }
+            }
+        }
+        return contributions;
+    }
+
+    private static void addContribution(ContributedPlatform platform) {
+        for (ContributedPlatformReleases contribution : contributions) {
+            if (!contribution.shouldContain(platform))
+                continue;
+            contribution.add(platform);
+            return;
+        }
+
+        contributions.add(new ContributedPlatformReleases(platform));
+    }
+
     @Override
     public String getIcon() {
         return "fas fa-tasks";
@@ -131,31 +157,5 @@ public class ConsoleArduinoBoardManagerSetting implements SettingPluginPackageIn
             throw new ServerException("Unable to find board with name: " + name);
         }
         return release;
-    }
-
-    public static List<ContributedPlatformReleases> getContributions() {
-        if (contributions == null) {
-            // update indexes
-            ArduinoConfiguration.getContributionInstaller();
-
-            contributions = new ArrayList<>();
-            for (ContributedPackage pack : BaseNoGui.indexer.getPackages()) {
-                for (ContributedPlatform platform : pack.getPlatforms()) {
-                    addContribution(platform);
-                }
-            }
-        }
-        return contributions;
-    }
-
-    private static void addContribution(ContributedPlatform platform) {
-        for (ContributedPlatformReleases contribution : contributions) {
-            if (!contribution.shouldContain(platform))
-                continue;
-            contribution.add(platform);
-            return;
-        }
-
-        contributions.add(new ContributedPlatformReleases(platform));
     }
 }

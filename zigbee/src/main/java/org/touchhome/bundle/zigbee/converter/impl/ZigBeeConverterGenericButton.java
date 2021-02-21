@@ -5,7 +5,7 @@ import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.*;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclScenesCluster;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.api.measure.ButtonState;
+import org.touchhome.bundle.api.state.ButtonType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 
 import java.lang.reflect.InvocationTargetException;
@@ -40,11 +40,11 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
     private static final String ATTRIBUTE_ID = "attribute_id";
     private static final String ATTRIBUTE_VALUE = "attribute_value";
 
-    private Map<ButtonState.ButtonPressType, EventSpec> handledEvents = new EnumMap<>(ButtonState.ButtonPressType.class);
+    private Map<ButtonType.ButtonPressType, EventSpec> handledEvents = new EnumMap<>(ButtonType.ButtonPressType.class);
     private Set<ZclCluster> clientClusters = new HashSet<>();
     private Set<ZclCluster> serverClusters = new HashSet<>();
 
-    private static String getParameterName(String parameterType, ButtonState.ButtonPressType buttonPressType) {
+    private static String getParameterName(String parameterType, ButtonType.ButtonPressType buttonPressType) {
         return String.format("zigbee_%s_%s", buttonPressType, parameterType);
     }
 
@@ -58,7 +58,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
 
     @Override
     public synchronized boolean initializeConverter() {
-        for (ButtonState.ButtonPressType buttonPressType : ButtonState.ButtonPressType.values()) {
+        for (ButtonType.ButtonPressType buttonPressType : ButtonType.ButtonPressType.values()) {
             /*TODO: EventSpec eventSpec = parseEventSpec(channel.getProperties(), buttonPressType);
             if (eventSpec != null) {
                 handledEvents.put(buttonPressType, eventSpec);
@@ -102,11 +102,11 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
 
     @Override
     public boolean commandReceived(ZclCommand command) {
-        ButtonState.ButtonPressType buttonPressType = getButtonPressType(command);
+        ButtonType.ButtonPressType buttonPressType = getButtonPressType(command);
         if (buttonPressType != null) {
             log.debug("{}: Matching ZigBee command for press type {} received: {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
                     buttonPressType, command);
-            updateChannelState(new ButtonState(buttonPressType));
+            updateChannelState(new ButtonType(buttonPressType));
             return true;
         }
         return false;
@@ -114,24 +114,24 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
 
     @Override
     public void attributeUpdated(ZclAttribute attribute, Object value) {
-        ButtonState.ButtonPressType buttonPressType = getButtonPressType(attribute, value);
+        ButtonType.ButtonPressType buttonPressType = getButtonPressType(attribute, value);
         if (buttonPressType != null) {
             log.debug("{}: Matching ZigBee attribute for press type {} received: {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
                     buttonPressType, attribute);
-            updateChannelState(new ButtonState(buttonPressType));
+            updateChannelState(new ButtonType(buttonPressType));
         }
     }
 
-    private ButtonState.ButtonPressType getButtonPressType(ZclAttribute attribute, Object value) {
+    private ButtonType.ButtonPressType getButtonPressType(ZclAttribute attribute, Object value) {
         return getButtonPressType(cs -> cs.matches(attribute, value));
     }
 
-    private ButtonState.ButtonPressType getButtonPressType(ZclCommand command) {
+    private ButtonType.ButtonPressType getButtonPressType(ZclCommand command) {
         return getButtonPressType(cs -> cs.matches(command));
     }
 
-    private ButtonState.ButtonPressType getButtonPressType(Predicate<EventSpec> predicate) {
-        for (Entry<ButtonState.ButtonPressType, EventSpec> entry : handledEvents.entrySet()) {
+    private ButtonType.ButtonPressType getButtonPressType(Predicate<EventSpec> predicate) {
+        for (Entry<ButtonType.ButtonPressType, EventSpec> entry : handledEvents.entrySet()) {
             if (predicate.test(entry.getValue())) {
                 return entry.getKey();
             }
@@ -139,7 +139,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
         return null;
     }
 
-    private EventSpec parseEventSpec(Map<String, String> properties, ButtonState.ButtonPressType pressType) {
+    private EventSpec parseEventSpec(Map<String, String> properties, ButtonType.ButtonPressType pressType) {
         String clusterProperty = properties.get(getParameterName(CLUSTER, pressType));
 
         if (clusterProperty == null) {
@@ -171,7 +171,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
     }
 
     private AttributeReportSpec parseAttributeReportSpec(int clusterId, Map<String, String> properties,
-                                                         ButtonState.ButtonPressType pressType) {
+                                                         ButtonType.ButtonPressType pressType) {
         String attributeIdProperty = properties.get(getParameterName(ATTRIBUTE_ID, pressType));
         String attributeValue = properties.get(getParameterName(ATTRIBUTE_VALUE, pressType));
 
@@ -197,7 +197,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
         return new AttributeReportSpec(clusterId, attributeId, attributeValue);
     }
 
-    private CommandSpec parseCommandSpec(int clusterId, Map<String, String> properties, ButtonState.ButtonPressType pressType) {
+    private CommandSpec parseCommandSpec(int clusterId, Map<String, String> properties, ButtonType.ButtonPressType pressType) {
         String commandProperty = properties.get(getParameterName(COMMAND, pressType));
         String commandParameterName = properties.get(getParameterName(PARAM_NAME, pressType));
         String commandParameterValue = properties.get(getParameterName(PARAM_VALUE, pressType));

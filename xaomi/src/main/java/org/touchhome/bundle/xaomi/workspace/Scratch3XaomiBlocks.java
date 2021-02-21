@@ -5,10 +5,13 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclMultistateInputBasicCluster;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.scratch.*;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
+import org.touchhome.bundle.api.workspace.WorkspaceBlock;
+import org.touchhome.bundle.api.workspace.scratch.BlockType;
+import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
+import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
+import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.xaomi.XaomiEntryPoint;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
@@ -43,6 +46,7 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
                                ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
                                XaomiEntryPoint xaomiEntryPoint) {
         super("#856d21", entityContext, xaomiEntryPoint);
+        setParent("zigbee");
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
         this.entityContext.setting().listenValue(ZigBeeStatusSetting.class, "zb-wp-xaomi-workspace", status -> {
@@ -67,8 +71,6 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
         this.magicCubeLastValue = Scratch3Block.ofEvaluate(2, "cube_value", BlockType.reporter, "Cube [CUBE_SENSOR] last value [EVENT]", this::cubeLastValueEvaluate);
         this.magicCubeLastValue.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
         this.magicCubeLastValue.addArgument(EVENT, this.cubeEventMenu);
-
-        this.postConstruct();
 
         zigBeeDeviceUpdateValueListener.addDescribeHandlerByModel(CUBE_MODE_IDENTIFIER, (state) -> "Magic cube <" + new CubeValueDescriptor(state) + ">", false);
     }

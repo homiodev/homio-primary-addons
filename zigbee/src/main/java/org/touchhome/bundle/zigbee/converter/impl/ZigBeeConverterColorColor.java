@@ -10,9 +10,9 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclOnOffCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.colorcontrol.ColorCapabilitiesEnum;
 import com.zsmartsystems.zigbee.zcl.clusters.colorcontrol.ColorModeEnum;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.api.measure.DecimalType;
-import org.touchhome.bundle.api.measure.HSBType;
-import org.touchhome.bundle.api.measure.OnOffType;
+import org.touchhome.bundle.api.state.DecimalType;
+import org.touchhome.bundle.api.state.HSBType;
+import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.config.ZclLevelControlConfig;
 

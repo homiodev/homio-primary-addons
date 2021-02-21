@@ -7,7 +7,7 @@ import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.api.measure.StringType;
+import org.touchhome.bundle.api.state.StringType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 
 import java.util.concurrent.ExecutionException;

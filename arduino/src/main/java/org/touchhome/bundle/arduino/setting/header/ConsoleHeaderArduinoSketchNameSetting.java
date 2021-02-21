@@ -11,7 +11,6 @@ import processing.app.BaseNoGui;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -20,56 +19,7 @@ import java.util.function.Predicate;
 import static org.touchhome.bundle.arduino.ArduinoConsolePlugin.DEFAULT_SKETCH_NAME;
 
 @Log4j2
-public class ConsoleHeaderArduinoSketchNameSetting implements ConsoleHeaderSettingPlugin<Path>, SettingPluginOptionsFileExplorer {
-
-    @Override
-    public SettingType getSettingType() {
-        return SettingType.TextSelectBoxDynamic;
-    }
-
-    @Override
-    public boolean isStorable() {
-        return false;
-    }
-
-    @Override
-    public Path rootPath() {
-        return BaseNoGui.packages == null ? null : BaseNoGui.getSketchbookFolder().toPath();
-    }
-
-    @Override
-    public int levels() {
-        return 2;
-    }
-
-    @Override
-    public Predicate<Path> filterPath() {
-        return path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".ino");
-    }
-
-    @Override
-    public List<OptionModel> getOptions(EntityContext entityContext) {
-        List<OptionModel> options = SettingPluginOptionsFileExplorer.super.getOptions(entityContext);
-        OptionModel examples = buildExamplePath(false);
-        if (examples != null) {
-            options.add(OptionModel.separator());
-            options.add(examples);
-        }
-        return options;
-    }
-
-    @Override
-    public Comparator<OptionModel> pathComparator() {
-        return (o1, o2) -> {
-            if (o1.getTitleOrKey().equals(DEFAULT_SKETCH_NAME)) {
-                return -1;
-            }
-            if (o2.getTitleOrKey().equals(DEFAULT_SKETCH_NAME)) {
-                return 1;
-            }
-            return o1.getTitleOrKey().compareTo(o2.getTitleOrKey());
-        };
-    }
+public class ConsoleHeaderArduinoSketchNameSetting implements SettingPluginOptionsFileExplorer, ConsoleHeaderSettingPlugin<Path> {
 
     public static OptionModel buildExamplePath(boolean includePath) {
         OptionModel examples = OptionModel.key("examples");
@@ -122,16 +72,63 @@ public class ConsoleHeaderArduinoSketchNameSetting implements ConsoleHeaderSetti
     }
 
     @Override
+    public String getIcon() {
+        return SettingPluginOptionsFileExplorer.super.getIcon();
+    }
+
+    @Override
+    public SettingType getSettingType() {
+        return SettingType.TextSelectBoxDynamic;
+    }
+
+    @Override
+    public Path rootPath() {
+        return BaseNoGui.packages == null ? null : BaseNoGui.getSketchbookFolder().toPath();
+    }
+
+    @Override
+    public int levels() {
+        return 2;
+    }
+
+    @Override
+    public Predicate<Path> filterPath() {
+        return path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".ino");
+    }
+
+    @Override
+    public List<OptionModel> getOptions(EntityContext entityContext) {
+        List<OptionModel> options = SettingPluginOptionsFileExplorer.super.getOptions(entityContext);
+        OptionModel examples = buildExamplePath(false);
+        if (examples != null) {
+            options.add(OptionModel.separator());
+            options.add(examples);
+        }
+        return options;
+    }
+
+    @Override
+    public Comparator<OptionModel> pathComparator() {
+        return (o1, o2) -> {
+            if (o1.getTitleOrKey().equals(DEFAULT_SKETCH_NAME)) {
+                return -1;
+            }
+            if (o2.getTitleOrKey().equals(DEFAULT_SKETCH_NAME)) {
+                return 1;
+            }
+            return o1.getTitleOrKey().compareTo(o2.getTitleOrKey());
+        };
+    }
+
+    @Override
     public boolean removableOption(OptionModel optionModel) {
         return !optionModel.getKey().equals(DEFAULT_SKETCH_NAME);
     }
 
     @Override
     public void removeOption(EntityContext entityContext, String key) throws Exception {
-        SettingPluginOptionsFileExplorer.super.removeOption(entityContext, key);
-        Path sketchFolder = Paths.get(key).getParent();
-        if (sketchFolder.getParent().equals(sketchFolder.getParent())) {
-            FileUtils.deleteDirectory(sketchFolder.toFile()); // remove parent because arduino creates folder for each sketch
-        }
+        Path path = parseValue(entityContext, key);
+        FileUtils.deleteDirectory(path.getParent().toFile());
+        entityContext.setting().reloadSettings(getClass());
     }
 }

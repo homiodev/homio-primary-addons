@@ -14,7 +14,6 @@ import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.UIField;
-import org.touchhome.bundle.api.ui.field.UIFieldName;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
@@ -63,7 +62,7 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
     }
 
     @Override
-    @UIFieldName("communicatorStatus")
+    @UIField(label = "communicatorStatus", order = 22, readOnly = true, hideOnEmpty = true)
     public Status getStatus() {
         return super.getStatus();
     }
@@ -136,6 +135,20 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
 
     protected abstract boolean allowRegistrationType(PendingRegistrationContext pendingRegistrationContext);
 
+    @Override
+    public void afterFetch(EntityContext entityContext) {
+        setFirmataDeviceCommunicator(entityIDToDeviceCommunicator.computeIfAbsent(getEntityID(),
+                ignore -> createFirmataDeviceType(entityContext)));
+    }
+
+    @Override
+    protected void beforeDelete() {
+        FirmataDeviceCommunicator firmataDeviceCommunicator = entityIDToDeviceCommunicator.remove(getEntityID());
+        if (firmataDeviceCommunicator != null) {
+            firmataDeviceCommunicator.destroy();
+        }
+    }
+
     public static class SelectTargetFirmataDeviceLoader implements DynamicOptionLoader {
 
         @Override
@@ -144,20 +157,6 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
                     .filter(entry -> ((FirmataBaseEntity) baseEntity).allowRegistrationType(entry.getValue()))
                     .map(entry -> OptionModel.of(Short.toString(entry.getKey()), entry.getKey() + "/" + entry.getValue()))
                     .collect(Collectors.toList());
-        }
-    }
-
-    @Override
-    public void afterFetch(EntityContext entityContext) {
-        setFirmataDeviceCommunicator(entityIDToDeviceCommunicator.computeIfAbsent(getEntityID(),
-                ignore -> createFirmataDeviceType(entityContext)));
-    }
-
-    @Override
-    protected void beforeRemove() {
-        FirmataDeviceCommunicator firmataDeviceCommunicator = entityIDToDeviceCommunicator.remove(getEntityID());
-        if (firmataDeviceCommunicator != null) {
-            firmataDeviceCommunicator.destroy();
         }
     }
 }

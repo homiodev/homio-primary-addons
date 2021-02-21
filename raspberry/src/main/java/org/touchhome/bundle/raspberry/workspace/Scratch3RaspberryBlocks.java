@@ -7,7 +7,7 @@ import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanEntity;
-import org.touchhome.bundle.api.measure.OnOffType;
+import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
@@ -18,6 +18,7 @@ import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.raspberry.RaspberryEntryPoint;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
+import org.touchhome.bundle.raspberry.model.RaspberryDeviceEntity;
 
 import java.util.function.Consumer;
 
@@ -52,8 +53,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
                 p.getPin().getSupportedPinModes().contains(PinMode.DIGITAL_INPUT));
         this.pwmPinMenu = MenuBlock.ofStatic("pwmPinMenu", RaspberryGpioPin.class, RaspberryGpioPin.PIN12, p -> p.name().equals("PIN12") || p.name().equals("PIN33"));
 
-        this.rpiIdMenu = MenuBlock.ofServer("rpiIdMenu", "rest/item/type/RaspberryDeviceEntity",
-                "Select RPI", "-");
+        this.rpiIdMenu = MenuBlock.ofServerItems("rpiIdMenu", RaspberryDeviceEntity.class);
         this.onOffMenu = MenuBlock.ofStatic("onOffMenu", OnOffType.class, OnOffType.ON);
 
         this.pullMenu = MenuBlock.ofStatic("pullMenu", PinPullResistance.class, PinPullResistance.PULL_UP);
@@ -97,8 +97,6 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
         this.ds18b20Value = Scratch3Block.ofEvaluate(4, "ds18B20_status", BlockType.reporter, "DS18B20 [DS18B20] of [RPI]", this::getDS18B20ValueHandler);
         this.ds18b20Value.addArgument("DS18B20", this.ds18b20Menu);
         this.ds18b20Value.addArgument("RPI", this.rpiIdMenu);
-
-        this.postConstruct();
     }
 
     private Scratch3Block of(Scratch3Block scratch3Block, MenuBlock.StaticMenuBlock pinMenu) {

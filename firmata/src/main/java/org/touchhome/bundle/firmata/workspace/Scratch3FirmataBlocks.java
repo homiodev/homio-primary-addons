@@ -7,15 +7,15 @@ import org.firmata4j.Pin;
 import org.firmata4j.firmata.FirmataMessageFactory;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.measure.CompareType;
-import org.touchhome.bundle.api.measure.OnOffType;
 import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.api.state.CompareType;
+import org.touchhome.bundle.api.state.OnOffType;
+import org.touchhome.bundle.api.workspace.BroadcastLock;
+import org.touchhome.bundle.api.workspace.BroadcastLockManager;
+import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
-import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.BroadcastLock;
-import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.firmata.FirmataBundleEntryPoint;
 import org.touchhome.bundle.firmata.model.FirmataBaseEntity;
 import org.touchhome.bundle.firmata.provider.command.FirmataCommand;
@@ -128,8 +128,6 @@ public class Scratch3FirmataBlocks extends Scratch3FirmataBaseBlock {
 
         this.getProtocol = of(Scratch3Block.ofEvaluate(90, "protocol", BlockType.reporter,
                 "protocol of [FIRMATA]", this::getProtocolEvaluate), "#939844");
-
-        this.postConstruct();
     }
 
     private void delayHandler(WorkspaceBlock workspaceBlock) {

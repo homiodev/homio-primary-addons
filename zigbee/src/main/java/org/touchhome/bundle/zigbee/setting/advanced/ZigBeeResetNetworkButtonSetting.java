@@ -13,4 +13,9 @@ public class ZigBeeResetNetworkButtonSetting implements SettingPluginButton {
     public boolean isAdvanced() {
         return true;
     }
+
+    @Override
+    public String getIcon() {
+        return "fas fa-power-off";
+    }
 }

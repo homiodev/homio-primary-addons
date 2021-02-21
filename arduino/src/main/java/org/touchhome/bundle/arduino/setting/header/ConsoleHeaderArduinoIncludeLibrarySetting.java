@@ -60,9 +60,4 @@ public class ConsoleHeaderArduinoIncludeLibrarySetting implements ConsoleHeaderS
     public SettingType getSettingType() {
         return SettingType.SelectBoxButton;
     }
-
-    @Override
-    public boolean isStorable() {
-        return false;
-    }
 }

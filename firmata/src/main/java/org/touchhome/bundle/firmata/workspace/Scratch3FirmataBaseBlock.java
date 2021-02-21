@@ -37,8 +37,7 @@ public abstract class Scratch3FirmataBaseBlock extends Scratch3ExtensionBlocks {
         super(color, entityContext, bundleEntryPoint, idSuffix);
         this.entityContext = entityContext;
         this.broadcastLockManager = broadcastLockManager;
-        this.firmataIdMenu = MenuBlock.ofServer(FIRMATA_ID_MENU, "rest/item/type/" + FirmataBaseEntity.class.getSimpleName(),
-                "Select device", "-");
+        this.firmataIdMenu = MenuBlock.ofServerItems(FIRMATA_ID_MENU, FirmataBaseEntity.class);
     }
 
     static Integer getPin(WorkspaceBlock workspaceBlock, MenuBlock.ServerMenuBlock menuBlock) {
@@ -69,8 +68,7 @@ public abstract class Scratch3FirmataBaseBlock extends Scratch3ExtensionBlocks {
 
     @SneakyThrows
     <T> T execute(WorkspaceBlock workspaceBlock, boolean waitDeviceForReady, ThrowingFunction<FirmataBaseEntity, T, Exception> consumer) {
-        String firmataId = workspaceBlock.getMenuValue(FIRMATA, this.firmataIdMenu);
-        FirmataBaseEntity entity = entityContext.getEntity(firmataId);
+        FirmataBaseEntity entity = workspaceBlock.getMenuValueEntity(FIRMATA, this.firmataIdMenu);
 
         if (entity != null && entity.getJoined() == Status.ONLINE) {
             return consumer.apply(entity);

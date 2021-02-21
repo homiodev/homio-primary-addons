@@ -8,4 +8,9 @@ public class CloudServerRestartSetting implements SettingPluginButton {
     public int order() {
         return 10;
     }
+
+    @Override
+    public String getIcon() {
+        return "fas fa-power-off";
+    }
 }

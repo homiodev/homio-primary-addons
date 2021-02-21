@@ -29,9 +29,9 @@
 
 package org.touchhome.bundle.arduino.avr;
 
-import java.util.Comparator;
-
 import processing.app.packages.UserLibrary;
+
+import java.util.Comparator;
 
 public class LibraryOfSameTypeComparator implements Comparator<UserLibrary> {
 

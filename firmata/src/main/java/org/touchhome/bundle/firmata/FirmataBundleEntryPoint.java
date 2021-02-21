@@ -37,32 +37,6 @@ public class FirmataBundleEntryPoint implements BundleEntryPoint {
     @Getter
     private final FirmataCommandPlugins firmataCommandPlugins;
 
-    public void init() {
-        restartFirmataProviders();
-        this.entityContext.event().addEntityUpdateListener(FirmataBaseEntity.class, "firmata-restart-comm-listen", FirmataBaseEntity::restartCommunicator);
-
-        this.entityContext.udp().listenUdp("listen-firmata-udp", null, 8266, (datagramPacket, payload) -> {
-            if (payload.startsWith("th:")) {
-                String[] parts = payload.split(":");
-                if (parts.length == 3) {
-                    foundController(entityContext, parts[1].trim(), parts[2].trim(), datagramPacket.getAddress().getHostAddress(), null);
-                    return;
-                }
-            }
-            log.warn("Got udp notification on port 8266 with unknown payload: <{}>", payload);
-        });
-
-        // ping firmata device if live status is online
-        this.entityContext.bgp().schedule("firmata-device-ping", 3, TimeUnit.MINUTES, () -> {
-            for (FirmataBaseEntity<?> firmataBaseEntity : entityContext.findAll(FirmataBaseEntity.class)) {
-                if (firmataBaseEntity.getJoined() == Status.ONLINE) {
-                    log.debug("Ping firmata device: <{}>", firmataBaseEntity.getTitle());
-                    firmataBaseEntity.getDevice().sendMessage(SYSEX_PING);
-                }
-            }
-        }, true);
-    }
-
     // this method fires only from devices that support internet access
     public static boolean foundController(EntityContext entityContext, String board, String deviceID, String hostAddress, String headerConfirmItemsKey) {
         // check if we already have firmata device with deviceID
@@ -115,6 +89,32 @@ public class FirmataBundleEntryPoint implements BundleEntryPoint {
                     new UdpPayload(hostAddress, deviceID == null ? null : Short.parseShort(deviceID), board));
             return true;
         }
+    }
+
+    public void init() {
+        restartFirmataProviders();
+        this.entityContext.event().addEntityUpdateListener(FirmataBaseEntity.class, "firmata-restart-comm-listen", FirmataBaseEntity::restartCommunicator);
+
+        this.entityContext.udp().listenUdp("listen-firmata-udp", null, 8266, (datagramPacket, payload) -> {
+            if (payload.startsWith("th:")) {
+                String[] parts = payload.split(":");
+                if (parts.length == 3) {
+                    foundController(entityContext, parts[1].trim(), parts[2].trim(), datagramPacket.getAddress().getHostAddress(), null);
+                    return;
+                }
+            }
+            log.warn("Got udp notification on port 8266 with unknown payload: <{}>", payload);
+        });
+
+        // ping firmata device if live status is online
+        this.entityContext.bgp().schedule("firmata-device-ping", 3, TimeUnit.MINUTES, () -> {
+            for (FirmataBaseEntity<?> firmataBaseEntity : entityContext.findAll(FirmataBaseEntity.class)) {
+                if (firmataBaseEntity.getJoined() == Status.ONLINE) {
+                    log.debug("Ping firmata device: <{}>", firmataBaseEntity.getTitle());
+                    firmataBaseEntity.getDevice().sendMessage(SYSEX_PING);
+                }
+            }
+        }, true);
     }
 
     private void restartFirmataProviders() {

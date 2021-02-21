@@ -8,6 +8,7 @@ import com.zsmartsystems.zigbee.zcl.clusters.onoff.ZclOnOffCommand;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanEntity;
 import org.touchhome.bundle.api.util.UpdatableValue;
@@ -15,6 +16,7 @@ import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
+import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.ZigBeeNodeDescription;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
@@ -30,7 +32,8 @@ import java.util.stream.Collectors;
 import static org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlocks.*;
 
 @Getter
-final class Scratch3ZigBeeButtonsBlocks {
+@Component
+final class Scratch3ZigBeeButtonsBlocks extends Scratch3ZigBeeExtensionBlocks {
 
     private static final String BUTTON_ENDPOINT = "BUTTON_ENDPOINT";
     private static final String DOUBLE_BUTTON_SENSOR = "DOUBLE_BUTTON_SENSOR";
@@ -53,7 +56,9 @@ final class Scratch3ZigBeeButtonsBlocks {
 
     private Map<String, UpdatableValue<Boolean>> statelessButtonStates = new HashMap<>();
 
-    Scratch3ZigBeeButtonsBlocks(EntityContext entityContext, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
+    Scratch3ZigBeeButtonsBlocks(EntityContext entityContext, ZigBeeBundleEntryPoint zigBeeBundleEntryPoint,
+                                ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
+        super("#A3623C", entityContext, zigBeeBundleEntryPoint, "btn");
         this.entityContext = entityContext;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
 

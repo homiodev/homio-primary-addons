@@ -24,7 +24,7 @@ public class FirmataController {
 
     private final EntityContext entityContext;
 
-    @GetMapping("onewire/address")
+    @GetMapping("/onewire/address")
     public Collection<OptionModel> getOneWireAddress(
             @RequestParam(name = "family", required = false) Byte family,
             @RequestParam(name = FIRMATA_ID_MENU, required = false) String firmataIdMenu,
@@ -53,7 +53,7 @@ public class FirmataController {
         return Collections.emptyList();
     }
 
-    @GetMapping("pin")
+    @GetMapping("/pin")
     public Collection<OptionModel> getAllPins(@RequestParam(name = FIRMATA_ID_MENU, required = false) String firmataIdMenu) {
         return this.getPins(null, firmataIdMenu);
     }

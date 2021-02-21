@@ -126,7 +126,8 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
             if (isLog) {
                 log.debug("{}: ZigBee saving network state complete.", node.getIeeeAddress());
             }
-            writer.close(); // do not delete this
+            // ensure writer is closed. somehow try with resources not closes writer
+            writer.close(); // do not delete this!!!!!!!
         } catch (Exception e) {
             log.error("{}: Error writing network state: ", node.getIeeeAddress(), e);
         }

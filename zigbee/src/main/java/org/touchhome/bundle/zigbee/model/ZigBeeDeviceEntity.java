@@ -39,7 +39,8 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 @Setter
 @Entity
 @Accessors(chain = true)
-@UISidebarMenu(icon = "fas fa-bezier-curve", parent = UISidebarMenu.TopSidebarMenu.HARDWARE, bg = "#de9ed7", order = 5)
+@UISidebarMenu(icon = "fas fa-bezier-curve", parent = UISidebarMenu.TopSidebarMenu.HARDWARE, bg = "#de9ed7",
+        order = 5, overridePath = "zigbee")
 public final class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> {
 
     public static final String PREFIX = "zb_";

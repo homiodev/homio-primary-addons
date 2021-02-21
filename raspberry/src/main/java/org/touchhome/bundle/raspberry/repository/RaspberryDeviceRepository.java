@@ -5,20 +5,12 @@ import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.OptionModel;
-import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanEntity;
-import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanGroupEntity;
 import org.touchhome.bundle.api.repository.AbstractRepository;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.api.workspace.HasWorkspaceVariableLinkAbility;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
 import org.touchhome.bundle.raspberry.model.RaspberryDeviceEntity;
 import org.touchhome.bundle.raspberry.workspace.Scratch3RaspberryBlocks;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Repository
 public class RaspberryDeviceRepository extends AbstractRepository<RaspberryDeviceEntity> implements HasWorkspaceVariableLinkAbility {

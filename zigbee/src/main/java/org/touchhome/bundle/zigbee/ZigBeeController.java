@@ -22,15 +22,24 @@ public class ZigBeeController {
     private final EntityContext entityContext;
     private final ZigBeeBundleEntryPoint zigbeeBundleContext;
 
+    public static boolean containsAny(int[] array, Integer value) {
+        for (int i : array) {
+            if (i == value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @GetMapping("option/zcl/{clusterId}")
     public Collection<OptionModel> filterByClusterId(@PathVariable("clusterId") int clusterId,
-                                                @RequestParam(value = "includeClusterName", required = false) boolean includeClusterName) {
+                                                     @RequestParam(value = "includeClusterName", required = false) boolean includeClusterName) {
         return filterByClusterIdAndEndpointCount(clusterId, null, includeClusterName);
     }
 
     @GetMapping("option/clusterName/{clusterName}")
     public Collection<OptionModel> filterByClusterName(@PathVariable("clusterName") String clusterName,
-                                            @RequestParam(value = "includeClusterName", required = false) boolean includeClusterName) {
+                                                       @RequestParam(value = "includeClusterName", required = false) boolean includeClusterName) {
         List<OptionModel> list = new ArrayList<>();
         for (ZigBeeDevice zigBeeDevice : zigbeeBundleContext.getCoordinatorHandler().getZigBeeDevices().values()) {
             ZigBeeConverterEndpoint zigBeeConverterEndpoint = zigBeeDevice.getZigBeeConverterEndpoints().keySet()
@@ -99,14 +108,5 @@ public class ZigBeeController {
             }
         }
         return endpoints;
-    }
-
-    public static boolean containsAny(int[] array, Integer value) {
-        for (int i : array) {
-            if (i == value) {
-                return true;
-            }
-        }
-        return false;
     }
 }

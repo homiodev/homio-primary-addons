@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.UserEntity;
-import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.scratch.*;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
+import org.touchhome.bundle.api.workspace.WorkspaceBlock;
+import org.touchhome.bundle.api.workspace.scratch.*;
 import org.touchhome.bundle.telegram.TelegramEntryPoint;
 import org.touchhome.bundle.telegram.service.TelegramService;
 
@@ -57,8 +57,6 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         this.sendMessageCommand.addArgument(MESSAGE, ArgumentType.string);
         this.sendMessageCommand.addArgument(USER, this.telegramUsersMenu);
         this.sendMessageCommand.addArgument(LEVEL, this.levelMenu);
-
-        this.postConstruct();
     }
 
     private static String escape(String text) {

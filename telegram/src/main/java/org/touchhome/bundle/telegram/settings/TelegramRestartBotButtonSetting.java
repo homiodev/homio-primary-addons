@@ -8,4 +8,9 @@ public class TelegramRestartBotButtonSetting implements SettingPluginButton {
     public int order() {
         return 300;
     }
+
+    @Override
+    public String getIcon() {
+        return "fas fa-power-off";
+    }
 }

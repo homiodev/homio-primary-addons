@@ -43,7 +43,6 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
     private final BroadcastLockManager broadcastLockManager;
     private final ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener;
     private ZigBeeCoordinatorHandler coordinatorHandler;
-    private Scratch3ZigBeeButtonsBlocks scratch3ZigBeeButtonsBlocks;
 
     public Scratch3ZigBeeBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
                                 ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
@@ -59,21 +58,15 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
             }
         });
 
-        this.scratch3ZigBeeButtonsBlocks = new Scratch3ZigBeeButtonsBlocks(entityContext, zigBeeDeviceUpdateValueListener);
-
-        // Menu
-
         // Items
-        this.whenEventReceived = Scratch3Block.ofHandler(10, "when_event_received", BlockType.hat, "when got [EVENT] event", this::whenEventReceivedHandler);
+        this.whenEventReceived = Scratch3Block.ofHandler(10, "when_event_received", BlockType.hat,
+                "when got [EVENT] event", this::whenEventReceivedHandler);
         this.whenEventReceived.addArgument(EVENT, ArgumentType.reference);
 
-        this.timeSinceLastEvent = Scratch3Block.ofEvaluate(20, "time_since_last_event", BlockType.reporter, "time since last event [EVENT]", this::timeSinceLastEventEvaluate);
+        this.timeSinceLastEvent = Scratch3Block.ofEvaluate(20, "time_since_last_event", BlockType.reporter,
+                "time since last event [EVENT]", this::timeSinceLastEventEvaluate);
         this.timeSinceLastEvent.addArgument(EVENT, ArgumentType.reference);
         this.timeSinceLastEvent.appendSpace();
-
-        this.postConstruct(this.scratch3ZigBeeButtonsBlocks);
-
-        // descriptions
     }
 
     static void linkVariable(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
@@ -205,10 +198,8 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
     }
 
     private void whenEventReceivedHandler(WorkspaceBlock workspaceBlock) {
-        WorkspaceBlock substack = workspaceBlock.getNext();
-        if (substack != null) {
-            this.handleWhenEventReceived(workspaceBlock, (zigBeeDeviceEntity, ignore) -> substack.handle());
-        }
+        WorkspaceBlock substack = workspaceBlock.getNextOrThrow();
+        this.handleWhenEventReceived(workspaceBlock, (zigBeeDeviceEntity, ignore) -> substack.handle());
     }
 
     private long timeSinceLastEventEvaluate(WorkspaceBlock workspaceBlock) {

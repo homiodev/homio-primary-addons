@@ -1,6 +1,7 @@
 {
   "WORKSPACE": {
     "zigbee": "ZigBee",
+    "zigbee-btn": "ZigBee buttons",
     "zigbee-sensor": "ZigBee sensors"
   },
   "placeholder": {
@@ -22,7 +23,6 @@
     "name": "ZigBee",
     "device_reinitialise": "Node rediscovery started",
     "start_scan": "ZigBee discovery started",
-    "extensionDescription": "ZigBee extension",
     "OFFLINE_COMMS_FAIL": "Communication failed",
     "OFFLINE_BAD_RESPONSE": "Bad response",
     "OFFLINE_INITIALIZE_FAIL": "Initialize failed",

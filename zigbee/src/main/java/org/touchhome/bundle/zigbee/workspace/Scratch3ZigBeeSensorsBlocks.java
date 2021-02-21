@@ -4,13 +4,13 @@ import com.zsmartsystems.zigbee.zcl.clusters.*;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.measure.OnOffType;
+import org.touchhome.bundle.api.state.OnOffType;
+import org.touchhome.bundle.api.workspace.BroadcastLock;
+import org.touchhome.bundle.api.workspace.BroadcastLockManager;
+import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
-import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.BroadcastLock;
-import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
@@ -62,7 +62,6 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
                                        ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
                                        ZigBeeBundleEntryPoint zigBeeBundleEntryPoint) {
         super("#8a6854", entityContext, zigBeeBundleEntryPoint, "sensor");
-        setName("ZigBee Sensors");
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
         this.entityContext.setting().listenValue(ZigBeeStatusSetting.class, "zb-wp-sensor-status", status -> {
@@ -145,8 +144,6 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
         this.alarmSensorEvent = Scratch3Block.ofHandler(90, "when_alarm_event_detected", BlockType.hat,
                 "alarm [ALARM_SENSOR] detected", this::whenAlarmEventDetectedHandler);
         this.alarmSensorEvent.addArgument(ALARM_SENSOR, this.alarmSensorMenu);
-
-        this.postConstruct();
     }
 
     private void whenAlarmEventDetectedHandler(WorkspaceBlock workspaceBlock) {
