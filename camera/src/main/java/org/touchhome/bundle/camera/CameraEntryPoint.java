@@ -11,6 +11,7 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.netty.NettyUtils;
 import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.handler.BaseCameraHandler;
+import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import java.lang.reflect.Method;
@@ -25,9 +26,6 @@ public class CameraEntryPoint implements BundleEntryPoint {
 
     @SneakyThrows
     private static boolean detectIfRequireRestartHandler(Object oldCameraEntity, Object cameraEntity) {
-        if (oldCameraEntity == null) { // in case if updated by delayed
-            return false;
-        }
         Method[] methods = MethodUtils.getMethodsWithAnnotation(cameraEntity.getClass(), RestartHandlerOnChange.class, true, false);
         for (Method method : methods) {
             Object newValue = MethodUtils.invokeMethod(cameraEntity, method.getName());
@@ -69,7 +67,9 @@ public class CameraEntryPoint implements BundleEntryPoint {
             }
             // change camera name if possible
             if (!Objects.equals(cameraEntity.getName(), oldCameraEntity.getName())) {
-                cameraHandler.changeName(cameraEntity.getName());
+                if (cameraHandler instanceof OnvifCameraHandler) {
+                    ((OnvifCameraHandler) cameraHandler).getOnvifDeviceState().getDevices().setName(cameraEntity.getName());
+                }
             }
         });
 

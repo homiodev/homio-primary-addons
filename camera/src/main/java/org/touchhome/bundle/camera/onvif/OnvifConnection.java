@@ -10,7 +10,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -18,7 +17,7 @@ import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.state.ObjectType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraActions;
+import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.util.Helper;
 
 import java.net.InetSocketAddress;
@@ -40,10 +39,10 @@ import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 public class OnvifConnection {
     private Bootstrap bootstrap;
     private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
-    private String ipAddress = "";
-    private String user = "";
-    private String password = "";
-    private int onvifPort = 80;
+    private String ipAddress;
+    private String user;
+    private String password;
+    private int onvifPort;
     private String deviceXAddr = "/onvif/device_service";
     private String eventXAddr = "/onvif/device_service";
     private String mediaXAddr = "/onvif/device_service";
@@ -56,7 +55,7 @@ public class OnvifConnection {
     private String snapshotUri = "";
     private String rtspUri = "";
     @Setter
-    private OnvifCameraActions onvifCameraActions;
+    private OnvifCameraHandler onvifCameraActions;
     private boolean usingEvents = false;
     // These hold the cameras PTZ position in the range that the camera uses, ie
     // mine is -1 to +1
@@ -80,10 +79,9 @@ public class OnvifConnection {
     private List<String> presetNames = new LinkedList<>();
     private List<String> mediaProfileTokens = new LinkedList<>();
     private boolean ptzDevice = true;
-    private GetDeviceInformationResponse deviceInformation;
     private String name;
 
-    public OnvifConnection(OnvifCameraActions onvifCameraActions, String ip, int port, String user, String password) {
+    public OnvifConnection(OnvifCameraHandler onvifCameraActions, String ip, int port, String user, String password) {
         this.onvifCameraActions = onvifCameraActions;
         this.user = user;
         this.password = password;
@@ -91,8 +89,8 @@ public class OnvifConnection {
         this.onvifPort = port;
     }
 
-    String getXml(RequestType requestType) {
-        switch (requestType) {
+    String getXml(DeviceRequestType deviceRequestType) {
+        switch (deviceRequestType) {
             case AbsoluteMove:
                 return "<AbsoluteMove xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex) + "</ProfileToken><Position><PanTilt x=\""
@@ -189,11 +187,8 @@ public class OnvifConnection {
             case GetPresets:
                 return "<GetPresets xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"><ProfileToken>"
                         + mediaProfileTokens.get(mediaProfileIndex) + "</ProfileToken></GetPresets>";
-            case SetScopes:
-                return "<SetScopes xmlns=\"http://www.onvif.org/ver10/device/wsdl\"><Scopes>"
-                        + "<ScopeItem>odm:name:camera test</ScopeItem>" + "</Scopes></SetScopes>";
             default:
-                return requestType.request;
+                return deviceRequestType.request;
         }
     }
 
@@ -203,58 +198,53 @@ public class OnvifConnection {
         if (message.contains("PullMessagesResponse")) {
             eventReceived(message);
         } else if (message.contains("RenewResponse")) {
-            sendOnvifRequest(requestBuilder(RequestType.PullMessages, subscriptionXAddr));
+            sendOnvifRequest(requestBuilder(DeviceRequestType.PullMessages, subscriptionXAddr));
         } else if (message.contains("GetSystemDateAndTimeResponse")) {// 1st to be sent.
             isConnected = true;
-            sendOnvifRequest(requestBuilder(RequestType.GetCapabilities, deviceXAddr));
+            sendOnvifRequest(requestBuilder(DeviceRequestType.GetCapabilities, deviceXAddr));
             parseDateAndTime(message);
         } else if (message.contains("GetCapabilitiesResponse")) {// 2nd to be sent.
             parseXAddr(message);
-            sendOnvifRequest(requestBuilder(RequestType.GetProfiles, mediaXAddr));
+            sendOnvifRequest(requestBuilder(DeviceRequestType.GetProfiles, mediaXAddr));
         } else if (message.contains("GetProfilesResponse")) {// 3rd to be sent.
             parseProfiles(message);
-            sendOnvifRequest(requestBuilder(RequestType.GetSnapshotUri, mediaXAddr));
-            sendOnvifRequest(requestBuilder(RequestType.GetStreamUri, mediaXAddr));
+            sendOnvifRequest(requestBuilder(DeviceRequestType.GetSnapshotUri, mediaXAddr));
+            sendOnvifRequest(requestBuilder(DeviceRequestType.GetStreamUri, mediaXAddr));
             if (ptzDevice) {
-                sendPTZRequest(RequestType.GetNodes);
+                sendPTZRequest(DeviceRequestType.GetNodes);
             }
             if (usingEvents) {// stops API cameras from getting sent ONVIF events.
-                sendOnvifRequest(requestBuilder(RequestType.GetEventProperties, eventXAddr));
-                sendOnvifRequest(requestBuilder(RequestType.GetServiceCapabilities, eventXAddr));
+                sendOnvifRequest(requestBuilder(DeviceRequestType.GetEventProperties, eventXAddr));
+                sendOnvifRequest(requestBuilder(DeviceRequestType.GetServiceCapabilities, eventXAddr));
             }
         } else if (message.contains("GetServiceCapabilitiesResponse")) {
             if (message.contains("WSSubscriptionPolicySupport=\"true\"")) {
-                sendOnvifRequest(requestBuilder(RequestType.Subscribe, eventXAddr));
+                sendOnvifRequest(requestBuilder(DeviceRequestType.Subscribe, eventXAddr));
             }
         } else if (message.contains("GetEventPropertiesResponse")) {
-            sendOnvifRequest(requestBuilder(RequestType.CreatePullPointSubscription, eventXAddr));
+            sendOnvifRequest(requestBuilder(DeviceRequestType.CreatePullPointSubscription, eventXAddr));
         } else if (message.contains("SubscribeResponse")) {
             log.info("Onvif Subscribe appears to be working for Alarms/Events.");
         } else if (message.contains("CreatePullPointSubscriptionResponse")) {
             subscriptionXAddr = removeIPfromUrl(Helper.fetchXML(message, "SubscriptionReference>", "Address>"));
             log.debug("subscriptionXAddr={}", subscriptionXAddr);
-            sendOnvifRequest(requestBuilder(RequestType.PullMessages, subscriptionXAddr));
+            sendOnvifRequest(requestBuilder(DeviceRequestType.PullMessages, subscriptionXAddr));
         } else if (message.contains("GetStatusResponse")) {
             processPTZLocation(message);
         } else if (message.contains("GetPresetsResponse")) {
             parsePresets(message);
         } else if (message.contains("GetConfigurationsResponse")) {
-            sendPTZRequest(RequestType.GetPresets);
+            sendPTZRequest(DeviceRequestType.GetPresets);
             ptzConfigToken = Helper.fetchXML(message, "PTZConfiguration", "token=\"");
             log.debug("ptzConfigToken={}", ptzConfigToken);
-            sendPTZRequest(RequestType.GetConfigurationOptions);
+            sendPTZRequest(DeviceRequestType.GetConfigurationOptions);
         } else if (message.contains("GetNodesResponse")) {
-            sendPTZRequest(RequestType.GetStatus);
+            sendPTZRequest(DeviceRequestType.GetStatus);
             ptzNodeToken = Helper.fetchXML(message, "", "token=\"");
             log.debug("ptzNodeToken={}", ptzNodeToken);
-            sendPTZRequest(RequestType.GetConfigurations);
-        } else if (message.contains("GetDeviceInformationResponse")) {
-            this.deviceInformation = new GetDeviceInformationResponse(message);
-            this.onvifCameraActions.onDeviceInformationReceived(this.deviceInformation);
-            log.debug("GetDeviceInformationResponse received");
+            sendPTZRequest(DeviceRequestType.GetConfigurations);
         } else if (message.contains("GetScopesResponse")) {
             this.name = URLDecoder.decode(Helper.fetchXML(message, "odm:name:", ""), "UTF-8");
-            this.onvifCameraActions.onCameraNameReceived(this.name);
         } else if (message.contains("GetSnapshotUriResponse")) {
             snapshotUri = removeIPfromUrl(Helper.fetchXML(message, ":MediaUri", ":Uri"));
             log.debug("GetSnapshotUri:{}", snapshotUri);
@@ -273,19 +263,19 @@ public class OnvifConnection {
         }
     }
 
-    public HttpRequest requestBuilder(RequestType requestType, String xAddr) {
-        log.trace("Sending ONVIF request:{}", requestType);
+    public HttpRequest requestBuilder(DeviceRequestType deviceRequestType, String xAddr) {
+        log.trace("Sending ONVIF request:{}", deviceRequestType);
         String security;
         String extraEnvelope = "";
         String headerTo = "";
-        String getXmlCache = getXml(requestType);
-        if (requestType.equals(RequestType.CreatePullPointSubscription) || requestType.equals(RequestType.PullMessages)
-                || requestType.equals(RequestType.Renew) || requestType.equals(RequestType.Unsubscribe)) {
+        String getXmlCache = getXml(deviceRequestType);
+        if (deviceRequestType.equals(DeviceRequestType.CreatePullPointSubscription) || deviceRequestType.equals(DeviceRequestType.PullMessages)
+                || deviceRequestType.equals(DeviceRequestType.Renew) || deviceRequestType.equals(DeviceRequestType.Unsubscribe)) {
             headerTo = "<a:To s:mustUnderstand=\"1\">http://" + ipAddress + xAddr + "</a:To>";
             extraEnvelope = " xmlns:a=\"http://www.w3.org/2005/08/addressing\"";
         }
         String headers;
-        if (!password.isEmpty() && !requestType.equals(RequestType.GetSystemDateAndTime)) {
+        if (!password.isEmpty() && !deviceRequestType.equals(DeviceRequestType.GetSystemDateAndTime)) {
             String nonce = createNonce();
             String dateTime = getUTCdateTime();
             String digest = createDigest(nonce, dateTime);
@@ -302,9 +292,9 @@ public class OnvifConnection {
             headers = "";
         }
         FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"), xAddr);
-        String actionString = Helper.fetchXML(getXmlCache, requestType.toString(), "xmlns=\"");
+        String actionString = Helper.fetchXML(getXmlCache, deviceRequestType.toString(), "xmlns=\"");
         request.headers().add("Content-Type",
-                "application/soap+xml; charset=utf-8; action=\"" + actionString + "/" + requestType + "\"");
+                "application/soap+xml; charset=utf-8; action=\"" + actionString + "/" + deviceRequestType + "\"");
         request.headers().add("Charset", "utf-8");
         if (onvifPort != 80) {
             request.headers().set("Host", ipAddress + ":" + onvifPort);
@@ -317,7 +307,7 @@ public class OnvifConnection {
                 + headers
                 + "<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
                 + getXmlCache + "</s:Body></s:Envelope>";
-        request.headers().add("SOAPAction", "\"" + actionString + "/" + requestType + "\"");
+        request.headers().add("SOAPAction", "\"" + actionString + "/" + deviceRequestType + "\"");
         ByteBuf bbuf = Unpooled.copiedBuffer(fullXml, StandardCharsets.UTF_8);
         request.headers().set("Content-Length", bbuf.readableBytes());
         request.content().clear().writeBytes(bbuf);
@@ -450,30 +440,15 @@ public class OnvifConnection {
         return this;
     }
 
-   /* void getIPandPortFromUrl(String url) {
-        int beginIndex = url.indexOf(":");
-        int endIndex = url.indexOf("/", beginIndex);
-        if (beginIndex >= 0 && endIndex == -1) {// 192.168.1.1:8080
-            ipAddress = url.substring(0, beginIndex);
-            onvifPort = Integer.parseInt(url.substring(beginIndex + 1));
-        } else if (beginIndex >= 0 && endIndex > beginIndex) {// 192.168.1.1:8080/foo/bar
-            ipAddress = url.substring(0, beginIndex);
-            onvifPort = Integer.parseInt(url.substring(beginIndex + 1, endIndex));
-        } else {// 192.168.1.1
-            ipAddress = url;
-            log.debug("No Onvif Port found when parsing:{}", url);
-        }
-    }*/
-
     public void gotoPreset(int index) {
         if (ptzDevice) {
             if (index > 0) {// 0 is reserved for HOME as cameras seem to start at preset 1.
                 if (presetTokens.isEmpty()) {
                     log.warn("Camera did not report any ONVIF preset locations, updating preset tokens now.");
-                    sendPTZRequest(RequestType.GetPresets);
+                    sendPTZRequest(DeviceRequestType.GetPresets);
                 } else {
                     presetTokenIndex = index - 1;
-                    sendPTZRequest(RequestType.GotoPreset);
+                    sendPTZRequest(DeviceRequestType.GotoPreset);
                 }
             }
         }
@@ -558,7 +533,7 @@ public class OnvifConnection {
                 break;
             default:
         }
-        sendOnvifRequest(requestBuilder(RequestType.Renew, subscriptionXAddr));
+        sendOnvifRequest(requestBuilder(DeviceRequestType.Renew, subscriptionXAddr));
     }
 
     public boolean supportsPTZ() {
@@ -567,7 +542,7 @@ public class OnvifConnection {
 
     public void getStatus() {
         if (ptzDevice) {
-            sendPTZRequest(RequestType.GetStatus);
+            sendPTZRequest(DeviceRequestType.GetStatus);
         }
     }
 
@@ -606,7 +581,7 @@ public class OnvifConnection {
 
     public void absoluteMove() { // Camera wont move until PTZ values are set, then call this.
         if (ptzDevice) {
-            sendPTZRequest(RequestType.AbsoluteMove);
+            sendPTZRequest(DeviceRequestType.AbsoluteMove);
         }
     }
 
@@ -697,21 +672,21 @@ public class OnvifConnection {
         }
     }
 
-    public void sendPTZRequest(RequestType requestType) {
-        sendOnvifRequest(requestBuilder(requestType, ptzXAddr));
+    public void sendPTZRequest(DeviceRequestType deviceRequestType) {
+        sendOnvifRequest(requestBuilder(deviceRequestType, ptzXAddr));
     }
 
-    public void sendOnvifDeviceServiceRequest(RequestType requestType) {
-        sendOnvifRequest(requestBuilder(requestType, deviceXAddr));
+    public void sendOnvifDeviceServiceRequest(DeviceRequestType deviceRequestType) {
+        sendOnvifRequest(requestBuilder(deviceRequestType, deviceXAddr));
     }
 
-    public void sendEventRequest(RequestType requestType) {
-        sendOnvifRequest(requestBuilder(requestType, eventXAddr));
+    public void sendEventRequest(DeviceRequestType deviceRequestType) {
+        sendOnvifRequest(requestBuilder(deviceRequestType, eventXAddr));
     }
 
     public void connect(boolean useEvents) {
         if (!isConnected) {
-            sendOnvifRequest(requestBuilder(RequestType.GetSystemDateAndTime, deviceXAddr));
+            sendOnvifRequest(requestBuilder(DeviceRequestType.GetSystemDateAndTime, deviceXAddr));
             usingEvents = useEvents;
         }
     }
@@ -722,7 +697,7 @@ public class OnvifConnection {
 
     public void disconnect() {
         if (usingEvents && isConnected) {
-            sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
+            sendOnvifRequest(requestBuilder(DeviceRequestType.Unsubscribe, subscriptionXAddr));
             try {
                 Thread.sleep(500);
             } catch (InterruptedException ignored) {
@@ -744,7 +719,7 @@ public class OnvifConnection {
     }
 
     @AllArgsConstructor
-    public enum RequestType {
+    public enum DeviceRequestType {
         AbsoluteMove(""),
         AddPTZConfiguration(""),
         ContinuousMoveLeft(""),
@@ -781,31 +756,50 @@ public class OnvifConnection {
         GetStatus(""),
         GotoPreset(""),
         GetPresets(""),
-        SystemReboot("<SystemReboot xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>"),
-        GetScopes("<GetScopes xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>"),
-        SetScopes("");
+        GetScopes("<GetScopes xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>");
 
         private final String request;
     }
 
-    @Getter
-    public static class GetDeviceInformationResponse {
-        private String hardwareID;
-        private String serialNumber;
-        private String firmwareVersion;
-        private String model;
-        private String manufacturer;
+    @AllArgsConstructor
+    public enum PtzRequestType {
+        AbsoluteMove(""),
+        AddPTZConfiguration(""),
+        ContinuousMoveLeft(""),
+        ContinuousMoveRight(""),
+        ContinuousMoveUp(""),
+        ContinuousMoveDown(""),
+        Stop(""),
+        ContinuousMoveIn(""),
+        ContinuousMoveOut(""),
+        CreatePullPointSubscription("<CreatePullPointSubscription xmlns=\"http://www.onvif.org/ver10/events/wsdl\"><InitialTerminationTime>PT600S</InitialTerminationTime></CreatePullPointSubscription>"),
+        GetCapabilities("<GetCapabilities xmlns=\"http://www.onvif.org/ver10/device/wsdl\"><Category>All</Category></GetCapabilities>"),
+        GetDeviceInformation("<GetDeviceInformation xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>"),
+        GetProfiles("<GetProfiles xmlns=\"http://www.onvif.org/ver10/media/wsdl\"/>"),
+        GetServiceCapabilities("<GetServiceCapabilities xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"></GetServiceCapabilities>"),
+        GetSnapshotUri(""),
+        GetStreamUri(""),
+        GetSystemDateAndTime("<GetSystemDateAndTime xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>"),
+        Subscribe(""),
+        Unsubscribe("<Unsubscribe xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"></Unsubscribe>"),
+        PullMessages("<PullMessages xmlns=\"http://www.onvif.org/ver10/events/wsdl\"><Timeout>PT8S</Timeout><MessageLimit>1</MessageLimit></PullMessages>"),
+        GetEventProperties("<GetEventProperties xmlns=\"http://www.onvif.org/ver10/events/wsdl\"/>"),
+        RelativeMoveLeft(""),
+        RelativeMoveRight(""),
+        RelativeMoveUp(""),
+        RelativeMoveDown(""),
+        RelativeMoveIn(""),
+        RelativeMoveOut(""),
+        Renew("<Renew xmlns=\"http://docs.oasis-open.org/wsn/b-2\"><TerminationTime>PT1M</TerminationTime></Renew>"),
+        GetConfigurations("<GetConfigurations xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"></GetConfigurations>"),
+        GetConfigurationOptions(""),
+        GetConfiguration(""),
+        SetConfiguration(""),
+        GetNodes("<GetNodes xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"></GetNodes>"),
+        GetStatus(""),
+        GotoPreset(""),
+        GetPresets("");
 
-        public GetDeviceInformationResponse(String message) {
-            this.hardwareID = Helper.fetchXML(message, "HardwareId", ">");
-            this.serialNumber = Helper.fetchXML(message, "SerialNumber", ">");
-            this.firmwareVersion = Helper.fetchXML(message, "FirmwareVersion", ">");
-            this.model = Helper.fetchXML(message, "Model", ">");
-            this.manufacturer = Helper.fetchXML(message, "Manufacturer", ">");
-        }
-
-        public String getIeeeAddress() {
-            return model + "~" + serialNumber;
-        }
+        private final String request;
     }
 }

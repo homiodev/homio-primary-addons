@@ -1,6 +1,7 @@
 package org.touchhome.bundle.camera.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.onvif.soap.OnvifDeviceState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -15,9 +16,7 @@ import org.touchhome.bundle.api.ui.field.action.ActionInputParameter;
 import org.touchhome.bundle.api.ui.field.action.HasDynamicContextMenuActions;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.action.impl.DynamicContextMenuAction;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraActions;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
-import org.touchhome.bundle.camera.onvif.OnvifConnection;
 import org.touchhome.bundle.camera.onvif.util.OnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
@@ -235,7 +234,7 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
     }
 
     public void tryUpdateData(EntityContext entityContext, String ip, Integer port, String name) {
-        if (!getIp().equals(ip) || getOnvifPort() != port) {
+        if (!getIp().equals(ip) || getOnvifPort() != port || !getName().equals(name)) {
             if (!getIp().equals(ip)) {
                 log.info("Onvif camera <{}> changed ip address from <{}> to <{}>", getTitle(), getIp(), ip);
             }
@@ -251,8 +250,8 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
 
     @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off")
     public ActionResponseModel reboot() {
-        this.getCameraHandler().reboot();
-        return null;
+        String response = this.getCameraHandler().getOnvifDeviceState().getDevices().reboot();
+        return ActionResponseModel.showSuccess(response);
     }
 
     @Override
@@ -266,33 +265,18 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
             String user = json.getString("user");
             String password = json.getString("pwd");
             OnvifCameraEntity entity = this;
-            OnvifConnection onvifConnection = new OnvifConnection(null, getIp(),  getOnvifPort(),
-                    user, password);
-            onvifConnection.setOnvifCameraActions(new OnvifCameraActions() {
-                @Override
-                public void onDeviceInformationReceived(OnvifConnection.GetDeviceInformationResponse deviceInformation) {
-                    entityContext.updateDelayed(entity, e -> e.setUser(user).setPassword(password)
-                            .setIeeeAddress(deviceInformation.getIeeeAddress()));
-                    entityContext.ui().sendSuccessMessage("Onvif camera: " + getTitle() + " authenticated successfully");
-                    onvifConnection.sendOnvifDeviceServiceRequest(OnvifConnection.RequestType.GetScopes);
-                }
-
-                @Override
-                public void cameraUnreachable(String message) {
-                    entityContext.ui().sendWarningMessage("Onvif camera: " + getTitle() + " unreachable");
-                }
-
-                @Override
-                public void cameraFaultResponse(int code, String reason) {
-                    entityContext.ui().sendWarningMessage("Onvif camera: " + getTitle() + " fault '" + code + "' response: " + reason);
-                }
-
-                @Override
-                public void onCameraNameReceived(String name) {
-                    entityContext.updateDelayed(entity, e -> e.setName(name));
-                }
-            });
-            onvifConnection.sendOnvifDeviceServiceRequest(OnvifConnection.RequestType.GetDeviceInformation);
+            OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getIp(), getOnvifPort(), user, password);
+            try {
+                onvifDeviceState.checkForErrors();
+                entityContext.updateDelayed(entity, e ->
+                        e.setUser(user) //
+                                .setPassword(password) //
+                                .setName(onvifDeviceState.getDevices().getName())
+                                .setIeeeAddress(onvifDeviceState.getIEEEAddress()));
+                entityContext.ui().sendSuccessMessage("Onvif camera: " + getTitle() + " authenticated successfully");
+            } catch (Exception ex) {
+                entityContext.ui().sendWarningMessage("Onvif camera: " + getTitle() + " fault response: " + ex.getMessage());
+            }
         }).setIcon("fas fa-sign-in-alt");
         authAction.addInput(ActionInputParameter.text("user", getUser()));
         authAction.addInput(ActionInputParameter.text("pwd", getPassword()));

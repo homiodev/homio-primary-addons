@@ -1,5 +1,6 @@
 package org.touchhome.bundle.camera.handler.impl;
 
+import de.onvif.soap.OnvifDeviceState;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -62,7 +63,7 @@ import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
  * responsible for handling commands, which are sent to one of the channels.
  */
 @Log4j2
-public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntity> implements OnvifCameraActions {
+public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntity> {
 
     // ChannelGroup is thread safe
     public final ChannelGroup mjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
@@ -94,18 +95,14 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     private boolean firstMotionAlarm = false;
     private boolean streamingSnapshotMjpeg = false;
     private boolean updateAutoFps = false;
+    @Getter
+    private OnvifDeviceState onvifDeviceState;
 
     public OnvifCameraHandler(OnvifCameraEntity cameraEntity, EntityContext entityContext) {
         super(cameraEntity, entityContext);
-    }
-
-    @Override
-    public void setCameraEntity(OnvifCameraEntity cameraEntity) {
-        super.setCameraEntity(cameraEntity);
-        if (onvifConnection == null) {
-            onvifConnection = new OnvifConnection(this, cameraEntity.getIp(),
-                    cameraEntity.getOnvifPort(), cameraEntity.getUser(), cameraEntity.getPassword());
-        }
+        this.onvifDeviceState = new OnvifDeviceState(cameraEntity.getIp(), cameraEntity.getOnvifPort(), cameraEntity.getUser(), cameraEntity.getPassword());
+        this.onvifConnection = new OnvifConnection(this, cameraEntity.getIp(),
+                cameraEntity.getOnvifPort(), cameraEntity.getUser(), cameraEntity.getPassword());
     }
 
     // false clears the stored user/pass hash, true creates the hash
@@ -524,13 +521,11 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         }
     }
 
-    @Override
     public void cameraUnreachable(String message) {
         log.warn("Camera <{}> unreachable: <{}>", getCameraEntity().getTitle(), message);
         this.disposeAndSetStatus(Status.OFFLINE, message);
     }
 
-    @Override
     public void cameraFaultResponse(int code, String reason) {
         log.warn("Onvif camera <{}> got fault response: <{} - {}>", getCameraEntity().getTitle(), code, reason);
     }
@@ -581,7 +576,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     }
 
     private void sendPTZRequest() {
-        onvifConnection.sendPTZRequest(OnvifConnection.RequestType.AbsoluteMove);
+        onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.AbsoluteMove);
     }
 
     @Override
@@ -591,11 +586,6 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         } else {
             super.startSnapshot();
         }
-    }
-
-    @Override
-    public void changeName(String name) {
-        onvifConnection.sendOnvifDeviceServiceRequest(OnvifConnection.RequestType.SetScopes);
     }
 
     @UICameraActionGetter(CHANNEL_PAN)
@@ -612,19 +602,19 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         if ("LEFT".equals(command) || "RIGHT".equals(command)) {
             if ("LEFT".equals(command)) {
                 if (cameraEntity.isPtzContinuous()) {
-                    onvifConnection.sendPTZRequest(OnvifConnection.RequestType.ContinuousMoveLeft);
+                    onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.ContinuousMoveLeft);
                 } else {
-                    onvifConnection.sendPTZRequest(OnvifConnection.RequestType.RelativeMoveLeft);
+                    onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.RelativeMoveLeft);
                 }
             } else {
                 if (cameraEntity.isPtzContinuous()) {
-                    onvifConnection.sendPTZRequest(OnvifConnection.RequestType.ContinuousMoveRight);
+                    onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.ContinuousMoveRight);
                 } else {
-                    onvifConnection.sendPTZRequest(OnvifConnection.RequestType.RelativeMoveRight);
+                    onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.RelativeMoveRight);
                 }
             }
         } else if ("OFF".equals(command)) {
-            onvifConnection.sendPTZRequest(OnvifConnection.RequestType.Stop);
+            onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.Stop);
         }
         onvifConnection.setAbsolutePan(Float.valueOf(command));
         entityContext.bgp().run("sendPTZRequest", 500, this::sendPTZRequest, false);
@@ -644,19 +634,19 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         if ("UP".equals(command) || "DOWN".equals(command)) {
             if ("UP".equals(command)) {
                 if (cameraEntity.isPtzContinuous()) {
-                    onvifConnection.sendPTZRequest(OnvifConnection.RequestType.ContinuousMoveUp);
+                    onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.ContinuousMoveUp);
                 } else {
-                    onvifConnection.sendPTZRequest(OnvifConnection.RequestType.RelativeMoveUp);
+                    onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.RelativeMoveUp);
                 }
             } else {
                 if (cameraEntity.isPtzContinuous()) {
-                    onvifConnection.sendPTZRequest(OnvifConnection.RequestType.ContinuousMoveDown);
+                    onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.ContinuousMoveDown);
                 } else {
-                    onvifConnection.sendPTZRequest(OnvifConnection.RequestType.RelativeMoveDown);
+                    onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.RelativeMoveDown);
                 }
             }
         } else if ("OFF".equals(command)) {
-            onvifConnection.sendPTZRequest(OnvifConnection.RequestType.Stop);
+            onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.Stop);
         }
         onvifConnection.setAbsoluteTilt(Float.valueOf(command));
         entityContext.bgp().run("sendPTZRequest", 500, this::sendPTZRequest, false);
@@ -676,19 +666,19 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         if ("IN".equals(command) || "OUT".equals(command)) {
             if ("IN".equals(command)) {
                 if (cameraEntity.isPtzContinuous()) {
-                    onvifConnection.sendPTZRequest(OnvifConnection.RequestType.ContinuousMoveIn);
+                    onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.ContinuousMoveIn);
                 } else {
-                    onvifConnection.sendPTZRequest(OnvifConnection.RequestType.RelativeMoveIn);
+                    onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.RelativeMoveIn);
                 }
             } else {
                 if (cameraEntity.isPtzContinuous()) {
-                    onvifConnection.sendPTZRequest(OnvifConnection.RequestType.ContinuousMoveOut);
+                    onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.ContinuousMoveOut);
                 } else {
-                    onvifConnection.sendPTZRequest(OnvifConnection.RequestType.RelativeMoveOut);
+                    onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.RelativeMoveOut);
                 }
             }
         } else if ("OFF".equals(command)) {
-            onvifConnection.sendPTZRequest(OnvifConnection.RequestType.Stop);
+            onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.Stop);
         }
         onvifConnection.setAbsoluteZoom(Float.valueOf(command));
         entityContext.bgp().run("sendPTZRequest", 500, this::sendPTZRequest, false);
@@ -696,7 +686,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
 
     @UICameraActionGetter(CHANNEL_GOTO_PRESET)
     public DecimalType getGotoPreset() {
-        onvifConnection.sendPTZRequest(OnvifConnection.RequestType.GetPresets);
+        onvifConnection.sendPTZRequest(OnvifConnection.DeviceRequestType.GetPresets);
         return new DecimalType(0); //TODO: (DecimalType) channelStates.getOrDefault(CHANNEL_GOTO_PRESET, null);
     }
 
@@ -927,10 +917,6 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         useDigestAuth = false;
         openChannels.close();
         channelTrackingMap.clear();
-    }
-
-    public void reboot() {
-        onvifConnection.sendOnvifDeviceServiceRequest(OnvifConnection.RequestType.SystemReboot);
     }
 
     public static class SupportPTZ implements Predicate<Object> {

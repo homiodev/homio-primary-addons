@@ -251,8 +251,4 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     public void removeCameraChangeState(String key) {
         this.stateListeners.remove(key);
     }
-
-    public void changeName(String name) {
-
-    }
 }
