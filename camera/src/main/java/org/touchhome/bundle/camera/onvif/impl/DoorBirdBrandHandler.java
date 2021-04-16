@@ -2,19 +2,23 @@ package org.touchhome.bundle.camera.onvif.impl;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
-import org.touchhome.bundle.camera.onvif.util.OnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.ui.UICameraAction;
-
-import java.util.ArrayList;
 
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
 /**
  * responsible for handling commands, which are sent to one of the channels.
  */
-public class DoorBirdBrandHandler extends OnvifCameraBrandHandler {
+@Log4j2
+@CameraBrandHandler(name = "DoorBird")
+public class DoorBirdBrandHandler extends BaseOnvifCameraBrandHandler {
 
     public DoorBirdBrandHandler(OnvifCameraEntity onvifCameraEntity) {
         super(onvifCameraEntity);
@@ -46,8 +50,28 @@ public class DoorBirdBrandHandler extends OnvifCameraBrandHandler {
         }
     }
 
-    public ArrayList<String> getLowPriorityRequests() {
-        return null;
+    @Override
+    public void pollCameraRunnable(OnvifCameraHandler onvifCameraHandler) {
+        if (onvifCameraHandler.streamIsStopped("/bha-api/monitor.cgi?ring=doorbell,motionsensor")) {
+            log.info("The alarm stream was not running for camera {}, re-starting it now",
+                    onvifCameraHandler.getCameraEntity().getIp());
+            onvifCameraHandler.sendHttpGET("/bha-api/monitor.cgi?ring=doorbell,motionsensor");
+        }
+    }
+
+    @Override
+    public void initialize(EntityContext entityContext) {
+        if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
+            onvifCameraHandler.setMjpegUri("/bha-api/video.cgi");
+        }
+        if (StringUtils.isEmpty(onvifCameraHandler.getSnapshotUri())) {
+            onvifCameraHandler.setSnapshotUri("/bha-api/image.cgi");
+        }
+    }
+
+    @Override
+    public String getUrlToKeepOpenForIdleStateEvent() {
+        return "/bha-api/monitor.cgi?ring=doorbell,motionsensor";
     }
 
     @UICameraAction(name = CHANNEL_EXTERNAL_LIGHT, order = 200, icon = "fas fa-sun")

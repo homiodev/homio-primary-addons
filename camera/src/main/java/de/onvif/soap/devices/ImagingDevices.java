@@ -1,140 +1,86 @@
 package de.onvif.soap.devices;
 
-import java.net.ConnectException;
-
-import javax.xml.soap.SOAPException;
-
+import de.onvif.soap.OnvifDeviceState;
+import de.onvif.soap.SOAP;
+import lombok.RequiredArgsConstructor;
 import org.onvif.ver10.schema.AbsoluteFocus;
 import org.onvif.ver10.schema.FocusMove;
 import org.onvif.ver10.schema.ImagingOptions20;
 import org.onvif.ver10.schema.ImagingSettings20;
-import org.onvif.ver20.imaging.wsdl.GetImagingSettings;
-import org.onvif.ver20.imaging.wsdl.GetImagingSettingsResponse;
-import org.onvif.ver20.imaging.wsdl.GetOptions;
-import org.onvif.ver20.imaging.wsdl.GetOptionsResponse;
-import org.onvif.ver20.imaging.wsdl.Move;
-import org.onvif.ver20.imaging.wsdl.MoveResponse;
-import org.onvif.ver20.imaging.wsdl.SetImagingSettings;
-import org.onvif.ver20.imaging.wsdl.SetImagingSettingsResponse;
+import org.onvif.ver20.imaging.wsdl.*;
 
-import de.onvif.soap.OnvifDeviceState;
-import de.onvif.soap.SOAP;
-
+@RequiredArgsConstructor
 public class ImagingDevices {
-	@SuppressWarnings("unused")
-	private OnvifDeviceState onvifDeviceState;
-	private SOAP soap;
 
-	public ImagingDevices(OnvifDeviceState onvifDeviceState) {
-		this.onvifDeviceState = onvifDeviceState;
-		this.soap = onvifDeviceState.getSoap();
-	}
+    private final OnvifDeviceState onvifDeviceState;
+    private final SOAP soap;
 
-	public ImagingOptions20 getOptions(String videoSourceToken) {
-		if (videoSourceToken == null) {
-			return null;
-		}
+    public ImagingOptions20 getOptions(String videoSourceToken) {
+        if (videoSourceToken == null) {
+            return null;
+        }
 
-		GetOptions request = new GetOptions();
-		GetOptionsResponse response = new GetOptionsResponse();
+        GetOptions request = new GetOptions();
+        GetOptionsResponse response = new GetOptionsResponse();
 
-		request.setVideoSourceToken(videoSourceToken);
+        request.setVideoSourceToken(videoSourceToken);
 
-		try {
-			response = (GetOptionsResponse) soap.createSOAPImagingRequest(request, response);
-		}
-		catch (SOAPException | ConnectException e) {
-			e.printStackTrace();
-			return null;
-		}
+        response = (GetOptionsResponse) soap.createSOAPImagingRequest(request, response);
+        return  response == null ? null: response.getImagingOptions();
+    }
 
-		if (response == null) {
-			return null;
-		}
+    public boolean moveFocus(String videoSourceToken, float absoluteFocusValue) {
+        if (videoSourceToken == null) {
+            return false;
+        }
 
-		return response.getImagingOptions();
-	}
+        Move request = new Move();
+        MoveResponse response = new MoveResponse();
 
-	public boolean moveFocus(String videoSourceToken, float absoluteFocusValue) {
-		if (videoSourceToken == null) {
-			return false;
-		}
+        AbsoluteFocus absoluteFocus = new AbsoluteFocus();
+        absoluteFocus.setPosition(absoluteFocusValue);
 
-		Move request = new Move();
-		MoveResponse response = new MoveResponse();
+        FocusMove focusMove = new FocusMove();
+        focusMove.setAbsolute(absoluteFocus);
 
-		AbsoluteFocus absoluteFocus = new AbsoluteFocus();
-		absoluteFocus.setPosition(absoluteFocusValue);
+        request.setVideoSourceToken(videoSourceToken);
+        request.setFocus(focusMove);
 
-		FocusMove focusMove = new FocusMove();
-		focusMove.setAbsolute(absoluteFocus);
+        response = (MoveResponse) soap.createSOAPImagingRequest(request, response);
 
-		request.setVideoSourceToken(videoSourceToken);
-		request.setFocus(focusMove);
+        return response != null;
+    }
 
-		try {
-			response = (MoveResponse) soap.createSOAPImagingRequest(request, response);
-		}
-		catch (SOAPException | ConnectException e) {
-			e.printStackTrace();
-			return false;
-		}
+    public ImagingSettings20 getImagingSettings(String videoSourceToken) {
+        if (videoSourceToken == null) {
+            return null;
+        }
 
-		if (response == null) {
-			return false;
-		}
+        GetImagingSettings request = new GetImagingSettings();
+        GetImagingSettingsResponse response = new GetImagingSettingsResponse();
 
-		return true;
-	}
+        request.setVideoSourceToken(videoSourceToken);
 
-	public ImagingSettings20 getImagingSettings(String videoSourceToken) {
-		if (videoSourceToken == null) {
-			return null;
-		}
+        response = (GetImagingSettingsResponse) soap.createSOAPImagingRequest(request, response);
+        return  response == null ? null : response.getImagingSettings();
+    }
 
-		GetImagingSettings request = new GetImagingSettings();
-		GetImagingSettingsResponse response = new GetImagingSettingsResponse();
+    public boolean setImagingSettings(String videoSourceToken, ImagingSettings20 imagingSettings) {
+        if (videoSourceToken == null) {
+            return false;
+        }
 
-		request.setVideoSourceToken(videoSourceToken);
+        SetImagingSettings request = new SetImagingSettings();
+        SetImagingSettingsResponse response = new SetImagingSettingsResponse();
 
-		try {
-			response = (GetImagingSettingsResponse) soap.createSOAPImagingRequest(request, response);
-		}
-		catch (SOAPException | ConnectException e) {
-			e.printStackTrace();
-			return null;
-		}
+        request.setVideoSourceToken(videoSourceToken);
+        request.setImagingSettings(imagingSettings);
 
-		if (response == null) {
-			return null;
-		}
+        response = (SetImagingSettingsResponse) soap.createSOAPImagingRequest(request, response);
+        return response != null;
+    }
 
-		return response.getImagingSettings();
-	}
+    public void dispose() {
 
-	public boolean setImagingSettings(String videoSourceToken, ImagingSettings20 imagingSettings) {
-		if (videoSourceToken == null) {
-			return false;
-		}
-
-		SetImagingSettings request = new SetImagingSettings();
-		SetImagingSettingsResponse response = new SetImagingSettingsResponse();
-
-		request.setVideoSourceToken(videoSourceToken);
-		request.setImagingSettings(imagingSettings);
-
-		try {
-			response = (SetImagingSettingsResponse) soap.createSOAPImagingRequest(request, response);
-		}
-		catch (SOAPException | ConnectException e) {
-			e.printStackTrace();
-			return false;
-		}
-
-		if (response == null) {
-			return false;
-		}
-
-		return true;
-	}
+    }
 }

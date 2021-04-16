@@ -44,6 +44,8 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     protected String ffmpegLocation;
     @Getter
     protected Map<String, State> attributes = new ConcurrentHashMap<>();
+    @Getter
+    protected Map<String, State> requestAttributes = new ConcurrentHashMap<>();
     protected long lastAnswerFromCamera;
     @Getter
     private Path ffmpegGifOutputPath;
@@ -95,6 +97,9 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     protected abstract void pollCameraRunnable();
 
     public final void initialize(T cameraEntity) {
+        if (isHandlerInitialized) {
+            return;
+        }
         isHandlerInitialized = true;
         try {
             if (cameraEntity == null) {
@@ -121,9 +126,6 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         if (isHandlerInitialized) {
             // set it before to avoid recursively disposing from listeners
             log.warn("Set camera <{}> to status <{}>. Msg: <{}>", cameraEntity.getTitle(), status, reason);
-
-            isCameraOnline = false;
-            isHandlerInitialized = false;
 
             entityContext.updateDelayed(this.cameraEntity, e -> e.setStart(false).setStatus(status).setStatusMessage(reason));
             entityContext.ui().sendEntityUpdated(this.cameraEntity);
@@ -223,6 +225,10 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     public void setAttribute(String key, State state) {
         attributes.put(key, state);
         broadcastLockManager.signalAll(key + ":" + cameraEntityID, state);
+    }
+
+    public void setAttributeRequest(String key, State state) {
+        requestAttributes.put(key, state);
     }
 
     protected final void fireFfmpeg(Ffmpeg ffmpeg, Consumer<Ffmpeg> handler) {

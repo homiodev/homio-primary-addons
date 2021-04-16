@@ -3,16 +3,17 @@ package org.touchhome.bundle.camera.onvif.impl;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
+import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.util.Helper;
-import org.touchhome.bundle.camera.onvif.util.OnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.ui.UICameraAction;
 import org.touchhome.bundle.camera.ui.UICameraActionGetter;
-
-import java.util.ArrayList;
 
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
@@ -20,7 +21,8 @@ import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
  * responsible for handling commands, which are sent to one of the channels.
  */
 @Log4j2
-public class DahuaBrandHandler extends OnvifCameraBrandHandler {
+@CameraBrandHandler(name = "Dahua")
+public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler {
 
     public DahuaBrandHandler(OnvifCameraEntity onvifCameraEntity) {
         super(onvifCameraEntity);
@@ -218,7 +220,7 @@ public class DahuaBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_ENABLE_PRIVACY_MODE)
     public State getEnablePrivacyMode() {
-        return getState(CHANNEL_ENABLE_PRIVACY_MODE);
+        return getAttribute(CHANNEL_ENABLE_PRIVACY_MODE);
     }
 
     @UICameraAction(name = CHANNEL_ENABLE_PRIVACY_MODE, order = 70, icon = "fas fa-user-secret")
@@ -238,7 +240,7 @@ public class DahuaBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_ENABLE_MOTION_ALARM)
     public State getEnableMotionAlarm() {
-        return getState(CHANNEL_ENABLE_MOTION_ALARM);
+        return getAttribute(CHANNEL_ENABLE_MOTION_ALARM);
     }
 
     @UICameraAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")
@@ -252,7 +254,7 @@ public class DahuaBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_ENABLE_LINE_CROSSING_ALARM)
     public State getEnableLineCrossingAlarm() {
-        return getState(CHANNEL_ENABLE_LINE_CROSSING_ALARM);
+        return getAttribute(CHANNEL_ENABLE_LINE_CROSSING_ALARM);
     }
 
     @UICameraAction(name = CHANNEL_ENABLE_LINE_CROSSING_ALARM, order = 150, icon = "fas fa-grip-lines-vertical")
@@ -262,7 +264,7 @@ public class DahuaBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_ENABLE_AUDIO_ALARM)
     public State getEnableAudioAlarm() {
-        return getState(CHANNEL_ENABLE_AUDIO_ALARM);
+        return getAttribute(CHANNEL_ENABLE_AUDIO_ALARM);
     }
 
     @UICameraAction(name = CHANNEL_ENABLE_AUDIO_ALARM, order = 25, icon = "fas fa-volume-mute")
@@ -276,7 +278,7 @@ public class DahuaBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_THRESHOLD_AUDIO_ALARM)
     public State getThresholdAudioAlarm() {
-        return getState(CHANNEL_THRESHOLD_AUDIO_ALARM);
+        return getAttribute(CHANNEL_THRESHOLD_AUDIO_ALARM);
     }
 
     @UICameraAction(name = CHANNEL_THRESHOLD_AUDIO_ALARM, order = 20, icon = "fas fa-volume-up")
@@ -322,11 +324,35 @@ public class DahuaBrandHandler extends OnvifCameraBrandHandler {
         }
     }
 
-    public ArrayList<String> getLowPriorityRequests() {
-        ArrayList<String> lowPriorityRequests = new ArrayList<>(3);
-        lowPriorityRequests.add("/cgi-bin/configManager.cgi?action=getConfig&name=AudioDetect[0]");
-        lowPriorityRequests.add("/cgi-bin/configManager.cgi?action=getConfig&name=CrossLineDetection[0]");
-        lowPriorityRequests.add("/cgi-bin/configManager.cgi?action=getConfig&name=MotionDetect[0]");
-        return lowPriorityRequests;
+    @Override
+    public void runOncePerMinute(EntityContext entityContext) {
+        onvifCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=AudioDetect[0]");
+        onvifCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=CrossLineDetection[0]");
+        onvifCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=MotionDetect[0]");
+    }
+
+    @Override
+    public void pollCameraRunnable(OnvifCameraHandler onvifCameraHandler) {
+        // Check for alarms, channel for NVRs appears not to work at filtering.
+        if (onvifCameraHandler.streamIsStopped("/cgi-bin/eventManager.cgi?action=attach&codes=[All]")) {
+            log.info("The alarm stream was not running for camera {}, re-starting it now",
+                    onvifCameraHandler.getCameraEntity().getIp());
+            onvifCameraHandler.sendHttpGET("/cgi-bin/eventManager.cgi?action=attach&codes=[All]");
+        }
+    }
+
+    @Override
+    public void initialize(EntityContext entityContext) {
+        if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
+            onvifCameraHandler.setMjpegUri("/cgi-bin/mjpg/video.cgi?channel=" + onvifCameraHandler.getCameraEntity().getNvrChannel() + "&subtype=1");
+        }
+        if (StringUtils.isEmpty(onvifCameraHandler.getSnapshotUri())) {
+            onvifCameraHandler.setSnapshotUri("/cgi-bin/snapshot.cgi?channel=" + onvifCameraHandler.getCameraEntity().getNvrChannel());
+        }
+    }
+
+    @Override
+    public String getUrlToKeepOpenForIdleStateEvent() {
+        return "/cgi-bin/eventManager.cgi?action=attach&codes=[All]";
     }
 }

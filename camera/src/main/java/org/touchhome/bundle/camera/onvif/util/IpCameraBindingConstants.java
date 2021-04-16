@@ -7,9 +7,7 @@ public class IpCameraBindingConstants {
     public static final String CM = "/cgi-bin/configManager.cgi?action=";
 
     public static final String AUTH_HANDLER = "authorizationHandler";
-    public static final String AMCREST_HANDLER = "amcrestHandler";
     public static final String COMMON_HANDLER = "commonHandler";
-    public static final String INSTAR_HANDLER = "instarHandler";
 
     // general motion key for al types of motion
     public static final String MOTION_ALARM = "motionAlarm";

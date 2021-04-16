@@ -2,8 +2,9 @@
   "VIDEO_STREAM": {
     "PORT": "Port   {{PORT}}",
     "ADDRESS": "Address   {{ADDRESS}}",
-    "MODEL": "Model   {{MODEL}}",
-    "NAME": "Name   {{NAME}}",
+    "MODEL": "Model     {{MODEL}}",
+    "NAME": "Name      {{NAME}}",
+    "BRAND": "Brand     {{BRAND}}",
     "REQUIRE_AUTH": "Require authentication to work with camera",
     "NEW_DEVICE_QUESTION": "Do you want create new video stream?"
   },

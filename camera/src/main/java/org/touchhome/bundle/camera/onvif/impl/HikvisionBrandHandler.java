@@ -1,29 +1,32 @@
 package org.touchhome.bundle.camera.onvif.impl;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.util.ReferenceCountUtil;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.state.StringType;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
+import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.util.ChannelTracking;
 import org.touchhome.bundle.camera.onvif.util.Helper;
-import org.touchhome.bundle.camera.onvif.util.OnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.ui.UICameraAction;
 import org.touchhome.bundle.camera.ui.UICameraActionGetter;
-
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
 /**
  * responsible for handling commands, which are sent to one of the channels.
  */
-public class HikvisionBrandHandler extends OnvifCameraBrandHandler {
+@Log4j2
+@CameraBrandHandler(name = "Hikvision")
+public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler {
 
     private int lineCount, vmdCount, leftCount, takenCount, faceCount, pirCount, fieldCount;
 
@@ -243,14 +246,8 @@ public class HikvisionBrandHandler extends OnvifCameraBrandHandler {
 
     public void hikSendXml(String httpPutURL, String xml) {
         onvifCameraHandler.getLog().trace("Body for PUT:{} is going to be:{}", httpPutURL, xml);
-        FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"), httpPutURL);
-        request.headers().set(HttpHeaderNames.HOST, onvifCameraHandler.getCameraEntity().getIp());
-        request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-        request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/xml; charset=\"UTF-8\"");
-        ByteBuf bbuf = Unpooled.copiedBuffer(xml, StandardCharsets.UTF_8);
-        request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
-        request.content().clear().writeBytes(bbuf);
-        onvifCameraHandler.sendHttpPUT(httpPutURL, request);
+        FullHttpRequest fullHttpRequest = buildFullHttpRequest(httpPutURL, xml, HttpMethod.PUT, MediaType.APPLICATION_XML);
+        onvifCameraHandler.sendHttpPUT(httpPutURL, fullHttpRequest);
     }
 
     public void hikChangeSetting(String httpGetPutURL, String removeElement, String replaceRemovedElementWith) {
@@ -277,21 +274,14 @@ public class HikvisionBrandHandler extends OnvifCameraBrandHandler {
                     + body.substring(elementIndexEnd + removeElement.length() + 3, body.length());
             onvifCameraHandler.getLog().trace("Body for this PUT is going to be:{}", body);
             localTracker.setReply(body);
-            FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"),
-                    httpGetPutURL);
-            request.headers().set(HttpHeaderNames.HOST, onvifCameraHandler.getCameraEntity().getIp());
-            request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-            request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/xml; charset=\"UTF-8\"");
-            ByteBuf bbuf = Unpooled.copiedBuffer(body, StandardCharsets.UTF_8);
-            request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
-            request.content().clear().writeBytes(bbuf);
-            onvifCameraHandler.sendHttpPUT(httpGetPutURL, request);
+            FullHttpRequest fullHttpRequest = buildFullHttpRequest(httpGetPutURL, body, HttpMethod.PUT, MediaType.APPLICATION_XML);
+            onvifCameraHandler.sendHttpPUT(httpGetPutURL, fullHttpRequest);
         }
     }
 
     @UICameraActionGetter(CHANNEL_TEXT_OVERLAY)
     public State getTextOverlay() {
-        return getState(CHANNEL_TEXT_OVERLAY);
+        return getAttribute(CHANNEL_TEXT_OVERLAY);
     }
 
     @UICameraAction(name = CHANNEL_TEXT_OVERLAY, order = 100, icon = "fas fa-paragraph")
@@ -310,7 +300,7 @@ public class HikvisionBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT)
     public State getEnableExternalAlarmInput() {
-        return getState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT);
+        return getAttribute(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT);
     }
 
     @UICameraAction(name = CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, order = 250, icon = "fas fa-external-link-square-alt")
@@ -321,7 +311,7 @@ public class HikvisionBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT)
     public State getTriggerExternalAlarmInput() {
-        return getState(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT);
+        return getAttribute(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT);
     }
 
     @UICameraAction(name = CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT, order = 300, icon = "fas fa-external-link-alt")
@@ -338,7 +328,7 @@ public class HikvisionBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_ENABLE_AUDIO_ALARM)
     public State getEnableAudioAlarm() {
-        return getState(CHANNEL_ENABLE_AUDIO_ALARM);
+        return getAttribute(CHANNEL_ENABLE_AUDIO_ALARM);
     }
 
     @UICameraAction(name = CHANNEL_ENABLE_AUDIO_ALARM, order = 25, icon = "fas fa-volume-mute")
@@ -348,7 +338,7 @@ public class HikvisionBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_ENABLE_LINE_CROSSING_ALARM)
     public State getEnableLineCrossingAlarm() {
-        return getState(CHANNEL_ENABLE_LINE_CROSSING_ALARM);
+        return getAttribute(CHANNEL_ENABLE_LINE_CROSSING_ALARM);
     }
 
     @UICameraAction(name = CHANNEL_ENABLE_LINE_CROSSING_ALARM, order = 150, icon = "fas fa-grip-lines-vertical")
@@ -365,7 +355,7 @@ public class HikvisionBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_ENABLE_FIELD_DETECTION_ALARM)
     public State getEnableFieldDetectionAlarm() {
-        return getState(CHANNEL_ENABLE_FIELD_DETECTION_ALARM);
+        return getAttribute(CHANNEL_ENABLE_FIELD_DETECTION_ALARM);
     }
 
     @UICameraAction(name = CHANNEL_ENABLE_FIELD_DETECTION_ALARM, order = 140, icon = "fas fa-shield-alt")
@@ -381,14 +371,37 @@ public class HikvisionBrandHandler extends OnvifCameraBrandHandler {
                         (on ? "high" : "low") + "</outputState>\r\n</IOPortData>\r\n");
     }
 
-    public ArrayList<String> getLowPriorityRequests() {
-        ArrayList<String> lowPriorityRequests = new ArrayList<>(1);
-        lowPriorityRequests.add("/ISAPI/System/IO/inputs/" + nvrChannel + "/status"); // must stay in element 0.
-        lowPriorityRequests.add("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "01/motionDetection");
-        lowPriorityRequests.add("/ISAPI/Smart/LineDetection/" + nvrChannel + "01");
-        lowPriorityRequests.add("/ISAPI/Smart/AudioDetection/channels/" + nvrChannel + "01");
-        lowPriorityRequests.add("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "/overlays/text/1");
-        lowPriorityRequests.add("/ISAPI/System/IO/inputs/" + nvrChannel);
-        return lowPriorityRequests;
+    @Override
+    public void runOncePerMinute(EntityContext entityContext) {
+        onvifCameraHandler.sendHttpGET("/ISAPI/System/IO/inputs/" + nvrChannel + "/status"); // must stay in element 0.
+        onvifCameraHandler.sendHttpGET("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "01/motionDetection");
+        onvifCameraHandler.sendHttpGET("/ISAPI/Smart/LineDetection/" + nvrChannel + "01");
+        onvifCameraHandler.sendHttpGET("/ISAPI/Smart/AudioDetection/channels/" + nvrChannel + "01");
+        onvifCameraHandler.sendHttpGET("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "/overlays/text/1");
+        onvifCameraHandler.sendHttpGET("/ISAPI/System/IO/inputs/" + nvrChannel);
+    }
+
+    @Override
+    public void pollCameraRunnable(OnvifCameraHandler onvifCameraHandler) {
+        if (onvifCameraHandler.streamIsStopped("/ISAPI/Event/notification/alertStream")) {
+            log.info("The alarm stream was not running for camera {}, re-starting it now",
+                    onvifCameraHandler.getCameraEntity().getIp());
+            onvifCameraHandler.sendHttpGET("/ISAPI/Event/notification/alertStream");
+        }
+    }
+
+    @Override
+    public void initialize(EntityContext entityContext) {
+        if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
+            onvifCameraHandler.setMjpegUri("/ISAPI/Streaming/channels/" + onvifCameraHandler.getCameraEntity().getNvrChannel() + "02" + "/httppreview");
+        }
+        if (StringUtils.isEmpty(onvifCameraHandler.getSnapshotUri())) {
+            onvifCameraHandler.setSnapshotUri("/ISAPI/Streaming/channels/" + onvifCameraHandler.getCameraEntity().getNvrChannel() + "01/picture");
+        }
+    }
+
+    @Override
+    public String getUrlToKeepOpenForIdleStateEvent() {
+        return "/ISAPI/Event/notification/alertStream";
     }
 }

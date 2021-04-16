@@ -18,14 +18,13 @@ import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.camera.entity.OnvifCameraType;
+import org.apache.commons.io.IOUtils;
+import org.touchhome.bundle.camera.CameraCoordinator;
 import org.touchhome.bundle.camera.onvif.util.Helper;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -125,12 +124,9 @@ public class OnvifDiscovery {
         } else {// // http://192.168.0.1/onvif/device_service
             ipAddress = temp.substring(beginIndex, endIndex);
         }
-        OnvifCameraType brand = checkForBrand(xml);
-        if (brand == OnvifCameraType.onvif) {
-            try {
-                brand = getBrandFromLoginPage(ipAddress);
-            } catch (IOException ignore) {
-            }
+        CameraBrandHandlerDescription brand = checkForBrand(xml);
+        if (brand.getID().equals(CameraBrandHandlerDescription.DEFAULT_BRAND.getID())) {
+            brand = getBrandFromLoginPage(ipAddress);
         }
         cameraFoundHandler.handle(brand, ipAddress, onvifPort.intValue());
     }
@@ -145,56 +141,40 @@ public class OnvifDiscovery {
                 searchReply(cameraFoundHandler, xAddr, xml);
             } else if (xml.contains("onvif")) {
                 log.info("Possible ONVIF camera found at:{}", packet.sender().getHostString());
-                cameraFoundHandler.handle(OnvifCameraType.onvif, packet.sender().getHostString(), 80);
+                cameraFoundHandler.handle(CameraBrandHandlerDescription.DEFAULT_BRAND, packet.sender().getHostString(), 80);
             }
         }
     }
 
-    private OnvifCameraType checkForBrand(String response) {
-        if (response.toLowerCase().contains("amcrest")) {
-            return OnvifCameraType.dahua;
-        } else if (response.toLowerCase().contains("dahua")) {
-            return OnvifCameraType.dahua;
-        } else if (response.toLowerCase().contains("foscam")) {
-            return OnvifCameraType.foscam;
-        } else if (response.toLowerCase().contains("hikvision")) {
-            return OnvifCameraType.hikvision;
-        } else if (response.toLowerCase().contains("instar")) {
-            return OnvifCameraType.instar;
-        } else if (response.toLowerCase().contains("doorbird")) {
-            return OnvifCameraType.doorbird;
-        } else if (response.toLowerCase().contains("ipc-")) {
-            return OnvifCameraType.dahua;
-        } else if (response.toLowerCase().contains("dh-sd")) {
-            return OnvifCameraType.dahua;
+    private static CameraBrandHandlerDescription checkForBrand(String response) {
+        for (CameraBrandHandlerDescription brandHandler : CameraCoordinator.cameraBrands.values()) {
+            if (response.contains(brandHandler.getName())) {
+                return brandHandler;
+            }
         }
-        return OnvifCameraType.onvif;
+        return CameraBrandHandlerDescription.DEFAULT_BRAND;
     }
 
-    private OnvifCameraType getBrandFromLoginPage(String hostname) throws IOException {
-        URL url = new URL("http://" + hostname);
-        OnvifCameraType brand = OnvifCameraType.onvif;
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setConnectTimeout(1000);
-        connection.setReadTimeout(2000);
-        connection.setInstanceFollowRedirects(true);
-        connection.setRequestMethod("GET");
+    public static CameraBrandHandlerDescription getBrandFromLoginPage(String hostname) {
         try {
-            connection.connect();
-            BufferedReader reply = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String temp;
-            while ((temp = reply.readLine()) != null) {
-                response.append(temp);
+            URL url = new URL("http://" + hostname);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(1000);
+            connection.setReadTimeout(2000);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestMethod("GET");
+            try {
+                connection.connect();
+                String response = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
+                return checkForBrand(response);
+            } catch (MalformedURLException ignored) {
+            } finally {
+                connection.disconnect();
             }
-            reply.close();
-            log.trace("Cameras Login page is:{}", response.toString());
-            brand = checkForBrand(response.toString());
-        } catch (MalformedURLException ignored) {
-        } finally {
-            connection.disconnect();
+            return CameraBrandHandlerDescription.DEFAULT_BRAND;
+        } catch (Exception ex) {
+            return CameraBrandHandlerDescription.DEFAULT_BRAND;
         }
-        return brand;
     }
 
     private DatagramPacket wsDiscovery() throws UnknownHostException {
@@ -207,6 +187,6 @@ public class OnvifDiscovery {
     }
 
     public interface CameraFoundHandler {
-        void handle(OnvifCameraType brand, String ipAddress, int onvifPort);
+        void handle(CameraBrandHandlerDescription brand, String ipAddress, int onvifPort);
     }
 }

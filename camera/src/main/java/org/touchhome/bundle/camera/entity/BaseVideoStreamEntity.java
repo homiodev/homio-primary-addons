@@ -12,6 +12,8 @@ import org.touchhome.bundle.api.service.scan.BaseBeansItemsDiscovery;
 import org.touchhome.bundle.api.ui.UISidebarButton;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.action.UIActionHandler;
+import org.touchhome.bundle.api.ui.field.action.HasDynamicContextMenuActions;
+import org.touchhome.bundle.api.ui.field.action.impl.DynamicContextMenuAction;
 import org.touchhome.bundle.api.ui.field.action.impl.StatefulContextMenuAction;
 import org.touchhome.bundle.camera.scanner.VideoStreamScanner;
 
@@ -31,7 +33,8 @@ import java.util.Set;
 @UISidebarButton(buttonIcon = "fas fa-qrcode", buttonIconColor = "#ED703E",
         buttonTitle = "TITLE.SCAN_VIDEO_STREAMS",
         handlerClass = BaseVideoStreamEntity.VideoStreamDiscovery.class)
-public abstract class BaseVideoStreamEntity<T extends BaseVideoStreamEntity> extends DeviceBaseEntity<T> {
+public abstract class BaseVideoStreamEntity<T extends BaseVideoStreamEntity> extends DeviceBaseEntity<T>
+        implements HasDynamicContextMenuActions {
 
     @Transient
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -58,5 +61,10 @@ public abstract class BaseVideoStreamEntity<T extends BaseVideoStreamEntity> ext
             entity.fireUpdateSnapshot(entityContext, params);
             return null;
         }
+    }
+
+    @Override
+    public Set<? extends DynamicContextMenuAction> getActions(EntityContext entityContext) {
+        return getActions(true);
     }
 }

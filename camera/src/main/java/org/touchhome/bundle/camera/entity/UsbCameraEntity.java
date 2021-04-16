@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.model.OptionModel;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
@@ -19,8 +20,10 @@ import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import javax.persistence.Entity;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -97,6 +100,21 @@ public class UsbCameraEntity extends BaseFFmpegStreamEntity<UsbCameraEntity, Usb
         setHlsVideoCodec("libx264");
         setSnapshotOutOptions("-vsync vfr~~~-q:v 2~~~-update 1~~~-frames:v 10");
         setStreamOptions("-vcodec libx264~~~-s 800x600~~~-bufsize:v 5M~~~-preset ultrafast~~~-vcodec libx264~~~-tune zerolatency~~~-b:v 2.5M");
+    }
+
+    @Override
+    public void afterFetch(EntityContext entityContext) {
+        super.afterFetch(entityContext);
+        if (getStatus() == Status.UNKNOWN) {
+            String ffmpegPath = entityContext.setting().getValue(CameraFFMPEGInstallPathOptions.class, Paths.get("ffmpeg")).toString();
+            FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
+            Set<String> aliveVideoDevices = repository.getVideoDevices(ffmpegPath);
+            if (aliveVideoDevices.contains(getIeeeAddress())) {
+                entityContext.updateStatus(this, Status.ONLINE, null);
+            } else {
+                entityContext.updateStatus(this, Status.OFFLINE, "No usb camera available from ");
+            }
+        }
     }
 
     public static class SelectAudioSource implements DynamicOptionLoader {

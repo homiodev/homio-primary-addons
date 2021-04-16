@@ -50,8 +50,7 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
 
     public boolean ffmpegSnapshotGeneration = false;
     public Ffmpeg ffmpegHLS;
-    @Setter
-    protected String rtspUri = "";
+    protected String rtspUri;
     @Getter
     protected boolean motionDetected = false;
     protected Ffmpeg ffmpegGIF;
@@ -87,6 +86,10 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
     @Override
     protected void pollingCameraConnection() {
         startSnapshot();
+    }
+
+    public String getRtspUri() {
+        return rtspUri;
     }
 
     @Override
@@ -210,8 +213,6 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
     @Override
     public void setAttribute(String key, State state) {
         super.setAttribute(key, state);
-        attributes.put(key, state);
-        broadcastLockManager.signalAll(key + ":" + cameraEntityID, state);
         if (key.equals(CHANNEL_THRESHOLD_AUDIO_ALARM)) {
             entityContext.updateDelayed(cameraEntity, e -> e.setAudioThreshold(state.intValue()));
         } else if (key.equals(CHANNEL_FFMPEG_MOTION_CONTROL)) {

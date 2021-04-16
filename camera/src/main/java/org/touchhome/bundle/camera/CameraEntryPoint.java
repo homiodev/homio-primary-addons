@@ -12,6 +12,8 @@ import org.touchhome.bundle.api.netty.NettyUtils;
 import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.handler.BaseCameraHandler;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import java.lang.reflect.Method;
@@ -26,6 +28,9 @@ public class CameraEntryPoint implements BundleEntryPoint {
 
     @SneakyThrows
     private static boolean detectIfRequireRestartHandler(Object oldCameraEntity, Object cameraEntity) {
+        if (oldCameraEntity == null) { // in case if just created
+            return false;
+        }
         Method[] methods = MethodUtils.getMethodsWithAnnotation(cameraEntity.getClass(), RestartHandlerOnChange.class, true, false);
         for (Method method : methods) {
             Object newValue = MethodUtils.invokeMethod(cameraEntity, method.getName());
@@ -43,6 +48,12 @@ public class CameraEntryPoint implements BundleEntryPoint {
     }
 
     public void init() {
+        for (Class<? extends BaseOnvifCameraBrandHandler> brandHandlerClass :
+                entityContext.getClassesWithParent(BaseOnvifCameraBrandHandler.class, "org.touchhome.bundle.camera.onvif")) {
+            CameraCoordinator.cameraBrands.put(brandHandlerClass.getSimpleName(),
+                    new CameraBrandHandlerDescription(brandHandlerClass));
+        }
+
         // listen if camera entity removed
         entityContext.event().addEntityRemovedListener(BaseVideoCameraEntity.class, "camera-remove-listener", cameraEntity -> {
             CameraCoordinator.removeSpdMessage(cameraEntity.getIeeeAddress());
@@ -66,9 +77,9 @@ public class CameraEntryPoint implements BundleEntryPoint {
                 cameraHandler.setCameraEntity(cameraEntity); // to avoid optimistic lock
             }
             // change camera name if possible
-            if (!Objects.equals(cameraEntity.getName(), oldCameraEntity.getName())) {
+            if (oldCameraEntity != null && !Objects.equals(cameraEntity.getName(), oldCameraEntity.getName())) {
                 if (cameraHandler instanceof OnvifCameraHandler) {
-                    ((OnvifCameraHandler) cameraHandler).getOnvifDeviceState().getDevices().setName(cameraEntity.getName());
+                    ((OnvifCameraHandler) cameraHandler).getOnvifDeviceState().getInitialDevices().setName(cameraEntity.getName());
                 }
             }
         });

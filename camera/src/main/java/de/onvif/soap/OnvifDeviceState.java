@@ -1,10 +1,8 @@
 package de.onvif.soap;
 
-import de.onvif.soap.devices.ImagingDevices;
-import de.onvif.soap.devices.InitialDevices;
-import de.onvif.soap.devices.MediaDevices;
-import de.onvif.soap.devices.PtzDevices;
+import de.onvif.soap.devices.*;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Base64;
@@ -13,9 +11,9 @@ import org.onvif.ver10.device.wsdl.GetDeviceInformationResponse;
 import org.onvif.ver10.schema.Capabilities;
 import org.onvif.ver10.schema.Profile;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
+import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 
 import javax.ws.rs.NotAuthorizedException;
-import javax.xml.soap.SOAPException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
@@ -25,9 +23,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Consumer;
 
-@Getter
 @Log4j2
+@Getter
 public class OnvifDeviceState {
     private final String HOST_IP;
     private String originalIp;
@@ -36,7 +35,21 @@ public class OnvifDeviceState {
 
     private String username, password, nonce, utcTime;
 
-    private String serverDeviceUri, serverPtzUri, serverMediaUri, serverImagingUri, serverEventsUri;
+    private String serverDeviceUri;
+    private String serverPtzUri;
+    private String serverMediaUri;
+    private String serverImagingUri;
+    private String serverEventsUri;
+    private String subscriptionUri;
+    private String analyticsUri;
+
+    private String serverDeviceIpLessUri;
+    private String serverPtzIpLessUri;
+    private String serverMediaIpLessUri;
+    private String serverImagingIpLessUri;
+    private String serverEventsIpLessUri;
+    @Setter
+    private String subscriptionIpLessUri;
 
     private SOAP soap;
 
@@ -44,31 +57,36 @@ public class OnvifDeviceState {
     private PtzDevices ptzDevices;
     private MediaDevices mediaDevices;
     private ImagingDevices imagingDevices;
+    private EventDevices eventDevices;
 
     private List<Profile> profiles;
-    private OnvifCameraEntity onvifCameraEntity;
-    private String snapshotUri;
-    private String rtspUri;
     private String ip;
-    private int port;
+    private int onvifPort;
+    private int serverPort;
+    private String profileToken;
+    @Setter
+    private Consumer<String> unreachableHandler;
 
     @SneakyThrows
-    public OnvifDeviceState(String ip, int port, String user, String password) {
+    public OnvifDeviceState(String ip, int onvifPort, int serverPort, String user, String password) {
         this.ip = ip;
-        this.port = port;
-        this.HOST_IP = ip + ":" + port;
+        this.onvifPort = onvifPort;
+        this.serverPort = serverPort;
+        this.HOST_IP = ip + ":" + onvifPort;
         this.serverDeviceUri = "http://" + HOST_IP + "/onvif/device_service";
+        this.serverDeviceIpLessUri = "/onvif/device_service";
 
         this.username = user;
         this.password = password;
 
         this.soap = new SOAP(this);
-        this.initialDevices = new InitialDevices(this);
-        this.ptzDevices = new PtzDevices(this);
-        this.mediaDevices = new MediaDevices(this);
-        this.imagingDevices = new ImagingDevices(this);
+        this.initialDevices = new InitialDevices(this, soap);
+        this.ptzDevices = new PtzDevices(this, soap);
+        this.mediaDevices = new MediaDevices(this, soap);
+        this.imagingDevices = new ImagingDevices(this, soap);
+        this.eventDevices = new EventDevices(this, soap);
 
-        init();
+        this.init();
     }
 
     /**
@@ -101,12 +119,10 @@ public class OnvifDeviceState {
     /**
      * Initalizes the addresses used for SOAP messages and to get the internal
      * IP, if given IP is a proxy.
-     *
-     * @throws ConnectException Get thrown if device doesn't give answers to
-     *                          GetCapabilities()
      */
-    protected void init() throws ConnectException, SOAPException {
-        Capabilities capabilities = getDevices().getCapabilities();
+    @SneakyThrows
+    private void init() {
+        Capabilities capabilities = initialDevices.getCapabilities();
 
         if (capabilities == null) {
             throw new ConnectException("Capabilities not reachable.");
@@ -127,30 +143,51 @@ public class OnvifDeviceState {
 
         if (capabilities.getMedia() != null && capabilities.getMedia().getXAddr() != null) {
             serverMediaUri = replaceLocalIpWithProxyIp(capabilities.getMedia().getXAddr());
+            serverMediaIpLessUri = SOAP.removeIpFromUrl(serverMediaUri);
         }
 
         if (capabilities.getPTZ() != null && capabilities.getPTZ().getXAddr() != null) {
             serverPtzUri = replaceLocalIpWithProxyIp(capabilities.getPTZ().getXAddr());
+            serverPtzIpLessUri = SOAP.removeIpFromUrl(serverPtzUri);
         }
 
         if (capabilities.getImaging() != null && capabilities.getImaging().getXAddr() != null) {
             serverImagingUri = replaceLocalIpWithProxyIp(capabilities.getImaging().getXAddr());
+            serverImagingIpLessUri = SOAP.removeIpFromUrl(serverImagingUri);
         }
 
         if (capabilities.getMedia() != null && capabilities.getEvents().getXAddr() != null) {
             serverEventsUri = replaceLocalIpWithProxyIp(capabilities.getEvents().getXAddr());
+            serverEventsIpLessUri = SOAP.removeIpFromUrl(serverEventsUri);
+        }
+
+        if (capabilities.getAnalytics() != null && capabilities.getAnalytics().getXAddr() != null) {
+            analyticsUri = replaceLocalIpWithProxyIp(capabilities.getAnalytics().getXAddr());
         }
     }
 
     @SneakyThrows
     public void initFully(OnvifCameraEntity onvifCameraEntity) {
-        this.onvifCameraEntity = onvifCameraEntity;
-        this.profiles = getDevices().getProfiles();
+        this.profiles = initialDevices.getProfiles();
 
         int activeProfileIndex = onvifCameraEntity.getOnvifMediaProfile() >= this.profiles.size() ? 0 : onvifCameraEntity.getOnvifMediaProfile();
-        String activeProfileToken = this.profiles.get(activeProfileIndex).getToken();
-        this.snapshotUri = getMedia().getSnapshotUri(activeProfileToken);
-        this.rtspUri = getMedia().getRTSPStreamUri(activeProfileToken);
+        this.profileToken = this.profiles.get(activeProfileIndex).getToken();
+
+        if (ptzDevices.supportPTZ()) {
+            ptzDevices.initFully();
+        }
+        if (onvifCameraEntity.getCameraType().equals(CameraBrandHandlerDescription.DEFAULT_BRAND.getID())) {
+            eventDevices.initFully();
+        }
+    }
+
+    public void dispose() {
+        imagingDevices.dispose();
+        eventDevices.dispose();
+        initialDevices.dispose();
+        mediaDevices.dispose();
+        ptzDevices.dispose();
+        soap.dispose();
     }
 
     public String replaceLocalIpWithProxyIp(String original) {
@@ -234,82 +271,45 @@ public class OnvifDeviceState {
         return utcTime;
     }
 
-    public SOAP getSoap() {
-        return soap;
-    }
-
-    /**
-     * Is used for basic devices and requests of given Onvif Device
-     */
-    public InitialDevices getDevices() {
-        return initialDevices;
-    }
-
-    /**
-     * Can be used for PTZ controlling requests, may not be supported by device!
-     */
-    public PtzDevices getPtz() {
-        return ptzDevices;
-    }
-
-    /**
-     * Can be used to get media data from OnvifDevice
-     */
-    public MediaDevices getMedia() {
-        return mediaDevices;
-    }
-
-    /**
-     * Can be used to get media data from OnvifDevice
-     */
-    public ImagingDevices getImaging() {
-        return imagingDevices;
-    }
-
     public Logger getLogger() {
         return log;
     }
 
-    public String getDeviceUri() {
-        return serverDeviceUri;
-    }
-
-    protected String getPtzUri() {
-        return serverPtzUri;
-    }
-
-    protected String getMediaUri() {
-        return serverMediaUri;
-    }
-
-    protected String getImagingUri() {
-        return serverImagingUri;
-    }
-
-    protected String getEventsUri() {
-        return serverEventsUri;
-    }
-
-    public Date getDate() {
+    /*public Date getDate() {
+        init();
         return initialDevices.getDate();
-    }
+    }*/
 
     public String getIEEEAddress() {
+        this.init();
         GetDeviceInformationResponse deviceInformation = initialDevices.getDeviceInformation();
         return deviceInformation.getSerialNumber() == null ? null : deviceInformation.getModel() + "~" + deviceInformation.getSerialNumber();
     }
 
-    public String getHostname() {
+    /*public String getHostname() {
         return initialDevices.getHostname();
-    }
+    }*/
 
     public void checkForErrors() {
         if (!isOnline()) {
             throw new RuntimeException("No connection to onvif device");
         }
+        this.init();
         GetDeviceInformationResponse deviceInformation = initialDevices.getDeviceInformation();
         if (deviceInformation.getFault() != null) {
             throw new NotAuthorizedException(deviceInformation.getFault().getFaultstring());
         }
+    }
+
+    public void cameraUnreachable(String errorMessage) {
+        log.error("Camera unreachable: <{}>", errorMessage);
+        if (unreachableHandler != null) {
+            unreachableHandler.accept(errorMessage);
+        }
+    }
+
+    public void setSubscriptionUri(String subscriptionUri) {
+        this.subscriptionUri = subscriptionUri;
+        this.subscriptionIpLessUri = SOAP.removeIpFromUrl(subscriptionUri);
     }
 }

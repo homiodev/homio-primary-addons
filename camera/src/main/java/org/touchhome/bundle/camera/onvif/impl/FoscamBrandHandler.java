@@ -2,22 +2,24 @@ package org.touchhome.bundle.camera.onvif.impl;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
-import org.touchhome.bundle.camera.onvif.util.OnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.util.Helper;
 import org.touchhome.bundle.camera.ui.UICameraAction;
 import org.touchhome.bundle.camera.ui.UICameraActionGetter;
-
-import java.util.ArrayList;
 
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
 /**
  * responsible for handling commands, which are sent to one of the channels.
  */
-public class FoscamBrandHandler extends OnvifCameraBrandHandler {
+@CameraBrandHandler(name = "Foscam")
+public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler {
     private static final String CG = "/cgi-bin/CGIProxy.fcgi?cmd=";
 
     public FoscamBrandHandler(OnvifCameraEntity onvifCameraEntity) {
@@ -112,7 +114,7 @@ public class FoscamBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_THRESHOLD_AUDIO_ALARM)
     public State getThresholdAudioAlarm() {
-        return getState(CHANNEL_THRESHOLD_AUDIO_ALARM);
+        return getAttribute(CHANNEL_THRESHOLD_AUDIO_ALARM);
     }
 
     @UICameraAction(name = CHANNEL_THRESHOLD_AUDIO_ALARM, order = 20, icon = "fas fa-volume-up")
@@ -134,7 +136,7 @@ public class FoscamBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_ENABLE_AUDIO_ALARM)
     public State getEnableAudioAlarm() {
-        return getState(CHANNEL_ENABLE_AUDIO_ALARM);
+        return getAttribute(CHANNEL_ENABLE_AUDIO_ALARM);
     }
 
     @UICameraAction(name = CHANNEL_ENABLE_AUDIO_ALARM, order = 25, icon = "fas fa-volume-mute")
@@ -154,7 +156,7 @@ public class FoscamBrandHandler extends OnvifCameraBrandHandler {
 
     @UICameraActionGetter(CHANNEL_ENABLE_MOTION_ALARM)
     public State getEnableMotionAlarm() {
-        return getState(CHANNEL_ENABLE_MOTION_ALARM);
+        return getAttribute(CHANNEL_ENABLE_MOTION_ALARM);
     }
 
     @UICameraAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")
@@ -176,10 +178,25 @@ public class FoscamBrandHandler extends OnvifCameraBrandHandler {
         }
     }
 
-    public ArrayList<String> getLowPriorityRequests() {
-        ArrayList<String> lowPriorityRequests = new ArrayList<>(2);
-        lowPriorityRequests.add(CG + "getDevState&usr=" + username + "&pwd=" + password);
-        lowPriorityRequests.add(CG + "getAudioAlarmConfig&usr=" + username + "&pwd=" + password);
-        return lowPriorityRequests;
+    @Override
+    public void runOncePerMinute(EntityContext entityContext) {
+        onvifCameraHandler.sendHttpGET(CG + "getDevState&usr=" + username + "&pwd=" + password);
+        onvifCameraHandler.sendHttpGET(CG + "getAudioAlarmConfig&usr=" + username + "&pwd=" + password);
+    }
+
+    @Override
+    public void initialize(EntityContext entityContext) {
+        OnvifCameraEntity cameraEntity = onvifCameraHandler.getCameraEntity();
+        // Foscam needs any special char like spaces (%20) to be encoded for URLs.
+        cameraEntity.setUser(Helper.encodeSpecialChars(cameraEntity.getUser()));
+        cameraEntity.setPassword(Helper.encodeSpecialChars(cameraEntity.getPassword()));
+        if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
+            onvifCameraHandler.setMjpegUri("/cgi-bin/CGIStream.cgi?cmd=GetMJStream&usr=" + cameraEntity.getUser() + "&pwd="
+                    + cameraEntity.getPassword());
+        }
+        if (StringUtils.isEmpty(onvifCameraHandler.getSnapshotUri())) {
+            onvifCameraHandler.setSnapshotUri("/cgi-bin/CGIProxy.fcgi?usr=" + cameraEntity.getUser() + "&pwd="
+                    + cameraEntity.getPassword() + "&cmd=snapPicture2");
+        }
     }
 }

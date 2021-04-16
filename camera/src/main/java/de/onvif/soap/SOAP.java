@@ -1,57 +1,213 @@
 package de.onvif.soap;
 
+import com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl;
+import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.*;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.oasis_open.docs.wsn.b_2.Renew;
+import org.oasis_open.docs.wsn.b_2.Unsubscribe;
+import org.onvif.ver10.events.wsdl.CreatePullPointSubscription;
+import org.onvif.ver10.events.wsdl.PullMessages;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.w3c.dom.Document;
 
 import javax.xml.bind.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 @Log4j2
-@RequiredArgsConstructor
-public class SOAP {
+public class SOAP implements BiConsumer<String, Integer> {
+
+    public static final DatatypeFactory DATATYPE_FACTORY = new DatatypeFactoryImpl();
 
     @Setter
-    private boolean logging = false;
+    private boolean logging = Boolean.parseBoolean(System.getProperty("soap.debug", "false"));
 
     private final OnvifDeviceState onvifDeviceState;
+    private Bootstrap bootstrap;
+    private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
+    private final Map<String, AsyncClassListener> asyncSoapMessageToType = new HashMap<>();
 
-    public Object createSOAPDeviceRequest(Object soapRequestElem, Object soapResponseElem) throws SOAPException,
-            ConnectException {
-        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getDeviceUri());
+    public SOAP(OnvifDeviceState onvifDeviceState) {
+        this.onvifDeviceState = onvifDeviceState;
     }
 
-    public Object createSOAPPtzRequest(Object soapRequestElem, Object soapResponseElem) throws SOAPException, ConnectException {
-        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getPtzUri());
+    public static <T> T parseMessage(Class<T> responseClass, String message) {
+        try {
+            SOAPMessage soapResponse = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL)
+                    .createMessage(null, new ByteArrayInputStream(message.getBytes()));
+            Unmarshaller unmarshaller = JAXBContext.newInstance(responseClass).createUnmarshaller();
+            return (T) unmarshaller.unmarshal(soapResponse.getSOAPBody().extractContentAsDocument());
+        } catch (Exception e) {
+            log.warn("Could not unmarshal, ended in SOAP fault.");
+        }
+        return null;
     }
 
-    public Object createSOAPMediaRequest(Object soapRequestElem, Object soapResponseElem) throws SOAPException, ConnectException {
-        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getMediaUri());
+    @SneakyThrows
+    public Object createSOAPDeviceRequest(Object soapRequestElem, Object soapResponseElem) {
+        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getServerDeviceUri(),
+                onvifDeviceState.getServerDeviceIpLessUri());
     }
 
-    public Object createSOAPImagingRequest(Object soapRequestElem, Object soapResponseElem) throws SOAPException,
-            ConnectException {
-        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getImagingUri());
+    @SneakyThrows
+    public Object createSOAPPtzRequest(Object soapRequestElem, Object soapResponseElem) {
+        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getServerPtzUri(),
+                onvifDeviceState.getServerPtzIpLessUri());
     }
 
-    public Object createSOAPEventsRequest(Object soapRequestElem, Object soapResponseElem) throws SOAPException,
-            ConnectException {
-        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getEventsUri());
+    @SneakyThrows
+    public Object createSOAPMediaRequest(Object soapRequestElem, Object soapResponseElem) {
+        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getServerMediaUri(),
+                onvifDeviceState.getServerMediaIpLessUri());
+    }
+
+    @SneakyThrows
+    public Object createSOAPImagingRequest(Object soapRequestElem, Object soapResponseElem) {
+        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getServerImagingUri(),
+                onvifDeviceState.getServerImagingIpLessUri());
+    }
+
+    @SneakyThrows
+    public Object createSOAPEventsRequest(Object soapRequestElem, Object soapResponseElem) {
+        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getServerEventsUri(),
+                onvifDeviceState.getServerEventsIpLessUri());
+    }
+
+    @SneakyThrows
+    public void sendSOAPEventRequestAsync(Object soapRequestElem) {
+        sendSOAPRequestAsync(soapRequestElem, onvifDeviceState.getServerEventsIpLessUri());
+    }
+
+    @SneakyThrows
+    public void sendSOAPSubscribeRequestAsync(Object soapRequestElem) {
+        sendSOAPRequestAsync(soapRequestElem, onvifDeviceState.getSubscriptionIpLessUri());
+    }
+
+    @Override
+    @SneakyThrows
+    public void accept(String message, Integer code) {
+        log.debug("Onvif {} reply is:{}", code, message);
+        boolean handled = false;
+        for (Map.Entry<String, AsyncClassListener> entry : asyncSoapMessageToType.entrySet()) {
+            if (message.contains(entry.getKey())) {
+                handled = true;
+                Object soapResponseElem = parseMessage(entry.getValue().responseClass, message);
+                if (soapResponseElem != null) {
+                    for (Consumer<Object> consumer : entry.getValue().handlers.values()) {
+                        consumer.accept(soapResponseElem);
+                    }
+                }
+            }
+        }
+        if (!handled) {
+            if (code != 200) {
+                log.error("Accepted not expected onvif soap message with code: <{}>. Msg: <{}>", code, message);
+            } else {
+                log.warn("Accepted not expected onvif soap message with code: <{}>. Msg: <{}>", code, message);
+            }
+        }
+    }
+
+    private void sendSOAPRequestAsync(Object soapRequestElem, String xAddr) {
+        HttpRequest httpRequest = soapRequestToHttpRequest(soapRequestElem, xAddr);
+        if (bootstrap == null) {
+            bootstrap = new Bootstrap();
+            bootstrap.group(mainEventLoopGroup);
+            bootstrap.channel(NioSocketChannel.class);
+            bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+            bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
+            bootstrap.option(ChannelOption.SO_SNDBUF, 1024 * 8);
+            bootstrap.option(ChannelOption.SO_RCVBUF, 1024 * 1024);
+            bootstrap.option(ChannelOption.TCP_NODELAY, true);
+            bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+
+                @Override
+                public void initChannel(SocketChannel socketChannel) {
+                    socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 0, 70));
+                    socketChannel.pipeline().addLast("HttpClientCodec", new HttpClientCodec());
+                    socketChannel.pipeline().addLast("OnvifCodec", new OnvifCodec(SOAP.this));
+                }
+            });
+        }
+        bootstrap.connect(new InetSocketAddress(onvifDeviceState.getIp(), onvifDeviceState.getOnvifPort()))
+                .addListener((ChannelFutureListener) future -> {
+                    if (future == null) {
+                        return;
+                    }
+                    if (future.isDone() && future.isSuccess()) {
+                        Channel ch = future.channel();
+                        ch.writeAndFlush(httpRequest);
+                    } else {
+                        onvifDeviceState.cameraUnreachable(future.cause() == null ? "" : TouchHomeUtils.getErrorMessage(future.cause()));
+                    }
+                });
+    }
+
+    @SneakyThrows
+    private HttpRequest soapRequestToHttpRequest(Object soapRequestElem, String xAddr) {
+        FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"), xAddr);
+        SOAPMessage soapMessage = createSoapMessage(soapRequestElem, xAddr);
+        String deviceRequestType = soapRequestElem.getClass().getDeclaredAnnotation(XmlRootElement.class).name();
+        String actionString = soapMessage.getSOAPBody().getFirstChild().getNamespaceURI();
+        request.headers().add("Content-Type",
+                "application/soap+xml; charset=utf-8; action=\"" + actionString + "/" + deviceRequestType + "\"");
+        request.headers().add("Charset", "utf-8");
+        if (onvifDeviceState.getOnvifPort() != 80) {
+            request.headers().set(HttpHeaderNames.HOST, onvifDeviceState.getIp() + ":" + onvifDeviceState.getOnvifPort());
+        } else {
+            request.headers().set(HttpHeaderNames.HOST, onvifDeviceState.getIp());
+        }
+        request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+        request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, "gzip, deflate");
+
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        soapMessage.writeTo(outputStream);
+        String fullXml = outputStream.toString();
+        if (logging) {
+            log.info("Request async SOAP Message (" + soapRequestElem.getClass().getSimpleName() + "): ");
+            log.info("{}", fullXml);
+        }
+
+        request.headers().add("SOAPAction", "\"" + actionString + "/" + deviceRequestType + "\"");
+        ByteBuf byteBuf = Unpooled.copiedBuffer(fullXml, StandardCharsets.UTF_8);
+        request.headers().set(HttpHeaderNames.CONTENT_LENGTH, byteBuf.readableBytes());
+        request.content().clear().writeBytes(byteBuf);
+        return request;
     }
 
     /**
      * @param soapResponseElem Answer object for SOAP request
      * @return SOAP Response Element
      */
-    public Object createSOAPRequest(Object soapRequestElem, Object soapResponseElem, String soapUri) throws ConnectException,
-            SOAPException {
+    public Object createSOAPRequest(Object soapRequestElem, Object soapResponseElem, String soapUri, String xAddr)
+            throws ConnectException, SOAPException {
         SOAPConnection soapConnection = null;
         SOAPMessage soapResponse = null;
 
@@ -60,11 +216,11 @@ public class SOAP {
             SOAPConnectionFactory soapConnectionFactory = SOAPConnectionFactory.newInstance();
             soapConnection = soapConnectionFactory.createConnection();
 
-            SOAPMessage soapMessage = createSoapMessage(soapRequestElem);
+            SOAPMessage soapMessage = createSoapMessage(soapRequestElem, xAddr);
 
             // Print the request message
-            if (isLogging()) {
-                log.info("Request SOAP Message (" + soapRequestElem.getClass().getSimpleName() + "): ");
+            if (logging) {
+                log.info("Request sync SOAP Message (" + soapRequestElem.getClass().getSimpleName() + "): ");
                 ByteArrayOutputStream bout = new ByteArrayOutputStream();
                 soapMessage.writeTo(bout);
                 log.info("{}", bout.toString());
@@ -73,8 +229,8 @@ public class SOAP {
             soapResponse = soapConnection.call(soapMessage, soapUri);
 
             // print SOAP Response
-            if (isLogging()) {
-                log.info("Response SOAP Message (" + soapResponseElem.getClass().getSimpleName() + "): ");
+            if (logging) {
+                log.info("Response sync SOAP Message (" + soapResponseElem.getClass().getSimpleName() + "): ");
                 ByteArrayOutputStream bout = new ByteArrayOutputStream();
                 soapResponse.writeTo(bout);
                 log.info("{}", bout.toString());
@@ -119,7 +275,7 @@ public class SOAP {
         }
     }
 
-    protected SOAPMessage createSoapMessage(Object soapRequestElem) throws SOAPException, ParserConfigurationException,
+    protected SOAPMessage createSoapMessage(Object soapRequestElem, String xAddr) throws SOAPException, ParserConfigurationException,
             JAXBException {
         MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
         SOAPMessage soapMessage = messageFactory.createMessage();
@@ -129,13 +285,13 @@ public class SOAP {
         marshaller.marshal(soapRequestElem, document);
         soapMessage.getSOAPBody().addDocument(document);
 
-        createSoapHeader(soapMessage);
+        createSoapHeader(soapMessage, xAddr);
 
         soapMessage.saveChanges();
         return soapMessage;
     }
 
-    protected void createSoapHeader(SOAPMessage soapMessage) throws SOAPException {
+    protected void createSoapHeader(SOAPMessage soapMessage, String xAddr) throws SOAPException {
         onvifDeviceState.createNonce();
         String encrypedPassword = onvifDeviceState.getEncryptedPassword();
         if (encrypedPassword != null && onvifDeviceState.getUsername() != null) {
@@ -164,10 +320,56 @@ public class SOAP {
 
             SOAPElement createdElem = usernameTokenElem.addChildElement("Created", "wsu");
             createdElem.setTextContent(onvifDeviceState.getLastUTCTime());
+
+            String deviceRequestType = soapMessage.getSOAPBody().getFirstChild().getLocalName();
+            if (deviceRequestType.equals(CreatePullPointSubscription.class.getSimpleName()) ||
+                    deviceRequestType.equals(PullMessages.class.getSimpleName()) ||
+                    deviceRequestType.equals(Renew.class.getSimpleName()) ||
+                    deviceRequestType.equals(Unsubscribe.class.getSimpleName())) {
+
+                se.addNamespaceDeclaration("wsa5", "http://www.w3.org/2005/08/addressing");
+                SOAPElement to = header.addChildElement("To", "wsa5");
+                to.setTextContent("http://" + onvifDeviceState.getIp() + xAddr);
+                to.setAttribute("env:mustUnderstand", "1");
+            }
         }
     }
 
-    public boolean isLogging() {
-        return logging;
+    public <T> void addAsyncListener(Class<T> responseClass, String key, Consumer<T> consumer) {
+        asyncSoapMessageToType.putIfAbsent(responseClass.getSimpleName(), new AsyncClassListener(responseClass));
+        asyncSoapMessageToType.get(responseClass.getSimpleName()).handlers.put(key, (Consumer<Object>) consumer);
+    }
+
+    public void dispose() {
+        if (bootstrap != null) {
+            if (!mainEventLoopGroup.isShutdown()) {
+                try {
+                    mainEventLoopGroup.awaitTermination(3, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    log.info("Onvif was not shutdown correctly due to being interrupted");
+                } finally {
+                    mainEventLoopGroup = new NioEventLoopGroup();
+                    bootstrap = null;
+                }
+            }
+        }
+    }
+
+    @RequiredArgsConstructor
+    private final class AsyncClassListener {
+        private final Class<?> responseClass;
+        private Map<String, Consumer<Object>> handlers = new HashMap<>();
+    }
+
+    public static String removeIpFromUrl(String url) {
+        int index = url.indexOf("//");
+        if (index != -1) {// now remove the :port
+            index = url.indexOf("/", index + 2);
+        }
+        if (index == -1) {
+            log.debug("We hit an issue parsing url:{}", url);
+            return "";
+        }
+        return url.substring(index);
     }
 }

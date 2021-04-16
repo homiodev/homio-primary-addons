@@ -4,26 +4,34 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.onvif.soap.OnvifDeviceState;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.Lang;
+import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.model.ActionResponseModel;
+import org.touchhome.bundle.api.model.OptionModel;
+import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.*;
 import org.touchhome.bundle.api.ui.field.action.ActionInputParameter;
 import org.touchhome.bundle.api.ui.field.action.HasDynamicContextMenuActions;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.action.impl.DynamicContextMenuAction;
+import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
+import org.touchhome.bundle.camera.CameraCoordinator;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
-import org.touchhome.bundle.camera.onvif.util.OnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-import java.util.Collections;
+import javax.ws.rs.NotAuthorizedException;
+import java.util.Collection;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Log4j2
 @Setter
@@ -37,15 +45,11 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
 
     @Transient
     @JsonIgnore
-    private int port;
-
-    @Transient
-    @JsonIgnore
     private String updateImageWhen = "0";
 
     @Transient
     @JsonIgnore
-    private OnvifCameraBrandHandler onvifCameraBrandHandler;
+    private BaseOnvifCameraBrandHandler baseOnvifCameraBrandHandler;
 
     @UIField(order = 1, readOnly = true, hideOnEmpty = true, fullWidth = true, bg = "#334842")
     @UIFieldRenderAsHTML
@@ -58,12 +62,21 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
 
     @UIField(order = 11)
     @RestartHandlerOnChange
-    public OnvifCameraType getCameraType() {
-        return getJsonDataEnum("cameraType", OnvifCameraType.onvif);
+    @UIFieldSelection(SelectCameraBrand.class)
+    public String getCameraType() {
+        return getJsonData("cameraType", CameraBrandHandlerDescription.DEFAULT_BRAND.getID());
     }
 
-    public OnvifCameraEntity setCameraType(OnvifCameraType cameraType) {
-        return setJsonDataEnum("cameraType", cameraType);
+    public static class SelectCameraBrand implements DynamicOptionLoader {
+
+        @Override
+        public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext) {
+            return OptionModel.list(CameraCoordinator.cameraBrands.keySet());
+        }
+    }
+
+    public OnvifCameraEntity setCameraType(String cameraType) {
+        return setJsonData("cameraType", cameraType);
     }
 
     @UIField(order = 12, type = UIFieldType.IpAddress)
@@ -85,6 +98,17 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
 
     public OnvifCameraEntity setOnvifPort(int value) {
         return setJsonData("onvifPort", value);
+    }
+
+    @UIFieldPort
+    @UIField(order = 36, advanced = true)
+    @RestartHandlerOnChange
+    public int getRestPort() {
+        return getJsonData("restPort", 80);
+    }
+
+    public OnvifCameraEntity setRestPort(int value) {
+        return setJsonData("restPort", value);
     }
 
     @UIField(order = 55, onlyEdit = true)
@@ -138,7 +162,11 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
     @UIField(order = 75, onlyEdit = true)
     @RestartHandlerOnChange
     public String getSnapshotUrl() {
-        return getJsonData("snapshotUrl", "ffmpeg");
+        String snapshotUrl = getJsonData("snapshotUrl");
+        if (snapshotUrl == null || snapshotUrl.equals("ffmpeg")) {
+            snapshotUrl = getCameraHandler().getOnvifDeviceState().getMediaDevices().getSnapshotUri();
+        }
+        return snapshotUrl == null ? "ffmpeg" : snapshotUrl;
     }
 
     public void setSnapshotUrl(String value) {
@@ -209,12 +237,27 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
         return new OnvifCameraHandler(this, entityContext);
     }
 
-    @SneakyThrows
-    public OnvifCameraBrandHandler getOnvifCameraBrandHandler() {
-        if (onvifCameraBrandHandler == null) {
-            onvifCameraBrandHandler = getCameraType().getCameraHandlerClass().getDeclaredConstructor(OnvifCameraEntity.class).newInstance(this);
+    @Override
+    public void afterFetch(EntityContext entityContext) {
+        super.afterFetch(entityContext);
+        if (getStatus() == Status.UNKNOWN) {
+            try {
+                getCameraHandler().getOnvifDeviceState().checkForErrors();
+                entityContext.updateStatus(this, Status.ONLINE, null);
+            } catch (NotAuthorizedException ex) {
+                entityContext.updateStatus(this, Status.REQUIRE_AUTH, ex.getMessage());
+            } catch (Exception ex) {
+                entityContext.updateStatus(this, Status.ERROR, ex.getMessage());
+            }
         }
-        return onvifCameraBrandHandler;
+    }
+
+    @JsonIgnore
+    public BaseOnvifCameraBrandHandler getBaseOnvifCameraBrandHandler() {
+        if (baseOnvifCameraBrandHandler == null) {
+            baseOnvifCameraBrandHandler = CameraCoordinator.cameraBrands.get(getCameraType()).newInstance(this);
+        }
+        return baseOnvifCameraBrandHandler;
     }
 
     @Override
@@ -250,14 +293,15 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
 
     @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off")
     public ActionResponseModel reboot() {
-        String response = this.getCameraHandler().getOnvifDeviceState().getDevices().reboot();
+        String response = this.getCameraHandler().getOnvifDeviceState().getInitialDevices().reboot();
         return ActionResponseModel.showSuccess(response);
     }
 
     @Override
-    public Set<DynamicContextMenuAction> getActions(EntityContext entityContext) {
+    public Set<? extends DynamicContextMenuAction> getActions(EntityContext entityContext) {
+        Set<DynamicContextMenuAction> actions = new TreeSet<>(super.getActions(entityContext));
         if (StringUtils.isNotEmpty(getIeeeAddress())) {
-            return Collections.emptySet();
+            return actions;
         }
         DynamicContextMenuAction authAction = new DynamicContextMenuAction("AUTHENTICATE",
                 0, json -> {
@@ -265,13 +309,13 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
             String user = json.getString("user");
             String password = json.getString("pwd");
             OnvifCameraEntity entity = this;
-            OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getIp(), getOnvifPort(), user, password);
+            OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getIp(), getOnvifPort(), 0, user, password);
             try {
                 onvifDeviceState.checkForErrors();
                 entityContext.updateDelayed(entity, e ->
                         e.setUser(user) //
                                 .setPassword(password) //
-                                .setName(onvifDeviceState.getDevices().getName())
+                                .setName(onvifDeviceState.getInitialDevices().getName())
                                 .setIeeeAddress(onvifDeviceState.getIEEEAddress()));
                 entityContext.ui().sendSuccessMessage("Onvif camera: " + getTitle() + " authenticated successfully");
             } catch (Exception ex) {
@@ -280,6 +324,7 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
         }).setIcon("fas fa-sign-in-alt");
         authAction.addInput(ActionInputParameter.text("user", getUser()));
         authAction.addInput(ActionInputParameter.text("pwd", getPassword()));
-        return Collections.singleton(authAction);
+        actions.add(authAction);
+        return actions;
     }
 }

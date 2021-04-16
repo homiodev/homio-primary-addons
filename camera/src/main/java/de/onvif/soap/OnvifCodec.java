@@ -1,4 +1,4 @@
-package org.touchhome.bundle.camera.onvif;
+package de.onvif.soap;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,15 +10,14 @@ import io.netty.util.ReferenceCountUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-/**
- * used by Netty to decode Onvif traffic into message Strings.
- */
+import java.util.function.BiConsumer;
+
 @Log4j2
 @RequiredArgsConstructor
 public class OnvifCodec extends ChannelDuplexHandler {
 
     private String incomingMessage = "";
-    private final OnvifConnection onvifConnection;
+    private final BiConsumer<String, Integer> consumer;
     private int code;
 
     @Override
@@ -32,10 +31,10 @@ public class OnvifCodec extends ChannelDuplexHandler {
                 incomingMessage += content.content().toString(CharsetUtil.UTF_8);
             }
             if (msg instanceof LastHttpContent) {
-                onvifConnection.processReply(incomingMessage, code);
+                consumer.accept(incomingMessage, code);
                 ctx.close();
             }
-            if(msg instanceof DefaultHttpResponse) {
+            if (msg instanceof DefaultHttpResponse) {
                 this.code = ((DefaultHttpResponse) msg).status().code();
             }
         } finally {

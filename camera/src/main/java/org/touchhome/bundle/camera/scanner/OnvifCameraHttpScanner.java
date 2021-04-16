@@ -11,6 +11,8 @@ import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
 import org.touchhome.bundle.api.model.ProgressBar;
 import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
+import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
+import org.touchhome.bundle.camera.onvif.OnvifDiscovery;
 import org.touchhome.bundle.camera.setting.onvif.ScanOnvifHttpDefaultPasswordAuthSetting;
 import org.touchhome.bundle.camera.setting.onvif.ScanOnvifHttpDefaultUserAuthSetting;
 import org.touchhome.bundle.camera.setting.onvif.ScanOnvifHttpMaxPingTimeoutSetting;
@@ -58,7 +60,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
         Map<String, Callable<Integer>> tasks = networkHardwareRepository.buildPingIpAddressTasks(log, ports, pingTimeout, (ipAddress, port) -> {
             String host = ipAddress + ":" + port;
             log.info("Onvif ip alive: <{}>. Fetching camera capabilities", host);
-            OnvifDeviceState onvifDeviceState = new OnvifDeviceState(ipAddress, port, user, password);
+            OnvifDeviceState onvifDeviceState = new OnvifDeviceState(ipAddress, port, 0, user, password);
             try {
                 onvifDeviceState.checkForErrors();
                 foundDeviceServices(onvifDeviceState, false);
@@ -68,7 +70,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
             }
         });
         List<Integer> availableOnvifCameras = entityContext.bgp().runInBatchAndGet("scan-onvif-http-batch-result",
-                pingTimeout * tasks.size() / 1000, THREAD_COUNT, tasks,
+                2 * pingTimeout * tasks.size() / 1000, THREAD_COUNT, tasks,
                 completedTaskCount -> progressBar.progress(100 / (float) tasks.size() * completedTaskCount,
                         "Onvif http stream done " + completedTaskCount + "/" + tasks.size() + " tasks"));
 
@@ -79,9 +81,11 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
 
     private void foundDeviceServices(OnvifDeviceState onvifDeviceState, boolean requireAuth) {
         log.info("Scan found onvif camera: <{}>", onvifDeviceState.getHOST_IP());
+        CameraBrandHandlerDescription brand = OnvifDiscovery.getBrandFromLoginPage(onvifDeviceState.getIp());
+
         OnvifCameraEntity existedCamera = existsCamera.get(onvifDeviceState.getIEEEAddress());
         if (existedCamera != null) {
-            existedCamera.tryUpdateData(entityContext, onvifDeviceState.getIp(), onvifDeviceState.getPort(), onvifDeviceState.getDevices().getName());
+            existedCamera.tryUpdateData(entityContext, onvifDeviceState.getIp(), onvifDeviceState.getOnvifPort(), onvifDeviceState.getInitialDevices().getName());
             result.getExistedCount().incrementAndGet();
             return;
         }
@@ -95,22 +99,24 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
                     if (requireAuth) {
                         messages.add(Lang.getServerMessage("VIDEO_STREAM.REQUIRE_AUTH"));
                     }
-                    String name = onvifDeviceState.getDevices().getName();
+                    String name = onvifDeviceState.getInitialDevices().getName();
                     if (name != null) {
                         messages.add(Lang.getServerMessage("VIDEO_STREAM.NAME", "NAME", name));
                     }
-                    String model = onvifDeviceState.getDevices().getDeviceInformation().getModel();
+                    String model = onvifDeviceState.getInitialDevices().getDeviceInformation().getModel();
                     if (model != null) {
                         messages.add(Lang.getServerMessage("VIDEO_STREAM.MODEL", "MODEL", model));
                     }
+                    messages.add(Lang.getServerMessage("VIDEO_STREAM.BRAND", "BRAND", brand.getName()));
                 },
                 () -> {
                     log.info("Saving onvif camera with host: <{}>", onvifDeviceState.getHOST_IP());
                     OnvifCameraEntity entity = new OnvifCameraEntity()
                             .setIp(onvifDeviceState.getIp())
-                            .setOnvifPort(onvifDeviceState.getPort())
-                            .setName(onvifDeviceState.getDevices().getName())
+                            .setOnvifPort(onvifDeviceState.getOnvifPort())
+                            .setName(onvifDeviceState.getInitialDevices().getName())
                             .setUser(onvifDeviceState.getUsername())
+                            .setCameraType(brand.getID())
                             .setPassword(onvifDeviceState.getPassword())
                             .setIeeeAddress(onvifDeviceState.getIEEEAddress());
                     entityContext.save(entity);

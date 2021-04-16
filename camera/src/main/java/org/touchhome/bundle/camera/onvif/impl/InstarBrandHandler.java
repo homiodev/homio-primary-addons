@@ -1,24 +1,26 @@
 package org.touchhome.bundle.camera.onvif.impl;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
 import io.netty.util.ReferenceCountUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.StringType;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.util.Helper;
-import org.touchhome.bundle.camera.onvif.util.OnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.ui.UICameraAction;
-
-import java.util.ArrayList;
 
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
 /**
  * responsible for handling commands, which are sent to one of the channels.
  */
-public class InstarBrandHandler extends OnvifCameraBrandHandler {
+@CameraBrandHandler(name = "Instar", handlerName = "instarHandler")
+public class InstarBrandHandler extends BaseOnvifCameraBrandHandler {
     private String requestUrl = "Empty";
 
     public InstarBrandHandler(OnvifCameraEntity onvifCameraEntity) {
@@ -178,14 +180,36 @@ public class InstarBrandHandler extends OnvifCameraBrandHandler {
         }
     }
 
-    public ArrayList<String> getLowPriorityRequests() {
-        ArrayList<String> lowPriorityRequests = new ArrayList<>(2);
-        lowPriorityRequests.add("/cgi-bin/hi3510/param.cgi?cmd=getaudioalarmattr");
-        lowPriorityRequests.add("/cgi-bin/hi3510/param.cgi?cmd=getmdattr");
-        lowPriorityRequests.add("/param.cgi?cmd=getinfrared");
-        lowPriorityRequests.add("/param.cgi?cmd=getoverlayattr&-region=1");
-        lowPriorityRequests.add("/param.cgi?cmd=getpirattr");
-        lowPriorityRequests.add("/param.cgi?cmd=getioattr"); // ext alarm input on/off
-        return lowPriorityRequests;
+    @Override
+    public void runOncePerMinute(EntityContext entityContext) {
+        onvifCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=getaudioalarmattr");
+        onvifCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=getmdattr");
+        onvifCameraHandler.sendHttpGET("/param.cgi?cmd=getinfrared");
+        onvifCameraHandler.sendHttpGET("/param.cgi?cmd=getoverlayattr&-region=1");
+        onvifCameraHandler.sendHttpGET("/param.cgi?cmd=getpirattr");
+        onvifCameraHandler.sendHttpGET("/param.cgi?cmd=getioattr"); // ext alarm input on/off
+    }
+
+    @Override
+    public void pollCameraRunnable(OnvifCameraHandler onvifCameraHandler) {
+        onvifCameraHandler.motionDetected(false, CHANNEL_MOTION_ALARM);
+        onvifCameraHandler.motionDetected(false, CHANNEL_PIR_ALARM);
+        onvifCameraHandler.audioDetected(false);
+    }
+
+    @Override
+    public void initialize(EntityContext entityContext) {
+        if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
+            onvifCameraHandler.setMjpegUri("/tmpfs/snap.jpg");
+        }
+        if (StringUtils.isEmpty(onvifCameraHandler.getSnapshotUri())) {
+            onvifCameraHandler.setSnapshotUri("/mjpegstream.cgi?-chn=12");
+        }
+    }
+
+    @Override
+    public void handleSetURL(ChannelPipeline pipeline, String httpRequestURL) {
+        InstarBrandHandler instarHandler = (InstarBrandHandler) pipeline.get("instarHandler");
+        instarHandler.setURL(httpRequestURL);
     }
 }

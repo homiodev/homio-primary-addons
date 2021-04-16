@@ -31,20 +31,22 @@ public class OnvifWsDiscoveryCameraScanner implements VideoStreamScanner {
             Map<String, OnvifCameraEntity> existsCamera = entityContext.findAll(OnvifCameraEntity.class)
                     .stream().collect(Collectors.toMap(OnvifCameraEntity::getIp, Function.identity()));
 
-            onvifDiscovery.discoverCameras((cameraType, ipAddress, onvifPort) -> {
+            onvifDiscovery.discoverCameras((brand, ipAddress, onvifPort) -> {
                 if (!existsCamera.containsKey(ipAddress)) {
                     result.getNewCount().incrementAndGet();
                     handleDevice(headerConfirmButtonKey,
                             "onvif-" + ipAddress,
-                            cameraType.name() + "/" + ipAddress, entityContext,
-                            messages ->
-                                    messages.add(Lang.getServerMessage("VIDEO_STREAM.PORT", "PORT", String.valueOf(onvifPort))),
+                            brand + "/" + ipAddress, entityContext,
+                            messages -> {
+                                messages.add(Lang.getServerMessage("VIDEO_STREAM.PORT", "PORT", String.valueOf(onvifPort)));
+                                messages.add(Lang.getServerMessage("VIDEO_STREAM.BRAND", "BRAND", brand.getName()));
+                            },
                             () -> {
                                 log.info("Confirm save onvif camera with ip address: <{}>", ipAddress);
                                 entityContext.save(new OnvifCameraEntity()
                                         .setIp(ipAddress)
                                         .setOnvifPort(onvifPort)
-                                        .setCameraType(cameraType));
+                                        .setCameraType(brand.getID()));
                             });
                 } else {
                     result.getExistedCount().incrementAndGet();

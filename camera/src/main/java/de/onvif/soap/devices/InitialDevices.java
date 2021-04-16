@@ -2,6 +2,7 @@ package de.onvif.soap.devices;
 
 import de.onvif.soap.OnvifDeviceState;
 import de.onvif.soap.SOAP;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.onvif.ver10.device.wsdl.*;
 import org.onvif.ver10.media.wsdl.*;
@@ -14,18 +15,23 @@ import java.net.ConnectException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class InitialDevices {
 
-    private SOAP soap;
-    private OnvifDeviceState onvifDeviceState;
+    private final OnvifDeviceState onvifDeviceState;
+    private final SOAP soap;
+
     private GetProfilesResponse profilesResponse;
     private Map<String, Profile> profileToken2Profile = new HashMap<>();
     private GetDeviceInformationResponse deviceInformation;
     private List<Scope> scopes;
+    private List<Service> services;
 
-    public InitialDevices(OnvifDeviceState onvifDeviceState) {
-        this.onvifDeviceState = onvifDeviceState;
-        this.soap = onvifDeviceState.getSoap();
+    public void dispose() {
+        profilesResponse = null;
+        profileToken2Profile = null;
+        deviceInformation = null;
+        scopes = null;
     }
 
     public java.util.Date getDate() {
@@ -33,12 +39,7 @@ public class InitialDevices {
 
         GetSystemDateAndTimeResponse response = new GetSystemDateAndTimeResponse();
 
-        try {
-            response = (GetSystemDateAndTimeResponse) soap.createSOAPDeviceRequest(new GetSystemDateAndTime(), response);
-        } catch (SOAPException | ConnectException e) {
-            e.printStackTrace();
-            return null;
-        }
+        response = (GetSystemDateAndTimeResponse) soap.createSOAPDeviceRequest(new GetSystemDateAndTime(), response);
 
         Date date = response.getSystemDateAndTime().getUTCDateTime().getDate();
         Time time = response.getSystemDateAndTime().getUTCDateTime().getTime();
@@ -50,14 +51,8 @@ public class InitialDevices {
     public GetDeviceInformationResponse getDeviceInformation() {
         if (this.deviceInformation == null) {
             GetDeviceInformation getHostname = new GetDeviceInformation();
-            GetDeviceInformationResponse response = new GetDeviceInformationResponse();
-            try {
-                response = (GetDeviceInformationResponse) soap.createSOAPDeviceRequest(getHostname, response);
-            } catch (SOAPException | ConnectException e) {
-                e.printStackTrace();
-                return null;
-            }
-            this.deviceInformation = response;
+            this.deviceInformation = new GetDeviceInformationResponse();
+            this.deviceInformation = (GetDeviceInformationResponse) soap.createSOAPDeviceRequest(getHostname, this.deviceInformation);
         }
         return this.deviceInformation;
     }
@@ -65,82 +60,40 @@ public class InitialDevices {
     public String getHostname() {
         GetHostname getHostname = new GetHostname();
         GetHostnameResponse response = new GetHostnameResponse();
-        try {
-            response = (GetHostnameResponse) soap.createSOAPDeviceRequest(getHostname, response);
-        } catch (SOAPException | ConnectException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        return response.getHostnameInformation().getName();
+        response = (GetHostnameResponse) soap.createSOAPDeviceRequest(getHostname, response);
+        return response == null ? null : response.getHostnameInformation().getName();
     }
 
-    public boolean setHostname(String hostname) {
+    public void setHostname(String hostname) {
         SetHostname setHostname = new SetHostname();
         setHostname.setName(hostname);
         SetHostnameResponse response = new SetHostnameResponse();
-        try {
-            response = (SetHostnameResponse) soap.createSOAPDeviceRequest(setHostname, response);
-        } catch (SOAPException | ConnectException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
+        soap.createSOAPDeviceRequest(setHostname, response);
     }
 
     public List<User> getUsers() {
         GetUsers getUsers = new GetUsers();
         GetUsersResponse response = new GetUsersResponse();
-        try {
-            response = (GetUsersResponse) soap.createSOAPDeviceRequest(getUsers, response);
-        } catch (SOAPException | ConnectException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        if (response == null) {
-            return null;
-        }
-
-        return response.getUser();
+        response = (GetUsersResponse) soap.createSOAPDeviceRequest(getUsers, response);
+        return response == null ? null : response.getUser();
     }
 
     public Capabilities getCapabilities() throws ConnectException, SOAPException {
-        GetCapabilities getCapabilities = new GetCapabilities();
+        GetCapabilities request = new GetCapabilities();
         GetCapabilitiesResponse response = new GetCapabilitiesResponse();
 
-        try {
-            response = (GetCapabilitiesResponse) soap.createSOAPRequest(getCapabilities, response, onvifDeviceState.getDeviceUri());
-        } catch (SOAPException e) {
-            throw e;
-        }
-
-        if (response == null) {
-            return null;
-        }
-
-        return response.getCapabilities();
+        response = (GetCapabilitiesResponse) soap.createSOAPRequest(request, response, onvifDeviceState.getServerDeviceUri(), onvifDeviceState.getServerDeviceIpLessUri());
+        return response == null ? null : response.getCapabilities();
     }
 
     public List<Profile> getProfiles() {
         GetProfiles request = new GetProfiles();
         if (this.profilesResponse == null) {
             profilesResponse = new GetProfilesResponse();
-
-            try {
-                profilesResponse = (GetProfilesResponse) soap.createSOAPMediaRequest(request, profilesResponse);
-            } catch (SOAPException | ConnectException e) {
-                e.printStackTrace();
-                return null;
-            }
-
-            if (profilesResponse == null) {
-                return null;
-            }
+            profilesResponse = (GetProfilesResponse) soap.createSOAPMediaRequest(request, profilesResponse);
         }
 
-        return profilesResponse.getProfiles();
+        return profilesResponse == null ? null : profilesResponse.getProfiles();
     }
 
     public Profile getProfile(String profileToken) {
@@ -150,12 +103,7 @@ public class InitialDevices {
 
             request.setProfileToken(profileToken);
 
-            try {
-                response = (GetProfileResponse) soap.createSOAPMediaRequest(request, response);
-            } catch (SOAPException | ConnectException e) {
-                e.printStackTrace();
-                return null;
-            }
+            response = (GetProfileResponse) soap.createSOAPMediaRequest(request, response);
 
             if (response == null) {
                 return null;
@@ -172,38 +120,17 @@ public class InitialDevices {
 
         request.setName(name);
 
-        try {
-            response = (CreateProfileResponse) soap.createSOAPMediaRequest(request, response);
-        } catch (SOAPException | ConnectException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        if (response == null) {
-            return null;
-        }
-
-        return response.getProfile();
+        response = (CreateProfileResponse) soap.createSOAPMediaRequest(request, response);
+        return response == null ? null : response.getProfile();
     }
 
-    public List<Service> getServices(boolean includeCapability) {
-        GetServices request = new GetServices();
-        GetServicesResponse response = new GetServicesResponse();
-
-        request.setIncludeCapability(includeCapability);
-
-        try {
-            response = (GetServicesResponse) soap.createSOAPDeviceRequest(request, response);
-        } catch (SOAPException | ConnectException e) {
-            e.printStackTrace();
-            return null;
+    public List<Service> getServices() {
+        if (services == null) {
+            GetServices request = new GetServices().setIncludeCapability(true);
+            GetServicesResponse response = (GetServicesResponse) soap.createSOAPDeviceRequest(request, new GetServicesResponse());
+            services = response == null ? null : response.getService();
         }
-
-        if (response == null) {
-            return null;
-        }
-
-        return response.getService();
+        return services;
     }
 
     public List<Scope> getScopes() {
@@ -211,13 +138,7 @@ public class InitialDevices {
             GetScopes request = new GetScopes();
             GetScopesResponse response = new GetScopesResponse();
 
-            try {
-                response = (GetScopesResponse) soap.createSOAPMediaRequest(request, response);
-            } catch (SOAPException | ConnectException e) {
-                e.printStackTrace();
-                return null;
-            }
-
+            response = (GetScopesResponse) soap.createSOAPMediaRequest(request, response);
             if (response == null) {
                 return null;
             }
