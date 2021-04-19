@@ -93,7 +93,7 @@ public final class FirmataNetworkEntity extends FirmataBaseEntity<FirmataNetwork
     public static class SelectFirmataIpDeviceLoader implements DynamicOptionLoader {
 
         @Override
-        public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext) {
+        public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
             Map<String, FirmataBundleEntryPoint.UdpPayload> udpFoundDevices = FirmataBundleEntryPoint.getUdpFoundDevices();
             return udpFoundDevices.entrySet().stream().map(e -> OptionModel.of(e.getKey(), e.getValue().toString())).collect(Collectors.toList());
         }

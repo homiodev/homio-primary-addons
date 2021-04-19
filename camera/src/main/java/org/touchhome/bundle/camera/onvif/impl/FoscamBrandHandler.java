@@ -9,6 +9,8 @@ import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.BrandCameraHasAudioAlarm;
+import org.touchhome.bundle.camera.onvif.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.onvif.util.Helper;
 import org.touchhome.bundle.camera.ui.UICameraAction;
 import org.touchhome.bundle.camera.ui.UICameraActionGetter;
@@ -19,8 +21,9 @@ import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
  * responsible for handling commands, which are sent to one of the channels.
  */
 @CameraBrandHandler(name = "Foscam")
-public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler {
+public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler implements BrandCameraHasAudioAlarm , BrandCameraHasMotionAlarm {
     private static final String CG = "/cgi-bin/CGIProxy.fcgi?cmd=";
+    private int audioThreshold;
 
     public FoscamBrandHandler(OnvifCameraEntity onvifCameraEntity) {
         super(onvifCameraEntity);
@@ -64,13 +67,13 @@ public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler {
 
             ////////////// Sound Threshold //////////////
             if (content.contains("<sensitivity>0</sensitivity>")) {
-                setAttribute(CHANNEL_THRESHOLD_AUDIO_ALARM, DecimalType.ZERO);
+                setAttribute(CHANNEL_AUDIO_THRESHOLD, DecimalType.ZERO);
             }
             if (content.contains("<sensitivity>1</sensitivity>")) {
-                setAttribute(CHANNEL_THRESHOLD_AUDIO_ALARM, new DecimalType(50));
+                setAttribute(CHANNEL_AUDIO_THRESHOLD, new DecimalType(50));
             }
             if (content.contains("<sensitivity>2</sensitivity>")) {
-                setAttribute(CHANNEL_THRESHOLD_AUDIO_ALARM, DecimalType.HUNDRED);
+                setAttribute(CHANNEL_AUDIO_THRESHOLD, DecimalType.HUNDRED);
             }
 
             //////////////// Infrared LED /////////////////////
@@ -112,36 +115,29 @@ public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler {
         }
     }
 
-    @UICameraActionGetter(CHANNEL_THRESHOLD_AUDIO_ALARM)
-    public State getThresholdAudioAlarm() {
-        return getAttribute(CHANNEL_THRESHOLD_AUDIO_ALARM);
-    }
-
-    @UICameraAction(name = CHANNEL_THRESHOLD_AUDIO_ALARM, order = 20, icon = "fas fa-volume-up")
-    public void setThresholdAudioAlarm(int threshold) {
-        if (threshold == 0) {
-            onvifCameraHandler.sendHttpGET(CG + "setAudioAlarmConfig&isEnable=0&usr="
-                    + username + "&pwd=" + password);
-        } else if (threshold <= 33) {
-            onvifCameraHandler.sendHttpGET(CG + "setAudioAlarmConfig&isEnable=1&sensitivity=0&usr="
-                    + username + "&pwd=" + password);
-        } else if (threshold <= 66) {
-            onvifCameraHandler.sendHttpGET(CG + "setAudioAlarmConfig&isEnable=1&sensitivity=1&usr="
-                    + username + "&pwd=" + password);
-        } else {
-            onvifCameraHandler.sendHttpGET(CG + "setAudioAlarmConfig&isEnable=1&sensitivity=2&usr="
-                    + username + "&pwd=" + password);
+    @Override
+    public void setAudioAlarmThreshold(int audioThreshold) {
+        if (audioThreshold != this.audioThreshold) {
+            this.audioThreshold = audioThreshold;
+            if (audioThreshold == 0) {
+                onvifCameraHandler.sendHttpGET(CG + "setAudioAlarmConfig&isEnable=0&usr="
+                        + username + "&pwd=" + password);
+            } else if (audioThreshold <= 33) {
+                onvifCameraHandler.sendHttpGET(CG + "setAudioAlarmConfig&isEnable=1&sensitivity=0&usr="
+                        + username + "&pwd=" + password);
+            } else if (audioThreshold <= 66) {
+                onvifCameraHandler.sendHttpGET(CG + "setAudioAlarmConfig&isEnable=1&sensitivity=1&usr="
+                        + username + "&pwd=" + password);
+            } else {
+                onvifCameraHandler.sendHttpGET(CG + "setAudioAlarmConfig&isEnable=1&sensitivity=2&usr="
+                        + username + "&pwd=" + password);
+            }
         }
     }
 
-    @UICameraActionGetter(CHANNEL_ENABLE_AUDIO_ALARM)
-    public State getEnableAudioAlarm() {
-        return getAttribute(CHANNEL_ENABLE_AUDIO_ALARM);
-    }
-
-    @UICameraAction(name = CHANNEL_ENABLE_AUDIO_ALARM, order = 25, icon = "fas fa-volume-mute")
-    public void setEnableAudioAlarm(boolean on) {
-        if (on) {
+    @Override
+    public void setMotionAlarmThreshold(int threshold) {
+        if (threshold > 0) {
             if (onvifCameraHandler.getCameraEntity().getCustomAudioAlarmUrl().isEmpty()) {
                 onvifCameraHandler.sendHttpGET(CG + "setAudioAlarmConfig&isEnable=1&usr="
                         + username + "&pwd=" + password);

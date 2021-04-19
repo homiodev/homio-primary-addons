@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,10 +8,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * <p>
  * Java-Klasse f�r PTZMoveStatus complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="PTZMoveStatus">
  *   <complexContent>
@@ -31,8 +24,8 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PTZMoveStatus", propOrder = { "panTilt", "zoom" })
@@ -45,9 +38,9 @@ public class PTZMoveStatus {
 
 	/**
 	 * Ruft den Wert der panTilt-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link MoveStatus }
-	 * 
+	 *
 	 */
 	public MoveStatus getPanTilt() {
 		return panTilt;
@@ -55,10 +48,10 @@ public class PTZMoveStatus {
 
 	/**
 	 * Legt den Wert der panTilt-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link MoveStatus }
-	 * 
+	 *
 	 */
 	public void setPanTilt(MoveStatus value) {
 		this.panTilt = value;
@@ -66,9 +59,9 @@ public class PTZMoveStatus {
 
 	/**
 	 * Ruft den Wert der zoom-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link MoveStatus }
-	 * 
+	 *
 	 */
 	public MoveStatus getZoom() {
 		return zoom;
@@ -76,10 +69,10 @@ public class PTZMoveStatus {
 
 	/**
 	 * Legt den Wert der zoom-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link MoveStatus }
-	 * 
+	 *
 	 */
 	public void setZoom(MoveStatus value) {
 		this.zoom = value;

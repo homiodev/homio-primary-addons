@@ -18,6 +18,7 @@ import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.model.ProgressBar;
 import org.touchhome.bundle.api.setting.SettingPluginOptions;
 import org.touchhome.bundle.api.setting.console.header.dynamic.DynamicConsoleHeaderSettingPlugin;
+import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.arduino.setting.ConsoleArduinoBoardPasswordSetting;
 import org.touchhome.bundle.arduino.setting.ConsoleArduinoProgrammerSetting;
 import org.touchhome.bundle.arduino.setting.header.ConsoleHeaderArduinoIncludeLibrarySetting;
@@ -237,8 +238,8 @@ public class ArduinoSketchService {
         }
 
         @Override
-        public SettingType getSettingType() {
-            return SettingType.SelectBox;
+        public UIFieldType getSettingType() {
+            return UIFieldType.SelectBox;
         }
 
         @Override

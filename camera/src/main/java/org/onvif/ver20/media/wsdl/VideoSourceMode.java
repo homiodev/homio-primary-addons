@@ -1,11 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2016.02.05 um 06:25:30 PM CET 
-//
-
-
 package org.onvif.ver20.media.wsdl;
 
 import java.util.ArrayList;
@@ -24,10 +16,10 @@ import org.onvif.ver10.schema.VideoResolution;
 
 
 /**
- * <p>Java-Klasse für VideoSourceMode complex type.
- * 
+ * <p>Java-Klasse fï¿½r VideoSourceMode complex type.
+ *
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * &lt;complexType name="VideoSourceMode">
  *   &lt;complexContent>
@@ -47,8 +39,8 @@ import org.onvif.ver10.schema.VideoResolution;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "VideoSourceMode", propOrder = {
@@ -83,7 +75,7 @@ public class VideoSourceMode {
 
     /**
      * Ruft den Wert der maxFramerate-Eigenschaft ab.
-     * 
+     *
      */
     public float getMaxFramerate() {
         return maxFramerate;
@@ -91,7 +83,7 @@ public class VideoSourceMode {
 
     /**
      * Legt den Wert der maxFramerate-Eigenschaft fest.
-     * 
+     *
      */
     public void setMaxFramerate(float value) {
         this.maxFramerate = value;
@@ -99,11 +91,11 @@ public class VideoSourceMode {
 
     /**
      * Ruft den Wert der maxResolution-Eigenschaft ab.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link VideoResolution }
-     *     
+     *
      */
     public VideoResolution getMaxResolution() {
         return maxResolution;
@@ -111,11 +103,11 @@ public class VideoSourceMode {
 
     /**
      * Legt den Wert der maxResolution-Eigenschaft fest.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link VideoResolution }
-     *     
+     *
      */
     public void setMaxResolution(VideoResolution value) {
         this.maxResolution = value;
@@ -123,25 +115,25 @@ public class VideoSourceMode {
 
     /**
      * Gets the value of the encodings property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the encodings property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getEncodings().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
+     *
+     *
      */
     public List<String> getEncodings() {
         if (encodings == null) {
@@ -152,7 +144,7 @@ public class VideoSourceMode {
 
     /**
      * Ruft den Wert der reboot-Eigenschaft ab.
-     * 
+     *
      */
     public boolean isReboot() {
         return reboot;
@@ -160,7 +152,7 @@ public class VideoSourceMode {
 
     /**
      * Legt den Wert der reboot-Eigenschaft fest.
-     * 
+     *
      */
     public void setReboot(boolean value) {
         this.reboot = value;
@@ -168,11 +160,11 @@ public class VideoSourceMode {
 
     /**
      * Ruft den Wert der description-Eigenschaft ab.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getDescription() {
         return description;
@@ -180,11 +172,11 @@ public class VideoSourceMode {
 
     /**
      * Legt den Wert der description-Eigenschaft fest.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setDescription(String value) {
         this.description = value;
@@ -192,11 +184,11 @@ public class VideoSourceMode {
 
     /**
      * Ruft den Wert der extension-Eigenschaft ab.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link VideoSourceModeExtension }
-     *     
+     *
      */
     public VideoSourceModeExtension getExtension() {
         return extension;
@@ -204,11 +196,11 @@ public class VideoSourceMode {
 
     /**
      * Legt den Wert der extension-Eigenschaft fest.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link VideoSourceModeExtension }
-     *     
+     *
      */
     public void setExtension(VideoSourceModeExtension value) {
         this.extension = value;
@@ -216,11 +208,11 @@ public class VideoSourceMode {
 
     /**
      * Ruft den Wert der token-Eigenschaft ab.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getToken() {
         return token;
@@ -228,11 +220,11 @@ public class VideoSourceMode {
 
     /**
      * Legt den Wert der token-Eigenschaft fest.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setToken(String value) {
         this.token = value;
@@ -240,11 +232,11 @@ public class VideoSourceMode {
 
     /**
      * Ruft den Wert der enabled-Eigenschaft ab.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public Boolean isEnabled() {
         return enabled;
@@ -252,11 +244,11 @@ public class VideoSourceMode {
 
     /**
      * Legt den Wert der enabled-Eigenschaft fest.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setEnabled(Boolean value) {
         this.enabled = value;
@@ -264,15 +256,15 @@ public class VideoSourceMode {
 
     /**
      * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     * 
+     *
      * <p>
-     * the map is keyed by the name of the attribute and 
+     * the map is keyed by the name of the attribute and
      * the value is the string value of the attribute.
-     * 
+     *
      * the map returned by this method is live, and you can add new attribute
      * by updating the map directly. Because of this design, there's no setter.
-     * 
-     * 
+     *
+     *
      * @return
      *     always non-null
      */

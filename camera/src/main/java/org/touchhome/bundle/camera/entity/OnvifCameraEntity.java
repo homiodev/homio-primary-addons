@@ -70,7 +70,7 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
     public static class SelectCameraBrand implements DynamicOptionLoader {
 
         @Override
-        public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext) {
+        public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
             return OptionModel.list(CameraCoordinator.cameraBrands.keySet());
         }
     }
@@ -101,7 +101,7 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
     }
 
     @UIFieldPort
-    @UIField(order = 36, advanced = true)
+    @UIField(order = 36, advanced = true, onlyEdit = true)
     @RestartHandlerOnChange
     public int getRestPort() {
         return getJsonData("restPort", 80);
@@ -161,12 +161,13 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
 
     @UIField(order = 75, onlyEdit = true)
     @RestartHandlerOnChange
+    @UIFieldIgnoreGetDefault
     public String getSnapshotUrl() {
         String snapshotUrl = getJsonData("snapshotUrl");
-        if (snapshotUrl == null || snapshotUrl.equals("ffmpeg")) {
+        if (StringUtils.isEmpty(snapshotUrl) || snapshotUrl.equals("ffmpeg")) {
             snapshotUrl = getCameraHandler().getOnvifDeviceState().getMediaDevices().getSnapshotUri();
         }
-        return snapshotUrl == null ? "ffmpeg" : snapshotUrl;
+        return StringUtils.isEmpty(snapshotUrl) ? "ffmpeg" : snapshotUrl;
     }
 
     public void setSnapshotUrl(String value) {
@@ -299,32 +300,35 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
 
     @Override
     public Set<? extends DynamicContextMenuAction> getActions(EntityContext entityContext) {
-        Set<DynamicContextMenuAction> actions = new TreeSet<>(super.getActions(entityContext));
-        if (StringUtils.isNotEmpty(getIeeeAddress())) {
-            return actions;
+        Set<DynamicContextMenuAction> actions = new TreeSet<>();
+        for (DynamicContextMenuAction action : super.getActions(entityContext)) {
+            actions.add(action.setDisabled(!this.isStart()));
         }
-        DynamicContextMenuAction authAction = new DynamicContextMenuAction("AUTHENTICATE",
-                0, json -> {
+        if (StringUtils.isEmpty(getIeeeAddress())) {
+            DynamicContextMenuAction authAction = new DynamicContextMenuAction("AUTHENTICATE",
+                    0, json -> {
 
-            String user = json.getString("user");
-            String password = json.getString("pwd");
-            OnvifCameraEntity entity = this;
-            OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getIp(), getOnvifPort(), 0, user, password);
-            try {
-                onvifDeviceState.checkForErrors();
-                entityContext.updateDelayed(entity, e ->
-                        e.setUser(user) //
-                                .setPassword(password) //
-                                .setName(onvifDeviceState.getInitialDevices().getName())
-                                .setIeeeAddress(onvifDeviceState.getIEEEAddress()));
-                entityContext.ui().sendSuccessMessage("Onvif camera: " + getTitle() + " authenticated successfully");
-            } catch (Exception ex) {
-                entityContext.ui().sendWarningMessage("Onvif camera: " + getTitle() + " fault response: " + ex.getMessage());
-            }
-        }).setIcon("fas fa-sign-in-alt");
-        authAction.addInput(ActionInputParameter.text("user", getUser()));
-        authAction.addInput(ActionInputParameter.text("pwd", getPassword()));
-        actions.add(authAction);
+                String user = json.getString("user");
+                String password = json.getString("pwd");
+                OnvifCameraEntity entity = this;
+                OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getIp(), getOnvifPort(), 0, user, password);
+                try {
+                    onvifDeviceState.checkForErrors();
+                    entityContext.updateDelayed(entity, e ->
+                            e.setUser(user) //
+                                    .setPassword(password) //
+                                    .setName(onvifDeviceState.getInitialDevices().getName())
+                                    .setIeeeAddress(onvifDeviceState.getIEEEAddress()));
+                    entityContext.ui().sendSuccessMessage("Onvif camera: " + getTitle() + " authenticated successfully");
+                } catch (Exception ex) {
+                    entityContext.ui().sendWarningMessage("Onvif camera: " + getTitle() + " fault response: " + ex.getMessage());
+                }
+            }).setIcon("fas fa-sign-in-alt");
+            authAction.addInput(ActionInputParameter.text("user", getUser()));
+            authAction.addInput(ActionInputParameter.text("pwd", getPassword()));
+            actions.add(authAction);
+        }
+
         return actions;
     }
 }

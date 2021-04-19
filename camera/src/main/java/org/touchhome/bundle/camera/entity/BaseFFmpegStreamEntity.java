@@ -5,6 +5,7 @@ import org.touchhome.bundle.api.entity.dependency.RequireExecutableDependency;
 import org.touchhome.bundle.api.netty.HasBootstrapServer;
 import org.touchhome.bundle.api.netty.NettyUtils;
 import org.touchhome.bundle.api.ui.field.UIField;
+import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
 import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.camera.handler.BaseFFmpegCameraHandler;
@@ -41,6 +42,12 @@ public abstract class BaseFFmpegStreamEntity<T extends BaseFFmpegStreamEntity, H
 
     public void setAlarmInputUrl(String value) {
         setJsonData("alarmInputUrl", value);
+    }
+
+    @Override
+    @UIFieldIgnore
+    public String getIeeeAddress() {
+        return super.getIeeeAddress();
     }
 
     @UIField(order = 125, onlyEdit = true, advanced = true, type = UIFieldType.Chips)
@@ -98,7 +105,7 @@ public abstract class BaseFFmpegStreamEntity<T extends BaseFFmpegStreamEntity, H
         setJsonData("gifPreroll", value);
     }
 
-    @UIField(order = 110, inlineEdit = true)
+    @UIField(order = 110)
     @UIFieldSlider(min = 0, max = 1000)
     @RestartHandlerOnChange
     public int getMotionThreshold() {

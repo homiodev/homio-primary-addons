@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,10 +10,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 /**
  * <p>
  * Java-Klasse f�r NetworkInterfaceInfo complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="NetworkInterfaceInfo">
  *   <complexContent>
@@ -34,8 +27,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "NetworkInterfaceInfo", propOrder = { "name", "hwAddress", "mtu" })
@@ -51,9 +44,9 @@ public class NetworkInterfaceInfo {
 
 	/**
 	 * Ruft den Wert der name-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getName() {
 		return name;
@@ -61,10 +54,10 @@ public class NetworkInterfaceInfo {
 
 	/**
 	 * Legt den Wert der name-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setName(String value) {
 		this.name = value;
@@ -72,9 +65,9 @@ public class NetworkInterfaceInfo {
 
 	/**
 	 * Ruft den Wert der hwAddress-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getHwAddress() {
 		return hwAddress;
@@ -82,10 +75,10 @@ public class NetworkInterfaceInfo {
 
 	/**
 	 * Legt den Wert der hwAddress-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setHwAddress(String value) {
 		this.hwAddress = value;
@@ -93,9 +86,9 @@ public class NetworkInterfaceInfo {
 
 	/**
 	 * Ruft den Wert der mtu-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Integer }
-	 * 
+	 *
 	 */
 	public Integer getMTU() {
 		return mtu;
@@ -103,10 +96,10 @@ public class NetworkInterfaceInfo {
 
 	/**
 	 * Legt den Wert der mtu-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Integer }
-	 * 
+	 *
 	 */
 	public void setMTU(Integer value) {
 		this.mtu = value;

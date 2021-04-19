@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.HashMap;
@@ -19,10 +12,10 @@ import javax.xml.namespace.QName;
 /**
  * <p>
  * Java-Klasse f�r Rotate complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="Rotate">
  *   <complexContent>
@@ -37,8 +30,8 @@ import javax.xml.namespace.QName;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Rotate", propOrder = { "mode", "degree", "extension" })
@@ -55,9 +48,9 @@ public class Rotate {
 
 	/**
 	 * Ruft den Wert der mode-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link RotateMode }
-	 * 
+	 *
 	 */
 	public RotateMode getMode() {
 		return mode;
@@ -65,10 +58,10 @@ public class Rotate {
 
 	/**
 	 * Legt den Wert der mode-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link RotateMode }
-	 * 
+	 *
 	 */
 	public void setMode(RotateMode value) {
 		this.mode = value;
@@ -76,9 +69,9 @@ public class Rotate {
 
 	/**
 	 * Ruft den Wert der degree-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Integer }
-	 * 
+	 *
 	 */
 	public Integer getDegree() {
 		return degree;
@@ -86,10 +79,10 @@ public class Rotate {
 
 	/**
 	 * Legt den Wert der degree-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Integer }
-	 * 
+	 *
 	 */
 	public void setDegree(Integer value) {
 		this.degree = value;
@@ -97,9 +90,9 @@ public class Rotate {
 
 	/**
 	 * Ruft den Wert der extension-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link RotateExtension }
-	 * 
+	 *
 	 */
 	public RotateExtension getExtension() {
 		return extension;
@@ -107,10 +100,10 @@ public class Rotate {
 
 	/**
 	 * Legt den Wert der extension-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link RotateExtension }
-	 * 
+	 *
 	 */
 	public void setExtension(RotateExtension value) {
 		this.extension = value;
@@ -118,13 +111,13 @@ public class Rotate {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

@@ -11,6 +11,8 @@ import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.BrandCameraHasAudioAlarm;
+import org.touchhome.bundle.camera.onvif.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.onvif.util.Helper;
 import org.touchhome.bundle.camera.ui.UICameraAction;
 import org.touchhome.bundle.camera.ui.UICameraActionGetter;
@@ -21,8 +23,10 @@ import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
  * responsible for handling commands, which are sent to one of the channels.
  */
 @CameraBrandHandler(name = "Amcrest", handlerName = "amcrestHandler")
-public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler {
+public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements BrandCameraHasAudioAlarm,
+        BrandCameraHasMotionAlarm {
     private String requestUrl = "Empty";
+    private int audioThreshold;
 
     public AmcrestBrandHandler(OnvifCameraEntity onvifCameraEntity) {
         super(onvifCameraEntity);
@@ -58,28 +62,21 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler {
         }
     }
 
-    @UICameraActionGetter(CHANNEL_THRESHOLD_AUDIO_ALARM)
-    public State getThresholdAudioAlarm() {
-        return getAttribute(CHANNEL_THRESHOLD_AUDIO_ALARM);
-    }
-
-    @UICameraAction(name = CHANNEL_THRESHOLD_AUDIO_ALARM, order = 20, icon = "fas fa-volume-up")
-    public void setThresholdAudioAlarm(int threshold) {
-        if (threshold == 0) {
-            onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationThreold=1");
-        } else {
-            onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationThreold=" + threshold);
+    @Override
+    public void setAudioAlarmThreshold(int audioThreshold) {
+        if (audioThreshold != this.audioThreshold) {
+            this.audioThreshold = audioThreshold;
+            if (this.audioThreshold > 0) {
+                onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationThreold=" + audioThreshold);
+            } else {
+                onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationThreold=1");
+            }
         }
     }
 
-    @UICameraActionGetter(CHANNEL_ENABLE_AUDIO_ALARM)
-    public State getEnableAudioAlarm() {
-        return getAttribute(CHANNEL_ENABLE_AUDIO_ALARM);
-    }
-
-    @UICameraAction(name = CHANNEL_ENABLE_AUDIO_ALARM, order = 25, icon = "fas fa-volume-mute")
-    public void setEnableAudioAlarm(boolean on) {
-        if (on) {
+    @Override
+    public void setMotionAlarmThreshold(int threshold) {
+        if (threshold > 0) {
             onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationDetect=true&AudioDetect[0].EventHandler.Dejitter=1");
         } else {
             onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationDetect=false");
@@ -183,7 +180,7 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler {
             // Handle AudioMutationThreshold alarm
             if (content.contains("table.AudioDetect[0].MutationThreold=")) {
                 String value = onvifCameraHandler.returnValueFromString(content, "table.AudioDetect[0].MutationThreold=");
-                setAttribute(CHANNEL_THRESHOLD_AUDIO_ALARM, new DecimalType(value));
+                setAttribute(CHANNEL_AUDIO_THRESHOLD, new DecimalType(value));
             }
             // Privacy Mode on/off
             if (content.contains("Code=LensMaskOpen;") || content.contains("table.LeLensMask[0].Enable=true")) {

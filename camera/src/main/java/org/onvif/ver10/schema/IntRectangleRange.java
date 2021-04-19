@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,13 +7,13 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * Range of a rectangle. The rectangle itself is defined by lower left corner position and size. Units are pixel.
- * 
+ *
  * <p>
  * Java-Klasse f�r IntRectangleRange complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="IntRectangleRange">
  *   <complexContent>
@@ -35,8 +28,8 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "IntRectangleRange", propOrder = { "xRange", "yRange", "widthRange", "heightRange" })
@@ -53,9 +46,9 @@ public class IntRectangleRange {
 
 	/**
 	 * Ruft den Wert der xRange-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link IntRange }
-	 * 
+	 *
 	 */
 	public IntRange getXRange() {
 		return xRange;
@@ -63,10 +56,10 @@ public class IntRectangleRange {
 
 	/**
 	 * Legt den Wert der xRange-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link IntRange }
-	 * 
+	 *
 	 */
 	public void setXRange(IntRange value) {
 		this.xRange = value;
@@ -74,9 +67,9 @@ public class IntRectangleRange {
 
 	/**
 	 * Ruft den Wert der yRange-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link IntRange }
-	 * 
+	 *
 	 */
 	public IntRange getYRange() {
 		return yRange;
@@ -84,10 +77,10 @@ public class IntRectangleRange {
 
 	/**
 	 * Legt den Wert der yRange-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link IntRange }
-	 * 
+	 *
 	 */
 	public void setYRange(IntRange value) {
 		this.yRange = value;
@@ -95,9 +88,9 @@ public class IntRectangleRange {
 
 	/**
 	 * Ruft den Wert der widthRange-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link IntRange }
-	 * 
+	 *
 	 */
 	public IntRange getWidthRange() {
 		return widthRange;
@@ -105,10 +98,10 @@ public class IntRectangleRange {
 
 	/**
 	 * Legt den Wert der widthRange-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link IntRange }
-	 * 
+	 *
 	 */
 	public void setWidthRange(IntRange value) {
 		this.widthRange = value;
@@ -116,9 +109,9 @@ public class IntRectangleRange {
 
 	/**
 	 * Ruft den Wert der heightRange-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link IntRange }
-	 * 
+	 *
 	 */
 	public IntRange getHeightRange() {
 		return heightRange;
@@ -126,10 +119,10 @@ public class IntRectangleRange {
 
 	/**
 	 * Legt den Wert der heightRange-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link IntRange }
-	 * 
+	 *
 	 */
 	public void setHeightRange(IntRange value) {
 		this.heightRange = value;

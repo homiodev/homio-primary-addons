@@ -5,6 +5,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.*;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.touchhome.bundle.api.EntityContext;
@@ -13,6 +14,7 @@ import org.touchhome.bundle.api.ui.field.action.impl.StatefulContextMenuAction;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.ui.CameraActionBuilder;
+import org.touchhome.bundle.camera.ui.CameraActionsContext;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -20,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @Log4j2
-public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler {
+public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler implements CameraActionsContext {
     private static Map<String, List<StatefulContextMenuAction>> actions = new HashMap<>();
 
     protected final OnvifCameraHandler onvifCameraHandler;
@@ -29,7 +31,10 @@ public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler {
     protected final String username;
     protected final String password;
     protected final String ip;
-    protected final OnvifCameraEntity onvifCameraEntity;
+    @Getter
+    protected final OnvifCameraEntity cameraEntity;
+    @Getter
+    protected final EntityContext entityContext;
 
     public BaseOnvifCameraBrandHandler(OnvifCameraHandler onvifCameraHandler) {
         this.onvifCameraHandler = onvifCameraHandler;
@@ -37,16 +42,18 @@ public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler {
         this.username = null;
         this.password = null;
         this.ip = null;
-        this.onvifCameraEntity = null;
+        this.cameraEntity = null;
+        this.entityContext = null;
     }
 
-    public BaseOnvifCameraBrandHandler(OnvifCameraEntity onvifCameraEntity) {
-        this.onvifCameraEntity = onvifCameraEntity;
-        this.onvifCameraHandler = onvifCameraEntity.getCameraHandler();
-        this.nvrChannel = onvifCameraEntity.getNvrChannel();
-        this.username = onvifCameraEntity.getUser();
-        this.password = onvifCameraEntity.getPassword();
-        this.ip = onvifCameraEntity.getIp();
+    public BaseOnvifCameraBrandHandler(OnvifCameraEntity cameraEntity) {
+        this.cameraEntity = cameraEntity;
+        this.onvifCameraHandler = cameraEntity.getCameraHandler();
+        this.nvrChannel = cameraEntity.getNvrChannel();
+        this.username = cameraEntity.getUser();
+        this.password = cameraEntity.getPassword();
+        this.ip = cameraEntity.getIp();
+        this.entityContext = onvifCameraHandler.getEntityContext();
     }
 
     @Override
@@ -54,7 +61,7 @@ public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler {
         return true;
     }
 
-    protected State getAttribute(String name) {
+    public State getAttribute(String name) {
         return onvifCameraHandler.getAttributes().getOrDefault(name, null);
     }
 
@@ -63,7 +70,7 @@ public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler {
     }
 
     public List<StatefulContextMenuAction> getCameraActions() {
-        return actions.computeIfAbsent(getClass().getSimpleName(), key -> CameraActionBuilder.assemble(this, this));
+        return actions.computeIfAbsent(getClass().getSimpleName(), key -> CameraActionBuilder.assemble(this));
     }
 
     protected void setAttribute(String key, State state) {

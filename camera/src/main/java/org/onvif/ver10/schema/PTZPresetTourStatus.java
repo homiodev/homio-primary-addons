@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.HashMap;
@@ -19,10 +12,10 @@ import javax.xml.namespace.QName;
 /**
  * <p>
  * Java-Klasse f�r PTZPresetTourStatus complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="PTZPresetTourStatus">
  *   <complexContent>
@@ -37,8 +30,8 @@ import javax.xml.namespace.QName;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PTZPresetTourStatus", propOrder = { "state", "currentTourSpot", "extension" })
@@ -55,9 +48,9 @@ public class PTZPresetTourStatus {
 
 	/**
 	 * Ruft den Wert der state-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link PTZPresetTourState }
-	 * 
+	 *
 	 */
 	public PTZPresetTourState getState() {
 		return state;
@@ -65,10 +58,10 @@ public class PTZPresetTourStatus {
 
 	/**
 	 * Legt den Wert der state-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link PTZPresetTourState }
-	 * 
+	 *
 	 */
 	public void setState(PTZPresetTourState value) {
 		this.state = value;
@@ -76,9 +69,9 @@ public class PTZPresetTourStatus {
 
 	/**
 	 * Ruft den Wert der currentTourSpot-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link PTZPresetTourSpot }
-	 * 
+	 *
 	 */
 	public PTZPresetTourSpot getCurrentTourSpot() {
 		return currentTourSpot;
@@ -86,10 +79,10 @@ public class PTZPresetTourStatus {
 
 	/**
 	 * Legt den Wert der currentTourSpot-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link PTZPresetTourSpot }
-	 * 
+	 *
 	 */
 	public void setCurrentTourSpot(PTZPresetTourSpot value) {
 		this.currentTourSpot = value;
@@ -97,9 +90,9 @@ public class PTZPresetTourStatus {
 
 	/**
 	 * Ruft den Wert der extension-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link PTZPresetTourStatusExtension }
-	 * 
+	 *
 	 */
 	public PTZPresetTourStatusExtension getExtension() {
 		return extension;
@@ -107,10 +100,10 @@ public class PTZPresetTourStatus {
 
 	/**
 	 * Legt den Wert der extension-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link PTZPresetTourStatusExtension }
-	 * 
+	 *
 	 */
 	public void setExtension(PTZPresetTourStatusExtension value) {
 		this.extension = value;
@@ -118,13 +111,13 @@ public class PTZPresetTourStatus {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

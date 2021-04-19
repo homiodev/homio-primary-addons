@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,10 +9,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * <p>
  * Java-Klasse f�r Space2DDescription complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="Space2DDescription">
  *   <complexContent>
@@ -33,8 +26,8 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Space2DDescription", propOrder = { "uri", "xRange", "yRange" })
@@ -50,9 +43,9 @@ public class Space2DDescription {
 
 	/**
 	 * Ruft den Wert der uri-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getURI() {
 		return uri;
@@ -60,10 +53,10 @@ public class Space2DDescription {
 
 	/**
 	 * Legt den Wert der uri-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setURI(String value) {
 		this.uri = value;
@@ -71,9 +64,9 @@ public class Space2DDescription {
 
 	/**
 	 * Ruft den Wert der xRange-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getXRange() {
 		return xRange;
@@ -81,10 +74,10 @@ public class Space2DDescription {
 
 	/**
 	 * Legt den Wert der xRange-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setXRange(FloatRange value) {
 		this.xRange = value;
@@ -92,9 +85,9 @@ public class Space2DDescription {
 
 	/**
 	 * Ruft den Wert der yRange-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getYRange() {
 		return yRange;
@@ -102,10 +95,10 @@ public class Space2DDescription {
 
 	/**
 	 * Legt den Wert der yRange-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setYRange(FloatRange value) {
 		this.yRange = value;

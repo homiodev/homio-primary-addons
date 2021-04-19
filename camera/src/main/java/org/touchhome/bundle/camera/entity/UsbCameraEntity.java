@@ -120,7 +120,7 @@ public class UsbCameraEntity extends BaseFFmpegStreamEntity<UsbCameraEntity, Usb
     public static class SelectAudioSource implements DynamicOptionLoader {
 
         @Override
-        public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext) {
+        public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
             Path path = entityContext.setting().getValue(CameraFFMPEGInstallPathOptions.class);
             return OptionModel.list(entityContext.getBean(FfmpegInputDeviceHardwareRepository.class)
                     .getAudioDevices(path.toString()));

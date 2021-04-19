@@ -6,6 +6,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.setting.SettingPluginOptionsFileExplorer;
 import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
+import org.touchhome.bundle.api.ui.field.UIFieldType;
 import processing.app.BaseNoGui;
 
 import java.io.File;
@@ -77,8 +78,8 @@ public class ConsoleHeaderArduinoSketchNameSetting implements SettingPluginOptio
     }
 
     @Override
-    public SettingType getSettingType() {
-        return SettingType.TextSelectBoxDynamic;
+    public UIFieldType getSettingType() {
+        return UIFieldType.TextSelectBoxDynamic;
     }
 
     @Override

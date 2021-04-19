@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,10 +8,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * <p>
  * Java-Klasse f�r NetworkInterfaceLink complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="NetworkInterfaceLink">
  *   <complexContent>
@@ -32,8 +25,8 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "NetworkInterfaceLink", propOrder = { "adminSettings", "operSettings", "interfaceType" })
@@ -48,9 +41,9 @@ public class NetworkInterfaceLink {
 
 	/**
 	 * Ruft den Wert der adminSettings-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link NetworkInterfaceConnectionSetting }
-	 * 
+	 *
 	 */
 	public NetworkInterfaceConnectionSetting getAdminSettings() {
 		return adminSettings;
@@ -58,10 +51,10 @@ public class NetworkInterfaceLink {
 
 	/**
 	 * Legt den Wert der adminSettings-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link NetworkInterfaceConnectionSetting }
-	 * 
+	 *
 	 */
 	public void setAdminSettings(NetworkInterfaceConnectionSetting value) {
 		this.adminSettings = value;
@@ -69,9 +62,9 @@ public class NetworkInterfaceLink {
 
 	/**
 	 * Ruft den Wert der operSettings-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link NetworkInterfaceConnectionSetting }
-	 * 
+	 *
 	 */
 	public NetworkInterfaceConnectionSetting getOperSettings() {
 		return operSettings;
@@ -79,10 +72,10 @@ public class NetworkInterfaceLink {
 
 	/**
 	 * Legt den Wert der operSettings-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link NetworkInterfaceConnectionSetting }
-	 * 
+	 *
 	 */
 	public void setOperSettings(NetworkInterfaceConnectionSetting value) {
 		this.operSettings = value;
@@ -90,7 +83,7 @@ public class NetworkInterfaceLink {
 
 	/**
 	 * Ruft den Wert der interfaceType-Eigenschaft ab.
-	 * 
+	 *
 	 */
 	public int getInterfaceType() {
 		return interfaceType;
@@ -98,7 +91,7 @@ public class NetworkInterfaceLink {
 
 	/**
 	 * Legt den Wert der interfaceType-Eigenschaft fest.
-	 * 
+	 *
 	 */
 	public void setInterfaceType(int value) {
 		this.interfaceType = value;

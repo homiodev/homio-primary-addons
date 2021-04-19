@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,10 +10,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 /**
  * <p>
  * Java-Klasse f�r PrefixedIPv6Address complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="PrefixedIPv6Address">
  *   <complexContent>
@@ -33,8 +26,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PrefixedIPv6Address", propOrder = { "address", "prefixLength" })
@@ -48,9 +41,9 @@ public class PrefixedIPv6Address {
 
 	/**
 	 * Ruft den Wert der address-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getAddress() {
 		return address;
@@ -58,10 +51,10 @@ public class PrefixedIPv6Address {
 
 	/**
 	 * Legt den Wert der address-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setAddress(String value) {
 		this.address = value;
@@ -69,7 +62,7 @@ public class PrefixedIPv6Address {
 
 	/**
 	 * Ruft den Wert der prefixLength-Eigenschaft ab.
-	 * 
+	 *
 	 */
 	public int getPrefixLength() {
 		return prefixLength;
@@ -77,7 +70,7 @@ public class PrefixedIPv6Address {
 
 	/**
 	 * Legt den Wert der prefixLength-Eigenschaft fest.
-	 * 
+	 *
 	 */
 	public void setPrefixLength(int value) {
 		this.prefixLength = value;

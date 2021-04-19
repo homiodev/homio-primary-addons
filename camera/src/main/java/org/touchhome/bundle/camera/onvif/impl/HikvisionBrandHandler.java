@@ -14,6 +14,7 @@ import org.touchhome.bundle.api.state.StringType;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.onvif.util.ChannelTracking;
 import org.touchhome.bundle.camera.onvif.util.Helper;
 import org.touchhome.bundle.camera.ui.UICameraAction;
@@ -26,9 +27,10 @@ import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
  */
 @Log4j2
 @CameraBrandHandler(name = "Hikvision")
-public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler {
+public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implements BrandCameraHasMotionAlarm {
 
     private int lineCount, vmdCount, leftCount, takenCount, faceCount, pirCount, fieldCount;
+    private boolean checkAlarmInput;
 
     public HikvisionBrandHandler(OnvifCameraEntity onvifCameraEntity) {
         super(onvifCameraEntity);
@@ -159,11 +161,10 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler {
                         break;
                     case "ResponseStatus version=":
                         ////////////////// External Alarm Input ///////////////
-                        if (content.contains(
-                                "<requestURL>/ISAPI/System/IO/inputs/" + nvrChannel + "/status</requestURL>")) {
+                        if (content.contains("<requestURL>/ISAPI/System/IO/inputs/" + nvrChannel + "/status</requestURL>")) {
                             // Stops checking the external alarm if camera does not have feature.
                             if (content.contains("<statusString>Invalid Operation</statusString>")) {
-                                onvifCameraHandler.lowPriorityRequests.remove(0);
+                                checkAlarmInput = false;
                                 onvifCameraHandler.getLog().debug("Stopping checks for alarm inputs as camera appears to be missing this feature.");
                             }
                         }
@@ -326,14 +327,9 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler {
         hikChangeSetting("/ISAPI/WLAlarm/PIR", "enabled", "<enabled>" + on + "</enabled>");
     }
 
-    @UICameraActionGetter(CHANNEL_ENABLE_AUDIO_ALARM)
-    public State getEnableAudioAlarm() {
-        return getAttribute(CHANNEL_ENABLE_AUDIO_ALARM);
-    }
-
-    @UICameraAction(name = CHANNEL_ENABLE_AUDIO_ALARM, order = 25, icon = "fas fa-volume-mute")
-    public void setEnableAudioAlarm(boolean on) {
-        hikChangeSetting("/ISAPI/WLAlarm/PIR", "enabled", "<enabled>" + on + "</enabled>");
+    @Override
+    public void setMotionAlarmThreshold(int threshold) {
+        hikChangeSetting("/ISAPI/WLAlarm/PIR", "enabled", "<enabled>" + (threshold > 0) + "</enabled>");
     }
 
     @UICameraActionGetter(CHANNEL_ENABLE_LINE_CROSSING_ALARM)
@@ -373,7 +369,9 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler {
 
     @Override
     public void runOncePerMinute(EntityContext entityContext) {
-        onvifCameraHandler.sendHttpGET("/ISAPI/System/IO/inputs/" + nvrChannel + "/status"); // must stay in element 0.
+        if (checkAlarmInput) {
+            onvifCameraHandler.sendHttpGET("/ISAPI/System/IO/inputs/" + nvrChannel + "/status"); // must stay in element 0.
+        }
         onvifCameraHandler.sendHttpGET("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "01/motionDetection");
         onvifCameraHandler.sendHttpGET("/ISAPI/Smart/LineDetection/" + nvrChannel + "01");
         onvifCameraHandler.sendHttpGET("/ISAPI/Smart/AudioDetection/channels/" + nvrChannel + "01");

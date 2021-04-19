@@ -3,6 +3,7 @@ package org.touchhome.bundle.zigbee.setting;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.setting.SettingPluginOptionsFileExplorer;
+import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 
 import java.nio.file.Files;
@@ -13,8 +14,8 @@ import java.util.function.Predicate;
 public class ZigBeeNetworkIdSetting implements SettingPluginOptionsFileExplorer {
 
     @Override
-    public SettingType getSettingType() {
-        return SettingType.TextSelectBoxDynamic;
+    public UIFieldType getSettingType() {
+        return UIFieldType.TextSelectBoxDynamic;
     }
 
     @Override

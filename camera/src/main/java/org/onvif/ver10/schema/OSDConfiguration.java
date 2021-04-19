@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.HashMap;
@@ -19,10 +12,10 @@ import javax.xml.namespace.QName;
 /**
  * <p>
  * Java-Klasse f�r OSDConfiguration complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="OSDConfiguration">
  *   <complexContent>
@@ -40,8 +33,8 @@ import javax.xml.namespace.QName;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "OSDConfiguration", propOrder = { "videoSourceConfigurationToken", "type", "position", "textString", "image", "extension" })
@@ -64,9 +57,9 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Ruft den Wert der videoSourceConfigurationToken-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link OSDReference }
-	 * 
+	 *
 	 */
 	public OSDReference getVideoSourceConfigurationToken() {
 		return videoSourceConfigurationToken;
@@ -74,10 +67,10 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Legt den Wert der videoSourceConfigurationToken-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link OSDReference }
-	 * 
+	 *
 	 */
 	public void setVideoSourceConfigurationToken(OSDReference value) {
 		this.videoSourceConfigurationToken = value;
@@ -85,9 +78,9 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Ruft den Wert der type-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link OSDType }
-	 * 
+	 *
 	 */
 	public OSDType getType() {
 		return type;
@@ -95,10 +88,10 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Legt den Wert der type-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link OSDType }
-	 * 
+	 *
 	 */
 	public void setType(OSDType value) {
 		this.type = value;
@@ -106,9 +99,9 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Ruft den Wert der position-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link OSDPosConfiguration }
-	 * 
+	 *
 	 */
 	public OSDPosConfiguration getPosition() {
 		return position;
@@ -116,10 +109,10 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Legt den Wert der position-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link OSDPosConfiguration }
-	 * 
+	 *
 	 */
 	public void setPosition(OSDPosConfiguration value) {
 		this.position = value;
@@ -127,9 +120,9 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Ruft den Wert der textString-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link OSDTextConfiguration }
-	 * 
+	 *
 	 */
 	public OSDTextConfiguration getTextString() {
 		return textString;
@@ -137,10 +130,10 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Legt den Wert der textString-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link OSDTextConfiguration }
-	 * 
+	 *
 	 */
 	public void setTextString(OSDTextConfiguration value) {
 		this.textString = value;
@@ -148,9 +141,9 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Ruft den Wert der image-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link OSDImgConfiguration }
-	 * 
+	 *
 	 */
 	public OSDImgConfiguration getImage() {
 		return image;
@@ -158,10 +151,10 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Legt den Wert der image-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link OSDImgConfiguration }
-	 * 
+	 *
 	 */
 	public void setImage(OSDImgConfiguration value) {
 		this.image = value;
@@ -169,9 +162,9 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Ruft den Wert der extension-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link OSDConfigurationExtension }
-	 * 
+	 *
 	 */
 	public OSDConfigurationExtension getExtension() {
 		return extension;
@@ -179,10 +172,10 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Legt den Wert der extension-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link OSDConfigurationExtension }
-	 * 
+	 *
 	 */
 	public void setExtension(OSDConfigurationExtension value) {
 		this.extension = value;
@@ -190,13 +183,13 @@ public class OSDConfiguration extends DeviceEntity {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

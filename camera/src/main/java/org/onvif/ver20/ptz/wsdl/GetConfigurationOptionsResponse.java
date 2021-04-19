@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.17 um 11:33:29 AM CET 
-//
-
 package org.onvif.ver20.ptz.wsdl;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,10 +10,10 @@ import org.onvif.ver10.schema.PTZConfigurationOptions;
 /**
  * <p>
  * Java-Klasse f�r anonymous complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType>
  *   <complexContent>
@@ -32,8 +25,8 @@ import org.onvif.ver10.schema.PTZConfigurationOptions;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = { "ptzConfigurationOptions" })
@@ -45,9 +38,9 @@ public class GetConfigurationOptionsResponse {
 
 	/**
 	 * Ruft den Wert der ptzConfigurationOptions-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link PTZConfigurationOptions }
-	 * 
+	 *
 	 */
 	public PTZConfigurationOptions getPTZConfigurationOptions() {
 		return ptzConfigurationOptions;
@@ -55,10 +48,10 @@ public class GetConfigurationOptionsResponse {
 
 	/**
 	 * Legt den Wert der ptzConfigurationOptions-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link PTZConfigurationOptions }
-	 * 
+	 *
 	 */
 	public void setPTZConfigurationOptions(PTZConfigurationOptions value) {
 		this.ptzConfigurationOptions = value;

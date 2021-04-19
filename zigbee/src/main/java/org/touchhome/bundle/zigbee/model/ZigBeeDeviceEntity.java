@@ -56,7 +56,7 @@ public final class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntit
     private ZigBeeDevice zigBeeDevice;
 
     @Transient
-    @UIField(order = 1000, type = UIFieldType.Selection, readOnly = true, color = "#7FBBCC")
+    @UIField(order = 1000, type = UIFieldType.SelectBox, readOnly = true, color = "#7FBBCC")
     @UIFieldExpand
     @UIFieldCreateWorkspaceVariableOnEmpty
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

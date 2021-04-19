@@ -17,6 +17,7 @@ import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
 import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.setting.CameraFFMPEGInstallPathOptions;
 import org.touchhome.bundle.camera.ui.CameraActionBuilder;
+import org.touchhome.bundle.camera.ui.CameraActionsContext;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -27,8 +28,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 @Log4j2
-public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> implements HasBootstrapServer {
+public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> implements HasBootstrapServer, CameraActionsContext {
 
+    @Getter
     protected final EntityContext entityContext;
     protected final BroadcastLockManager broadcastLockManager;
     @Getter
@@ -124,6 +126,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
 
     public final void disposeAndSetStatus(Status status, String reason) {
         if (isHandlerInitialized) {
+            isHandlerInitialized = false;
             // set it before to avoid recursively disposing from listeners
             log.warn("Set camera <{}> to status <{}>. Msg: <{}>", cameraEntity.getTitle(), status, reason);
 
@@ -135,7 +138,8 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     }
 
     public final void dispose() {
-        if (!isHandlerInitialized) {
+        if (isHandlerInitialized) {
+            isHandlerInitialized = false;
             disposeCameraConnectionJob();
             disposePollCameraJob();
             try {
@@ -144,7 +148,6 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
                 log.error("Error while dispose camera: <{}>", cameraEntity.getTitle(), ex);
             }
             isCameraOnline = false;
-            isHandlerInitialized = false;
         }
     }
 
@@ -208,11 +211,13 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         if (actions == null) {
             // additional actions should be first
             actions = new TreeSet<>(getAdditionalCameraActions());
-            actions.addAll(CameraActionBuilder.assemble(this, this));
+            actions.addAll(CameraActionBuilder.assemble(this));
         }
         if (fetchValues) {
             for (StatefulContextMenuAction action : actions) {
-                action.setValue(action.getGetter().get());
+                for (Consumer<StatefulContextMenuAction> updateHandler : action.getUpdateHandlers().values()) {
+                    updateHandler.accept(action);
+                }
             }
         }
         return actions;
@@ -225,6 +230,11 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     public void setAttribute(String key, State state) {
         attributes.put(key, state);
         broadcastLockManager.signalAll(key + ":" + cameraEntityID, state);
+    }
+
+    @Override
+    public State getAttribute(String key) {
+        return attributes.get(key);
     }
 
     public void setAttributeRequest(String key, State state) {

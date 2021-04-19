@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.HashMap;
@@ -19,10 +12,10 @@ import javax.xml.namespace.QName;
 /**
  * <p>
  * Java-Klasse f�r ImagingSettings complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="ImagingSettings">
  *   <complexContent>
@@ -45,8 +38,8 @@ import javax.xml.namespace.QName;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ImagingSettings", propOrder = { "backlightCompensation", "brightness", "colorSaturation", "contrast", "exposure", "focus", "irCutFilter",
@@ -80,9 +73,9 @@ public class ImagingSettings {
 
 	/**
 	 * Ruft den Wert der backlightCompensation-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link BacklightCompensation }
-	 * 
+	 *
 	 */
 	public BacklightCompensation getBacklightCompensation() {
 		return backlightCompensation;
@@ -90,10 +83,10 @@ public class ImagingSettings {
 
 	/**
 	 * Legt den Wert der backlightCompensation-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link BacklightCompensation }
-	 * 
+	 *
 	 */
 	public void setBacklightCompensation(BacklightCompensation value) {
 		this.backlightCompensation = value;
@@ -101,9 +94,9 @@ public class ImagingSettings {
 
 	/**
 	 * Ruft den Wert der brightness-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Float }
-	 * 
+	 *
 	 */
 	public Float getBrightness() {
 		return brightness;
@@ -111,10 +104,10 @@ public class ImagingSettings {
 
 	/**
 	 * Legt den Wert der brightness-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Float }
-	 * 
+	 *
 	 */
 	public void setBrightness(Float value) {
 		this.brightness = value;
@@ -122,9 +115,9 @@ public class ImagingSettings {
 
 	/**
 	 * Ruft den Wert der colorSaturation-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Float }
-	 * 
+	 *
 	 */
 	public Float getColorSaturation() {
 		return colorSaturation;
@@ -132,10 +125,10 @@ public class ImagingSettings {
 
 	/**
 	 * Legt den Wert der colorSaturation-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Float }
-	 * 
+	 *
 	 */
 	public void setColorSaturation(Float value) {
 		this.colorSaturation = value;
@@ -143,9 +136,9 @@ public class ImagingSettings {
 
 	/**
 	 * Ruft den Wert der contrast-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Float }
-	 * 
+	 *
 	 */
 	public Float getContrast() {
 		return contrast;
@@ -153,10 +146,10 @@ public class ImagingSettings {
 
 	/**
 	 * Legt den Wert der contrast-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Float }
-	 * 
+	 *
 	 */
 	public void setContrast(Float value) {
 		this.contrast = value;
@@ -164,9 +157,9 @@ public class ImagingSettings {
 
 	/**
 	 * Ruft den Wert der exposure-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Exposure }
-	 * 
+	 *
 	 */
 	public Exposure getExposure() {
 		return exposure;
@@ -174,10 +167,10 @@ public class ImagingSettings {
 
 	/**
 	 * Legt den Wert der exposure-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Exposure }
-	 * 
+	 *
 	 */
 	public void setExposure(Exposure value) {
 		this.exposure = value;
@@ -185,9 +178,9 @@ public class ImagingSettings {
 
 	/**
 	 * Ruft den Wert der focus-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FocusConfiguration }
-	 * 
+	 *
 	 */
 	public FocusConfiguration getFocus() {
 		return focus;
@@ -195,10 +188,10 @@ public class ImagingSettings {
 
 	/**
 	 * Legt den Wert der focus-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FocusConfiguration }
-	 * 
+	 *
 	 */
 	public void setFocus(FocusConfiguration value) {
 		this.focus = value;
@@ -206,9 +199,9 @@ public class ImagingSettings {
 
 	/**
 	 * Ruft den Wert der irCutFilter-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link IrCutFilterMode }
-	 * 
+	 *
 	 */
 	public IrCutFilterMode getIrCutFilter() {
 		return irCutFilter;
@@ -216,10 +209,10 @@ public class ImagingSettings {
 
 	/**
 	 * Legt den Wert der irCutFilter-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link IrCutFilterMode }
-	 * 
+	 *
 	 */
 	public void setIrCutFilter(IrCutFilterMode value) {
 		this.irCutFilter = value;
@@ -227,9 +220,9 @@ public class ImagingSettings {
 
 	/**
 	 * Ruft den Wert der sharpness-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Float }
-	 * 
+	 *
 	 */
 	public Float getSharpness() {
 		return sharpness;
@@ -237,10 +230,10 @@ public class ImagingSettings {
 
 	/**
 	 * Legt den Wert der sharpness-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Float }
-	 * 
+	 *
 	 */
 	public void setSharpness(Float value) {
 		this.sharpness = value;
@@ -248,9 +241,9 @@ public class ImagingSettings {
 
 	/**
 	 * Ruft den Wert der wideDynamicRange-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link WideDynamicRange }
-	 * 
+	 *
 	 */
 	public WideDynamicRange getWideDynamicRange() {
 		return wideDynamicRange;
@@ -258,10 +251,10 @@ public class ImagingSettings {
 
 	/**
 	 * Legt den Wert der wideDynamicRange-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link WideDynamicRange }
-	 * 
+	 *
 	 */
 	public void setWideDynamicRange(WideDynamicRange value) {
 		this.wideDynamicRange = value;
@@ -269,9 +262,9 @@ public class ImagingSettings {
 
 	/**
 	 * Ruft den Wert der whiteBalance-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link WhiteBalance }
-	 * 
+	 *
 	 */
 	public WhiteBalance getWhiteBalance() {
 		return whiteBalance;
@@ -279,10 +272,10 @@ public class ImagingSettings {
 
 	/**
 	 * Legt den Wert der whiteBalance-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link WhiteBalance }
-	 * 
+	 *
 	 */
 	public void setWhiteBalance(WhiteBalance value) {
 		this.whiteBalance = value;
@@ -290,9 +283,9 @@ public class ImagingSettings {
 
 	/**
 	 * Ruft den Wert der extension-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link ImagingSettingsExtension }
-	 * 
+	 *
 	 */
 	public ImagingSettingsExtension getExtension() {
 		return extension;
@@ -300,10 +293,10 @@ public class ImagingSettings {
 
 	/**
 	 * Legt den Wert der extension-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link ImagingSettingsExtension }
-	 * 
+	 *
 	 */
 	public void setExtension(ImagingSettingsExtension value) {
 		this.extension = value;
@@ -311,13 +304,13 @@ public class ImagingSettings {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

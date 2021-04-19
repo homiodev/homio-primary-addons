@@ -14,6 +14,7 @@ import org.touchhome.bundle.camera.handler.BaseCameraHandler;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
+import org.touchhome.bundle.camera.scanner.OnvifCameraHttpScanner;
 import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import java.lang.reflect.Method;
@@ -48,6 +49,7 @@ public class CameraEntryPoint implements BundleEntryPoint {
     }
 
     public void init() {
+        // fulfill camera brands
         for (Class<? extends BaseOnvifCameraBrandHandler> brandHandlerClass :
                 entityContext.getClassesWithParent(BaseOnvifCameraBrandHandler.class, "org.touchhome.bundle.camera.onvif")) {
             CameraCoordinator.cameraBrands.put(brandHandlerClass.getSimpleName(),
@@ -64,6 +66,7 @@ public class CameraEntryPoint implements BundleEntryPoint {
                 handler.deleteDirectories();
             }
         });
+
         // lister start/stop status, changes
         entityContext.event().addEntityUpdateListener(BaseVideoCameraEntity.class, "camera-change-listener", (cameraEntity, oldCameraEntity) -> {
             BaseCameraHandler cameraHandler = cameraEntity.getCameraHandler();
@@ -71,7 +74,7 @@ public class CameraEntryPoint implements BundleEntryPoint {
                 cameraHandler.initialize(cameraEntity);
             } else if (!cameraEntity.isStart() && cameraHandler.isHandlerInitialized()) {
                 cameraHandler.disposeAndSetStatus(Status.OFFLINE, "Camera not started");
-            } else if (detectIfRequireRestartHandler(oldCameraEntity, cameraEntity)) {
+            } else if (cameraHandler.isHandlerInitialized() && detectIfRequireRestartHandler(oldCameraEntity, cameraEntity)) {
                 cameraHandler.restart("Restart camera handler", cameraEntity, true);
             } else {
                 cameraHandler.setCameraEntity(cameraEntity); // to avoid optimistic lock
@@ -84,10 +87,14 @@ public class CameraEntryPoint implements BundleEntryPoint {
             }
         });
 
+        // fire initialize camera if start is true
         for (BaseVideoCameraEntity cameraEntity : entityContext.findAll(BaseVideoCameraEntity.class)) {
             if (cameraEntity.isStart()) {
                 cameraEntity.getCameraHandler().initialize(cameraEntity);
             }
         }
+
+        // fire rescan whole possible items to see if ip address has been changed
+        entityContext.getBean(OnvifCameraHttpScanner.class).executeScan(entityContext, null, null, true);
     }
 }

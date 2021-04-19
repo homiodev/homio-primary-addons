@@ -2,17 +2,23 @@ package org.touchhome.bundle.telegram.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
-import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.BotSession;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.UserEntity;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
@@ -21,6 +27,7 @@ import org.touchhome.bundle.telegram.settings.TelegramBotNameSetting;
 import org.touchhome.bundle.telegram.settings.TelegramBotTokenSetting;
 import org.touchhome.bundle.telegram.settings.TelegramRestartBotButtonSetting;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,22 +41,24 @@ import static org.touchhome.bundle.telegram.commands.TelegramBaseCommand.CHAT_ID
 @RequiredArgsConstructor
 public class TelegramService {
 
-    static {
-        ApiContextInitializer.init();
-    }
-
-    private final TelegramBotsApi botsApi = new TelegramBotsApi();
-    private final DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
+    private final TelegramBotsApi botsApi;
+    private final DefaultBotOptions botOptions;
     private final Map<String, TelegramEventCommand> eventCommandMap = new HashMap<>();
 
     private final EntityContext entityContext;
     private BotSession botSession;
+    private int replayId = 0;
 
     @Getter
     private TelegramBot telegramBot;
 
+    public TelegramService(EntityContext entityContext) throws TelegramApiException {
+        this.entityContext = entityContext;
+        botsApi = new TelegramBotsApi(DefaultBotSession.class);
+        botOptions = new DefaultBotOptions();
+    }
+
     public void postConstruct() {
-        ApiContextInitializer.init();
         entityContext.setting().listenValue(TelegramRestartBotButtonSetting.class, "tm-fire-restart", this::restart);
         start();
     }
@@ -67,12 +76,55 @@ public class TelegramService {
         this.start();
     }
 
-    public void sendMessage(List<UserEntity> users, String message) throws TelegramApiException {
+    @SneakyThrows
+    public void sendPhoto(List<UserEntity> users, InputFile inputFile, String caption) {
+        for (UserEntity user : users) {
+            SendPhoto sendPhoto = new SendPhoto(user.getJsonData().getString(CHAT_ID), inputFile);
+            if (caption != null) {
+                sendPhoto.setCaption(caption);
+            }
+            this.telegramBot.execute(sendPhoto);
+        }
+    }
+
+    @SneakyThrows
+    public void sendVideo(List<UserEntity> users, InputFile inputFile, String caption) {
+        for (UserEntity user : users) {
+            SendVideo sendVideo = new SendVideo(user.getJsonData().getString(CHAT_ID), inputFile);
+            if (caption != null) {
+                sendVideo.setCaption(caption);
+            }
+            this.telegramBot.execute(sendVideo);
+        }
+    }
+
+    @SneakyThrows
+    public void sendMessage(List<UserEntity> users, String message, String... buttons) {
         if (users != null && !users.isEmpty()) {
-            for (UserEntity user : users) {
-                SendMessage sendMessage = new SendMessage(user.getJsonData().getString(CHAT_ID), message);
-                sendMessage.enableMarkdownV2(true);
-                this.telegramBot.execute(sendMessage);
+            if (message != null) {
+                List<List<InlineKeyboardButton>> keyboard2D = new ArrayList<>();
+                if (buttons.length > 0) {
+                    String replyId = "rp_" + replayId++;
+                    List<InlineKeyboardButton> keyboard = new ArrayList<>(buttons.length);
+                    keyboard2D.add(keyboard);
+                    for (String button : buttons) {
+                        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(button);
+                        inlineKeyboardButton.setCallbackData(replyId + " " + button);
+                        keyboard.add(inlineKeyboardButton);
+                    }
+                }
+
+                for (UserEntity user : users) {
+                    SendMessage sendMessage = new SendMessage(user.getJsonData().getString(CHAT_ID), message);
+                    if (!keyboard2D.isEmpty()) {
+                        InlineKeyboardMarkup keyBoardMarkup = new InlineKeyboardMarkup(keyboard2D);
+                        sendMessage.setReplyMarkup(keyBoardMarkup);
+                    }
+                    sendMessage.enableMarkdownV2(true);
+                    Message execute = this.telegramBot.execute(sendMessage);
+
+                    System.out.println(execute.getText());
+                }
             }
         }
     }
@@ -112,7 +164,7 @@ public class TelegramService {
                 log.warn("Telegram User {} is trying to execute unknown command '{}'.", message.getFrom().getId(), message.getText());
 
                 SendMessage text = new SendMessage();
-                text.setChatId(message.getChatId());
+                text.setChatId(Long.toString(message.getChatId()));
                 text.setText(message.getText() + " command not found!");
 
                 try {
@@ -136,7 +188,7 @@ public class TelegramService {
         // handle message not started with '/'
         @Override
         public void processNonCommandUpdate(Update update) {
-            log.info("Processing non-command update...");
+            log.info("Unable to process message {}", update.getMessage().getText());
         }
 
         public void registerEvent(String command, String description, String workspaceId, BroadcastLock lock) {

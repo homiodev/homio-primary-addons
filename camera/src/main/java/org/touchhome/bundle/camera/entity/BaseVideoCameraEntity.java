@@ -16,6 +16,7 @@ import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldCodeEditor;
 import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
+import org.touchhome.bundle.api.ui.field.UIFieldIgnoreGetDefault;
 import org.touchhome.bundle.api.ui.field.action.UIActionButton;
 import org.touchhome.bundle.api.ui.field.action.UIActionInput;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
@@ -60,6 +61,7 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
     @UIField(order = 500, readOnly = true)
     @UIFieldImage
     @UIActionButton(name = "refresh", icon = "fas fa-sync", actionHandler = BaseVideoCameraEntity.UpdateSnapshotActionHandler.class)
+    @UIFieldIgnoreGetDefault
     public byte[] getLastSnapshot() {
         return cameraHandler == null ? null : cameraHandler.getLatestSnapshot();
     }

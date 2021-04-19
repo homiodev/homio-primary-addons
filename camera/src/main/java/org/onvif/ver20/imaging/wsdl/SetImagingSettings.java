@@ -1,11 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.04.25 um 04:22:13 PM CEST 
-//
-
-
 package org.onvif.ver20.imaging.wsdl;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,10 +9,10 @@ import org.onvif.ver10.schema.ImagingSettings20;
 
 
 /**
- * <p>Java-Klasse für anonymous complex type.
- * 
+ * <p>Java-Klasse fï¿½r anonymous complex type.
+ *
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -34,8 +26,8 @@ import org.onvif.ver10.schema.ImagingSettings20;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -55,11 +47,11 @@ public class SetImagingSettings {
 
     /**
      * Ruft den Wert der videoSourceToken-Eigenschaft ab.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getVideoSourceToken() {
         return videoSourceToken;
@@ -67,11 +59,11 @@ public class SetImagingSettings {
 
     /**
      * Legt den Wert der videoSourceToken-Eigenschaft fest.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setVideoSourceToken(String value) {
         this.videoSourceToken = value;
@@ -79,11 +71,11 @@ public class SetImagingSettings {
 
     /**
      * Ruft den Wert der imagingSettings-Eigenschaft ab.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link ImagingSettings20 }
-     *     
+     *
      */
     public ImagingSettings20 getImagingSettings() {
         return imagingSettings;
@@ -91,11 +83,11 @@ public class SetImagingSettings {
 
     /**
      * Legt den Wert der imagingSettings-Eigenschaft fest.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link ImagingSettings20 }
-     *     
+     *
      */
     public void setImagingSettings(ImagingSettings20 value) {
         this.imagingSettings = value;
@@ -103,11 +95,11 @@ public class SetImagingSettings {
 
     /**
      * Ruft den Wert der forcePersistence-Eigenschaft ab.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Boolean }
-     *     
+     *
      */
     public Boolean isForcePersistence() {
         return forcePersistence;
@@ -115,11 +107,11 @@ public class SetImagingSettings {
 
     /**
      * Legt den Wert der forcePersistence-Eigenschaft fest.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *     
+     *
      */
     public void setForcePersistence(Boolean value) {
         this.forcePersistence = value;

@@ -41,7 +41,7 @@ public class WidgetCameraSeriesEntity extends WidgetSeriesEntity<WidgetCameraEnt
     public static class VideoSeriesDataSourceDynamicOptionLoader implements DynamicOptionLoader {
 
         @Override
-        public List<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext) {
+        public List<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
             return OptionModel.list(entityContext.findAll(BaseVideoStreamEntity.class));
         }
     }

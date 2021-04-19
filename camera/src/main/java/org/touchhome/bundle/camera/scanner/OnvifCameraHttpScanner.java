@@ -44,7 +44,14 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
 
     @SneakyThrows
     @Override
-    public synchronized BaseItemsDiscovery.DeviceScannerResult scan(EntityContext entityContext, ProgressBar progressBar, String headerConfirmButtonKey) {
+    public synchronized BaseItemsDiscovery.DeviceScannerResult scan(EntityContext entityContext,
+                                                                    ProgressBar progressBar,
+                                                                    String headerConfirmButtonKey) {
+        return executeScan(entityContext, progressBar, headerConfirmButtonKey, false);
+    }
+
+    public BaseItemsDiscovery.DeviceScannerResult executeScan(EntityContext entityContext, ProgressBar progressBar,
+                                                              String headerConfirmButtonKey, boolean rediscoverIpAddresses) {
         this.headerConfirmButtonKey = headerConfirmButtonKey;
         this.result = new BaseItemsDiscovery.DeviceScannerResult();
         this.existsCamera = entityContext.findAll(OnvifCameraEntity.class)
@@ -63,34 +70,40 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
             OnvifDeviceState onvifDeviceState = new OnvifDeviceState(ipAddress, port, 0, user, password);
             try {
                 onvifDeviceState.checkForErrors();
-                foundDeviceServices(onvifDeviceState, false);
+                foundDeviceServices(onvifDeviceState, false, rediscoverIpAddresses);
             } catch (NotAuthorizedException naex) {
                 log.warn("Onvif camera <{}> got fault response: <{}>", host, naex.getMessage());
-                foundDeviceServices(onvifDeviceState, true);
+                foundDeviceServices(onvifDeviceState, true, rediscoverIpAddresses);
             }
         });
         List<Integer> availableOnvifCameras = entityContext.bgp().runInBatchAndGet("scan-onvif-http-batch-result",
                 2 * pingTimeout * tasks.size() / 1000, THREAD_COUNT, tasks,
-                completedTaskCount -> progressBar.progress(100 / (float) tasks.size() * completedTaskCount,
-                        "Onvif http stream done " + completedTaskCount + "/" + tasks.size() + " tasks"));
+                completedTaskCount -> {
+                    if (progressBar != null) {
+                        progressBar.progress(100 / (float) tasks.size() * completedTaskCount,
+                                "Onvif http stream done " + completedTaskCount + "/" + tasks.size() + " tasks");
+                    }
+                });
 
         log.info("Found {} onvif cameras", availableOnvifCameras.size());
 
         return result;
     }
 
-    private void foundDeviceServices(OnvifDeviceState onvifDeviceState, boolean requireAuth) {
+    private void foundDeviceServices(OnvifDeviceState onvifDeviceState, boolean requireAuth, boolean rediscoverIpAddresses) {
         log.info("Scan found onvif camera: <{}>", onvifDeviceState.getHOST_IP());
-        CameraBrandHandlerDescription brand = OnvifDiscovery.getBrandFromLoginPage(onvifDeviceState.getIp());
 
         OnvifCameraEntity existedCamera = existsCamera.get(onvifDeviceState.getIEEEAddress());
         if (existedCamera != null) {
             existedCamera.tryUpdateData(entityContext, onvifDeviceState.getIp(), onvifDeviceState.getOnvifPort(), onvifDeviceState.getInitialDevices().getName());
             result.getExistedCount().incrementAndGet();
             return;
+        } else if (!rediscoverIpAddresses) {
+            return;
         }
         result.getNewCount().incrementAndGet();
 
+        CameraBrandHandlerDescription brand = OnvifDiscovery.getBrandFromLoginPage(onvifDeviceState.getIp());
         handleDevice(headerConfirmButtonKey,
                 "onvif-http-" + onvifDeviceState.getHOST_IP(),
                 onvifDeviceState.getHOST_IP(), entityContext,

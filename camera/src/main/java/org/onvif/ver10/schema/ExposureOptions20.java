@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.ArrayList;
@@ -17,10 +10,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * <p>
  * Java-Klasse f�r ExposureOptions20 complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="ExposureOptions20">
  *   <complexContent>
@@ -42,8 +35,8 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ExposureOptions20", propOrder = { "mode", "priority", "minExposureTime", "maxExposureTime", "minGain", "maxGain", "minIris", "maxIris",
@@ -75,23 +68,23 @@ public class ExposureOptions20 {
 
 	/**
 	 * Gets the value of the mode property.
-	 * 
+	 *
 	 * <p>
 	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
 	 * This is why there is not a <CODE>set</CODE> method for the mode property.
-	 * 
+	 *
 	 * <p>
 	 * For example, to add a new item, do as follows:
-	 * 
+	 *
 	 * <pre>
 	 * getMode().add(newItem);
 	 * </pre>
-	 * 
-	 * 
+	 *
+	 *
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list {@link ExposureMode }
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public List<ExposureMode> getMode() {
 		if (mode == null) {
@@ -102,23 +95,23 @@ public class ExposureOptions20 {
 
 	/**
 	 * Gets the value of the priority property.
-	 * 
+	 *
 	 * <p>
 	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
 	 * This is why there is not a <CODE>set</CODE> method for the priority property.
-	 * 
+	 *
 	 * <p>
 	 * For example, to add a new item, do as follows:
-	 * 
+	 *
 	 * <pre>
 	 * getPriority().add(newItem);
 	 * </pre>
-	 * 
-	 * 
+	 *
+	 *
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list {@link ExposurePriority }
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public List<ExposurePriority> getPriority() {
 		if (priority == null) {
@@ -129,9 +122,9 @@ public class ExposureOptions20 {
 
 	/**
 	 * Ruft den Wert der minExposureTime-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getMinExposureTime() {
 		return minExposureTime;
@@ -139,10 +132,10 @@ public class ExposureOptions20 {
 
 	/**
 	 * Legt den Wert der minExposureTime-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setMinExposureTime(FloatRange value) {
 		this.minExposureTime = value;
@@ -150,9 +143,9 @@ public class ExposureOptions20 {
 
 	/**
 	 * Ruft den Wert der maxExposureTime-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getMaxExposureTime() {
 		return maxExposureTime;
@@ -160,10 +153,10 @@ public class ExposureOptions20 {
 
 	/**
 	 * Legt den Wert der maxExposureTime-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setMaxExposureTime(FloatRange value) {
 		this.maxExposureTime = value;
@@ -171,9 +164,9 @@ public class ExposureOptions20 {
 
 	/**
 	 * Ruft den Wert der minGain-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getMinGain() {
 		return minGain;
@@ -181,10 +174,10 @@ public class ExposureOptions20 {
 
 	/**
 	 * Legt den Wert der minGain-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setMinGain(FloatRange value) {
 		this.minGain = value;
@@ -192,9 +185,9 @@ public class ExposureOptions20 {
 
 	/**
 	 * Ruft den Wert der maxGain-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getMaxGain() {
 		return maxGain;
@@ -202,10 +195,10 @@ public class ExposureOptions20 {
 
 	/**
 	 * Legt den Wert der maxGain-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setMaxGain(FloatRange value) {
 		this.maxGain = value;
@@ -213,9 +206,9 @@ public class ExposureOptions20 {
 
 	/**
 	 * Ruft den Wert der minIris-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getMinIris() {
 		return minIris;
@@ -223,10 +216,10 @@ public class ExposureOptions20 {
 
 	/**
 	 * Legt den Wert der minIris-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setMinIris(FloatRange value) {
 		this.minIris = value;
@@ -234,9 +227,9 @@ public class ExposureOptions20 {
 
 	/**
 	 * Ruft den Wert der maxIris-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getMaxIris() {
 		return maxIris;
@@ -244,10 +237,10 @@ public class ExposureOptions20 {
 
 	/**
 	 * Legt den Wert der maxIris-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setMaxIris(FloatRange value) {
 		this.maxIris = value;
@@ -255,9 +248,9 @@ public class ExposureOptions20 {
 
 	/**
 	 * Ruft den Wert der exposureTime-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getExposureTime() {
 		return exposureTime;
@@ -265,10 +258,10 @@ public class ExposureOptions20 {
 
 	/**
 	 * Legt den Wert der exposureTime-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setExposureTime(FloatRange value) {
 		this.exposureTime = value;
@@ -276,9 +269,9 @@ public class ExposureOptions20 {
 
 	/**
 	 * Ruft den Wert der gain-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getGain() {
 		return gain;
@@ -286,10 +279,10 @@ public class ExposureOptions20 {
 
 	/**
 	 * Legt den Wert der gain-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setGain(FloatRange value) {
 		this.gain = value;
@@ -297,9 +290,9 @@ public class ExposureOptions20 {
 
 	/**
 	 * Ruft den Wert der iris-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getIris() {
 		return iris;
@@ -307,10 +300,10 @@ public class ExposureOptions20 {
 
 	/**
 	 * Legt den Wert der iris-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setIris(FloatRange value) {
 		this.iris = value;

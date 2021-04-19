@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,10 +10,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 /**
  * <p>
  * Java-Klasse f�r IPAddress complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="IPAddress">
  *   <complexContent>
@@ -34,8 +27,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "IPAddress", propOrder = { "type", "iPv4Address", "iPv6Address" })
@@ -52,9 +45,9 @@ public class IPAddress {
 
 	/**
 	 * Ruft den Wert der type-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link IPType }
-	 * 
+	 *
 	 */
 	public IPType getType() {
 		return type;
@@ -62,10 +55,10 @@ public class IPAddress {
 
 	/**
 	 * Legt den Wert der type-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link IPType }
-	 * 
+	 *
 	 */
 	public void setType(IPType value) {
 		this.type = value;
@@ -73,9 +66,9 @@ public class IPAddress {
 
 	/**
 	 * Ruft den Wert der iPv4Address-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getIPv4Address() {
 		return iPv4Address;
@@ -83,10 +76,10 @@ public class IPAddress {
 
 	/**
 	 * Legt den Wert der iPv4Address-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setIPv4Address(String value) {
 		this.iPv4Address = value;
@@ -94,9 +87,9 @@ public class IPAddress {
 
 	/**
 	 * Ruft den Wert der iPv6Address-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getIPv6Address() {
 		return iPv6Address;
@@ -104,10 +97,10 @@ public class IPAddress {
 
 	/**
 	 * Legt den Wert der iPv6Address-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setIPv6Address(String value) {
 		this.iPv6Address = value;

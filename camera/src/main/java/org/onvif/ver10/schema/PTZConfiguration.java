@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.HashMap;
@@ -21,10 +14,10 @@ import javax.xml.namespace.QName;
 /**
  * <p>
  * Java-Klasse f�r PTZConfiguration complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="PTZConfiguration">
  *   <complexContent>
@@ -48,8 +41,8 @@ import javax.xml.namespace.QName;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PTZConfiguration", propOrder = { "nodeToken", "defaultAbsolutePantTiltPositionSpace", "defaultAbsoluteZoomPositionSpace",
@@ -92,9 +85,9 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Ruft den Wert der nodeToken-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getNodeToken() {
 		return nodeToken;
@@ -102,10 +95,10 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Legt den Wert der nodeToken-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setNodeToken(String value) {
 		this.nodeToken = value;
@@ -113,9 +106,9 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Ruft den Wert der defaultAbsolutePantTiltPositionSpace-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getDefaultAbsolutePantTiltPositionSpace() {
 		return defaultAbsolutePantTiltPositionSpace;
@@ -123,10 +116,10 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Legt den Wert der defaultAbsolutePantTiltPositionSpace-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setDefaultAbsolutePantTiltPositionSpace(String value) {
 		this.defaultAbsolutePantTiltPositionSpace = value;
@@ -134,9 +127,9 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Ruft den Wert der defaultAbsoluteZoomPositionSpace-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getDefaultAbsoluteZoomPositionSpace() {
 		return defaultAbsoluteZoomPositionSpace;
@@ -144,10 +137,10 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Legt den Wert der defaultAbsoluteZoomPositionSpace-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setDefaultAbsoluteZoomPositionSpace(String value) {
 		this.defaultAbsoluteZoomPositionSpace = value;
@@ -155,9 +148,9 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Ruft den Wert der defaultRelativePanTiltTranslationSpace-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getDefaultRelativePanTiltTranslationSpace() {
 		return defaultRelativePanTiltTranslationSpace;
@@ -165,10 +158,10 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Legt den Wert der defaultRelativePanTiltTranslationSpace-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setDefaultRelativePanTiltTranslationSpace(String value) {
 		this.defaultRelativePanTiltTranslationSpace = value;
@@ -176,9 +169,9 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Ruft den Wert der defaultRelativeZoomTranslationSpace-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getDefaultRelativeZoomTranslationSpace() {
 		return defaultRelativeZoomTranslationSpace;
@@ -186,10 +179,10 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Legt den Wert der defaultRelativeZoomTranslationSpace-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setDefaultRelativeZoomTranslationSpace(String value) {
 		this.defaultRelativeZoomTranslationSpace = value;
@@ -197,9 +190,9 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Ruft den Wert der defaultContinuousPanTiltVelocitySpace-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getDefaultContinuousPanTiltVelocitySpace() {
 		return defaultContinuousPanTiltVelocitySpace;
@@ -207,10 +200,10 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Legt den Wert der defaultContinuousPanTiltVelocitySpace-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setDefaultContinuousPanTiltVelocitySpace(String value) {
 		this.defaultContinuousPanTiltVelocitySpace = value;
@@ -218,9 +211,9 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Ruft den Wert der defaultContinuousZoomVelocitySpace-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getDefaultContinuousZoomVelocitySpace() {
 		return defaultContinuousZoomVelocitySpace;
@@ -228,10 +221,10 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Legt den Wert der defaultContinuousZoomVelocitySpace-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setDefaultContinuousZoomVelocitySpace(String value) {
 		this.defaultContinuousZoomVelocitySpace = value;
@@ -239,9 +232,9 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Ruft den Wert der defaultPTZSpeed-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link PTZSpeed }
-	 * 
+	 *
 	 */
 	public PTZSpeed getDefaultPTZSpeed() {
 		return defaultPTZSpeed;
@@ -249,10 +242,10 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Legt den Wert der defaultPTZSpeed-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link PTZSpeed }
-	 * 
+	 *
 	 */
 	public void setDefaultPTZSpeed(PTZSpeed value) {
 		this.defaultPTZSpeed = value;
@@ -260,9 +253,9 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Ruft den Wert der defaultPTZTimeout-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Duration }
-	 * 
+	 *
 	 */
 	public Duration getDefaultPTZTimeout() {
 		return defaultPTZTimeout;
@@ -270,10 +263,10 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Legt den Wert der defaultPTZTimeout-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Duration }
-	 * 
+	 *
 	 */
 	public void setDefaultPTZTimeout(Duration value) {
 		this.defaultPTZTimeout = value;
@@ -281,9 +274,9 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Ruft den Wert der panTiltLimits-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link PanTiltLimits }
-	 * 
+	 *
 	 */
 	public PanTiltLimits getPanTiltLimits() {
 		return panTiltLimits;
@@ -291,10 +284,10 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Legt den Wert der panTiltLimits-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link PanTiltLimits }
-	 * 
+	 *
 	 */
 	public void setPanTiltLimits(PanTiltLimits value) {
 		this.panTiltLimits = value;
@@ -302,9 +295,9 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Ruft den Wert der zoomLimits-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link ZoomLimits }
-	 * 
+	 *
 	 */
 	public ZoomLimits getZoomLimits() {
 		return zoomLimits;
@@ -312,10 +305,10 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Legt den Wert der zoomLimits-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link ZoomLimits }
-	 * 
+	 *
 	 */
 	public void setZoomLimits(ZoomLimits value) {
 		this.zoomLimits = value;
@@ -323,9 +316,9 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Ruft den Wert der extension-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link PTZConfigurationExtension }
-	 * 
+	 *
 	 */
 	public PTZConfigurationExtension getExtension() {
 		return extension;
@@ -333,10 +326,10 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Legt den Wert der extension-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link PTZConfigurationExtension }
-	 * 
+	 *
 	 */
 	public void setExtension(PTZConfigurationExtension value) {
 		this.extension = value;
@@ -344,13 +337,13 @@ public class PTZConfiguration extends ConfigurationEntity {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

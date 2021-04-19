@@ -1,11 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2016.02.05 um 06:25:30 PM CET 
-//
-
-
 package org.onvif.ver10.schema;
 
 import java.util.HashMap;
@@ -19,10 +11,10 @@ import javax.xml.namespace.QName;
 
 
 /**
- * <p>Java-Klasse für StorageReferencePath complex type.
- * 
+ * <p>Java-Klasse fï¿½r StorageReferencePath complex type.
+ *
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * &lt;complexType name="StorageReferencePath">
  *   &lt;complexContent>
@@ -37,8 +29,8 @@ import javax.xml.namespace.QName;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "StorageReferencePath", propOrder = {
@@ -59,11 +51,11 @@ public class StorageReferencePath {
 
     /**
      * Ruft den Wert der storageToken-Eigenschaft ab.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getStorageToken() {
         return storageToken;
@@ -71,11 +63,11 @@ public class StorageReferencePath {
 
     /**
      * Legt den Wert der storageToken-Eigenschaft fest.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setStorageToken(String value) {
         this.storageToken = value;
@@ -83,11 +75,11 @@ public class StorageReferencePath {
 
     /**
      * Ruft den Wert der relativePath-Eigenschaft ab.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getRelativePath() {
         return relativePath;
@@ -95,11 +87,11 @@ public class StorageReferencePath {
 
     /**
      * Legt den Wert der relativePath-Eigenschaft fest.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setRelativePath(String value) {
         this.relativePath = value;
@@ -107,11 +99,11 @@ public class StorageReferencePath {
 
     /**
      * Ruft den Wert der extension-Eigenschaft ab.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link StorageReferencePathExtension }
-     *     
+     *
      */
     public StorageReferencePathExtension getExtension() {
         return extension;
@@ -119,11 +111,11 @@ public class StorageReferencePath {
 
     /**
      * Legt den Wert der extension-Eigenschaft fest.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link StorageReferencePathExtension }
-     *     
+     *
      */
     public void setExtension(StorageReferencePathExtension value) {
         this.extension = value;
@@ -131,15 +123,15 @@ public class StorageReferencePath {
 
     /**
      * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     * 
+     *
      * <p>
-     * the map is keyed by the name of the attribute and 
+     * the map is keyed by the name of the attribute and
      * the value is the string value of the attribute.
-     * 
+     *
      * the map returned by this method is live, and you can add new attribute
      * by updating the map directly. Because of this design, there's no setter.
-     * 
-     * 
+     *
+     *
      * @return
      *     always non-null
      */

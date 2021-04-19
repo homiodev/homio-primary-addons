@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.ArrayList;
@@ -22,10 +15,10 @@ import javax.xml.namespace.QName;
 /**
  * <p>
  * Java-Klasse f�r PresetTour complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="PresetTour">
  *   <complexContent>
@@ -44,8 +37,8 @@ import javax.xml.namespace.QName;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PresetTour", propOrder = { "name", "status", "autoStart", "startingCondition", "tourSpot", "extension" })
@@ -70,9 +63,9 @@ public class PresetTour {
 
 	/**
 	 * Ruft den Wert der name-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getName() {
 		return name;
@@ -80,10 +73,10 @@ public class PresetTour {
 
 	/**
 	 * Legt den Wert der name-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setName(String value) {
 		this.name = value;
@@ -91,9 +84,9 @@ public class PresetTour {
 
 	/**
 	 * Ruft den Wert der status-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link PTZPresetTourStatus }
-	 * 
+	 *
 	 */
 	public PTZPresetTourStatus getStatus() {
 		return status;
@@ -101,10 +94,10 @@ public class PresetTour {
 
 	/**
 	 * Legt den Wert der status-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link PTZPresetTourStatus }
-	 * 
+	 *
 	 */
 	public void setStatus(PTZPresetTourStatus value) {
 		this.status = value;
@@ -112,7 +105,7 @@ public class PresetTour {
 
 	/**
 	 * Ruft den Wert der autoStart-Eigenschaft ab.
-	 * 
+	 *
 	 */
 	public boolean isAutoStart() {
 		return autoStart;
@@ -120,7 +113,7 @@ public class PresetTour {
 
 	/**
 	 * Legt den Wert der autoStart-Eigenschaft fest.
-	 * 
+	 *
 	 */
 	public void setAutoStart(boolean value) {
 		this.autoStart = value;
@@ -128,9 +121,9 @@ public class PresetTour {
 
 	/**
 	 * Ruft den Wert der startingCondition-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link PTZPresetTourStartingCondition }
-	 * 
+	 *
 	 */
 	public PTZPresetTourStartingCondition getStartingCondition() {
 		return startingCondition;
@@ -138,10 +131,10 @@ public class PresetTour {
 
 	/**
 	 * Legt den Wert der startingCondition-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link PTZPresetTourStartingCondition }
-	 * 
+	 *
 	 */
 	public void setStartingCondition(PTZPresetTourStartingCondition value) {
 		this.startingCondition = value;
@@ -149,23 +142,23 @@ public class PresetTour {
 
 	/**
 	 * Gets the value of the tourSpot property.
-	 * 
+	 *
 	 * <p>
 	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
 	 * This is why there is not a <CODE>set</CODE> method for the tourSpot property.
-	 * 
+	 *
 	 * <p>
 	 * For example, to add a new item, do as follows:
-	 * 
+	 *
 	 * <pre>
 	 * getTourSpot().add(newItem);
 	 * </pre>
-	 * 
-	 * 
+	 *
+	 *
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list {@link PTZPresetTourSpot }
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public List<PTZPresetTourSpot> getTourSpot() {
 		if (tourSpot == null) {
@@ -176,9 +169,9 @@ public class PresetTour {
 
 	/**
 	 * Ruft den Wert der extension-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link PTZPresetTourExtension }
-	 * 
+	 *
 	 */
 	public PTZPresetTourExtension getExtension() {
 		return extension;
@@ -186,10 +179,10 @@ public class PresetTour {
 
 	/**
 	 * Legt den Wert der extension-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link PTZPresetTourExtension }
-	 * 
+	 *
 	 */
 	public void setExtension(PTZPresetTourExtension value) {
 		this.extension = value;
@@ -197,9 +190,9 @@ public class PresetTour {
 
 	/**
 	 * Ruft den Wert der token-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getToken() {
 		return token;
@@ -207,10 +200,10 @@ public class PresetTour {
 
 	/**
 	 * Legt den Wert der token-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setToken(String value) {
 		this.token = value;
@@ -218,13 +211,13 @@ public class PresetTour {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

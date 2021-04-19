@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.HashMap;
@@ -23,10 +16,10 @@ import javax.xml.namespace.QName;
 /**
  * <p>
  * Java-Klasse f�r anonymous complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType>
  *   <complexContent>
@@ -44,8 +37,8 @@ import javax.xml.namespace.QName;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = { "source", "key", "data", "extension" })
@@ -70,9 +63,9 @@ public class Message {
 
 	/**
 	 * Ruft den Wert der source-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link ItemList }
-	 * 
+	 *
 	 */
 	public ItemList getSource() {
 		return source;
@@ -80,10 +73,10 @@ public class Message {
 
 	/**
 	 * Legt den Wert der source-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link ItemList }
-	 * 
+	 *
 	 */
 	public void setSource(ItemList value) {
 		this.source = value;
@@ -91,9 +84,9 @@ public class Message {
 
 	/**
 	 * Ruft den Wert der key-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link ItemList }
-	 * 
+	 *
 	 */
 	public ItemList getKey() {
 		return key;
@@ -101,10 +94,10 @@ public class Message {
 
 	/**
 	 * Legt den Wert der key-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link ItemList }
-	 * 
+	 *
 	 */
 	public void setKey(ItemList value) {
 		this.key = value;
@@ -112,9 +105,9 @@ public class Message {
 
 	/**
 	 * Ruft den Wert der data-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link ItemList }
-	 * 
+	 *
 	 */
 	public ItemList getData() {
 		return data;
@@ -122,10 +115,10 @@ public class Message {
 
 	/**
 	 * Legt den Wert der data-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link ItemList }
-	 * 
+	 *
 	 */
 	public void setData(ItemList value) {
 		this.data = value;
@@ -133,9 +126,9 @@ public class Message {
 
 	/**
 	 * Ruft den Wert der extension-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link MessageExtension }
-	 * 
+	 *
 	 */
 	public MessageExtension getExtension() {
 		return extension;
@@ -143,10 +136,10 @@ public class Message {
 
 	/**
 	 * Legt den Wert der extension-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link MessageExtension }
-	 * 
+	 *
 	 */
 	public void setExtension(MessageExtension value) {
 		this.extension = value;
@@ -154,9 +147,9 @@ public class Message {
 
 	/**
 	 * Ruft den Wert der utcTime-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link XMLGregorianCalendar }
-	 * 
+	 *
 	 */
 	public XMLGregorianCalendar getUtcTime() {
 		return utcTime;
@@ -164,10 +157,10 @@ public class Message {
 
 	/**
 	 * Legt den Wert der utcTime-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link XMLGregorianCalendar }
-	 * 
+	 *
 	 */
 	public void setUtcTime(XMLGregorianCalendar value) {
 		this.utcTime = value;
@@ -175,9 +168,9 @@ public class Message {
 
 	/**
 	 * Ruft den Wert der propertyOperation-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link PropertyOperation }
-	 * 
+	 *
 	 */
 	public PropertyOperation getPropertyOperation() {
 		return propertyOperation;
@@ -185,10 +178,10 @@ public class Message {
 
 	/**
 	 * Legt den Wert der propertyOperation-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link PropertyOperation }
-	 * 
+	 *
 	 */
 	public void setPropertyOperation(PropertyOperation value) {
 		this.propertyOperation = value;
@@ -196,13 +189,13 @@ public class Message {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

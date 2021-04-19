@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.17 um 11:33:29 AM CET 
-//
-
 package org.onvif.ver20.ptz.wsdl;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -18,10 +11,10 @@ import org.onvif.ver10.schema.PTZSpeed;
 /**
  * <p>
  * Java-Klasse f�r anonymous complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType>
  *   <complexContent>
@@ -35,8 +28,8 @@ import org.onvif.ver10.schema.PTZSpeed;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = { "profileToken", "velocity", "timeout" })
@@ -52,9 +45,9 @@ public class ContinuousMove {
 
 	/**
 	 * Ruft den Wert der profileToken-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getProfileToken() {
 		return profileToken;
@@ -62,10 +55,10 @@ public class ContinuousMove {
 
 	/**
 	 * Legt den Wert der profileToken-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setProfileToken(String value) {
 		this.profileToken = value;
@@ -73,9 +66,9 @@ public class ContinuousMove {
 
 	/**
 	 * Ruft den Wert der velocity-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link PTZSpeed }
-	 * 
+	 *
 	 */
 	public PTZSpeed getVelocity() {
 		return velocity;
@@ -83,10 +76,10 @@ public class ContinuousMove {
 
 	/**
 	 * Legt den Wert der velocity-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link PTZSpeed }
-	 * 
+	 *
 	 */
 	public void setVelocity(PTZSpeed value) {
 		this.velocity = value;
@@ -94,9 +87,9 @@ public class ContinuousMove {
 
 	/**
 	 * Ruft den Wert der timeout-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Duration }
-	 * 
+	 *
 	 */
 	public Duration getTimeout() {
 		return timeout;
@@ -104,10 +97,10 @@ public class ContinuousMove {
 
 	/**
 	 * Legt den Wert der timeout-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Duration }
-	 * 
+	 *
 	 */
 	public void setTimeout(Duration value) {
 		this.timeout = value;

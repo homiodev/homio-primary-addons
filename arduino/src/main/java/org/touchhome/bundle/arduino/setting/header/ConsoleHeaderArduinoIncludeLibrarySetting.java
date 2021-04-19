@@ -4,6 +4,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.setting.SettingPluginOptions;
 import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
+import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.arduino.avr.LibraryOfSameTypeComparator;
 import processing.app.BaseNoGui;
 import processing.app.debug.TargetPlatform;
@@ -57,7 +58,7 @@ public class ConsoleHeaderArduinoIncludeLibrarySetting implements ConsoleHeaderS
     }
 
     @Override
-    public SettingType getSettingType() {
-        return SettingType.SelectBoxButton;
+    public UIFieldType getSettingType() {
+        return UIFieldType.SelectBoxButton;
     }
 }

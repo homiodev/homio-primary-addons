@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.ArrayList;
@@ -23,10 +16,10 @@ import org.w3c.dom.Element;
 /**
  * <p>
  * Java-Klasse f�r ImagingOptions complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="ImagingOptions">
  *   <complexContent>
@@ -49,8 +42,8 @@ import org.w3c.dom.Element;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ImagingOptions", propOrder = { "backlightCompensation", "brightness", "colorSaturation", "contrast", "exposure", "focus", "irCutFilterModes",
@@ -84,9 +77,9 @@ public class ImagingOptions {
 
 	/**
 	 * Ruft den Wert der backlightCompensation-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link BacklightCompensationOptions }
-	 * 
+	 *
 	 */
 	public BacklightCompensationOptions getBacklightCompensation() {
 		return backlightCompensation;
@@ -94,10 +87,10 @@ public class ImagingOptions {
 
 	/**
 	 * Legt den Wert der backlightCompensation-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link BacklightCompensationOptions }
-	 * 
+	 *
 	 */
 	public void setBacklightCompensation(BacklightCompensationOptions value) {
 		this.backlightCompensation = value;
@@ -105,9 +98,9 @@ public class ImagingOptions {
 
 	/**
 	 * Ruft den Wert der brightness-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getBrightness() {
 		return brightness;
@@ -115,10 +108,10 @@ public class ImagingOptions {
 
 	/**
 	 * Legt den Wert der brightness-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setBrightness(FloatRange value) {
 		this.brightness = value;
@@ -126,9 +119,9 @@ public class ImagingOptions {
 
 	/**
 	 * Ruft den Wert der colorSaturation-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getColorSaturation() {
 		return colorSaturation;
@@ -136,10 +129,10 @@ public class ImagingOptions {
 
 	/**
 	 * Legt den Wert der colorSaturation-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setColorSaturation(FloatRange value) {
 		this.colorSaturation = value;
@@ -147,9 +140,9 @@ public class ImagingOptions {
 
 	/**
 	 * Ruft den Wert der contrast-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getContrast() {
 		return contrast;
@@ -157,10 +150,10 @@ public class ImagingOptions {
 
 	/**
 	 * Legt den Wert der contrast-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setContrast(FloatRange value) {
 		this.contrast = value;
@@ -168,9 +161,9 @@ public class ImagingOptions {
 
 	/**
 	 * Ruft den Wert der exposure-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link ExposureOptions }
-	 * 
+	 *
 	 */
 	public ExposureOptions getExposure() {
 		return exposure;
@@ -178,10 +171,10 @@ public class ImagingOptions {
 
 	/**
 	 * Legt den Wert der exposure-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link ExposureOptions }
-	 * 
+	 *
 	 */
 	public void setExposure(ExposureOptions value) {
 		this.exposure = value;
@@ -189,9 +182,9 @@ public class ImagingOptions {
 
 	/**
 	 * Ruft den Wert der focus-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FocusOptions }
-	 * 
+	 *
 	 */
 	public FocusOptions getFocus() {
 		return focus;
@@ -199,10 +192,10 @@ public class ImagingOptions {
 
 	/**
 	 * Legt den Wert der focus-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FocusOptions }
-	 * 
+	 *
 	 */
 	public void setFocus(FocusOptions value) {
 		this.focus = value;
@@ -210,23 +203,23 @@ public class ImagingOptions {
 
 	/**
 	 * Gets the value of the irCutFilterModes property.
-	 * 
+	 *
 	 * <p>
 	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
 	 * This is why there is not a <CODE>set</CODE> method for the irCutFilterModes property.
-	 * 
+	 *
 	 * <p>
 	 * For example, to add a new item, do as follows:
-	 * 
+	 *
 	 * <pre>
 	 * getIrCutFilterModes().add(newItem);
 	 * </pre>
-	 * 
-	 * 
+	 *
+	 *
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list {@link IrCutFilterMode }
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public List<IrCutFilterMode> getIrCutFilterModes() {
 		if (irCutFilterModes == null) {
@@ -237,9 +230,9 @@ public class ImagingOptions {
 
 	/**
 	 * Ruft den Wert der sharpness-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public FloatRange getSharpness() {
 		return sharpness;
@@ -247,10 +240,10 @@ public class ImagingOptions {
 
 	/**
 	 * Legt den Wert der sharpness-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link FloatRange }
-	 * 
+	 *
 	 */
 	public void setSharpness(FloatRange value) {
 		this.sharpness = value;
@@ -258,9 +251,9 @@ public class ImagingOptions {
 
 	/**
 	 * Ruft den Wert der wideDynamicRange-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link WideDynamicRangeOptions }
-	 * 
+	 *
 	 */
 	public WideDynamicRangeOptions getWideDynamicRange() {
 		return wideDynamicRange;
@@ -268,10 +261,10 @@ public class ImagingOptions {
 
 	/**
 	 * Legt den Wert der wideDynamicRange-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link WideDynamicRangeOptions }
-	 * 
+	 *
 	 */
 	public void setWideDynamicRange(WideDynamicRangeOptions value) {
 		this.wideDynamicRange = value;
@@ -279,9 +272,9 @@ public class ImagingOptions {
 
 	/**
 	 * Ruft den Wert der whiteBalance-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link WhiteBalanceOptions }
-	 * 
+	 *
 	 */
 	public WhiteBalanceOptions getWhiteBalance() {
 		return whiteBalance;
@@ -289,10 +282,10 @@ public class ImagingOptions {
 
 	/**
 	 * Legt den Wert der whiteBalance-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link WhiteBalanceOptions }
-	 * 
+	 *
 	 */
 	public void setWhiteBalance(WhiteBalanceOptions value) {
 		this.whiteBalance = value;
@@ -300,23 +293,23 @@ public class ImagingOptions {
 
 	/**
 	 * Gets the value of the any property.
-	 * 
+	 *
 	 * <p>
 	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
 	 * This is why there is not a <CODE>set</CODE> method for the any property.
-	 * 
+	 *
 	 * <p>
 	 * For example, to add a new item, do as follows:
-	 * 
+	 *
 	 * <pre>
 	 * getAny().add(newItem);
 	 * </pre>
-	 * 
-	 * 
+	 *
+	 *
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list {@link Element } {@link java.lang.Object }
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public List<java.lang.Object> getAny() {
 		if (any == null) {
@@ -327,13 +320,13 @@ public class ImagingOptions {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

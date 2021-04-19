@@ -11,7 +11,6 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.compress.utils.IOUtils;
@@ -88,10 +87,6 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
         startSnapshot();
     }
 
-    public String getRtspUri() {
-        return rtspUri;
-    }
-
     @Override
     protected void pollCameraRunnable() {
         fireFfmpeg(ffmpegHLS, Ffmpeg::stopProcessIfNoKeepAlive);
@@ -107,6 +102,7 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
     @Override
     protected void initialize0() {
         this.rtspUri = createRtspUri();
+        setAttribute("RTSP_URI", new StringType(this.rtspUri));
         this.snapshotSource = initSnapshotInput();
         this.snapshotInputOptions = getFFMPEGInputOptions() + " -threads 1 -skip_frame nokey -hide_banner -loglevel warning -an";
         this.audioThreshold = cameraEntity.getAudioThreshold();
@@ -213,9 +209,9 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
     @Override
     public void setAttribute(String key, State state) {
         super.setAttribute(key, state);
-        if (key.equals(CHANNEL_THRESHOLD_AUDIO_ALARM)) {
+        if (key.equals(CHANNEL_AUDIO_THRESHOLD)) {
             entityContext.updateDelayed(cameraEntity, e -> e.setAudioThreshold(state.intValue()));
-        } else if (key.equals(CHANNEL_FFMPEG_MOTION_CONTROL)) {
+        } else if (key.equals(CHANNEL_MOTION_THRESHOLD)) {
             entityContext.updateDelayed(cameraEntity, e -> e.setMotionThreshold(state.intValue()));
         }
     }
@@ -385,50 +381,90 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
         this.updateStatus(Status.ERROR, error);
     }
 
-    @UICameraActionGetter(CHANNEL_THRESHOLD_AUDIO_ALARM)
+    @UICameraActionGetter(CHANNEL_AUDIO_THRESHOLD)
     public DecimalType getAudioAlarmThreshold() {
         return new DecimalType(cameraEntity.getAudioThreshold());
     }
 
-    @UICameraAction(name = CHANNEL_THRESHOLD_AUDIO_ALARM, order = 20, icon = "fas fa-volume-up",
+    @UICameraAction(name = CHANNEL_AUDIO_THRESHOLD, order = 120, icon = "fas fa-volume-up",
             type = UICameraAction.ActionType.Dimmer)
     @UICameraDimmerButton(name = "ON", icon = "fas fa-volume-down")
     @UICameraDimmerButton(name = "OFF", icon = "fas fa-volume-off")
     public boolean setAudioAlarmThreshold(String command) {
-        audioAlarmEnabled = !"OFF".equals(command) && !"0".equals(command);
-        if (audioAlarmEnabled) {
-            if (!"ON".equals(command)) {
-                audioThreshold = Integer.parseInt(command);
-                setAttribute(CHANNEL_THRESHOLD_AUDIO_ALARM, new StringType(audioThreshold + ""));
+        command = command.toLowerCase();
+        if (this.isAudioAlarmHandlesByCamera()) {
+            if ("off".equals(command) || "0".equals(command) || "false".equals(command)) {
+                setAudioAlarmThreshold(0);
+            } else if ("on".equals(command) || "true".equals(command)) {
+                setAudioAlarmThreshold(cameraEntity.getAudioThreshold());
+            } else {
+                setAudioAlarmThreshold(Integer.parseInt(command));
             }
+            return true;
         } else {
-            audioDetected(false);
+            audioAlarmEnabled = !"OFF".equals(command) && !"0".equals(command);
+            if (audioAlarmEnabled) {
+                if (!"ON".equals(command)) {
+                    audioThreshold = Integer.parseInt(command);
+                    setAttribute(CHANNEL_AUDIO_THRESHOLD, new StringType(audioThreshold + ""));
+                }
+            } else {
+                audioDetected(false);
+            }
+            return startRtspAlarms();
         }
-        return startRtspAlarms();
     }
 
-    @UICameraActionGetter(CHANNEL_FFMPEG_MOTION_CONTROL)
+    protected void setAudioAlarmThreshold(int audioThreshold) {
+        throw new RuntimeException("Must be implemented in subclass");
+    }
+
+    protected void setMotionAlarmThreshold(int motionThreshold) {
+        throw new RuntimeException("Must be implemented in subclass");
+    }
+
+    protected boolean isAudioAlarmHandlesByCamera() {
+        return false;
+    }
+
+    protected boolean isMotionAlarmHandlesByCamera() {
+        return false;
+    }
+
+    @UICameraActionGetter(CHANNEL_MOTION_THRESHOLD)
     public DecimalType getMotionThreshold() {
         return new DecimalType(cameraEntity.getMotionThreshold());
     }
 
-    @UICameraAction(name = CHANNEL_FFMPEG_MOTION_CONTROL, order = 15, icon = "fas fa-expand-arrows-alt",
+    @UICameraAction(name = CHANNEL_MOTION_THRESHOLD, order = 110, icon = "fas fa-expand-arrows-alt",
             type = UICameraAction.ActionType.Dimmer, max = 1000)
     @UICameraDimmerButton(name = "ON", icon = "fas fa-power-off")
     @UICameraDimmerButton(name = "OFF", icon = "fas fa-power-on")
-    public boolean setFfmpegMotionControl(String command) {
-        motionAlarmEnabled = !"OFF".equals(command) && !"0".equals(command);
-        if (motionAlarmEnabled) {
-            if (!"ON".equals(command)) {
-                motionThreshold = Integer.parseInt(command);
-                setAttribute(CHANNEL_FFMPEG_MOTION_CONTROL, new StringType(command));
-            } else if (motionThreshold == 0) {
-                motionAlarmEnabled = false;
+    public boolean setMotionThreshold(String command) {
+        command = command.toLowerCase();
+        if (this.isMotionAlarmHandlesByCamera()) {
+            if ("off".equals(command) || "0".equals(command) || "false".equals(command)) {
+                setMotionAlarmThreshold(0);
+            } else if ("on".equals(command) || "true".equals(command)) {
+                setMotionAlarmThreshold(cameraEntity.getAudioThreshold());
+            } else {
+                setMotionAlarmThreshold(Integer.parseInt(command));
             }
+            return true;
         } else {
-            motionDetected(false, CHANNEL_FFMPEG_MOTION_ALARM);
+            motionAlarmEnabled = !"OFF".equals(command) && !"0".equals(command);
+            if (motionAlarmEnabled) {
+                if (!"ON".equals(command)) {
+                    motionThreshold = Integer.parseInt(command);
+                    setAttribute(CHANNEL_MOTION_THRESHOLD, new StringType(command));
+                } else if (motionThreshold == 0) {
+                    motionAlarmEnabled = false;
+                }
+            } else {
+                motionDetected(false, CHANNEL_FFMPEG_MOTION_ALARM);
+            }
+            return startRtspAlarms();
         }
-        return startRtspAlarms();
     }
 
     public byte[] recordGifSync(int time) {

@@ -1,11 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2016.02.05 um 06:25:30 PM CET 
-//
-
-
 package org.onvif.ver20.media.wsdl;
 
 import java.util.ArrayList;
@@ -18,10 +10,10 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für anonymous complex type.
- * 
+ * <p>Java-Klasse fï¿½r anonymous complex type.
+ *
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -34,8 +26,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -52,11 +44,11 @@ public class RemoveConfiguration {
 
     /**
      * Ruft den Wert der profileToken-Eigenschaft ab.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getProfileToken() {
         return profileToken;
@@ -64,11 +56,11 @@ public class RemoveConfiguration {
 
     /**
      * Legt den Wert der profileToken-Eigenschaft fest.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setProfileToken(String value) {
         this.profileToken = value;
@@ -76,25 +68,25 @@ public class RemoveConfiguration {
 
     /**
      * Gets the value of the configuration property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the configuration property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getConfiguration().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link ConfigurationRef }
-     * 
-     * 
+     *
+     *
      */
     public List<ConfigurationRef> getConfiguration() {
         if (configuration == null) {

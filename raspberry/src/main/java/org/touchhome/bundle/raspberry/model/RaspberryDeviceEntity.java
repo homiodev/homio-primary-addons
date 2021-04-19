@@ -37,7 +37,7 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
     @Getter
     @Setter
     @Transient
-    @UIField(order = 1000, type = UIFieldType.Selection, readOnly = true, color = "#7FBBCC")
+    @UIField(order = 1000, type = UIFieldType.SelectBox, readOnly = true, color = "#7FBBCC")
     @UIFieldExpand
     @UIFieldCreateWorkspaceVariableOnEmpty
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

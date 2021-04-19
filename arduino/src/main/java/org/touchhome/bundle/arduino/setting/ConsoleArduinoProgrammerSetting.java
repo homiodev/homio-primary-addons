@@ -5,6 +5,7 @@ import org.touchhome.bundle.api.console.ConsolePlugin;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.setting.SettingPluginOptions;
 import org.touchhome.bundle.api.setting.console.ConsoleSettingPlugin;
+import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.arduino.ArduinoConsolePlugin;
 import processing.app.BaseNoGui;
 import processing.app.debug.TargetBoard;
@@ -66,8 +67,8 @@ public class ConsoleArduinoProgrammerSetting implements ConsoleSettingPlugin<Str
     }
 
     @Override
-    public SettingType getSettingType() {
-        return SettingType.SelectBoxDynamic;
+    public UIFieldType getSettingType() {
+        return UIFieldType.SelectBoxDynamic;
     }
 
     @Override

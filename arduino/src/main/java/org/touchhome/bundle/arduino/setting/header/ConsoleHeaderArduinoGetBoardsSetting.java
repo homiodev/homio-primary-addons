@@ -4,6 +4,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.setting.SettingPluginOptions;
 import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
+import org.touchhome.bundle.api.ui.field.UIFieldType;
 import processing.app.BaseNoGui;
 import processing.app.debug.TargetBoard;
 import processing.app.debug.TargetPackage;
@@ -68,8 +69,8 @@ public class ConsoleHeaderArduinoGetBoardsSetting implements ConsoleHeaderSettin
     }
 
     @Override
-    public SettingType getSettingType() {
-        return SettingType.SelectBoxDynamic;
+    public UIFieldType getSettingType() {
+        return UIFieldType.SelectBoxDynamic;
     }
 
     @Override

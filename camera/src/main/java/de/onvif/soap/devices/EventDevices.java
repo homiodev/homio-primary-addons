@@ -1,6 +1,5 @@
 package de.onvif.soap.devices;
 
-import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 import de.onvif.soap.OnvifDeviceState;
 import de.onvif.soap.SOAP;
 import lombok.extern.log4j.Log4j2;
@@ -47,7 +46,7 @@ public class EventDevices {
         soap.addAsyncListener(PullMessagesResponse.class, "listen-PullMessagesResponse", this::handleEventReceived);
         soap.addAsyncListener(RenewResponse.class, "listen-RenewResponse", response -> soap.sendSOAPSubscribeRequestAsync(new PullMessages()));
         soap.addAsyncListener(GetServiceCapabilitiesResponse.class, "listen-GetServiceCapabilitiesResponse", response -> {
-            if (response.getCapabilities().isWSSubscriptionPolicySupport()) {
+            if (response.getCapabilities().getWsSubscriptionPolicySupport()) {
                 soap.sendSOAPEventRequestAsync(new Subscribe().setConsumerReference(new EndpointReferenceType()
                         .setAddress(new AttributedURIType().setValue(onvifDeviceState.getIp() + ":" + onvifDeviceState.getServerPort()))));
             }
@@ -96,7 +95,7 @@ public class EventDevices {
     }
 
     private Node findEventData(NotificationMessageHolderType notificationMessageHolderType) {
-        NodeList childNodes = ((ElementNSImpl) notificationMessageHolderType.getMessage().getAny()).getChildNodes();
+        NodeList childNodes = ((Node) notificationMessageHolderType.getMessage().getAny()).getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getLocalName().equals("Data")) {
                 return childNodes.item(i).getFirstChild();

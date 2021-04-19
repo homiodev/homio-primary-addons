@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,10 +8,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * <p>
  * Java-Klasse f�r VideoRateControl complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="VideoRateControl">
  *   <complexContent>
@@ -32,8 +25,8 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "VideoRateControl", propOrder = { "frameRateLimit", "encodingInterval", "bitrateLimit" })
@@ -48,7 +41,7 @@ public class VideoRateControl {
 
 	/**
 	 * Ruft den Wert der frameRateLimit-Eigenschaft ab.
-	 * 
+	 *
 	 */
 	public int getFrameRateLimit() {
 		return frameRateLimit;
@@ -56,7 +49,7 @@ public class VideoRateControl {
 
 	/**
 	 * Legt den Wert der frameRateLimit-Eigenschaft fest.
-	 * 
+	 *
 	 */
 	public void setFrameRateLimit(int value) {
 		this.frameRateLimit = value;
@@ -64,7 +57,7 @@ public class VideoRateControl {
 
 	/**
 	 * Ruft den Wert der encodingInterval-Eigenschaft ab.
-	 * 
+	 *
 	 */
 	public int getEncodingInterval() {
 		return encodingInterval;
@@ -72,7 +65,7 @@ public class VideoRateControl {
 
 	/**
 	 * Legt den Wert der encodingInterval-Eigenschaft fest.
-	 * 
+	 *
 	 */
 	public void setEncodingInterval(int value) {
 		this.encodingInterval = value;
@@ -80,7 +73,7 @@ public class VideoRateControl {
 
 	/**
 	 * Ruft den Wert der bitrateLimit-Eigenschaft ab.
-	 * 
+	 *
 	 */
 	public int getBitrateLimit() {
 		return bitrateLimit;
@@ -88,7 +81,7 @@ public class VideoRateControl {
 
 	/**
 	 * Legt den Wert der bitrateLimit-Eigenschaft fest.
-	 * 
+	 *
 	 */
 	public void setBitrateLimit(int value) {
 		this.bitrateLimit = value;

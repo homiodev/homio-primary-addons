@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.HashMap;
@@ -19,10 +12,10 @@ import javax.xml.namespace.QName;
 /**
  * <p>
  * Java-Klasse f�r OSDTextConfiguration complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="OSDTextConfiguration">
  *   <complexContent>
@@ -42,8 +35,8 @@ import javax.xml.namespace.QName;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "OSDTextConfiguration", propOrder = { "type", "dateFormat", "timeFormat", "fontSize", "fontColor", "backgroundColor", "plainText", "extension" })
@@ -70,9 +63,9 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Ruft den Wert der type-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getType() {
 		return type;
@@ -80,10 +73,10 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Legt den Wert der type-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setType(String value) {
 		this.type = value;
@@ -91,9 +84,9 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Ruft den Wert der dateFormat-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getDateFormat() {
 		return dateFormat;
@@ -101,10 +94,10 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Legt den Wert der dateFormat-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setDateFormat(String value) {
 		this.dateFormat = value;
@@ -112,9 +105,9 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Ruft den Wert der timeFormat-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getTimeFormat() {
 		return timeFormat;
@@ -122,10 +115,10 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Legt den Wert der timeFormat-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setTimeFormat(String value) {
 		this.timeFormat = value;
@@ -133,9 +126,9 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Ruft den Wert der fontSize-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Integer }
-	 * 
+	 *
 	 */
 	public Integer getFontSize() {
 		return fontSize;
@@ -143,10 +136,10 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Legt den Wert der fontSize-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Integer }
-	 * 
+	 *
 	 */
 	public void setFontSize(Integer value) {
 		this.fontSize = value;
@@ -154,9 +147,9 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Ruft den Wert der fontColor-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link OSDColor }
-	 * 
+	 *
 	 */
 	public OSDColor getFontColor() {
 		return fontColor;
@@ -164,10 +157,10 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Legt den Wert der fontColor-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link OSDColor }
-	 * 
+	 *
 	 */
 	public void setFontColor(OSDColor value) {
 		this.fontColor = value;
@@ -175,9 +168,9 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Ruft den Wert der backgroundColor-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link OSDColor }
-	 * 
+	 *
 	 */
 	public OSDColor getBackgroundColor() {
 		return backgroundColor;
@@ -185,10 +178,10 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Legt den Wert der backgroundColor-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link OSDColor }
-	 * 
+	 *
 	 */
 	public void setBackgroundColor(OSDColor value) {
 		this.backgroundColor = value;
@@ -196,9 +189,9 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Ruft den Wert der plainText-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getPlainText() {
 		return plainText;
@@ -206,10 +199,10 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Legt den Wert der plainText-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setPlainText(String value) {
 		this.plainText = value;
@@ -217,9 +210,9 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Ruft den Wert der extension-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link OSDTextConfigurationExtension }
-	 * 
+	 *
 	 */
 	public OSDTextConfigurationExtension getExtension() {
 		return extension;
@@ -227,10 +220,10 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Legt den Wert der extension-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link OSDTextConfigurationExtension }
-	 * 
+	 *
 	 */
 	public void setExtension(OSDTextConfigurationExtension value) {
 		this.extension = value;
@@ -238,13 +231,13 @@ public class OSDTextConfiguration {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

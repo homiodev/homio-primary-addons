@@ -25,15 +25,15 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextBGP;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.state.DecimalType;
-import org.touchhome.bundle.api.state.OnOffType;
-import org.touchhome.bundle.api.state.RawType;
+import org.touchhome.bundle.api.state.*;
 import org.touchhome.bundle.api.ui.field.action.impl.StatefulContextMenuAction;
 import org.touchhome.bundle.camera.CameraCoordinator;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
 import org.touchhome.bundle.camera.handler.BaseCameraStreamServerHandler;
 import org.touchhome.bundle.camera.handler.BaseFFmpegCameraHandler;
+import org.touchhome.bundle.camera.onvif.BrandCameraHasAudioAlarm;
+import org.touchhome.bundle.camera.onvif.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.onvif.impl.InstarBrandHandler;
 import org.touchhome.bundle.camera.onvif.util.ChannelTracking;
 import org.touchhome.bundle.camera.onvif.util.MyNettyAuthHandler;
@@ -782,8 +782,9 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     @Override
     protected void initialize0() {
         this.onvifDeviceState.initFully(cameraEntity);
-
         super.initialize0();
+
+        setAttribute("PROFILES", new ObjectType(onvifDeviceState.getProfiles()));
         snapshotUri = getCorrectUrlFormat(cameraEntity.getSnapshotUrl());
         mjpegUri = getCorrectUrlFormat(cameraEntity.getMjpegUrl());
 
@@ -805,6 +806,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
             log.warn("Camera <{}> has no snapshot url. Will use your CPU and FFmpeg to create snapshots from the cameras RTSP.", cameraEntity.getTitle());
             snapshotUri = "";
         }
+        setAttribute("SNAPSHOT_URI", new StringType(snapshotUri));
     }
 
     @Override
@@ -1103,5 +1105,25 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
                 cameraHandler.setupSnapshotStreaming(false, ctx, false);
             }
         }
+    }
+
+    @Override
+    protected void setAudioAlarmThreshold(int audioThreshold) {
+        ((BrandCameraHasAudioAlarm) cameraEntity.getBaseOnvifCameraBrandHandler()).setAudioAlarmThreshold(audioThreshold);
+    }
+
+    @Override
+    protected void setMotionAlarmThreshold(int motionThreshold) {
+        ((BrandCameraHasMotionAlarm) cameraEntity.getBaseOnvifCameraBrandHandler()).setMotionAlarmThreshold(motionThreshold);
+    }
+
+    @Override
+    protected boolean isAudioAlarmHandlesByCamera() {
+        return cameraEntity.getBaseOnvifCameraBrandHandler() instanceof BrandCameraHasAudioAlarm;
+    }
+
+    @Override
+    protected boolean isMotionAlarmHandlesByCamera() {
+        return cameraEntity.getBaseOnvifCameraBrandHandler() instanceof BrandCameraHasMotionAlarm;
     }
 }

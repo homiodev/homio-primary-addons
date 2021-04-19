@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,10 +9,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * <p>
  * Java-Klasse f�r Vector2D complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="Vector2D">
  *   <complexContent>
@@ -31,8 +24,8 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Vector2D")
@@ -48,7 +41,7 @@ public class Vector2D {
 
 	/**
 	 * Ruft den Wert der x-Eigenschaft ab.
-	 * 
+	 *
 	 */
 	public float getX() {
 		return x;
@@ -56,7 +49,7 @@ public class Vector2D {
 
 	/**
 	 * Legt den Wert der x-Eigenschaft fest.
-	 * 
+	 *
 	 */
 	public void setX(float value) {
 		this.x = value;
@@ -64,7 +57,7 @@ public class Vector2D {
 
 	/**
 	 * Ruft den Wert der y-Eigenschaft ab.
-	 * 
+	 *
 	 */
 	public float getY() {
 		return y;
@@ -72,7 +65,7 @@ public class Vector2D {
 
 	/**
 	 * Legt den Wert der y-Eigenschaft fest.
-	 * 
+	 *
 	 */
 	public void setY(float value) {
 		this.y = value;
@@ -80,9 +73,9 @@ public class Vector2D {
 
 	/**
 	 * Ruft den Wert der space-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getSpace() {
 		return space;
@@ -90,10 +83,10 @@ public class Vector2D {
 
 	/**
 	 * Legt den Wert der space-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setSpace(String value) {
 		this.space = value;

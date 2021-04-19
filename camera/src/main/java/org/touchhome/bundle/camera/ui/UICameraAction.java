@@ -10,6 +10,14 @@ import java.lang.annotation.Target;
 public @interface UICameraAction {
     String name();
 
+    String group() default "";
+
+    boolean collapseGroup() default false;
+
+    String collapseGroupIcon() default "";
+
+    String subGroup() default "";
+
     int order();
 
     String icon();
@@ -31,6 +39,7 @@ public @interface UICameraAction {
         Dimmer,
         String,
         Switch,
+        Select,
         AutoDiscover // discover on type of first parameter type in method
     }
 }

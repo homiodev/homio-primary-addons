@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.ArrayList;
@@ -22,16 +15,16 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Element;
 
 /**
- * 
+ *
  * A set of informative desciptions of a data source. The Search searvice allows a client to filter on recordings based on information in this structure.
- * 
- * 
+ *
+ *
  * <p>
  * Java-Klasse f�r RecordingSourceInformation complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="RecordingSourceInformation">
  *   <complexContent>
@@ -49,8 +42,8 @@ import org.w3c.dom.Element;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "RecordingSourceInformation", propOrder = { "sourceId", "name", "location", "description", "address", "any" })
@@ -75,9 +68,9 @@ public class RecordingSourceInformation {
 
 	/**
 	 * Ruft den Wert der sourceId-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getSourceId() {
 		return sourceId;
@@ -85,10 +78,10 @@ public class RecordingSourceInformation {
 
 	/**
 	 * Legt den Wert der sourceId-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setSourceId(String value) {
 		this.sourceId = value;
@@ -96,9 +89,9 @@ public class RecordingSourceInformation {
 
 	/**
 	 * Ruft den Wert der name-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getName() {
 		return name;
@@ -106,10 +99,10 @@ public class RecordingSourceInformation {
 
 	/**
 	 * Legt den Wert der name-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setName(String value) {
 		this.name = value;
@@ -117,9 +110,9 @@ public class RecordingSourceInformation {
 
 	/**
 	 * Ruft den Wert der location-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getLocation() {
 		return location;
@@ -127,10 +120,10 @@ public class RecordingSourceInformation {
 
 	/**
 	 * Legt den Wert der location-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setLocation(String value) {
 		this.location = value;
@@ -138,9 +131,9 @@ public class RecordingSourceInformation {
 
 	/**
 	 * Ruft den Wert der description-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getDescription() {
 		return description;
@@ -148,10 +141,10 @@ public class RecordingSourceInformation {
 
 	/**
 	 * Legt den Wert der description-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setDescription(String value) {
 		this.description = value;
@@ -159,9 +152,9 @@ public class RecordingSourceInformation {
 
 	/**
 	 * Ruft den Wert der address-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getAddress() {
 		return address;
@@ -169,10 +162,10 @@ public class RecordingSourceInformation {
 
 	/**
 	 * Legt den Wert der address-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setAddress(String value) {
 		this.address = value;
@@ -180,23 +173,23 @@ public class RecordingSourceInformation {
 
 	/**
 	 * Gets the value of the any property.
-	 * 
+	 *
 	 * <p>
 	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
 	 * This is why there is not a <CODE>set</CODE> method for the any property.
-	 * 
+	 *
 	 * <p>
 	 * For example, to add a new item, do as follows:
-	 * 
+	 *
 	 * <pre>
 	 * getAny().add(newItem);
 	 * </pre>
-	 * 
-	 * 
+	 *
+	 *
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list {@link Element } {@link java.lang.Object }
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public List<java.lang.Object> getAny() {
 		if (any == null) {
@@ -207,13 +200,13 @@ public class RecordingSourceInformation {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

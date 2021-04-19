@@ -1,11 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2016.02.05 um 06:25:30 PM CET 
-//
-
-
 package org.onvif.ver20.media.wsdl;
 
 import java.util.ArrayList;
@@ -18,10 +10,10 @@ import org.w3c.dom.Element;
 
 
 /**
- * <p>Java-Klasse für VideoSourceModeExtension complex type.
- * 
+ * <p>Java-Klasse fï¿½r VideoSourceModeExtension complex type.
+ *
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * &lt;complexType name="VideoSourceModeExtension">
  *   &lt;complexContent>
@@ -33,8 +25,8 @@ import org.w3c.dom.Element;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "VideoSourceModeExtension", propOrder = {
@@ -47,26 +39,26 @@ public class VideoSourceModeExtension {
 
     /**
      * Gets the value of the any property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the any property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getAny().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Element }
      * {@link Object }
-     * 
-     * 
+     *
+     *
      */
     public List<Object> getAny() {
         if (any == null) {

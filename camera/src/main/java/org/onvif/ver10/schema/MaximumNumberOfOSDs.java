@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.HashMap;
@@ -19,10 +12,10 @@ import javax.xml.namespace.QName;
 /**
  * <p>
  * Java-Klasse f�r MaximumNumberOfOSDs complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="MaximumNumberOfOSDs">
  *   <complexContent>
@@ -38,8 +31,8 @@ import javax.xml.namespace.QName;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MaximumNumberOfOSDs")
@@ -62,7 +55,7 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Ruft den Wert der total-Eigenschaft ab.
-	 * 
+	 *
 	 */
 	public int getTotal() {
 		return total;
@@ -70,7 +63,7 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Legt den Wert der total-Eigenschaft fest.
-	 * 
+	 *
 	 */
 	public void setTotal(int value) {
 		this.total = value;
@@ -78,9 +71,9 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Ruft den Wert der image-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Integer }
-	 * 
+	 *
 	 */
 	public Integer getImage() {
 		return image;
@@ -88,10 +81,10 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Legt den Wert der image-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Integer }
-	 * 
+	 *
 	 */
 	public void setImage(Integer value) {
 		this.image = value;
@@ -99,9 +92,9 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Ruft den Wert der plainText-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Integer }
-	 * 
+	 *
 	 */
 	public Integer getPlainText() {
 		return plainText;
@@ -109,10 +102,10 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Legt den Wert der plainText-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Integer }
-	 * 
+	 *
 	 */
 	public void setPlainText(Integer value) {
 		this.plainText = value;
@@ -120,9 +113,9 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Ruft den Wert der date-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Integer }
-	 * 
+	 *
 	 */
 	public Integer getDate() {
 		return date;
@@ -130,10 +123,10 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Legt den Wert der date-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Integer }
-	 * 
+	 *
 	 */
 	public void setDate(Integer value) {
 		this.date = value;
@@ -141,9 +134,9 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Ruft den Wert der time-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Integer }
-	 * 
+	 *
 	 */
 	public Integer getTime() {
 		return time;
@@ -151,10 +144,10 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Legt den Wert der time-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Integer }
-	 * 
+	 *
 	 */
 	public void setTime(Integer value) {
 		this.time = value;
@@ -162,9 +155,9 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Ruft den Wert der dateAndTime-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Integer }
-	 * 
+	 *
 	 */
 	public Integer getDateAndTime() {
 		return dateAndTime;
@@ -172,10 +165,10 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Legt den Wert der dateAndTime-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Integer }
-	 * 
+	 *
 	 */
 	public void setDateAndTime(Integer value) {
 		this.dateAndTime = value;
@@ -183,13 +176,13 @@ public class MaximumNumberOfOSDs {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

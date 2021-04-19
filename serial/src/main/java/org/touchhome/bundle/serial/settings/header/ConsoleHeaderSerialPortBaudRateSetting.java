@@ -2,6 +2,7 @@ package org.touchhome.bundle.serial.settings.header;
 
 import org.touchhome.bundle.api.setting.SettingPluginOptionsInteger;
 import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
+import org.touchhome.bundle.api.ui.field.UIFieldType;
 
 public class ConsoleHeaderSerialPortBaudRateSetting implements ConsoleHeaderSettingPlugin<Integer>, SettingPluginOptionsInteger {
 
@@ -16,8 +17,8 @@ public class ConsoleHeaderSerialPortBaudRateSetting implements ConsoleHeaderSett
     }
 
     @Override
-    public SettingType getSettingType() {
-        return SettingType.SelectBox;
+    public UIFieldType getSettingType() {
+        return UIFieldType.SelectBox;
     }
 
     @Override

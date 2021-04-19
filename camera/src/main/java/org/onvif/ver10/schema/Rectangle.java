@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,10 +8,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * <p>
  * Java-Klasse f�r Rectangle complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="Rectangle">
  *   <complexContent>
@@ -31,8 +24,8 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Rectangle")
@@ -49,9 +42,9 @@ public class Rectangle {
 
 	/**
 	 * Ruft den Wert der bottom-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Float }
-	 * 
+	 *
 	 */
 	public Float getBottom() {
 		return bottom;
@@ -59,10 +52,10 @@ public class Rectangle {
 
 	/**
 	 * Legt den Wert der bottom-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Float }
-	 * 
+	 *
 	 */
 	public void setBottom(Float value) {
 		this.bottom = value;
@@ -70,9 +63,9 @@ public class Rectangle {
 
 	/**
 	 * Ruft den Wert der top-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Float }
-	 * 
+	 *
 	 */
 	public Float getTop() {
 		return top;
@@ -80,10 +73,10 @@ public class Rectangle {
 
 	/**
 	 * Legt den Wert der top-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Float }
-	 * 
+	 *
 	 */
 	public void setTop(Float value) {
 		this.top = value;
@@ -91,9 +84,9 @@ public class Rectangle {
 
 	/**
 	 * Ruft den Wert der right-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Float }
-	 * 
+	 *
 	 */
 	public Float getRight() {
 		return right;
@@ -101,10 +94,10 @@ public class Rectangle {
 
 	/**
 	 * Legt den Wert der right-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Float }
-	 * 
+	 *
 	 */
 	public void setRight(Float value) {
 		this.right = value;
@@ -112,9 +105,9 @@ public class Rectangle {
 
 	/**
 	 * Ruft den Wert der left-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Float }
-	 * 
+	 *
 	 */
 	public Float getLeft() {
 		return left;
@@ -122,10 +115,10 @@ public class Rectangle {
 
 	/**
 	 * Legt den Wert der left-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Float }
-	 * 
+	 *
 	 */
 	public void setLeft(Float value) {
 		this.left = value;

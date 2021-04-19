@@ -9,7 +9,9 @@ import org.onvif.ver10.schema.*;
 
 import javax.xml.soap.SOAPException;
 import java.net.ConnectException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class MediaDevices {
@@ -17,81 +19,39 @@ public class MediaDevices {
     private final OnvifDeviceState onvifDeviceState;
     private final SOAP soap;
 
-    private String snapshotUri;
-    private String rtspUri;
+    private Map<String, ProfileMediaDeviceCache> profileCache = new HashMap<>();
 
-    @Deprecated
-    public String getHTTPStreamUri(int profileNumber) {
-        StreamSetup setup = new StreamSetup();
-        setup.setStream(StreamType.RTP_UNICAST);
-        Transport transport = new Transport();
-        transport.setProtocol(TransportProtocol.HTTP);
-        setup.setTransport(transport);
-        return getStreamUri(setup, profileNumber);
+    private static class ProfileMediaDeviceCache {
+        private Map<TransportProtocol, String> protocolURI = new HashMap<>();
+        private String snapshotUri;
     }
 
     public String getHTTPStreamUri() {
-        StreamSetup setup = new StreamSetup();
-        setup.setStream(StreamType.RTP_UNICAST);
-        Transport transport = new Transport();
-        transport.setProtocol(TransportProtocol.HTTP);
-        setup.setTransport(transport);
-        return getStreamUri(onvifDeviceState.getProfileToken(), setup);
+        return getHTTPStreamUri(onvifDeviceState.getProfileToken());
+    }
+
+    public String getHTTPStreamUri(String profile) {
+        return getStreamUri(profile, TransportProtocol.HTTP);
     }
 
     public String getUDPStreamUri() {
-        StreamSetup setup = new StreamSetup();
-        setup.setStream(StreamType.RTP_UNICAST);
-        Transport transport = new Transport();
-        transport.setProtocol(TransportProtocol.UDP);
-        setup.setTransport(transport);
-        return getStreamUri(onvifDeviceState.getProfileToken(), setup);
+        return getUDPStreamUri(onvifDeviceState.getProfileToken());
     }
 
-    @Deprecated
-    public String getTCPStreamUri(int profileNumber) {
-        StreamSetup setup = new StreamSetup();
-        setup.setStream(StreamType.RTP_UNICAST);
-        Transport transport = new Transport();
-        transport.setProtocol(TransportProtocol.TCP);
-        setup.setTransport(transport);
-        return getStreamUri(setup, profileNumber);
-    }
-
-    public String getTCPStreamUri() {
-        StreamSetup setup = new StreamSetup();
-        setup.setStream(StreamType.RTP_UNICAST);
-        Transport transport = new Transport();
-        transport.setProtocol(TransportProtocol.TCP);
-        setup.setTransport(transport);
-        return getStreamUri(onvifDeviceState.getProfileToken(), setup);
+    public String getUDPStreamUri(String profile) {
+        return getStreamUri(profile, TransportProtocol.UDP);
     }
 
     public String getRTSPStreamUri() {
-        if (this.rtspUri == null) {
-            StreamSetup setup = new StreamSetup();
-            setup.setStream(StreamType.RTP_UNICAST);
-            Transport transport = new Transport();
-            transport.setProtocol(TransportProtocol.TCP);
-            setup.setTransport(transport);
-            this.rtspUri = getStreamUri(onvifDeviceState.getProfileToken(), setup);
-        }
-        return this.rtspUri;
+        return getRTSPStreamUri(onvifDeviceState.getProfileToken());
     }
 
-    @Deprecated
-    public String getStreamUri(StreamSetup streamSetup, int profileNumber) {
-        Profile profile = onvifDeviceState.getInitialDevices().getProfiles().get(profileNumber);
-        return getStreamUri(profile, streamSetup);
-    }
-
-    @Deprecated
-    public String getStreamUri(Profile profile, StreamSetup streamSetup) {
-        return getStreamUri(profile.getToken(), streamSetup);
+    public String getRTSPStreamUri(String profile) {
+        return getStreamUri(profile, TransportProtocol.TCP);
     }
 
     @SneakyThrows
-    public String getStreamUri(String profileToken, StreamSetup streamSetup) {
+    private String getStreamUri(String profileToken, StreamSetup streamSetup) {
         GetStreamUri request = new GetStreamUri();
         GetStreamUriResponse response = new GetStreamUriResponse();
 
@@ -125,7 +85,7 @@ public class MediaDevices {
         return response.getOptions();
     }
 
-    public boolean setVideoEncoderConfiguration(VideoEncoderConfiguration videoEncoderConfiguration) throws SOAPException, ConnectException {
+    public boolean setVideoEncoderConfiguration(VideoEncoderConfiguration videoEncoderConfiguration) {
         SetVideoEncoderConfiguration request = new SetVideoEncoderConfiguration();
         SetVideoEncoderConfigurationResponse response = new SetVideoEncoderConfigurationResponse();
 
@@ -137,26 +97,32 @@ public class MediaDevices {
     }
 
     public String getSnapshotUri() {
-        try {
-            if (this.snapshotUri == null) {
+        return getSnapshotUri(onvifDeviceState.getProfileToken());
+    }
+
+    public String getSnapshotUri(String profile) {
+        profileCache.putIfAbsent(profile, new ProfileMediaDeviceCache());
+        ProfileMediaDeviceCache mediaDeviceCache = profileCache.get(profile);
+        if (mediaDeviceCache.snapshotUri == null) {
+            try {
                 GetSnapshotUri request = new GetSnapshotUri();
                 GetSnapshotUriResponse response = new GetSnapshotUriResponse();
-                request.setProfileToken(onvifDeviceState.getProfileToken());
+                request.setProfileToken(profile);
 
                 response = (GetSnapshotUriResponse) soap.createSOAPMediaRequest(request, response);
                 if (response == null || response.getMediaUri() == null) {
                     return null;
                 }
 
-                this.snapshotUri = onvifDeviceState.replaceLocalIpWithProxyIp(response.getMediaUri().getUri());
+                mediaDeviceCache.snapshotUri = onvifDeviceState.replaceLocalIpWithProxyIp(response.getMediaUri().getUri());
+            } catch (Exception ex) {
+                return null;
             }
-            return this.snapshotUri;
-        } catch (Exception ex) {
-            return null;
         }
+        return mediaDeviceCache.snapshotUri;
     }
 
-    public List<VideoSource> getVideoSources() throws SOAPException, ConnectException {
+    public List<VideoSource> getVideoSources() {
         GetVideoSources request = new GetVideoSources();
         GetVideoSourcesResponse response = new GetVideoSourcesResponse();
 
@@ -169,7 +135,20 @@ public class MediaDevices {
     }
 
     public void dispose() {
-        snapshotUri = null;
-        rtspUri = null;
+        profileCache.clear();
+    }
+
+    private String getStreamUri(String profile, TransportProtocol transportProtocol) {
+        profileCache.putIfAbsent(profile, new ProfileMediaDeviceCache());
+        ProfileMediaDeviceCache mediaDeviceCache = profileCache.get(profile);
+        if (!mediaDeviceCache.protocolURI.containsKey(transportProtocol)) {
+            StreamSetup setup = new StreamSetup();
+            setup.setStream(StreamType.RTP_UNICAST);
+            Transport transport = new Transport();
+            transport.setProtocol(transportProtocol);
+            setup.setTransport(transport);
+            mediaDeviceCache.protocolURI.put(transportProtocol, getStreamUri(onvifDeviceState.getProfileToken(), setup));
+        }
+        return mediaDeviceCache.protocolURI.get(transportProtocol);
     }
 }

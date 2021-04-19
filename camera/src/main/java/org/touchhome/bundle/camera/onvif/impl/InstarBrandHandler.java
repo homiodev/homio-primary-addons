@@ -11,6 +11,7 @@ import org.touchhome.bundle.api.state.StringType;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.BrandCameraHasAudioAlarm;
 import org.touchhome.bundle.camera.onvif.util.Helper;
 import org.touchhome.bundle.camera.ui.UICameraAction;
 
@@ -20,8 +21,9 @@ import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
  * responsible for handling commands, which are sent to one of the channels.
  */
 @CameraBrandHandler(name = "Instar", handlerName = "instarHandler")
-public class InstarBrandHandler extends BaseOnvifCameraBrandHandler {
+public class InstarBrandHandler extends BaseOnvifCameraBrandHandler implements BrandCameraHasAudioAlarm {
     private String requestUrl = "Empty";
+    private int audioThreshold;
 
     public InstarBrandHandler(OnvifCameraEntity onvifCameraEntity) {
         super(onvifCameraEntity);
@@ -76,7 +78,7 @@ public class InstarBrandHandler extends BaseOnvifCameraBrandHandler {
                         setAttribute(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
                         value1 = Helper.searchString(content, "var aa_value=\"");
                         if (!value1.isEmpty()) {
-                            setAttribute(CHANNEL_THRESHOLD_AUDIO_ALARM, new DecimalType(value1));
+                            setAttribute(CHANNEL_AUDIO_THRESHOLD, new DecimalType(value1));
                         }
                     } else {
                         setAttribute(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
@@ -104,19 +106,17 @@ public class InstarBrandHandler extends BaseOnvifCameraBrandHandler {
         }
     }
 
-    @UICameraAction(name = CHANNEL_THRESHOLD_AUDIO_ALARM, order = 20, icon = "fas fa-volume-up")
-    public void thresholdAudioAlarm(int threshold) {
-        if (threshold == 0) {
-            onvifCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=0");
-        } else {
-            onvifCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=1");
-            onvifCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=1&-aa_value=" + threshold);
+    @Override
+    public void setAudioAlarmThreshold(int audioThreshold) {
+        if (audioThreshold != this.audioThreshold) {
+            this.audioThreshold = audioThreshold;
+            if (this.audioThreshold > 0) {
+                onvifCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=1");
+                onvifCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=1&-aa_value=" + audioThreshold);
+            } else {
+                onvifCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=0");
+            }
         }
-    }
-
-    @UICameraAction(name = CHANNEL_ENABLE_AUDIO_ALARM, order = 25, icon = "fas fa-volume-mute")
-    public void enableAudioAlarm(boolean on) {
-        onvifCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=" + boolToInt(on));
     }
 
     @UICameraAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")

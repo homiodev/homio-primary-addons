@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import java.util.HashMap;
@@ -19,10 +12,10 @@ import javax.xml.namespace.QName;
 /**
  * <p>
  * Java-Klasse f�r NetworkInterface complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="NetworkInterface">
  *   <complexContent>
@@ -40,8 +33,8 @@ import javax.xml.namespace.QName;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "NetworkInterface", propOrder = { "enabled", "info", "link", "iPv4", "iPv6", "extension" })
@@ -64,7 +57,7 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Ruft den Wert der enabled-Eigenschaft ab.
-	 * 
+	 *
 	 */
 	public boolean isEnabled() {
 		return enabled;
@@ -72,7 +65,7 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Legt den Wert der enabled-Eigenschaft fest.
-	 * 
+	 *
 	 */
 	public void setEnabled(boolean value) {
 		this.enabled = value;
@@ -80,9 +73,9 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Ruft den Wert der info-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link NetworkInterfaceInfo }
-	 * 
+	 *
 	 */
 	public NetworkInterfaceInfo getInfo() {
 		return info;
@@ -90,10 +83,10 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Legt den Wert der info-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link NetworkInterfaceInfo }
-	 * 
+	 *
 	 */
 	public void setInfo(NetworkInterfaceInfo value) {
 		this.info = value;
@@ -101,9 +94,9 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Ruft den Wert der link-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link NetworkInterfaceLink }
-	 * 
+	 *
 	 */
 	public NetworkInterfaceLink getLink() {
 		return link;
@@ -111,10 +104,10 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Legt den Wert der link-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link NetworkInterfaceLink }
-	 * 
+	 *
 	 */
 	public void setLink(NetworkInterfaceLink value) {
 		this.link = value;
@@ -122,9 +115,9 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Ruft den Wert der iPv4-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link IPv4NetworkInterface }
-	 * 
+	 *
 	 */
 	public IPv4NetworkInterface getIPv4() {
 		return iPv4;
@@ -132,10 +125,10 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Legt den Wert der iPv4-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link IPv4NetworkInterface }
-	 * 
+	 *
 	 */
 	public void setIPv4(IPv4NetworkInterface value) {
 		this.iPv4 = value;
@@ -143,9 +136,9 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Ruft den Wert der iPv6-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link IPv6NetworkInterface }
-	 * 
+	 *
 	 */
 	public IPv6NetworkInterface getIPv6() {
 		return iPv6;
@@ -153,10 +146,10 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Legt den Wert der iPv6-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link IPv6NetworkInterface }
-	 * 
+	 *
 	 */
 	public void setIPv6(IPv6NetworkInterface value) {
 		this.iPv6 = value;
@@ -164,9 +157,9 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Ruft den Wert der extension-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link NetworkInterfaceExtension }
-	 * 
+	 *
 	 */
 	public NetworkInterfaceExtension getExtension() {
 		return extension;
@@ -174,10 +167,10 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Legt den Wert der extension-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link NetworkInterfaceExtension }
-	 * 
+	 *
 	 */
 	public void setExtension(NetworkInterfaceExtension value) {
 		this.extension = value;
@@ -185,13 +178,13 @@ public class NetworkInterface extends DeviceEntity {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

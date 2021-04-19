@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,10 +8,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * <p>
  * Java-Klasse f�r VideoResolution complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="VideoResolution">
  *   <complexContent>
@@ -31,8 +24,8 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "VideoResolution", propOrder = { "width", "height" })
@@ -45,7 +38,7 @@ public class VideoResolution {
 
 	/**
 	 * Ruft den Wert der width-Eigenschaft ab.
-	 * 
+	 *
 	 */
 	public int getWidth() {
 		return width;
@@ -53,7 +46,7 @@ public class VideoResolution {
 
 	/**
 	 * Legt den Wert der width-Eigenschaft fest.
-	 * 
+	 *
 	 */
 	public void setWidth(int value) {
 		this.width = value;
@@ -61,7 +54,7 @@ public class VideoResolution {
 
 	/**
 	 * Ruft den Wert der height-Eigenschaft ab.
-	 * 
+	 *
 	 */
 	public int getHeight() {
 		return height;
@@ -69,7 +62,7 @@ public class VideoResolution {
 
 	/**
 	 * Legt den Wert der height-Eigenschaft fest.
-	 * 
+	 *
 	 */
 	public void setHeight(int value) {
 		this.height = value;

@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
-//
-
 package org.onvif.ver10.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,10 +8,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * <p>
  * Java-Klasse f�r Vector complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="Vector">
  *   <complexContent>
@@ -29,8 +22,8 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Vector")
@@ -43,9 +36,9 @@ public class Vector {
 
 	/**
 	 * Ruft den Wert der x-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Float }
-	 * 
+	 *
 	 */
 	public Float getX() {
 		return x;
@@ -53,10 +46,10 @@ public class Vector {
 
 	/**
 	 * Legt den Wert der x-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Float }
-	 * 
+	 *
 	 */
 	public void setX(Float value) {
 		this.x = value;
@@ -64,9 +57,9 @@ public class Vector {
 
 	/**
 	 * Ruft den Wert der y-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Float }
-	 * 
+	 *
 	 */
 	public Float getY() {
 		return y;
@@ -74,10 +67,10 @@ public class Vector {
 
 	/**
 	 * Legt den Wert der y-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Float }
-	 * 
+	 *
 	 */
 	public void setY(Float value) {
 		this.y = value;

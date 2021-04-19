@@ -15,15 +15,10 @@ import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.*;
 import org.touchhome.bundle.camera.CameraEntryPoint;
 import org.touchhome.bundle.camera.entity.BaseFFmpegStreamEntity;
-import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.BaseFFmpegCameraHandler;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 
-import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
@@ -139,7 +134,7 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
     }
 
     private void fireSetFFmpegMotionAlarmThresholdCommand(WorkspaceBlock workspaceBlock) {
-        getFFmpegHandler(workspaceBlock).setFfmpegMotionControl(workspaceBlock.getInputString(VALUE));
+        getFFmpegHandler(workspaceBlock).setMotionThreshold(workspaceBlock.getInputString(VALUE));
     }
 
     private byte[] getGifMP4Reporter(WorkspaceBlock workspaceBlock) {
@@ -180,7 +175,7 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
     private void listenMotionAlarmHat(WorkspaceBlock workspaceBlock) {
         workspaceBlock.getNextOrThrow();
         BaseFFmpegStreamEntity entity = getEntity(workspaceBlock);
-        if (!entity.getCameraHandler().setFfmpegMotionControl("ON")) {
+        if (!entity.getCameraHandler().setMotionThreshold("ON")) {
             workspaceBlock.logErrorAndThrow("Unable to start motion detection");
         }
         OnOffType onOffType = workspaceBlock.getMenuValue(ON_OFF, this.onOffMenu);
