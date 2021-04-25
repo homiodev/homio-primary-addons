@@ -346,6 +346,12 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         }
     }
 
+    @Override
+    public String updateURL(String url) {
+        loginIfRequire();
+        return url + (url.contains("?") ? "&" : "?") + "token=" + token;
+    }
+
     private void loginIfRequire() {
         if (this.tokenExpiration - System.currentTimeMillis() < 60000) {
             String body = "[{\"cmd\":\"Login\",\"action\":0,\"param\":{\"User\":{\"userName\":\"" +
@@ -360,8 +366,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     @SneakyThrows
     private ObjectNode[] firePost(String url, String body, boolean requireAuth) {
         if (requireAuth) {
-            loginIfRequire();
-            url += (url.contains("?") ? "&" : "?") + "token=" + token;
+            url = updateURL(url);
         }
         String msg = restTemplate.postForEntity("http://" + this.ip + ":" + this.cameraEntity.getRestPort() +
                 "/cgi-bin/api.cgi" + url, body, String.class).getBody();

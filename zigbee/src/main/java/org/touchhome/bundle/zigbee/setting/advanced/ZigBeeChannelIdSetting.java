@@ -1,5 +1,6 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
+import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.setting.SettingPluginOptionsInteger;
@@ -18,7 +19,7 @@ public class ZigBeeChannelIdSetting implements SettingPluginOptionsInteger {
     }
 
     @Override
-    public Collection<OptionModel> getOptions(EntityContext entityContext) {
+    public Collection<OptionModel> getOptions(EntityContext entityContext, JSONObject params) {
         List<OptionModel> options = new ArrayList<>();
         options.add(OptionModel.of("0", "AUTO"));
         options.addAll(IntStream.range(11, 25)

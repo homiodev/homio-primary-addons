@@ -115,4 +115,8 @@ public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler i
         request.content().clear().writeBytes(bbuf);
         return request;
     }
+
+    public String updateURL(String url) {
+        return url;
+    }
 }

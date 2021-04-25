@@ -2,20 +2,19 @@ package org.touchhome.bundle.arduino.setting.header;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.setting.SettingPluginOptionsFileExplorer;
 import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
-import org.touchhome.bundle.api.ui.field.UIFieldType;
 import processing.app.BaseNoGui;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
-import java.util.function.Predicate;
 
 import static org.touchhome.bundle.arduino.ArduinoConsolePlugin.DEFAULT_SKETCH_NAME;
 
@@ -78,11 +77,6 @@ public class ConsoleHeaderArduinoSketchNameSetting implements SettingPluginOptio
     }
 
     @Override
-    public UIFieldType getSettingType() {
-        return UIFieldType.TextSelectBoxDynamic;
-    }
-
-    @Override
     public Path rootPath() {
         return BaseNoGui.packages == null ? null : BaseNoGui.getSketchbookFolder().toPath();
     }
@@ -93,13 +87,23 @@ public class ConsoleHeaderArduinoSketchNameSetting implements SettingPluginOptio
     }
 
     @Override
-    public Predicate<Path> filterPath() {
-        return path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".ino");
+    public boolean pushDirectory(Path dir) {
+        return false;
     }
 
     @Override
-    public List<OptionModel> getOptions(EntityContext entityContext) {
-        List<OptionModel> options = SettingPluginOptionsFileExplorer.super.getOptions(entityContext);
+    public boolean flatStructure() {
+        return true;
+    }
+
+    @Override
+    public boolean visitFile(Path path, BasicFileAttributes attrs) {
+        return path.getFileName().toString().endsWith(".ino");
+    }
+
+    @Override
+    public Collection<OptionModel> getOptions(EntityContext entityContext, JSONObject params) {
+        Collection<OptionModel> options = SettingPluginOptionsFileExplorer.super.getOptions(entityContext, params);
         OptionModel examples = buildExamplePath(false);
         if (examples != null) {
             options.add(OptionModel.separator());

@@ -69,7 +69,7 @@ final class Scratch3ZigBeeButtonsBlocks extends Scratch3ZigBeeExtensionBlocks {
         this.buttonEndpointValueMenu = MenuBlock.ofStatic("buttonEndpointValueMenu", ButtonEndpoint.class, ButtonEndpoint.Left);
         this.buttonEndpointGetterValueMenu = MenuBlock.ofStatic("buttonEndpointGetterValueMenu", ButtonEndpointGetter.class, ButtonEndpointGetter.Left);
 
-        this.buttonStatus = Scratch3Block.ofEvaluate(70, "button_value", BlockType.reporter, "button value [BUTTON_SENSOR]", this::buttonStatusEvaluate, Scratch3ZigBeeBlock.class);
+        this.buttonStatus = Scratch3Block.ofReporter(70, "button_value",  "button value [BUTTON_SENSOR]", this::buttonStatusEvaluate, Scratch3ZigBeeBlock.class);
         this.buttonStatus.addArgument(BUTTON_SENSOR, this.buttonSensorMenu);
         this.buttonStatus.overrideColor("#853139");
         this.buttonStatus.addZigBeeEventHandler((ieeeAddress, endpointRef, consumer) -> zigBeeDeviceUpdateValueListener.addModelIdentifierListener("lumi.remote", consumer));
@@ -89,7 +89,7 @@ final class Scratch3ZigBeeButtonsBlocks extends Scratch3ZigBeeExtensionBlocks {
         this.turnOnOfButtonCommand.appendSpace();
         this.turnOnOfButtonCommand.overrideColor("#853139");
 
-        this.button2XStatus = Scratch3Block.ofEvaluate(100, "double_button_value", BlockType.reporter,
+        this.button2XStatus = Scratch3Block.ofReporter(100, "double_button_value",
                 "button [BUTTON_ENDPOINT] value [DOUBLE_BUTTON_SENSOR]", this::doubleButtonStatusEvaluate, Scratch3ZigBeeBlock.class);
         this.button2XStatus.addArgument(DOUBLE_BUTTON_SENSOR, this.doubleButtonSensorMenu);
         this.button2XStatus.addArgument(BUTTON_ENDPOINT, this.buttonEndpointGetterValueMenu);

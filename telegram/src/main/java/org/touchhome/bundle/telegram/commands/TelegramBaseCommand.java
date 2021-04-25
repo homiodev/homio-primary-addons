@@ -7,14 +7,17 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.touchhome.bundle.telegram.service.TelegramService;
 
 @Log4j2
 public abstract class TelegramBaseCommand extends BotCommand {
 
     public static final String CHAT_ID = "TELEGRAM_CHAT_ID";
+    protected final TelegramService.TelegramBot telegramBot;
 
-    TelegramBaseCommand(String commandIdentifier, String description) {
+    TelegramBaseCommand(String commandIdentifier, String description, TelegramService.TelegramBot telegramBot) {
         super(commandIdentifier, description + "\n");
+        this.telegramBot = telegramBot;
     }
 
     @Override

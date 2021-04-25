@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.firmata.FirmataBundleEntryPoint;
@@ -35,7 +34,7 @@ public class Scratch3FirmataOneWireBlocks extends Scratch3FirmataBaseBlock {
         this.pinMenu1Wire = MenuBlock.ofServer(PIN, REST_PIN + Pin.Mode.ONEWIRE).setDependency(firmataIdMenu);
         this.menuTemperatureAddress = MenuBlock.ofServer("pinMenu1WireAddress", ONE_REST + ONE_WIRE.DS18B20.TEMPERATURE_FAMILY).setDependency(firmataIdMenu, this.pinMenu1Wire);
 
-        this.ds18b20Value = ofPin(Scratch3Block.ofEvaluate(10, "DS18B20", BlockType.reporter,
+        this.ds18b20Value = ofPin(Scratch3Block.ofReporter(10, "DS18B20",
                 "DS18B20(1-Wire) on [PIN] address [ADDRESS] of [FIRMATA]", this::getDS18B20Value), this.pinMenu1Wire);
         this.ds18b20Value.addArgument("ADDRESS", this.menuTemperatureAddress);
     }

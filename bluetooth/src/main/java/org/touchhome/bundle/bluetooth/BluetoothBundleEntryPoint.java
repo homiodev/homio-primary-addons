@@ -138,6 +138,12 @@ public class BluetoothBundleEntryPoint implements BundleEntryPoint {
     public void init() {
         log.info("Starting bluetooth...");
 
+        if (!EntityContext.isLinuxEnvironment()) {
+            log.warn("Bluetooth skipped for non linux env. Require unix sockets");
+            entityContext.setting().setValue(BluetoothStatusSetting.class, SettingPluginStatus.OFFLINE);
+            return;
+        }
+
         bluetoothApplication = new BluetoothApplication("touchHome", SERVICE_UUID, new BleApplicationListener() {
             @Override
             public void deviceConnected(Variant<String> address, InterfacesAdded signal) {

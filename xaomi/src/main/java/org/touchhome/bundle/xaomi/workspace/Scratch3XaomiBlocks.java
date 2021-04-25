@@ -68,7 +68,7 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
         this.magicCubeEvent.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
         this.magicCubeEvent.addArgument(EVENT, this.cubeEventMenu);
 
-        this.magicCubeLastValue = Scratch3Block.ofEvaluate(2, "cube_value", BlockType.reporter, "Cube [CUBE_SENSOR] last value [EVENT]", this::cubeLastValueEvaluate);
+        this.magicCubeLastValue = Scratch3Block.ofReporter(2, "cube_value",  "Cube [CUBE_SENSOR] last value [EVENT]", this::cubeLastValueEvaluate);
         this.magicCubeLastValue.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
         this.magicCubeLastValue.addArgument(EVENT, this.cubeEventMenu);
 
@@ -87,29 +87,30 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
     }
 
     private void magicCubeEventHandler(WorkspaceBlock workspaceBlock) {
-        workspaceBlock.getNextOrThrow();
-        String expectedMenuValueStr = workspaceBlock.getMenuValue(EVENT, this.cubeEventMenu, String.class);
-        MagicCubeEvent expectedMenuValue = MagicCubeEvent.getEvent(expectedMenuValueStr);
-        final TapSide tapSide = expectedMenuValue == MagicCubeEvent.TAP_TWICE ? TapSide.valueOf(expectedMenuValueStr) : null;
-        final MoveSide moveSide = expectedMenuValue == MagicCubeEvent.MOVE ? MoveSide.valueOf(expectedMenuValueStr) : null;
+        workspaceBlock.handleNext(next -> {
+            String expectedMenuValueStr = workspaceBlock.getMenuValue(EVENT, this.cubeEventMenu, String.class);
+            MagicCubeEvent expectedMenuValue = MagicCubeEvent.getEvent(expectedMenuValueStr);
+            final TapSide tapSide = expectedMenuValue == MagicCubeEvent.TAP_TWICE ? TapSide.valueOf(expectedMenuValueStr) : null;
+            final MoveSide moveSide = expectedMenuValue == MagicCubeEvent.MOVE ? MoveSide.valueOf(expectedMenuValueStr) : null;
 
-        String ieeeAddress = fetchIEEEAddress(workspaceBlock);
-        if (ieeeAddress == null) {
-            return;
-        }
-
-        BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
-        Consumer<ScratchDeviceState> consumer = sds -> {
-            CubeValueDescriptor cubeValueDescriptor = new CubeValueDescriptor(sds);
-            if (cubeValueDescriptor.match(expectedMenuValue, tapSide, moveSide)) {
-                lock.signalAll();
+            String ieeeAddress = fetchIEEEAddress(workspaceBlock);
+            if (ieeeAddress == null) {
+                return;
             }
-        };
 
-        addZigBeeEventListener(ieeeAddress, ZclMultistateInputBasicCluster.CLUSTER_ID, consumer);
-        addZigBeeEventListener(ieeeAddress, ZclAnalogInputBasicCluster.CLUSTER_ID, consumer);
+            BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
+            Consumer<ScratchDeviceState> consumer = sds -> {
+                CubeValueDescriptor cubeValueDescriptor = new CubeValueDescriptor(sds);
+                if (cubeValueDescriptor.match(expectedMenuValue, tapSide, moveSide)) {
+                    lock.signalAll();
+                }
+            };
 
-        workspaceBlock.subscribeToLock(lock);
+            addZigBeeEventListener(ieeeAddress, ZclMultistateInputBasicCluster.CLUSTER_ID, consumer);
+            addZigBeeEventListener(ieeeAddress, ZclAnalogInputBasicCluster.CLUSTER_ID, consumer);
+
+            workspaceBlock.subscribeToLock(lock, next::handle);
+        });
     }
 
     private String fetchIEEEAddress(WorkspaceBlock workspaceBlock) {

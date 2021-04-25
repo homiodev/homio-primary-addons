@@ -27,6 +27,7 @@ import org.touchhome.bundle.api.EntityContextBGP;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.state.*;
 import org.touchhome.bundle.api.ui.field.action.impl.StatefulContextMenuAction;
+import org.touchhome.bundle.api.util.Curl;
 import org.touchhome.bundle.camera.CameraCoordinator;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
@@ -601,7 +602,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
 
     @Override
     public void startSnapshot() {
-        if (!snapshotUri.isEmpty()) {
+        if (!isEmpty(snapshotUri)) {
             sendHttpGET(snapshotUri);// Allows this to change Image FPS on demand
         } else {
             super.startSnapshot();
@@ -767,7 +768,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
                 // Dont need to poll if creating from RTSP stream with FFmpeg or we are polling at full rate already.
                 sendHttpGET(snapshotUri);
             }
-        } else if (!snapshotUri.isEmpty() && !snapshotPolling) {// we need to check camera is still online.
+        } else if (!isEmpty(snapshotUri) && !snapshotPolling) {// we need to check camera is still online.
             sendHttpGET(snapshotUri);
         }
         // what needs to be done every poll//
@@ -781,6 +782,9 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
 
     @Override
     protected void initialize0() {
+        if (!onvifDeviceState.isOnline()) {
+            throw new RuntimeException("Unable connect to offline camera");
+        }
         this.onvifDeviceState.initFully(cameraEntity);
         super.initialize0();
 
@@ -791,14 +795,15 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         cameraEntity.getBaseOnvifCameraBrandHandler().initialize(entityContext);
 
         pullConfigSchedule = entityContext.bgp().schedule("pull-configs-" + cameraEntity.getEntityID(), 30000,
-                60, TimeUnit.SECONDS, () -> cameraEntity.getBaseOnvifCameraBrandHandler().runOncePerMinute(entityContext), false, false);
+                60, TimeUnit.SECONDS, () -> cameraEntity.getBaseOnvifCameraBrandHandler()
+                        .runOncePerMinute(entityContext), false, false);
 
         // for poll times above 9 seconds don't display a warning about the Image channel.
         if (cameraEntity.getJpegPollTime() <= 9000 && cameraEntity.getUpdateImageWhen().contains("1")) {
             log.warn("The Image channel is set to update more often than 8 seconds. This is not recommended. The Image channel is best used only for higher poll times. See the readme file on how to display the cameras picture for best results or use a higher poll time.");
         }
 
-        if ((snapshotUri.equals("ffmpeg") || snapshotUri.isEmpty()) && rtspUri.isEmpty()) {
+        if (("ffmpeg".equals(snapshotUri) || isEmpty(snapshotUri)) && isEmpty(rtspUri)) {
             throw new RuntimeException("Camera unable to find valid Snapshot and/or RTSP URL.");
         }
 
@@ -1125,5 +1130,14 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     @Override
     protected boolean isMotionAlarmHandlesByCamera() {
         return cameraEntity.getBaseOnvifCameraBrandHandler() instanceof BrandCameraHasMotionAlarm;
+    }
+
+    @Override
+    public RawType recordImageSync(String profile) {
+        if (isEmpty(snapshotUri)) {
+            return super.recordImageSync(profile);
+        }
+        String snapshotUri = onvifDeviceState.getMediaDevices().getSnapshotUri(profile);
+        return Curl.download(snapshotUri, cameraEntity.getUser(), cameraEntity.getPassword());
     }
 }

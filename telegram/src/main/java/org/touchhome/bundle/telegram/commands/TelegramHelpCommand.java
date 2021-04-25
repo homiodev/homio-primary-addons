@@ -6,15 +6,13 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import org.touchhome.bundle.telegram.service.TelegramService;
 
 @Log4j2
 public final class TelegramHelpCommand extends TelegramBaseCommand {
 
-    private final ICommandRegistry mCommandRegistry;
-
-    public TelegramHelpCommand(ICommandRegistry mCommandRegistry) {
-        super("help", "List all known commands");
-        this.mCommandRegistry = mCommandRegistry;
+    public TelegramHelpCommand(TelegramService.TelegramBot telegramBot) {
+        super("help", "List all known commands", telegramBot);
     }
 
     static void assembleCommands(ICommandRegistry mCommandRegistry, StringBuilder sb, SendMessage message) {
@@ -29,7 +27,6 @@ public final class TelegramHelpCommand extends TelegramBaseCommand {
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings, StringBuilder sb, SendMessage message) {
-        assembleCommands(mCommandRegistry, sb, message);
+        assembleCommands(telegramBot, sb, message);
     }
-
 }

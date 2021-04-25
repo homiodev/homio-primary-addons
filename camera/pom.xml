@@ -15,6 +15,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>jakarta.xml.soap</groupId>
+            <artifactId>jakarta.xml.soap-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>net.sf.kxml</groupId>
             <artifactId>kxml2</artifactId>
             <version>2.3.0</version>

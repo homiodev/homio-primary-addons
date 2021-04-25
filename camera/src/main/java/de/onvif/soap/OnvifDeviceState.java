@@ -1,15 +1,18 @@
 package de.onvif.soap;
 
 import de.onvif.soap.devices.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.onvif.ver10.device.wsdl.GetDeviceInformationResponse;
 import org.onvif.ver10.schema.Capabilities;
 import org.onvif.ver10.schema.Profile;
+import org.onvif.ver10.schema.VideoResolution;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 
@@ -24,6 +27,8 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Getter
@@ -60,12 +65,14 @@ public class OnvifDeviceState {
     private EventDevices eventDevices;
 
     private List<Profile> profiles;
+    private TreeMap<VideoEncodeResolution, Profile> resolutionProfiles;
     private String ip;
     private int onvifPort;
     private int serverPort;
     private String profileToken;
     @Setter
     private Consumer<String> unreachableHandler;
+    private Capabilities capabilities;
 
     @SneakyThrows
     public OnvifDeviceState(String ip, int onvifPort, int serverPort, String user, String password) {
@@ -85,15 +92,13 @@ public class OnvifDeviceState {
         this.mediaDevices = new MediaDevices(this, soap);
         this.imagingDevices = new ImagingDevices(this, soap);
         this.eventDevices = new EventDevices(this, soap);
-
-        this.init();
     }
 
     /**
      * Internal function to check, if device is available and answers to ping
      * requests.
      */
-    private boolean isOnline() {
+    public boolean isOnline() {
         String port = HOST_IP.contains(":") ? HOST_IP.substring(HOST_IP.indexOf(':') + 1) : "80";
         String ip = HOST_IP.contains(":") ? HOST_IP.substring(0, HOST_IP.indexOf(':')) : HOST_IP;
 
@@ -122,53 +127,58 @@ public class OnvifDeviceState {
      */
     @SneakyThrows
     private void init() {
-        Capabilities capabilities = initialDevices.getCapabilities();
+        if (this.capabilities == null) {
+            this.capabilities = initialDevices.getCapabilities();
 
-        if (capabilities == null) {
-            throw new ConnectException("Capabilities not reachable.");
-        }
+            if (capabilities == null) {
+                throw new ConnectException("Capabilities not reachable.");
+            }
 
-        String localDeviceUri = capabilities.getDevice().getXAddr();
+            String localDeviceUri = capabilities.getDevice().getXAddr();
 
-        if (localDeviceUri.startsWith("http://")) {
-            originalIp = localDeviceUri.replace("http://", "");
-            originalIp = originalIp.substring(0, originalIp.indexOf('/'));
-        } else {
-            log.error("Unknown/Not implemented local procotol!");
-        }
+            if (localDeviceUri.startsWith("http://")) {
+                originalIp = localDeviceUri.replace("http://", "");
+                originalIp = originalIp.substring(0, originalIp.indexOf('/'));
+            } else {
+                log.error("Unknown/Not implemented local protocol!");
+            }
 
-        if (!originalIp.equals(HOST_IP)) {
-            isProxy = true;
-        }
+            if (!originalIp.equals(HOST_IP)) {
+                isProxy = true;
+            }
 
-        if (capabilities.getMedia() != null && capabilities.getMedia().getXAddr() != null) {
-            serverMediaUri = replaceLocalIpWithProxyIp(capabilities.getMedia().getXAddr());
-            serverMediaIpLessUri = SOAP.removeIpFromUrl(serverMediaUri);
-        }
+            if (capabilities.getMedia() != null && capabilities.getMedia().getXAddr() != null) {
+                serverMediaUri = replaceLocalIpWithProxyIp(capabilities.getMedia().getXAddr());
+                serverMediaIpLessUri = SOAP.removeIpFromUrl(serverMediaUri);
+            }
 
-        if (capabilities.getPTZ() != null && capabilities.getPTZ().getXAddr() != null) {
-            serverPtzUri = replaceLocalIpWithProxyIp(capabilities.getPTZ().getXAddr());
-            serverPtzIpLessUri = SOAP.removeIpFromUrl(serverPtzUri);
-        }
+            if (capabilities.getPTZ() != null && capabilities.getPTZ().getXAddr() != null) {
+                serverPtzUri = replaceLocalIpWithProxyIp(capabilities.getPTZ().getXAddr());
+                serverPtzIpLessUri = SOAP.removeIpFromUrl(serverPtzUri);
+            }
 
-        if (capabilities.getImaging() != null && capabilities.getImaging().getXAddr() != null) {
-            serverImagingUri = replaceLocalIpWithProxyIp(capabilities.getImaging().getXAddr());
-            serverImagingIpLessUri = SOAP.removeIpFromUrl(serverImagingUri);
-        }
+            if (capabilities.getImaging() != null && capabilities.getImaging().getXAddr() != null) {
+                serverImagingUri = replaceLocalIpWithProxyIp(capabilities.getImaging().getXAddr());
+                serverImagingIpLessUri = SOAP.removeIpFromUrl(serverImagingUri);
+            }
 
-        if (capabilities.getMedia() != null && capabilities.getEvents().getXAddr() != null) {
-            serverEventsUri = replaceLocalIpWithProxyIp(capabilities.getEvents().getXAddr());
-            serverEventsIpLessUri = SOAP.removeIpFromUrl(serverEventsUri);
-        }
+            if (capabilities.getMedia() != null && capabilities.getEvents().getXAddr() != null) {
+                serverEventsUri = replaceLocalIpWithProxyIp(capabilities.getEvents().getXAddr());
+                serverEventsIpLessUri = SOAP.removeIpFromUrl(serverEventsUri);
+            }
 
-        if (capabilities.getAnalytics() != null && capabilities.getAnalytics().getXAddr() != null) {
-            analyticsUri = replaceLocalIpWithProxyIp(capabilities.getAnalytics().getXAddr());
+            if (capabilities.getAnalytics() != null && capabilities.getAnalytics().getXAddr() != null) {
+                analyticsUri = replaceLocalIpWithProxyIp(capabilities.getAnalytics().getXAddr());
+            }
         }
     }
 
     @SneakyThrows
     public void initFully(OnvifCameraEntity onvifCameraEntity) {
+        this.init();
         this.profiles = initialDevices.getProfiles();
+        this.resolutionProfiles = new TreeMap<>(this.profiles.stream().collect(Collectors.toMap(profile ->
+                new VideoEncodeResolution(profile.getVideoEncoderConfiguration().getResolution()), Function.identity())));
 
         int activeProfileIndex = onvifCameraEntity.getOnvifMediaProfile() >= this.profiles.size() ? 0 : onvifCameraEntity.getOnvifMediaProfile();
         this.profileToken = this.profiles.get(activeProfileIndex).getToken();
@@ -292,7 +302,7 @@ public class OnvifDeviceState {
 
     public void checkForErrors() {
         if (!isOnline()) {
-            throw new RuntimeException("No connection to onvif device");
+            throw new RuntimeException("No connection to onvif camera");
         }
         this.init();
         GetDeviceInformationResponse deviceInformation = initialDevices.getDeviceInformation();
@@ -311,5 +321,25 @@ public class OnvifDeviceState {
     public void setSubscriptionUri(String subscriptionUri) {
         this.subscriptionUri = subscriptionUri;
         this.subscriptionIpLessUri = SOAP.removeIpFromUrl(subscriptionUri);
+    }
+
+    public String getProfile(boolean highResolution) {
+        return highResolution ? resolutionProfiles.firstEntry().getValue().getName() : resolutionProfiles.lastEntry().getValue().getName();
+    }
+
+    @EqualsAndHashCode
+    private static class VideoEncodeResolution implements Comparable<VideoEncodeResolution> {
+        private int width;
+        private int height;
+
+        public VideoEncodeResolution(VideoResolution resolution) {
+            this.width = resolution.getWidth();
+            this.height = resolution.getHeight();
+        }
+
+        @Override
+        public int compareTo(@NotNull OnvifDeviceState.VideoEncodeResolution o) {
+            return Integer.compare(width + height, o.width + o.height);
+        }
     }
 }

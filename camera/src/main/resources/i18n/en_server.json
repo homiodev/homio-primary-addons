@@ -1,5 +1,6 @@
 {
   "VIDEO_STREAM": {
+    "CAMERA_NOT_INIT": "Camera not initialized",
     "PORT": "Port   {{PORT}}",
     "ADDRESS": "Address   {{ADDRESS}}",
     "MODEL": "Model     {{MODEL}}",

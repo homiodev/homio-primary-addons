@@ -1,0 +1,5 @@
+{
+  "telegram": {
+    "description": "Open <a target='_blank' href='https://t.me/botfather'>BotFather</a> to create your own bot. Then read bot's instruction to create yours bot and retrieve 'Api token' and Bot name. Fill required parameters and press 'Restart telegram bot' button"
+  }
+}

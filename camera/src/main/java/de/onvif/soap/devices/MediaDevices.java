@@ -70,7 +70,7 @@ public class MediaDevices {
         return profile.getVideoEncoderConfiguration();
     }
 
-    public VideoEncoderConfigurationOptions getVideoEncoderConfigurationOptions(String profileToken) throws SOAPException, ConnectException {
+    public VideoEncoderConfigurationOptions getVideoEncoderConfigurationOptions(String profileToken) {
         GetVideoEncoderConfigurationOptions request = new GetVideoEncoderConfigurationOptions();
         GetVideoEncoderConfigurationOptionsResponse response = new GetVideoEncoderConfigurationOptionsResponse();
 
@@ -147,7 +147,7 @@ public class MediaDevices {
             Transport transport = new Transport();
             transport.setProtocol(transportProtocol);
             setup.setTransport(transport);
-            mediaDeviceCache.protocolURI.put(transportProtocol, getStreamUri(onvifDeviceState.getProfileToken(), setup));
+            mediaDeviceCache.protocolURI.put(transportProtocol, getStreamUri(profile, setup));
         }
         return mediaDeviceCache.protocolURI.get(transportProtocol);
     }

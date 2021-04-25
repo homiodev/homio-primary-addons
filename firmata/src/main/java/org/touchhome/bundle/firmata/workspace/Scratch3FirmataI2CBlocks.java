@@ -28,7 +28,7 @@ public class Scratch3FirmataI2CBlocks extends Scratch3FirmataBaseBlock {
 
         this.bme280ValueMenu = MenuBlock.ofStatic("bme280ValueMenu", BME280ValueMenu.class, BME280ValueMenu.Temp);
 
-        this.getBME280Value = of(Scratch3Block.ofEvaluate(9, "BME280", BlockType.reporter,
+        this.getBME280Value = of(Scratch3Block.ofReporter(9, "BME280",
                 "BME280 [TYPE] of [FIRMATA]", this::getBME280ValueEvaluate));
         this.getBME280Value.addArgument("TYPE", this.bme280ValueMenu);
     }

@@ -102,7 +102,7 @@ public abstract class Scratch3FirmataBaseBlock extends Scratch3ExtensionBlocks {
             }
 
             if (waitDeviceForReady && entity.getJoined() != Status.ONLINE) {
-                BroadcastLock<Object> readyLock = broadcastLockManager.getOrCreateLock(workspaceBlock, "firmata_ready_" + entity.getTarget());
+                BroadcastLock readyLock = broadcastLockManager.getOrCreateLock(workspaceBlock, "firmata_ready_" + entity.getTarget());
                 if (readyLock.await(workspaceBlock, 60, TimeUnit.SECONDS)) {
                     // fetch updated entity
                     entity = entityContext.getEntity(deviceId);

@@ -5,11 +5,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.OptionModel;
-import org.touchhome.bundle.telegram.service.TelegramService;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Log4j2
 @RestController
@@ -17,12 +18,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TelegramController {
 
-    private final TelegramService telegramService;
+    private final EntityContext entityContext;
 
-    @GetMapping("user/options")
-    public Collection<OptionModel> getRegisteredUsers() {
-        return telegramService.getUsers().stream()
-                .map(u -> OptionModel.of(u.getEntityID(), u.getName()))
-                .collect(Collectors.toList());
+    @GetMapping("entityUser")
+    public Collection<OptionModel> getEntityAndUsers() {
+        List<OptionModel> models = new ArrayList<>();
+        for (TelegramEntity telegramEntity : entityContext.findAll(TelegramEntity.class)) {
+            models.add(OptionModel.of(telegramEntity.getEntityID(), telegramEntity.getTitle() + "/All"));
+            telegramEntity.getUsers().stream().forEach(user ->
+                    models.add(OptionModel.of(telegramEntity.getEntityID() + "/" + user.getId(),
+                            telegramEntity.getTitle() + "/" + user.getName())));
+        }
+        return models;
     }
 }

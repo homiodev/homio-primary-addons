@@ -6,9 +6,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.entity.UserEntity;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
+import org.touchhome.bundle.telegram.TelegramEntity;
+import org.touchhome.bundle.telegram.service.TelegramService;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,17 +18,16 @@ import java.util.Map;
 public final class TelegramEventCommand extends TelegramBaseCommand {
 
     private final Map<String, BroadcastLock> handlers = new HashMap<>();
-    private final EntityContext entityContext;
 
-    public TelegramEventCommand(String commandIdentifier, String description, EntityContext entityContext) {
-        super(commandIdentifier, "Event: '" + StringUtils.defaultIfBlank(description, commandIdentifier) + "'");
-        this.entityContext = entityContext;
+    public TelegramEventCommand(String commandIdentifier, String description, TelegramService.TelegramBot telegramBot) {
+        super(commandIdentifier, "Event: '" + StringUtils.defaultIfBlank(description, commandIdentifier) + "'",
+                telegramBot);
     }
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings, StringBuilder sb, SendMessage message) {
-        UserEntity entity = entityContext.getEntity(UserEntity.PREFIX + user.getId());
-        if (entity == null) {
+        TelegramEntity.TelegramUser telegramUser = telegramBot.getTelegramEntity().getUser(user.getId());
+        if (telegramUser == null) {
             sb.append("User: <").append(user.getFirstName()).append("> not registered, please register user first");
         } else {
             for (BroadcastLock broadcastLock : handlers.values()) {

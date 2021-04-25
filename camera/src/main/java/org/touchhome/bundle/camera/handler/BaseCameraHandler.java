@@ -15,7 +15,7 @@ import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
 import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
-import org.touchhome.bundle.camera.setting.CameraFFMPEGInstallPathOptions;
+import org.touchhome.bundle.camera.setting.FFMPEGInstallPathOptions;
 import org.touchhome.bundle.camera.ui.CameraActionBuilder;
 import org.touchhome.bundle.camera.ui.CameraActionsContext;
 
@@ -87,7 +87,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         }
 
         // for custom ffmpeg path
-        entityContext.setting().listenValueAndGet(CameraFFMPEGInstallPathOptions.class, "listen-ffmpeg-path-" + cameraEntityID,
+        entityContext.setting().listenValueAndGet(FFMPEGInstallPathOptions.class, "listen-ffmpeg-path-" + cameraEntityID,
                 path -> {
                     this.ffmpegLocation = path.toString();
                     this.restart("ffmpeg location changed", null, false);

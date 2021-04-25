@@ -74,7 +74,7 @@ public class Scratch3FirmataBlocks extends Scratch3FirmataBaseBlock {
         this.pinModeMenu = MenuBlock.ofStatic("pinModeMenu", PinMode.class, PinMode.PULL_UP);
 
         // Blocks
-        this.pinRead = ofPin(Scratch3Block.ofEvaluate(5, "pinRead", BlockType.reporter,
+        this.pinRead = ofPin(Scratch3Block.ofReporter(5, "pinRead",
                 "Get [PIN] of [FIRMATA]", this::readPinEvaluate), this.pinMenuAll);
 
         this.digitalWrite = ofPin(Scratch3Block.ofHandler(10, "digital_write", BlockType.command,
@@ -92,7 +92,7 @@ public class Scratch3FirmataBlocks extends Scratch3FirmataBaseBlock {
         this.invertPin = ofPin(Scratch3Block.ofHandler(25, "invertPin", BlockType.command,
                 "Invert Pin(D) [PIN] of [FIRMATA]", this::invertPinHandler), this.pinMenuDigital);
 
-        this.isReady = of(Scratch3Block.ofEvaluate(40, "ready", BlockType.Boolean, "[FIRMATA] ready",
+        this.isReady = of(Scratch3Block.ofBoolean(40, "ready", "[FIRMATA] ready",
                 this::isReadyEvaluate));
 
         this.whenPinChanged = ofPin(Scratch3Block.ofHandler(45, "when_pin_changed", BlockType.hat,
@@ -123,10 +123,10 @@ public class Scratch3FirmataBlocks extends Scratch3FirmataBaseBlock {
                 "Delay [VALUE] of [FIRMATA]", this::delayHandler), "#939844");
         this.delay.addArgument(VALUE, 3);
 
-        this.getTime = of(Scratch3Block.ofEvaluate(80, "time", BlockType.reporter,
+        this.getTime = of(Scratch3Block.ofReporter(80, "time",
                 "time of [FIRMATA]", this::getTimeEvaluate), "#939844");
 
-        this.getProtocol = of(Scratch3Block.ofEvaluate(90, "protocol", BlockType.reporter,
+        this.getProtocol = of(Scratch3Block.ofReporter(90, "protocol",
                 "protocol of [FIRMATA]", this::getProtocolEvaluate), "#939844");
     }
 
@@ -138,21 +138,22 @@ public class Scratch3FirmataBlocks extends Scratch3FirmataBaseBlock {
     }
 
     private void whenDeviceReady(WorkspaceBlock workspaceBlock) {
-        String firmataId = workspaceBlock.getMenuValue(FIRMATA, this.firmataIdMenu);
-        FirmataBaseEntity entity = entityContext.getEntity(firmataId);
-        WorkspaceBlock substack = workspaceBlock.getNext();
-        if (entity == null || substack == null || entity.getTarget() == -1) {
-            return;
-        }
-
-        if (entity.getJoined() == Status.ONLINE) {
-            substack.handle();
-        } else {
-            BroadcastLock<Object> readyLock = broadcastLockManager.getOrCreateLock(workspaceBlock, "firmata-ready-" + entity.getTarget());
-            if (readyLock.await(workspaceBlock)) {
-                substack.handle();
+        workspaceBlock.handleNextOptional(next -> {
+            String firmataId = workspaceBlock.getMenuValue(FIRMATA, this.firmataIdMenu);
+            FirmataBaseEntity entity = entityContext.getEntity(firmataId);
+            if (entity == null || entity.getTarget() == -1) {
+                return;
             }
-        }
+
+            if (entity.getJoined() == Status.ONLINE) {
+                next.handle();
+            } else {
+                BroadcastLock readyLock = broadcastLockManager.getOrCreateLock(workspaceBlock, "firmata-ready-" + entity.getTarget());
+                if (readyLock.await(workspaceBlock)) {
+                    next.handle();
+                }
+            }
+        });
     }
 
     private void setServoConfigHandler(WorkspaceBlock workspaceBlock) {
@@ -182,19 +183,20 @@ public class Scratch3FirmataBlocks extends Scratch3FirmataBaseBlock {
     private void whenPinOpValueHandler(WorkspaceBlock workspaceBlock) {
         CompareType compareType = workspaceBlock.getMenuValue("OP", this.opMenu);
         Integer compareValue = workspaceBlock.getInputInteger(VALUE);
-        whenPinChangedHandler(workspaceBlock, value -> compareType.match(value, compareValue));
+        whenPinChangedHandler(workspaceBlock, value -> compareType.match((long) value, compareValue));
     }
 
-    private void whenPinChangedHandler(WorkspaceBlock workspaceBlock, Function<Long, Boolean> checkFn) {
-        WorkspaceBlock substack = workspaceBlock.getNext();
-        Integer pinNum = getPin(workspaceBlock, this.pinMenuAll);
-        if (substack != null && pinNum != null) {
-            execute(workspaceBlock, true, entity -> {
-                Pin pin = entity.getDevice().getIoDevice().getPin(pinNum);
-                BroadcastLock<Long> lock = broadcastLockManager.getOrCreateLock(workspaceBlock, entity.getTarget() + "_pin_" + pin.getIndex());
-                workspaceBlock.subscribeToLock(lock, checkFn);
-            });
-        }
+    private void whenPinChangedHandler(WorkspaceBlock workspaceBlock, Function<Object, Boolean> checkFn) {
+        workspaceBlock.handleNextOptional(next -> {
+            Integer pinNum = getPin(workspaceBlock, this.pinMenuAll);
+            if (pinNum != null) {
+                execute(workspaceBlock, true, entity -> {
+                    Pin pin = entity.getDevice().getIoDevice().getPin(pinNum);
+                    BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock, entity.getTarget() + "_pin_" + pin.getIndex());
+                    workspaceBlock.subscribeToLock(lock, checkFn, next::handle);
+                });
+            }
+        });
     }
 
     private Boolean isReadyEvaluate(WorkspaceBlock workspaceBlock) {

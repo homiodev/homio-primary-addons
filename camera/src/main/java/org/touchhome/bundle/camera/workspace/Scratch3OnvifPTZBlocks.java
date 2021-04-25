@@ -47,6 +47,7 @@ public class Scratch3OnvifPTZBlocks extends Scratch3ExtensionBlocks implements S
 
     public Scratch3OnvifPTZBlocks(EntityContext entityContext, CameraEntryPoint cameraEntryPoint) {
         super("#4f4ba6", entityContext, cameraEntryPoint, "onvifptz");
+        setParent("media");
 
         // Menu
         this.onvifCameraMenu = MenuBlock.ofServerItems("onvifCameraMenu", OnvifCameraEntity.class);
@@ -56,16 +57,16 @@ public class Scratch3OnvifPTZBlocks extends Scratch3ExtensionBlocks implements S
         Map<String, String> presets = IntStream.range(1, 25).boxed().collect(Collectors.toMap(String::valueOf, num -> "Preset " + num));
         this.presetMenu = MenuBlock.ofStaticList("presetMenu", presets, "1");
 
-        this.zoomReporter = withServerOnvif(Scratch3Block.ofEvaluate(50, "get_zoom", BlockType.reporter,
+        this.zoomReporter = withServerOnvif(Scratch3Block.ofReporter(50, "get_zoom",
                 "Get zoom of [VIDEO_STREAM]", this::getZoomReporter));
 
-        this.tiltReporter = withServerOnvif(Scratch3Block.ofEvaluate(60, "get_tilt", BlockType.reporter,
+        this.tiltReporter = withServerOnvif(Scratch3Block.ofReporter(60, "get_tilt",
                 "Get tilt of [VIDEO_STREAM]", this::getTiltReporter));
 
-        this.panReporter = withServerOnvif(Scratch3Block.ofEvaluate(70, "get_pan", BlockType.reporter,
+        this.panReporter = withServerOnvif(Scratch3Block.ofReporter(70, "get_pan",
                 "Get pan of [VIDEO_STREAM]", this::getPanReporter));
 
-        this.goToPresetReporter = withServerOnvif(Scratch3Block.ofEvaluate(80, "get_gotopreset", BlockType.reporter,
+        this.goToPresetReporter = withServerOnvif(Scratch3Block.ofReporter(80, "get_gotopreset",
                 "Get GoToPreset of [VIDEO_STREAM]", this::getGoToPresetReporter));
 
         this.panCommand = withServerOnvifAndValue(Scratch3Block.ofHandler(200, "pan",

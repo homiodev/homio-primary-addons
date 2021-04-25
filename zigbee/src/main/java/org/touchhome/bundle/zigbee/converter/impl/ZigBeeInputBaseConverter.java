@@ -33,7 +33,7 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
                     // Configure reporting - no faster than once per second - no slower than 2 hours.
 
                     ZclAttribute attribute = zclCluster.getAttribute(this.getInputAttributeId());
-                    CommandResult reportingResponse = attribute.setReporting(1, REPORTING_PERIOD_DEFAULT_MAX, 0.1).get();
+                    CommandResult reportingResponse = attribute.setReporting(getMinReportInterval(), REPORTING_PERIOD_DEFAULT_MAX, getReportableChange()).get();
                     handleReportingResponse(reportingResponse);
                 }
             } catch (InterruptedException | ExecutionException e) {
@@ -43,6 +43,14 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
             return true;
         }
         return false;
+    }
+
+    float getReportableChange() {
+        return 0.1f;
+    }
+
+    int getMinReportInterval() {
+        return 1;
     }
 
     @Override
@@ -96,11 +104,15 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
     }
 
     private ZclCluster getZclCluster() {
-        ZclCluster zclCluster = endpoint.getInputCluster(getZclClusterType().getId());
+        ZclCluster zclCluster = endpoint.getInputCluster(getInputClusterType());
         if (zclCluster == null) {
             log.error("{}/{}: Error opening multistate binary input cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return null;
         }
         return zclCluster;
+    }
+
+    protected int getInputClusterType() {
+        return getZclClusterType().getId();
     }
 }

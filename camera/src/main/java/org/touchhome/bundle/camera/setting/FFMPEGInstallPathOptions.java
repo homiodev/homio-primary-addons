@@ -3,12 +3,12 @@ package org.touchhome.bundle.camera.setting;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.setting.SettingPluginOptionsFileExplorer;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Predicate;
 
-public class CameraFFMPEGInstallPathOptions implements SettingPluginOptionsFileExplorer {
+public class FFMPEGInstallPathOptions implements SettingPluginOptionsFileExplorer {
+
     @Override
     public int order() {
         return 80;
@@ -25,12 +25,12 @@ public class CameraFFMPEGInstallPathOptions implements SettingPluginOptionsFileE
     }
 
     @Override
-    public Predicate<Path> filterPath() {
-        return path -> !Files.isDirectory(path);
+    public boolean removableOption(OptionModel optionModel) {
+        return false;
     }
 
     @Override
-    public boolean removableOption(OptionModel optionModel) {
-        return false;
+    public boolean allowRequestNextLevel() {
+        return true;
     }
 }

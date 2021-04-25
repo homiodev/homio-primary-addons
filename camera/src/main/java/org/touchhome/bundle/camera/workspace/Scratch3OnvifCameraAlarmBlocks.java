@@ -35,35 +35,36 @@ public class Scratch3OnvifCameraAlarmBlocks extends Scratch3ExtensionBlocks impl
     public Scratch3OnvifCameraAlarmBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
                                           CameraEntryPoint cameraEntryPoint) {
         super("#8F4D77", entityContext, cameraEntryPoint, "onvifalarm");
+        setParent("media");
         this.broadcastLockManager = broadcastLockManager;
 
         // Menu
         this.onvifCameraMenu = MenuBlock.ofServerItems("cameraMenu", OnvifCameraEntity.class);
 
         // Hats
-        this.whenFaceDetectionAlarm = withServerOnvif(Scratch3Block.ofHandler(10, "alarm_face_detected",
-                BlockType.hat, "Face detected alarm of [VIDEO_STREAM]", this::whenFaceDetectionAlarmHat));
+        this.whenFaceDetectionAlarm = withServerOnvif(Scratch3Block.ofHat(10, "alarm_face_detected",
+                "Face detected alarm of [VIDEO_STREAM]", this::whenFaceDetectionAlarmHat));
 
-        this.whenItemLeftAlarm = withServerOnvif(Scratch3Block.ofHandler(20, "alarm_item_left",
-                BlockType.hat, "Item left alarm of [VIDEO_STREAM]", this::whenItemLeftAlarmHat));
+        this.whenItemLeftAlarm = withServerOnvif(Scratch3Block.ofHat(20, "alarm_item_left",
+                "Item left alarm of [VIDEO_STREAM]", this::whenItemLeftAlarmHat));
 
-        this.whenItemTakenAlarm = withServerOnvif(Scratch3Block.ofHandler(30, "alarm_item_taken",
-                BlockType.hat, "Item taken alarm of [VIDEO_STREAM]", this::whenItemTakenAlarmHat));
+        this.whenItemTakenAlarm = withServerOnvif(Scratch3Block.ofHat(30, "alarm_item_taken",
+                "Item taken alarm of [VIDEO_STREAM]", this::whenItemTakenAlarmHat));
 
-        this.whenTamperAlarm = withServerOnvif(Scratch3Block.ofHandler(40, "alarm_tamper",
-                BlockType.hat, "Tamper alarm of [VIDEO_STREAM]", this::whenTamperAlarmHat));
+        this.whenTamperAlarm = withServerOnvif(Scratch3Block.ofHat(40, "alarm_tamper",
+                "Tamper alarm of [VIDEO_STREAM]", this::whenTamperAlarmHat));
 
-        this.whenTooDarkAlarm = withServerOnvif(Scratch3Block.ofHandler(50, "alarm_dark",
-                BlockType.hat, "Too dark alarm of [VIDEO_STREAM]", this::whenTooDarkAlarmHat));
+        this.whenTooDarkAlarm = withServerOnvif(Scratch3Block.ofHat(50, "alarm_dark",
+                "Too dark alarm of [VIDEO_STREAM]", this::whenTooDarkAlarmHat));
 
-        this.whenStorageAlarm = withServerOnvif(Scratch3Block.ofHandler(60, "alarm_storage",
-                BlockType.hat, "Storage alarm of [VIDEO_STREAM]", this::whenStorageAlarmHat));
+        this.whenStorageAlarm = withServerOnvif(Scratch3Block.ofHat(60, "alarm_storage",
+                "Storage alarm of [VIDEO_STREAM]", this::whenStorageAlarmHat));
 
-        this.whenSceneChangeAlarm = withServerOnvif(Scratch3Block.ofHandler(70, "alarm_scene",
-                BlockType.hat, "Scene change alarm of [VIDEO_STREAM]", this::whenSceneChangeAlarmHat));
+        this.whenSceneChangeAlarm = withServerOnvif(Scratch3Block.ofHat(70, "alarm_scene",
+                "Scene change alarm of [VIDEO_STREAM]", this::whenSceneChangeAlarmHat));
 
-        this.whenTooBrightAlarm = withServerOnvif(Scratch3Block.ofHandler(80, "alarm_bright",
-                BlockType.hat, "Too bright alarm of [VIDEO_STREAM]", this::whenTooBrightAlarmHat));
+        this.whenTooBrightAlarm = withServerOnvif(Scratch3Block.ofHat(80, "alarm_bright",
+                "Too bright alarm of [VIDEO_STREAM]", this::whenTooBrightAlarmHat));
 
         this.whenTooBlurryAlarm = withServerOnvif(Scratch3Block.ofHandler(90, "alarm_blurry",
                 BlockType.hat, "Too bright alarm of [VIDEO_STREAM]", this::whenTooBlurryAlarmHat));

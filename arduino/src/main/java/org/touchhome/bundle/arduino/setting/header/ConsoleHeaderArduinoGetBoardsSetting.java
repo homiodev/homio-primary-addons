@@ -1,5 +1,6 @@
 package org.touchhome.bundle.arduino.setting.header;
 
+import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.setting.SettingPluginOptions;
@@ -18,7 +19,7 @@ public class ConsoleHeaderArduinoGetBoardsSetting implements ConsoleHeaderSettin
         SettingPluginOptions<String> {
 
     @Override
-    public Collection<OptionModel> getOptions(EntityContext entityContext) {
+    public Collection<OptionModel> getOptions(EntityContext entityContext, JSONObject params) {
         List<OptionModel> options = new ArrayList<>();
         // Cycle through all packages
         if (BaseNoGui.packages != null) {

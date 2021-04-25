@@ -1,5 +1,6 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
+import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.setting.SettingPluginOptionsInteger;
@@ -16,7 +17,7 @@ public class ZigBeeMeshUpdatePeriodSetting implements SettingPluginOptionsIntege
     }
 
     @Override
-    public Collection<OptionModel> getOptions(EntityContext entityContext) {
+    public Collection<OptionModel> getOptions(EntityContext entityContext, JSONObject params) {
         return new ArrayList<>(Arrays.asList(
                 OptionModel.of("0", "NEVER"),
                 OptionModel.of("300", "5 Minutes"),

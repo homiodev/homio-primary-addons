@@ -14,7 +14,7 @@ import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.camera.CameraEntryPoint;
 import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
 import org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants;
-import org.touchhome.bundle.camera.setting.CameraFFMPEGInstallPathOptions;
+import org.touchhome.bundle.camera.setting.FFMPEGInstallPathOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +33,7 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
 
     public Scratch3FFmpegBlocks(EntityContext entityContext, CameraEntryPoint cameraEntryPoint) {
         super("#3B8F33", entityContext, cameraEntryPoint, "ffmpeg");
+        setParent("media");
 
         this.inputArgCommand = ofValue(Scratch3Block.ofHandler(10, FFmpegApplyHandler.argsInput.name(), BlockType.command,
                 "Input arg [VALUE]", this::skipHandler), "");
@@ -55,7 +56,7 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
         FfmpegBuilder ffmpegBuilder = new FfmpegBuilder();
         applyParentBlocks(ffmpegBuilder, workspaceBlock.getParent());
 
-        String ffmpegLocation = entityContext.setting().getValue(CameraFFMPEGInstallPathOptions.class).toString();
+        String ffmpegLocation = entityContext.setting().getValue(FFMPEGInstallPathOptions.class).toString();
         Ffmpeg ffmpeg = new Ffmpeg(new Ffmpeg.FFmpegHandler() {
             @Override
             public String getEntityID() {

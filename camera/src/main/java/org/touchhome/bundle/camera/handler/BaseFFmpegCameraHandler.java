@@ -19,10 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.state.DecimalType;
-import org.touchhome.bundle.api.state.OnOffType;
-import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.api.state.StringType;
+import org.touchhome.bundle.api.state.*;
 import org.touchhome.bundle.camera.entity.AbilityToStreamHLSOverFFmpeg;
 import org.touchhome.bundle.camera.entity.BaseFFmpegStreamEntity;
 import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
@@ -479,11 +476,11 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
                 mp4OutOptions, time + 20);
     }
 
-    public byte[] recordImageSync() {
+    public RawType recordImageSync(String profile) {
         String output = getFfmpegImageOutputPath().resolve("tmp_" + System.currentTimeMillis() + ".jpg").toString();
         byte[] imageBytes = fireFfmpegSync(output, snapshotInputOptions, cameraEntity.getSnapshotOutOptionsAsString(), 20);
         latestSnapshot = imageBytes;
-        return imageBytes;
+        return new RawType(imageBytes, "image/jpeg");
     }
 
     @SneakyThrows

@@ -152,7 +152,7 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
     public static class SelectTargetFirmataDeviceLoader implements DynamicOptionLoader {
 
         @Override
-        public List<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext) {
+        public List<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
             return entityContext.getBean(FirmataRegisterCommand.class).getPendingRegistrations().entrySet().stream()
                     .filter(entry -> ((FirmataBaseEntity) baseEntity).allowRegistrationType(entry.getValue()))
                     .map(entry -> OptionModel.of(Short.toString(entry.getKey()), entry.getKey() + "/" + entry.getValue()))

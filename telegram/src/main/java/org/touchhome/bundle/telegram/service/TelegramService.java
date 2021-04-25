@@ -1,16 +1,17 @@
 package org.touchhome.bundle.telegram.service;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -20,143 +21,119 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.entity.UserEntity;
+import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
+import org.touchhome.bundle.api.workspace.BroadcastLockManager;
+import org.touchhome.bundle.telegram.TelegramEntity;
 import org.touchhome.bundle.telegram.commands.*;
-import org.touchhome.bundle.telegram.settings.TelegramBotNameSetting;
-import org.touchhome.bundle.telegram.settings.TelegramBotTokenSetting;
-import org.touchhome.bundle.telegram.settings.TelegramRestartBotButtonSetting;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.touchhome.bundle.telegram.commands.TelegramBaseCommand.CHAT_ID;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Log4j2
 @Component
-@RequiredArgsConstructor
 public class TelegramService {
 
+    public static final String TELEGRAM_EVENT_PREFIX = "telegram_";
     private final TelegramBotsApi botsApi;
     private final DefaultBotOptions botOptions;
+    private final BroadcastLockManager broadcastLockManager;
     private final Map<String, TelegramEventCommand> eventCommandMap = new HashMap<>();
 
     private final EntityContext entityContext;
-    private BotSession botSession;
-    private int replayId = 0;
+    private Map<String, TelegramBot> telegramBots = new HashMap<>();
 
-    @Getter
-    private TelegramBot telegramBot;
-
-    public TelegramService(EntityContext entityContext) throws TelegramApiException {
+    @SneakyThrows
+    public TelegramService(EntityContext entityContext, BroadcastLockManager broadcastLockManager) {
         this.entityContext = entityContext;
-        botsApi = new TelegramBotsApi(DefaultBotSession.class);
-        botOptions = new DefaultBotOptions();
+        this.broadcastLockManager = broadcastLockManager;
+        this.botsApi = new TelegramBotsApi(DefaultBotSession.class);
+        this.botOptions = new DefaultBotOptions();
     }
 
-    public void postConstruct() {
-        entityContext.setting().listenValue(TelegramRestartBotButtonSetting.class, "tm-fire-restart", this::restart);
-        start();
-    }
-
-    public List<UserEntity> getUsers() {
-        return entityContext.findAll(UserEntity.class).stream()
-                .filter(u -> u.getUserType() == UserEntity.UserType.OTHER && u.getJsonData().has(CHAT_ID))
-                .collect(Collectors.toList());
-    }
-
-    private void restart() {
-        if (botSession != null && botSession.isRunning()) {
-            botSession.stop();
+    public void restart(TelegramEntity telegramEntity) {
+        TelegramBot telegramBot = telegramBots.get(telegramEntity.getEntityID());
+        if (telegramBot != null) {
+            telegramBot.dispose();
         }
-        this.start();
+        start(telegramEntity);
     }
 
-    @SneakyThrows
-    public void sendPhoto(List<UserEntity> users, InputFile inputFile, String caption) {
-        for (UserEntity user : users) {
-            SendPhoto sendPhoto = new SendPhoto(user.getJsonData().getString(CHAT_ID), inputFile);
-            if (caption != null) {
-                sendPhoto.setCaption(caption);
-            }
-            this.telegramBot.execute(sendPhoto);
-        }
-    }
-
-    @SneakyThrows
-    public void sendVideo(List<UserEntity> users, InputFile inputFile, String caption) {
-        for (UserEntity user : users) {
-            SendVideo sendVideo = new SendVideo(user.getJsonData().getString(CHAT_ID), inputFile);
-            if (caption != null) {
-                sendVideo.setCaption(caption);
-            }
-            this.telegramBot.execute(sendVideo);
-        }
-    }
-
-    @SneakyThrows
-    public void sendMessage(List<UserEntity> users, String message, String... buttons) {
-        if (users != null && !users.isEmpty()) {
-            if (message != null) {
-                List<List<InlineKeyboardButton>> keyboard2D = new ArrayList<>();
-                if (buttons.length > 0) {
-                    String replyId = "rp_" + replayId++;
-                    List<InlineKeyboardButton> keyboard = new ArrayList<>(buttons.length);
-                    keyboard2D.add(keyboard);
-                    for (String button : buttons) {
-                        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(button);
-                        inlineKeyboardButton.setCallbackData(replyId + " " + button);
-                        keyboard.add(inlineKeyboardButton);
-                    }
-                }
-
-                for (UserEntity user : users) {
-                    SendMessage sendMessage = new SendMessage(user.getJsonData().getString(CHAT_ID), message);
-                    if (!keyboard2D.isEmpty()) {
-                        InlineKeyboardMarkup keyBoardMarkup = new InlineKeyboardMarkup(keyboard2D);
-                        sendMessage.setReplyMarkup(keyBoardMarkup);
-                    }
-                    sendMessage.enableMarkdownV2(true);
-                    Message execute = this.telegramBot.execute(sendMessage);
-
-                    System.out.println(execute.getText());
-                }
-            }
-        }
-    }
-
-    private void start() {
+    private void start(TelegramEntity telegramEntity) {
         try {
-            if (isNotEmpty(entityContext.setting().getValue(TelegramBotNameSetting.class)) &&
-                    isNotEmpty(entityContext.setting().getValue(TelegramBotTokenSetting.class))) {
-                this.telegramBot = new TelegramBot(botOptions);
-                this.botSession = botsApi.registerBot(this.telegramBot);
-                log.info("Telegram bot started");
-                entityContext.ui().sendInfoMessage("Telegram bot started");
+            if (isNotEmpty(telegramEntity.getBotName()) && isNotEmpty(telegramEntity.getBotToken())) {
+                TelegramBot telegramBot = new TelegramBot(botOptions, telegramEntity);
+                this.telegramBots.put(telegramEntity.getEntityID(), telegramBot);
+                log.info("Telegram bot running");
+                entityContext.ui().sendInfoMessage("Telegram bot running");
+                entityContext.updateStatus(telegramEntity, Status.ONLINE, null);
             } else {
-                log.warn("Telegram bot not started. Requires settings.");
-                entityContext.ui().sendInfoMessage("Telegram bot started. Requires settings.");
+                log.warn("Telegram bot not running. Requires settings.");
+                entityContext.ui().sendWarningMessage("Telegram bot not running. Requires settings.");
+                entityContext.updateStatus(telegramEntity, Status.ERROR, isEmpty(telegramEntity.getBotName()) ?
+                        "Require bot name field" : "Require bot token field");
 
             }
         } catch (Exception ex) {
             entityContext.ui().sendErrorMessage("Unable to start telegram bot: ", ex);
             log.error("Unable to start telegram bot", ex);
+            entityContext.updateStatus(telegramEntity, Status.ERROR, TouchHomeUtils.getErrorMessage(ex));
+        }
+    }
+
+    public void dispose(TelegramEntity telegramEntity) {
+        TelegramBot telegramBot = telegramBots.remove(telegramEntity.getEntityID());
+        if (telegramBot != null) {
+            telegramBot.dispose();
+        }
+    }
+
+    public void setTelegramEntity(TelegramEntity telegramEntity) {
+        if (telegramBots.containsKey(telegramEntity.getEntityID())) {
+            telegramBots.get(telegramEntity.getEntityID()).telegramEntity = telegramEntity;
+        }
+    }
+
+    public void sendPhoto(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile, String caption) {
+        telegramBots.get(telegramEntity.getEntityID()).sendPhoto(users, inputFile, caption);
+    }
+
+    public void sendVideo(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile, String caption) {
+        telegramBots.get(telegramEntity.getEntityID()).sendVideo(users, inputFile, caption);
+    }
+
+    public Message sendMessage(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, String message, String[] buttons) {
+        return telegramBots.get(telegramEntity.getEntityID()).sendMessage(users, message, buttons);
+    }
+
+    public void registerEvent(String command, String description, String id, BroadcastLock lock) {
+        for (TelegramBot telegramBot : telegramBots.values()) {
+            telegramBot.registerEvent(command, description, id, lock);
         }
     }
 
     public final class TelegramBot extends TelegramLongPollingCommandBot {
 
-        TelegramBot(DefaultBotOptions botOptions) {
+        private final BotSession botSession;
+        @Getter
+        private TelegramEntity telegramEntity;
+
+        @SneakyThrows
+        TelegramBot(DefaultBotOptions botOptions, TelegramEntity telegramEntity) {
             super(botOptions);
+            this.telegramEntity = telegramEntity;
+            this.botSession = botsApi.registerBot(this);
 
             register(new TelegramStartCommand(this));
             register(new TelegramHelpCommand(this));
-            register(new TelegramRegisterUserCommand(entityContext));
-            register(new TelegramUnregisterUserCommand(entityContext));
+            register(new TelegramRegisterUserCommand(entityContext, this));
+            register(new TelegramUnregisterUserCommand(entityContext, this));
 
             log.info("Registering default action'...");
             registerDefaultAction(((absSender, message) -> {
@@ -175,25 +152,94 @@ public class TelegramService {
             }));
         }
 
+        @SneakyThrows
+        public void sendPhoto(List<TelegramEntity.TelegramUser> users, InputFile inputFile, String caption) {
+            for (TelegramEntity.TelegramUser user : users) {
+                SendPhoto sendPhoto = new SendPhoto(user.getChatId(), inputFile);
+                if (caption != null) {
+                    sendPhoto.setCaption(caption);
+                }
+                this.execute(sendPhoto);
+            }
+        }
+
+        @SneakyThrows
+        public void sendVideo(List<TelegramEntity.TelegramUser> users, InputFile inputFile, String caption) {
+            for (TelegramEntity.TelegramUser user : users) {
+                SendVideo sendVideo = new SendVideo(user.getChatId(), inputFile);
+                if (caption != null) {
+                    sendVideo.setCaption(caption);
+                }
+                this.execute(sendVideo);
+            }
+        }
+
+        @SneakyThrows
+        public Message sendMessage(List<TelegramEntity.TelegramUser> users, String message, String[] buttons) {
+            if (users != null && !users.isEmpty()) {
+                if (message != null) {
+                    List<List<InlineKeyboardButton>> keyboard2D = new ArrayList<>();
+                    if (buttons != null && buttons.length > 0) {
+                        List<InlineKeyboardButton> keyboard = new ArrayList<>(buttons.length);
+                        keyboard2D.add(keyboard);
+                        for (String button : buttons) {
+                            InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(button);
+                            inlineKeyboardButton.setCallbackData(button);
+                            keyboard.add(inlineKeyboardButton);
+                        }
+                    }
+
+                    for (TelegramEntity.TelegramUser user : users) {
+                        SendMessage sendMessage = new SendMessage(user.getChatId(), message);
+                        if (!keyboard2D.isEmpty()) {
+                            sendMessage.setReplyMarkup(new InlineKeyboardMarkup(keyboard2D));
+                        }
+                        sendMessage.enableMarkdownV2(true);
+                        return this.execute(sendMessage);
+                    }
+                }
+            }
+            return null;
+        }
+
         @Override
         public String getBotUsername() {
-            return entityContext.setting().getValue(TelegramBotNameSetting.class);
+            return telegramEntity.getBotName();
         }
 
         @Override
         public String getBotToken() {
-            return entityContext.setting().getValue(TelegramBotTokenSetting.class);
+            return telegramEntity.getBotToken().asString();
         }
 
         // handle message not started with '/'
         @Override
+        @SneakyThrows
         public void processNonCommandUpdate(Update update) {
-            log.info("Unable to process message {}", update.getMessage().getText());
+            if (update.getCallbackQuery() != null) {
+                Integer messageId = update.getCallbackQuery().getMessage().getMessageId();
+                TelegramAnswer telegramAnswer = new TelegramAnswer(messageId,
+                        update.getCallbackQuery().getData(),
+                        update.getCallbackQuery().getFrom().getId());
+                TelegramService.this.broadcastLockManager.signalAll(TELEGRAM_EVENT_PREFIX + messageId, telegramAnswer);
+                TelegramService.this.broadcastLockManager.signalAll(TELEGRAM_EVENT_PREFIX + messageId + "_" + telegramAnswer.getData(), telegramAnswer);
+                AnswerCallbackQuery query = new AnswerCallbackQuery(update.getCallbackQuery().getId());
+                query.setText("Done");
+                this.execute(query);
+
+                // remove buttons
+                EditMessageReplyMarkup editReplyMarkup = new EditMessageReplyMarkup(Long.toString(update.getCallbackQuery().getFrom().getId()), update.getCallbackQuery().getMessage().getMessageId(), null,
+                        new InlineKeyboardMarkup(new ArrayList<>()));
+                this.execute(editReplyMarkup);
+            }
+            log.debug("Income message {}", update.getMessage() != null ?
+                    update.getMessage().getText() : update.getCallbackQuery().getData());
         }
 
         public void registerEvent(String command, String description, String workspaceId, BroadcastLock lock) {
-            TelegramEventCommand telegramEventCommand = eventCommandMap.computeIfAbsent(command, s -> {
-                TelegramEventCommand eventCommand = new TelegramEventCommand(s, description, entityContext);
+            TelegramEventCommand telegramEventCommand = eventCommandMap.computeIfAbsent(command, commandIdentifier -> {
+                TelegramEventCommand eventCommand = new TelegramEventCommand(commandIdentifier, description,
+                        this);
                 this.register(eventCommand);
                 return eventCommand;
             });
@@ -207,6 +253,12 @@ public class TelegramService {
                     }
                 }
             });
+        }
+
+        public void dispose() {
+            if (botSession != null && botSession.isRunning()) {
+                botSession.stop();
+            }
         }
     }
 }

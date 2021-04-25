@@ -67,7 +67,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
         this.writePwmPin.addArgument("PIN", this.pwmPinMenu);
         this.writePwmPin.addArgument("VALUE", 255);
 
-        this.isGpioInState = of(Scratch3Block.ofEvaluate(2, "get_gpio", BlockType.reporter, "[PIN] of [RPI]", this::isGpioInStateHandler), this.allPinMenu);
+        this.isGpioInState = of(Scratch3Block.ofReporter(2, "get_gpio",  "[PIN] of [RPI]", this::isGpioInStateHandler), this.allPinMenu);
         this.isGpioInState.allowLinkBoolean((varId, workspaceBlock) -> {
             RaspberryGpioPin raspberryGpioPin = getPin(workspaceBlock);
             WorkspaceBooleanEntity workspaceBooleanEntity = workspaceBlock.getEntityContext().getEntity(WorkspaceBooleanEntity.PREFIX + varId);
@@ -94,7 +94,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
         this.set_pull = of(Scratch3Block.ofHandler(4, "set_pull", BlockType.command, "set [PULL] to [PIN] of [RPI]", this::setPullStateHandler), this.allPinMenu);
         this.set_pull.addArgument("PULL", this.pullMenu);
 
-        this.ds18b20Value = Scratch3Block.ofEvaluate(4, "ds18B20_status", BlockType.reporter, "DS18B20 [DS18B20] of [RPI]", this::getDS18B20ValueHandler);
+        this.ds18b20Value = Scratch3Block.ofReporter(4, "ds18B20_status",  "DS18B20 [DS18B20] of [RPI]", this::getDS18B20ValueHandler);
         this.ds18b20Value.addArgument("DS18B20", this.ds18b20Menu);
         this.ds18b20Value.addArgument("RPI", this.rpiIdMenu);
     }
@@ -118,13 +118,14 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
     }
 
     private void whenGpioInState(WorkspaceBlock workspaceBlock) {
-        workspaceBlock.getNextOrThrow();
-        RaspberryGpioPin pin = getPin(workspaceBlock);
-        PinState state = getHighLow(workspaceBlock);
-        BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
-        raspberryGPIOService.addGpioListener(workspaceBlock.getId(), pin, state, lock::signalAll);
+        workspaceBlock.handleNext(next -> {
+            RaspberryGpioPin pin = getPin(workspaceBlock);
+            PinState state = getHighLow(workspaceBlock);
+            BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
+            raspberryGPIOService.addGpioListener(workspaceBlock.getId(), pin, state, lock::signalAll);
 
-        workspaceBlock.subscribeToLock(lock);
+            workspaceBlock.subscribeToLock(lock, next::handle);
+        });
     }
 
     private boolean isGpioInStateHandler(WorkspaceBlock workspaceBlock) {

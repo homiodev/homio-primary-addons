@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.InlineLogsConsolePlugin;
@@ -243,7 +244,7 @@ public class ArduinoSketchService {
         }
 
         @Override
-        public Collection<OptionModel> getOptions(EntityContext entityContext) {
+        public Collection<OptionModel> getOptions(EntityContext entityContext, JSONObject params) {
             return OptionModel.list(preferencesMap);
         }
 

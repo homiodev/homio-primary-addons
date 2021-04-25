@@ -20,7 +20,7 @@ import org.touchhome.bundle.arduino.setting.header.*;
 import processing.app.BaseNoGui;
 import processing.app.PreferencesData;
 import processing.app.Sketch;
-import processing.app.SketchFile;
+import processing.app.TextStorage;
 import processing.app.packages.UserLibrary;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
-public class ArduinoConsolePlugin implements ConsolePluginEditor, SketchFile.TextStorage,
+public class ArduinoConsolePlugin implements ConsolePluginEditor,
         ConsolePluginRequireZipDependency<FileModel> {
 
     public static final String DEFAULT_SKETCH_NAME = "sketch_default.ino";
@@ -63,11 +63,8 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor, SketchFile.Tex
 
     @Override
     public String getDependencyURL() {
-        if (TouchHomeUtils.OS_NAME.isWindows()) {
-            return "https://bintray.com/touchhome/touchhome/download_file?file_path=arduino-ide-setup-win.7z";
-        } else {
-            return "https://bintray.com/touchhome/touchhome/download_file?file_path=arduino-ide-setup-linux.7z";
-        }
+        return String.format("%s/arduino-ide-setup-%s.7z", entityContext.getEnv("artifactoryFilesURL"),
+                TouchHomeUtils.OS_NAME.isWindows() ? "win" : "linux");
     }
 
     public void init() {
@@ -159,7 +156,22 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor, SketchFile.Tex
                 this.prevContent = ""; // uses for save content;
             }
             this.sketch = new Sketch(sketchFile.toFile());
-            this.sketch.getPrimaryFile().setStorage(this);
+            this.sketch.getPrimaryFile().setStorage(new TextStorage() {
+                @Override
+                public String getText() {
+                    return content.getContent();
+                }
+
+                @Override
+                public boolean isModified() {
+                    return !prevContent.equals(content.getContent());
+                }
+
+                @Override
+                public void clearModified() {
+                    prevContent = content.getContent();
+                }
+            });
             this.arduinoSketchService.setSketch(this.sketch);
         }
         // somehow file was removed
@@ -256,20 +268,5 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor, SketchFile.Tex
     @Override
     public FileModel getValue() {
         return content;
-    }
-
-    @Override
-    public String getText() {
-        return content.getContent();
-    }
-
-    @Override
-    public boolean isModified() {
-        return !this.prevContent.equals(content.getContent());
-    }
-
-    @Override
-    public void clearModified() {
-        this.prevContent = content.getContent();
     }
 }

@@ -9,7 +9,8 @@ import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
 import org.touchhome.bundle.camera.entity.UsbCameraEntity;
 import org.touchhome.bundle.camera.ffmpeg.FFmpegVideoDevice;
 import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
-import org.touchhome.bundle.camera.setting.CameraFFMPEGInstallPathOptions;
+import org.touchhome.bundle.camera.setting.FFMPEGInstallPathOptions;
+import org.touchhome.bundle.camera.util.FFMPEGDependencyExecutableInstaller;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -28,10 +29,14 @@ public class UsbCameraScanner implements VideoStreamScanner {
 
     @Override
     public BaseItemsDiscovery.DeviceScannerResult scan(EntityContext entityContext, ProgressBar progressBar, String headerConfirmButtonKey) {
-        FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
-        String ffmpegPath = entityContext.setting().getValue(CameraFFMPEGInstallPathOptions.class, Paths.get("ffmpeg")).toString();
-        List<FFmpegVideoDevice> foundUsbVideoCameraDevices = new ArrayList<>();
         BaseItemsDiscovery.DeviceScannerResult result = new BaseItemsDiscovery.DeviceScannerResult();
+        if (new FFMPEGDependencyExecutableInstaller().isRequireInstallDependencies(entityContext)) {
+            entityContext.ui().sendWarningMessage("Install ffmpeg to scan usb devices");
+            return result;
+        }
+        FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
+        String ffmpegPath = entityContext.setting().getValue(FFMPEGInstallPathOptions.class, Paths.get("ffmpeg")).toString();
+        List<FFmpegVideoDevice> foundUsbVideoCameraDevices = new ArrayList<>();
 
         for (String deviceName : repository.getVideoDevices(ffmpegPath)) {
             foundUsbVideoCameraDevices.add(repository.createVideoInputDevice(ffmpegPath, deviceName).setName(deviceName));

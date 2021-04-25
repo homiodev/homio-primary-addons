@@ -4,17 +4,30 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntryPoint;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.telegram.service.TelegramService;
+
+import java.util.Objects;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
 public class TelegramEntryPoint implements BundleEntryPoint {
 
+    private final EntityContext entityContext;
     private final TelegramService telegramService;
 
     public void init() {
-        telegramService.postConstruct();
+        for (TelegramEntity telegramEntity : entityContext.findAll(TelegramEntity.class)) {
+            telegramService.restart(telegramEntity);
+        }
+        //listen for bot name/token changes and fire restart
+        entityContext.event().addEntityUpdateListener(TelegramEntity.class, "listen-telegram-to-start", (newValue, oldValue) -> {
+            if (oldValue == null || !Objects.equals(newValue.getBotName(), oldValue.getBotName()) ||
+                    !Objects.equals(newValue.getBotToken(), oldValue.getBotToken())) {
+                newValue.reboot(entityContext);
+            }
+        });
     }
 
     @Override
@@ -23,7 +36,7 @@ public class TelegramEntryPoint implements BundleEntryPoint {
     }
 
     @Override
-    public String getSettingDescription() {
-        return "telegram.setting.description";
+    public BundleImageColorIndex getBundleImageColorIndex() {
+        return BundleImageColorIndex.ONE;
     }
 }

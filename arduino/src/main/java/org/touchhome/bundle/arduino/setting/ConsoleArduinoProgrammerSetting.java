@@ -1,5 +1,6 @@
 package org.touchhome.bundle.arduino.setting;
 
+import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePlugin;
 import org.touchhome.bundle.api.model.OptionModel;
@@ -26,7 +27,7 @@ public class ConsoleArduinoProgrammerSetting implements ConsoleSettingPlugin<Str
     }
 
     @Override
-    public Collection<OptionModel> getOptions(EntityContext entityContext) {
+    public Collection<OptionModel> getOptions(EntityContext entityContext, JSONObject params) {
         List<OptionModel> programmerMenus = new ArrayList<>();
 
         if (BaseNoGui.packages != null) {

@@ -11,4 +11,5 @@
     <name>Serial</name>
     <artifactId>touchhome-bundle-serial</artifactId>
     <packaging>jar</packaging>
+    <description>Serial bundle for usb/com port usage</description>
 </project>

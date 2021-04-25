@@ -18,7 +18,6 @@ import org.touchhome.bundle.camera.entity.BaseFFmpegStreamEntity;
 import org.touchhome.bundle.camera.handler.BaseFFmpegCameraHandler;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
@@ -27,6 +26,7 @@ import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 @Component
 public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
 
+    public static final String FFMPEG_CAMERA_MENU = "ffmpegCameraMenu";
     protected static final String VIDEO_STREAM = "VIDEO_STREAM";
     private static final String ON_OFF = "ON_OFF";
     private static final String RECORD_TYPE = "RECORD_TYPE";
@@ -51,14 +51,20 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
     private final Scratch3Block motionAlarmReporter;
     private final Scratch3Block setAudioAlarmThresholdCommand;
     private final Scratch3Block lastImageReporter;
+    //private final MenuBlock.ServerMenuBlock profileMenu;
+    private final MenuBlock.ServerMenuBlock ffmpegCameraMenuWithProfiles;
 
     public Scratch3CameraBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
                                 CameraEntryPoint cameraEntryPoint) {
         super("#8F4D77", entityContext, cameraEntryPoint, null);
+        setParent("media");
         this.broadcastLockManager = broadcastLockManager;
 
         // Menu
-        this.ffmpegCameraMenu = MenuBlock.ofServerItems("ffmpegCameraMenu", BaseFFmpegStreamEntity.class);
+        this.ffmpegCameraMenu = MenuBlock.ofServerItems(FFMPEG_CAMERA_MENU, BaseFFmpegStreamEntity.class);
+        this.ffmpegCameraMenuWithProfiles = MenuBlock.ofServer("ffmpegCameraMenuWithProfiles", "rest/camera/ffmpegWithProfiles", "-", "-");
+        /*this.profileMenu = MenuBlock.ofServer("profileMenu", "/rest/camera/profiles", "-", "-")
+                .setDependency(this.ffmpegCameraMenu);*/
         this.onOffMenu = MenuBlock.ofStatic("onOff", OnOffType.class, OnOffType.ON);
         this.recordTypeMenu = MenuBlock.ofStatic("recordType", RecordType.class, RecordType.Mp4);
 
@@ -71,22 +77,22 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         this.whenAudioAlarmHat.appendSpace();
 
         // reporters
-        this.audioAlarmReporter = withServerFfmpeg(Scratch3Block.ofEvaluate(30, "get_audio_alarm", BlockType.reporter,
+        this.audioAlarmReporter = withServerFfmpeg(Scratch3Block.ofReporter(30, "get_audio_alarm",
                 "Get audio alarm threshold of [VIDEO_STREAM]", this::getAudioAlarmReporter));
 
-        this.motionAlarmReporter = withServerFfmpeg(Scratch3Block.ofEvaluate(40, "get_motion_alarm", BlockType.reporter,
+        this.motionAlarmReporter = withServerFfmpeg(Scratch3Block.ofReporter(40, "get_motion_alarm",
                 "Get motion alarm threshold of [VIDEO_STREAM]", this::getMotionAlarmReporter));
 
-        this.lastMotionTypeReporter = withServerFfmpeg(Scratch3Block.ofEvaluate(90, "last_motion_type", BlockType.reporter,
+        this.lastMotionTypeReporter = withServerFfmpeg(Scratch3Block.ofReporter(90, "last_motion_type",
                 "Get last motion type of [VIDEO_STREAM]", this::getLastMotionTypeReporter));
 
-        this.lastImageReporter = withServerFfmpeg(Scratch3Block.ofEvaluate(95, "last_image", BlockType.reporter,
+        this.lastImageReporter = withServerFfmpeg(Scratch3Block.ofReporter(95, "last_image",
                 "Get last image of [VIDEO_STREAM]", this::getLastImageReporter));
 
-        this.imageReporter = withServerFfmpeg(Scratch3Block.ofEvaluate(100, "get_image", BlockType.reporter,
+        this.imageReporter = withServerFfmpegAndProfile(Scratch3Block.ofReporter(100, "get_image",
                 "Get image of [VIDEO_STREAM]", this::getImageReporter));
 
-        this.gifMP4Reporter = withServerFfmpeg(Scratch3Block.ofEvaluate(110, "get_gif_mp4", BlockType.reporter,
+        this.gifMP4Reporter = withServerFfmpeg(Scratch3Block.ofReporter(110, "get_gif_mp4",
                 "Get [RECORD_TYPE] [TIME]sec. of [VIDEO_STREAM]", this::getGifMP4Reporter));
         this.gifMP4Reporter.addArgument("TIME", ArgumentType.number, "5");
         this.gifMP4Reporter.addArgument(RECORD_TYPE, this.recordTypeMenu);
@@ -137,10 +143,10 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         getFFmpegHandler(workspaceBlock).setMotionThreshold(workspaceBlock.getInputString(VALUE));
     }
 
-    private byte[] getGifMP4Reporter(WorkspaceBlock workspaceBlock) {
-        return workspaceBlock.getMenuValue(RECORD_TYPE, this.recordTypeMenu).getHandler
+    private RawType getGifMP4Reporter(WorkspaceBlock workspaceBlock) {
+        return new RawType(workspaceBlock.getMenuValue(RECORD_TYPE, this.recordTypeMenu).getHandler
                 .apply(getFFmpegHandler(workspaceBlock),
-                        workspaceBlock.getInputInteger("TIME"));
+                        workspaceBlock.getInputInteger("TIME")), "image/gif");
     }
 
     private void fireRecordGifMP4Command(WorkspaceBlock workspaceBlock) {
@@ -150,8 +156,11 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
                         workspaceBlock.getInputInteger("TIME"));
     }
 
-    private byte[] getImageReporter(WorkspaceBlock workspaceBlock) {
-        return getFFmpegHandler(workspaceBlock).recordImageSync();
+    private RawType getImageReporter(WorkspaceBlock workspaceBlock) {
+        String[] cameraWithProfile = workspaceBlock.getMenuValue(VIDEO_STREAM, this.ffmpegCameraMenuWithProfiles).split("/");
+        BaseFFmpegStreamEntity cameraEntity = entityContext.getEntity(cameraWithProfile[0]);
+        String profile = cameraWithProfile.length > 1 ? cameraWithProfile[1] : null;
+        return cameraEntity.getCameraHandler().recordImageSync(profile);
     }
 
     private void firePollImageCommand(WorkspaceBlock workspaceBlock) {
@@ -173,25 +182,28 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
     }
 
     private void listenMotionAlarmHat(WorkspaceBlock workspaceBlock) {
-        workspaceBlock.getNextOrThrow();
-        BaseFFmpegStreamEntity entity = getEntity(workspaceBlock);
-        if (!entity.getCameraHandler().setMotionThreshold("ON")) {
-            workspaceBlock.logErrorAndThrow("Unable to start motion detection");
-        }
-        OnOffType onOffType = workspaceBlock.getMenuValue(ON_OFF, this.onOffMenu);
-        BroadcastLock motionAlarm = broadcastLockManager.getOrCreateLock(workspaceBlock, MOTION_ALARM + ":" + entity.getEntityID());
-        workspaceBlock.subscribeToLock(motionAlarm, (Function<OnOffType, Boolean>) state -> state.boolValue() == onOffType.boolValue());
+        workspaceBlock.handleNext(next -> {
+            BaseFFmpegStreamEntity entity = getEntity(workspaceBlock);
+            if (!entity.getCameraHandler().setMotionThreshold("ON")) {
+                workspaceBlock.logErrorAndThrow("Unable to start motion detection");
+            }
+            OnOffType onOffType = workspaceBlock.getMenuValue(ON_OFF, this.onOffMenu);
+            BroadcastLock motionAlarm = broadcastLockManager.getOrCreateLock(workspaceBlock, MOTION_ALARM + ":" + entity.getEntityID());
+            workspaceBlock.subscribeToLock(motionAlarm, state -> ((OnOffType) state).boolValue() == onOffType.boolValue(),
+                    next::handle);
+        });
     }
 
     private void listenAudioAlarmHat(WorkspaceBlock workspaceBlock) {
-        workspaceBlock.getNextOrThrow();
-        BaseFFmpegStreamEntity entity = getEntity(workspaceBlock);
-        if (!entity.getCameraHandler().setAudioAlarmThreshold("ON")) {
-            workspaceBlock.logErrorAndThrow("Unable to start motion detection");
-        }
-        OnOffType onOffType = workspaceBlock.getMenuValue(ON_OFF, this.onOffMenu);
-        BroadcastLock audioAlarm = broadcastLockManager.getOrCreateLock(workspaceBlock, CHANNEL_AUDIO_ALARM + ":" + entity.getEntityID());
-        workspaceBlock.subscribeToLock(audioAlarm, (Function<OnOffType, Boolean>) state -> state.boolValue() == onOffType.boolValue());
+        workspaceBlock.handleNext(next -> {
+            BaseFFmpegStreamEntity entity = getEntity(workspaceBlock);
+            if (!entity.getCameraHandler().setAudioAlarmThreshold("ON")) {
+                workspaceBlock.logErrorAndThrow("Unable to start motion detection");
+            }
+            OnOffType onOffType = workspaceBlock.getMenuValue(ON_OFF, this.onOffMenu);
+            BroadcastLock audioAlarm = broadcastLockManager.getOrCreateLock(workspaceBlock, CHANNEL_AUDIO_ALARM + ":" + entity.getEntityID());
+            workspaceBlock.subscribeToLock(audioAlarm, state -> ((OnOffType) state).boolValue() == onOffType.boolValue(), next::handle);
+        });
     }
 
     private <T extends BaseFFmpegStreamEntity> T getEntity(WorkspaceBlock workspaceBlock) {
@@ -215,6 +227,11 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
 
     private Scratch3Block withServerFfmpeg(Scratch3Block scratch3Block) {
         scratch3Block.addArgument(VIDEO_STREAM, this.ffmpegCameraMenu);
+        return scratch3Block;
+    }
+
+    private Scratch3Block withServerFfmpegAndProfile(Scratch3Block scratch3Block) {
+        scratch3Block.addArgument(VIDEO_STREAM, this.ffmpegCameraMenuWithProfiles);
         return scratch3Block;
     }
 

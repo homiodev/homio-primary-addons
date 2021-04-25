@@ -168,7 +168,7 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeBaseChannelConverte
         return ChannelBuilder
                 .create(createChannelUID(thingUID, endpoint, ZigBeeBindingConstants.CHANNEL_NAME_WINDOWCOVERING_LIFT),
                         ZigBeeBindingConstants.ITEM_TYPE_ROLLERSHUTTER)
-                .withType(ZigBeeBindingConstants.CHANNEL_WINDOWCOVERING_LIFT)
+                .withType(ZigBeeBindingConstants.FCHANNEL_WINDOWCOVERING_LIFT)
                 .withLabel(ZigBeeBindingConstants.CHANNEL_LABEL_WINDOWCOVERING_LIFT)
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).withProperties(createProperties(endpoint)).build();
     }*/

@@ -1,5 +1,6 @@
 package org.touchhome.bundle.zigbee.setting.advanced;
 
+import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.setting.SettingPluginOptionsInteger;
@@ -14,7 +15,7 @@ public class ZigBeePowerModeSetting implements SettingPluginOptionsInteger {
     }
 
     @Override
-    public Collection<OptionModel> getOptions(EntityContext entityContext) {
+    public Collection<OptionModel> getOptions(EntityContext entityContext, JSONObject params) {
         return OptionModel.list(OptionModel.of("0", "Normal"), OptionModel.of("1", "Boost"));
     }
 

@@ -63,7 +63,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
                 "when got [EVENT] event", this::whenEventReceivedHandler);
         this.whenEventReceived.addArgument(EVENT, ArgumentType.reference);
 
-        this.timeSinceLastEvent = Scratch3Block.ofEvaluate(20, "time_since_last_event", BlockType.reporter,
+        this.timeSinceLastEvent = Scratch3Block.ofReporter(20, "time_since_last_event",
                 "time since last event [EVENT]", this::timeSinceLastEventEvaluate);
         this.timeSinceLastEvent.addArgument(EVENT, ArgumentType.reference);
         this.timeSinceLastEvent.appendSpace();
@@ -170,7 +170,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
             throw new IllegalStateException("Unable to find ZigBee device entity <" + ieeeAddress + ">");
         }
 
-        BroadcastLock<ScratchDeviceState> lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
+        BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
         boolean availableReceiveEvents = false;
 
         if (scratch3Block instanceof Scratch3ZigBeeBlock) {
@@ -192,14 +192,13 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
 
         while (!Thread.currentThread().isInterrupted()) {
             if (lock.await(workspaceBlock)) {
-                handler.handle(zigBeeDeviceEntity, lock.getValue());
+                handler.handle(zigBeeDeviceEntity, (ScratchDeviceState)lock.getValue());
             }
         }
     }
 
     private void whenEventReceivedHandler(WorkspaceBlock workspaceBlock) {
-        WorkspaceBlock substack = workspaceBlock.getNextOrThrow();
-        this.handleWhenEventReceived(workspaceBlock, (zigBeeDeviceEntity, ignore) -> substack.handle());
+        workspaceBlock.handleNext(next -> this.handleWhenEventReceived(workspaceBlock, (zigBeeDeviceEntity, ignore) -> next.handle()));
     }
 
     private long timeSinceLastEventEvaluate(WorkspaceBlock workspaceBlock) {

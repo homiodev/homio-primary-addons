@@ -164,7 +164,7 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
     @UIFieldIgnoreGetDefault
     public String getSnapshotUrl() {
         String snapshotUrl = getJsonData("snapshotUrl");
-        if (StringUtils.isEmpty(snapshotUrl) || snapshotUrl.equals("ffmpeg")) {
+        if (getCameraHandler().isHandlerInitialized() && (StringUtils.isEmpty(snapshotUrl) || snapshotUrl.equals("ffmpeg"))) {
             snapshotUrl = getCameraHandler().getOnvifDeviceState().getMediaDevices().getSnapshotUri();
         }
         return StringUtils.isEmpty(snapshotUrl) ? "ffmpeg" : snapshotUrl;
@@ -294,8 +294,11 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
 
     @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off")
     public ActionResponseModel reboot() {
-        String response = this.getCameraHandler().getOnvifDeviceState().getInitialDevices().reboot();
-        return ActionResponseModel.showSuccess(response);
+        if (this.getCameraHandler().isHandlerInitialized()) {
+            String response = this.getCameraHandler().getOnvifDeviceState().getInitialDevices().reboot();
+            return ActionResponseModel.showSuccess(response);
+        }
+        return ActionResponseModel.showWarn("VIDEO_STREAM.CAMERA_NOT_INIT");
     }
 
     @Override
