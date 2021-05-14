@@ -2,6 +2,7 @@ package org.touchhome.bundle.telegram;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
@@ -25,7 +26,9 @@ public class TelegramEntryPoint implements BundleEntryPoint {
         entityContext.event().addEntityUpdateListener(TelegramEntity.class, "listen-telegram-to-start", (newValue, oldValue) -> {
             if (oldValue == null || !Objects.equals(newValue.getBotName(), oldValue.getBotName()) ||
                     !Objects.equals(newValue.getBotToken(), oldValue.getBotToken())) {
-                newValue.reboot(entityContext);
+                if (StringUtils.isNotEmpty(newValue.getBotName()) && StringUtils.isNotEmpty(newValue.getBotToken().asString())) {
+                    newValue.reboot(entityContext);
+                }
             }
         });
     }

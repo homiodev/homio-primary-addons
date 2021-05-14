@@ -77,7 +77,7 @@ public class ArduinoConfiguration {
 
                 List<String> downloadedPackageIndexFiles = contributionInstaller.updateIndex(new ConsoleProgressListener());
                 contributionInstaller.deleteUnknownFiles(downloadedPackageIndexFiles);
-                // BaseNoGui.initPackages();
+                BaseNoGui.initPackages();
             } catch (Exception ex) {
                 log.error("Error create ContributionInstaller", ex);
                 throw new RuntimeException("Unable to create arduino ContributionInstaller");

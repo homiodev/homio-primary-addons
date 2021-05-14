@@ -16,7 +16,9 @@
       "st_ConsoleHeaderArduinoDeploySketchSetting": "Deploy sketch to board",
       "st_ConsoleHeaderArduinoBuildSketchSetting": "Verify/Compile sketch",
       "st_ConsoleHeaderArduinoGetBoardsSetting": "Select board",
-      "st_ConsoleHeaderGetBoardsDynamicSetting": "Additional settings"
+      "st_ConsoleHeaderGetBoardsDynamicSetting": "Additional settings",
+      "st_ConsoleHeaderArduinoIncludeLibrarySetting": "Load example",
+      "st_ConsoleHeaderGetBoardInfoSetting": "Get board info"
     }
   },
   "setting": {

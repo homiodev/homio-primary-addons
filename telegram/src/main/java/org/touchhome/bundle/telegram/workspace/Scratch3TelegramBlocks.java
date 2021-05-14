@@ -14,7 +14,10 @@ import org.touchhome.bundle.api.state.RawType;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.scratch.*;
+import org.touchhome.bundle.api.workspace.scratch.BlockType;
+import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
+import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
+import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.telegram.TelegramEntity;
 import org.touchhome.bundle.telegram.TelegramEntryPoint;
 import org.touchhome.bundle.telegram.service.TelegramAnswer;
@@ -37,7 +40,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
 
     public static final String URL = "rest/telegram/";
     public static final String COMMAND = "COMMAND";
-    public static final String DESCRIPTION = "DESCRIPTION";
+    public static final String DESCR = "DESCR";
     private static final Pattern ESCAPE_PATTERN = Pattern.compile("[\\{\\}\\.\\+\\-\\#\\(\\)]");
     private static final String USER = "USER";
     private static final String MESSAGE = "MESSAGE";
@@ -73,20 +76,20 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         this.byteType = MenuBlock.ofStatic("type", ByteType.class, ByteType.Image);
 
 
-        this.getCommand = Scratch3Block.ofHandler(10, "get_msg", BlockType.hat, "On command [COMMAND] (description) [DESCRIPTION]", this::whenGetMessage);
-        this.getCommand.addArgument(COMMAND, ArgumentType.string);
-        this.getCommand.addArgument(DESCRIPTION, ArgumentType.string);
+        this.getCommand = Scratch3Block.ofHandler(10, "get_msg", BlockType.hat, "On command [COMMAND] | Desc: [DESCR]", this::whenGetMessage);
+        this.getCommand.addArgument(COMMAND, "bulb4_on");
+        this.getCommand.addArgument(DESCR, "Turn on bulb 4");
 
         this.sendMessageCommand = Scratch3Block.ofHandler(20, "send_msg", BlockType.command,
                 "Send [MESSAGE] to [USER]. [LEVEL]", this::sendMessageCommand);
-        this.sendMessageCommand.addArgument(MESSAGE, ArgumentType.string);
+        this.sendMessageCommand.addArgument(MESSAGE, "msg");
         this.sendMessageCommand.addArgument(USER, this.telegramEntityUsersMenu);
         this.sendMessageCommand.addArgument(LEVEL, this.levelMenu);
 
         this.sendImageMessageCommand = Scratch3Block.ofHandler(30, "send_img", BlockType.command,
                 "Send [TYPE] [MESSAGE], caption [CAPTION] to [USER]", this::sendIVAMessageCommand);
         this.sendImageMessageCommand.addArgument("TYPE", this.byteType);
-        this.sendImageMessageCommand.addArgument(MESSAGE, ArgumentType.string);
+        this.sendImageMessageCommand.addArgument(MESSAGE, "msg");
         this.sendImageMessageCommand.addArgument(USER, this.telegramEntityUsersMenu);
         this.sendImageMessageCommand.addArgument("CAPTION", "caption");
 
@@ -101,7 +104,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     }
 
     private Scratch3Block ask(Scratch3Block scratch3Block) {
-        scratch3Block.addArgument(MESSAGE, ArgumentType.string);
+        scratch3Block.addArgument(MESSAGE, "msg");
         scratch3Block.addArgument(USER, this.telegramEntityUsersMenu);
         scratch3Block.addArgument("BUTTONS", this.buttonsMenu);
         return scratch3Block;
@@ -201,7 +204,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     private void whenGetMessage(WorkspaceBlock workspaceBlock) {
         workspaceBlock.handleNext(next -> {
             String command = workspaceBlock.getInputString(COMMAND);
-            String description = workspaceBlock.getInputString(DESCRIPTION);
+            String description = workspaceBlock.getInputString(DESCR);
             BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
             this.telegramService.registerEvent(command, description, workspaceBlock.getId(), lock);
             workspaceBlock.subscribeToLock(lock, next::handle);
@@ -212,6 +215,9 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         String entityUser = workspaceBlock.getMenuValue(USER, this.telegramEntityUsersMenu);
         String[] entityAndUser = entityUser.split("/");
         TelegramEntity telegramEntity = entityContext.getEntity(entityAndUser[0]);
+        if (telegramEntity == null) {
+            workspaceBlock.logErrorAndThrow("Unable to find telegram: <{}>", entityAndUser[0]);
+        }
         if (entityAndUser.length > 1) {
             return Pair.of(telegramEntity, Collections.singletonList(telegramEntity.getUser(Long.parseLong(entityAndUser[1]))));
         } else {
