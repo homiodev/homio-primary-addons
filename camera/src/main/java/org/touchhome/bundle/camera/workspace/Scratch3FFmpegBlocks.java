@@ -122,10 +122,10 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
     @AllArgsConstructor
     private enum FFmpegApplyHandler {
         argsInput((workspaceBlock, builder) -> {
-            addToListSafe(builder.inputArgs, workspaceBlock.getInputString(VALUE, "").trim());
+            addToListSafe(builder.inputArgs, workspaceBlock.getInputString(VALUE).trim());
         }),
         argsOutput((workspaceBlock, builder) -> {
-            addToListSafe(builder.outputArgs, workspaceBlock.getInputString(VALUE, "").trim());
+            addToListSafe(builder.outputArgs, workspaceBlock.getInputString(VALUE).trim());
         });
 
         private final ThrowingBiConsumer<WorkspaceBlock, FfmpegBuilder, Exception> applyFn;

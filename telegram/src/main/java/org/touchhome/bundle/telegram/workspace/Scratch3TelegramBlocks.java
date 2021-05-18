@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
 
 import static org.touchhome.bundle.telegram.service.TelegramService.TELEGRAM_EVENT_PREFIX;
 
-@Getter
 @Component
 public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
 
@@ -65,6 +64,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
                                   BroadcastLockManager broadcastLockManager,
                                   TelegramEntryPoint telegramEntryPoint) {
         super("#73868c", entityContext, telegramEntryPoint);
+        setParent("communication");
         this.telegramService = telegramService;
         this.broadcastLockManager = broadcastLockManager;
 

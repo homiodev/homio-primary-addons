@@ -51,8 +51,8 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         this.zigBeeNodeDescription = new ZigBeeNodeDescription(nodeIeeeAddress);
         this.nodeIeeeAddress = nodeIeeeAddress;
 
-        this.discoveryService.getCoordinatorHandlers().addNetworkNodeListener(this);
-        this.discoveryService.getCoordinatorHandlers().addAnnounceListener(this);
+        this.discoveryService.getCoordinatorHandler().addNetworkNodeListener(this);
+        this.discoveryService.getCoordinatorHandler().addAnnounceListener(this);
 
         tryInitializeDevice(discoveryService.getEntityContext().setting().getValue(ZigBeeStatusSetting.class).getStatus());
 
@@ -72,7 +72,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
             stopPolling();
         } else if (!zigBeeNodeDescription.isNodeInitialized() && isInitializeFinished()) {
             log.debug("{}: Coordinator is ONLINE. Starting device initialisation.", nodeIeeeAddress);
-            this.discoveryService.getCoordinatorHandlers().rediscoverNode(nodeIeeeAddress);
+            this.discoveryService.getCoordinatorHandler().rediscoverNode(nodeIeeeAddress);
             initialiseZigBeeNode();
         }
     }
@@ -89,7 +89,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         this.zigBeeNodeDescription.setNodeInitializationStatus(ZigBeeNodeDescription.NodeInitializationStatus.Started);
         try {
             log.info("{}: Initialize zigBee device", nodeIeeeAddress);
-            ZigBeeNode node = this.discoveryService.getCoordinatorHandlers().getNode(nodeIeeeAddress);
+            ZigBeeNode node = this.discoveryService.getCoordinatorHandler().getNode(nodeIeeeAddress);
             if (node == null) {
                 log.debug("{}: Node not found", nodeIeeeAddress);
                 updateStatus(Status.OFFLINE, "zigbee.error.OFFLINE_NODE_NOT_FOUND");
@@ -115,7 +115,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
             List<ZigBeeConverterEndpoint> zigBeeConverterEndpoints = new ArrayList<>();
             // Dynamically create the zigBeeConverterEndpoints from the device
             // Process all the endpoints for this device and add all zigBeeConverterEndpoints as derived from the supported clusters
-            for (ZigBeeEndpoint endpoint : this.discoveryService.getCoordinatorHandlers().getNodeEndpoints(nodeIeeeAddress)) {
+            for (ZigBeeEndpoint endpoint : this.discoveryService.getCoordinatorHandler().getNodeEndpoints(nodeIeeeAddress)) {
                 log.debug("{}: Checking endpoint {} zigBeeConverterEndpoints", nodeIeeeAddress, endpoint.getEndpointId());
                 zigBeeConverterEndpoints.addAll(discoveryService.getZigBeeChannelConverterFactory().getZigBeeConverterEndpoints(endpoint));
             }
@@ -182,7 +182,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
             log.debug("{}: Done initialising ZigBee device", nodeIeeeAddress);
 
             // Save the network state
-            this.discoveryService.getCoordinatorHandlers().serializeNetwork(node.getIeeeAddress());
+            this.discoveryService.getCoordinatorHandler().serializeNetwork(node.getIeeeAddress());
         } finally {
             this.zigBeeNodeDescription.setNodeInitializationStatus(ZigBeeNodeDescription.NodeInitializationStatus.Finished);
         }
@@ -283,9 +283,9 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
     }
 
     private ZigBeeBaseChannelConverter createZigBeeBaseChannelConverter(ZigBeeConverterEndpoint zigBeeConverterEndpoint) {
-        ZigBeeNode node = this.discoveryService.getCoordinatorHandlers().getNode(nodeIeeeAddress);
+        ZigBeeNode node = this.discoveryService.getCoordinatorHandler().getNode(nodeIeeeAddress);
         return discoveryService.getZigBeeChannelConverterFactory().createConverter(this,
-                zigBeeConverterEndpoint, this.discoveryService.getCoordinatorHandlers(), node.getIeeeAddress());
+                zigBeeConverterEndpoint, this.discoveryService.getCoordinatorHandler(), node.getIeeeAddress());
     }
 
     void dispose() {
@@ -294,9 +294,9 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         stopPolling();
 
         if (nodeIeeeAddress != null) {
-            if (this.discoveryService.getCoordinatorHandlers() != null) {
-                this.discoveryService.getCoordinatorHandlers().removeNetworkNodeListener(this);
-                this.discoveryService.getCoordinatorHandlers().removeAnnounceListener(this);
+            if (this.discoveryService.getCoordinatorHandler() != null) {
+                this.discoveryService.getCoordinatorHandler().removeNetworkNodeListener(this);
+                this.discoveryService.getCoordinatorHandler().removeAnnounceListener(this);
             }
         }
 
@@ -409,7 +409,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
     }
 
     public void discoveryNodeDescription(String savedModelIdentifier) {
-        ZigBeeNode node = this.discoveryService.getCoordinatorHandlers().getNode(nodeIeeeAddress);
+        ZigBeeNode node = this.discoveryService.getCoordinatorHandler().getNode(nodeIeeeAddress);
         if (node == null) {
             throw new IllegalStateException("Unable to find node: <" + nodeIeeeAddress + ">");
         }

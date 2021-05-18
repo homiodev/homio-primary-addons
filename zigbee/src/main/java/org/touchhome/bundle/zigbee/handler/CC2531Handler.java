@@ -31,13 +31,13 @@ public class CC2531Handler extends ZigBeeCoordinatorHandler {
     protected void initializeDongle() {
         log.debug("Initializing ZigBee CC2531 serial bridge handler.");
 
-        ZigBeeTransportTransmit dongle = createDingle();
+        ZigBeeTransportTransmit dongle = createDongle();
         TransportConfig transportConfig = createTransportConfig();
 
         startZigBee(dongle, transportConfig);
     }
 
-    private ZigBeeTransportTransmit createDingle() {
+    private ZigBeeTransportTransmit createDongle() {
         ZigBeeSerialPort serialPort = new ZigBeeSerialPort(
                 "cc2531",
                 entityContext,

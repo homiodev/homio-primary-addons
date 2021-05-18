@@ -8,8 +8,8 @@ import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.Lang;
+import org.touchhome.bundle.api.entity.CommunicationEntity;
 import org.touchhome.bundle.api.entity.HasStatusAndMsg;
-import org.touchhome.bundle.api.entity.MessengerEntity;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.ui.UISidebarChildren;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @Entity
 @Accessors(chain = true)
 @UISidebarChildren(icon = "fab fa-telegram", color = "#0088cc")
-public class TelegramEntity extends MessengerEntity<TelegramEntity> implements HasStatusAndMsg<TelegramEntity> {
+public class TelegramEntity extends CommunicationEntity<TelegramEntity> implements HasStatusAndMsg<TelegramEntity> {
 
     public static final String PREFIX = "telegram_";
 

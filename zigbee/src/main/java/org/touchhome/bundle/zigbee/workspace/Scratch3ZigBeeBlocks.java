@@ -15,12 +15,9 @@ import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
-import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
-import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +39,6 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
     private final Scratch3Block whenEventReceived;
     private final BroadcastLockManager broadcastLockManager;
     private final ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener;
-    private ZigBeeCoordinatorHandler coordinatorHandler;
 
     public Scratch3ZigBeeBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
                                 ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
@@ -50,13 +46,6 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
         super("#6d4747", entityContext, zigBeeBundleEntryPoint, null);
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
-        this.entityContext.setting().listenValue(ZigBeeStatusSetting.class, "zb-wp-status", status -> {
-            if (status.isOnline()) {
-                this.coordinatorHandler = this.entityContext.setting().getValue(ZigBeeCoordinatorHandlerSetting.class);
-            } else {
-                this.coordinatorHandler = null;
-            }
-        });
 
         // Items
         this.whenEventReceived = Scratch3Block.ofHandler(10, "when_event_received", BlockType.hat,
@@ -192,7 +181,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
 
         while (!Thread.currentThread().isInterrupted()) {
             if (lock.await(workspaceBlock)) {
-                handler.handle(zigBeeDeviceEntity, (ScratchDeviceState)lock.getValue());
+                handler.handle(zigBeeDeviceEntity, (ScratchDeviceState) lock.getValue());
             }
         }
     }

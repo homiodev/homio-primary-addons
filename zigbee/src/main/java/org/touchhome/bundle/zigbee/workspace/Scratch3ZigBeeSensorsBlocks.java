@@ -12,13 +12,10 @@ import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
-import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasFireIndicator;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasWaterSensor;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
-import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
 
 import static org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlocks.*;
 
@@ -56,7 +53,6 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
     private final Scratch3ZigBeeBlock humidityValue;
     private final BroadcastLockManager broadcastLockManager;
     private final ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener;
-    private ZigBeeCoordinatorHandler coordinatorHandler;
 
     public Scratch3ZigBeeSensorsBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
                                        ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
@@ -64,13 +60,6 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
         super("#8a6854", entityContext, zigBeeBundleEntryPoint, "sensor");
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
-        this.entityContext.setting().listenValue(ZigBeeStatusSetting.class, "zb-wp-sensor-status", status -> {
-            if (status.isOnline()) {
-                this.coordinatorHandler = this.entityContext.setting().getValue(ZigBeeCoordinatorHandlerSetting.class);
-            } else {
-                this.coordinatorHandler = null;
-            }
-        });
 
         // Menu
         this.alarmSensorMenu = MenuBlock.ofServer("alarmSensorMenu", ZIGBEE_ALARM_URL, "Alarm Sensor", "-");

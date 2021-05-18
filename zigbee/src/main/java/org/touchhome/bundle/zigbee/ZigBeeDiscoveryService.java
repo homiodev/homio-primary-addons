@@ -11,20 +11,20 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryDurationSetting;
 import org.touchhome.bundle.zigbee.setting.advanced.ZigBeeJoinDeviceDuringScanOnlySetting;
-import org.touchhome.bundle.zigbee.setting.header.ConsoleHeaderZigBeeDiscoveryButtonSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import static org.touchhome.bundle.api.util.Constants.PRIMARY_COLOR;
 
 @Log4j2
 @Getter
-class ZigBeeDiscoveryService {
+class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
 
     private final EntityContext entityContext;
-    private final ZigBeeCoordinatorHandler coordinatorHandlers;
+    private final Supplier<ZigBeeCoordinatorHandler> coordinatorHandler;
     private final ZigBeeChannelConverterFactory zigBeeChannelConverterFactory;
     private final ScheduledExecutorService scheduler;
     private final ZigBeeDeviceUpdateValueListener deviceUpdateListener;
@@ -32,59 +32,58 @@ class ZigBeeDiscoveryService {
 
     private volatile boolean scanStarted = false;
 
-    ZigBeeDiscoveryService(EntityContext entityContext, ZigBeeCoordinatorHandler coordinatorHandlers,
+    ZigBeeDiscoveryService(EntityContext entityContext, Supplier<ZigBeeCoordinatorHandler> coordinatorHandler,
                            ZigBeeIsAliveTracker zigBeeIsAliveTracker,
                            ZigBeeChannelConverterFactory zigBeeChannelConverterFactory,
                            ScheduledExecutorService scheduler,
                            ZigBeeDeviceUpdateValueListener deviceUpdateListener) {
         this.entityContext = entityContext;
-        this.coordinatorHandlers = coordinatorHandlers;
+        this.coordinatorHandler = coordinatorHandler;
         this.zigBeeIsAliveTracker = zigBeeIsAliveTracker;
         this.zigBeeChannelConverterFactory = zigBeeChannelConverterFactory;
         this.scheduler = scheduler;
         this.deviceUpdateListener = deviceUpdateListener;
-        this.entityContext.setting().listenValue(ConsoleHeaderZigBeeDiscoveryButtonSetting.class, "zb-start-scan", this::startScan);
-
-        ZigBeeNetworkNodeListener listener = new ZigBeeNetworkNodeListener() {
-            @Override
-            public void nodeAdded(ZigBeeNode node) {
-                boolean forceAdd = !entityContext.setting().getValue(ZigBeeJoinDeviceDuringScanOnlySetting.class);
-                if (forceAdd || scanStarted) {
-                    ZigBeeDiscoveryService.this.nodeDiscovered(coordinatorHandlers, node);
-                }
-            }
-
-            @Override
-            public void nodeRemoved(ZigBeeNode node) {
-                log.debug("Node removed: <{}>", node);
-            }
-
-            @Override
-            public void nodeUpdated(ZigBeeNode node) {
-                log.debug("Node updated: <{}>", node);
-            }
-        };
-
-        coordinatorHandlers.addNetworkNodeListener(listener);
     }
 
-    private void startScan() {
+    @Override
+    public void nodeAdded(ZigBeeNode node) {
+        boolean forceAdd = !entityContext.setting().getValue(ZigBeeJoinDeviceDuringScanOnlySetting.class);
+        if (forceAdd || scanStarted) {
+            ZigBeeDiscoveryService.this.nodeDiscovered(coordinatorHandler.get(), node);
+        }
+    }
+
+    @Override
+    public void nodeRemoved(ZigBeeNode node) {
+        log.debug("Node removed: <{}>", node);
+    }
+
+    @Override
+    public void nodeUpdated(ZigBeeNode node) {
+        log.debug("Node updated: <{}>", node);
+    }
+
+    public ZigBeeCoordinatorHandler getCoordinatorHandler() {
+        return coordinatorHandler.get();
+    }
+
+    void startScan() {
         if (scanStarted) {
             return;
         }
         log.info("Start scanning...");
         scanStarted = true;
 
-        for (ZigBeeNode node : coordinatorHandlers.getNodes()) {
+        for (ZigBeeNode node : coordinatorHandler.get().getNodes()) {
             if (node.getNetworkAddress() == 0) {
                 continue;
             }
 
-            nodeDiscovered(coordinatorHandlers, node);
+            nodeDiscovered(coordinatorHandler.get(), node);
         }
 
         Integer duration = entityContext.setting().getValue(ZigBeeDiscoveryDurationSetting.class);
-        coordinatorHandlers.scanStart(duration);
+        coordinatorHandler.get().scanStart(duration);
 
         this.entityContext.ui().addHeaderButton("zigbee-scan", null, PRIMARY_COLOR, duration, null);
 
@@ -97,8 +96,8 @@ class ZigBeeDiscoveryService {
 
     private void nodeDiscovered(ZigBeeCoordinatorHandler coordinator, final ZigBeeNode node) {
         if (node.getLogicalType() == NodeDescriptor.LogicalType.COORDINATOR || node.getNetworkAddress() == 0) {
-            if (this.coordinatorHandlers.getNodeIeeeAddress() == null) {
-                this.coordinatorHandlers.setNodeIeeeAddress(node.getIeeeAddress());
+            if (this.coordinatorHandler.get().getNodeIeeeAddress() == null) {
+                this.coordinatorHandler.get().setNodeIeeeAddress(node.getIeeeAddress());
             }
             return;
         }
@@ -129,11 +128,11 @@ class ZigBeeDiscoveryService {
     }
 
     synchronized void addZigBeeDevice(IeeeAddress ieeeAddress) {
-        boolean deviceAdded = this.coordinatorHandlers.getZigBeeDevices().keySet().stream()
+        boolean deviceAdded = this.coordinatorHandler.get().getZigBeeDevices().keySet().stream()
                 .anyMatch(d -> d.equals(ieeeAddress.toString()));
         if (!deviceAdded) {
             ZigBeeDevice zigBeeDevice = new ZigBeeDevice(this, ieeeAddress);
-            this.coordinatorHandlers.addZigBeeDevice(zigBeeDevice);
+            this.coordinatorHandler.get().addZigBeeDevice(zigBeeDevice);
         }
     }
 }

@@ -33,6 +33,7 @@
         <module>xaomi</module>
         <module>serial</module>
         <module>camera</module>
+        <module>mail</module>
     </modules>
 
     <properties>
