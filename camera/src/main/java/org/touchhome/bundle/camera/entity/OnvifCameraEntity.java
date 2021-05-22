@@ -51,8 +51,7 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
     @JsonIgnore
     private BaseOnvifCameraBrandHandler baseOnvifCameraBrandHandler;
 
-    @UIField(order = 1, readOnly = true, hideOnEmpty = true, fullWidth = true, bg = "#334842")
-    @UIFieldRenderAsHTML
+    @UIField(order = 1, readOnly = true, hideOnEmpty = true, fullWidth = true, bg = "#334842", type = UIFieldType.HTML)
     public String getDescription() {
         if (getIeeeAddress() == null) {
             return Lang.getServerMessage("ONVIF.REQ_AUTH_DESCRIPTION");

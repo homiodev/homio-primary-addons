@@ -64,7 +64,7 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor,
     @Override
     public String getDependencyURL() {
         return String.format("%s/arduino-ide-setup-%s.7z", entityContext.getEnv("artifactoryFilesURL"),
-                TouchHomeUtils.OS_NAME.isWindows() ? "win" : "linux");
+                TouchHomeUtils.OS.isWindows() ? "win" : "linux");
     }
 
     public void init() {

@@ -5,9 +5,11 @@ import org.touchhome.bundle.api.setting.SettingPluginOptionsFileExplorer;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.function.Predicate;
 
-public class FFMPEGInstallPathOptions implements SettingPluginOptionsFileExplorer {
+/**
+ * Must point to ffmpeg.exe
+ */
+public class FFMPEGInstallPathSetting implements SettingPluginOptionsFileExplorer {
 
     @Override
     public int order() {
@@ -30,7 +32,12 @@ public class FFMPEGInstallPathOptions implements SettingPluginOptionsFileExplore
     }
 
     @Override
-    public boolean allowRequestNextLevel() {
+    public boolean lazyLoading() {
         return true;
+    }
+
+    @Override
+    public boolean allowSelectDirs() {
+        return false;
     }
 }

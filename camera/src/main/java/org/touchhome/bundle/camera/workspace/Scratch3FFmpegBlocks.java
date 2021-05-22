@@ -14,7 +14,7 @@ import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.camera.CameraEntryPoint;
 import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
 import org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants;
-import org.touchhome.bundle.camera.setting.FFMPEGInstallPathOptions;
+import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
         FfmpegBuilder ffmpegBuilder = new FfmpegBuilder();
         applyParentBlocks(ffmpegBuilder, workspaceBlock.getParent());
 
-        String ffmpegLocation = entityContext.setting().getValue(FFMPEGInstallPathOptions.class).toString();
+        String ffmpegLocation = entityContext.setting().getValue(FFMPEGInstallPathSetting.class).toString();
         Ffmpeg ffmpeg = new Ffmpeg(new Ffmpeg.FFmpegHandler() {
             @Override
             public String getEntityID() {

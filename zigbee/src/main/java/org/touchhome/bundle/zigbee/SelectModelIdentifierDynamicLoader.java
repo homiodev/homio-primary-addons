@@ -14,6 +14,6 @@ public class SelectModelIdentifierDynamicLoader implements DynamicOptionLoader {
     @Override
     public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
         return ZigBeeRequireEndpoints.get().getZigBeeRequireEndpoints().stream().map(c ->
-                OptionModel.of(c.getModelId(), c.getName()).setImageRef(c.getImage())).collect(Collectors.toList());
+                OptionModel.of(c.getModelId(), c.getName()).setImage(c.getImage())).collect(Collectors.toList());
     }
 }

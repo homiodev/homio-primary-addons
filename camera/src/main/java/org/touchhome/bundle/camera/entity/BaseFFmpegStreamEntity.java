@@ -14,7 +14,7 @@ import org.touchhome.bundle.camera.util.FFMPEGDependencyExecutableInstaller;
 
 import java.util.List;
 
-@RequireExecutableDependency(name = "ffmpeg", installer = FFMPEGDependencyExecutableInstaller.class)
+@RequireExecutableDependency(installer = FFMPEGDependencyExecutableInstaller.class)
 public abstract class BaseFFmpegStreamEntity<T extends BaseFFmpegStreamEntity, H extends BaseFFmpegCameraHandler>
         extends BaseVideoCameraEntity<T, H> {
 

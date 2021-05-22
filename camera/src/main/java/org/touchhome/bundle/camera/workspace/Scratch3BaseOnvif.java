@@ -27,10 +27,6 @@ public interface Scratch3BaseOnvif {
     }
 
     default OnvifCameraEntity getOnvifEntity(WorkspaceBlock workspaceBlock) {
-        OnvifCameraEntity entity = workspaceBlock.getMenuValueEntity(VIDEO_STREAM, getOnvifCameraMenu());
-        if (entity == null) {
-            throw new RuntimeException("Video camera entity not exists");
-        }
-        return entity;
+        return workspaceBlock.getMenuValueEntityRequired(VIDEO_STREAM, getOnvifCameraMenu());
     }
 }

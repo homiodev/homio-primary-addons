@@ -44,7 +44,7 @@ public interface FfmpegInputDeviceHardwareRepository {
 
     default Set<String> getStrings(String prefix, Supplier<List<String>> windowDeviceFetcher) {
         Set<String> devices = new HashSet<>();
-        if (TouchHomeUtils.OS_NAME.isLinux()) {
+        if (TouchHomeUtils.OS.isLinux()) {
             File DEV = new File("/dev");
             String[] names = DEV.list((dir, name) -> dir.getName().equals("dev") && name.startsWith(prefix) && Character.isDigit(name.charAt(5)));
             for (String name : names) {

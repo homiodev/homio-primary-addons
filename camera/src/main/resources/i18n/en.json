@@ -29,7 +29,7 @@
     "setting": {
       "label": "Camera settings",
       "st_ScanRtspUrlsSetting": "RTSP urls to scan",
-      "st_FFMPEGInstallPathOptions": "FFmpeg install path",
+      "st_FFMPEGInstallPathSetting": "FFmpeg install path",
       "st_ScanRtspIpAddressMaxPingTimeoutSetting": "Rtsp max ping timeout",
       "st_ScanRtspPortsSetting": "RTSP scan ports",
       "st_ScanOnvifHttpDefaultPasswordAuthSetting": "Scan onvif http password",

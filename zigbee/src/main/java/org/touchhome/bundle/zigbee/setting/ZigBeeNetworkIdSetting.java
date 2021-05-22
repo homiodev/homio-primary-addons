@@ -17,7 +17,7 @@ public class ZigBeeNetworkIdSetting implements SettingPluginOptionsFileExplorer 
     }
 
     @Override
-    public boolean visitFile(Path path, BasicFileAttributes attrs) {
+    public boolean writeFile(Path path, BasicFileAttributes attrs) {
         return false;
     }
 
@@ -27,7 +27,7 @@ public class ZigBeeNetworkIdSetting implements SettingPluginOptionsFileExplorer 
     }
 
     @Override
-    public boolean pushDirectory(Path dir) {
+    public boolean writeDirectory(Path dir) {
         return !dir.getFileName().toString().equals("zigbee");
     }
 
@@ -39,5 +39,15 @@ public class ZigBeeNetworkIdSetting implements SettingPluginOptionsFileExplorer 
     @Override
     public boolean removableOption(OptionModel optionModel) {
         return false;
+    }
+
+    @Override
+    public boolean allowSelectDirs() {
+        return false;
+    }
+
+    @Override
+    public String buildTitle(Path path) {
+        return path.getFileName() == null ? path.toString() : path.getFileName().toString();
     }
 }

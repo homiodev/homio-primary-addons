@@ -15,7 +15,7 @@ import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.handler.impl.UsbCameraHandler;
-import org.touchhome.bundle.camera.setting.FFMPEGInstallPathOptions;
+import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
 import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import javax.persistence.Entity;
@@ -106,7 +106,7 @@ public class UsbCameraEntity extends BaseFFmpegStreamEntity<UsbCameraEntity, Usb
     public void afterFetch(EntityContext entityContext) {
         super.afterFetch(entityContext);
         if (getStatus() == Status.UNKNOWN) {
-            String ffmpegPath = entityContext.setting().getValue(FFMPEGInstallPathOptions.class, Paths.get("ffmpeg")).toString();
+            String ffmpegPath = entityContext.setting().getValue(FFMPEGInstallPathSetting.class, Paths.get("ffmpeg")).toString();
             FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
             Set<String> aliveVideoDevices = repository.getVideoDevices(ffmpegPath);
             if (aliveVideoDevices.contains(getIeeeAddress())) {
@@ -121,7 +121,7 @@ public class UsbCameraEntity extends BaseFFmpegStreamEntity<UsbCameraEntity, Usb
 
         @Override
         public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
-            Path path = entityContext.setting().getValue(FFMPEGInstallPathOptions.class);
+            Path path = entityContext.setting().getValue(FFMPEGInstallPathSetting.class);
             return OptionModel.list(entityContext.getBean(FfmpegInputDeviceHardwareRepository.class)
                     .getAudioDevices(path.toString()));
         }

@@ -11,6 +11,7 @@ import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.setting.SettingPluginStatus;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
@@ -88,6 +89,9 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
         });
 
         this.entityContext.setting().listenValue(ZigBeeStatusSetting.class, "zb-status-changed", status -> {
+            entityContext.ui().addHeaderButton("zb-status", status.isOnline() ? TouchHomeUtils.Colors.GREEN : TouchHomeUtils.Colors.RED,
+                    status.isOnline() ? "Zigbee success running" : "Zigbee '" + status.getStatus() + "': " + status.getMessage(), "fas fa-bug", false, false, null, ZigBeeDeviceEntity.class, null);
+
             if (status.isOnline()) {
                 // init devices
                 for (ZigBeeDeviceEntity zigbeeDeviceEntity : entityContext.findAll(ZigBeeDeviceEntity.class)) {
@@ -98,6 +102,7 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
             for (ZigBeeDevice zigBeeDevice : coordinatorHandler.getZigBeeDevices().values()) {
                 zigBeeDevice.tryInitializeDevice(entityContext.setting().getValue(ZigBeeStatusSetting.class).getStatus());
             }
+
         });
 
         // not tested

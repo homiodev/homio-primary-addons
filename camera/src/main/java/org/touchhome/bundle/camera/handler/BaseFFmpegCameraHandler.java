@@ -490,7 +490,7 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
                     ffmpegLocation,
                     inputArguments + " " + getFFMPEGInputOptions(),
                     snapshotSource,
-                    outOptions + " " + outOptions,
+                    outOptions + " " + outOptions + " " + output,
                     maxTimeout);
             Path path = Paths.get(output);
             return Files.exists(path) ? IOUtils.toByteArray(Files.newInputStream(path)) : null;

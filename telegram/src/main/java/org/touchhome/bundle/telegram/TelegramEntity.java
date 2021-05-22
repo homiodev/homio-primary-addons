@@ -14,7 +14,6 @@ import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.ui.UISidebarChildren;
 import org.touchhome.bundle.api.ui.field.UIField;
-import org.touchhome.bundle.api.ui.field.UIFieldRenderAsHTML;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
@@ -52,8 +51,7 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
     @Column(length = 512)
     private String statusMessage;
 
-    @UIField(order = 1, required = true, readOnly = true, hideOnEmpty = true, fullWidth = true, bg = "#334842")
-    @UIFieldRenderAsHTML
+    @UIField(order = 1, readOnly = true, hideOnEmpty = true, fullWidth = true, bg = "#334842", type = UIFieldType.HTML)
     public String getDescription() {
         if (StringUtils.isEmpty(getBotName()) || StringUtils.isEmpty(getBotToken())) {
             return Lang.getServerMessage("telegram.description");

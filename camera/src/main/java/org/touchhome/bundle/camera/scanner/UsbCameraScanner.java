@@ -1,5 +1,6 @@
 package org.touchhome.bundle.camera.scanner;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
@@ -9,7 +10,7 @@ import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
 import org.touchhome.bundle.camera.entity.UsbCameraEntity;
 import org.touchhome.bundle.camera.ffmpeg.FFmpegVideoDevice;
 import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
-import org.touchhome.bundle.camera.setting.FFMPEGInstallPathOptions;
+import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
 import org.touchhome.bundle.camera.util.FFMPEGDependencyExecutableInstaller;
 
 import java.nio.file.Paths;
@@ -21,7 +22,11 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Component
+@RequiredArgsConstructor
 public class UsbCameraScanner implements VideoStreamScanner {
+
+    private final FFMPEGDependencyExecutableInstaller installer;
+
     @Override
     public String getName() {
         return "scan-usb-camera";
@@ -30,12 +35,12 @@ public class UsbCameraScanner implements VideoStreamScanner {
     @Override
     public BaseItemsDiscovery.DeviceScannerResult scan(EntityContext entityContext, ProgressBar progressBar, String headerConfirmButtonKey) {
         BaseItemsDiscovery.DeviceScannerResult result = new BaseItemsDiscovery.DeviceScannerResult();
-        if (new FFMPEGDependencyExecutableInstaller().isRequireInstallDependencies(entityContext)) {
+        if (installer.isRequireInstallDependencies(entityContext, true)) {
             entityContext.ui().sendWarningMessage("Install ffmpeg to scan usb devices");
             return result;
         }
         FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
-        String ffmpegPath = entityContext.setting().getValue(FFMPEGInstallPathOptions.class, Paths.get("ffmpeg")).toString();
+        String ffmpegPath = entityContext.setting().getValue(FFMPEGInstallPathSetting.class, Paths.get("ffmpeg")).toString();
         List<FFmpegVideoDevice> foundUsbVideoCameraDevices = new ArrayList<>();
 
         for (String deviceName : repository.getVideoDevices(ffmpegPath)) {

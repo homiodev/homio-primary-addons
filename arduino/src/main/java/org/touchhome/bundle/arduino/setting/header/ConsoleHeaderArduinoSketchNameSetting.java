@@ -87,7 +87,7 @@ public class ConsoleHeaderArduinoSketchNameSetting implements SettingPluginOptio
     }
 
     @Override
-    public boolean pushDirectory(Path dir) {
+    public boolean writeDirectory(Path dir) {
         return false;
     }
 
@@ -97,7 +97,7 @@ public class ConsoleHeaderArduinoSketchNameSetting implements SettingPluginOptio
     }
 
     @Override
-    public boolean visitFile(Path path, BasicFileAttributes attrs) {
+    public boolean writeFile(Path path, BasicFileAttributes attrs) {
         return path.getFileName().toString().endsWith(".ino");
     }
 
@@ -135,5 +135,10 @@ public class ConsoleHeaderArduinoSketchNameSetting implements SettingPluginOptio
         Path path = parseValue(entityContext, key);
         FileUtils.deleteDirectory(path.getParent().toFile());
         entityContext.setting().reloadSettings(getClass());
+    }
+
+    @Override
+    public String buildTitle(Path path) {
+        return path.getFileName() == null ? path.toString() : path.getFileName().toString();
     }
 }

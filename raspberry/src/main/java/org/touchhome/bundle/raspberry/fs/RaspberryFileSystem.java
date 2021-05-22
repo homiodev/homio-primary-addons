@@ -3,8 +3,8 @@ package org.touchhome.bundle.raspberry.fs;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.fs.CachedFileSystem;
-import org.touchhome.bundle.api.fs.VendorFileSystem;
+import org.touchhome.bundle.api.entity.storage.CachedFileSystem;
+import org.touchhome.bundle.api.entity.storage.VendorFileSystem;
 import org.touchhome.bundle.raspberry.model.RaspberryDeviceEntity;
 
 import java.io.File;

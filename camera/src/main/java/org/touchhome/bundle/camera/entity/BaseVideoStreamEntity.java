@@ -36,8 +36,7 @@ import java.util.Set;
         handlerClass = BaseVideoStreamEntity.VideoStreamDiscovery.class)
 @UISidebarButton(buttonIcon = "fab fa-instalod", buttonIconColor = "#39B84E",
         buttonTitle = "TITLE.INSTALL_FFMPEG",
-        conditionalClass = FFMPEGDependencyExecutableInstaller.RequireInstallCondition.class,
-        handlerClass = FFMPEGDependencyExecutableInstaller.InstallFFmpegHeaderAction.class)
+        handlerClass = FFMPEGDependencyExecutableInstaller.class)
 public abstract class BaseVideoStreamEntity<T extends BaseVideoStreamEntity> extends DeviceBaseEntity<T>
         implements HasDynamicContextMenuActions {
 
@@ -61,7 +60,7 @@ public abstract class BaseVideoStreamEntity<T extends BaseVideoStreamEntity> ext
     public static class UpdateSnapshotActionHandler implements UIActionHandler {
 
         @Override
-        public ActionResponseModel apply(EntityContext entityContext, JSONObject params) {
+        public ActionResponseModel handleAction(EntityContext entityContext, JSONObject params) {
             BaseVideoStreamEntity entity = entityContext.getEntity(params.getString("entityID"));
             entity.fireUpdateSnapshot(entityContext, params);
             return null;

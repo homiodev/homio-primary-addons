@@ -85,7 +85,7 @@ class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
         Integer duration = entityContext.setting().getValue(ZigBeeDiscoveryDurationSetting.class);
         coordinatorHandler.get().scanStart(duration);
 
-        this.entityContext.ui().addHeaderButton("zigbee-scan", null, PRIMARY_COLOR, duration, null);
+        this.entityContext.ui().addHeaderButton("zigbee-scan", PRIMARY_COLOR, duration, null);
 
         scheduler.schedule(() -> {
             log.info("Scanning stopped");

@@ -286,7 +286,7 @@ public class RaspberryGPIOService {
         if (EntityContext.isDevEnvironment()) {
             return Collections.singletonList("28-test000011");
         }
-        if (TouchHomeUtils.OS_NAME.isLinux() && Files.exists(w1BaseDir.resolve("w1_master_slaves"))) {
+        if (TouchHomeUtils.OS.isLinux() && Files.exists(w1BaseDir.resolve("w1_master_slaves"))) {
             return Files.readAllLines(w1BaseDir.resolve("w1_master_slaves")).stream()
                     .filter(sensorID -> sensorID != null && sensorID.startsWith("28-"))
                     .collect(Collectors.toList());
