@@ -35,10 +35,10 @@ public class FirmataNetworkControllerScanner implements MicroControllerScanner {
             }
         });
 
-        BaseItemsDiscovery.DeviceScannerResult result = new BaseItemsDiscovery.DeviceScannerResult();
         List<Integer> availableIpAddresses = entityContext.bgp().runInBatchAndGet("firmata-ip-scan", 5 * 60, 8, tasks,
-                completedTaskCount -> progressBar.progress(100 / 256F * completedTaskCount, "Scanned " + completedTaskCount + " ip addresses"));
-        log.debug("Found {} devices", availableIpAddresses.size());
-        return new BaseItemsDiscovery.DeviceScannerResult(existedDevices.size(), availableIpAddresses.size() - existedDevices.size());
+                completedTaskCount -> progressBar.progress(100 / 256F * completedTaskCount, "Firmata bundle scanned " + completedTaskCount + "/255"));
+        long availableIpAddressesSize = availableIpAddresses.stream().filter(Objects::nonNull).count();
+        log.debug("Found {} devices", availableIpAddressesSize);
+        return new BaseItemsDiscovery.DeviceScannerResult(existedDevices.size(), (int) (availableIpAddressesSize - existedDevices.size()));
     }
 }

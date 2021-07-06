@@ -60,9 +60,7 @@ public class PtzDevices {
 
     public List<PTZNode> getNodes() {
         GetNodes request = new GetNodes();
-        GetNodesResponse response = new GetNodesResponse();
-
-        response = (GetNodesResponse) soap.createSOAPDeviceRequest(request, response);
+        GetNodesResponse response = (GetNodesResponse) soap.createSOAPDeviceRequest(request, GetNodesResponse.class);
         return response == null ? null : response.getPTZNode();
     }
 
@@ -72,14 +70,12 @@ public class PtzDevices {
 
     public PTZNode getNode(PTZConfiguration ptzConfiguration) {
         GetNode request = new GetNode();
-        GetNodeResponse response = new GetNodeResponse();
-
         if (ptzConfiguration == null) {
             return null; // no PTZ support
         }
         request.setNodeToken(ptzConfiguration.getNodeToken());
 
-        response = (GetNodeResponse) soap.createSOAPDeviceRequest(request, response);
+        GetNodeResponse response = (GetNodeResponse) soap.createSOAPDeviceRequest(request, GetNodeResponse.class);
         return response == null ? null : response.getPTZNode();
     }
 
@@ -142,13 +138,11 @@ public class PtzDevices {
         }
 
         AbsoluteMove request = new AbsoluteMove();
-        AbsoluteMoveResponse response = new AbsoluteMoveResponse();
-
         request.setPosition(new PTZVector(x, y, zoom));
         request.setProfileToken(profileToken);
         request.setSpeed(new PTZSpeed(0.1f, 0.1f, 0));
 
-        response = (AbsoluteMoveResponse) soap.createSOAPPtzRequest(request, response);
+        AbsoluteMoveResponse response = soap.createSOAPPtzRequest(request, AbsoluteMoveResponse.class);
         return response != null;
     }
 
@@ -165,8 +159,6 @@ public class PtzDevices {
 
     public boolean relativeMove(float x, float y, float zoom) {
         RelativeMove request = new RelativeMove();
-        RelativeMoveResponse response = new RelativeMoveResponse();
-
         Vector2D panTiltVector = new Vector2D();
         panTiltVector.setX(x);
         panTiltVector.setY(y);
@@ -180,7 +172,7 @@ public class PtzDevices {
         request.setProfileToken(onvifDeviceState.getProfileToken());
         request.setTranslation(translation);
 
-        response = (RelativeMoveResponse) soap.createSOAPPtzRequest(request, response);
+        RelativeMoveResponse response = soap.createSOAPPtzRequest(request, RelativeMoveResponse.class);
         return response != null;
     }
 
@@ -197,8 +189,6 @@ public class PtzDevices {
 
     public boolean continuousMove(float x, float y, float zoom) {
         ContinuousMove request = new ContinuousMove();
-        ContinuousMoveResponse response = new ContinuousMoveResponse();
-
         Vector2D panTiltVector = new Vector2D();
         panTiltVector.setX(x);
         panTiltVector.setY(y);
@@ -212,7 +202,7 @@ public class PtzDevices {
 
         request.setProfileToken(onvifDeviceState.getProfileToken());
 
-        response = (ContinuousMoveResponse) soap.createSOAPPtzRequest(request, response);
+        ContinuousMoveResponse response = soap.createSOAPPtzRequest(request, ContinuousMoveResponse.class);
         return response != null;
     }
 
@@ -220,21 +210,17 @@ public class PtzDevices {
         Stop request = new Stop();
         request.setPanTilt(true);
         request.setZoom(true);
-        StopResponse response = new StopResponse();
-
         request.setProfileToken(onvifDeviceState.getProfileToken());
 
-        response = (StopResponse) soap.createSOAPPtzRequest(request, response);
+        StopResponse response = soap.createSOAPPtzRequest(request, StopResponse.class);
         return response != null;
     }
 
     public PTZStatus getStatus() {
         GetStatus request = new GetStatus();
-        GetStatusResponse response = new GetStatusResponse();
-
         request.setProfileToken(onvifDeviceState.getProfileToken());
 
-        response = (GetStatusResponse) soap.createSOAPPtzRequest(request, response);
+        GetStatusResponse response = soap.createSOAPPtzRequest(request, GetStatusResponse.class);
         return response == null ? null : response.getPTZStatus();
     }
 
@@ -250,22 +236,18 @@ public class PtzDevices {
 
     public boolean setHomePosition(String profileToken) {
         SetHomePosition request = new SetHomePosition();
-        SetHomePositionResponse response = new SetHomePositionResponse();
-
         request.setProfileToken(profileToken);
 
-        response = (SetHomePositionResponse) soap.createSOAPPtzRequest(request, response);
+        SetHomePositionResponse response = soap.createSOAPPtzRequest(request, SetHomePositionResponse.class);
         return response != null;
     }
 
     public List<PTZPreset> getPresets() {
         if (this.presets == null) {
             GetPresets request = new GetPresets();
-            GetPresetsResponse response = new GetPresetsResponse();
-
             request.setProfileToken(onvifDeviceState.getProfileToken());
 
-            response = (GetPresetsResponse) soap.createSOAPPtzRequest(request, response);
+            GetPresetsResponse response = soap.createSOAPPtzRequest(request, GetPresetsResponse.class);
 
             if (response == null) {
                 return null;
@@ -278,13 +260,11 @@ public class PtzDevices {
 
     public String setPreset(String presetName, String presetToken, String profileToken) {
         SetPreset request = new SetPreset();
-        SetPresetResponse response = new SetPresetResponse();
-
         request.setProfileToken(profileToken);
         request.setPresetName(presetName);
         request.setPresetToken(presetToken);
 
-        response = (SetPresetResponse) soap.createSOAPPtzRequest(request, response);
+        SetPresetResponse response = soap.createSOAPPtzRequest(request, SetPresetResponse.class);
         return response == null ? null : response.getPresetToken();
     }
 
@@ -294,23 +274,19 @@ public class PtzDevices {
 
     public boolean removePreset(String presetToken, String profileToken) {
         RemovePreset request = new RemovePreset();
-        RemovePresetResponse response = new RemovePresetResponse();
-
         request.setProfileToken(profileToken);
         request.setPresetToken(presetToken);
 
-        response = (RemovePresetResponse) soap.createSOAPPtzRequest(request, response);
+        RemovePresetResponse response = soap.createSOAPPtzRequest(request, RemovePresetResponse.class);
         return response != null;
     }
 
     private boolean gotoPreset(String presetToken) {
         GotoPreset request = new GotoPreset();
-        GotoPresetResponse response = new GotoPresetResponse();
-
         request.setProfileToken(onvifDeviceState.getProfileToken());
         request.setPresetToken(presetToken);
 
-        response = (GotoPresetResponse) soap.createSOAPPtzRequest(request, response);
+        GotoPresetResponse response = soap.createSOAPPtzRequest(request, GotoPresetResponse.class);
         return response != null;
     }
 

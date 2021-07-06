@@ -355,11 +355,11 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     private void loginIfRequire() {
         if (this.tokenExpiration - System.currentTimeMillis() < 60000) {
             String body = "[{\"cmd\":\"Login\",\"action\":0,\"param\":{\"User\":{\"userName\":\"" +
-                    cameraEntity.getUser() + "\",\"password\":\"" + cameraEntity.getPassword() + "\"}}}]";
+                    cameraEntity.getUser() + "\",\"password\":\"" + cameraEntity.getPassword().asString() + "\"}}}]";
             ObjectNode objectNode = firePost("?cmd=Login", body, false)[0];
             JsonNode token = objectNode.path("value").path("Token");
-            this.tokenExpiration = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(token.get("leaseTime").asInt());
-            this.token = token.get("name").asText();
+            this.tokenExpiration = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(token.path("leaseTime").asInt());
+            this.token = token.path("name").asText();
         }
     }
 

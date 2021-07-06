@@ -101,7 +101,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         super(cameraEntity, entityContext);
         this.onvifDeviceState = new OnvifDeviceState(cameraEntity.getIp(), cameraEntity.getOnvifPort(),
                 cameraEntity.getServerPort(),
-                cameraEntity.getUser(), cameraEntity.getPassword());
+                cameraEntity.getUser(), cameraEntity.getPassword().asString());
         this.onvifDeviceState.setUnreachableHandler(message -> this.disposeAndSetStatus(Status.OFFLINE, message));
 
         onvifDeviceState.getEventDevices().subscribe("RuleEngine/CellMotionDetector/Motion",
@@ -155,8 +155,8 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
             log.warn("Camera is reporting your username and/or password is wrong.");
             return false;
         }
-        if (!isEmpty(cameraEntity.getUser()) && !isEmpty(cameraEntity.getPassword())) {
-            String authString = cameraEntity.getUser() + ":" + cameraEntity.getPassword();
+        if (!cameraEntity.getUser().isEmpty() && !cameraEntity.getPassword().isEmpty()) {
+            String authString = cameraEntity.getUser() + ":" + cameraEntity.getPassword().asString();
             ByteBuf byteBuf = null;
             try {
                 byteBuf = Base64.encode(Unpooled.wrappedBuffer(authString.getBytes(CharsetUtil.UTF_8)));
@@ -258,7 +258,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
                     socketChannel.pipeline().addLast(new IdleStateHandler(18, 0, 0));
                     socketChannel.pipeline().addLast(new HttpClientCodec());
                     socketChannel.pipeline().addLast(AUTH_HANDLER,
-                            new MyNettyAuthHandler(cameraEntity.getUser(), cameraEntity.getPassword(), OnvifCameraHandler.this));
+                            new MyNettyAuthHandler(cameraEntity.getUser(), cameraEntity.getPassword().asString(), OnvifCameraHandler.this));
                     socketChannel.pipeline().addLast(COMMON_HANDLER, new CommonCameraHandler());
 
                     String handlerName = CameraCoordinator.cameraBrands.get(cameraEntity.getCameraType()).getHandlerName();
@@ -1138,6 +1138,6 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
             return super.recordImageSync(profile);
         }
         String snapshotUri = onvifDeviceState.getMediaDevices().getSnapshotUri(profile);
-        return Curl.download(snapshotUri, cameraEntity.getUser(), cameraEntity.getPassword());
+        return Curl.download(snapshotUri, cameraEntity.getUser(), cameraEntity.getPassword().asString());
     }
 }

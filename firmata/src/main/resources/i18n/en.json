@@ -15,8 +15,10 @@
     "FirmataUsbEntity": "Firmata Usb device",
     "FirmataNetworkEntity": "Firmata Network device"
   },
-  "ACTION": {
-    "UPLOAD_SKETCH": "Upload sketch automatically",
-    "UPLOAD_SKETCH_MANUALLY": "Upload sketch manually"
+  "CONTEXT": {
+    "ACTION": {
+      "UPLOAD_SKETCH": "Upload sketch automatically",
+      "UPLOAD_SKETCH_MANUALLY": "Upload sketch manually"
+    }
   }
 }

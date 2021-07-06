@@ -34,6 +34,7 @@ import org.touchhome.bundle.camera.setting.rtsp.ScanRtspUrlsSetting;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -161,7 +162,7 @@ public class RtspStreamScanner implements VideoStreamScanner {
             mainEventLoopGroup.shutdownGracefully().sync();
             bootstrap = null;
         }
-        log.info("Found {} rtcp streams", availableRtspAddresses.size());
+        log.info("Found {} rtcp streams", availableRtspAddresses.stream().filter(Objects::nonNull).count());
 
         return result;
     }

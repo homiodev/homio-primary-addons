@@ -4,12 +4,14 @@ import de.onvif.soap.OnvifDeviceState;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.Lang;
 import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
 import org.touchhome.bundle.api.model.ProgressBar;
 import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 import org.touchhome.bundle.camera.onvif.OnvifDiscovery;
@@ -18,9 +20,9 @@ import org.touchhome.bundle.camera.setting.onvif.ScanOnvifHttpDefaultUserAuthSet
 import org.touchhome.bundle.camera.setting.onvif.ScanOnvifHttpMaxPingTimeoutSetting;
 import org.touchhome.bundle.camera.setting.onvif.ScanOnvifPortsSetting;
 
-import javax.ws.rs.NotAuthorizedException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
@@ -71,9 +73,11 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
             try {
                 onvifDeviceState.checkForErrors();
                 foundDeviceServices(onvifDeviceState, false, rediscoverIpAddresses);
-            } catch (NotAuthorizedException naex) {
-                log.warn("Onvif camera <{}> got fault response: <{}>", host, naex.getMessage());
+            } catch (BadCredentialsException bex) {
+                log.warn("Onvif camera <{}> got fault auth response: <{}>", host, bex.getMessage());
                 foundDeviceServices(onvifDeviceState, true, rediscoverIpAddresses);
+            } catch (Exception ex) {
+                log.error("Onvif camera <{}> got fault response: <{}>", host, ex.getMessage());
             }
         });
         List<Integer> availableOnvifCameras = entityContext.bgp().runInBatchAndGet("scan-onvif-http-batch-result",
@@ -84,8 +88,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
                                 "Onvif http stream done " + completedTaskCount + "/" + tasks.size() + " tasks");
                     }
                 });
-
-        log.info("Found {} onvif cameras", availableOnvifCameras.size());
+        log.info("Found {} onvif cameras", availableOnvifCameras.stream().filter(Objects::nonNull).count());
 
         return result;
     }
@@ -95,7 +98,12 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
 
         OnvifCameraEntity existedCamera = existsCamera.get(onvifDeviceState.getIEEEAddress());
         if (existedCamera != null) {
-            existedCamera.tryUpdateData(entityContext, onvifDeviceState.getIp(), onvifDeviceState.getOnvifPort(), onvifDeviceState.getInitialDevices().getName());
+            try {
+                existedCamera.tryUpdateData(entityContext, onvifDeviceState.getIp(), onvifDeviceState.getOnvifPort(),
+                        onvifDeviceState.getInitialDevices().getName());
+            } catch (Exception ex) {
+                log.error("Error while trying update camera: <{}>", TouchHomeUtils.getErrorMessage(ex));
+            }
             result.getExistedCount().incrementAndGet();
             return;
         } else if (!rediscoverIpAddresses) {
@@ -112,14 +120,8 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
                     if (requireAuth) {
                         messages.add(Lang.getServerMessage("VIDEO_STREAM.REQUIRE_AUTH"));
                     }
-                    String name = onvifDeviceState.getInitialDevices().getName();
-                    if (name != null) {
-                        messages.add(Lang.getServerMessage("VIDEO_STREAM.NAME", "NAME", name));
-                    }
-                    String model = onvifDeviceState.getInitialDevices().getDeviceInformation().getModel();
-                    if (model != null) {
-                        messages.add(Lang.getServerMessage("VIDEO_STREAM.MODEL", "MODEL", model));
-                    }
+                    messages.add(Lang.getServerMessage("VIDEO_STREAM.NAME", "NAME", fetchCameraName(onvifDeviceState)));
+                    messages.add(Lang.getServerMessage("VIDEO_STREAM.MODEL", "MODEL", fetchCameraModel(onvifDeviceState)));
                     messages.add(Lang.getServerMessage("VIDEO_STREAM.BRAND", "BRAND", brand.getName()));
                 },
                 () -> {
@@ -134,5 +136,25 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
                             .setIeeeAddress(onvifDeviceState.getIEEEAddress());
                     entityContext.save(entity);
                 });
+    }
+
+    private String fetchCameraName(OnvifDeviceState onvifDeviceState) {
+        try {
+            return onvifDeviceState.getInitialDevices().getName();
+        } catch (BadCredentialsException ex) {
+            return "Require auth to fetch name";
+        } catch (Exception ex) {
+            return "Unknown name: " + TouchHomeUtils.getErrorMessage(ex);
+        }
+    }
+
+    private String fetchCameraModel(OnvifDeviceState onvifDeviceState) {
+        try {
+            return onvifDeviceState.getInitialDevices().getDeviceInformation().getModel();
+        } catch (BadCredentialsException ex) {
+            return "Require auth to fetch model";
+        } catch (Exception ex) {
+            return "Unknown model: " + TouchHomeUtils.getErrorMessage(ex);
+        }
     }
 }

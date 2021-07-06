@@ -6,9 +6,6 @@ import org.touchhome.bundle.api.setting.SettingPluginOptionsFileExplorer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/**
- * Must point to ffmpeg.exe
- */
 public class FFMPEGInstallPathSetting implements SettingPluginOptionsFileExplorer {
 
     @Override

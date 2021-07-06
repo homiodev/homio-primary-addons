@@ -16,7 +16,6 @@ import org.onvif.ver10.schema.VideoResolution;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 
-import javax.ws.rs.NotAuthorizedException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
@@ -181,7 +180,10 @@ public class OnvifDeviceState {
                 new VideoEncodeResolution(profile.getVideoEncoderConfiguration().getResolution()), Function.identity())));
 
         int activeProfileIndex = onvifCameraEntity.getOnvifMediaProfile() >= this.profiles.size() ? 0 : onvifCameraEntity.getOnvifMediaProfile();
-        this.profileToken = this.profiles.get(activeProfileIndex).getToken();
+        Profile profile = this.profiles.size() > activeProfileIndex ? this.profiles.get(activeProfileIndex) : null;
+        if (profile != null) {
+            this.profileToken = profile.getToken();
+        }
 
         if (ptzDevices.supportPTZ()) {
             ptzDevices.initFully();
@@ -291,9 +293,14 @@ public class OnvifDeviceState {
     }*/
 
     public String getIEEEAddress() {
-        this.init();
-        GetDeviceInformationResponse deviceInformation = initialDevices.getDeviceInformation();
-        return deviceInformation.getSerialNumber() == null ? null : deviceInformation.getModel() + "~" + deviceInformation.getSerialNumber();
+        try {
+            this.init();
+            GetDeviceInformationResponse deviceInformation = initialDevices.getDeviceInformation();
+            return deviceInformation.getSerialNumber() == null ? null : deviceInformation.getModel() + "~" + deviceInformation.getSerialNumber();
+        } catch (Exception ex) {
+            // in case of auth this method may throws exception
+            return null;
+        }
     }
 
     /*public String getHostname() {
@@ -305,10 +312,8 @@ public class OnvifDeviceState {
             throw new RuntimeException("No connection to onvif camera");
         }
         this.init();
-        GetDeviceInformationResponse deviceInformation = initialDevices.getDeviceInformation();
-        if (deviceInformation.getFault() != null) {
-            throw new NotAuthorizedException(deviceInformation.getFault().getFaultstring());
-        }
+        // check for Authentication validation
+        initialDevices.getDeviceInformation();
     }
 
     public void cameraUnreachable(String errorMessage) {

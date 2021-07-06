@@ -18,12 +18,14 @@ import org.oasis_open.docs.wsn.b_2.Renew;
 import org.oasis_open.docs.wsn.b_2.Unsubscribe;
 import org.onvif.ver10.events.wsdl.CreatePullPointSubscription;
 import org.onvif.ver10.events.wsdl.PullMessages;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.w3c.dom.Document;
 
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
@@ -35,6 +37,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -70,32 +73,32 @@ public class SOAP implements BiConsumer<String, Integer> {
     }
 
     @SneakyThrows
-    public Object createSOAPDeviceRequest(Object soapRequestElem, Object soapResponseElem) {
-        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getServerDeviceUri(),
+    public Object createSOAPDeviceRequest(Object soapRequestElem, Class soapResponseClass) {
+        return createSOAPRequest(soapRequestElem, soapResponseClass, onvifDeviceState.getServerDeviceUri(),
                 onvifDeviceState.getServerDeviceIpLessUri());
     }
 
     @SneakyThrows
-    public Object createSOAPPtzRequest(Object soapRequestElem, Object soapResponseElem) {
-        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getServerPtzUri(),
+    public <T> T createSOAPPtzRequest(Object soapRequestElem, Class<T> soapResponseClass) {
+        return createSOAPRequest(soapRequestElem, soapResponseClass, onvifDeviceState.getServerPtzUri(),
                 onvifDeviceState.getServerPtzIpLessUri());
     }
 
     @SneakyThrows
-    public Object createSOAPMediaRequest(Object soapRequestElem, Object soapResponseElem) {
-        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getServerMediaUri(),
+    public <T> T createSOAPMediaRequest(Object soapRequestElem, Class<T> soapResponseClass) {
+        return createSOAPRequest(soapRequestElem, soapResponseClass, onvifDeviceState.getServerMediaUri(),
                 onvifDeviceState.getServerMediaIpLessUri());
     }
 
     @SneakyThrows
-    public Object createSOAPImagingRequest(Object soapRequestElem, Object soapResponseElem) {
-        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getServerImagingUri(),
+    public <T> T createSOAPImagingRequest(Object soapRequestElem, Class<T> soapResponseClass) {
+        return createSOAPRequest(soapRequestElem, soapResponseClass, onvifDeviceState.getServerImagingUri(),
                 onvifDeviceState.getServerImagingIpLessUri());
     }
 
     @SneakyThrows
-    public Object createSOAPEventsRequest(Object soapRequestElem, Object soapResponseElem) {
-        return createSOAPRequest(soapRequestElem, soapResponseElem, onvifDeviceState.getServerEventsUri(),
+    public Object createSOAPEventsRequest(Object soapRequestElem, Class soapResponseClass) {
+        return createSOAPRequest(soapRequestElem, soapResponseClass, onvifDeviceState.getServerEventsUri(),
                 onvifDeviceState.getServerEventsIpLessUri());
     }
 
@@ -203,11 +206,10 @@ public class SOAP implements BiConsumer<String, Integer> {
     }
 
     /**
-     * @param soapResponseElem Answer object for SOAP request
      * @return SOAP Response Element
      */
-    public Object createSOAPRequest(Object soapRequestElem, Object soapResponseElem, String soapUri, String xAddr)
-            throws ConnectException, SOAPException {
+    public <T> T createSOAPRequest(Object soapRequestElem, Class<T> soapResponseClass, String soapUri, String xAddr)
+            throws IOException, SOAPException, JAXBException, ParserConfigurationException {
         SOAPConnection soapConnection = null;
         SOAPMessage soapResponse = null;
 
@@ -230,46 +232,47 @@ public class SOAP implements BiConsumer<String, Integer> {
 
             // print SOAP Response
             if (logging) {
-                log.info("Response sync SOAP Message (" + soapResponseElem.getClass().getSimpleName() + "): ");
+                log.info("Response sync SOAP Message (" + soapResponseClass.getSimpleName() + "): ");
                 ByteArrayOutputStream bout = new ByteArrayOutputStream();
                 soapResponse.writeTo(bout);
                 log.info("{}", bout.toString());
             }
 
-            if (soapResponseElem == null) {
-                throw new NullPointerException("Improper SOAP Response Element given (is null).");
-            }
-
-            Unmarshaller unmarshaller = JAXBContext.newInstance(soapResponseElem.getClass()).createUnmarshaller();
-            try {
-                try {
-                    soapResponseElem = unmarshaller.unmarshal(soapResponse.getSOAPBody().extractContentAsDocument());
-                } catch (SOAPException e) {
-                    // Second try for SOAP 1.2
-                    // Sorry, I don't know why it works, it just does o.o
-                    soapResponseElem = unmarshaller.unmarshal(soapResponse.getSOAPBody().extractContentAsDocument());
+            if (soapResponse.getSOAPBody().getFault() != null) {
+                Iterator<?> iterator = soapResponse.getSOAPBody().getFault().getFaultSubcodes();
+                if (iterator.hasNext()) {
+                    String error = ((QName) iterator.next()).getLocalPart();
+                    if ("NotAuthorized".equals(error)) {
+                        throw new BadCredentialsException("Wrong credential to authorize access to soap URI: " + soapUri);
+                    }
+                    throw new RuntimeException("Unknown fault <" + error + "> during access to soap URI: " + soapUri);
                 }
-            } catch (UnmarshalException e) {
-                // Fault soapFault = (Fault)
-                // unmarshaller.unmarshal(soapResponse.getSOAPBody().extractContentAsDocument());
-                onvifDeviceState.getLogger().warn("Could not unmarshal, ended in SOAP fault.");
-                // throw new SOAPFaultException(soapFault);
             }
 
-            return soapResponseElem;
+            Object soapResponseElem = null;
+            Unmarshaller unmarshaller = JAXBContext.newInstance(soapResponseClass).createUnmarshaller();
+            Document document = soapResponse.getSOAPBody().extractContentAsDocument();
+            try {
+                soapResponseElem = unmarshaller.unmarshal(document);
+            } catch (UnmarshalException e) {
+                onvifDeviceState.getLogger().warn("Could not unmarshal, ended in SOAP fault.");
+            }
+
+            return (T) soapResponseElem;
         } catch (SocketException e) {
             throw new ConnectException(e.getMessage());
         } catch (SOAPException e) {
             onvifDeviceState.getLogger().error(
-                    "Unexpected response. Response should be from class " + soapResponseElem.getClass() + ", but response is: " + soapResponse);
+                    "Unexpected response. Response should be from class " + soapResponseClass + ", but response is: " + soapResponse);
             throw e;
         } catch (ParserConfigurationException | JAXBException | IOException e) {
             onvifDeviceState.getLogger().error("Unhandled exception: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            throw e;
         } finally {
             try {
-                soapConnection.close();
+                if (soapConnection != null) {
+                    soapConnection.close();
+                }
             } catch (SOAPException ignored) {
             }
         }

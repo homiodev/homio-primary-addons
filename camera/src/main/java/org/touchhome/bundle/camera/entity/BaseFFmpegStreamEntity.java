@@ -8,6 +8,7 @@ import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
 import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
+import org.touchhome.bundle.api.util.SecureString;
 import org.touchhome.bundle.camera.handler.BaseFFmpegCameraHandler;
 import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 import org.touchhome.bundle.camera.util.FFMPEGDependencyExecutableInstaller;
@@ -28,8 +29,8 @@ public abstract class BaseFFmpegStreamEntity<T extends BaseFFmpegStreamEntity, H
     }
 
     // not all entity has password
-    public String getPassword() {
-        return getJsonData("password", "");
+    public SecureString getPassword() {
+        return new SecureString(getJsonData("password", ""));
     }
 
     public T setPassword(String value) {

@@ -21,7 +21,7 @@ import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
  * responsible for handling commands, which are sent to one of the channels.
  */
 @CameraBrandHandler(name = "Foscam")
-public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler implements BrandCameraHasAudioAlarm , BrandCameraHasMotionAlarm {
+public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler implements BrandCameraHasAudioAlarm, BrandCameraHasMotionAlarm {
     private static final String CG = "/cgi-bin/CGIProxy.fcgi?cmd=";
     private int audioThreshold;
 
@@ -185,14 +185,14 @@ public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler implements B
         OnvifCameraEntity cameraEntity = onvifCameraHandler.getCameraEntity();
         // Foscam needs any special char like spaces (%20) to be encoded for URLs.
         cameraEntity.setUser(Helper.encodeSpecialChars(cameraEntity.getUser()));
-        cameraEntity.setPassword(Helper.encodeSpecialChars(cameraEntity.getPassword()));
+        cameraEntity.setPassword(Helper.encodeSpecialChars(cameraEntity.getPassword().asString()));
         if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
             onvifCameraHandler.setMjpegUri("/cgi-bin/CGIStream.cgi?cmd=GetMJStream&usr=" + cameraEntity.getUser() + "&pwd="
-                    + cameraEntity.getPassword());
+                    + cameraEntity.getPassword().asString());
         }
         if (StringUtils.isEmpty(onvifCameraHandler.getSnapshotUri())) {
             onvifCameraHandler.setSnapshotUri("/cgi-bin/CGIProxy.fcgi?usr=" + cameraEntity.getUser() + "&pwd="
-                    + cameraEntity.getPassword() + "&cmd=snapPicture2");
+                    + cameraEntity.getPassword().asString() + "&cmd=snapPicture2");
         }
     }
 }

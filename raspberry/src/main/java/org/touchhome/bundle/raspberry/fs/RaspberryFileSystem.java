@@ -55,9 +55,9 @@ public class RaspberryFileSystem extends VendorFileSystem<RaspberryDeviceEntity,
             path = Paths.get(getEntity().getFileSystemRoot()).resolve(path);
         }
         if (append) {
-            Files.write(path, content, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
+            Files.write(path, content, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
         } else {
-            Files.write(path, content, StandardOpenOption.WRITE);
+            Files.write(path, content, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
         }
     }
 

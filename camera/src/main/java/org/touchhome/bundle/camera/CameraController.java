@@ -20,10 +20,7 @@ import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.widget.WidgetCameraEntity;
 import org.touchhome.bundle.camera.widget.WidgetCameraSeriesEntity;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -110,7 +107,7 @@ public class CameraController {
         public CameraEntityResponse(BaseVideoStreamEntity source) {
             this.source = source;
             Set<StatefulContextMenuAction> actions = source.getActions(true);
-            this.actions = actions.stream().map(UIActionResponse::new).collect(Collectors.toCollection(LinkedHashSet::new));
+            this.actions = actions == null ? Collections.emptySet() : actions.stream().map(UIActionResponse::new).collect(Collectors.toCollection(LinkedHashSet::new));
         }
     }
 }

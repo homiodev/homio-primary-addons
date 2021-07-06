@@ -91,20 +91,22 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
         if (!isStart()) {
             throw new ServerException("Camera <" + getTitle() + "> not started");
         }
-        getCameraHandler().startSnapshot();
+        if (cameraHandler != null) {
+            cameraHandler.startSnapshot();
+        }
     }
 
     @UIField(order = 200, readOnly = true)
     @UIFieldCodeEditor(editorType = UIFieldCodeEditor.CodeEditorType.json, autoFormat = true)
     public Map<String, State> getAttributes() {
-        return getCameraHandler() == null ? null : getCameraHandler().getAttributes();
+        return cameraHandler == null ? null : cameraHandler.getAttributes();
     }
 
     public abstract H createCameraHandler(EntityContext entityContext);
 
     @Override
     public Set<StatefulContextMenuAction> getActions(boolean fetchValues) {
-        return cameraHandler.getCameraActions(fetchValues);
+        return cameraHandler == null ? null : cameraHandler.getCameraActions(fetchValues);
     }
 
     @UIContextMenuAction(value = "RECORD_MP4", icon = "fas fa-file-video", inputs = {
@@ -112,11 +114,14 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
             @UIActionInput(name = "secondsToRecord", type = UIActionInput.Type.number, value = "10", min = 5, max = 100)
     })
     public ActionResponseModel recordMP4(JSONObject params) {
+        if (cameraHandler == null) {
+            return ActionResponseModel.showError("Camera handler is empty");
+        }
         String filename = getFileNameToRecord(params);
         int secondsToRecord = params.getInt("secondsToRecord");
         log.debug("Recording {}.mp4 for {} seconds.", filename, secondsToRecord);
-        this.cameraHandler.recordMp4(filename, secondsToRecord);
-        return null;
+        cameraHandler.recordMp4(filename, secondsToRecord);
+        return ActionResponseModel.showSuccess("SUCCESS");
     }
 
     @UIContextMenuAction(value = "RECORD_GIF", icon = "fas fa-magic", inputs = {
@@ -124,11 +129,14 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
             @UIActionInput(name = "secondsToRecord", type = UIActionInput.Type.number, value = "3", min = 1, max = 10)
     })
     public ActionResponseModel recordGif(JSONObject params) {
+        if (cameraHandler == null) {
+            return ActionResponseModel.showError("Camera handler is empty");
+        }
         String filename = getFileNameToRecord(params);
         int secondsToRecord = params.getInt("secondsToRecord");
         log.debug("Recording {}.gif for {} seconds.", filename, secondsToRecord);
-        this.cameraHandler.recordGif(filename, secondsToRecord);
-        return null;
+        cameraHandler.recordGif(filename, secondsToRecord);
+        return ActionResponseModel.showSuccess("SUCCESS");
     }
 
     private String getFileNameToRecord(JSONObject params) {

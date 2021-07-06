@@ -6,9 +6,11 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.dependency.DependencyExecutableInstaller;
 import org.touchhome.bundle.api.hardware.other.MachineHardwareRepository;
 import org.touchhome.bundle.api.model.ProgressBar;
+import org.touchhome.bundle.api.setting.SettingPluginButton;
 import org.touchhome.bundle.api.setting.SettingPluginOptionsFileExplorer;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
+import org.touchhome.bundle.camera.setting.FFMPEGInstallSetting;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,5 +44,10 @@ public class FFMPEGDependencyExecutableInstaller extends DependencyExecutableIns
     @Override
     public Class<? extends SettingPluginOptionsFileExplorer> getDependencyPluginSettingClass() {
         return FFMPEGInstallPathSetting.class;
+    }
+
+    @Override
+    public Class<? extends SettingPluginButton> getInstallButton() {
+        return FFMPEGInstallSetting.class;
     }
 }

@@ -21,12 +21,10 @@ public class ImagingDevices {
         }
 
         GetOptions request = new GetOptions();
-        GetOptionsResponse response = new GetOptionsResponse();
-
         request.setVideoSourceToken(videoSourceToken);
 
-        response = (GetOptionsResponse) soap.createSOAPImagingRequest(request, response);
-        return  response == null ? null: response.getImagingOptions();
+        GetOptionsResponse response = soap.createSOAPImagingRequest(request, GetOptionsResponse.class);
+        return response == null ? null : response.getImagingOptions();
     }
 
     public boolean moveFocus(String videoSourceToken, float absoluteFocusValue) {
@@ -35,8 +33,6 @@ public class ImagingDevices {
         }
 
         Move request = new Move();
-        MoveResponse response = new MoveResponse();
-
         AbsoluteFocus absoluteFocus = new AbsoluteFocus();
         absoluteFocus.setPosition(absoluteFocusValue);
 
@@ -46,7 +42,7 @@ public class ImagingDevices {
         request.setVideoSourceToken(videoSourceToken);
         request.setFocus(focusMove);
 
-        response = (MoveResponse) soap.createSOAPImagingRequest(request, response);
+        MoveResponse response = soap.createSOAPImagingRequest(request, MoveResponse.class);
 
         return response != null;
     }
@@ -57,12 +53,10 @@ public class ImagingDevices {
         }
 
         GetImagingSettings request = new GetImagingSettings();
-        GetImagingSettingsResponse response = new GetImagingSettingsResponse();
-
         request.setVideoSourceToken(videoSourceToken);
 
-        response = (GetImagingSettingsResponse) soap.createSOAPImagingRequest(request, response);
-        return  response == null ? null : response.getImagingSettings();
+        GetImagingSettingsResponse response = soap.createSOAPImagingRequest(request, GetImagingSettingsResponse.class);
+        return response == null ? null : response.getImagingSettings();
     }
 
     public boolean setImagingSettings(String videoSourceToken, ImagingSettings20 imagingSettings) {
@@ -71,12 +65,10 @@ public class ImagingDevices {
         }
 
         SetImagingSettings request = new SetImagingSettings();
-        SetImagingSettingsResponse response = new SetImagingSettingsResponse();
-
         request.setVideoSourceToken(videoSourceToken);
         request.setImagingSettings(imagingSettings);
 
-        response = (SetImagingSettingsResponse) soap.createSOAPImagingRequest(request, response);
+        SetImagingSettingsResponse response = soap.createSOAPImagingRequest(request, SetImagingSettingsResponse.class);
         return response != null;
     }
 

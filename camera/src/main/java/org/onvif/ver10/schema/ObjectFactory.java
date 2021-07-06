@@ -2813,14 +2813,6 @@ public class ObjectFactory {
 	}
 
 	/**
-	 * Create an instance of {@link ActionEngineEventPayload }
-	 *
-	 */
-	public ActionEngineEventPayload createActionEngineEventPayload() {
-		return new ActionEngineEventPayload();
-	}
-
-	/**
 	 * Create an instance of {@link RealTimeStreamingCapabilities }
 	 *
 	 */

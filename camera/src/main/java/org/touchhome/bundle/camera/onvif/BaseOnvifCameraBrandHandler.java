@@ -51,7 +51,7 @@ public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler i
         this.onvifCameraHandler = cameraEntity.getCameraHandler();
         this.nvrChannel = cameraEntity.getNvrChannel();
         this.username = cameraEntity.getUser();
-        this.password = cameraEntity.getPassword();
+        this.password = cameraEntity.getPassword().asString();
         this.ip = cameraEntity.getIp();
         this.entityContext = onvifCameraHandler.getEntityContext();
     }

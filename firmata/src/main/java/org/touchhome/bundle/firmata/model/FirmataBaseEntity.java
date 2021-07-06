@@ -61,13 +61,7 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
         return super.getIeeeAddress();
     }
 
-    @Override
-    @UIField(label = "communicatorStatus", order = 22, readOnly = true, hideOnEmpty = true)
-    public Status getStatus() {
-        return super.getStatus();
-    }
-
-    @UIContextMenuAction("ACTION.COMMUNICATOR.RESTART")
+    @UIContextMenuAction("RESTART")
     public ActionResponseModel restartCommunicator() {
         if (firmataDeviceCommunicator != null) {
             try {
@@ -80,12 +74,12 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
         return ActionResponseModel.showWarn("ACTION.COMMUNICATOR.NOT_FOUND");
     }
 
-    @UIContextMenuAction("ACTION.UPLOAD_SKETCH")
+    @UIContextMenuAction("UPLOAD_SKETCH")
     public void uploadSketch(EntityContext entityContext) {
 
     }
 
-    @UIContextMenuAction("ACTION.UPLOAD_SKETCH_MANUALLY")
+    @UIContextMenuAction("UPLOAD_SKETCH_MANUALLY")
     public void uploadSketchManually(EntityContext entityContext) {
         ArduinoConsolePlugin arduinoConsolePlugin = entityContext.getBean(ArduinoConsolePlugin.class);
         String content = TouchHomeUtils.getResourceAsString("firmata", "arduino_firmata.ino");

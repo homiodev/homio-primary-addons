@@ -7,8 +7,6 @@ import lombok.SneakyThrows;
 import org.onvif.ver10.media.wsdl.*;
 import org.onvif.ver10.schema.*;
 
-import javax.xml.soap.SOAPException;
-import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,11 +51,9 @@ public class MediaDevices {
     @SneakyThrows
     private String getStreamUri(String profileToken, StreamSetup streamSetup) {
         GetStreamUri request = new GetStreamUri();
-        GetStreamUriResponse response = new GetStreamUriResponse();
-
         request.setProfileToken(profileToken);
         request.setStreamSetup(streamSetup);
-        response = (GetStreamUriResponse) soap.createSOAPMediaRequest(request, response);
+        GetStreamUriResponse response = soap.createSOAPMediaRequest(request, GetStreamUriResponse.class);
 
         if (response == null) {
             return null;
@@ -72,11 +68,9 @@ public class MediaDevices {
 
     public VideoEncoderConfigurationOptions getVideoEncoderConfigurationOptions(String profileToken) {
         GetVideoEncoderConfigurationOptions request = new GetVideoEncoderConfigurationOptions();
-        GetVideoEncoderConfigurationOptionsResponse response = new GetVideoEncoderConfigurationOptionsResponse();
-
         request.setProfileToken(profileToken);
 
-        response = (GetVideoEncoderConfigurationOptionsResponse) soap.createSOAPMediaRequest(request, response);
+        GetVideoEncoderConfigurationOptionsResponse response = soap.createSOAPMediaRequest(request, GetVideoEncoderConfigurationOptionsResponse.class);
 
         if (response == null) {
             return null;
@@ -87,12 +81,10 @@ public class MediaDevices {
 
     public boolean setVideoEncoderConfiguration(VideoEncoderConfiguration videoEncoderConfiguration) {
         SetVideoEncoderConfiguration request = new SetVideoEncoderConfiguration();
-        SetVideoEncoderConfigurationResponse response = new SetVideoEncoderConfigurationResponse();
-
         request.setConfiguration(videoEncoderConfiguration);
         request.setForcePersistence(true);
 
-        response = (SetVideoEncoderConfigurationResponse) soap.createSOAPMediaRequest(request, response);
+        SetVideoEncoderConfigurationResponse response = soap.createSOAPMediaRequest(request, SetVideoEncoderConfigurationResponse.class);
         return response != null;
     }
 
@@ -106,10 +98,9 @@ public class MediaDevices {
         if (mediaDeviceCache.snapshotUri == null) {
             try {
                 GetSnapshotUri request = new GetSnapshotUri();
-                GetSnapshotUriResponse response = new GetSnapshotUriResponse();
                 request.setProfileToken(profile);
 
-                response = (GetSnapshotUriResponse) soap.createSOAPMediaRequest(request, response);
+                GetSnapshotUriResponse response = soap.createSOAPMediaRequest(request, GetSnapshotUriResponse.class);
                 if (response == null || response.getMediaUri() == null) {
                     return null;
                 }
@@ -124,9 +115,7 @@ public class MediaDevices {
 
     public List<VideoSource> getVideoSources() {
         GetVideoSources request = new GetVideoSources();
-        GetVideoSourcesResponse response = new GetVideoSourcesResponse();
-
-        response = (GetVideoSourcesResponse) soap.createSOAPMediaRequest(request, response);
+        GetVideoSourcesResponse response = soap.createSOAPMediaRequest(request, GetVideoSourcesResponse.class);
         if (response == null) {
             return null;
         }
