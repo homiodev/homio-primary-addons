@@ -239,21 +239,6 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
         return new OnvifCameraHandler(this, entityContext);
     }
 
-    @Override
-    public void afterFetch(EntityContext entityContext) {
-        super.afterFetch(entityContext);
-        if (getStatus() == Status.UNKNOWN) {
-            try {
-                getCameraHandler().getOnvifDeviceState().checkForErrors();
-                entityContext.updateStatus(this, Status.ONLINE, null);
-            } catch (BadCredentialsException ex) {
-                entityContext.updateStatus(this, Status.REQUIRE_AUTH, ex.getMessage());
-            } catch (Exception ex) {
-                entityContext.updateStatus(this, Status.ERROR, ex.getMessage());
-            }
-        }
-    }
-
     @JsonIgnore
     public BaseOnvifCameraBrandHandler getBaseOnvifCameraBrandHandler() {
         if (baseOnvifCameraBrandHandler == null) {

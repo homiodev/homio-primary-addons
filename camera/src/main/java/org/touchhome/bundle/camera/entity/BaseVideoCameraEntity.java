@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.json.JSONObject;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.exception.ServerException;
 import org.touchhome.bundle.api.model.ActionResponseModel;
@@ -149,7 +150,6 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
     @Override
     protected void beforePersist() {
         super.beforePersist();
-        this.setStatus(Status.UNKNOWN);
     }
 
     @Override
@@ -157,5 +157,22 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
         H cameraHandler = (H) NettyUtils.putBootstrapServer(getEntityID(), (Supplier<HasBootstrapServer>) () -> createCameraHandler(entityContext));
         setCameraHandler(cameraHandler);
         setHlsStreamUrl("http://" + TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + cameraHandler.getServerPort() + "/ipcamera.m3u8");
+
+        if (getStatus() == Status.UNKNOWN) {
+            try {
+                getCameraHandler().testOnline();
+                setStatusOnline();
+            } catch (BadCredentialsException ex) {
+                setStatus(Status.REQUIRE_AUTH, ex.getMessage());
+            } catch (Exception ex) {
+                setStatusError(ex);
+            }
+        }
     }
+
+    @Override
+    public void afterUpdate(EntityContext entityContext) {
+        setStatus(Status.UNKNOWN);
+    }
+
 }

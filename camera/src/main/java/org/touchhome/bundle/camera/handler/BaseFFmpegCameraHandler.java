@@ -400,9 +400,9 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
             }
             return true;
         } else {
-            audioAlarmEnabled = !"OFF".equals(command) && !"0".equals(command);
+            audioAlarmEnabled = !"off".equals(command) && !"0".equals(command);
             if (audioAlarmEnabled) {
-                if (!"ON".equals(command)) {
+                if (!"on".equals(command)) {
                     audioThreshold = Integer.parseInt(command);
                     setAttribute(CHANNEL_AUDIO_THRESHOLD, new StringType(audioThreshold + ""));
                 }
@@ -450,9 +450,9 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
             }
             return true;
         } else {
-            motionAlarmEnabled = !"OFF".equals(command) && !"0".equals(command);
+            motionAlarmEnabled = !"off".equals(command) && !"0".equals(command);
             if (motionAlarmEnabled) {
-                if (!"ON".equals(command)) {
+                if (!"on".equals(command)) {
                     motionThreshold = Integer.parseInt(command);
                     setAttribute(CHANNEL_MOTION_THRESHOLD, new StringType(command));
                 } else if (motionThreshold == 0) {

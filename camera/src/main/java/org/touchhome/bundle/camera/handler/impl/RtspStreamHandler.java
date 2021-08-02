@@ -29,6 +29,11 @@ public class RtspStreamHandler extends BaseFFmpegCameraHandler<BaseFFmpegStreamE
     }
 
     @Override
+    public void testOnline() {
+
+    }
+
+    @Override
     protected String createRtspUri() {
         return cameraEntity.getIeeeAddress();
     }

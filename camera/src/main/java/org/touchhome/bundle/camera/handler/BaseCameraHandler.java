@@ -130,7 +130,8 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
             // set it before to avoid recursively disposing from listeners
             log.warn("Set camera <{}> to status <{}>. Msg: <{}>", cameraEntity.getTitle(), status, reason);
 
-            entityContext.updateDelayed(this.cameraEntity, e -> e.setStart(false).setStatus(status).setStatusMessage(reason));
+            cameraEntity.setStatus(status, reason);
+            entityContext.updateDelayed(this.cameraEntity, e -> e.setStart(false));
             entityContext.ui().sendEntityUpdated(this.cameraEntity);
             this.stateListeners.values().forEach(h -> h.accept(status));
             dispose();
@@ -204,7 +205,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         } else {
             log.info("Camera update status: <{}>", status);
         }
-        entityContext.updateStatus(cameraEntity, status, message);
+        cameraEntity.setStatus(status, message);
     }
 
     public Set<StatefulContextMenuAction> getCameraActions(boolean fetchValues) {
@@ -267,4 +268,6 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     public void removeCameraChangeState(String key) {
         this.stateListeners.remove(key);
     }
+
+    public abstract void testOnline();
 }

@@ -22,7 +22,6 @@ import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.telegram.TelegramEntity;
@@ -72,18 +71,18 @@ public class TelegramService {
                 this.telegramBots.put(telegramEntity.getEntityID(), telegramBot);
                 log.info("Telegram bot running");
                 entityContext.ui().sendInfoMessage("Telegram bot running");
-                entityContext.updateStatus(telegramEntity, Status.ONLINE, null);
+                telegramEntity.setStatusOnline();
             } else {
                 log.warn("Telegram bot not running. Requires settings.");
                 entityContext.ui().sendWarningMessage("Telegram bot not running. Requires settings.");
-                entityContext.updateStatus(telegramEntity, Status.ERROR, isEmpty(telegramEntity.getBotName()) ?
+                telegramEntity.setStatus(Status.ERROR, isEmpty(telegramEntity.getBotName()) ?
                         "Require bot name field" : "Require bot token field");
 
             }
         } catch (Exception ex) {
             entityContext.ui().sendErrorMessage("Unable to start telegram bot: ", ex);
             log.error("Unable to start telegram bot", ex);
-            entityContext.updateStatus(telegramEntity, Status.ERROR, TouchHomeUtils.getErrorMessage(ex));
+            telegramEntity.setStatusError(ex);
         }
     }
 

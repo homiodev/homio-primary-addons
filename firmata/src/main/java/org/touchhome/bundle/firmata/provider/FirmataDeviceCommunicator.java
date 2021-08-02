@@ -190,7 +190,7 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
 
     private void updateStatus(T entity, Status status, String statusMessage) {
         if (entity.getStatus() != status) {
-            entityContext.updateStatus(entity, status, statusMessage);
+            entity.setStatus(status, statusMessage);
             entityContext.ui().addBellWarningNotification(entity.getEntityID(), "A-" + entity.getEntityID(), "Communicator status: " + status);
         }
         if (status == Status.OFFLINE || status == Status.ERROR) {

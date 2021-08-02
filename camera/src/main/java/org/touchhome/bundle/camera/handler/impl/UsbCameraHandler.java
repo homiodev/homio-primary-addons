@@ -9,10 +9,13 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.entity.UsbCameraEntity;
 import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
+import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.handler.BaseCameraStreamServerHandler;
 import org.touchhome.bundle.camera.handler.BaseFFmpegCameraHandler;
 import org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants;
+import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -61,6 +64,16 @@ public class UsbCameraHandler extends BaseFFmpegCameraHandler<UsbCameraEntity> {
         super.dispose0();
         ffmpegUsbStream.stopConverting();
 
+    }
+
+    @Override
+    public void testOnline() {
+        String ffmpegPath = entityContext.setting().getValue(FFMPEGInstallPathSetting.class, Paths.get("ffmpeg")).toString();
+        FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
+        Set<String> aliveVideoDevices = repository.getVideoDevices(ffmpegPath);
+        if (!aliveVideoDevices.contains(getCameraEntity().getIeeeAddress())) {
+            throw new RuntimeException("Camera not available");
+        }
     }
 
     @Override

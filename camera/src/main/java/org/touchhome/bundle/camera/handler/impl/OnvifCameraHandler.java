@@ -609,6 +609,11 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         }
     }
 
+    @Override
+    public void testOnline() {
+        getOnvifDeviceState().checkForErrors();
+    }
+
     @UICameraActionGetter(CHANNEL_PAN)
     public DecimalType getPan() {
         return new DecimalType(Math.round(onvifDeviceState.getPtzDevices().getCurrentPanPercentage()));

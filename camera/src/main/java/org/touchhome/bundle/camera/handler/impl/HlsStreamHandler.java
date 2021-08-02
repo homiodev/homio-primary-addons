@@ -20,4 +20,9 @@ public class HlsStreamHandler extends RtspStreamHandler {
     public String getFFMPEGInputOptions() {
         return "";
     }
+
+    @Override
+    public void testOnline() {
+
+    }
 }
