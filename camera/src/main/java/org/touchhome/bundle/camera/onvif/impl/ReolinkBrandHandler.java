@@ -196,7 +196,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     }
 
     @UICameraAction(name = CHANNEL_STREAM_MAIN_RESOLUTION, order = 80, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "mainStream", collapseGroup = true, collapseGroupIcon = "fas fa-dice-six")
+            group = "ENC", subGroup = "mainStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectResolution.class, staticParameters = {"mainStream"})
     public void setStreamMainResolution(String value) {
         setSetting("Enc", isp -> isp.set(value, "mainStream", "size"));
@@ -209,7 +209,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     }
 
     @UICameraAction(name = CHANNEL_STREAM_MAIN_BITRATE, order = 81, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "mainStream", collapseGroup = true, collapseGroupIcon = "fas fa-dice-six")
+            group = "ENC", subGroup = "mainStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectStreamValue.class, staticParameters = {"mainStream", "bitRate"})
     public void setStreamMainBitRate(String value) {
         setSetting("Enc", isp -> isp.set(value, "mainStream", "bitRate"));
@@ -222,7 +222,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     }
 
     @UICameraAction(name = CHANNEL_STREAM_MAIN_FRAMERATE, order = 82, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "mainStream", collapseGroup = true, collapseGroupIcon = "fas fa-dice-six")
+            group = "ENC", subGroup = "mainStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectStreamValue.class, staticParameters = {"mainStream", "frameRate"})
     public void setStreamMainFrameRate(String value) {
         setSetting("Enc", isp -> isp.set(value, "mainStream", "frameRate"));
@@ -235,7 +235,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     }
 
     @UICameraAction(name = CHANNEL_STREAM_MAIN_H264_PROFILE, order = 83, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "mainStream", collapseGroup = true, collapseGroupIcon = "fas fa-dice-six")
+            group = "ENC", subGroup = "mainStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectStreamValue.class, staticParameters = {"mainStream", "profile"})
     public void setStreamMainH264Profile(String value) {
         setSetting("Enc", isp -> isp.set(value, "mainStream", "profile"));
@@ -248,7 +248,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     }
 
     @UICameraAction(name = CHANNEL_STREAM_SECONDARY_RESOLUTION, order = 80, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "subStream", collapseGroup = true, collapseGroupIcon = "fas fa-dice-six")
+            group = "ENC", subGroup = "subStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectResolution.class, staticParameters = {"subStream"})
     public void setStreamSecondaryResolution(String value) {
         setSetting("Enc", isp -> isp.set(value, "subStream", "size"));
@@ -261,7 +261,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     }
 
     @UICameraAction(name = CHANNEL_STREAM_SECONDARY_BITRATE, order = 81, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "subStream", collapseGroup = true, collapseGroupIcon = "fas fa-dice-six")
+            group = "ENC", subGroup = "subStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectStreamValue.class, staticParameters = {"subStream", "bitRate"})
     public void setStreamSecondaryBitRate(String value) {
         setSetting("Enc", isp -> isp.set(value, "subStream", "bitRate"));
@@ -274,7 +274,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     }
 
     @UICameraAction(name = CHANNEL_STREAM_SECONDARY_FRAMERATE, order = 82, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "subStream", collapseGroup = true, collapseGroupIcon = "fas fa-dice-six")
+            group = "ENC", subGroup = "subStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectStreamValue.class, staticParameters = {"subStream", "frameRate"})
     public void setStreamSecondaryFrameRate(String value) {
         setSetting("Enc", isp -> isp.set(value, "subStream", "frameRate"));
@@ -287,7 +287,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     }
 
     @UICameraAction(name = CHANNEL_STREAM_SECONDARY_H264_PROFILE, order = 83, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "subStream", collapseGroup = true, collapseGroupIcon = "fas fa-dice-six")
+            group = "ENC", subGroup = "subStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectStreamValue.class, staticParameters = {"subStream", "profile"})
     public void setStreamSecondaryH264Profile(String value) {
         setSetting("Enc", isp -> isp.set(value, "subStream", "profile"));

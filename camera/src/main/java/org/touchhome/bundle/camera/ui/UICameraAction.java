@@ -12,11 +12,9 @@ public @interface UICameraAction {
 
     String group() default "";
 
-    boolean collapseGroup() default false;
-
-    String collapseGroupIcon() default "";
-
     String subGroup() default "";
+
+    String subGroupIcon() default "";
 
     int order();
 

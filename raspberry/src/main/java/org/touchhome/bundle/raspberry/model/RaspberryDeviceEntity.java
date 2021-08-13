@@ -15,7 +15,7 @@ import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldExpand;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
-import org.touchhome.bundle.api.ui.field.action.impl.DynamicContextMenuAction;
+import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.method.UIFieldCreateWorkspaceVariableOnEmpty;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
@@ -23,7 +23,10 @@ import org.touchhome.bundle.raspberry.fs.RaspberryFileSystem;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<RaspberryDeviceEntity>
@@ -128,8 +131,8 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
     }
 
     @Override
-    public Set<DynamicContextMenuAction> getActions(EntityContext entityContext) {
-        return null;
+    public void assembleActions(UIInputBuilder uiInputBuilder) {
+
     }
 
     @Getter

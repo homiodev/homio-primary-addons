@@ -13,8 +13,7 @@ import org.touchhome.bundle.api.ui.UISidebarButton;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.action.UIActionHandler;
 import org.touchhome.bundle.api.ui.field.action.HasDynamicContextMenuActions;
-import org.touchhome.bundle.api.ui.field.action.impl.DynamicContextMenuAction;
-import org.touchhome.bundle.api.ui.field.action.impl.StatefulContextMenuAction;
+import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.camera.scanner.VideoStreamScanner;
 import org.touchhome.bundle.camera.util.FFMPEGDependencyExecutableInstaller;
 
@@ -22,7 +21,6 @@ import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
-import java.util.Set;
 
 @Log4j2
 @Setter
@@ -48,7 +46,7 @@ public abstract class BaseVideoStreamEntity<T extends BaseVideoStreamEntity> ext
 
     protected abstract void fireUpdateSnapshot(EntityContext entityContext, JSONObject params);
 
-    public abstract Set<StatefulContextMenuAction> getActions(boolean fetchValues);
+    public abstract void assembleActions(UIInputBuilder uiInputBuilder, boolean fetchValues);
 
     static class VideoStreamDiscovery extends BaseBeansItemsDiscovery {
 
@@ -68,7 +66,7 @@ public abstract class BaseVideoStreamEntity<T extends BaseVideoStreamEntity> ext
     }
 
     @Override
-    public Set<? extends DynamicContextMenuAction> getActions(EntityContext entityContext) {
-        return getActions(true);
+    public void assembleActions(UIInputBuilder uiInputBuilder) {
+        assembleActions(uiInputBuilder, true);
     }
 }

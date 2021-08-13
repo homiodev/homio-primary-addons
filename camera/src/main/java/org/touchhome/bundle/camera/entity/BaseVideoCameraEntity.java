@@ -21,7 +21,7 @@ import org.touchhome.bundle.api.ui.field.UIFieldIgnoreGetDefault;
 import org.touchhome.bundle.api.ui.field.action.UIActionButton;
 import org.touchhome.bundle.api.ui.field.action.UIActionInput;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
-import org.touchhome.bundle.api.ui.field.action.impl.StatefulContextMenuAction;
+import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.field.image.UIFieldImage;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.handler.BaseCameraHandler;
@@ -29,7 +29,6 @@ import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import javax.persistence.Transient;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 
 @Log4j2
@@ -105,9 +104,12 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
 
     public abstract H createCameraHandler(EntityContext entityContext);
 
+
     @Override
-    public Set<StatefulContextMenuAction> getActions(boolean fetchValues) {
-        return cameraHandler == null ? null : cameraHandler.getCameraActions(fetchValues);
+    public void assembleActions(UIInputBuilder uiInputBuilder, boolean fetchValues) {
+        if (cameraHandler != null) {
+            cameraHandler.assembleActions(uiInputBuilder, fetchValues);
+        }
     }
 
     @UIContextMenuAction(value = "RECORD_MP4", icon = "fas fa-file-video", inputs = {

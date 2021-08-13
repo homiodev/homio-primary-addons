@@ -3,14 +3,12 @@ package org.touchhome.bundle.cloud.providers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.hardware.other.MachineHardwareRepository;
-import org.touchhome.bundle.api.ui.BellNotification;
+import org.touchhome.bundle.api.ui.builder.BellNotificationBuilder;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.cloud.CloudProvider;
 import org.touchhome.bundle.cloud.netty.impl.ServerConnectionStatus;
 
 import java.nio.file.Files;
-import java.util.HashSet;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -25,21 +23,18 @@ public class SshCloudProvider implements CloudProvider {
     }
 
     @Override
-    public Set<BellNotification> getBellNotifications() {
-        Set<BellNotification> notifications = new HashSet<>();
+    public void assembleBellNotifications(BellNotificationBuilder bellNotificationBuilder) {
         if (!Files.exists(TouchHomeUtils.getSshPath().resolve("id_rsa_touchhome"))) {
-            notifications.add(BellNotification.danger("private-key").setTitle("Cloud").setValue("Private Key not found"));
+            bellNotificationBuilder.danger("private-key", "Cloud", "Private Key not found");
         }
         if (!Files.exists(TouchHomeUtils.getSshPath().resolve("id_rsa_touchhome.pub"))) {
-            notifications.add(BellNotification.danger("public-key").setTitle("Cloud").setValue("Public key not found"));
+            bellNotificationBuilder.danger("public-key", "Cloud", "Public Key not found");
         }
         int serviceStatus = machineHardwareRepository.getServiceStatus("touchhome-tunnel");
         if (serviceStatus == 0) {
-            notifications.add(BellNotification.info("cloud-status").setTitle("Cloud").setValue("Connected"));
+            bellNotificationBuilder.info("cloud-status", "Cloud", "Connected");
         } else {
-            notifications.add(BellNotification.warn("cloud-status").setTitle("Cloud")
-                    .setValue("Connection status not active " + serviceStatus));
+            bellNotificationBuilder.warn("cloud-status", "Cloud", "Connection status not active " + serviceStatus);
         }
-        return notifications;
     }
 }

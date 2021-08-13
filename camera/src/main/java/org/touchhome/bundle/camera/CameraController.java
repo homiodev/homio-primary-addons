@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.exception.NotFoundException;
 import org.touchhome.bundle.api.model.OptionModel;
-import org.touchhome.bundle.api.ui.field.action.UIActionResponse;
-import org.touchhome.bundle.api.ui.field.action.impl.StatefulContextMenuAction;
+import org.touchhome.bundle.api.ui.action.UIActionHandler;
+import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
+import org.touchhome.bundle.api.ui.field.action.v1.UIInputEntity;
 import org.touchhome.bundle.camera.entity.BaseFFmpegStreamEntity;
 import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.entity.BaseVideoStreamEntity;
@@ -20,8 +21,9 @@ import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.widget.WidgetCameraEntity;
 import org.touchhome.bundle.camera.widget.WidgetCameraSeriesEntity;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Log4j2
 @RestController
@@ -87,10 +89,22 @@ public class CameraController {
         if (baseVideoCameraEntity == null) {
             throw new NotFoundException("Unable to find base camera for series: " + series.getTitle());
         }
-        Set<StatefulContextMenuAction> statefulContextMenuActions = baseVideoCameraEntity.getCameraHandler().getCameraActions(false);
-        StatefulContextMenuAction statefulContextMenuAction = statefulContextMenuActions.stream().filter(ca -> ca.getName().equals(cameraActionRequest.name)).findAny().orElseThrow(
-                () -> new RuntimeException("No camera action " + cameraActionRequest.name + "found"));
-        statefulContextMenuAction.getAction().accept(new JSONObject().put("value", cameraActionRequest.value));
+
+        UIInputBuilder uiInputBuilder = entityContext.ui().inputBuilder();
+
+        baseVideoCameraEntity.getCameraHandler().assembleActions(uiInputBuilder, false);
+        UIActionHandler actionHandler = uiInputBuilder.findActionHandler(cameraActionRequest.name);
+        if (actionHandler == null) {
+            throw new RuntimeException("No camera action " + cameraActionRequest.name + "found");
+        }
+        actionHandler.handleAction(entityContext, new JSONObject().put("value", cameraActionRequest.value));
+
+        /*TODO: Set<StatefulContextMenuAction> statefulContextMenuActions = baseVideoCameraEntity.getCameraHandler().getCameraActions(false);
+
+        StatefulContextMenuAction statefulContextMenuAction = statefulContextMenuActions.stream()
+                .filter(ca -> ca.getName().equals(cameraActionRequest.name)).findAny().orElseThrow(
+                        () -> new RuntimeException("No camera action " + cameraActionRequest.name + "found"));
+        statefulContextMenuAction.getAction().accept(new JSONObject().put("value", cameraActionRequest.value));*/
     }
 
     @Setter
@@ -100,14 +114,15 @@ public class CameraController {
     }
 
     @Getter
-    private static class CameraEntityResponse {
+    private class CameraEntityResponse {
         private final BaseVideoStreamEntity source;
-        private final Set<UIActionResponse> actions;
+        private final Collection<UIInputEntity> actions;
 
         public CameraEntityResponse(BaseVideoStreamEntity source) {
             this.source = source;
-            Set<StatefulContextMenuAction> actions = source.getActions(true);
-            this.actions = actions == null ? Collections.emptySet() : actions.stream().map(UIActionResponse::new).collect(Collectors.toCollection(LinkedHashSet::new));
+            UIInputBuilder uiInputBuilder = entityContext.ui().inputBuilder();
+            source.assembleActions(uiInputBuilder);
+            this.actions = uiInputBuilder.build();
         }
     }
 }

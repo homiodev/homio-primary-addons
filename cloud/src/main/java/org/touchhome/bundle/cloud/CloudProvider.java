@@ -1,11 +1,9 @@
 package org.touchhome.bundle.cloud;
 
-import org.touchhome.bundle.api.ui.BellNotification;
-
-import java.util.Set;
+import org.touchhome.bundle.api.ui.builder.BellNotificationBuilder;
 
 public interface CloudProvider {
     String getStatus();
 
-    Set<BellNotification> getBellNotifications();
+    void assembleBellNotifications(BellNotificationBuilder bellNotificationBuilder);
 }

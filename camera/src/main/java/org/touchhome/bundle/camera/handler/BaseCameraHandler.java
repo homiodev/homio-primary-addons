@@ -9,19 +9,19 @@ import org.touchhome.bundle.api.EntityContextBGP;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.netty.HasBootstrapServer;
 import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.api.ui.field.action.impl.StatefulContextMenuAction;
+import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
 import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
-import org.touchhome.bundle.camera.ui.CameraActionBuilder;
 import org.touchhome.bundle.camera.ui.CameraActionsContext;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -63,7 +63,6 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     private boolean isHandlerInitialized = false;
     private EntityContextBGP.ThreadContext<Void> cameraConnectionJob;
     private EntityContextBGP.ThreadContext<Void> pollCameraJob;
-    private Set<StatefulContextMenuAction> actions;
     private Map<String, Consumer<Status>> stateListeners = new HashMap<>();
 
     public BaseCameraHandler(T cameraEntity, EntityContext entityContext) {
@@ -208,7 +207,19 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         cameraEntity.setStatus(status, message);
     }
 
-    public Set<StatefulContextMenuAction> getCameraActions(boolean fetchValues) {
+    public void assembleActions(UIInputBuilder uiInputBuilder, boolean fetchValues) {
+        assembleAdditionalCameraActions(uiInputBuilder);
+        if (fetchValues) {
+            uiInputBuilder.fireFetchValues();
+            /* TODO: for (StatefulContextMenuAction action : actions) {
+                for (Consumer<StatefulContextMenuAction> updateHandler : action.getUpdateHandlers().values()) {
+                    updateHandler.accept(action);
+                }
+            }*/
+        }
+    }
+
+    /*TODO: public Set<StatefulContextMenuAction> getCameraActions(boolean fetchValues) {
         if (actions == null) {
             // additional actions should be first
             actions = new TreeSet<>(getAdditionalCameraActions());
@@ -222,10 +233,10 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
             }
         }
         return actions;
-    }
+    }*/
 
-    protected List<StatefulContextMenuAction> getAdditionalCameraActions() {
-        return Collections.emptyList();
+    protected void assembleAdditionalCameraActions(UIInputBuilder uiInputBuilder) {
+
     }
 
     public void setAttribute(String key, State state) {

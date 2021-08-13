@@ -3,16 +3,13 @@ package org.touchhome.bundle.cloud.netty;
 import lombok.RequiredArgsConstructor;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.UserEntity;
-import org.touchhome.bundle.api.ui.BellNotification;
+import org.touchhome.bundle.api.ui.builder.BellNotificationBuilder;
 import org.touchhome.bundle.api.util.NotificationLevel;
 import org.touchhome.bundle.cloud.CloudProvider;
 import org.touchhome.bundle.cloud.netty.impl.ServerConnectionStatus;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerConnectionMessageSetting;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerConnectionStatusSetting;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerUrlSetting;
-
-import java.util.HashSet;
-import java.util.Set;
 
 //@Component
 @RequiredArgsConstructor
@@ -28,18 +25,13 @@ public class NettyCloudProvider implements CloudProvider {
     }
 
     @Override
-    public Set<BellNotification> getBellNotifications() {
+    public void assembleBellNotifications(BellNotificationBuilder bellNotificationBuilder) {
         UserEntity user = entityContext.getUser(false);
-        Set<BellNotification> notifications = new HashSet<>();
         if (user != null && user.getKeystore() == null) {
-            notifications.add(BellNotification.danger("keystore").setTitle("Keystore").setValue("Keystore not found"));
+            bellNotificationBuilder.danger("keystore", "Keystore", "Keystore not found");
         }
         ServerConnectionStatus serverConnectionStatus = entityContext.setting().getValue(CloudServerConnectionStatusSetting.class);
-        notifications.add(new BellNotification("cloud-status")
-                .setTitle("Cloud status")
-                .setValue(entityContext.setting().getValue(CloudServerConnectionMessageSetting.class))
-                .setLevel(serverConnectionStatus == ServerConnectionStatus.CONNECTED ? NotificationLevel.info : NotificationLevel.warning));
-
-        return notifications;
+        bellNotificationBuilder.notification(serverConnectionStatus == ServerConnectionStatus.CONNECTED ? NotificationLevel.info : NotificationLevel.warning,
+                "cloud-status", "Cloud status", entityContext.setting().getValue(CloudServerConnectionMessageSetting.class));
     }
 }

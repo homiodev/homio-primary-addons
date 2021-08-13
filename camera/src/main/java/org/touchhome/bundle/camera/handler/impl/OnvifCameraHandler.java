@@ -26,7 +26,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextBGP;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.state.*;
-import org.touchhome.bundle.api.ui.field.action.impl.StatefulContextMenuAction;
+import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.util.Curl;
 import org.touchhome.bundle.camera.CameraCoordinator;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
@@ -47,7 +47,6 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -713,8 +712,8 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     }
 
     @Override
-    protected List<StatefulContextMenuAction> getAdditionalCameraActions() {
-        return cameraEntity.getBaseOnvifCameraBrandHandler().getCameraActions();
+    protected void assembleAdditionalCameraActions(UIInputBuilder uiInputBuilder) {
+        cameraEntity.getBaseOnvifCameraBrandHandler().assembleActions(uiInputBuilder);
     }
 
     @Override

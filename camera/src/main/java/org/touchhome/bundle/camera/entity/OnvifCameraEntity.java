@@ -7,7 +7,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.Lang;
 import org.touchhome.bundle.api.entity.BaseEntity;
@@ -16,10 +15,10 @@ import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.*;
-import org.touchhome.bundle.api.ui.field.action.ActionInputParameter;
 import org.touchhome.bundle.api.ui.field.action.HasDynamicContextMenuActions;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
-import org.touchhome.bundle.api.ui.field.action.impl.DynamicContextMenuAction;
+import org.touchhome.bundle.api.ui.field.action.v1.UIEntityItemBuilder;
+import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.util.SecureString;
 import org.touchhome.bundle.camera.CameraCoordinator;
@@ -31,8 +30,6 @@ import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
 
 @Log4j2
 @Setter
@@ -288,20 +285,15 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
     }
 
     @Override
-    public Set<? extends DynamicContextMenuAction> getActions(EntityContext entityContext) {
-        Set<DynamicContextMenuAction> actions = new TreeSet<>();
-        Set<? extends DynamicContextMenuAction> menuActions = super.getActions(entityContext);
-        if (menuActions != null) {
-            for (DynamicContextMenuAction action : menuActions) {
-                actions.add(action.setDisabled(!this.isStart()));
-            }
+    public void assembleActions(UIInputBuilder uiInputBuilder, boolean fetchValues) {
+        for (UIEntityItemBuilder uiEntity : uiInputBuilder.getUiEntityItemBuilders()) {
+            uiEntity.setDisabled(!this.isStart());
         }
         if (StringUtils.isEmpty(getIeeeAddress()) || getStatus() == Status.REQUIRE_AUTH) {
-            DynamicContextMenuAction authAction = new DynamicContextMenuAction("AUTHENTICATE",
-                    0, json -> {
+            uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", "fas fa-sign-in-alt", null, (entityContext, params) -> {
 
-                String user = json.getString("user");
-                String password = json.getString("pwd");
+                String user = params.getString("user");
+                String password = params.getString("pwd");
                 OnvifCameraEntity entity = this;
                 OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getIp(), getOnvifPort(), 0, user, password);
                 try {
@@ -316,12 +308,11 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
                 } catch (Exception ex) {
                     entityContext.ui().sendWarningMessage("Onvif camera: " + getTitle() + " fault response: " + ex.getMessage());
                 }
-            }).setIcon("fas fa-sign-in-alt");
-            authAction.addInput(ActionInputParameter.text("user", getUser()));
-            authAction.addInput(ActionInputParameter.text("pwd", getPassword().asString()));
-            actions.add(authAction);
+                return null;
+            }).editDialog(dialogBuilder -> {
+                dialogBuilder.addTextInput("user", getUser(), true);
+                dialogBuilder.addTextInput("pwd", getPassword().asString(), false);
+            });
         }
-
-        return actions;
     }
 }
