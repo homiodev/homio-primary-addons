@@ -18,7 +18,7 @@ public @interface UICameraAction {
 
     int order();
 
-    String icon();
+    String icon() default "";
 
     String iconColor() default "inherit";
 

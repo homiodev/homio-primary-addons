@@ -285,34 +285,37 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
     }
 
     @Override
-    public void assembleActions(UIInputBuilder uiInputBuilder, boolean fetchValues) {
-        for (UIEntityItemBuilder uiEntity : uiInputBuilder.getUiEntityItemBuilders()) {
+    public UIInputBuilder assembleActions() {
+        UIInputBuilder uiInputBuilder = super.assembleActions();
+        for (UIEntityItemBuilder uiEntity : uiInputBuilder.getUiEntityItemBuilders(true)) {
             uiEntity.setDisabled(!this.isStart());
         }
         if (StringUtils.isEmpty(getIeeeAddress()) || getStatus() == Status.REQUIRE_AUTH) {
-            uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", "fas fa-sign-in-alt", null, (entityContext, params) -> {
+            uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", "fas fa-sign-in-alt", null, null,
+                    (entityContext, params) -> {
 
-                String user = params.getString("user");
-                String password = params.getString("pwd");
-                OnvifCameraEntity entity = this;
-                OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getIp(), getOnvifPort(), 0, user, password);
-                try {
-                    onvifDeviceState.checkForErrors();
-                    setUser(user);
-                    setPassword(password);
-                    setName(onvifDeviceState.getInitialDevices().getName());
-                    setIeeeAddress(onvifDeviceState.getIEEEAddress());
+                        String user = params.getString("user");
+                        String password = params.getString("pwd");
+                        OnvifCameraEntity entity = this;
+                        OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getIp(), getOnvifPort(), 0, user, password);
+                        try {
+                            onvifDeviceState.checkForErrors();
+                            setUser(user);
+                            setPassword(password);
+                            setName(onvifDeviceState.getInitialDevices().getName());
+                            setIeeeAddress(onvifDeviceState.getIEEEAddress());
 
-                    entityContext.save(entity);
-                    entityContext.ui().sendSuccessMessage("Onvif camera: " + getTitle() + " authenticated successfully");
-                } catch (Exception ex) {
-                    entityContext.ui().sendWarningMessage("Onvif camera: " + getTitle() + " fault response: " + ex.getMessage());
-                }
-                return null;
-            }).editDialog(dialogBuilder -> {
+                            entityContext.save(entity);
+                            entityContext.ui().sendSuccessMessage("Onvif camera: " + getTitle() + " authenticated successfully");
+                        } catch (Exception ex) {
+                            entityContext.ui().sendWarningMessage("Onvif camera: " + getTitle() + " fault response: " + ex.getMessage());
+                        }
+                        return null;
+                    }).editDialog(dialogBuilder -> {
                 dialogBuilder.addTextInput("user", getUser(), true);
                 dialogBuilder.addTextInput("pwd", getPassword().asString(), false);
             });
         }
+        return uiInputBuilder;
     }
 }

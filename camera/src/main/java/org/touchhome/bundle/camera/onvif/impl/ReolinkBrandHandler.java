@@ -42,7 +42,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         super(onvifCameraEntity);
     }
 
-    @UICameraAction(name = CHANNEL_AUTO_LED, order = 40, icon = "fas fa-lightbulb")
+    @UICameraAction(name = CHANNEL_AUTO_LED, order = 10, icon = "fas fa-lightbulb")
     public void autoLed(boolean on) {
         String state = on ? "Auto" : "Off";
         String body = "[{\"cmd\":\"SetIrLights\",\"action\":0,\"param\":{\"IrLights\":{\"state\":\"" + state + "\"}}}]";
@@ -57,23 +57,12 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return getAttribute(CHANNEL_AUTO_LED);
     }
 
-    @UICameraAction(name = CHANNEL_RECORD_AUDIO, order = 41, icon = "fas fa-microphone-slash")
-    public void setRecAudio(boolean on) {
-        setSetting("Esp", isp -> isp.set(boolToInt(on), "audio"));
-    }
-
-    @UICameraActionGetter(CHANNEL_RECORD_AUDIO)
-    public State getRecAudio() {
-        JsonType esp = (JsonType) getAttribute("Esp");
-        return esp == null ? null : OnOffType.valueOf(esp.getJsonNode().path("audio").asInt() == 1);
-    }
-
     @UICameraActionGetter(CHANNEL_POSITION_NAME)
     public State getNamePosition() {
         return getOSDPosition("osdChannel");
     }
 
-    @UICameraAction(name = CHANNEL_POSITION_NAME, order = 50, icon = "fas fa-sort-amount-down-alt", group = "OSD")
+    @UICameraAction(name = CHANNEL_POSITION_NAME, order = 100, icon = "fas fa-sort-amount-down-alt", group = "VIDEO.OSD")
     @UICameraSelectionAttributeValues(value = "OsdRange", path = {"osdChannel", "pos"}, prependValues = {"", "Hide"})
     public void setNamePosition(String position) {
         setSetting("Osd", osd -> {
@@ -86,18 +75,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         });
     }
 
-    @UICameraAction(name = CHANNEL_SHOW_DATETIME, order = 51, icon = "fas fa-copyright", group = "OSD")
-    public void setShowDateTime(boolean on) {
-        setSetting("Osd", osd -> osd.set(boolToInt(on), "osdTime", "enable"));
-    }
-
-    @UICameraActionGetter(CHANNEL_SHOW_DATETIME)
-    public State getShowDateTime() {
-        JsonType osd = (JsonType) getAttribute("Osd");
-        return osd == null ? null : OnOffType.valueOf(osd.getJsonNode().path("osdTime").path("enable").asInt() == 1);
-    }
-
-    @UICameraAction(name = CHANNEL_POSITION_DATETIME, order = 52, icon = "fas fa-sort-numeric-up", group = "OSD")
+    @UICameraAction(name = CHANNEL_POSITION_DATETIME, order = 101, icon = "fas fa-sort-numeric-up", group = "VIDEO.OSD")
     @UICameraSelectionAttributeValues(value = "OsdRange", path = {"osdTime", "pos"}, prependValues = {"", "Hide"})
     public void setDateTimePosition(String position) {
         setSetting("Osd", osd -> {
@@ -115,7 +93,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return getOSDPosition("osdTime");
     }
 
-    @UICameraAction(name = CHANNEL_SHOW_WATERMARK, order = 53, icon = "fas fa-copyright", group = "OSD")
+    @UICameraAction(name = CHANNEL_SHOW_WATERMARK, order = 102, icon = "fas fa-copyright", group = "VIDEO.OSD")
     public void setShowWatermark(boolean on) {
         setSetting("Osd", osd -> osd.set(boolToInt(on), "watermark"));
     }
@@ -126,7 +104,18 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return osd == null ? null : OnOffType.valueOf(osd.getJsonNode().path("watermark").asInt() == 1);
     }
 
-    @UICameraAction(name = CHANNEL_IMAGE_ROTATE, order = 60, icon = "fas fa-copyright", group = "ISP")
+    @UICameraAction(name = CHANNEL_SHOW_DATETIME, order = 103, icon = "fas fa-copyright", group = "VIDEO.OSD")
+    public void setShowDateTime(boolean on) {
+        setSetting("Osd", osd -> osd.set(boolToInt(on), "osdTime", "enable"));
+    }
+
+    @UICameraActionGetter(CHANNEL_SHOW_DATETIME)
+    public State getShowDateTime() {
+        JsonType osd = (JsonType) getAttribute("Osd");
+        return osd == null ? null : OnOffType.valueOf(osd.getJsonNode().path("osdTime").path("enable").asInt() == 1);
+    }
+
+    @UICameraAction(name = CHANNEL_IMAGE_ROTATE, order = 160, icon = "fas fa-copyright", group = "VIDEO.ISP")
     public void setRotateImage(boolean on) {
         setSetting("Isp", isp -> isp.set(boolToInt(on), "rotation"));
     }
@@ -137,7 +126,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return isp == null ? null : OnOffType.valueOf(isp.getJsonNode().path("rotation").asInt() == 1);
     }
 
-    @UICameraAction(name = CHANNEL_IMAGE_MIRROR, order = 61, icon = "fas fa-copyright", group = "ISP")
+    @UICameraAction(name = CHANNEL_IMAGE_MIRROR, order = 161, icon = "fas fa-copyright", group = "VIDEO.ISP")
     public void setMirrorImage(boolean on) {
         setSetting("Isp", isp -> isp.set(boolToInt(on), "mirroring"));
     }
@@ -148,7 +137,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return isp == null ? null : OnOffType.valueOf(isp.getJsonNode().path("mirroring").asInt() == 1);
     }
 
-    @UICameraAction(name = CHANNEL_ANTI_FLICKER, order = 62, icon = "fab fa-flickr", group = "ISP")
+    @UICameraAction(name = CHANNEL_ANTI_FLICKER, order = 162, icon = "fab fa-flickr", group = "VIDEO.ISP")
     @UICameraSelectionAttributeValues(value = "IspRange", path = {"antiFlicker"})
     public void setAntiFlicker(String value) {
         setSetting("Isp", isp -> isp.set(value, "antiFlicker"));
@@ -160,7 +149,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return isp == null ? null : new StringType(isp.get("antiFlicker").asText());
     }
 
-    @UICameraAction(name = CHANNEL_EXPOSURE, order = 63, icon = "fas fa-sun", group = "ISP")
+    @UICameraAction(name = CHANNEL_EXPOSURE, order = 163, icon = "fas fa-sun", group = "VIDEO.ISP")
     @UICameraSelectionAttributeValues(value = "IspRange", path = {"exposure"})
     public void setExposure(String value) {
         setSetting("Isp", isp -> isp.set(value, "exposure"));
@@ -172,7 +161,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return isp == null ? null : new StringType(isp.get("exposure").asText());
     }
 
-    @UICameraAction(name = CHANNEL_DAY_NIGHT, order = 64, icon = "fas fa-cloud-sun", group = "ISP")
+    @UICameraAction(name = CHANNEL_DAY_NIGHT, order = 164, icon = "fas fa-cloud-sun", group = "VIDEO.ISP")
     @UICameraSelectionAttributeValues(value = "IspRange", path = {"dayNight"})
     public void setDayNight(String value) {
         setSetting("Isp", isp -> isp.set(value, "dayNight"));
@@ -184,7 +173,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return isp == null ? null : new StringType(isp.getJsonNode().path("dayNight").asText());
     }
 
-    @UICameraAction(name = CHANNEL_3DNR, order = 61, icon = "fab fa-unity", group = "ISP")
+    @UICameraAction(name = CHANNEL_3DNR, order = 165, icon = "fab fa-unity", group = "VIDEO.ISP")
     public void set3DNR(boolean on) {
         setSetting("Isp", isp -> isp.set(boolToInt(on), "nr3d"));
     }
@@ -195,11 +184,21 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return isp == null ? null : OnOffType.valueOf(isp.getJsonNode().path("nr3d").asInt() == 1);
     }
 
-    @UICameraAction(name = CHANNEL_STREAM_MAIN_RESOLUTION, order = 80, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "mainStream", subGroupIcon = "fas fa-dice-six")
+    @UICameraAction(name = CHANNEL_RECORD_AUDIO, order = 80, group = "VIDEO.ENC", subGroup = "VIDEO.mainStream", subGroupIcon = "fas fa-dice-six")
+    public void setRecAudio(boolean on) {
+        setSetting("Enc", enc -> enc.set(boolToInt(on), "audio"));
+    }
+
+    @UICameraActionGetter(CHANNEL_RECORD_AUDIO)
+    public State getRecAudio() {
+        JsonType enc = (JsonType) getAttribute("Enc");
+        return enc == null ? null : OnOffType.valueOf(enc.getJsonNode().path("audio").asInt() == 1);
+    }
+
+    @UICameraAction(name = CHANNEL_STREAM_MAIN_RESOLUTION, order = 81, group = "VIDEO.ENC", subGroup = "VIDEO.mainStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectResolution.class, staticParameters = {"mainStream"})
     public void setStreamMainResolution(String value) {
-        setSetting("Enc", isp -> isp.set(value, "mainStream", "size"));
+        setSetting("Enc", enc -> enc.set(value, "mainStream", "size"));
     }
 
     @UICameraActionGetter(CHANNEL_STREAM_MAIN_RESOLUTION)
@@ -208,11 +207,10 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return enc == null ? null : new StringType(enc.get("mainStream", "size").asText());
     }
 
-    @UICameraAction(name = CHANNEL_STREAM_MAIN_BITRATE, order = 81, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "mainStream", subGroupIcon = "fas fa-dice-six")
+    @UICameraAction(name = CHANNEL_STREAM_MAIN_BITRATE, order = 82, group = "VIDEO.ENC", subGroup = "VIDEO.mainStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectStreamValue.class, staticParameters = {"mainStream", "bitRate"})
     public void setStreamMainBitRate(String value) {
-        setSetting("Enc", isp -> isp.set(value, "mainStream", "bitRate"));
+        setSetting("Enc", enc -> enc.set(value, "mainStream", "bitRate"));
     }
 
     @UICameraActionGetter(CHANNEL_STREAM_MAIN_BITRATE)
@@ -221,11 +219,10 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return enc == null ? null : new StringType(enc.get("mainStream", "bitRate").asText());
     }
 
-    @UICameraAction(name = CHANNEL_STREAM_MAIN_FRAMERATE, order = 82, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "mainStream", subGroupIcon = "fas fa-dice-six")
+    @UICameraAction(name = CHANNEL_STREAM_MAIN_FRAMERATE, order = 83, group = "VIDEO.ENC", subGroup = "VIDEO.mainStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectStreamValue.class, staticParameters = {"mainStream", "frameRate"})
     public void setStreamMainFrameRate(String value) {
-        setSetting("Enc", isp -> isp.set(value, "mainStream", "frameRate"));
+        setSetting("Enc", enc -> enc.set(value, "mainStream", "frameRate"));
     }
 
     @UICameraActionGetter(CHANNEL_STREAM_MAIN_FRAMERATE)
@@ -234,11 +231,10 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return enc == null ? null : new StringType(enc.get("mainStream", "frameRate").asText());
     }
 
-    @UICameraAction(name = CHANNEL_STREAM_MAIN_H264_PROFILE, order = 83, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "mainStream", subGroupIcon = "fas fa-dice-six")
+    @UICameraAction(name = CHANNEL_STREAM_MAIN_H264_PROFILE, order = 84, group = "VIDEO.ENC", subGroup = "VIDEO.mainStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectStreamValue.class, staticParameters = {"mainStream", "profile"})
     public void setStreamMainH264Profile(String value) {
-        setSetting("Enc", isp -> isp.set(value, "mainStream", "profile"));
+        setSetting("Enc", enc -> enc.set(value, "mainStream", "profile"));
     }
 
     @UICameraActionGetter(CHANNEL_STREAM_MAIN_H264_PROFILE)
@@ -247,11 +243,10 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return enc == null ? null : new StringType(enc.get("mainStream", "profile").asText());
     }
 
-    @UICameraAction(name = CHANNEL_STREAM_SECONDARY_RESOLUTION, order = 80, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "subStream", subGroupIcon = "fas fa-dice-six")
+    @UICameraAction(name = CHANNEL_STREAM_SECONDARY_RESOLUTION, order = 90, group = "VIDEO.ENC", subGroup = "VIDEO.subStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectResolution.class, staticParameters = {"subStream"})
     public void setStreamSecondaryResolution(String value) {
-        setSetting("Enc", isp -> isp.set(value, "subStream", "size"));
+        setSetting("Enc", enc -> enc.set(value, "subStream", "size"));
     }
 
     @UICameraActionGetter(CHANNEL_STREAM_SECONDARY_RESOLUTION)
@@ -260,11 +255,10 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return enc == null ? null : new StringType(enc.get("subStream", "size").asText());
     }
 
-    @UICameraAction(name = CHANNEL_STREAM_SECONDARY_BITRATE, order = 81, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "subStream", subGroupIcon = "fas fa-dice-six")
+    @UICameraAction(name = CHANNEL_STREAM_SECONDARY_BITRATE, order = 91, group = "VIDEO.ENC", subGroup = "VIDEO.subStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectStreamValue.class, staticParameters = {"subStream", "bitRate"})
     public void setStreamSecondaryBitRate(String value) {
-        setSetting("Enc", isp -> isp.set(value, "subStream", "bitRate"));
+        setSetting("Enc", enc -> enc.set(value, "subStream", "bitRate"));
     }
 
     @UICameraActionGetter(CHANNEL_STREAM_SECONDARY_BITRATE)
@@ -273,11 +267,10 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return enc == null ? null : new StringType(enc.get("subStream", "bitRate").asText());
     }
 
-    @UICameraAction(name = CHANNEL_STREAM_SECONDARY_FRAMERATE, order = 82, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "subStream", subGroupIcon = "fas fa-dice-six")
+    @UICameraAction(name = CHANNEL_STREAM_SECONDARY_FRAMERATE, order = 92, group = "VIDEO.ENC", subGroup = "VIDEO.subStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectStreamValue.class, staticParameters = {"subStream", "frameRate"})
     public void setStreamSecondaryFrameRate(String value) {
-        setSetting("Enc", isp -> isp.set(value, "subStream", "frameRate"));
+        setSetting("Enc", enc -> enc.set(value, "subStream", "frameRate"));
     }
 
     @UICameraActionGetter(CHANNEL_STREAM_SECONDARY_FRAMERATE)
@@ -286,8 +279,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         return enc == null ? null : new StringType(enc.get("subStream", "frameRate").asText());
     }
 
-    @UICameraAction(name = CHANNEL_STREAM_SECONDARY_H264_PROFILE, order = 83, icon = "fas fa-microphone-slash",
-            group = "ENC", subGroup = "subStream", subGroupIcon = "fas fa-dice-six")
+    @UICameraAction(name = CHANNEL_STREAM_SECONDARY_H264_PROFILE, order = 93, group = "VIDEO.ENC", subGroup = "VIDEO.subStream", subGroupIcon = "fas fa-dice-six")
     @UIFieldSelection(value = SelectStreamValue.class, staticParameters = {"subStream", "profile"})
     public void setStreamSecondaryH264Profile(String value) {
         setSetting("Enc", isp -> isp.set(value, "subStream", "profile"));

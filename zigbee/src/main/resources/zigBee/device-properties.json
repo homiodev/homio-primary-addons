@@ -30,6 +30,19 @@
       "disablePooling": true
     },
     {
+      "modelId": "lumi.sensor_magnet",
+      "name": "zigbee.mi.doorsensor",
+      "image": "zigbee-door-sensor",
+      "disablePooling": true,
+      "requireEndpoints": [
+        {
+          "typeId": "zigbee:switch_onoff",
+          "endpoint": 1,
+          "inputCluster": 6
+        }
+      ]
+    },
+    {
       "modelId": "lumi.sensor_wleak.aq1",
       "name": "zigbee.mi.leak",
       "image": "zigbee-leak",

@@ -46,7 +46,7 @@ public abstract class BaseVideoStreamEntity<T extends BaseVideoStreamEntity> ext
 
     protected abstract void fireUpdateSnapshot(EntityContext entityContext, JSONObject params);
 
-    public abstract void assembleActions(UIInputBuilder uiInputBuilder, boolean fetchValues);
+    public abstract UIInputBuilder assembleActions();
 
     static class VideoStreamDiscovery extends BaseBeansItemsDiscovery {
 
@@ -67,6 +67,7 @@ public abstract class BaseVideoStreamEntity<T extends BaseVideoStreamEntity> ext
 
     @Override
     public void assembleActions(UIInputBuilder uiInputBuilder) {
-        assembleActions(uiInputBuilder, true);
+        uiInputBuilder.from(assembleActions());
+        uiInputBuilder.fireFetchValues();
     }
 }

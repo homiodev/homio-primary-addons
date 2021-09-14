@@ -36,7 +36,7 @@
     </modules>
 
     <properties>
-        <bundle-api.version>1.2.0-SNAPSHOT</bundle-api.version>
+        <bundle-api.version>1.2.1-SNAPSHOT</bundle-api.version>
     </properties>
 
     <dependencies>

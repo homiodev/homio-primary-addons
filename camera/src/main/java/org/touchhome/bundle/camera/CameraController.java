@@ -90,9 +90,7 @@ public class CameraController {
             throw new NotFoundException("Unable to find base camera for series: " + series.getTitle());
         }
 
-        UIInputBuilder uiInputBuilder = entityContext.ui().inputBuilder();
-
-        baseVideoCameraEntity.getCameraHandler().assembleActions(uiInputBuilder, false);
+        UIInputBuilder uiInputBuilder = baseVideoCameraEntity.getCameraHandler().assembleActions();
         UIActionHandler actionHandler = uiInputBuilder.findActionHandler(cameraActionRequest.name);
         if (actionHandler == null) {
             throw new RuntimeException("No camera action " + cameraActionRequest.name + "found");
@@ -122,7 +120,7 @@ public class CameraController {
             this.source = source;
             UIInputBuilder uiInputBuilder = entityContext.ui().inputBuilder();
             source.assembleActions(uiInputBuilder);
-            this.actions = uiInputBuilder.build();
+            this.actions = uiInputBuilder.buildAll();
         }
     }
 }

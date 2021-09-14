@@ -32,7 +32,7 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
     private final Scratch3Block outputArgCommand;
 
     public Scratch3FFmpegBlocks(EntityContext entityContext, CameraEntryPoint cameraEntryPoint) {
-        super("#3B8F33", entityContext, cameraEntryPoint, "ffmpeg");
+        super("#87B023", entityContext, cameraEntryPoint, "ffmpeg");
         setParent("media");
 
         this.inputArgCommand = ofValue(Scratch3Block.ofHandler(10, FFmpegApplyHandler.argsInput.name(), BlockType.command,

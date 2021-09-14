@@ -7,6 +7,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.port.BaseSerialPort;
 import org.touchhome.bundle.api.port.PortFlowControl;
 
+import java.io.IOException;
 import java.util.function.Consumer;
 
 import static com.zsmartsystems.zigbee.transport.ZigBeePort.FlowControl.FLOWCONTROL_OUT_NONE;
@@ -107,6 +108,22 @@ public class ZigBeeSerialPort extends BaseSerialPort implements ZigBeePort {
                 }
 
             }
+        }
+    }
+
+    @Override
+    public void write(int[] outArray) {
+        if (outputStream == null) {
+            return;
+        }
+        byte[] bytes = new byte[outArray.length];
+        int cnt = 0;
+        for (int value : outArray) {
+            bytes[cnt++] = (byte) value;
+        }
+        try {
+            outputStream.write(bytes);
+        } catch (IOException e) {
         }
     }
 

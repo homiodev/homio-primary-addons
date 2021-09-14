@@ -63,6 +63,7 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
         this.entityContext.setting().listenValue(ConsoleHeaderZigBeeDiscoveryButtonSetting.class, "zb-start-scan", () ->
                 zigBeeDiscoveryService.startScan());
 
+        entityContext.setting().listenValue(ZigBeePortSetting.class, "zb-port", this::reInitialize);
         entityContext.setting().listenValue(ZigBeePortBaudSetting.class, "zb-port-baud-changed", this::reInitialize);
         entityContext.setting().listenValue(ZigBeeNetworkIdSetting.class, "zb-network-id-changed", this::reInitialize);
         entityContext.setting().listenValue(ZigBeeLinkKeySetting.class, "zb-link-key-changed", this::reInitialize);
@@ -90,7 +91,8 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
 
         this.entityContext.setting().listenValue(ZigBeeStatusSetting.class, "zb-status-changed", status -> {
             entityContext.ui().addHeaderButton("zb-status", status.isOnline() ? TouchHomeUtils.Colors.GREEN : TouchHomeUtils.Colors.RED,
-                    status.isOnline() ? "Zigbee success running" : "Zigbee '" + status.getStatus() + "': " + status.getMessage(), "fas fa-bug", false, false, null, ZigBeeDeviceEntity.class, null);
+                    status.isOnline() ? "Zigbee success running" : "Zigbee '" + status.getStatus() + "': " + status.getMessage(),
+                    "fas fa-bug", false, null, null, ZigBeeDeviceEntity.class, null);
 
             if (status.isOnline()) {
                 // init devices

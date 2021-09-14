@@ -115,4 +115,16 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
     protected int getInputClusterType() {
         return getZclClusterType().getId();
     }
+
+    protected boolean configureReporting(ZclAttribute attribute) {
+        // Configure reporting - no faster than once per second - no slower than 2 hours.
+        try {
+            CommandResult reportingResponse = attribute.setReporting(3, REPORTING_PERIOD_DEFAULT_MAX, 1L).get();
+            handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, REPORTING_PERIOD_DEFAULT_MAX);
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("{}: Exception setting reporting ", endpoint.getIeeeAddress(), e);
+            return false;
+        }
+        return true;
+    }
 }

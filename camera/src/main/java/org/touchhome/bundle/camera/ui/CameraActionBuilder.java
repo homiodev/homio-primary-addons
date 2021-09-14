@@ -16,8 +16,10 @@ import org.touchhome.bundle.api.ui.field.action.v1.UIEntityItemBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.item.UIMultiButtonItemBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.item.UISelectBoxItemBuilder;
+import org.touchhome.bundle.api.ui.field.action.v1.item.UISliderItemBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.UILayoutBuilder;
+import org.touchhome.bundle.api.ui.field.action.v1.layout.dialog.UIStickyDialogItemBuilder;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 
@@ -32,7 +34,6 @@ import java.util.function.Function;
 @Log4j2
 public class CameraActionBuilder {
 
-
     public static void assembleActions(CameraActionsContext instance, UIInputBuilder uiInputBuilder) {
         Set<String> handledMethods = new HashSet<>();
         for (Method method : MethodUtils.getMethodsWithAnnotation(instance.getClass(), UICameraAction.class, true, false)) {
@@ -43,17 +44,6 @@ public class CameraActionBuilder {
                 UICameraAction uiCameraAction = method.getDeclaredAnnotation(UICameraAction.class);
                 Parameter actionParameter = method.getParameters()[0];
                 Function<String, Object> actionParameterConverter = buildParameterActionConverter(actionParameter);
-                // JSONObject options = new JSONObject();
-                /*if (uiCameraAction.min() != 0) {
-                    options.put("min", uiCameraAction.min());
-                }
-                if (uiCameraAction.max() != 100) {
-                    options.put("max", uiCameraAction.max());
-                }
-                if (StringUtils.isNotEmpty(uiCameraAction.selectReplacer())) {
-                    options.put("selectReplacer", uiCameraAction.selectReplacer());
-                }*/
-                //  Map<String, Consumer<StatefulContextMenuAction>> updateHandlers = new HashMap<>();
 
                 UIFieldType type;
                 if (uiCameraAction.type() == UICameraAction.ActionType.AutoDiscover) {
@@ -81,10 +71,18 @@ public class CameraActionBuilder {
                 UILayoutBuilder layoutBuilder = uiInputBuilder;
                 if (StringUtils.isNotEmpty(uiCameraAction.group())) {
 
-                    layoutBuilder = uiInputBuilder.addFlex(uiCameraAction.group());
-                    if (StringUtils.isNotEmpty(uiCameraAction.subGroup())) {
-                        layoutBuilder = layoutBuilder.addStickyDialogButton(
-                                uiCameraAction.subGroup(), uiCameraAction.subGroupIcon(), null);
+                    if (StringUtils.isEmpty(uiCameraAction.subGroup())) {
+                        layoutBuilder = uiInputBuilder.addFlex(uiCameraAction.group(), uiCameraAction.order())
+                                .columnFlexDirection()
+                                .setBorderArea(uiCameraAction.group());
+                    } else {
+                        UIStickyDialogItemBuilder stickyLayoutBuilder = layoutBuilder.addStickyDialogButton(
+                                uiCameraAction.group() + "_sb", uiCameraAction.subGroupIcon(), null, uiCameraAction.order())
+                                .editButton(buttonItemBuilder -> buttonItemBuilder.setText(uiCameraAction.group()));
+
+                        layoutBuilder = stickyLayoutBuilder.addFlex(uiCameraAction.subGroup(), uiCameraAction.order())
+                                .setBorderArea(uiCameraAction.subGroup())
+                                .columnFlexDirection();
                     }
                 }
                 UICameraDimmerButton[] buttons = method.getDeclaredAnnotationsByType(UICameraDimmerButton.class);
@@ -92,11 +90,10 @@ public class CameraActionBuilder {
                     if (uiCameraAction.type() != UICameraAction.ActionType.Dimmer) {
                         throw new RuntimeException("Method " + method.getName() + " annotated with @UICameraDimmerButton, but @UICameraAction has no dimmer type");
                     }
-                    UIFlexLayoutBuilder flex = layoutBuilder.addFlex("dimmer");
-                    // TODO: flex.addRawEntityBuilder(uiEntityItemBuilder);
-                    UIMultiButtonItemBuilder multiButtonItemBuilder = flex.addMultiButton("dimm_btns", actionHandler);
+                    UIFlexLayoutBuilder flex = layoutBuilder.addFlex("dimmer", uiCameraAction.order());
+                    UIMultiButtonItemBuilder multiButtonItemBuilder = flex.addMultiButton("dimm_btns", actionHandler, uiCameraAction.order());
                     for (UICameraDimmerButton button : buttons) {
-                        multiButtonItemBuilder.addExtraButton(button.name()).setIcon(button.icon(), null);
+                        multiButtonItemBuilder.addButton(button.name(), button.icon(), null);
                     }
                     layoutBuilder = flex;
                 }
@@ -171,13 +168,15 @@ public class CameraActionBuilder {
                                                             UIActionHandler handler) {
         switch (type) {
             case SelectBox:
-                return layoutBuilder.addSelectBox(uiCameraAction.name(), handler);
+                return layoutBuilder.addSelectBox(uiCameraAction.name(), handler, uiCameraAction.order()).setSelectReplacer(uiCameraAction.min(),
+                        uiCameraAction.max(), uiCameraAction.selectReplacer());
             case Slider:
-                return layoutBuilder.addSlider(uiCameraAction.name(), uiCameraAction.min(), uiCameraAction.max(), handler).setSelectReplacer(uiCameraAction.selectReplacer());
+                return layoutBuilder.addSlider(uiCameraAction.name(), 0, uiCameraAction.min(),
+                        uiCameraAction.max(), handler, UISliderItemBuilder.SliderType.Regular, uiCameraAction.order());
             case Boolean:
-                return layoutBuilder.addCheckbox(uiCameraAction.name(), false, handler);
+                return layoutBuilder.addCheckbox(uiCameraAction.name(), false, handler, uiCameraAction.order());
             case String:
-                return layoutBuilder.addInfo(uiCameraAction.name());
+                return layoutBuilder.addInfo(uiCameraAction.name(), uiCameraAction.order());
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }

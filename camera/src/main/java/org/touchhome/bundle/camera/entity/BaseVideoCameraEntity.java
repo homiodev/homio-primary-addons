@@ -106,13 +106,14 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
 
 
     @Override
-    public void assembleActions(UIInputBuilder uiInputBuilder, boolean fetchValues) {
+    public UIInputBuilder assembleActions() {
         if (cameraHandler != null) {
-            cameraHandler.assembleActions(uiInputBuilder, fetchValues);
+            return cameraHandler.assembleActions();
         }
+        return null;
     }
 
-    @UIContextMenuAction(value = "RECORD_MP4", icon = "fas fa-file-video", inputs = {
+    @UIContextMenuAction(value = "VIDEO.RECORD_MP4", icon = "fas fa-file-video", inputs = {
             @UIActionInput(name = "fileName", value = "record_${timestamp}", min = 4, max = 30),
             @UIActionInput(name = "secondsToRecord", type = UIActionInput.Type.number, value = "10", min = 5, max = 100)
     })
@@ -127,7 +128,7 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
         return ActionResponseModel.showSuccess("SUCCESS");
     }
 
-    @UIContextMenuAction(value = "RECORD_GIF", icon = "fas fa-magic", inputs = {
+    @UIContextMenuAction(value = "VIDEO.RECORD_GIF", icon = "fas fa-magic", inputs = {
             @UIActionInput(name = "fileName", value = "record_${timestamp}", min = 4, max = 30),
             @UIActionInput(name = "secondsToRecord", type = UIActionInput.Type.number, value = "3", min = 1, max = 10)
     })

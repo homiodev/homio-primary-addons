@@ -65,6 +65,9 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     private EntityContextBGP.ThreadContext<Void> pollCameraJob;
     private Map<String, Consumer<Status>> stateListeners = new HashMap<>();
 
+    // actions holder
+    private UIInputBuilder uiInputBuilder;
+
     public BaseCameraHandler(T cameraEntity, EntityContext entityContext) {
         setCameraEntity(cameraEntity);
         this.cameraEntityID = cameraEntity.getEntityID();
@@ -207,33 +210,13 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         cameraEntity.setStatus(status, message);
     }
 
-    public void assembleActions(UIInputBuilder uiInputBuilder, boolean fetchValues) {
-        assembleAdditionalCameraActions(uiInputBuilder);
-        if (fetchValues) {
-            uiInputBuilder.fireFetchValues();
-            /* TODO: for (StatefulContextMenuAction action : actions) {
-                for (Consumer<StatefulContextMenuAction> updateHandler : action.getUpdateHandlers().values()) {
-                    updateHandler.accept(action);
-                }
-            }*/
+    public UIInputBuilder assembleActions() {
+        if (this.uiInputBuilder == null) {
+            this.uiInputBuilder = entityContext.ui().inputBuilder();
+            assembleAdditionalCameraActions(uiInputBuilder);
         }
+        return uiInputBuilder;
     }
-
-    /*TODO: public Set<StatefulContextMenuAction> getCameraActions(boolean fetchValues) {
-        if (actions == null) {
-            // additional actions should be first
-            actions = new TreeSet<>(getAdditionalCameraActions());
-            actions.addAll(CameraActionBuilder.assemble(this));
-        }
-        if (fetchValues) {
-            for (StatefulContextMenuAction action : actions) {
-                for (Consumer<StatefulContextMenuAction> updateHandler : action.getUpdateHandlers().values()) {
-                    updateHandler.accept(action);
-                }
-            }
-        }
-        return actions;
-    }*/
 
     protected void assembleAdditionalCameraActions(UIInputBuilder uiInputBuilder) {
 

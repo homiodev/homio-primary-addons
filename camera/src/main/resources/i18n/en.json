@@ -1,12 +1,20 @@
 {
-  "OSD": "Basic settings",
-  "ISP": "Advanced settings",
-  "ENC": "Streams",
-  "mainStream": "Primary(Clear) stream",
-  "subStream": "Secondary(Fluent) stream",
-  "RECORD_MP4": "Record a MP4",
-  "RECORD_GIF": "Record a GIF",
+  "VIDEO": {
+    "OSD": "Basic settings",
+    "ISP": "Advanced settings",
+    "ENC": "Streams",
+    "mainStream": "Primary(Clear) stream",
+    "subStream": "Secondary(Fluent) stream",
+    "RECORD_MP4": "Record a MP4",
+    "RECORD_GIF": "Record a GIF"
+  },
   "selection": {
+    "ReolinkBrandHandler": "Reolink Brand",
+    "FoscamBrandHandler": "Foscam Brand",
+    "DoorBirdBrandHandler": "DoorBird Brand",
+    "OnvifBrandHandler": "General Onvif",
+    "DahuaBrandHandler": "Dahua Brand",
+
     "WidgetCameraEntity": "Camera",
     "OnvifCameraEntity": "Onvif Camera",
     "UsbCameraEntity": "Usb Camera",
@@ -49,7 +57,6 @@
       "streamSecondaryBitRate_description": "Maximum Bitrate(kbps)",
       "streamSecondaryFrameRate_description": "Frame Rate(fps)",
       "streamSecondaryH264Profile_description": "H.264 Profile",
-      "recordAudio_description": "Record audio",
       "3dnr_description": "3-Dimensional Noise Reduction",
       "exposure_description": "Exposure",
       "antiFlicker_description": "Anti flickr",

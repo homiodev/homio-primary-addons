@@ -23,8 +23,8 @@ public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeInputBaseC
 
     private ZclAttribute attribute;
 
-    private Integer divisor;
-    private Integer multiplier;
+    private double divisor = 1.0;
+    private double multiplier = 1.0;
 
     @Override
     public int getInputAttributeId() {
@@ -33,7 +33,7 @@ public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeInputBaseC
 
     @Override
     public ZclClusterType getZclClusterType() {
-        return ZclClusterType.ELECTRICAL_MEASUREMENT;
+        return ZclClusterType.METERING;
     }
 
     @Override
@@ -59,9 +59,12 @@ public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeInputBaseC
             return false;
         }
 
-        attribute = clusterMetering.getAttribute(ZclMeteringCluster.ATTR_INSTANTANEOUSDEMAND);
+        attribute = clusterMetering.getAttribute(getInputAttributeId());
+        if (!configureReporting(attribute)) {
+            return false;
+        }
 
-        determineDivisorAndMultiplier(clusterMetering);
+        determineDivisorAndMultiplier();
 
         // Add a listener
         clusterMetering.addAttributeListener(this);
@@ -86,10 +89,10 @@ public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeInputBaseC
         }
         try {
             if (!cluster.discoverAttributes(false).get()
-                    && !cluster.isAttributeSupported(ZclMeteringCluster.ATTR_INSTANTANEOUSDEMAND)) {
+                    && !cluster.isAttributeSupported(getInputAttributeId())) {
                 return false;
             } else {
-                ZclAttribute attribute = cluster.getAttribute(ZclMeteringCluster.ATTR_INSTANTANEOUSDEMAND);
+                ZclAttribute attribute = cluster.getAttribute(getInputAttributeId());
                 if (attribute.readValue(Long.MAX_VALUE) == null) {
                     return false;
                 }
@@ -104,23 +107,26 @@ public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeInputBaseC
     @Override
     public void attributeUpdated(ZclAttribute attribute, Object val) {
         log.debug("{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), attribute);
-        if (attribute.getCluster() == ZclClusterType.ELECTRICAL_MEASUREMENT
-                && attribute.getId() == ZclMeteringCluster.ATTR_INSTANTANEOUSDEMAND) {
-            Integer value = (Integer) val;
+        if (attribute.getCluster() == ZclClusterType.METERING
+                && attribute.getId() == getInputAttributeId()) {
+            double value = (Integer) val;
             BigDecimal valueCalibrated = BigDecimal.valueOf(value * multiplier / divisor);
             updateChannelState(new DecimalType(valueCalibrated));
         }
     }
 
-    private void determineDivisorAndMultiplier(ZclMeteringCluster serverClusterMeasurement) {
+    private void determineDivisorAndMultiplier() {
         ZclAttribute divisorAttribute = clusterMetering.getAttribute(ZclMeteringCluster.ATTR_DIVISOR);
         ZclAttribute multiplierAttribute = clusterMetering.getAttribute(ZclMeteringCluster.ATTR_MULTIPLIER);
 
-        divisor = (Integer) divisorAttribute.readValue(Long.MAX_VALUE);
-        multiplier = (Integer) multiplierAttribute.readValue(Long.MAX_VALUE);
-        if (divisor == null || multiplier == null) {
-            divisor = 1;
-            multiplier = 1;
+        Integer iDiv = (Integer) divisorAttribute.readValue(Long.MAX_VALUE);
+        Integer iMult = (Integer) multiplierAttribute.readValue(Long.MAX_VALUE);
+        if (iDiv == null || iMult == null) {
+            iDiv = 1;
+            iMult = 1;
         }
+
+        divisor = iDiv;
+        multiplier = iMult;
     }
 }

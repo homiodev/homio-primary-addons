@@ -9,12 +9,14 @@ import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.netty.NettyUtils;
+import org.touchhome.bundle.api.setting.SettingPluginStatus;
 import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.handler.BaseCameraHandler;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 import org.touchhome.bundle.camera.scanner.OnvifCameraHttpScanner;
+import org.touchhome.bundle.camera.setting.CameraStatusSetting;
 import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import java.lang.reflect.Method;
@@ -96,5 +98,10 @@ public class CameraEntryPoint implements BundleEntryPoint {
 
         // fire rescan whole possible items to see if ip address has been changed
         entityContext.getBean(OnvifCameraHttpScanner.class).executeScan(entityContext, null, null, true);
+    }
+
+    @Override
+    public Class<? extends SettingPluginStatus> getBundleStatusSetting() {
+        return CameraStatusSetting.class;
     }
 }
