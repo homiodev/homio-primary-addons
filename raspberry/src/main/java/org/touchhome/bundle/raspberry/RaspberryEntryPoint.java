@@ -5,9 +5,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.raspberry.model.RaspberryDeviceEntity;
+import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
 
-import static org.touchhome.bundle.raspberry.model.RaspberryDeviceEntity.DEFAULT_DEVICE_ENTITY_ID;
+import static org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity.DEFAULT_DEVICE_ENTITY_ID;
 
 @Log4j2
 @Component

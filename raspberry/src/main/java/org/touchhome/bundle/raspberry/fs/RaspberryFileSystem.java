@@ -5,7 +5,7 @@ import lombok.SneakyThrows;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.storage.CachedFileSystem;
 import org.touchhome.bundle.api.entity.storage.VendorFileSystem;
-import org.touchhome.bundle.raspberry.model.RaspberryDeviceEntity;
+import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
 
 import java.io.File;
 import java.nio.file.Files;

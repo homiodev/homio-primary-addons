@@ -4,6 +4,7 @@ import de.onvif.soap.OnvifDeviceState;
 import de.onvif.soap.SOAP;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.Nullable;
 import org.onvif.ver10.media.wsdl.*;
 import org.onvif.ver10.schema.*;
 
@@ -24,27 +25,15 @@ public class MediaDevices {
         private String snapshotUri;
     }
 
-    public String getHTTPStreamUri() {
-        return getHTTPStreamUri(onvifDeviceState.getProfileToken());
-    }
-
     public String getHTTPStreamUri(String profile) {
         return getStreamUri(profile, TransportProtocol.HTTP);
-    }
-
-    public String getUDPStreamUri() {
-        return getUDPStreamUri(onvifDeviceState.getProfileToken());
     }
 
     public String getUDPStreamUri(String profile) {
         return getStreamUri(profile, TransportProtocol.UDP);
     }
 
-    public String getRTSPStreamUri() {
-        return getRTSPStreamUri(onvifDeviceState.getProfileToken());
-    }
-
-    public String getRTSPStreamUri(String profile) {
+    public String getRTSPStreamUri(@Nullable String profile) {
         return getStreamUri(profile, TransportProtocol.TCP);
     }
 
@@ -123,11 +112,24 @@ public class MediaDevices {
         return response.getVideoSources();
     }
 
+    public List<AudioSource> getAudioSources() {
+        GetAudioSources request = new GetAudioSources();
+        GetAudioSourcesResponse response = soap.createSOAPMediaRequest(request, GetAudioSourcesResponse.class);
+        if (response == null) {
+            return null;
+        }
+
+        return response.getAudioSources();
+    }
+
     public void dispose() {
         profileCache.clear();
     }
 
-    private String getStreamUri(String profile, TransportProtocol transportProtocol) {
+    private String getStreamUri(@Nullable String profile, TransportProtocol transportProtocol) {
+        if (profile == null) {
+            profile = onvifDeviceState.getProfileToken();
+        }
         profileCache.putIfAbsent(profile, new ProfileMediaDeviceCache());
         ProfileMediaDeviceCache mediaDeviceCache = profileCache.get(profile);
         if (!mediaDeviceCache.protocolURI.containsKey(transportProtocol)) {

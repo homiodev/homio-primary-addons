@@ -96,9 +96,9 @@ public abstract class BaseCameraStreamServerHandler<T extends BaseFFmpegCameraHa
             log.debug("Stream Server received request \tGET:{}", httpRequest.uri());
             // Some browsers send a query string after the path when refreshing a picture.
             QueryStringDecoder queryStringDecoder = new QueryStringDecoder(httpRequest.uri());
-            if (handleHttpRequest(queryStringDecoder, ctx)) {
-                return true;
-            }
+
+            handleChildrenHttpRequest(queryStringDecoder, ctx);
+
             switch (queryStringDecoder.path()) {
                 case "/ipcamera.m3u8":
                     Ffmpeg localFfmpeg = cameraHandler.ffmpegHLS;
@@ -119,7 +119,8 @@ public abstract class BaseCameraStreamServerHandler<T extends BaseFFmpegCameraHa
                     sendFile(ctx, httpRequest.uri(), "application/dash+xml", cameraHandler.getFfmpegMP4OutputPath());
                     return true;
                 case "/ipcamera.gif":
-                    sendFile(ctx, httpRequest.uri(), "image/gif", cameraHandler.getFfmpegGifOutputPath());
+                    byte[] bytes = cameraHandler.recordGifSync(null, 5);
+                    sendNettyResponse(ctx, "image/gif", bytes);
                     return true;
                 case "/ipcamera.jpg":
                     sendSnapshotImage(ctx, "image/jpg");
@@ -157,45 +158,24 @@ public abstract class BaseCameraStreamServerHandler<T extends BaseFFmpegCameraHa
         return false;
     }
 
-    protected abstract boolean handleHttpRequest(QueryStringDecoder queryStringDecoder, ChannelHandlerContext ctx);
+    protected void handleChildrenHttpRequest(QueryStringDecoder queryStringDecoder, ChannelHandlerContext ctx) {
+
+    }
 
     protected abstract boolean streamServerReceivedPostHandler(HttpRequest httpRequest);
 
     private void sendSnapshotImage(ChannelHandlerContext ctx, String contentType) {
-        HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         cameraHandler.lockCurrentSnapshot.lock();
         try {
-            ByteBuf snapshotData = Unpooled.copiedBuffer(cameraHandler.getLatestSnapshot());
-            response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);
-            response.headers().set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
-            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-            response.headers().add(HttpHeaderNames.CONTENT_LENGTH, snapshotData.readableBytes());
-            response.headers().add("Access-Control-Allow-Origin", "*");
-            response.headers().add("Access-Control-Expose-Headers", "*");
-            ctx.channel().write(response);
-            ctx.channel().write(snapshotData);
-            ByteBuf footerBbuf = Unpooled.copiedBuffer("\r\n", 0, 2, StandardCharsets.UTF_8);
-            ctx.channel().writeAndFlush(footerBbuf);
+            sendNettyResponse(ctx, contentType, cameraHandler.getLatestSnapshot());
         } finally {
             cameraHandler.lockCurrentSnapshot.unlock();
         }
     }
 
     private void sendFile(ChannelHandlerContext ctx, String fileUri, String contentType, Path path) throws IOException {
-        Path file = path.resolve(fileUri.substring(1));
-
-        ChunkedFile chunkedFile = new ChunkedFile(file.toFile());
-        HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);
-        response.headers().set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
-        response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-        response.headers().add(HttpHeaderNames.CONTENT_LENGTH, chunkedFile.length());
-        response.headers().add("Access-Control-Allow-Origin", "*");
-        response.headers().add("Access-Control-Expose-Headers", "*");
-        ctx.channel().write(response);
-        ctx.channel().write(chunkedFile);
-        ByteBuf footerBbuf = Unpooled.copiedBuffer("\r\n", 0, 2, StandardCharsets.UTF_8);
-        ctx.channel().writeAndFlush(footerBbuf);
+        ChunkedFile chunkedFile = new ChunkedFile(path.resolve(fileUri.substring(1)).toFile());
+        sendNettyResponse(ctx, contentType, chunkedFile.length(), chunkedFile);
     }
 
     @Override
@@ -246,4 +226,23 @@ public abstract class BaseCameraStreamServerHandler<T extends BaseFFmpegCameraHa
     }
 
     protected abstract void handlerChildRemoved(ChannelHandlerContext ctx);
+
+    private void sendNettyResponse(ChannelHandlerContext ctx, String contentType, byte[] data) {
+        ByteBuf snapshotData = Unpooled.copiedBuffer(cameraHandler.getLatestSnapshot());
+        sendNettyResponse(ctx, contentType, snapshotData.readableBytes(), snapshotData);
+    }
+
+    private void sendNettyResponse(ChannelHandlerContext ctx, String contentType, long length, Object data) {
+        HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+        response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);
+        response.headers().set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
+        response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+        response.headers().add(HttpHeaderNames.CONTENT_LENGTH, length);
+        response.headers().add("Access-Control-Allow-Origin", "*");
+        response.headers().add("Access-Control-Expose-Headers", "*");
+        ctx.channel().write(response);
+        ctx.channel().write(data);
+        ByteBuf footerBbuf = Unpooled.copiedBuffer("\r\n", 0, 2, StandardCharsets.UTF_8);
+        ctx.channel().writeAndFlush(footerBbuf);
+    }
 }

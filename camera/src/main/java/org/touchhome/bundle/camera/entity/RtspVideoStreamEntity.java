@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.camera.handler.impl.RtspStreamHandler;
-import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import javax.persistence.Entity;
 

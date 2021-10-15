@@ -60,7 +60,7 @@ public class PtzDevices {
 
     public List<PTZNode> getNodes() {
         GetNodes request = new GetNodes();
-        GetNodesResponse response = (GetNodesResponse) soap.createSOAPDeviceRequest(request, GetNodesResponse.class);
+        GetNodesResponse response = soap.createSOAPDeviceRequestType(request, GetNodesResponse.class);
         return response == null ? null : response.getPTZNode();
     }
 
@@ -75,7 +75,7 @@ public class PtzDevices {
         }
         request.setNodeToken(ptzConfiguration.getNodeToken());
 
-        GetNodeResponse response = (GetNodeResponse) soap.createSOAPDeviceRequest(request, GetNodeResponse.class);
+        GetNodeResponse response = soap.createSOAPDeviceRequestType(request, GetNodeResponse.class);
         return response == null ? null : response.getPTZNode();
     }
 

@@ -1,4 +1,4 @@
-package org.touchhome.bundle.telegram.workspace;
+package org.touchhome.bundle.telegram;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -9,9 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.touchhome.bundle.api.util.TouchHomeUtils.addToListSafe;
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.CHANNEL_FFMPEG_MOTION_ALARM;
@@ -21,9 +19,15 @@ import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.CH
  */
 public class Ffmpeg {
 
+    public static Map<String, Ffmpeg> ffmpegMap = new HashMap<>();
+
     private final FFmpegHandler handler;
     private final Logger log;
     private final Runnable destroyListener;
+    @Getter
+    private final String description;
+    @Getter
+    private final Date creationDate = new Date();
     private Process process = null;
     private FFmpegFormat format;
     @Getter
@@ -31,9 +35,12 @@ public class Ffmpeg {
     private IpCameraFfmpegThread ipCameraFfmpegThread;
     private int keepAlive = 8;
 
-    public Ffmpeg(FFmpegHandler handler, Logger log, FFmpegFormat format, String ffmpegLocation, String inputArguments,
+    public Ffmpeg(String key, String description, FFmpegHandler handler, Logger log, FFmpegFormat format, String ffmpegLocation, String inputArguments,
                   String input, String outArguments, String output, String username, String password, Runnable destroyListener) {
+        Ffmpeg.ffmpegMap.put(key, this);
+
         this.log = log;
+        this.description = description;
         this.format = format;
         this.destroyListener = destroyListener;
         this.handler = handler;

@@ -5,10 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
 import org.touchhome.bundle.camera.handler.impl.HlsStreamHandler;
-import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import javax.persistence.Entity;
 
@@ -50,10 +50,14 @@ public class HlsVideoStreamEntity extends BaseFFmpegStreamEntity<HlsVideoStreamE
     }
 
     @Override
+    public String getHlsStreamUrl() {
+        return getIeeeAddress();
+    }
+
+    @Override
     public void afterFetch(EntityContext entityContext) {
         super.afterFetch(entityContext);
         setStart(true);
-        setHlsStreamUrl(getIeeeAddress());
     }
 
     @Override

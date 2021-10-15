@@ -2,6 +2,7 @@ package org.oasis_open.docs.wsn.b_2;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.w3._2005._08.addressing.EndpointReferenceType;
 
 import javax.xml.bind.annotation.*;
@@ -10,6 +11,7 @@ import javax.xml.bind.annotation.*;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "NotificationMessageHolderType", propOrder = {"subscriptionReference", "topic", "producerReference", "message"})
+@ToString
 public class NotificationMessageHolderType {
 
     @XmlElement(name = "SubscriptionReference")

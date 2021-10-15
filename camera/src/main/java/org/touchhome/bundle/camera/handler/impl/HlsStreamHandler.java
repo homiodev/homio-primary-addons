@@ -12,12 +12,12 @@ public class HlsStreamHandler extends RtspStreamHandler {
     }
 
     @Override
-    protected String createRtspUri() {
+    public String getRtspUri(String profile) {
         return cameraEntity.getIeeeAddress();
     }
 
     @Override
-    public String getFFMPEGInputOptions() {
+    public String getFFMPEGInputOptions(String profile) {
         return "";
     }
 

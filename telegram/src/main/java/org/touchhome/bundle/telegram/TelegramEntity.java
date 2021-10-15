@@ -38,19 +38,6 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
 
     public static final String PREFIX = "telegram_";
 
-    @Getter
-    @UIField(order = 22, readOnly = true, hideOnEmpty = true)
-    @UIFieldColorStatusMatch
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @Enumerated(EnumType.STRING)
-    @Column(length = 32)
-    private Status status;
-
-    @Getter
-    @UIField(order = 23, readOnly = true, hideOnEmpty = true)
-    @Column(length = 512)
-    private String statusMessage;
-
     @UIField(order = 1, readOnly = true, hideOnEmpty = true, fullWidth = true, bg = "#334842", type = UIFieldType.HTML)
     public String getDescription() {
         if (StringUtils.isEmpty(getBotName()) || StringUtils.isEmpty(getBotToken())) {

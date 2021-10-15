@@ -16,12 +16,14 @@ import javax.xml.namespace.QName;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.w3c.dom.Element;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "TopicExpressionType", propOrder = { "content" })
+@ToString
 public class TopicExpressionType {
 
 	@XmlMixed

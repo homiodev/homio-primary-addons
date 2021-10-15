@@ -18,7 +18,7 @@ import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.raspberry.RaspberryEntryPoint;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
-import org.touchhome.bundle.raspberry.model.RaspberryDeviceEntity;
+import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
 
 import java.util.function.Consumer;
 
@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 @Component
 public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
 
-    private final MenuBlock.StaticMenuBlock<OnOffType> onOffMenu;
+    private final MenuBlock.StaticMenuBlock<OnOffType.OnOffTypeEnum> onOffMenu;
     private final MenuBlock.StaticMenuBlock<RaspberryGpioPin> allPinMenu;
     private final MenuBlock.StaticMenuBlock pwmPinMenu;
     private final MenuBlock.StaticMenuBlock<PinPullResistance> pullMenu;
@@ -54,7 +54,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
         this.pwmPinMenu = MenuBlock.ofStatic("pwmPinMenu", RaspberryGpioPin.class, RaspberryGpioPin.PIN12, p -> p.name().equals("PIN12") || p.name().equals("PIN33"));
 
         this.rpiIdMenu = MenuBlock.ofServerItems("rpiIdMenu", RaspberryDeviceEntity.class);
-        this.onOffMenu = MenuBlock.ofStatic("onOffMenu", OnOffType.class, OnOffType.ON);
+        this.onOffMenu = MenuBlock.ofStatic("onOffMenu", OnOffType.OnOffTypeEnum.class, OnOffType.OnOffTypeEnum.On);
 
         this.pullMenu = MenuBlock.ofStatic("pullMenu", PinPullResistance.class, PinPullResistance.PULL_UP);
 
@@ -67,7 +67,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
         this.writePwmPin.addArgument("PIN", this.pwmPinMenu);
         this.writePwmPin.addArgument("VALUE", 255);
 
-        this.isGpioInState = of(Scratch3Block.ofReporter(2, "get_gpio",  "[PIN] of [RPI]", this::isGpioInStateHandler), this.allPinMenu);
+        this.isGpioInState = of(Scratch3Block.ofReporter(2, "get_gpio", "[PIN] of [RPI]", this::isGpioInStateHandler), this.allPinMenu);
         this.isGpioInState.allowLinkBoolean((varId, workspaceBlock) -> {
             RaspberryGpioPin raspberryGpioPin = getPin(workspaceBlock);
             WorkspaceBooleanEntity workspaceBooleanEntity = workspaceBlock.getEntityContext().getEntity(WorkspaceBooleanEntity.PREFIX + varId);
@@ -94,7 +94,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
         this.set_pull = of(Scratch3Block.ofHandler(4, "set_pull", BlockType.command, "set [PULL] to [PIN] of [RPI]", this::setPullStateHandler), this.allPinMenu);
         this.set_pull.addArgument("PULL", this.pullMenu);
 
-        this.ds18b20Value = Scratch3Block.ofReporter(4, "ds18B20_status",  "DS18B20 [DS18B20] of [RPI]", this::getDS18B20ValueHandler);
+        this.ds18b20Value = Scratch3Block.ofReporter(4, "ds18B20_status", "DS18B20 [DS18B20] of [RPI]", this::getDS18B20ValueHandler);
         this.ds18b20Value.addArgument("DS18B20", this.ds18b20Menu);
         this.ds18b20Value.addArgument("RPI", this.rpiIdMenu);
     }
@@ -146,7 +146,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
     }
 
     private PinState getHighLow(WorkspaceBlock workspaceBlock) {
-        return workspaceBlock.getMenuValue("ONOFF", this.onOffMenu) == OnOffType.ON ? PinState.HIGH : PinState.LOW;
+        return workspaceBlock.getMenuValue("ONOFF", this.onOffMenu) == OnOffType.OnOffTypeEnum.On ? PinState.HIGH : PinState.LOW;
     }
 
     private RaspberryGpioPin getPin(WorkspaceBlock workspaceBlock) {

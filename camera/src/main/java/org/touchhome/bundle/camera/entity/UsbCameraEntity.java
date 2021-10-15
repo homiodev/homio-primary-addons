@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.BaseEntity;
+import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.UIField;
@@ -15,7 +16,6 @@ import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.handler.impl.UsbCameraHandler;
 import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
-import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import javax.persistence.Entity;
 import java.nio.file.Path;
@@ -94,7 +94,7 @@ public class UsbCameraEntity extends BaseFFmpegStreamEntity<UsbCameraEntity, Usb
     @Override
     protected void beforePersist() {
         super.beforePersist();
-        setHlsVideoCodec("libx264");
+        setVideoCodec("libx264");
         setSnapshotOutOptions("-vsync vfr~~~-q:v 2~~~-update 1~~~-frames:v 10");
         setStreamOptions("-vcodec libx264~~~-s 800x600~~~-bufsize:v 5M~~~-preset ultrafast~~~-vcodec libx264~~~-tune zerolatency~~~-b:v 2.5M");
     }

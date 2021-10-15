@@ -35,7 +35,7 @@ public class InitialDevices {
     public java.util.Date getDate() {
         Calendar cal;
 
-        GetSystemDateAndTimeResponse response = (GetSystemDateAndTimeResponse) soap.createSOAPDeviceRequest(new GetSystemDateAndTime(), GetSystemDateAndTimeResponse.class);
+        GetSystemDateAndTimeResponse response = soap.createSOAPDeviceRequestType(new GetSystemDateAndTime(), GetSystemDateAndTimeResponse.class);
 
         Date date = response.getSystemDateAndTime().getUTCDateTime().getDate();
         Time time = response.getSystemDateAndTime().getUTCDateTime().getTime();
@@ -47,14 +47,14 @@ public class InitialDevices {
     public GetDeviceInformationResponse getDeviceInformation() {
         if (this.deviceInformation == null) {
             GetDeviceInformation getHostname = new GetDeviceInformation();
-            this.deviceInformation = (GetDeviceInformationResponse) soap.createSOAPDeviceRequest(getHostname, GetDeviceInformationResponse.class);
+            this.deviceInformation = soap.createSOAPDeviceRequestType(getHostname, GetDeviceInformationResponse.class);
         }
         return this.deviceInformation;
     }
 
     public String getHostname() {
         GetHostname getHostname = new GetHostname();
-        GetHostnameResponse response = (GetHostnameResponse) soap.createSOAPDeviceRequest(getHostname, GetHostnameResponse.class);
+        GetHostnameResponse response = soap.createSOAPDeviceRequestType(getHostname, GetHostnameResponse.class);
         return response == null ? null : response.getHostnameInformation().getName();
     }
 
@@ -66,7 +66,7 @@ public class InitialDevices {
 
     public List<User> getUsers() {
         GetUsers getUsers = new GetUsers();
-        GetUsersResponse response = (GetUsersResponse) soap.createSOAPDeviceRequest(getUsers, GetUsersResponse.class);
+        GetUsersResponse response = soap.createSOAPDeviceRequestType(getUsers, GetUsersResponse.class);
         return response == null ? null : response.getUser();
     }
 
@@ -74,14 +74,13 @@ public class InitialDevices {
     public Capabilities getCapabilities() {
         GetCapabilities request = new GetCapabilities();
         GetCapabilitiesResponse response = soap.createSOAPRequest(request,
-                GetCapabilitiesResponse.class, onvifDeviceState.getServerDeviceUri(), onvifDeviceState.getServerDeviceIpLessUri());
+                GetCapabilitiesResponse.class, onvifDeviceState.getServerDeviceUri(), onvifDeviceState.getServerDeviceIpLessUri(), false);
         return response == null ? null : response.getCapabilities();
     }
 
     public List<Profile> getProfiles() {
-        GetProfiles request = new GetProfiles();
         if (this.profilesResponse == null) {
-            profilesResponse = soap.createSOAPMediaRequest(request, GetProfilesResponse.class);
+            profilesResponse = soap.createSOAPMediaRequest(new GetProfiles(), GetProfilesResponse.class);
         }
 
         return profilesResponse == null ? null : profilesResponse.getProfiles();
@@ -114,7 +113,7 @@ public class InitialDevices {
     public List<Service> getServices() {
         if (services == null) {
             GetServices request = new GetServices().setIncludeCapability(true);
-            GetServicesResponse response = (GetServicesResponse) soap.createSOAPDeviceRequest(request, GetServicesResponse.class);
+            GetServicesResponse response = soap.createSOAPDeviceRequestType(request, GetServicesResponse.class);
             services = response == null ? null : response.getService();
         }
         return services;

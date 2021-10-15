@@ -49,7 +49,8 @@ public class UsbCameraHandler extends BaseFFmpegCameraHandler<UsbCameraEntity> {
         outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + cameraEntity.getStreamStartPort());
         outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + (cameraEntity.getStreamStartPort() + 1));
 
-        ffmpegUsbStream = new Ffmpeg(this, log, IpCameraBindingConstants.FFmpegFormat.GENERAL, ffmpegLocation,
+        ffmpegUsbStream = new Ffmpeg("FFmpegUSB_UDP", "FFmpeg usb udp re streamer", this, log,
+                IpCameraBindingConstants.FFmpegFormat.GENERAL, ffmpegLocation,
                 "-loglevel warning " + (TouchHomeUtils.OS.isLinux() ? "-f v4l2" : "-f dshow"), url,
                 String.join(" ", outputParams),
                 outputs.stream().map(o -> "[f=mpegts]udp://" + o + "?pkt_size=1316").collect(Collectors.joining("|")),
@@ -82,12 +83,12 @@ public class UsbCameraHandler extends BaseFFmpegCameraHandler<UsbCameraEntity> {
     }
 
     @Override
-    protected String createRtspUri() {
+    public String getRtspUri(String profile) {
         return "udp://@" + outputs.get(0);
     }
 
     @Override
-    public String getFFMPEGInputOptions() {
+    public String getFFMPEGInputOptions(String profile) {
         return "";
     }
 
@@ -114,11 +115,6 @@ public class UsbCameraHandler extends BaseFFmpegCameraHandler<UsbCameraEntity> {
 
         @Override
         protected void handleLastHttpContent(byte[] incomingJpeg) {
-        }
-
-        @Override
-        protected boolean handleHttpRequest(QueryStringDecoder queryStringDecoder, ChannelHandlerContext ctx) {
-            return false;
         }
 
         @Override

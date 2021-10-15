@@ -13,7 +13,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <telegram.version>5.1.1</telegram.version>
+        <telegram.version>5.3.0</telegram.version>
     </properties>
 
     <dependencies>

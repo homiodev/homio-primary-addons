@@ -31,9 +31,11 @@ import java.util.concurrent.*;
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
 /**
+ * Not used yet or at all
  * responsible for finding cameras that are part of this group and displaying a group picture.
  */
 @Log4j2
+@Deprecated
 public class IpCameraGroupHandler {
 
     private final ScheduledExecutorService pollCameraGroup = Executors.newSingleThreadScheduledExecutor();
@@ -177,14 +179,8 @@ public class IpCameraGroupHandler {
                     serverFuture.await(4000);
                     log.info("IpCamera file server for a group of cameras has started on port {} for all NIC's.",
                             serverPort);
-                    updateState(CHANNEL_MJPEG_URL,
-                            new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.mjpeg"));
-                    updateState(CHANNEL_HLS_URL,
-                            new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.m3u8"));
-                    updateState(CHANNEL_IMAGE_URL,
-                            new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.jpg"));
                 } catch (Exception e) {
-                    updateStatus(Status.OFFLINE, "Exception occured when starting the streaming server. Try changing the serverPort to another number.");
+                    updateStatus(Status.OFFLINE, "Exception occurred when starting the streaming server. Try changing the serverPort to another number.");
                 }
             }
         }

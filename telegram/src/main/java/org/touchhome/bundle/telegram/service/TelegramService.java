@@ -95,20 +95,35 @@ public class TelegramService {
 
     public void setTelegramEntity(TelegramEntity telegramEntity) {
         if (telegramBots.containsKey(telegramEntity.getEntityID())) {
-            telegramBots.get(telegramEntity.getEntityID()).telegramEntity = telegramEntity;
+            getTelegramBot(telegramEntity).telegramEntity = telegramEntity;
         }
     }
 
     public void sendPhoto(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile, String caption) {
-        telegramBots.get(telegramEntity.getEntityID()).sendPhoto(users, inputFile, caption);
+        getTelegramBot(telegramEntity).sendPhoto(checkUsers(users), inputFile, caption);
     }
 
     public void sendVideo(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile, String caption) {
-        telegramBots.get(telegramEntity.getEntityID()).sendVideo(users, inputFile, caption);
+        getTelegramBot(telegramEntity).sendVideo(checkUsers(users), inputFile, caption);
     }
 
     public Message sendMessage(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, String message, String[] buttons) {
-        return telegramBots.get(telegramEntity.getEntityID()).sendMessage(users, message, buttons);
+        return getTelegramBot(telegramEntity).sendMessage(checkUsers(users), message, buttons);
+    }
+
+    private List<TelegramEntity.TelegramUser> checkUsers(List<TelegramEntity.TelegramUser> users) {
+        if(users.isEmpty()) {
+            throw new IllegalStateException("Telegram bot has no registered users");
+        }
+        return users;
+    }
+
+    private TelegramBot getTelegramBot(TelegramEntity telegramEntity) {
+        TelegramBot telegramBot = telegramBots.get(telegramEntity.getEntityID());
+        if (telegramBot == null) {
+            throw new IllegalStateException("TelegramBot <" + telegramEntity.getTitle() + " not started");
+        }
+        return telegramBot;
     }
 
     public void registerEvent(String command, String description, String id, BroadcastLock lock) {

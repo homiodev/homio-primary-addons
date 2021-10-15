@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +13,6 @@ import org.onvif.ver10.schema.Capabilities;
 import org.onvif.ver10.schema.Profile;
 import org.onvif.ver10.schema.VideoResolution;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
-import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -29,7 +27,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Log4j2
 @Getter
 public class OnvifDeviceState {
     private final String HOST_IP;
@@ -44,7 +41,6 @@ public class OnvifDeviceState {
     private String serverMediaUri;
     private String serverImagingUri;
     private String serverEventsUri;
-    private String subscriptionUri;
     private String analyticsUri;
 
     private String serverDeviceIpLessUri;
@@ -52,7 +48,6 @@ public class OnvifDeviceState {
     private String serverMediaIpLessUri;
     private String serverImagingIpLessUri;
     private String serverEventsIpLessUri;
-    @Setter
     private String subscriptionIpLessUri;
 
     private SOAP soap;
@@ -68,16 +63,21 @@ public class OnvifDeviceState {
     private String ip;
     private int onvifPort;
     private int serverPort;
+    private Logger log;
     private String profileToken;
     @Setter
     private Consumer<String> unreachableHandler;
     private Capabilities capabilities;
 
+    @Setter
+    private String subscriptionError;
+
     @SneakyThrows
-    public OnvifDeviceState(String ip, int onvifPort, int serverPort, String user, String password) {
+    public OnvifDeviceState(String ip, int onvifPort, int serverPort, String user, String password, Logger log) {
         this.ip = ip;
         this.onvifPort = onvifPort;
         this.serverPort = serverPort;
+        this.log = log;
         this.HOST_IP = ip + ":" + onvifPort;
         this.serverDeviceUri = "http://" + HOST_IP + "/onvif/device_service";
         this.serverDeviceIpLessUri = "/onvif/device_service";
@@ -188,7 +188,8 @@ public class OnvifDeviceState {
         if (ptzDevices.supportPTZ()) {
             ptzDevices.initFully();
         }
-        if (onvifCameraEntity.getCameraType().equals(CameraBrandHandlerDescription.DEFAULT_BRAND.getID())) {
+
+        if (onvifCameraEntity.getOnvifCameraBrandHandler().isSupportOnvifEvents()) {
             eventDevices.initFully();
         }
     }
@@ -324,12 +325,15 @@ public class OnvifDeviceState {
     }
 
     public void setSubscriptionUri(String subscriptionUri) {
-        this.subscriptionUri = subscriptionUri;
         this.subscriptionIpLessUri = SOAP.removeIpFromUrl(subscriptionUri);
     }
 
     public String getProfile(boolean highResolution) {
         return highResolution ? resolutionProfiles.firstEntry().getValue().getName() : resolutionProfiles.lastEntry().getValue().getName();
+    }
+
+    public void runOncePerMinute() {
+        this.eventDevices.runOncePerMinute();
     }
 
     @EqualsAndHashCode

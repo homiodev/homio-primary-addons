@@ -2,6 +2,7 @@ package org.w3._2005._08.addressing;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import javax.xml.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.Map;
 @Accessors(chain = true)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AttributedURIType", propOrder = {"value"})
+@ToString
 public class AttributedURIType {
 
     @XmlValue

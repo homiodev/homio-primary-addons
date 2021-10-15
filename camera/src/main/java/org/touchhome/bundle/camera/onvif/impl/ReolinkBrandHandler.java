@@ -18,6 +18,7 @@ import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.ui.UICameraAction;
 import org.touchhome.bundle.camera.ui.UICameraActionGetter;
 import org.touchhome.bundle.camera.ui.UICameraSelectionAttributeValues;
@@ -32,7 +33,7 @@ import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
 @Log4j2
 @CameraBrandHandler(name = "Reolink")
-public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
+public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements BrandCameraHasMotionAlarm {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private long tokenExpiration;
@@ -47,7 +48,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         String state = on ? "Auto" : "Off";
         String body = "[{\"cmd\":\"SetIrLights\",\"action\":0,\"param\":{\"IrLights\":{\"state\":\"" + state + "\"}}}]";
         if (firePostGetCode("/cgi-bin/api.cgi?cmd=SetIrLights", body, true)) {
-            setAttribute(CHANNEL_AUTO_LED, OnOffType.valueOf(on));
+            setAttribute(CHANNEL_AUTO_LED, OnOffType.of(on));
             entityContext.ui().sendSuccessMessage("Reolink set IR light applied successfully");
         }
     }
@@ -101,7 +102,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     @UICameraActionGetter(CHANNEL_SHOW_WATERMARK)
     public State getShowWatermark() {
         JsonType osd = (JsonType) getAttribute("Osd");
-        return osd == null ? null : OnOffType.valueOf(osd.getJsonNode().path("watermark").asInt() == 1);
+        return osd == null ? null : OnOffType.of(osd.getJsonNode().path("watermark").asInt() == 1);
     }
 
     @UICameraAction(name = CHANNEL_SHOW_DATETIME, order = 103, icon = "fas fa-copyright", group = "VIDEO.OSD")
@@ -112,7 +113,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     @UICameraActionGetter(CHANNEL_SHOW_DATETIME)
     public State getShowDateTime() {
         JsonType osd = (JsonType) getAttribute("Osd");
-        return osd == null ? null : OnOffType.valueOf(osd.getJsonNode().path("osdTime").path("enable").asInt() == 1);
+        return osd == null ? null : OnOffType.of(osd.getJsonNode().path("osdTime").path("enable").asInt() == 1);
     }
 
     @UICameraAction(name = CHANNEL_IMAGE_ROTATE, order = 160, icon = "fas fa-copyright", group = "VIDEO.ISP")
@@ -123,7 +124,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     @UICameraActionGetter(CHANNEL_IMAGE_ROTATE)
     public State getRotateImage() {
         JsonType isp = (JsonType) getAttribute("Isp");
-        return isp == null ? null : OnOffType.valueOf(isp.getJsonNode().path("rotation").asInt() == 1);
+        return isp == null ? null : OnOffType.of(isp.getJsonNode().path("rotation").asInt() == 1);
     }
 
     @UICameraAction(name = CHANNEL_IMAGE_MIRROR, order = 161, icon = "fas fa-copyright", group = "VIDEO.ISP")
@@ -134,7 +135,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     @UICameraActionGetter(CHANNEL_IMAGE_MIRROR)
     public State getMirrorImage() {
         JsonType isp = (JsonType) getAttribute("Isp");
-        return isp == null ? null : OnOffType.valueOf(isp.getJsonNode().path("mirroring").asInt() == 1);
+        return isp == null ? null : OnOffType.of(isp.getJsonNode().path("mirroring").asInt() == 1);
     }
 
     @UICameraAction(name = CHANNEL_ANTI_FLICKER, order = 162, icon = "fab fa-flickr", group = "VIDEO.ISP")
@@ -181,7 +182,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     @UICameraActionGetter(CHANNEL_3DNR)
     public State get3DNR() {
         JsonType isp = (JsonType) getAttribute("Isp");
-        return isp == null ? null : OnOffType.valueOf(isp.getJsonNode().path("nr3d").asInt() == 1);
+        return isp == null ? null : OnOffType.of(isp.getJsonNode().path("nr3d").asInt() == 1);
     }
 
     @UICameraAction(name = CHANNEL_RECORD_AUDIO, order = 80, group = "VIDEO.ENC", subGroup = "VIDEO.mainStream", subGroupIcon = "fas fa-dice-six")
@@ -192,7 +193,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     @UICameraActionGetter(CHANNEL_RECORD_AUDIO)
     public State getRecAudio() {
         JsonType enc = (JsonType) getAttribute("Enc");
-        return enc == null ? null : OnOffType.valueOf(enc.getJsonNode().path("audio").asInt() == 1);
+        return enc == null ? null : OnOffType.of(enc.getJsonNode().path("audio").asInt() == 1);
     }
 
     @UICameraAction(name = CHANNEL_STREAM_MAIN_RESOLUTION, order = 81, group = "VIDEO.ENC", subGroup = "VIDEO.mainStream", subGroupIcon = "fas fa-dice-six")
@@ -332,7 +333,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
                     setAttribute("IspRange", new JsonType(objectNode.path("range").path("Isp")));
                     break;
                 case "GetIrLights":
-                    setAttribute(CHANNEL_AUTO_LED, OnOffType.valueOf("Auto".equals(objectNode.path("value").path("IrLights").path("state").asText())));
+                    setAttribute(CHANNEL_AUTO_LED, OnOffType.of("Auto".equals(objectNode.path("value").path("IrLights").path("state").asText())));
                     break;
             }
         }
@@ -342,6 +343,11 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
     public String updateURL(String url) {
         loginIfRequire();
         return url + (url.contains("?") ? "&" : "?") + "token=" + token;
+    }
+
+    @Override
+    public boolean isSupportOnvifEvents() {
+        return true;
     }
 
     private void loginIfRequire() {
@@ -389,6 +395,11 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler {
         if (firePostGetCode("/cgi-bin/api.cgi?cmd=Set" + key, body, true)) {
             entityContext.ui().sendSuccessMessage("Reolink set " + key + " applied successfully");
         }
+    }
+
+    @Override
+    public void setMotionAlarmThreshold(int threshold) {
+
     }
 
     private class SelectResolution implements DynamicOptionLoader {

@@ -32,7 +32,7 @@ public class Scratch3FirmataBlocks extends Scratch3FirmataBaseBlock {
     private final Scratch3Block getProtocol;
     private final Scratch3Block isReady;
 
-    private final MenuBlock.StaticMenuBlock<OnOffType> onOffMenu;
+    private final MenuBlock.StaticMenuBlock<OnOffType.OnOffTypeEnum> onOffMenu;
     private final MenuBlock.StaticMenuBlock<CompareType> opMenu;
     private final MenuBlock.StaticMenuBlock<PinMode> pinModeMenu;
 
@@ -69,7 +69,7 @@ public class Scratch3FirmataBlocks extends Scratch3FirmataBaseBlock {
         this.pinMenuServo = MenuBlock.ofServer("pinMenuAnalog", REST_PIN + Pin.Mode.SERVO).setDependency(this.firmataIdMenu);
         this.pinMenuAll = MenuBlock.ofServer("pinMenuAll", REST_PIN).setDependency(this.firmataIdMenu);
 
-        this.onOffMenu = MenuBlock.ofStatic("onOffMenu", OnOffType.class, OnOffType.OFF);
+        this.onOffMenu = MenuBlock.ofStatic("onOffMenu", OnOffType.OnOffTypeEnum.class, OnOffType.OnOffTypeEnum.Off);
         this.opMenu = MenuBlock.ofStatic("opMenu", CompareType.class, CompareType.GREATER);
         this.pinModeMenu = MenuBlock.ofStatic("pinModeMenu", PinMode.class, PinMode.PULL_UP);
 
@@ -220,7 +220,7 @@ public class Scratch3FirmataBlocks extends Scratch3FirmataBaseBlock {
 
     private void digitalWriteHandler(WorkspaceBlock workspaceBlock) {
         updatePinValue(workspaceBlock, Pin.Mode.OUTPUT, pin ->
-                workspaceBlock.getMenuValue("ON_OFF", this.onOffMenu).longValue());
+                (long) workspaceBlock.getMenuValue("ON_OFF", this.onOffMenu).ordinal());
     }
 
     private void pwmWriteHandler(WorkspaceBlock workspaceBlock) {

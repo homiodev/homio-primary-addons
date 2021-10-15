@@ -9,12 +9,12 @@
     "RECORD_GIF": "Record a GIF"
   },
   "selection": {
+    "FFMPEGLoopRecordStorageService": "FFMPEG Loop record storage",
     "ReolinkBrandHandler": "Reolink Brand",
     "FoscamBrandHandler": "Foscam Brand",
     "DoorBirdBrandHandler": "DoorBird Brand",
     "OnvifBrandHandler": "General Onvif",
     "DahuaBrandHandler": "Dahua Brand",
-
     "WidgetCameraEntity": "Camera",
     "OnvifCameraEntity": "Onvif Camera",
     "UsbCameraEntity": "Usb Camera",
@@ -23,8 +23,8 @@
   },
   "WORKSPACE": {
     "camera": "Camera",
-    "camera-onvifalarm": "Onvif alarms",
-    "camera-onvifptz": "Onvif PTZ",
+    "camera-onvifalarm": "Camera ONVIF alarms",
+    "camera-onvifptz": "Camera onvif PTZ",
     "camera-ffmpeg": "FFmpeg"
   },
   "placeholder": {
@@ -67,7 +67,6 @@
       "showDateTime_description": "Show Date&Time",
       "showWatermark_description": "Show Watermark",
       "positionName_description": "Name position",
-
       "streamMainResolution": "Resolution",
       "streamMainBitRate": "Maximum Bitrate(kbps)",
       "streamMainFrameRate": "Frame Rate(fps)",
@@ -132,11 +131,19 @@
     }
   },
   "field": {
+    "eventSubscription": "Event subscription",
+    "lastAnswerFromCamera": "Last answer from camera",
+    "snapshotPollInterval": "Snapshot poll interval(sec)",
+    "cameraHandler": "Last answer from camera",
+    "segmentTime": "Segment time(sec)",
+    "maxSegments": "Max segments",
+    "muxerType": "Muxer type",
+    "selectStream": "Select Stream",
     "motionThreshold": "Motion threshold",
     "audioThreshold": "Audio threshold",
     "hlsScale": "Scale",
-    "hlsVideoCodec": "Video codec",
-    "hlsAudioCodec": "Audio codec",
+    "videoCodec": "Video codec",
+    "audioCodec": "Audio codec",
     "detectCameraLiveInterval": "Check camera alive interval",
     "mp4OutOptions": "MP4 OutOptions",
     "hlsUrl": "Hls url",
@@ -159,7 +166,7 @@
     "ffmpegInput": "FFMPEG input",
     "ffmpegInputOptions": "FFMPEG input options",
     "audioSource": "Audio source",
-    "hlsExtraOptions": "Extra options",
+    "extraOptions": "Extra options",
     "hlsListSize": "List size",
     "gifOutOptions": "GIF options",
     "mjpegOutOptions": "MJPEG options",
@@ -169,8 +176,15 @@
   },
   "help": {
     "field": {
+      "snapshotPollInterval": "Specify interval for taking snapshots for snapshots.mjpeg",
+      "videoCodec": "Specify video codec (copy, libx264)",
+      "audioCodec": "Specify audio codec (copy, aac)",
+      "segmentTime": "Set segment duration to time in sec., the value must be a duration specification",
+      "maxSegments": "Count of segments(files)",
+      "selectStream": "Choose which streams from the input(s) should be included in the output(s)",
+      "muxerType": "hls/segment FFMPEG muxer type",
       "motionThreshold": "Enable/Disable the motion alarm and control the sensitivity.",
-      "hlsExtraOptions": "Additional hls options",
+      "extraOptions": "Additional ffmpeg options",
       "hlsListSize": "Set the maximum number of playlist entries. If set to 0 the list file will contain all the segments.",
       "hlsUrl": "HTTP Live Streaming url",
       "cameraType": "Camera type",

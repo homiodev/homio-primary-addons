@@ -8,16 +8,14 @@ import lombok.extern.log4j.Log4j2;
 import org.json.JSONObject;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.exception.ServerException;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.netty.HasBootstrapServer;
 import org.touchhome.bundle.api.netty.NettyUtils;
 import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.api.ui.field.UIField;
-import org.touchhome.bundle.api.ui.field.UIFieldCodeEditor;
-import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
-import org.touchhome.bundle.api.ui.field.UIFieldIgnoreGetDefault;
+import org.touchhome.bundle.api.ui.field.*;
 import org.touchhome.bundle.api.ui.field.action.UIActionButton;
 import org.touchhome.bundle.api.ui.field.action.UIActionInput;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
@@ -25,9 +23,9 @@ import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.field.image.UIFieldImage;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.handler.BaseCameraHandler;
-import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import javax.persistence.Transient;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -57,6 +55,16 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
         return this;
     }
 
+    @UIField(order = 16, onlyEdit = true)
+    public boolean isAutoStart() {
+        return getJsonData("autoStart", false);
+    }
+
+    public BaseVideoCameraEntity<T, H> setAutoStart(boolean start) {
+        setJsonData("autoStart", start);
+        return this;
+    }
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @UIField(order = 500, readOnly = true)
     @UIFieldImage
@@ -79,6 +87,11 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
     @UIField(order = 300, onlyEdit = true, advanced = true)
     public boolean isHasAudioStream() {
         return getJsonData("hasAudioStream", false);
+    }
+
+    @UIField(order = 500, readOnly = true, type = UIFieldType.Duration)
+    public long getLastAnswerFromCamera() {
+        return cameraHandler == null ? 0 : cameraHandler.getLastAnswerFromCamera();
     }
 
     public T setHasAudioStream(boolean value) {
@@ -124,7 +137,7 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
         String filename = getFileNameToRecord(params);
         int secondsToRecord = params.getInt("secondsToRecord");
         log.debug("Recording {}.mp4 for {} seconds.", filename, secondsToRecord);
-        cameraHandler.recordMp4(filename, secondsToRecord);
+        cameraHandler.recordMp4(filename, null, secondsToRecord);
         return ActionResponseModel.showSuccess("SUCCESS");
     }
 
@@ -139,7 +152,7 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
         String filename = getFileNameToRecord(params);
         int secondsToRecord = params.getInt("secondsToRecord");
         log.debug("Recording {}.gif for {} seconds.", filename, secondsToRecord);
-        cameraHandler.recordGif(filename, secondsToRecord);
+        cameraHandler.recordGif(filename, null, secondsToRecord);
         return ActionResponseModel.showSuccess("SUCCESS");
     }
 
@@ -159,7 +172,6 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
     public void afterFetch(EntityContext entityContext) {
         H cameraHandler = (H) NettyUtils.putBootstrapServer(getEntityID(), (Supplier<HasBootstrapServer>) () -> createCameraHandler(entityContext));
         setCameraHandler(cameraHandler);
-        setHlsStreamUrl("http://" + TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + cameraHandler.getServerPort() + "/ipcamera.m3u8");
 
         if (getStatus() == Status.UNKNOWN) {
             try {
@@ -178,4 +190,11 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
         setStatus(Status.UNKNOWN);
     }
 
+    public Path getFolder() {
+        return TouchHomeUtils.getMediaPath().resolve("camera").resolve(getEntityID());
+    }
+
+    public Path getFolder(String profile) {
+        return TouchHomeUtils.getMediaPath().resolve("camera").resolve(getEntityID()).resolve(profile);
+    }
 }

@@ -7,19 +7,21 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.netty.NettyUtils;
 import org.touchhome.bundle.api.setting.SettingPluginStatus;
 import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
+import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
 import org.touchhome.bundle.camera.handler.BaseCameraHandler;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 import org.touchhome.bundle.camera.scanner.OnvifCameraHttpScanner;
 import org.touchhome.bundle.camera.setting.CameraStatusSetting;
-import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Objects;
 
 @Log4j2
@@ -51,6 +53,18 @@ public class CameraEntryPoint implements BundleEntryPoint {
     }
 
     public void init() {
+        entityContext.bgp().registerThreadsPuller("camera-ffmpeg", threadPuller -> {
+            for (Map.Entry<String, Ffmpeg> threadEntry : Ffmpeg.ffmpegMap.entrySet()) {
+                Ffmpeg ffmpeg = threadEntry.getValue();
+                if (ffmpeg.getIsAlive()) {
+                    threadPuller.addThread(threadEntry.getKey(), ffmpeg.getDescription(), ffmpeg.getCreationDate(),
+                            "working", null,
+                            "Command: " + String.join(" ", ffmpeg.getCommandArrayList())
+                    );
+                }
+            }
+        });
+
         // fulfill camera brands
         for (Class<? extends BaseOnvifCameraBrandHandler> brandHandlerClass :
                 entityContext.getClassesWithParent(BaseOnvifCameraBrandHandler.class, "org.touchhome.bundle.camera.onvif")) {
@@ -69,7 +83,7 @@ public class CameraEntryPoint implements BundleEntryPoint {
             }
         });
 
-        // lister start/stop status, changes
+        // lister start/stop status, any changes
         entityContext.event().addEntityUpdateListener(BaseVideoCameraEntity.class, "camera-change-listener", (cameraEntity, oldCameraEntity) -> {
             BaseCameraHandler cameraHandler = cameraEntity.getCameraHandler();
             if (cameraEntity.isStart() && !cameraHandler.isHandlerInitialized()) {
@@ -91,8 +105,12 @@ public class CameraEntryPoint implements BundleEntryPoint {
 
         // fire initialize camera if start is true
         for (BaseVideoCameraEntity cameraEntity : entityContext.findAll(BaseVideoCameraEntity.class)) {
-            if (cameraEntity.isStart()) {
-                cameraEntity.getCameraHandler().initialize(cameraEntity);
+            if (cameraEntity.isStart() || cameraEntity.isAutoStart()) {
+                if (!cameraEntity.isStart()) {
+                    entityContext.save(cameraEntity.setStart(true));
+                } else {
+                    cameraEntity.getCameraHandler().initialize(cameraEntity);
+                }
             }
         }
 

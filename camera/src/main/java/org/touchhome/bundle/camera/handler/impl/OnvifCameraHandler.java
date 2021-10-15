@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextBGP;
 import org.touchhome.bundle.api.model.Status;
@@ -76,10 +78,11 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     @Setter
     @Getter
     public String mjpegUri = "";
-    public boolean audioAlarmUpdateSnapshot = false;
-    public boolean snapshotPolling = false;
+
     private boolean streamingAutoFps = false;
+    public boolean snapshotPolling = false;
     private EntityContextBGP.ThreadContext<Void> snapshotJob = null;
+
     private Bootstrap mainBootstrap;
     private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
     private FullHttpRequest putRequestWithBody = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"), "");
@@ -87,9 +90,6 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     // basicAuth MUST remain private as it holds the cameraEntity.getPassword()
     private String basicAuth = "";
     private Object firstStreamedMsg = new Object();
-    private boolean motionAlarmUpdateSnapshot = false;
-    private boolean firstAudioAlarm = false;
-    private boolean firstMotionAlarm = false;
     private boolean streamingSnapshotMjpeg = false;
     private boolean updateAutoFps = false;
     @Getter
@@ -100,7 +100,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         super(cameraEntity, entityContext);
         this.onvifDeviceState = new OnvifDeviceState(cameraEntity.getIp(), cameraEntity.getOnvifPort(),
                 cameraEntity.getServerPort(),
-                cameraEntity.getUser(), cameraEntity.getPassword().asString());
+                cameraEntity.getUser(), cameraEntity.getPassword().asString(), log);
         this.onvifDeviceState.setUnreachableHandler(message -> this.disposeAndSetStatus(Status.OFFLINE, message));
 
         onvifDeviceState.getEventDevices().subscribe("RuleEngine/CellMotionDetector/Motion",
@@ -114,33 +114,33 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         onvifDeviceState.getEventDevices().subscribe("RuleEngine/LineDetector/Crossed",
                 (dataName, dataValue) -> motionDetected(dataName.equals("ObjectId"), CHANNEL_LINE_CROSSING_ALARM));
         onvifDeviceState.getEventDevices().subscribe("RuleEngine/TamperDetector/Tamper",
-                (dataName, dataValue) -> setAttribute(CHANNEL_TAMPER_ALARM, OnOffType.valueOf(dataValue.equals("true"))));
+                (dataName, dataValue) -> setAttribute(CHANNEL_TAMPER_ALARM, OnOffType.of(dataValue.equals("true"))));
         onvifDeviceState.getEventDevices().subscribe("Device/HardwareFailure/StorageFailure",
-                (dataName, dataValue) -> setAttribute(CHANNEL_STORAGE_ALARM, OnOffType.valueOf(dataValue.equals("true"))));
+                (dataName, dataValue) -> setAttribute(CHANNEL_STORAGE_ALARM, OnOffType.of(dataValue.equals("true"))));
 
         onvifDeviceState.getEventDevices().subscribe(
                 "VideoSource/ImageTooDark/AnalyticsService",
                 "VideoSource/ImageTooDark/ImagingService",
                 "VideoSource/ImageTooDark/RecordingService",
-                (dataName, dataValue) -> setAttribute(CHANNEL_TOO_DARK_ALARM, OnOffType.valueOf(dataValue.equals("true"))));
+                (dataName, dataValue) -> setAttribute(CHANNEL_TOO_DARK_ALARM, OnOffType.of(dataValue.equals("true"))));
 
         onvifDeviceState.getEventDevices().subscribe(
                 "VideoSource/GlobalSceneChange/AnalyticsService",
                 "VideoSource/GlobalSceneChange/ImagingService",
                 "VideoSource/GlobalSceneChange/RecordingService",
-                (dataName, dataValue) -> setAttribute(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.valueOf(dataValue.equals("true"))));
+                (dataName, dataValue) -> setAttribute(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.of(dataValue.equals("true"))));
 
         onvifDeviceState.getEventDevices().subscribe(
                 "VideoSource/ImageTooBright/AnalyticsService",
                 "VideoSource/ImageTooBright/ImagingService",
                 "VideoSource/ImageTooBright/RecordingService",
-                (dataName, dataValue) -> setAttribute(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.valueOf(dataValue.equals("true"))));
+                (dataName, dataValue) -> setAttribute(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.of(dataValue.equals("true"))));
 
         onvifDeviceState.getEventDevices().subscribe(
                 "VideoSource/ImageTooBlurry/AnalyticsService",
                 "VideoSource/ImageTooBlurry/ImagingService",
                 "VideoSource/ImageTooBlurry/RecordingService",
-                (dataName, dataValue) -> setAttribute(CHANNEL_TOO_BLURRY_ALARM, OnOffType.valueOf(dataValue.equals("true"))));
+                (dataName, dataValue) -> setAttribute(CHANNEL_TOO_BLURRY_ALARM, OnOffType.of(dataValue.equals("true"))));
     }
 
     // false clears the stored user/pass hash, true creates the hash
@@ -261,7 +261,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
                     socketChannel.pipeline().addLast(COMMON_HANDLER, new CommonCameraHandler());
 
                     String handlerName = CameraCoordinator.cameraBrands.get(cameraEntity.getCameraType()).getHandlerName();
-                    socketChannel.pipeline().addLast(handlerName, cameraEntity.getBaseOnvifCameraBrandHandler());
+                    socketChannel.pipeline().addLast(handlerName, cameraEntity.getOnvifCameraBrandHandler());
                 }
             });
         }
@@ -309,7 +309,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
                         MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline().get(AUTH_HANDLER);
                         authHandler.setURL(httpMethod, httpRequestURL);
 
-                        cameraEntity.getBaseOnvifCameraBrandHandler().handleSetURL(ch.pipeline(), httpRequestURL);
+                        cameraEntity.getOnvifCameraBrandHandler().handleSetURL(ch.pipeline(), httpRequestURL);
                         ch.writeAndFlush(request);
                     } else { // an error occurred
                         restart("Connection Timeout: Check your IP and PORT are correct and the camera can be reached.", null, false);
@@ -479,8 +479,9 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     }
 
     @Override
-    public String getFFMPEGInputOptions() {
+    public String getFFMPEGInputOptions(@Nullable String profile) {
         String inputOptions = cameraEntity.getFfmpegInputOptions();
+        String rtspUri = getRtspUri(profile);
         if (rtspUri.isEmpty()) {
             log.warn("The camera tried to use a FFmpeg feature when no valid input for FFmpeg is provided.");
             return null;
@@ -503,26 +504,8 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
             if (streamingAutoFps) {
                 startSnapshotPolling();
             }
-            if (cameraEntity.getUpdateImageWhen().contains("2")) {
-                if (!firstMotionAlarm) {
-                    if (!snapshotUri.isEmpty()) {
-                        sendHttpGET(snapshotUri);
-                    }
-                    firstMotionAlarm = true;// reset back to false when the jpg arrives.
-                }
-            } else if (cameraEntity.getUpdateImageWhen().contains("4")) { // During Motion Alarms
-                if (!snapshotPolling) {
-                    startSnapshotPolling();
-                }
-                firstMotionAlarm = true;
-                motionAlarmUpdateSnapshot = true;
-            }
         } else {
-            firstMotionAlarm = false;
-            motionAlarmUpdateSnapshot = false;
             if (streamingAutoFps) {
-                stopSnapshotPolling();
-            } else if (cameraEntity.getUpdateImageWhen().contains("4")) { // During Motion Alarms
                 stopSnapshotPolling();
             }
         }
@@ -531,27 +514,6 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     @Override
     protected BaseCameraStreamServerHandler createCameraStreamServerHandler() {
         return new OnvifCameraStreamHandler(this);
-    }
-
-    @Override
-    public void audioDetected(boolean on) {
-        super.audioDetected(on);
-        if (on) {
-            if (cameraEntity.getUpdateImageWhen().contains("3")) {
-                if (!firstAudioAlarm) {
-                    if (!snapshotUri.isEmpty()) {
-                        sendHttpGET(snapshotUri);
-                    }
-                    firstAudioAlarm = true;// reset back to false when the jpg arrives.
-                }
-            } else if (cameraEntity.getUpdateImageWhen().contains("5")) {// During audio alarms
-                firstAudioAlarm = true;
-                audioAlarmUpdateSnapshot = true;
-            }
-        } else {
-            firstAudioAlarm = false;
-            audioAlarmUpdateSnapshot = false;
-        }
     }
 
     @Override
@@ -569,17 +531,6 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
                 sendMjpegFrame(incomingSnapshot, autoSnapshotMjpegChannelGroup);
                 updateAutoFps = false;
             }
-        }
-
-        /*if (updateImageChannel) {
-            setAttribute(CHANNEL_IMAGE, new RawType(incomingSnapshot, "image/jpeg"));
-        } else */
-        if (firstMotionAlarm || motionAlarmUpdateSnapshot) {
-            setAttribute(CHANNEL_IMAGE, new RawType(incomingSnapshot, "image/jpeg"));
-            firstMotionAlarm = motionAlarmUpdateSnapshot = false;
-        } else if (firstAudioAlarm || audioAlarmUpdateSnapshot) {
-            setAttribute(CHANNEL_IMAGE, new RawType(incomingSnapshot, "image/jpeg"));
-            firstAudioAlarm = audioAlarmUpdateSnapshot = false;
         }
     }
 
@@ -695,25 +646,9 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         onvifDeviceState.getPtzDevices().gotoPreset(preset);
     }
 
-    protected void bringCameraOnline0() {
-        //     groupTracker.onlineCameraMap.put(cameraEntity.getEntityID(), this);
-
-        if (cameraEntity.getGifPreroll() > 0 || cameraEntity.getUpdateImageWhen().contains("1")) {
-            snapshotPolling = true;
-            snapshotJob = entityContext.bgp().schedule("snapshotJob", 1000, cameraEntity.getJpegPollTime(), TimeUnit.MILLISECONDS,
-                    this::snapshotRunnable, true, true);
-        }
-//        startSnapshot();
-     /*   if (!groupTracker.listOfGroupHandlers.isEmpty()) {
-            for (IpCameraGroupHandler handle : groupTracker.listOfGroupHandlers) {
-                handle.cameraOnline(cameraEntity);
-            }
-        }*/
-    }
-
     @Override
     protected void assembleAdditionalCameraActions(UIInputBuilder uiInputBuilder) {
-        cameraEntity.getBaseOnvifCameraBrandHandler().assembleActions(uiInputBuilder);
+        cameraEntity.getOnvifCameraBrandHandler().assembleActions(uiInputBuilder);
     }
 
     @Override
@@ -730,19 +665,11 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     }
 
     void snapshotRunnable() {
-        // Snapshot should be first to keep consistent time between shots
         sendHttpGET(snapshotUri);
-        if (snapCount > 0) {
-            if (--snapCount == 0) {
-                startGifRecord();
-            }
-        }
     }
 
     private void stopSnapshotPolling() {
-        if ((!streamingSnapshotMjpeg && cameraEntity.getGifPreroll() == 0
-                && !cameraEntity.getUpdateImageWhen().contains("1")) ||
-                cameraEntity.getUpdateImageWhen().contains("4")) { // only during Motion Alarms
+        if (!streamingSnapshotMjpeg) {
             snapshotPolling = false;
             if (snapshotJob != null) {
                 snapshotJob.cancel();
@@ -751,24 +678,25 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     }
 
     private void startSnapshotPolling() {
-        if (snapshotPolling || !ffmpegSnapshotGeneration) {
+        if (snapshotPolling || StringUtils.isEmpty(snapshotUri)) {
             return; // Already polling or creating with FFmpeg from RTSP
         }
-        if (streamingSnapshotMjpeg || streamingAutoFps || cameraEntity.getUpdateImageWhen().contains("4")) {
+        if (streamingSnapshotMjpeg || streamingAutoFps) {
             snapshotPolling = true;
-            snapshotJob = entityContext.bgp().schedule("snapshotJob", 200, cameraEntity.getJpegPollTime(), TimeUnit.MILLISECONDS,
-                    this::snapshotRunnable, true, true);
+            snapshotJob = entityContext.bgp().schedule(cameraEntity.getTitle() + " SnapshotJob", 200,
+                    cameraEntity.getSnapshotPollInterval(), TimeUnit.MILLISECONDS,
+                    () -> sendHttpGET(snapshotUri), true, true);
         }
     }
 
     @Override
     protected void pollCameraRunnable() {
-        fireFfmpeg(ffmpegHLS, Ffmpeg::stopProcessIfNoKeepAlive);
+        super.pollCameraRunnable();
 
         // Snapshot should be first to keep consistent time between shots
         if (streamingAutoFps) {
             updateAutoFps = true;
-            if (!snapshotPolling && !ffmpegSnapshotGeneration) {
+            if (!snapshotPolling && StringUtils.isEmpty(snapshotUri)) {
                 // Dont need to poll if creating from RTSP stream with FFmpeg or we are polling at full rate already.
                 sendHttpGET(snapshotUri);
             }
@@ -776,7 +704,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
             sendHttpGET(snapshotUri);
         }
         // what needs to be done every poll//
-        cameraEntity.getBaseOnvifCameraBrandHandler().pollCameraRunnable(this);
+        cameraEntity.getOnvifCameraBrandHandler().pollCameraRunnable(this);
 
         if (openChannels.size() > 18) {
             log.debug("There are {} open Channels being tracked.", openChannels.size());
@@ -796,18 +724,15 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         snapshotUri = getCorrectUrlFormat(cameraEntity.getSnapshotUrl());
         mjpegUri = getCorrectUrlFormat(cameraEntity.getMjpegUrl());
 
-        cameraEntity.getBaseOnvifCameraBrandHandler().initialize(entityContext);
+        cameraEntity.getOnvifCameraBrandHandler().initialize(entityContext);
 
-        pullConfigSchedule = entityContext.bgp().schedule("pull-configs-" + cameraEntity.getEntityID(), 30000,
-                60, TimeUnit.SECONDS, () -> cameraEntity.getBaseOnvifCameraBrandHandler()
-                        .runOncePerMinute(entityContext), false, false);
+        pullConfigSchedule = entityContext.bgp().schedule("Camera " + cameraEntity.getEntityID() + " run per minute", 30000,
+                60, TimeUnit.SECONDS, () -> {
+                    onvifDeviceState.runOncePerMinute();
+                    cameraEntity.getOnvifCameraBrandHandler().runOncePerMinute(entityContext);
+                }, false, false);
 
-        // for poll times above 9 seconds don't display a warning about the Image channel.
-        if (cameraEntity.getJpegPollTime() <= 9000 && cameraEntity.getUpdateImageWhen().contains("1")) {
-            log.warn("The Image channel is set to update more often than 8 seconds. This is not recommended. The Image channel is best used only for higher poll times. See the readme file on how to display the cameras picture for best results or use a higher poll time.");
-        }
-
-        if (("ffmpeg".equals(snapshotUri) || isEmpty(snapshotUri)) && isEmpty(rtspUri)) {
+        if (("ffmpeg".equals(snapshotUri) || isEmpty(snapshotUri)) && isEmpty(getRtspUri(null))) {
             throw new RuntimeException("Camera unable to find valid Snapshot and/or RTSP URL.");
         }
 
@@ -818,9 +743,8 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         setAttribute("SNAPSHOT_URI", new StringType(snapshotUri));
     }
 
-    @Override
-    protected String createRtspUri() {
-        return cameraEntity.getFfmpegInput().isEmpty() ? onvifDeviceState.getMediaDevices().getRTSPStreamUri() : cameraEntity.getFfmpegInput();
+    public String getRtspUri(@Nullable String profile) {
+        return cameraEntity.getFfmpegInput().isEmpty() ? onvifDeviceState.getMediaDevices().getRTSPStreamUri(profile) : cameraEntity.getFfmpegInput();
     }
 
     @Override
@@ -938,6 +862,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
                                 incomingJpeg[bytesAlreadyReceived++] = content.content().getByte(i);
                             }
                             if (content instanceof LastHttpContent) {
+                                bringCameraOnline();
                                 processSnapshot(incomingJpeg);
                                 // testing next line and if works need to do a full cleanup of this function.
                                 closeConnection = true;
@@ -1029,7 +954,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
                 IdleStateEvent e = (IdleStateEvent) evt;
                 // If camera does not use the channel for X amount of time it will close.
                 if (e.state() == IdleState.READER_IDLE) {
-                    String urlToKeepOpen = cameraEntity.getBaseOnvifCameraBrandHandler().getUrlToKeepOpenForIdleStateEvent();
+                    String urlToKeepOpen = cameraEntity.getOnvifCameraBrandHandler().getUrlToKeepOpenForIdleStateEvent();
                     ChannelTracking channelTracking = channelTrackingMap.get(urlToKeepOpen);
                     if (channelTracking != null) {
                         if (channelTracking.getChannel() == ctx.channel()) {
@@ -1063,7 +988,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         }
 
         @Override
-        protected boolean handleHttpRequest(QueryStringDecoder queryStringDecoder, ChannelHandlerContext ctx) {
+        protected void handleChildrenHttpRequest(QueryStringDecoder queryStringDecoder, ChannelHandlerContext ctx) {
             switch (queryStringDecoder.path()) {
                 case "/ipcamera.jpg":
                     if (!cameraHandler.snapshotPolling && !cameraHandler.snapshotUri.equals("")) {
@@ -1071,29 +996,27 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
                     }
                     if (cameraHandler.latestSnapshot.length == 1) {
                         log.warn("ipcamera.jpg was requested but there is no jpg in ram to send.");
-                        return true;
                     }
-                    return true;
+                    break;
                 case "/snapshots.mjpeg":
                     handlingSnapshotStream = true;
                     cameraHandler.startSnapshotPolling();
                     cameraHandler.setupSnapshotStreaming(true, ctx, false);
-                    return true;
+                    break;
                 case "/ipcamera.mjpeg":
                     cameraHandler.setupMjpegStreaming(true, ctx);
                     handlingMjpeg = true;
-                    return true;
+                    break;
                 case "/autofps.mjpeg":
                     handlingSnapshotStream = true;
                     cameraHandler.setupSnapshotStreaming(true, ctx, true);
-                    return true;
+                    break;
                 case "/instar":
                     InstarBrandHandler instar = new InstarBrandHandler(cameraHandler);
                     instar.alarmTriggered(queryStringDecoder.uri());
                     ctx.close();
-                    return true;
+                    break;
             }
-            return false;
         }
 
         @Override
@@ -1118,22 +1041,22 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
 
     @Override
     protected void setAudioAlarmThreshold(int audioThreshold) {
-        ((BrandCameraHasAudioAlarm) cameraEntity.getBaseOnvifCameraBrandHandler()).setAudioAlarmThreshold(audioThreshold);
+        ((BrandCameraHasAudioAlarm) cameraEntity.getOnvifCameraBrandHandler()).setAudioAlarmThreshold(audioThreshold);
     }
 
     @Override
     protected void setMotionAlarmThreshold(int motionThreshold) {
-        ((BrandCameraHasMotionAlarm) cameraEntity.getBaseOnvifCameraBrandHandler()).setMotionAlarmThreshold(motionThreshold);
+        ((BrandCameraHasMotionAlarm) cameraEntity.getOnvifCameraBrandHandler()).setMotionAlarmThreshold(motionThreshold);
     }
 
     @Override
     protected boolean isAudioAlarmHandlesByCamera() {
-        return cameraEntity.getBaseOnvifCameraBrandHandler() instanceof BrandCameraHasAudioAlarm;
+        return cameraEntity.getOnvifCameraBrandHandler() instanceof BrandCameraHasAudioAlarm;
     }
 
     @Override
     protected boolean isMotionAlarmHandlesByCamera() {
-        return cameraEntity.getBaseOnvifCameraBrandHandler() instanceof BrandCameraHasMotionAlarm;
+        return cameraEntity.getOnvifCameraBrandHandler() instanceof BrandCameraHasMotionAlarm;
     }
 
     @Override

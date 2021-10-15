@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextBGP;
 import org.touchhome.bundle.api.model.Status;
@@ -43,11 +44,13 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     @Getter
     protected T cameraEntity;
     protected String cameraEntityID;
+    @Getter
     protected String ffmpegLocation;
     @Getter
     protected Map<String, State> attributes = new ConcurrentHashMap<>();
     @Getter
     protected Map<String, State> requestAttributes = new ConcurrentHashMap<>();
+    @Getter
     protected long lastAnswerFromCamera;
     @Getter
     private Path ffmpegGifOutputPath;
@@ -77,7 +80,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         this.broadcastLockManager = entityContext.getBean(BroadcastLockManager.class);
         this.serverPort = cameraEntity.getServerPort();
 
-        Path ffmpegOutputPath = TouchHomeUtils.getMediaPath().resolve("camera").resolve(cameraEntityID);
+        Path ffmpegOutputPath = cameraEntity.getFolder();
         ffmpegImageOutputPath = TouchHomeUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("images"));
         ffmpegGifOutputPath = TouchHomeUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("gif"));
         ffmpegMP4OutputPath = TouchHomeUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("mp4"));
@@ -156,16 +159,15 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
 
     protected abstract void dispose0();
 
-    public abstract void recordMp4(String fileName, int secondsToRecord);
+    public abstract void recordMp4(String fileName, @Nullable String profile, int secondsToRecord);
 
-    public abstract void recordGif(String fileName, int secondsToRecord);
+    public abstract void recordGif(String fileName, @Nullable String profile, int secondsToRecord);
 
     public final void bringCameraOnline() {
         lastAnswerFromCamera = System.currentTimeMillis();
         if (!isCameraOnline && isHandlerInitialized) {
             isCameraOnline = true;
             updateStatus(Status.ONLINE, "Success");
-            bringCameraOnline0();
 
             disposeCameraConnectionJob();
             pollCameraJob = entityContext.bgp().schedule("poll-camera-runnable-" + cameraEntityID,
@@ -185,10 +187,6 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
             pollCameraJob.cancel();
             pollCameraJob = null;
         }
-    }
-
-    protected void bringCameraOnline0() {
-
     }
 
     public final void restart(String reason, T cameraEntity, boolean force) {

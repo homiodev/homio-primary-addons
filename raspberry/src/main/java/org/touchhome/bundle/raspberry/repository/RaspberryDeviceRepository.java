@@ -9,7 +9,7 @@ import org.touchhome.bundle.api.repository.AbstractRepository;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.api.workspace.HasWorkspaceVariableLinkAbility;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
-import org.touchhome.bundle.raspberry.model.RaspberryDeviceEntity;
+import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
 import org.touchhome.bundle.raspberry.workspace.Scratch3RaspberryBlocks;
 
 @Repository

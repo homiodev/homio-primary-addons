@@ -2,6 +2,7 @@ package org.onvif.ver10.events.wsdl;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 
@@ -20,6 +21,7 @@ import java.util.List;
         "notificationMessage"
 })
 @XmlRootElement(name = "PullMessagesResponse")
+@ToString
 public class PullMessagesResponse {
 
     @XmlElement(name = "CurrentTime", required = true)

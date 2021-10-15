@@ -13,10 +13,6 @@ public class IpCameraBindingConstants {
     public static final String MOTION_ALARM = "motionAlarm";
 
     // List of all Channel ids
-    public static final String CHANNEL_IMAGE = "image";
-    public static final String CHANNEL_IMAGE_URL = "imageUrl";
-    public static final String CHANNEL_MJPEG_URL = "mjpegUrl";
-    public static final String CHANNEL_HLS_URL = "hlsUrl";
     public static final String CHANNEL_PAN = "pan";
     public static final String CHANNEL_TILT = "tilt";
     public static final String CHANNEL_ZOOM = "zoom";

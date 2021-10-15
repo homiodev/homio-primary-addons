@@ -99,7 +99,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
         }
 
         log.info("Onvif ip alive: <{}>. Fetching camera capabilities", host);
-        OnvifDeviceState onvifDeviceState = new OnvifDeviceState(ipAddress, port, 0, user, password);
+        OnvifDeviceState onvifDeviceState = new OnvifDeviceState(ipAddress, port, 0, user, password, log);
         try {
             onvifDeviceState.checkForErrors();
             foundDeviceServices(onvifDeviceState, false, rediscoverIpAddresses);
@@ -116,7 +116,8 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
     private boolean tryFindCameraFromDb(List<OnvifCameraEntity> allSavedCameraEntities, String ipAddress, Integer port) {
         log.info("Onvif camera got fault auth response. Checking user/pwd from other all saved cameras. Maybe ip address has been changed");
         for (OnvifCameraEntity entity : allSavedCameraEntities) {
-            OnvifDeviceState entityOnvifDeviceState = new OnvifDeviceState(ipAddress, port, 0, entity.getUser(), entity.getPassword().asString());
+            OnvifDeviceState entityOnvifDeviceState = new OnvifDeviceState(ipAddress, port, 0,
+                    entity.getUser(), entity.getPassword().asString(), log);
             try {
                 entityOnvifDeviceState.checkForErrors();
                 foundDeviceServices(entityOnvifDeviceState, false, false);

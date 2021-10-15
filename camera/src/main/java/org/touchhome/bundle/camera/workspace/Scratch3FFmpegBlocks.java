@@ -57,7 +57,7 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
         applyParentBlocks(ffmpegBuilder, workspaceBlock.getParent());
 
         String ffmpegLocation = entityContext.setting().getValue(FFMPEGInstallPathSetting.class).toString();
-        Ffmpeg ffmpeg = new Ffmpeg(new Ffmpeg.FFmpegHandler() {
+        Ffmpeg ffmpeg = new Ffmpeg("FFMpeg_" + workspaceBlock.getId(), "FFMpeg workspace general command", new Ffmpeg.FFmpegHandler() {
             @Override
             public String getEntityID() {
                 return null;

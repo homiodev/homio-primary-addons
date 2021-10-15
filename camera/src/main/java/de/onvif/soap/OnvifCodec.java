@@ -10,14 +10,12 @@ import io.netty.util.ReferenceCountUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.function.BiConsumer;
-
 @Log4j2
 @RequiredArgsConstructor
 public class OnvifCodec extends ChannelDuplexHandler {
 
     private String incomingMessage = "";
-    private final BiConsumer<String, Integer> consumer;
+    private final OnvifEventHandler onvifEventHandler;
     private int code;
 
     @Override
@@ -31,7 +29,7 @@ public class OnvifCodec extends ChannelDuplexHandler {
                 incomingMessage += content.content().toString(CharsetUtil.UTF_8);
             }
             if (msg instanceof LastHttpContent) {
-                consumer.accept(incomingMessage, code);
+                onvifEventHandler.handle(incomingMessage, code);
                 ctx.close();
             }
             if (msg instanceof DefaultHttpResponse) {
@@ -49,5 +47,9 @@ public class OnvifCodec extends ChannelDuplexHandler {
         }
         log.debug("Exception on ONVIF connection: {}", cause.getMessage());
         ctx.close();
+    }
+
+    public interface OnvifEventHandler {
+        void handle(String message, int code);
     }
 }

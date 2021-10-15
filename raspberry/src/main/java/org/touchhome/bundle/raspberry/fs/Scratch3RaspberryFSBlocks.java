@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.storage.Scratch3BaseFileSystemExtensionBlocks;
 import org.touchhome.bundle.raspberry.RaspberryEntryPoint;
-import org.touchhome.bundle.raspberry.model.RaspberryDeviceEntity;
+import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
 
 @Getter
 @Component

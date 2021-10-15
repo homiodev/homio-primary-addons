@@ -1,6 +1,8 @@
 package org.touchhome.bundle.camera.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.util.Pair;
+import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.entity.dependency.RequireExecutableDependency;
 import org.touchhome.bundle.api.netty.HasBootstrapServer;
 import org.touchhome.bundle.api.netty.NettyUtils;
@@ -9,10 +11,12 @@ import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
 import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.util.SecureString;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.handler.BaseFFmpegCameraHandler;
-import org.touchhome.bundle.camera.ui.RestartHandlerOnChange;
 import org.touchhome.bundle.camera.util.FFMPEGDependencyExecutableInstaller;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 @RequireExecutableDependency(installer = FFMPEGDependencyExecutableInstaller.class)
@@ -96,21 +100,10 @@ public abstract class BaseFFmpegStreamEntity<T extends BaseFFmpegStreamEntity, H
         setJsonData("motionOptions", value);
     }
 
-    @UIField(order = 145, onlyEdit = true, advanced = true)
-    @RestartHandlerOnChange
-    public int getGifPreroll() {
-        return getJsonData("gifPreroll", 0);
-    }
-
-    public void setGifPreroll(int value) {
-        setJsonData("gifPreroll", value);
-    }
-
     @UIField(order = 110)
-    @UIFieldSlider(min = 0, max = 1000)
-    @RestartHandlerOnChange
+    @UIFieldSlider(min = 1, max = 100)
     public int getMotionThreshold() {
-        return getJsonData("motionThreshold", 250);
+        return getJsonData("motionThreshold", 40);
     }
 
     public void setMotionThreshold(int value) {
@@ -118,10 +111,19 @@ public abstract class BaseFFmpegStreamEntity<T extends BaseFFmpegStreamEntity, H
     }
 
     @UIField(order = 112)
-    @UIFieldSlider(min = 0, max = 100)
-    @RestartHandlerOnChange
+    @UIFieldSlider(min = 1, max = 100)
     public int getAudioThreshold() {
-        return getJsonData("audioThreshold", 35);
+        return getJsonData("audioThreshold", 40);
+    }
+
+    @UIField(order = 200)
+    @UIFieldSlider(min = 1, max = 30)
+    public int getSnapshotPollInterval() {
+        return getJsonData("spi", 5);
+    }
+
+    public void setSnapshotPollInterval(int value) {
+        setJsonData("spi", value);
     }
 
     public void setAudioThreshold(int value) {
@@ -140,7 +142,6 @@ public abstract class BaseFFmpegStreamEntity<T extends BaseFFmpegStreamEntity, H
 
     @Override
     protected void beforePersist() {
-        setGifPreroll(0);
         setMp4OutOptions("-c:v copy~~~-c:a copy");
         setMjpegOutOptions("-q:v 5~~~-r 2~~~-vf scale=640:-2~~~-update 1");
         setSnapshotOutOptions("-vsync vfr~~~-q:v 2~~~-update 1~~~-frames:v 1");
@@ -161,5 +162,51 @@ public abstract class BaseFFmpegStreamEntity<T extends BaseFFmpegStreamEntity, H
     @Override
     public H getCameraHandler() {
         return super.getCameraHandler();
+    }
+
+    public String getHlsStreamUrl() {
+        return "http://" + TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + getCameraHandler().getServerPort() + "/ipcamera.m3u8";
+    }
+
+    public String getSnapshotsMjpegUrl() {
+        return "http://" + TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + getCameraHandler().getServerPort() + "/snapshots.mjpeg";
+    }
+
+    public String getAutofpsMjpegUrl() {
+        return "http://" + TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + getCameraHandler().getServerPort() + "/autofps.mjpeg";
+    }
+
+    public String getImageUrl() {
+        return "http://" + TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + getCameraHandler().getServerPort() + "/ipcamera.jpg";
+    }
+
+    public String getIpCameraMjpeg() {
+        return "http://" + TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + getCameraHandler().getServerPort() + "/ipcamera.mjpeg";
+    }
+
+    @Override
+    public Collection<Pair<String, String>> getVideoSources() {
+        return Arrays.asList(
+                Pair.of("autofps.mjpeg", "autofps.mjpeg"),
+                Pair.of("snapshots.mjpeg", "snapshots.mjpeg"),
+                Pair.of("ipcamera.mjpeg", "ipcamera.mjpeg"),
+                Pair.of("HLS", "HLS"));
+    }
+
+    @Override
+    public String getStreamUrl(String source) {
+        switch (source) {
+            case "autofps.mjpeg":
+                return getAutofpsMjpegUrl();
+            case "snapshots.mjpeg":
+                return getSnapshotsMjpegUrl();
+            case "HLS":
+                return getHlsStreamUrl();
+            case "ipcamera.mjpeg":
+                return getIpCameraMjpeg();
+            case "image.jpg":
+                return getImageUrl();
+        }
+        return null;
     }
 }

@@ -13,7 +13,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Logger;
 import org.oasis_open.docs.wsn.b_2.Renew;
 import org.oasis_open.docs.wsn.b_2.Unsubscribe;
 import org.onvif.ver10.events.wsdl.CreatePullPointSubscription;
@@ -40,11 +40,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-@Log4j2
-public class SOAP implements BiConsumer<String, Integer> {
+public class SOAP implements OnvifCodec.OnvifEventHandler {
 
     public static final DatatypeFactory DATATYPE_FACTORY = new DatatypeFactoryImpl();
 
@@ -60,14 +58,14 @@ public class SOAP implements BiConsumer<String, Integer> {
         this.onvifDeviceState = onvifDeviceState;
     }
 
-    public static <T> T parseMessage(Class<T> responseClass, String message) {
+    public static <T> T parseMessage(Class<T> responseClass, String message, Logger log) {
         try {
             SOAPMessage soapResponse = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL)
                     .createMessage(null, new ByteArrayInputStream(message.getBytes()));
             Unmarshaller unmarshaller = JAXBContext.newInstance(responseClass).createUnmarshaller();
             return (T) unmarshaller.unmarshal(soapResponse.getSOAPBody().extractContentAsDocument());
         } catch (Exception e) {
-            log.warn("Could not unmarshal, ended in SOAP fault.");
+            log.warn("Could not unmarshal for <{}>, ended in SOAP fault. Msg: <{}>", responseClass.getSimpleName(), message);
         }
         return null;
     }
@@ -75,31 +73,45 @@ public class SOAP implements BiConsumer<String, Integer> {
     @SneakyThrows
     public Object createSOAPDeviceRequest(Object soapRequestElem, Class soapResponseClass) {
         return createSOAPRequest(soapRequestElem, soapResponseClass, onvifDeviceState.getServerDeviceUri(),
-                onvifDeviceState.getServerDeviceIpLessUri());
+                onvifDeviceState.getServerDeviceIpLessUri(), false);
+    }
+
+    @SneakyThrows
+    public Object createSOAPDeviceRequestThrowError(Object soapRequestElem, Class soapResponseClass) {
+        return createSOAPRequest(soapRequestElem, soapResponseClass, onvifDeviceState.getServerDeviceUri(),
+                onvifDeviceState.getServerDeviceIpLessUri(), true);
+    }
+
+    public <T> T createSOAPDeviceRequestType(Object soapRequestElem, Class<T> soapResponseClass) {
+        return (T) createSOAPDeviceRequest(soapRequestElem, soapResponseClass);
+    }
+
+    public <T> T createSOAPDeviceRequestTypeThrowError(Object soapRequestElem, Class<T> soapResponseClass) {
+        return (T) createSOAPDeviceRequestThrowError(soapRequestElem, soapResponseClass);
     }
 
     @SneakyThrows
     public <T> T createSOAPPtzRequest(Object soapRequestElem, Class<T> soapResponseClass) {
         return createSOAPRequest(soapRequestElem, soapResponseClass, onvifDeviceState.getServerPtzUri(),
-                onvifDeviceState.getServerPtzIpLessUri());
+                onvifDeviceState.getServerPtzIpLessUri(), false);
     }
 
     @SneakyThrows
     public <T> T createSOAPMediaRequest(Object soapRequestElem, Class<T> soapResponseClass) {
         return createSOAPRequest(soapRequestElem, soapResponseClass, onvifDeviceState.getServerMediaUri(),
-                onvifDeviceState.getServerMediaIpLessUri());
+                onvifDeviceState.getServerMediaIpLessUri(), false);
     }
 
     @SneakyThrows
     public <T> T createSOAPImagingRequest(Object soapRequestElem, Class<T> soapResponseClass) {
         return createSOAPRequest(soapRequestElem, soapResponseClass, onvifDeviceState.getServerImagingUri(),
-                onvifDeviceState.getServerImagingIpLessUri());
+                onvifDeviceState.getServerImagingIpLessUri(), false);
     }
 
     @SneakyThrows
     public Object createSOAPEventsRequest(Object soapRequestElem, Class soapResponseClass) {
         return createSOAPRequest(soapRequestElem, soapResponseClass, onvifDeviceState.getServerEventsUri(),
-                onvifDeviceState.getServerEventsIpLessUri());
+                onvifDeviceState.getServerEventsIpLessUri(), false);
     }
 
     @SneakyThrows
@@ -114,13 +126,13 @@ public class SOAP implements BiConsumer<String, Integer> {
 
     @Override
     @SneakyThrows
-    public void accept(String message, Integer code) {
-        log.debug("Onvif {} reply is:{}", code, message);
+    public void handle(String message, int code) {
+        onvifDeviceState.getLogger().debug("Onvif {} reply is:{}", code, message);
         boolean handled = false;
         for (Map.Entry<String, AsyncClassListener> entry : asyncSoapMessageToType.entrySet()) {
             if (message.contains(entry.getKey())) {
                 handled = true;
-                Object soapResponseElem = parseMessage(entry.getValue().responseClass, message);
+                Object soapResponseElem = parseMessage(entry.getValue().responseClass, message, onvifDeviceState.getLogger());
                 if (soapResponseElem != null) {
                     for (Consumer<Object> consumer : entry.getValue().handlers.values()) {
                         consumer.accept(soapResponseElem);
@@ -130,9 +142,9 @@ public class SOAP implements BiConsumer<String, Integer> {
         }
         if (!handled) {
             if (code != 200) {
-                log.error("Accepted not expected onvif soap message with code: <{}>. Msg: <{}>", code, message);
+                onvifDeviceState.getLogger().error("Accepted not expected onvif soap message with code: <{}>. Msg: <{}>", code, message);
             } else {
-                log.warn("Accepted not expected onvif soap message with code: <{}>. Msg: <{}>", code, message);
+                onvifDeviceState.getLogger().warn("Accepted not expected onvif soap message with code: <{}>. Msg: <{}>", code, message);
             }
         }
     }
@@ -194,8 +206,8 @@ public class SOAP implements BiConsumer<String, Integer> {
         soapMessage.writeTo(outputStream);
         String fullXml = outputStream.toString();
         if (logging) {
-            log.info("Request async SOAP Message (" + soapRequestElem.getClass().getSimpleName() + "): ");
-            log.info("{}", fullXml);
+            onvifDeviceState.getLogger().info("Request async SOAP Message (" + soapRequestElem.getClass().getSimpleName() + "): ");
+            onvifDeviceState.getLogger().info("{}", fullXml);
         }
 
         request.headers().add("SOAPAction", "\"" + actionString + "/" + deviceRequestType + "\"");
@@ -208,7 +220,7 @@ public class SOAP implements BiConsumer<String, Integer> {
     /**
      * @return SOAP Response Element
      */
-    public <T> T createSOAPRequest(Object soapRequestElem, Class<T> soapResponseClass, String soapUri, String xAddr)
+    public <T> T createSOAPRequest(Object soapRequestElem, Class<T> soapResponseClass, String soapUri, String xAddr, boolean throwError)
             throws IOException, SOAPException, JAXBException, ParserConfigurationException {
         SOAPConnection soapConnection = null;
         SOAPMessage soapResponse = null;
@@ -222,20 +234,20 @@ public class SOAP implements BiConsumer<String, Integer> {
 
             // Print the request message
             if (logging) {
-                log.info("Request sync SOAP Message (" + soapRequestElem.getClass().getSimpleName() + "): ");
+                onvifDeviceState.getLogger().info("Request sync SOAP Message (" + soapRequestElem.getClass().getSimpleName() + "): ");
                 ByteArrayOutputStream bout = new ByteArrayOutputStream();
                 soapMessage.writeTo(bout);
-                log.info("{}", bout.toString());
+                onvifDeviceState.getLogger().info("{}", bout.toString());
             }
 
             soapResponse = soapConnection.call(soapMessage, soapUri);
 
             // print SOAP Response
             if (logging) {
-                log.info("Response sync SOAP Message (" + soapResponseClass.getSimpleName() + "): ");
+                onvifDeviceState.getLogger().info("Response sync SOAP Message (" + soapResponseClass.getSimpleName() + "): ");
                 ByteArrayOutputStream bout = new ByteArrayOutputStream();
                 soapResponse.writeTo(bout);
-                log.info("{}", bout.toString());
+                onvifDeviceState.getLogger().info("{}", bout.toString());
             }
 
             if (soapResponse.getSOAPBody().getFault() != null) {
@@ -247,6 +259,11 @@ public class SOAP implements BiConsumer<String, Integer> {
                     }
                     throw new RuntimeException("Unknown fault <" + error + "> during access to soap URI: " + soapUri);
                 }
+                if (throwError) {
+                    String faultCode = soapResponse.getSOAPBody().getFault().getFaultCode();
+                    throw new IllegalStateException("Get onvif fault response for <" + soapResponseClass.getSimpleName()
+                            + ">. Code: <" + faultCode + ">. Full: " + soapResponse.getSOAPBody().getFault().toString());
+                }
             }
 
             Object soapResponseElem = null;
@@ -255,7 +272,12 @@ public class SOAP implements BiConsumer<String, Integer> {
             try {
                 soapResponseElem = unmarshaller.unmarshal(document);
             } catch (UnmarshalException e) {
-                onvifDeviceState.getLogger().warn("Could not unmarshal, ended in SOAP fault.");
+                onvifDeviceState.getLogger().warn("Could not unmarshal for <{}>, ended in SOAP fault. Source: '{}'",
+                        soapResponseClass.getSimpleName(), TouchHomeUtils.toString(document));
+                if (throwError) {
+                    throw new IllegalStateException("Error unmarshal for " + soapResponseClass.getSimpleName() +
+                            ". Doc: " + TouchHomeUtils.toString(document));
+                }
             }
 
             return (T) soapResponseElem;
@@ -349,7 +371,7 @@ public class SOAP implements BiConsumer<String, Integer> {
                 try {
                     mainEventLoopGroup.awaitTermination(3, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
-                    log.info("Onvif was not shutdown correctly due to being interrupted");
+                    onvifDeviceState.getLogger().info("Onvif was not shutdown correctly due to being interrupted");
                 } finally {
                     mainEventLoopGroup = new NioEventLoopGroup();
                     bootstrap = null;
@@ -370,7 +392,6 @@ public class SOAP implements BiConsumer<String, Integer> {
             index = url.indexOf("/", index + 2);
         }
         if (index == -1) {
-            log.debug("We hit an issue parsing url:{}", url);
             return "";
         }
         return url.substring(index);

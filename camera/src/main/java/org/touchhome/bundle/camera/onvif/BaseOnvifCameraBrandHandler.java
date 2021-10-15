@@ -115,4 +115,8 @@ public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler i
     public String updateURL(String url) {
         return url;
     }
+
+    public boolean isSupportOnvifEvents() {
+        return false;
+    }
 }

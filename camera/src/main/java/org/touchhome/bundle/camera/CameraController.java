@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.exception.NotFoundException;
 import org.touchhome.bundle.api.model.OptionModel;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.ui.action.UIActionHandler;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputEntity;
@@ -37,13 +38,15 @@ public class CameraController {
     public List<OptionModel> getAllFFmpegWithProfiles() {
         List<OptionModel> list = new ArrayList<>();
         for (BaseFFmpegStreamEntity cameraEntity : entityContext.findAll(BaseFFmpegStreamEntity.class)) {
-            if (cameraEntity instanceof OnvifCameraEntity) {
-                for (Profile profile : ((OnvifCameraHandler) cameraEntity.getCameraHandler()).getOnvifDeviceState().getProfiles()) {
-                    list.add(OptionModel.of(cameraEntity.getEntityID() + "/" + profile.getToken(), cameraEntity.getTitle() + " (" +
-                            profile.getVideoEncoderConfiguration().getResolution().toString() + ")"));
+            if (cameraEntity.getStatus() == Status.ONLINE && cameraEntity.isStart()) {
+                if (cameraEntity instanceof OnvifCameraEntity) {
+                    for (Profile profile : ((OnvifCameraHandler) cameraEntity.getCameraHandler()).getOnvifDeviceState().getProfiles()) {
+                        list.add(OptionModel.of(cameraEntity.getEntityID() + "/" + profile.getToken(), cameraEntity.getTitle() + " (" +
+                                profile.getVideoEncoderConfiguration().getResolution().toString() + ")"));
+                    }
+                } else {
+                    list.add(OptionModel.of(cameraEntity.getEntityID(), cameraEntity.getTitle()));
                 }
-            } else {
-                list.add(OptionModel.of(cameraEntity.getEntityID(), cameraEntity.getTitle()));
             }
         }
         return list;
@@ -66,9 +69,10 @@ public class CameraController {
         WidgetCameraEntity entity = entityContext.getEntity(entityID);
         List<CameraEntityResponse> result = new ArrayList<>();
         for (WidgetCameraSeriesEntity item : entity.getSeries()) {
-            BaseVideoStreamEntity baseVideoStreamEntity = entityContext.getEntity(item.getDataSource());
+            String[] keys = item.getDataSource().split("~~~");
+            BaseVideoStreamEntity baseVideoStreamEntity = entityContext.getEntity(keys[0]);
             if (baseVideoStreamEntity != null) {
-                result.add(new CameraEntityResponse(entityContext.getEntity(item.getDataSource())));
+                result.add(new CameraEntityResponse(item.getDataSource(), baseVideoStreamEntity.getStreamUrl(keys[1]), baseVideoStreamEntity));
             } else {
                 log.warn("Camera entity: <{}> not found", item.getDataSource());
             }
@@ -113,13 +117,15 @@ public class CameraController {
 
     @Getter
     private class CameraEntityResponse {
-        private final BaseVideoStreamEntity source;
+        private final String dataSource;
+        private final String source;
         private final Collection<UIInputEntity> actions;
 
-        public CameraEntityResponse(BaseVideoStreamEntity source) {
+        public CameraEntityResponse(String dataSource, String source, BaseVideoStreamEntity baseVideoStreamEntity) {
+            this.dataSource = dataSource;
             this.source = source;
             UIInputBuilder uiInputBuilder = entityContext.ui().inputBuilder();
-            source.assembleActions(uiInputBuilder);
+            baseVideoStreamEntity.assembleActions(uiInputBuilder);
             this.actions = uiInputBuilder.buildAll();
         }
     }

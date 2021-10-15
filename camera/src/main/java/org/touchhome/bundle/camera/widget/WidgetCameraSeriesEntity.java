@@ -1,5 +1,6 @@
 package org.touchhome.bundle.camera.widget;
 
+import org.springframework.data.util.Pair;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.widget.WidgetSeriesEntity;
@@ -11,6 +12,8 @@ import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.camera.entity.BaseVideoStreamEntity;
 
 import javax.persistence.Entity;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -42,7 +45,14 @@ public class WidgetCameraSeriesEntity extends WidgetSeriesEntity<WidgetCameraEnt
 
         @Override
         public List<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
-            return OptionModel.list(entityContext.findAll(BaseVideoStreamEntity.class));
+            List<OptionModel> list = new ArrayList<>();
+            for (BaseVideoStreamEntity entity : entityContext.findAll(BaseVideoStreamEntity.class)) {
+                Collection<Pair<String, String>> sources = entity.getVideoSources();
+                for (Pair<String, String> source : sources) {
+                    list.add(OptionModel.of(entity.getEntityID() + "~~~" + source.getFirst(), entity.getTitle() + "/" + source.getSecond()));
+                }
+            }
+            return list;
         }
     }
 }

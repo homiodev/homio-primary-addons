@@ -34,12 +34,12 @@ public class RtspStreamHandler extends BaseFFmpegCameraHandler<BaseFFmpegStreamE
     }
 
     @Override
-    protected String createRtspUri() {
+    public String getRtspUri(String profile) {
         return cameraEntity.getIeeeAddress();
     }
 
     @Override
-    public String getFFMPEGInputOptions() {
+    public String getFFMPEGInputOptions(String profile) {
         return "-rtsp_transport tcp -stimeout " + TimeUnit.SECONDS.toMicros(10);
     }
 
@@ -71,11 +71,6 @@ public class RtspStreamHandler extends BaseFFmpegCameraHandler<BaseFFmpegStreamE
 
         @Override
         protected void handleLastHttpContent(byte[] incomingJpeg) {
-        }
-
-        @Override
-        protected boolean handleHttpRequest(QueryStringDecoder queryStringDecoder, ChannelHandlerContext ctx) {
-            return false;
         }
 
         @Override
