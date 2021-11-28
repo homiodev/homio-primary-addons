@@ -30,6 +30,7 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.state.*;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.util.Curl;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.CameraCoordinator;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
@@ -95,6 +96,9 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     @Getter
     private OnvifDeviceState onvifDeviceState;
     private EntityContextBGP.ThreadContext<Void> pullConfigSchedule;
+
+    private int retryCount = 1;
+    private boolean restartingBgp;
 
     public OnvifCameraHandler(OnvifCameraEntity cameraEntity, EntityContext entityContext) {
         super(cameraEntity, entityContext);
@@ -312,7 +316,22 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
                         cameraEntity.getOnvifCameraBrandHandler().handleSetURL(ch.pipeline(), httpRequestURL);
                         ch.writeAndFlush(request);
                     } else { // an error occurred
-                        restart("Connection Timeout: Check your IP and PORT are correct and the camera can be reached.", null, false);
+                        log.warn("Error handle camera: <{}>. Error: <{}>", cameraEntity, TouchHomeUtils.getErrorMessage(future.cause()));
+
+                        /*if (!this.restartingBgp) {
+                            log.error("Error in camera <{}> boostrap: <{}>", cameraEntity.getTitle(),
+                                    TouchHomeUtils.getErrorMessage(future.cause()));
+                            this.retryCount *= 2;
+                            this.restartingBgp = true;
+                            log.info("Try restart camera <{}> in <{}> sec", cameraEntity.getTitle(), this.retryCount);
+                            entityContext.bgp().run("Restart camera " + cameraEntity.getTitle(), retryCount * 1000, () -> {
+                                boolean restarted = restart("Connection Timeout: Check your IP and PORT are correct and the camera can be reached.", null, false);
+                                if (restarted) {
+                                    this.retryCount = 1;
+                                }
+                                this.restartingBgp = false;
+                            }, false);
+                        }*/
                     }
                 });
     }

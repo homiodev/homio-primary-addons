@@ -118,7 +118,7 @@ public class TelegramService {
         return users;
     }
 
-    private TelegramBot getTelegramBot(TelegramEntity telegramEntity) {
+    public TelegramBot getTelegramBot(TelegramEntity telegramEntity) {
         TelegramBot telegramBot = telegramBots.get(telegramEntity.getEntityID());
         if (telegramBot == null) {
             throw new IllegalStateException("TelegramBot <" + telegramEntity.getTitle() + " not started");

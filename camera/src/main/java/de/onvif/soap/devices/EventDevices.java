@@ -78,9 +78,11 @@ public class EventDevices {
     }
 
     private void fetchSubscriptionUrlAndSendPullMessages() {
-        log.info("Trying fetch onvif message subscription...");
+        log.info("Trying fetch onvif message subscription for ip address <{}>...", this.onvifDeviceState.getIp());
         try {
-            CreatePullPointSubscriptionResponse pullPointResponse = soap.createSOAPDeviceRequestType(new CreatePullPointSubscription(), CreatePullPointSubscriptionResponse.class);
+            CreatePullPointSubscriptionResponse pullPointResponse = soap.createSOAPDeviceRequestTypeThrowError(
+                    new CreatePullPointSubscription(),
+                    CreatePullPointSubscriptionResponse.class);
             onvifDeviceState.setSubscriptionUri(pullPointResponse.getSubscriptionReference().getAddress().getValue());
             soap.sendSOAPSubscribeRequestAsync(new PullMessages());
             log.info("Successfully fetched onvif message subscription: <{}>",

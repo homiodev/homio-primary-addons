@@ -42,6 +42,9 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
 
     public static final String PREFIX = "onvifcam_";
 
+    public OnvifCameraEntity() {
+    }
+
     @Transient
     @JsonIgnore
     private BaseOnvifCameraBrandHandler onvifCameraBrandHandler;
@@ -288,35 +291,39 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
     @Override
     public UIInputBuilder assembleActions() {
         UIInputBuilder uiInputBuilder = super.assembleActions();
-        for (UIEntityItemBuilder uiEntity : uiInputBuilder.getUiEntityItemBuilders(true)) {
-            uiEntity.setDisabled(!this.isStart());
-        }
-        if (StringUtils.isEmpty(getIeeeAddress()) || getStatus() == Status.REQUIRE_AUTH) {
-            uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", "fas fa-sign-in-alt", null, null,
-                    (entityContext, params) -> {
+        if (uiInputBuilder != null) {
+            for (UIEntityItemBuilder uiEntity : uiInputBuilder.getUiEntityItemBuilders(true)) {
+                uiEntity.setDisabled(!this.isStart());
+            }
 
-                        String user = params.getString("user");
-                        String password = params.getString("pwd");
-                        OnvifCameraEntity entity = this;
-                        OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getIp(), getOnvifPort(), 0, user, password, log);
-                        try {
-                            onvifDeviceState.checkForErrors();
-                            setUser(user);
-                            setPassword(password);
-                            setName(onvifDeviceState.getInitialDevices().getName());
-                            setIeeeAddress(onvifDeviceState.getIEEEAddress());
+            if (StringUtils.isEmpty(getIeeeAddress()) || getStatus() == Status.REQUIRE_AUTH) {
+                uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", "fas fa-sign-in-alt", null, null,
+                        (entityContext, params) -> {
 
-                            entityContext.save(entity);
-                            entityContext.ui().sendSuccessMessage("Onvif camera: " + getTitle() + " authenticated successfully");
-                        } catch (Exception ex) {
-                            entityContext.ui().sendWarningMessage("Onvif camera: " + getTitle() + " fault response: " + ex.getMessage());
-                        }
-                        return null;
-                    }).editDialog(dialogBuilder -> {
-                dialogBuilder.addTextInput("user", getUser(), true);
-                dialogBuilder.addTextInput("pwd", getPassword().asString(), false);
-            });
+                            String user = params.getString("user");
+                            String password = params.getString("pwd");
+                            OnvifCameraEntity entity = this;
+                            OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getIp(), getOnvifPort(), 0, user, password, log);
+                            try {
+                                onvifDeviceState.checkForErrors();
+                                setUser(user);
+                                setPassword(password);
+                                setName(onvifDeviceState.getInitialDevices().getName());
+                                setIeeeAddress(onvifDeviceState.getIEEEAddress());
+
+                                entityContext.save(entity);
+                                entityContext.ui().sendSuccessMessage("Onvif camera: " + getTitle() + " authenticated successfully");
+                            } catch (Exception ex) {
+                                entityContext.ui().sendWarningMessage("Onvif camera: " + getTitle() + " fault response: " + ex.getMessage());
+                            }
+                            return null;
+                        }).editDialog(dialogBuilder -> {
+                    dialogBuilder.addTextInput("user", getUser(), true);
+                    dialogBuilder.addTextInput("pwd", getPassword().asString(), false);
+                });
+            }
         }
+
         return uiInputBuilder;
     }
 }

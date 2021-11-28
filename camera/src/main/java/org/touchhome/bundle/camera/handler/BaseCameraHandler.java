@@ -103,9 +103,9 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
 
     protected abstract void pollCameraRunnable();
 
-    public final void initialize(T cameraEntity) {
+    public final boolean initialize(T cameraEntity) {
         if (isHandlerInitialized) {
-            return;
+            return true;
         }
         isHandlerInitialized = true;
         try {
@@ -119,12 +119,15 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
                 this.cameraEntity = cameraEntity;
             }
 
+            log.info("Init camera: <{}>", this.cameraEntity.getTitle());
             initialize0();
             cameraConnectionJob = entityContext.bgp().schedule("poll-camera-connection-" + cameraEntityID,
                     60, TimeUnit.SECONDS, this::pollingCameraConnection, true, true);
+            return true;
         } catch (Exception ex) {
             disposeAndSetStatus(Status.ERROR, "Error while init camera: " + TouchHomeUtils.getErrorMessage(ex));
         }
+        return false;
     }
 
     protected abstract void initialize0();
@@ -189,14 +192,15 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         }
     }
 
-    public final void restart(String reason, T cameraEntity, boolean force) {
+    public final boolean restart(String reason, T cameraEntity, boolean force) {
         if (force && !this.isHandlerInitialized) {
-            initialize(cameraEntity);
+            return initialize(cameraEntity);
         } else if (isCameraOnline) { // if already offline dont try reconnecting in 6 seconds, we want 30sec wait.
             updateStatus(Status.OFFLINE, reason); // will try to reconnect again as camera may be rebooting.
             dispose();
-            initialize(cameraEntity);
+            return initialize(cameraEntity);
         }
+        return false;
     }
 
     protected final void updateStatus(Status status, String message) {

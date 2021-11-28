@@ -190,11 +190,17 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
     }
 
     private RawType getGifMP4Reporter(WorkspaceBlock workspaceBlock) {
+        Integer time = workspaceBlock.getInputInteger("TIME");
+        String timeStr = (String) workspaceBlock.getValue("time");
+        if (timeStr != null) {
+            time = Integer.parseInt(timeStr);
+        }
         CameraWithProfile camera = getCameraProfile(workspaceBlock);
         RecordType recordType = workspaceBlock.getMenuValue(RECORD_TYPE, this.recordTypeMenu);
         return new RawType(recordType.getHandler
                 .getData(camera.entity.getCameraHandler(), camera.profile,
-                        workspaceBlock.getInputInteger("TIME")), recordType.mimeType);
+                        time), recordType.mimeType,
+                camera.entity.getTitle() + " " + recordType.name());
     }
 
     private void fireRecordGifMP4Command(WorkspaceBlock workspaceBlock) {

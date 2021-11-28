@@ -3,6 +3,7 @@ package org.touchhome.bundle.telegram;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
@@ -18,8 +19,6 @@ import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
-import org.touchhome.bundle.telegram.TelegramEntity;
-import org.touchhome.bundle.telegram.TelegramEntryPoint;
 import org.touchhome.bundle.telegram.service.TelegramAnswer;
 import org.touchhome.bundle.telegram.service.TelegramService;
 import org.touchhome.bundle.telegram.setting.TelegramSettingMaxQuestionMaxSeconds;
@@ -48,7 +47,6 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     private final TelegramService telegramService;
 
     private final MenuBlock.StaticMenuBlock<Level> levelMenu;
-    private final MenuBlock.StaticMenuBlock<ByteType> byteType;
     private final MenuBlock.ServerMenuBlock telegramEntityUsersMenu;
     private final MenuBlock.StaticMenuBlock<QuestionButtons> buttonsMenu;
 
@@ -73,7 +71,6 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
                 "-", "-");
         this.levelMenu = MenuBlock.ofStatic("levelMenu", Level.class, Level.info);
         this.buttonsMenu = MenuBlock.ofStaticKV("buttonsMenu", QuestionButtons.class, QuestionButtons.YesNo);
-        this.byteType = MenuBlock.ofStatic("type", ByteType.class, ByteType.Image);
 
 
         this.getCommand = Scratch3Block.ofHandler(10, "get_msg", BlockType.hat, "On command [COMMAND] | Desc: [DESCR]", this::whenGetMessage);
@@ -87,9 +84,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         this.sendMessageCommand.addArgument(LEVEL, this.levelMenu);
 
         this.sendImageMessageCommand = Scratch3Block.ofHandler(30, "send_img", BlockType.command,
-                "Send [TYPE] [MESSAGE], caption [CAPTION] to [USER]", this::sendIVAMessageCommand);
-        this.sendImageMessageCommand.addArgument("TYPE", this.byteType);
-        this.sendImageMessageCommand.addArgument(MESSAGE, "msg");
+                "Send media [MESSAGE] to [USER] | Caption: [CAPTION]", this::sendIVAMessageCommand);
         this.sendImageMessageCommand.addArgument(USER, this.telegramEntityUsersMenu);
         this.sendImageMessageCommand.addArgument("CAPTION", "caption");
 
@@ -122,15 +117,17 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
 
     private void sendIVAMessageCommand(WorkspaceBlock workspaceBlock) {
         Pair<TelegramEntity, List<TelegramEntity.TelegramUser>> context = getEntityAndUsers(workspaceBlock);
-        ByteType byteType = workspaceBlock.getMenuValue("TYPE", this.byteType);
         String caption = workspaceBlock.getInputString("CAPTION");
-        RawType rawType = workspaceBlock.getInputRawType(MESSAGE, byteType.maxLength);
-        InputFile inputFile = new InputFile(new ByteArrayInputStream(rawType.byteArrayValue()), rawType.getName());
+        RawType rawType = workspaceBlock.getInputRawType(MESSAGE, 50 * 1024 * 1024);
+        InputFile inputFile = new InputFile(new ByteArrayInputStream(rawType.byteArrayValue()),
+                StringUtils.defaultString(rawType.getName(), "Undefined name"));
         try {
-            if (ByteType.Image.equals(byteType)) {
+            if (rawType.isImage()) {
                 telegramService.sendPhoto(context.getFirst(), context.getSecond(), inputFile, caption);
-            } else {
+            } else if (rawType.isVideo()) {
                 telegramService.sendVideo(context.getFirst(), context.getSecond(), inputFile, caption);
+            } else {
+                workspaceBlock.logErrorAndThrow("Unable to recognize media MimeType: <{}>", rawType.getMimeType());
             }
         } catch (Exception ex) {
             workspaceBlock.logError("Error send telegram message " + ex);
@@ -246,10 +243,10 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         }
     }
 
-    @AllArgsConstructor
+    /*@AllArgsConstructor
     private enum ByteType {
         Image(10 * 1024 * 1024),
         Video(50 * 1024 * 1024);
         private final int maxLength;
-    }
+    }*/
 }

@@ -44,6 +44,8 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
 
     @Override
     public void init() {
+        entityContext.setting().setValue(ZigBeeStatusSetting.class, new SettingPluginStatus.BundleStatusInfo(Status.UNKNOWN, null));
+
         this.zigBeeDiscoveryService = new ZigBeeDiscoveryService(
                 entityContext, () -> this.coordinatorHandler,
                 zigBeeIsAliveTracker,

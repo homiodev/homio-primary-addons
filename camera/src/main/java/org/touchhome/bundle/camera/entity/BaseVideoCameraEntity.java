@@ -120,10 +120,7 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
 
     @Override
     public UIInputBuilder assembleActions() {
-        if (cameraHandler != null) {
-            return cameraHandler.assembleActions();
-        }
-        return null;
+        return cameraHandler == null ? null : cameraHandler.assembleActions();
     }
 
     @UIContextMenuAction(value = "VIDEO.RECORD_MP4", icon = "fas fa-file-video", inputs = {
