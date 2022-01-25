@@ -2,7 +2,6 @@ package org.touchhome.bundle.camera.handler.impl;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.QueryStringDecoder;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
@@ -33,21 +32,21 @@ public class UsbCameraHandler extends BaseFFmpegCameraHandler<UsbCameraEntity> {
     }
 
     @Override
-    protected void initialize0() {
-        String url = "video=\"" + cameraEntity.getIeeeAddress() + "\"";
-        if (StringUtils.isNotEmpty(cameraEntity.getAudioSource())) {
-            url += ":audio=\"" + cameraEntity.getAudioSource() + "\"";
+    protected void initialize0(UsbCameraEntity cameraEntity) {
+        String url = "video=\"" + this.cameraEntity.getIeeeAddress() + "\"";
+        if (StringUtils.isNotEmpty(this.cameraEntity.getAudioSource())) {
+            url += ":audio=\"" + this.cameraEntity.getAudioSource() + "\"";
         }
-        Set<String> outputParams = new LinkedHashSet<>(cameraEntity.getStreamOptions());
+        Set<String> outputParams = new LinkedHashSet<>(this.cameraEntity.getStreamOptions());
         outputParams.add("-f tee");
         outputParams.add("-map 0:v");
-        if (StringUtils.isNotEmpty(cameraEntity.getAudioSource())) {
-            url += ":audio=\"" + cameraEntity.getAudioSource() + "\"";
+        if (StringUtils.isNotEmpty(this.cameraEntity.getAudioSource())) {
+            url += ":audio=\"" + this.cameraEntity.getAudioSource() + "\"";
             outputParams.add("-map 0:a");
         }
 
-        outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + cameraEntity.getStreamStartPort());
-        outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + (cameraEntity.getStreamStartPort() + 1));
+        outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + this.cameraEntity.getStreamStartPort());
+        outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + (this.cameraEntity.getStreamStartPort() + 1));
 
         ffmpegUsbStream = new Ffmpeg("FFmpegUSB_UDP", "FFmpeg usb udp re streamer", this, log,
                 IpCameraBindingConstants.FFmpegFormat.GENERAL, ffmpegLocation,
@@ -57,7 +56,7 @@ public class UsbCameraHandler extends BaseFFmpegCameraHandler<UsbCameraEntity> {
                 "", "", null);
         ffmpegUsbStream.startConverting();
 
-        super.initialize0();
+        super.initialize0(cameraEntity);
     }
 
     @Override

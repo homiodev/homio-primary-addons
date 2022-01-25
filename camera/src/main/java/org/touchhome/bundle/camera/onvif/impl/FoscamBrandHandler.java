@@ -7,6 +7,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
+import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.BrandCameraHasAudioAlarm;
@@ -25,8 +26,8 @@ public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler implements B
     private static final String CG = "/cgi-bin/CGIProxy.fcgi?cmd=";
     private int audioThreshold;
 
-    public FoscamBrandHandler(OnvifCameraEntity onvifCameraEntity) {
-        super(onvifCameraEntity);
+    public FoscamBrandHandler(BaseVideoCameraEntity cameraEntity) {
+        super(cameraEntity);
     }
 
     // This handles the incoming http replies back from the camera.

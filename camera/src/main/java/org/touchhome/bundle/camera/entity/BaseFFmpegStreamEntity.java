@@ -164,22 +164,27 @@ public abstract class BaseFFmpegStreamEntity<T extends BaseFFmpegStreamEntity, H
         return super.getCameraHandler();
     }
 
+    @JsonIgnore
     public String getHlsStreamUrl() {
         return "http://" + TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + getCameraHandler().getServerPort() + "/ipcamera.m3u8";
     }
 
+    @JsonIgnore
     public String getSnapshotsMjpegUrl() {
         return "http://" + TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + getCameraHandler().getServerPort() + "/snapshots.mjpeg";
     }
 
+    @JsonIgnore
     public String getAutofpsMjpegUrl() {
         return "http://" + TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + getCameraHandler().getServerPort() + "/autofps.mjpeg";
     }
 
+    @JsonIgnore
     public String getImageUrl() {
         return "http://" + TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + getCameraHandler().getServerPort() + "/ipcamera.jpg";
     }
 
+    @JsonIgnore
     public String getIpCameraMjpeg() {
         return "http://" + TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + getCameraHandler().getServerPort() + "/ipcamera.mjpeg";
     }

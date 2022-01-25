@@ -3,6 +3,7 @@ package org.touchhome.bundle.camera.onvif;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.*;
 import lombok.Getter;
@@ -11,7 +12,9 @@ import org.springframework.http.MediaType;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
+import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
+import org.touchhome.bundle.camera.handler.BaseBrandCameraHandler;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.ui.CameraActionBuilder;
 import org.touchhome.bundle.camera.ui.CameraActionsContext;
@@ -19,7 +22,7 @@ import org.touchhome.bundle.camera.ui.CameraActionsContext;
 import java.nio.charset.StandardCharsets;
 
 @Log4j2
-public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler implements CameraActionsContext {
+public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler implements CameraActionsContext, BaseBrandCameraHandler {
 
     protected final OnvifCameraHandler onvifCameraHandler;
     protected final int nvrChannel;
@@ -42,8 +45,8 @@ public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler i
         this.entityContext = null;
     }
 
-    public BaseOnvifCameraBrandHandler(OnvifCameraEntity cameraEntity) {
-        this.cameraEntity = cameraEntity;
+    public BaseOnvifCameraBrandHandler(BaseVideoCameraEntity entity) {
+        this.cameraEntity = (OnvifCameraEntity) entity;
         this.onvifCameraHandler = cameraEntity.getCameraHandler();
         this.nvrChannel = cameraEntity.getNvrChannel();
         this.username = cameraEntity.getUser();
@@ -118,5 +121,10 @@ public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler i
 
     public boolean isSupportOnvifEvents() {
         return false;
+    }
+
+    @Override
+    public ChannelHandler asBootstrapHandler() {
+        return this;
     }
 }

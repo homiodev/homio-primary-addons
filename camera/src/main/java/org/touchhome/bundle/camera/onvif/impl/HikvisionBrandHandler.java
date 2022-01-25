@@ -11,6 +11,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.state.StringType;
+import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
@@ -32,8 +33,8 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
     private int lineCount, vmdCount, leftCount, takenCount, faceCount, pirCount, fieldCount;
     private boolean checkAlarmInput;
 
-    public HikvisionBrandHandler(OnvifCameraEntity onvifCameraEntity) {
-        super(onvifCameraEntity);
+    public HikvisionBrandHandler(BaseVideoCameraEntity cameraEntity) {
+        super(cameraEntity);
     }
 
     // This handles the incoming http replies back from the camera.

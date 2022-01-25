@@ -29,7 +29,9 @@ import java.util.stream.Collectors;
 
 @Getter
 public class OnvifDeviceState {
-    private final String HOST_IP;
+    @Setter
+    private OnvifCameraEntity onvifCameraEntity;
+    private String HOST_IP;
     private String originalIp;
 
     private boolean isProxy;
@@ -68,23 +70,16 @@ public class OnvifDeviceState {
     @Setter
     private Consumer<String> unreachableHandler;
     private Capabilities capabilities;
-
-    @Setter
     private String subscriptionError;
+
+    public void setSubscriptionError(String subscriptionError) {
+        this.subscriptionError = subscriptionError;
+    }
 
     @SneakyThrows
     public OnvifDeviceState(String ip, int onvifPort, int serverPort, String user, String password, Logger log) {
-        this.ip = ip;
-        this.onvifPort = onvifPort;
-        this.serverPort = serverPort;
         this.log = log;
-        this.HOST_IP = ip + ":" + onvifPort;
-        this.serverDeviceUri = "http://" + HOST_IP + "/onvif/device_service";
-        this.serverDeviceIpLessUri = "/onvif/device_service";
-
-        this.username = user;
-        this.password = password;
-
+        updateParameters(ip, onvifPort, serverPort, user, password);
         this.soap = new SOAP(this);
         this.initialDevices = new InitialDevices(this, soap);
         this.ptzDevices = new PtzDevices(this, soap);
@@ -92,6 +87,18 @@ public class OnvifDeviceState {
         this.imagingDevices = new ImagingDevices(this, soap);
         this.eventDevices = new EventDevices(this, soap);
     }
+
+    public void updateParameters(String ip, int onvifPort, int serverPort, String user, String password) {
+        this.ip = ip;
+        this.onvifPort = onvifPort;
+        this.serverPort = serverPort;
+        this.HOST_IP = ip + ":" + onvifPort;
+        this.serverDeviceUri = "http://" + HOST_IP + "/onvif/device_service";
+        this.serverDeviceIpLessUri = "/onvif/device_service";
+        this.username = user;
+        this.password = password;
+    }
+
 
     /**
      * Internal function to check, if device is available and answers to ping
@@ -189,7 +196,7 @@ public class OnvifDeviceState {
             ptzDevices.initFully();
         }
 
-        if (onvifCameraEntity.getOnvifCameraBrandHandler().isSupportOnvifEvents()) {
+        if (onvifCameraEntity.getBaseBrandCameraHandler().isSupportOnvifEvents()) {
             eventDevices.initFully();
         }
     }

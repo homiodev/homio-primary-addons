@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.OnOffType;
+import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
@@ -20,8 +21,8 @@ import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 @CameraBrandHandler(name = "DoorBird")
 public class DoorBirdBrandHandler extends BaseOnvifCameraBrandHandler {
 
-    public DoorBirdBrandHandler(OnvifCameraEntity onvifCameraEntity) {
-        super(onvifCameraEntity);
+    public DoorBirdBrandHandler(BaseVideoCameraEntity cameraEntity) {
+        super(cameraEntity);
     }
 
     // This handles the incoming http replies back from the camera.

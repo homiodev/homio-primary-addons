@@ -8,6 +8,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
+import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
@@ -28,8 +29,8 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
     private String requestUrl = "Empty";
     private int audioThreshold;
 
-    public AmcrestBrandHandler(OnvifCameraEntity onvifCameraEntity) {
-        super(onvifCameraEntity);
+    public AmcrestBrandHandler(BaseVideoCameraEntity cameraEntity) {
+        super(cameraEntity);
     }
 
     @UICameraAction(name = CHANNEL_TEXT_OVERLAY, order = 100, icon = "fas fa-paragraph")

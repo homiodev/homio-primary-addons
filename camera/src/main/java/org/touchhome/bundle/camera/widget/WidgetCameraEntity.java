@@ -1,6 +1,5 @@
 package org.touchhome.bundle.camera.widget;
 
-import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.widget.WidgetBaseEntityAndSeries;
 
 import javax.persistence.Entity;
@@ -32,10 +31,5 @@ public class WidgetCameraEntity extends WidgetBaseEntityAndSeries<WidgetCameraEn
     @Override
     public String getEntityPrefix() {
         return PREFIX;
-    }
-
-    @Override
-    public boolean updateRelations(EntityContext entityContext) {
-        return false;
     }
 }

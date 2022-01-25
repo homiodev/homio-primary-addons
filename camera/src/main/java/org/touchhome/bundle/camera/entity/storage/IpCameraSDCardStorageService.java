@@ -28,10 +28,10 @@ import java.util.Map;
 @Setter
 @Getter
 @Entity
-@UISidebarChildren(icon = "rest/bundle/image/camera/rpi-loop-record.png", color = "#0088CC")
-public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFMPEGLoopRecordStorageService> {
+@UISidebarChildren(icon = "rest/bundle/image/camera/memory-card.png", color = "#AACC00")
+public class IpCameraSDCardStorageService extends CameraBaseStorageService<IpCameraSDCardStorageService> {
 
-    public static final String PREFIX = "ffmpeglr_";
+    public static final String PREFIX = "ipcsd_";
 
     private static Map<String, Ffmpeg> ffmpegServices = new HashMap<>();
 
@@ -41,7 +41,7 @@ public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFM
         return getJsonData("st", 300);
     }
 
-    public FFMPEGLoopRecordStorageService setSegmentTime(int value) {
+    public IpCameraSDCardStorageService setSegmentTime(int value) {
         return setJsonData("st", value);
     }
 
@@ -51,7 +51,7 @@ public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFM
         return getJsonData("ms", 10);
     }
 
-    public FFMPEGLoopRecordStorageService setMaxSegments(int maxClips) {
+    public IpCameraSDCardStorageService setMaxSegments(int maxClips) {
         return setJsonData("ms", maxClips);
     }
 
@@ -61,7 +61,7 @@ public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFM
         return getJsonDataEnum("mt", MuxerType.segments);
     }
 
-    public FFMPEGLoopRecordStorageService setMuxerType(MuxerType value) {
+    public IpCameraSDCardStorageService setMuxerType(MuxerType value) {
         setJsonDataEnum("mt", value);
         return this;
     }
@@ -75,7 +75,7 @@ public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFM
         return getJsonData("vc", "copy");
     }
 
-    public FFMPEGLoopRecordStorageService setVideoCodec(String value) {
+    public IpCameraSDCardStorageService setVideoCodec(String value) {
         setJsonData("vc", value);
         return this;
     }
@@ -86,7 +86,7 @@ public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFM
         return getJsonData("ac", "copy");
     }
 
-    public FFMPEGLoopRecordStorageService setAudioCodec(String value) {
+    public IpCameraSDCardStorageService setAudioCodec(String value) {
         setJsonData("ac", value);
         return this;
     }
@@ -97,7 +97,7 @@ public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFM
         return getJsonData("map", "0");
     }
 
-    public FFMPEGLoopRecordStorageService setSelectStream(String value) {
+    public IpCameraSDCardStorageService setSelectStream(String value) {
         setJsonData("map", value);
         return this;
     }
@@ -118,7 +118,7 @@ public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFM
         return getJsonData("vb", false);
     }
 
-    public FFMPEGLoopRecordStorageService setVerbose(boolean value) {
+    public IpCameraSDCardStorageService setVerbose(boolean value) {
         setJsonData("vb", value);
         return this;
     }

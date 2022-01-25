@@ -1,6 +1,5 @@
 package org.touchhome.bundle.camera.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.onvif.soap.OnvifDeviceState;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,28 +8,19 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.Lang;
-import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.model.ActionResponseModel;
-import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.*;
 import org.touchhome.bundle.api.ui.field.action.HasDynamicContextMenuActions;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.action.v1.UIEntityItemBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
-import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.util.SecureString;
-import org.touchhome.bundle.camera.CameraCoordinator;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
-import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
-import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 
 import javax.persistence.Entity;
-import javax.persistence.Transient;
-import java.util.Collection;
 
 @Log4j2
 @Setter
@@ -42,13 +32,6 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
 
     public static final String PREFIX = "onvifcam_";
 
-    public OnvifCameraEntity() {
-    }
-
-    @Transient
-    @JsonIgnore
-    private BaseOnvifCameraBrandHandler onvifCameraBrandHandler;
-
     @UIField(order = 1, readOnly = true, hideOnEmpty = true, fullWidth = true, bg = "#334842", type = UIFieldType.HTML)
     public String getDescription() {
         if (getIeeeAddress() == null) {
@@ -57,26 +40,21 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
         return null;
     }
 
-    @UIField(order = 11)
-    @RestartHandlerOnChange
-    @UIFieldSelection(SelectCameraBrand.class)
-    public String getCameraType() {
-        return getJsonData("cameraType", CameraBrandHandlerDescription.DEFAULT_BRAND.getID());
-    }
-
-    public OnvifCameraEntity setCameraType(String cameraType) {
-        return setJsonData("cameraType", cameraType);
-    }
-
-    public static class SelectCameraBrand implements DynamicOptionLoader {
-
-        @Override
-        public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
-            return OptionModel.list(CameraCoordinator.cameraBrands.keySet());
+    @UIField(order = 12, readOnly = true)
+    @UIFieldColorStatusMatch
+    public String getEventSubscription() {
+        OnvifCameraHandler cameraHandler = getCameraHandler();
+        if (cameraHandler != null) {
+            String subscriptionError = cameraHandler.getOnvifDeviceState().getSubscriptionError();
+            if (subscriptionError != null) {
+                return Status.ERROR.name() + " " + subscriptionError;
+            }
+            return Status.ONLINE.name();
         }
+        return null;
     }
 
-    @UIField(order = 12, type = UIFieldType.IpAddress)
+    @UIField(order = 15, type = UIFieldType.IpAddress)
     @RestartHandlerOnChange
     public String getIp() {
         return getJsonData("ip");
@@ -221,31 +199,9 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
         setJsonData("ptzContinuous", value);
     }
 
-    @UIField(order = 250, readOnly = true)
-    @UIFieldColorStatusMatch
-    public String getEventSubscription() {
-        OnvifCameraHandler cameraHandler = getCameraHandler();
-        if (cameraHandler != null) {
-            String subscriptionError = cameraHandler.getOnvifDeviceState().getSubscriptionError();
-            if (subscriptionError != null) {
-                return Status.ERROR.name() + " " + subscriptionError;
-            }
-            return Status.ONLINE.name();
-        }
-        return null;
-    }
-
     @Override
     public OnvifCameraHandler createCameraHandler(EntityContext entityContext) {
         return new OnvifCameraHandler(this, entityContext);
-    }
-
-    @JsonIgnore
-    public BaseOnvifCameraBrandHandler getOnvifCameraBrandHandler() {
-        if (onvifCameraBrandHandler == null) {
-            onvifCameraBrandHandler = CameraCoordinator.cameraBrands.get(getCameraType()).newInstance(this);
-        }
-        return onvifCameraBrandHandler;
     }
 
     @Override

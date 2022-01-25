@@ -8,6 +8,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.StringType;
+import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
@@ -25,8 +26,8 @@ public class InstarBrandHandler extends BaseOnvifCameraBrandHandler implements B
     private String requestUrl = "Empty";
     private int audioThreshold;
 
-    public InstarBrandHandler(OnvifCameraEntity onvifCameraEntity) {
-        super(onvifCameraEntity);
+    public InstarBrandHandler(BaseVideoCameraEntity cameraEntity) {
+        super(cameraEntity);
     }
 
     public InstarBrandHandler(OnvifCameraHandler onvifCameraHandler) {

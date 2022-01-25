@@ -7,6 +7,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.EntityContextBGP;
 import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.netty.NettyUtils;
@@ -23,6 +24,8 @@ import org.touchhome.bundle.camera.setting.CameraStatusSetting;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 @Component
@@ -30,6 +33,7 @@ import java.util.Objects;
 public class CameraEntryPoint implements BundleEntryPoint {
 
     private final EntityContext entityContext;
+    private EntityContextBGP.ThreadContext<Void> cameraRunPerMinuteSchedule;
 
     @SneakyThrows
     private static boolean detectIfRequireRestartHandler(Object oldCameraEntity, Object cameraEntity) {
@@ -90,7 +94,7 @@ public class CameraEntryPoint implements BundleEntryPoint {
                 cameraHandler.initialize(cameraEntity);
             } else if (!cameraEntity.isStart() && cameraHandler.isHandlerInitialized()) {
                 cameraHandler.disposeAndSetStatus(Status.OFFLINE, "Camera not started");
-            } else if (cameraHandler.isHandlerInitialized() && detectIfRequireRestartHandler(oldCameraEntity, cameraEntity)) {
+            } else if (/*TODO: cameraHandler.isHandlerInitialized() && */detectIfRequireRestartHandler(oldCameraEntity, cameraEntity)) {
                 cameraHandler.restart("Restart camera handler", cameraEntity, true);
             } else {
                 cameraHandler.setCameraEntity(cameraEntity); // to avoid optimistic lock
@@ -103,9 +107,19 @@ public class CameraEntryPoint implements BundleEntryPoint {
             }
         });
 
-        // fire initialize camera if start is true
+        entityContext.bgp().runOnceOnInternetUp("scan camera", () -> {
+            // fire rescan whole possible items to see if ip address has been changed
+            entityContext.getBean(OnvifCameraHttpScanner.class).executeScan(entityContext, null, null, true);
+        });
+
+        cameraRunPerMinuteSchedule = entityContext.bgp().schedule("Camera bundle schedule", 0,
+                5, TimeUnit.MINUTES, this::fireStartCamera, false, false);
+    }
+
+    private void fireStartCamera() {
         for (BaseVideoCameraEntity cameraEntity : entityContext.findAll(BaseVideoCameraEntity.class)) {
-            if (cameraEntity.isStart() || cameraEntity.isAutoStart()) {
+            BaseCameraHandler cameraHandler = cameraEntity.getCameraHandler();
+            if ((cameraEntity.isStart() || cameraEntity.isAutoStart()) && !cameraHandler.isHandlerInitialized()) {
                 if (!cameraEntity.isStart()) {
                     entityContext.save(cameraEntity.setStart(true));
                 } else {
@@ -113,9 +127,11 @@ public class CameraEntryPoint implements BundleEntryPoint {
                 }
             }
         }
+    }
 
-        // fire rescan whole possible items to see if ip address has been changed
-        entityContext.getBean(OnvifCameraHttpScanner.class).executeScan(entityContext, null, null, true);
+    @Override
+    public void destroy() {
+        Optional.ofNullable(cameraRunPerMinuteSchedule).ifPresent(EntityContextBGP.ThreadContext::cancel);
     }
 
     @Override

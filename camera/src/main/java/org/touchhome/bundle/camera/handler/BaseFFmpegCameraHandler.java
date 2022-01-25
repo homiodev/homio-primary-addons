@@ -87,12 +87,12 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
     }
 
     @Override
-    protected void initialize0() {
+    protected void initialize0(T cameraEntity) {
         this.snapshotSource = initSnapshotInput();
         this.snapshotInputOptions = getFFMPEGInputOptions() + " -threads 1 -skip_frame nokey -hide_banner -loglevel warning -an";
-        this.mp4OutOptions = String.join(" ", cameraEntity.getMp4OutOptions());
-        this.gifOutOptions = String.join(" ", cameraEntity.getGifOutOptions());
-        this.mgpegOutOptions = String.join(" ", cameraEntity.getMjpegOutOptions());
+        this.mp4OutOptions = String.join(" ", this.cameraEntity.getMp4OutOptions());
+        this.gifOutOptions = String.join(" ", this.cameraEntity.getGifOutOptions());
+        this.mgpegOutOptions = String.join(" ", this.cameraEntity.getMjpegOutOptions());
 
         String rtspUri = getRtspUri(null);
 
@@ -100,29 +100,29 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
                 FFmpegFormat.MJPEG, ffmpegLocation,
                 getFFMPEGInputOptions() + " -hide_banner -loglevel warning", rtspUri,
                 mgpegOutOptions, "http://127.0.0.1:" + serverPort + "/ipcamera.jpg",
-                cameraEntity.getUser(), cameraEntity.getPassword().asString(), null);
+                this.cameraEntity.getUser(), this.cameraEntity.getPassword().asString(), null);
         setAttribute("FFMPEG_MJPEG", new StringType(String.join(" ", ffmpegMjpeg.getCommandArrayList())));
 
         ffmpegSnapshot = new Ffmpeg("FFmpegSnapshot", "FFmpeg snapshot", this, log,
                 FFmpegFormat.SNAPSHOT, ffmpegLocation, snapshotInputOptions, rtspUri,
-                cameraEntity.getSnapshotOutOptionsAsString(),
+                this.cameraEntity.getSnapshotOutOptionsAsString(),
                 "http://127.0.0.1:" + serverPort + "/snapshot.jpg",
-                cameraEntity.getUser(), cameraEntity.getPassword().asString(), () -> {
+                this.cameraEntity.getUser(), this.cameraEntity.getPassword().asString(), () -> {
         });
         setAttribute("FFMPEG_SNAPSHOT", new StringType(String.join(" ", ffmpegSnapshot.getCommandArrayList())));
 
-        if (cameraEntity instanceof AbilityToStreamHLSOverFFmpeg) {
+        if (this.cameraEntity instanceof AbilityToStreamHLSOverFFmpeg) {
             ffmpegHLS = new Ffmpeg("FFmpegHLS", "FFmpeg HLS", this, log, FFmpegFormat.HLS, ffmpegLocation,
                     "-hide_banner -loglevel warning " + getFFMPEGInputOptions(), createHlsRtspUri(),
                     buildHlsOptions(), getFfmpegHLSOutputPath().resolve("ipcamera.m3u8").toString(),
-                    cameraEntity.getUser(), cameraEntity.getPassword().asString(), () -> setAttribute(CHANNEL_START_STREAM, OnOffType.OFF));
+                    this.cameraEntity.getUser(), this.cameraEntity.getPassword().asString(), () -> setAttribute(CHANNEL_START_STREAM, OnOffType.OFF));
             setAttribute("FFMPEG_HLS", new StringType(String.join(" ", ffmpegHLS.getCommandArrayList())));
         }
 
         String gifInputOptions = "-y -t " + gifRecordTime + " -hide_banner -loglevel warning " + getFFMPEGInputOptions();
         ffmpegGIF = new Ffmpeg("FFmpegGIF", "FFmpeg GIF", this, log, FFmpegFormat.GIF, ffmpegLocation, gifInputOptions, rtspUri,
                 gifOutOptions, getFfmpegGifOutputPath().resolve(gifFilename + ".gif").toString(),
-                cameraEntity.getUser(), cameraEntity.getPassword().asString(), null);
+                this.cameraEntity.getUser(), this.cameraEntity.getPassword().asString(), null);
         setAttribute("FFMPEG_GIF", new StringType(String.join(" ", ffmpegGIF.getCommandArrayList())));
 
         startStreamServer();
@@ -136,6 +136,8 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
 
     @Override
     protected void dispose0() {
+        log.info("Dispose camera: <{}>", this.cameraEntity.getTitle());
+
         fireFfmpeg(ffmpegHLS, Ffmpeg::stopConverting);
         fireFfmpeg(ffmpegRecord, Ffmpeg::stopConverting);
         fireFfmpeg(ffmpegGIF, Ffmpeg::stopConverting);

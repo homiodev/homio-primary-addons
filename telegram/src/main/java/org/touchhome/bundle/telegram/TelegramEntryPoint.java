@@ -19,9 +19,11 @@ public class TelegramEntryPoint implements BundleEntryPoint {
     private final TelegramService telegramService;
 
     public void init() {
-        for (TelegramEntity telegramEntity : entityContext.findAll(TelegramEntity.class)) {
-            telegramService.restart(telegramEntity);
-        }
+        entityContext.bgp().runOnceOnInternetUp("telegram-start", () -> {
+            for (TelegramEntity telegramEntity : entityContext.findAll(TelegramEntity.class)) {
+                telegramService.restart(telegramEntity);
+            }
+        });
         //listen for bot name/token changes and fire restart
         entityContext.event().addEntityUpdateListener(TelegramEntity.class, "listen-telegram-to-start", (newValue, oldValue) -> {
             if (oldValue == null || !Objects.equals(newValue.getBotName(), oldValue.getBotName()) ||

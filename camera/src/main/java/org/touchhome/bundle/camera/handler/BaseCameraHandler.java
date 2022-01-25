@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -107,6 +108,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         if (isHandlerInitialized) {
             return true;
         }
+        log.info("Initialize camera: <{}>", cameraEntity.getTitle());
         isHandlerInitialized = true;
         try {
             if (cameraEntity == null) {
@@ -120,7 +122,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
             }
 
             log.info("Init camera: <{}>", this.cameraEntity.getTitle());
-            initialize0();
+            initialize0(cameraEntity);
             cameraConnectionJob = entityContext.bgp().schedule("poll-camera-connection-" + cameraEntityID,
                     60, TimeUnit.SECONDS, this::pollingCameraConnection, true, true);
             return true;
@@ -130,10 +132,11 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         return false;
     }
 
-    protected abstract void initialize0();
+    protected abstract void initialize0(T cameraEntity);
 
     public final void disposeAndSetStatus(Status status, String reason) {
         if (isHandlerInitialized) {
+            // need here to avoid infinite loop
             isHandlerInitialized = false;
             // set it before to avoid recursively disposing from listeners
             log.warn("Set camera <{}> to status <{}>. Msg: <{}>", cameraEntity.getTitle(), status, reason);
@@ -142,12 +145,16 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
             entityContext.updateDelayed(this.cameraEntity, e -> e.setStart(false));
             entityContext.ui().sendEntityUpdated(this.cameraEntity);
             this.stateListeners.values().forEach(h -> h.accept(status));
+
+            // need set to true to handle dispose !!!
+            isHandlerInitialized = true;
             dispose();
         }
     }
 
     public final void dispose() {
         if (isHandlerInitialized) {
+            log.info("Dispose camera: <{}>", cameraEntity.getTitle());
             isHandlerInitialized = false;
             disposeCameraConnectionJob();
             disposePollCameraJob();
@@ -170,7 +177,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         lastAnswerFromCamera = System.currentTimeMillis();
         if (!isCameraOnline && isHandlerInitialized) {
             isCameraOnline = true;
-            updateStatus(Status.ONLINE, "Success");
+            updateStatus(Status.ONLINE, null);
 
             disposeCameraConnectionJob();
             pollCameraJob = entityContext.bgp().schedule("poll-camera-runnable-" + cameraEntityID,
@@ -179,17 +186,11 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     }
 
     private void disposeCameraConnectionJob() {
-        if (cameraConnectionJob != null) {
-            cameraConnectionJob.cancel();
-            cameraConnectionJob = null;
-        }
+        Optional.ofNullable(cameraConnectionJob).ifPresent(EntityContextBGP.ThreadContext::cancel);
     }
 
     private void disposePollCameraJob() {
-        if (pollCameraJob != null) {
-            pollCameraJob.cancel();
-            pollCameraJob = null;
-        }
+        Optional.ofNullable(pollCameraJob).ifPresent(EntityContextBGP.ThreadContext::cancel);
     }
 
     public final boolean restart(String reason, T cameraEntity, boolean force) {

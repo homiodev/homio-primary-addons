@@ -8,41 +8,70 @@ import lombok.extern.log4j.Log4j2;
 import org.json.JSONObject;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.exception.ServerException;
 import org.touchhome.bundle.api.model.ActionResponseModel;
+import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.netty.HasBootstrapServer;
 import org.touchhome.bundle.api.netty.NettyUtils;
 import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.api.ui.field.*;
+import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
+import org.touchhome.bundle.api.ui.field.UIField;
+import org.touchhome.bundle.api.ui.field.UIFieldCodeEditor;
+import org.touchhome.bundle.api.ui.field.UIFieldIgnoreGetDefault;
+import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.action.UIActionButton;
 import org.touchhome.bundle.api.ui.field.action.UIActionInput;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.field.image.UIFieldImage;
+import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.bundle.api.video.VideoPlaybackStorage;
+import org.touchhome.bundle.camera.CameraCoordinator;
+import org.touchhome.bundle.camera.handler.BaseBrandCameraHandler;
 import org.touchhome.bundle.camera.handler.BaseCameraHandler;
+import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 
 import javax.persistence.Transient;
+import java.net.URI;
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 @Log4j2
 @Setter
 @Getter
 public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H extends BaseCameraHandler>
-        extends BaseVideoStreamEntity<T> {
+        extends BaseVideoStreamEntity<T> implements VideoPlaybackStorage {
 
     @Transient
     @JsonIgnore
     private H cameraHandler;
 
-    @Override
-    @UIFieldIgnore
-    public Status getJoined() {
-        return super.getJoined();
+    @Transient
+    @JsonIgnore
+    private BaseBrandCameraHandler baseBrandCameraHandler;
+
+    @UIField(order = 16)
+    @RestartHandlerOnChange
+    @UIFieldSelection(SelectCameraBrand.class)
+    public String getCameraType() {
+        return getJsonData("cameraType", CameraBrandHandlerDescription.DEFAULT_BRAND.getID());
+    }
+
+    public T setCameraType(String cameraType) {
+        return setJsonData("cameraType", cameraType);
+    }
+
+    public static class SelectCameraBrand implements DynamicOptionLoader {
+
+        @Override
+        public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
+            return OptionModel.list(CameraCoordinator.cameraBrands.keySet());
+        }
     }
 
     @UIField(order = 15, inlineEdit = true)
@@ -55,7 +84,7 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
         return this;
     }
 
-    @UIField(order = 16, onlyEdit = true)
+    @UIField(order = 16, inlineEdit = true)
     public boolean isAutoStart() {
         return getJsonData("autoStart", false);
     }
@@ -117,7 +146,6 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
 
     public abstract H createCameraHandler(EntityContext entityContext);
 
-
     @Override
     public UIInputBuilder assembleActions() {
         return cameraHandler == null ? null : cameraHandler.assembleActions();
@@ -167,8 +195,15 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
 
     @Override
     public void afterFetch(EntityContext entityContext) {
-        H cameraHandler = (H) NettyUtils.putBootstrapServer(getEntityID(), (Supplier<HasBootstrapServer>) () -> createCameraHandler(entityContext));
-        setCameraHandler(cameraHandler);
+        cameraHandler = (H) NettyUtils.putBootstrapServer(getEntityID(), (Supplier<HasBootstrapServer>) () -> createCameraHandler(entityContext));
+        baseBrandCameraHandler = CameraCoordinator.entityToCameraBrands.computeIfAbsent(getEntityID(), entityID -> {
+            String cameraType = getCameraType();
+            if (cameraType != null && CameraCoordinator.cameraBrands.containsKey(cameraType)) {
+                CameraBrandHandlerDescription cameraBrandHandlerDescription = CameraCoordinator.cameraBrands.get(cameraType);
+                return cameraBrandHandlerDescription.newInstance(BaseVideoCameraEntity.this);
+            }
+            return null;
+        });
 
         if (getStatus() == Status.UNKNOWN) {
             try {
@@ -193,5 +228,25 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
 
     public Path getFolder(String profile) {
         return TouchHomeUtils.getMediaPath().resolve("camera").resolve(getEntityID()).resolve(profile);
+    }
+
+    @Override
+    public LinkedHashMap<Long, Boolean> getAvailableDaysPlaybacks(EntityContext entityContext, String profile, Date from, Date to) throws Exception {
+        return ((VideoPlaybackStorage) baseBrandCameraHandler).getAvailableDaysPlaybacks(entityContext, profile, from, to);
+    }
+
+    @Override
+    public List<PlaybackFile> getPlaybackFiles(EntityContext entityContext, String profile, Date from, Date to) throws Exception {
+        return ((VideoPlaybackStorage) baseBrandCameraHandler).getPlaybackFiles(entityContext, profile, from, to);
+    }
+
+    @Override
+    public DownloadFile downloadPlaybackFile(EntityContext entityContext, String profile, String fileId, Path path) throws Exception {
+        return ((VideoPlaybackStorage) baseBrandCameraHandler).downloadPlaybackFile(entityContext, profile, fileId, path);
+    }
+
+    @Override
+    public URI getPlaybackVideoURL(EntityContext entityContext, String fileId) throws Exception {
+        return ((VideoPlaybackStorage) baseBrandCameraHandler).getPlaybackVideoURL(entityContext, fileId);
     }
 }

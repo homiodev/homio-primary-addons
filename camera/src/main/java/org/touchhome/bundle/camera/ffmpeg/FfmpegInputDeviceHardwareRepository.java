@@ -14,7 +14,9 @@ public interface FfmpegInputDeviceHardwareRepository {
 
     @HardwareQuery(
             name = "Run ffmpeg command",
+            redirectErrorsToInputs = true,
             value = ":ffmpeg :inputOptions -i :source :output", win = ":ffmpeg :inputOptions -i :source :output")
+    @ErrorsHandler(throwError = true, logError = false)
     void fireFfmpeg(@HQueryParam("ffmpeg") String ffmpeg,
                     @HQueryParam("inputOptions") String inputOptions,
                     @HQueryParam("source") String source,

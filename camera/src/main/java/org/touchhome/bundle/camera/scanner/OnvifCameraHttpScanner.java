@@ -170,6 +170,8 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
 
     private void updateCameraIpPortName(OnvifDeviceState onvifDeviceState, OnvifCameraEntity existedCamera) {
         try {
+            log.info("Updating camera ip <{}> address from <{}> to <{}>", existedCamera.getTitle(),
+                    existedCamera.getIp(), onvifDeviceState.getIp());
             existedCamera.tryUpdateData(entityContext, onvifDeviceState.getIp(), onvifDeviceState.getOnvifPort(),
                     onvifDeviceState.getInitialDevices().getName());
         } catch (Exception ex) {

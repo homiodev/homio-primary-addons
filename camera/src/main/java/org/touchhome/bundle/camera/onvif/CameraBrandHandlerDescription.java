@@ -1,6 +1,7 @@
 package org.touchhome.bundle.camera.onvif;
 
 import lombok.SneakyThrows;
+import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.impl.CameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.impl.OnvifBrandHandler;
@@ -30,7 +31,7 @@ public class CameraBrandHandlerDescription {
     }
 
     @SneakyThrows
-    public BaseOnvifCameraBrandHandler newInstance(OnvifCameraEntity onvifCameraEntity) {
-        return brandHandler.getConstructor(OnvifCameraEntity.class).newInstance(onvifCameraEntity);
+    public BaseOnvifCameraBrandHandler newInstance(BaseVideoCameraEntity baseVideoCameraEntity) {
+        return brandHandler.getConstructor(BaseVideoCameraEntity.class).newInstance(baseVideoCameraEntity);
     }
 }

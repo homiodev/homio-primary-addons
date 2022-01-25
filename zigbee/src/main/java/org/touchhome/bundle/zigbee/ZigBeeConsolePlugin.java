@@ -10,6 +10,7 @@ import org.touchhome.bundle.api.console.ConsolePluginTable;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
 import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.api.setting.SettingPluginStatus;
 import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
@@ -40,7 +41,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
     @Override
     public boolean isEnabled() {
-        return entityContext.setting().getValue(ZigBeeStatusSetting.class).isOnline();
+        return entityContext.setting().getValue(ZigBeeStatusSetting.class, SettingPluginStatus.UNKNOWN).isOnline();
     }
 
     @Override

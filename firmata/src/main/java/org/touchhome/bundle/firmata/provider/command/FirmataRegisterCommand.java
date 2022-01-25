@@ -50,7 +50,10 @@ public class FirmataRegisterCommand implements FirmataCommandPlugin {
         long uniqueID = entity.getUniqueID() == 0 ? device.generateUniqueIDOnRegistrationSuccess() : entity.getUniqueID();
         String boardType = THUtil.getString(payload, null);
 
-        entityContext.updateDelayed(entity, t -> t.setBoardType(boardType).setUniqueID(uniqueID).setJoined(Status.ONLINE).setStatus(Status.ONLINE));
+        entityContext.updateDelayed(entity, t -> {
+            t.setBoardType(boardType).setUniqueID(uniqueID).setJoined(Status.ONLINE);
+            t.setStatus(Status.ONLINE);
+        });
         entityContext.getBean(BroadcastLockManager.class).signalAll("firmata-ready-" + entity.getTarget());
         device.sendMessage(SYSEX_REGISTER, uniqueID);
     }

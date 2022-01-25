@@ -1,6 +1,7 @@
 package org.touchhome.bundle.camera;
 
 import org.apache.commons.lang3.StringUtils;
+import org.touchhome.bundle.camera.handler.BaseBrandCameraHandler;
 import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 import org.touchhome.bundle.camera.rtsp.message.sdp.SdpMessage;
 
@@ -9,6 +10,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class CameraCoordinator {
+
+    public static Map<String, BaseBrandCameraHandler> entityToCameraBrands = new HashMap<>();
 
     public static Map<String, CameraBrandHandlerDescription> cameraBrands = new HashMap<>();
 
