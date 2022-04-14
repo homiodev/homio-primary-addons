@@ -19,7 +19,7 @@ import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.touchhome.bundle.api.util.TouchHomeUtils.addToListSafe;
+import static org.touchhome.common.util.CommonUtils.addToListSafe;
 
 @Log4j2
 @Getter

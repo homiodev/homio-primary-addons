@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePluginEditor;
 import org.touchhome.bundle.api.console.dependency.ConsolePluginRequireZipDependency;
-import org.touchhome.bundle.api.exception.ServerException;
+import org.touchhome.common.exception.ServerException;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.FileContentType;
 import org.touchhome.bundle.api.model.FileModel;
@@ -17,6 +17,7 @@ import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.arduino.setting.ConsoleArduinoUploadUsingProgrammerSetting;
 import org.touchhome.bundle.arduino.setting.ConsoleArduinoVerboseSetting;
 import org.touchhome.bundle.arduino.setting.header.*;
+import org.touchhome.common.util.CommonUtils;
 import processing.app.BaseNoGui;
 import processing.app.PreferencesData;
 import processing.app.Sketch;
@@ -64,7 +65,7 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor,
     @Override
     public String getDependencyURL() {
         return String.format("%s/arduino-ide-setup-%s.7z", entityContext.getEnv("artifactoryFilesURL"),
-                TouchHomeUtils.OS.isWindows() ? "win" : "linux");
+                CommonUtils.OS.isWindows() ? "win" : "linux");
     }
 
     public void init() {

@@ -9,7 +9,7 @@ import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePlugin;
-import org.touchhome.bundle.api.model.ProgressBar;
+import org.touchhome.common.model.ProgressBar;
 import org.touchhome.bundle.api.setting.SettingPluginPackageInstall;
 import org.touchhome.bundle.api.setting.console.ConsoleSettingPlugin;
 import org.touchhome.bundle.arduino.ArduinoConfiguration;

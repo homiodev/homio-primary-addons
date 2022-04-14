@@ -5,7 +5,6 @@ import com.pi4j.io.gpio.PinMode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.SystemUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.micro.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.entity.storage.BaseFileSystemEntity;
@@ -18,6 +17,7 @@ import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.method.UIFieldCreateWorkspaceVariableOnEmpty;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
 import org.touchhome.bundle.raspberry.fs.RaspberryFileSystem;
 
@@ -53,7 +53,7 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
 
     @UIField(order = 200)
     public String getFileSystemRoot() {
-        return getJsonData("fs_root", SystemUtils.getUserHome().toString());
+        return getJsonData("fs_root", TouchHomeUtils.getRootPath().toString());
     }
 
     public void setFileSystemRoot(String value) {

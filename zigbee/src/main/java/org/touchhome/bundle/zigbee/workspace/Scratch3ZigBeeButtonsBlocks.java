@@ -11,7 +11,6 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.workspace.bool.WorkspaceBooleanEntity;
-import org.touchhome.bundle.api.util.UpdatableValue;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
@@ -22,6 +21,7 @@ import org.touchhome.bundle.zigbee.ZigBeeNodeDescription;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
+import org.touchhome.common.model.UpdatableValue;
 
 import java.util.HashMap;
 import java.util.List;

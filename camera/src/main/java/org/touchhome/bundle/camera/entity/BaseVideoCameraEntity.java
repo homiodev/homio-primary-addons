@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+import org.springframework.data.util.Pair;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
-import org.touchhome.bundle.api.exception.ServerException;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.model.Status;
@@ -34,6 +35,7 @@ import org.touchhome.bundle.camera.CameraCoordinator;
 import org.touchhome.bundle.camera.handler.BaseBrandCameraHandler;
 import org.touchhome.bundle.camera.handler.BaseCameraHandler;
 import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
+import org.touchhome.common.exception.ServerException;
 
 import javax.persistence.Transient;
 import java.net.URI;
@@ -151,6 +153,16 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
         return cameraHandler == null ? null : cameraHandler.assembleActions();
     }
 
+    @Override
+    public Collection<Pair<String, String>> getVideoSources() {
+        return null;
+    }
+
+    @Override
+    public String getStreamUrl(String key) {
+        return null;
+    }
+
     @UIContextMenuAction(value = "VIDEO.RECORD_MP4", icon = "fas fa-file-video", inputs = {
             @UIActionInput(name = "fileName", value = "record_${timestamp}", min = 4, max = 30),
             @UIActionInput(name = "secondsToRecord", type = UIActionInput.Type.number, value = "10", min = 5, max = 100)
@@ -218,6 +230,11 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
     }
 
     @Override
+    public String getTitle() {
+        return StringUtils.defaultIfBlank(getName(), StringUtils.defaultIfBlank(getDefaultName(), getEntityID()));
+    }
+
+    @Override
     public void afterUpdate(EntityContext entityContext) {
         setStatus(Status.UNKNOWN);
     }
@@ -248,5 +265,10 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
     @Override
     public URI getPlaybackVideoURL(EntityContext entityContext, String fileId) throws Exception {
         return ((VideoPlaybackStorage) baseBrandCameraHandler).getPlaybackVideoURL(entityContext, fileId);
+    }
+
+    @Override
+    public PlaybackFile getLastPlaybackFile(EntityContext entityContext, String profile) {
+        return ((VideoPlaybackStorage) baseBrandCameraHandler).getLastPlaybackFile(entityContext, profile);
     }
 }

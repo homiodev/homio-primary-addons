@@ -29,8 +29,6 @@ import org.touchhome.bundle.api.EntityContextBGP;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.state.*;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
-import org.touchhome.bundle.api.util.Curl;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.CameraCoordinator;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
@@ -45,6 +43,8 @@ import org.touchhome.bundle.camera.ui.UICameraAction;
 import org.touchhome.bundle.camera.ui.UICameraActionConditional;
 import org.touchhome.bundle.camera.ui.UICameraActionGetter;
 import org.touchhome.bundle.camera.ui.UICameraDimmerButton;
+import org.touchhome.common.util.CommonUtils;
+import org.touchhome.common.util.Curl;
 
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -323,7 +323,7 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
                         cameraEntity.getBaseBrandCameraHandler().handleSetURL(ch.pipeline(), httpRequestURL);
                         ch.writeAndFlush(request);
                     } else { // an error occurred
-                        log.warn("Error handle camera: <{}>. Error: <{}>", cameraEntity, TouchHomeUtils.getErrorMessage(future.cause()));
+                        log.warn("Error handle camera: <{}>. Error: <{}>", cameraEntity, CommonUtils.getErrorMessage(future.cause()));
 
                         /*if (!this.restartingBgp) {
                             log.error("Error in camera <{}> boostrap: <{}>", cameraEntity.getTitle(),
@@ -1091,6 +1091,6 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
             return super.recordImageSync(profile);
         }
         String snapshotUri = onvifDeviceState.getMediaDevices().getSnapshotUri(profile);
-        return Curl.download(snapshotUri, cameraEntity.getUser(), cameraEntity.getPassword().asString());
+        return new RawType(Curl.download(snapshotUri, cameraEntity.getUser(), cameraEntity.getPassword().asString()));
     }
 }

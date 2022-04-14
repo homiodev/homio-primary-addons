@@ -18,6 +18,7 @@ import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
 import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
 import org.touchhome.bundle.camera.ui.CameraActionsContext;
+import org.touchhome.common.util.CommonUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -82,10 +83,10 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         this.serverPort = cameraEntity.getServerPort();
 
         Path ffmpegOutputPath = cameraEntity.getFolder();
-        ffmpegImageOutputPath = TouchHomeUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("images"));
-        ffmpegGifOutputPath = TouchHomeUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("gif"));
-        ffmpegMP4OutputPath = TouchHomeUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("mp4"));
-        ffmpegHLSOutputPath = TouchHomeUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("hls"));
+        ffmpegImageOutputPath = CommonUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("images"));
+        ffmpegGifOutputPath = CommonUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("gif"));
+        ffmpegMP4OutputPath = CommonUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("mp4"));
+        ffmpegHLSOutputPath = CommonUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("hls"));
         try {
             FileUtils.cleanDirectory(ffmpegHLSOutputPath.toFile());
         } catch (IOException e) {
@@ -127,7 +128,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
                     60, TimeUnit.SECONDS, this::pollingCameraConnection, true, true);
             return true;
         } catch (Exception ex) {
-            disposeAndSetStatus(Status.ERROR, "Error while init camera: " + TouchHomeUtils.getErrorMessage(ex));
+            disposeAndSetStatus(Status.ERROR, "Error while init camera: " + CommonUtils.getErrorMessage(ex));
         }
         return false;
     }
@@ -248,9 +249,9 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     public abstract void startSnapshot();
 
     public void deleteDirectories() {
-        TouchHomeUtils.deleteDirectory(ffmpegGifOutputPath);
-        TouchHomeUtils.deleteDirectory(ffmpegMP4OutputPath);
-        TouchHomeUtils.deleteDirectory(ffmpegImageOutputPath);
+        CommonUtils.deleteDirectory(ffmpegGifOutputPath);
+        CommonUtils.deleteDirectory(ffmpegMP4OutputPath);
+        CommonUtils.deleteDirectory(ffmpegImageOutputPath);
     }
 
     @Override

@@ -13,8 +13,6 @@ import org.firmata4j.firmata.parser.FirmataEventType;
 import org.firmata4j.fsm.Event;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.util.FlowMap;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.firmata.model.FirmataBaseEntity;
 import org.touchhome.bundle.firmata.provider.command.FirmataCommand;
@@ -22,6 +20,8 @@ import org.touchhome.bundle.firmata.provider.command.FirmataCommandPlugin;
 import org.touchhome.bundle.firmata.provider.command.FirmataOneWireResponseDataCommand;
 import org.touchhome.bundle.firmata.provider.util.THUtil;
 import org.touchhome.bundle.firmata.setting.FirmataWatchDogIntervalSetting;
+import org.touchhome.common.util.CommonUtils;
+import org.touchhome.common.util.FlowMap;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
@@ -124,7 +124,7 @@ public abstract class FirmataDeviceCommunicator<T extends FirmataBaseEntity<T>> 
 
             return "ACTION.COMMUNICATOR.SUCCESS";
         } catch (Exception ex) {
-            updateStatus(entity, Status.ERROR, TouchHomeUtils.getErrorMessage(ex));
+            updateStatus(entity, Status.ERROR, CommonUtils.getErrorMessage(ex));
             log.error("Error while initialize device: {} for device type: {}", entity.getTitle(), getClass().getSimpleName(), ex);
             throw new RuntimeException("ACTION.COMMUNICATOR.UNKNOWN_ERROR");
         }

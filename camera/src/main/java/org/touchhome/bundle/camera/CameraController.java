@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import org.onvif.ver10.schema.Profile;
 import org.springframework.web.bind.annotation.*;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.exception.NotFoundException;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.ui.action.UIActionHandler;
@@ -21,6 +20,7 @@ import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.widget.WidgetCameraEntity;
 import org.touchhome.bundle.camera.widget.WidgetCameraSeriesEntity;
+import org.touchhome.common.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collection;

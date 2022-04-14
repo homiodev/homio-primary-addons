@@ -7,7 +7,8 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.Lang;
+import org.touchhome.common.util.CommonUtils;
+import org.touchhome.common.util.Lang;
 import org.touchhome.bundle.api.entity.CommunicationEntity;
 import org.touchhome.bundle.api.entity.HasStatusAndMsg;
 import org.touchhome.bundle.api.model.ActionResponseModel;
@@ -74,7 +75,7 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
     public List<TelegramUser> getUsers() {
         String users = getJsonData("users");
         if (StringUtils.isNotEmpty(users)) {
-            return TouchHomeUtils.OBJECT_MAPPER.readValue(users, new TypeReference<List<TelegramUser>>() {
+            return CommonUtils.OBJECT_MAPPER.readValue(users, new TypeReference<List<TelegramUser>>() {
             });
         }
         return new ArrayList<>();
@@ -82,7 +83,7 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
 
     @SneakyThrows
     private void setUsers(List<TelegramUser> users) {
-        setJsonData("users", TouchHomeUtils.OBJECT_MAPPER.writeValueAsString(users));
+        setJsonData("users", CommonUtils.OBJECT_MAPPER.writeValueAsString(users));
     }
 
     @Override

@@ -7,9 +7,10 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.Lang;
+import org.touchhome.common.model.ProgressBar;
+import org.touchhome.common.util.CommonUtils;
+import org.touchhome.common.util.Lang;
 import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
-import org.touchhome.bundle.api.model.ProgressBar;
 import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
@@ -170,12 +171,10 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
 
     private void updateCameraIpPortName(OnvifDeviceState onvifDeviceState, OnvifCameraEntity existedCamera) {
         try {
-            log.info("Updating camera ip <{}> address from <{}> to <{}>", existedCamera.getTitle(),
-                    existedCamera.getIp(), onvifDeviceState.getIp());
             existedCamera.tryUpdateData(entityContext, onvifDeviceState.getIp(), onvifDeviceState.getOnvifPort(),
                     onvifDeviceState.getInitialDevices().getName());
         } catch (Exception ex) {
-            log.error("Error while trying update camera: <{}>", TouchHomeUtils.getErrorMessage(ex));
+            log.error("Error while trying update camera: <{}>", CommonUtils.getErrorMessage(ex));
         }
     }
 
@@ -185,7 +184,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
         } catch (BadCredentialsException ex) {
             return "Require auth to fetch name";
         } catch (Exception ex) {
-            return "Unknown name: " + TouchHomeUtils.getErrorMessage(ex);
+            return "Unknown name: " + CommonUtils.getErrorMessage(ex);
         }
     }
 
@@ -195,7 +194,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
         } catch (BadCredentialsException ex) {
             return "Require auth to fetch model";
         } catch (Exception ex) {
-            return "Unknown model: " + TouchHomeUtils.getErrorMessage(ex);
+            return "Unknown model: " + CommonUtils.getErrorMessage(ex);
         }
     }
 }

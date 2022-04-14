@@ -41,6 +41,23 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.touchhome</groupId>
+            <artifactId>touchhome-common</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.touchhome</groupId>
+            <artifactId>touchhome-hquery</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.github.hypfvieh</groupId>
             <artifactId>dbus-java</artifactId>
             <scope>provided</scope>

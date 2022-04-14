@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
-import org.touchhome.bundle.api.util.UpdatableValue;
 import org.touchhome.bundle.raspberry.settings.RaspberryOneWireIntervalSetting;
+import org.touchhome.common.model.UpdatableValue;
+import org.touchhome.common.util.CommonUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -286,7 +286,7 @@ public class RaspberryGPIOService {
         if (EntityContext.isDevEnvironment()) {
             return Collections.singletonList("28-test000011");
         }
-        if (TouchHomeUtils.OS.isLinux() && Files.exists(w1BaseDir.resolve("w1_master_slaves"))) {
+        if (CommonUtils.OS.isLinux() && Files.exists(w1BaseDir.resolve("w1_master_slaves"))) {
             return Files.readAllLines(w1BaseDir.resolve("w1_master_slaves")).stream()
                     .filter(sensorID -> sensorID != null && sensorID.startsWith("28-"))
                     .collect(Collectors.toList());

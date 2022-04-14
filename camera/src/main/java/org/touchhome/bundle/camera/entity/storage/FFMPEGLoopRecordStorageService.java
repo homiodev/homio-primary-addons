@@ -15,6 +15,7 @@ import org.touchhome.bundle.camera.entity.BaseFFmpegStreamEntity;
 import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
 import org.touchhome.bundle.camera.handler.BaseFFmpegCameraHandler;
 import org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants;
+import org.touchhome.common.util.CommonUtils;
 
 import javax.persistence.Entity;
 import java.nio.file.Path;
@@ -175,7 +176,7 @@ public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFM
             path = cameraEntity.getFolder(profile).resolve("ffmpeg").resolve(target);
         }
         Path folder = path.getParent();
-        TouchHomeUtils.createDirectoriesIfNotExists(folder);
+        CommonUtils.createDirectoriesIfNotExists(folder);
 
         String source = cameraHandler.getRtspUri(profile);
         log.info("Start ffmpeg video recording from source: <{}> to: <{}>", source, path);

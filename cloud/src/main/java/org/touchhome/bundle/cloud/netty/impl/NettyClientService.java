@@ -12,11 +12,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.UserEntity;
-import org.touchhome.bundle.api.util.SslUtil;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerConnectionMessageSetting;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerConnectionStatusSetting;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerUrlSetting;
+import org.touchhome.common.util.CommonUtils;
+import org.touchhome.common.util.SslUtil;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
@@ -85,8 +86,8 @@ public class NettyClientService {
                     connectLoop();
                     updateConnectionStatus(ServerConnectionStatus.DISCONNECTED, "");
                 } catch (Exception ex) {
-                    log.error("Netty client finished with error: <{}>", TouchHomeUtils.getErrorMessage(ex));
-                    updateConnectionStatus(ServerConnectionStatus.DISCONNECTED_WIDTH_ERRORS, TouchHomeUtils.getErrorMessage(ex));
+                    log.error("Netty client finished with error: <{}>", CommonUtils.getErrorMessage(ex));
+                    updateConnectionStatus(ServerConnectionStatus.DISCONNECTED_WIDTH_ERRORS, CommonUtils.getErrorMessage(ex));
                 }
                 try {
                     TimeUnit.SECONDS.sleep(60);

@@ -5,12 +5,13 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.dependency.DependencyExecutableInstaller;
 import org.touchhome.bundle.api.hardware.other.MachineHardwareRepository;
-import org.touchhome.bundle.api.model.ProgressBar;
+import org.touchhome.common.model.ProgressBar;
 import org.touchhome.bundle.api.setting.SettingPluginButton;
 import org.touchhome.bundle.api.setting.SettingPluginOptionsFileExplorer;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
 import org.touchhome.bundle.camera.setting.FFMPEGInstallSetting;
+import org.touchhome.common.util.CommonUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,7 +27,7 @@ public class FFMPEGDependencyExecutableInstaller extends DependencyExecutableIns
 
     @Override
     protected Path installDependencyInternal(EntityContext entityContext, ProgressBar progressBar) {
-        if (TouchHomeUtils.OS.isLinux()) {
+        if (CommonUtils.OS.isLinux()) {
             entityContext.getBean(MachineHardwareRepository.class).installSoftware("ffmpeg");
         } else {
             Path targetFolder;

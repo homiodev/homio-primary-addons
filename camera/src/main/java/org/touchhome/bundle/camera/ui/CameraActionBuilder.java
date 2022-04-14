@@ -22,6 +22,7 @@ import org.touchhome.bundle.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.dialog.UIStickyDialogItemBuilder;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.common.util.CommonUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -39,7 +40,7 @@ public class CameraActionBuilder {
         for (Method method : MethodUtils.getMethodsWithAnnotation(instance.getClass(), UICameraAction.class, true, false)) {
             UICameraActionConditional cameraActionConditional = method.getDeclaredAnnotation(UICameraActionConditional.class);
             if (handledMethods.add(method.getName()) && (cameraActionConditional == null ||
-                    TouchHomeUtils.newInstance(cameraActionConditional.value()).test(instance))) {
+                    CommonUtils.newInstance(cameraActionConditional.value()).test(instance))) {
 
                 UICameraAction uiCameraAction = method.getDeclaredAnnotation(UICameraAction.class);
                 Parameter actionParameter = method.getParameters()[0];
@@ -62,7 +63,7 @@ public class CameraActionBuilder {
                     try {
                         method.invoke(instance, actionParameterConverter.apply(params.optString("value")));
                     } catch (Exception ex) {
-                        log.error("Unable to invoke camera action: <{}>", TouchHomeUtils.getErrorMessage(ex));
+                        log.error("Unable to invoke camera action: <{}>", CommonUtils.getErrorMessage(ex));
                     }
                     return null;
                 };
@@ -155,7 +156,7 @@ public class CameraActionBuilder {
                             uiEntityItemBuilder.setValue(type.getConvertToObject().apply(value));
                         } catch (Exception ex) {
                             log.error("Unable to fetch getter value for action: <{}>. Msg: <{}>",
-                                    uiCameraAction.name(), TouchHomeUtils.getErrorMessage(ex));
+                                    uiCameraAction.name(), CommonUtils.getErrorMessage(ex));
                         }
                     });
                 }

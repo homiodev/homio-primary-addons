@@ -14,6 +14,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.touchhome</groupId>
+            <artifactId>touchhome-bluetooth</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.touchhome.bundle</groupId>
             <artifactId>touchhome-bundle-cloud</artifactId>
             <version>${project.version}</version>

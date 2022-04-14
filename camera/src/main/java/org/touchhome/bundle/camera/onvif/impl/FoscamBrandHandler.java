@@ -16,6 +16,10 @@ import org.touchhome.bundle.camera.onvif.util.Helper;
 import org.touchhome.bundle.camera.ui.UICameraAction;
 import org.touchhome.bundle.camera.ui.UICameraActionGetter;
 
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
 /**
@@ -96,14 +100,26 @@ public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler implements B
 
     @UICameraAction(name = CHANNEL_ENABLE_LED, order = 50, icon = "far fa-lightbulb")
     public void enableLED(boolean on) {
-        // Disable the auto mode first
-        onvifCameraHandler.sendHttpGET(CG + "setInfraLedConfig&mode=1&usr=" + username + "&pwd=" + password);
-        setAttribute(CHANNEL_AUTO_LED, OnOffType.OFF);
-        if (on) {
-            onvifCameraHandler.sendHttpGET(CG + "openInfraLed&usr=" + username + "&pwd=" + password);
-        } else {
-            onvifCameraHandler.sendHttpGET(CG + "closeInfraLed&usr=" + username + "&pwd=" + password);
-        }
+        getIRLedHandler().accept(on);
+    }
+
+    @Override
+    public Consumer<Boolean> getIRLedHandler() {
+        return on -> {
+            // Disable the auto mode first
+            onvifCameraHandler.sendHttpGET(CG + "setInfraLedConfig&mode=1&usr=" + username + "&pwd=" + password);
+            setAttribute(CHANNEL_AUTO_LED, OnOffType.OFF);
+            if (on) {
+                onvifCameraHandler.sendHttpGET(CG + "openInfraLed&usr=" + username + "&pwd=" + password);
+            } else {
+                onvifCameraHandler.sendHttpGET(CG + "closeInfraLed&usr=" + username + "&pwd=" + password);
+            }
+        };
+    }
+
+    @Override
+    public Supplier<Boolean> getIrLedValueHandler() {
+        return () -> Optional.ofNullable(getAttribute(CHANNEL_ENABLE_LED)).map(State::boolValue).orElse(false);
     }
 
     @UICameraAction(name = CHANNEL_AUTO_LED, order = 60, icon = "fas fa-lightbulb")

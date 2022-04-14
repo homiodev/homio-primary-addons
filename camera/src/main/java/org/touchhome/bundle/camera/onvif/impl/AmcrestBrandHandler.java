@@ -9,7 +9,6 @@ import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
-import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.BrandCameraHasAudioAlarm;
@@ -17,6 +16,10 @@ import org.touchhome.bundle.camera.onvif.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.onvif.util.Helper;
 import org.touchhome.bundle.camera.ui.UICameraAction;
 import org.touchhome.bundle.camera.ui.UICameraActionGetter;
+
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
@@ -51,7 +54,6 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
             onvifCameraHandler.sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Manual");
         } else {
             onvifCameraHandler.sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Off");
-
         }
     }
 
@@ -61,6 +63,23 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
             setAttribute(CHANNEL_ENABLE_LED, null);
             onvifCameraHandler.sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Auto");
         }
+    }
+
+    @Override
+    public Consumer<Boolean> getIRLedHandler() {
+        return on -> {
+            setAttribute(CHANNEL_AUTO_LED, OnOffType.OFF);
+            if (on) {
+                onvifCameraHandler.sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Manual");
+            } else {
+                onvifCameraHandler.sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Off");
+            }
+        };
+    }
+
+    @Override
+    public Supplier<Boolean> getIrLedValueHandler() {
+        return () -> Optional.ofNullable(getAttribute(CHANNEL_ENABLE_LED)).map(State::boolValue).orElse(false);
     }
 
     @Override

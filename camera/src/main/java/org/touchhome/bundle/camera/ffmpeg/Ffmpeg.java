@@ -2,8 +2,8 @@ package org.touchhome.bundle.camera.ffmpeg;
 
 import lombok.Getter;
 import org.apache.logging.log4j.Logger;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.FFmpegFormat;
+import org.touchhome.common.util.CommonUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,8 +11,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
-import static org.touchhome.bundle.api.util.TouchHomeUtils.addToListSafe;
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.CHANNEL_FFMPEG_MOTION_ALARM;
+import static org.touchhome.common.util.CommonUtils.addToListSafe;
 
 /**
  * Responsible for handling multiple ffmpeg conversions which are used for many tasks
@@ -177,7 +177,7 @@ public class Ffmpeg {
                 }
             } catch (IOException ex) {
                 log.warn("An error occurred trying to process the messages from FFmpeg.");
-                handler.ffmpegError(TouchHomeUtils.getErrorMessage(ex));
+                handler.ffmpegError(CommonUtils.getErrorMessage(ex));
             }
         }
     }

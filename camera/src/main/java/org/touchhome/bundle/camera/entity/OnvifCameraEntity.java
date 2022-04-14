@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.Lang;
+import org.touchhome.common.util.Lang;
 import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.Status;

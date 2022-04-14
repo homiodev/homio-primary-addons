@@ -1,17 +1,25 @@
 package org.touchhome.bundle.camera.workspace;
 
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MimeTypeUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.storage.CameraBaseStorageService;
+import org.touchhome.bundle.api.model.KeyValueEnum;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.RawType;
 import org.touchhome.bundle.api.state.StringType;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.bundle.api.video.VideoPlaybackStorage;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
@@ -19,8 +27,15 @@ import org.touchhome.bundle.api.workspace.scratch.*;
 import org.touchhome.bundle.camera.CameraEntryPoint;
 import org.touchhome.bundle.camera.entity.BaseFFmpegStreamEntity;
 import org.touchhome.bundle.camera.handler.BaseFFmpegCameraHandler;
+import org.touchhome.common.util.CommonUtils;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
@@ -40,20 +55,34 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
     private final MenuBlock.StaticMenuBlock<OnOffType.OnOffTypeEnum> onOffMenu;
     private final MenuBlock.StaticMenuBlock<RecordType> recordTypeMenu;
 
-    private final Scratch3Block whenAlarmHat;
-    private final Scratch3Block fireAlarmCommand;
+    private final Scratch3Block whenBoolHat;
     // private final Scratch3Block recordImageCommand;
     private final Scratch3Block recordGifOrMP4Command;
     private final Scratch3Block gifMP4Reporter;
-    private final Scratch3Block setAlarmThresholdCommand;
+
+    private final Scratch3Block setIntParamCommand;
+    private final Scratch3Block setBoolParamCommand;
+
     private final Scratch3Block recordVideo;
+    private final Scratch3Block getCameraWithProfileParameterReporter;
+
+    private final Scratch3Block getCameraParameterReporter;
 
     // private final MenuBlock.ServerMenuBlock profileMenu;
     private final MenuBlock.ServerMenuBlock ffmpegCameraMenuWithProfiles;
     private final MenuBlock.StaticMenuBlock<CameraReportCommands> cameraReportCommandMenu;
-    private final MenuBlock.StaticMenuBlock<AlarmEnum> alarmMenu;
+    private final MenuBlock.StaticMenuBlock<BoolHatMenuEnum> boolHatMenu;
+    private final MenuBlock.StaticMenuBlock<SetCameraIntParamEnum> intParamMenu;
+    private final MenuBlock.StaticMenuBlock<SetCameraBoolParamEnum> boolParamMenu;
+    private final MenuBlock.StaticMenuBlock<CameraProfileReportCommands> cameraProfileReportCommandMenu;
+
     private final MenuBlock.ServerMenuBlock cameraRecordHandler;
-    private final Scratch3Block cameraReporter;
+
+    private static final RetryPolicy<VideoPlaybackStorage.DownloadFile> PLAYBACK_DOWNLOAD_FILE_RETRY_POLICY = RetryPolicy.<VideoPlaybackStorage.DownloadFile>builder()
+            .handle(Exception.class)
+            .withDelay(Duration.ofSeconds(5))
+            .withMaxRetries(3)
+            .build();
 
     public Scratch3CameraBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
                                 CameraEntryPoint cameraEntryPoint) {
@@ -68,15 +97,20 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         /*this.profileMenu = MenuBlock.ofServer("profileMenu", "/rest/camera/profiles", "-", "-")
                 .setDependency(this.ffmpegCameraMenu);*/
         this.onOffMenu = MenuBlock.ofStatic("onOff", OnOffType.OnOffTypeEnum.class, OnOffType.OnOffTypeEnum.On);
-        this.cameraReportCommandMenu = MenuBlock.ofStatic("camReport", CameraReportCommands.class, CameraReportCommands.MotionAlarmThreshold);
         this.recordTypeMenu = MenuBlock.ofStatic("recordType", RecordType.class, RecordType.Mp4);
-        this.alarmMenu = MenuBlock.ofStatic("alarmMenu", AlarmEnum.class, AlarmEnum.Motion);
+
+        this.cameraReportCommandMenu = MenuBlock.ofStaticKV("camReport", CameraReportCommands.class, CameraReportCommands.MotionAlarmThreshold);
+        this.cameraProfileReportCommandMenu = MenuBlock.ofStaticKV("camProfileReport", CameraProfileReportCommands.class, CameraProfileReportCommands.Snapshot);
+
+        this.boolHatMenu = MenuBlock.ofStaticKV("boolHatMenu", BoolHatMenuEnum.class, BoolHatMenuEnum.MotionAlarm);
+        this.intParamMenu = MenuBlock.ofStaticKV("intParamMenu", SetCameraIntParamEnum.class, SetCameraIntParamEnum.MotionAlarm);
+        this.boolParamMenu = MenuBlock.ofStaticKV("boolParamMenu", SetCameraBoolParamEnum.class, SetCameraBoolParamEnum.IRLedValue);
 
         // Hats
-        this.whenAlarmHat = withServerFfmpeg(Scratch3Block.ofHandler(10, "alarm",
-                BlockType.hat, "[ALARM] alarm [ON_OFF] of [VIDEO_STREAM]", this::listenAlarmHat));
-        this.whenAlarmHat.addArgument("ALARM", this.alarmMenu);
-        this.whenAlarmHat.addArgument(ON_OFF, this.onOffMenu);
+        this.whenBoolHat = withServerFfmpeg(Scratch3Block.ofHandler(10, "bool_hat",
+                BlockType.hat, "[VALUE] [ON_OFF] of [VIDEO_STREAM]", this::listenBoolHat));
+        this.whenBoolHat.addArgument("VALUE", this.boolHatMenu);
+        this.whenBoolHat.addArgument(ON_OFF, this.onOffMenu);
 
         this.recordVideo = withServerFfmpegAndProfile(Scratch3Block.ofCommand(15, "record",
                 "Record [VIDEO_STREAM] to file [NAME] using [FS]", this::recordCameraHandler));
@@ -84,9 +118,13 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         this.recordVideo.addArgument("NAME", "output-%03d.mp4");
 
         // Reporters
-        this.cameraReporter = withServerFfmpeg(Scratch3Block.ofReporter(33, "camReporter",
-                "Get [COMMAND] of [VIDEO_STREAM]", this::getCameraReportHandler));
-        this.cameraReporter.addArgument("COMMAND", this.cameraReportCommandMenu);
+        this.getCameraParameterReporter = withServerFfmpeg(Scratch3Block.ofReporter(33, "camReporter",
+                "Get [ENTITY] of [VIDEO_STREAM]", this::getCameraReportHandler));
+        this.getCameraParameterReporter.addArgument(ENTITY, this.cameraReportCommandMenu);
+
+        this.getCameraWithProfileParameterReporter = withServerFfmpegAndProfile(Scratch3Block.ofReporter(40, "get_img",
+                "Get [ENTITY] of [VIDEO_STREAM]", this::getCameraWithProfileParameterReporter));
+        this.getCameraWithProfileParameterReporter.addArgument(ENTITY, this.cameraProfileReportCommandMenu);
 
         this.gifMP4Reporter = withServerFfmpegAndProfile(Scratch3Block.ofReporter(110, "get_gif_mp4",
                 "Get [RECORD_TYPE] [TIME]sec. of [VIDEO_STREAM]", this::getGifMP4Reporter));
@@ -95,11 +133,6 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         this.gifMP4Reporter.appendSpace();
 
         // Commands
-        this.fireAlarmCommand = withServerFfmpeg(Scratch3Block.ofCommand(120, "fire__alarm",
-                "Fire [ALARM] alarm [ON_OFF] of [VIDEO_STREAM]", this::fireAlarmCommand));
-        this.fireAlarmCommand.addArgument("ALARM", this.alarmMenu);
-        this.fireAlarmCommand.addArgument(ON_OFF, this.onOffMenu);
-
         /*this.recordImageCommand = withServerFfmpeg(Scratch3Block.ofCommand(140, "record_image",
                 "Record image of [VIDEO_STREAM]", this::firePollImageCommand));*/
 
@@ -110,14 +143,19 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         this.recordGifOrMP4Command.addArgument("TIME", ArgumentType.number, "5");
         this.recordGifOrMP4Command.addArgument("FILE_NAME", ArgumentType.string, "name");
 
-        this.setAlarmThresholdCommand = withServerFfmpeg(Scratch3Block.ofCommand(160, "set_alarm_threshold",
-                "Set [ALARM] alarm as [VALUE] of [VIDEO_STREAM]", this::setAlarmThresholdCommand));
-        this.setAlarmThresholdCommand.addArgument("ALARM", this.alarmMenu);
-        this.setAlarmThresholdCommand.addArgument(VALUE, 35);
+        this.setIntParamCommand = withServerFfmpeg(Scratch3Block.ofCommand(160, "set_int_param",
+                "Set [ENTITY] as [VALUE] of [VIDEO_STREAM]", this::setIntParamCommand));
+        this.setIntParamCommand.addArgument(ENTITY, this.intParamMenu);
+        this.setIntParamCommand.addArgument(VALUE, 35);
+
+        this.setBoolParamCommand = withServerFfmpeg(Scratch3Block.ofCommand(170, "set_bool_param",
+                "Set [ENTITY] as [ON_OFF] of [VIDEO_STREAM]", this::setBoolParamCommand));
+        this.setBoolParamCommand.addArgument(ENTITY, this.boolParamMenu);
+        this.setBoolParamCommand.addArgument(ON_OFF, this.onOffMenu);
     }
 
     private Object getCameraReportHandler(WorkspaceBlock workspaceBlock) {
-        CameraReportCommands camReportCommands = workspaceBlock.getMenuValue("COMMAND", this.cameraReportCommandMenu);
+        CameraReportCommands camReportCommands = workspaceBlock.getMenuValue(ENTITY, this.cameraReportCommandMenu);
         return camReportCommands.reportFn.apply(workspaceBlock, this);
     }
 
@@ -133,60 +171,169 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
     }
 
     @RequiredArgsConstructor
-    private enum AlarmEnum {
-        Audio((entity, onOffType, scratch, workspaceBlock, next) -> {
-            BroadcastLock audioAlarm = scratch.broadcastLockManager.getOrCreateLock(workspaceBlock, CHANNEL_AUDIO_ALARM + ":" + entity.getEntityID());
-            workspaceBlock.subscribeToLock(audioAlarm, state -> ((OnOffType) state).boolValue() == onOffType.boolValue(), next::handle);
-        }, (entity, onOffType, scratch, workspaceBlock) -> {
+    private enum SetCameraBoolParamEnum implements KeyValueEnum {
+        IRLedValue("IR led value", (entity, onOffType, workspaceBlock) -> {
+            Consumer<Boolean> handler = entity.getBaseBrandCameraHandler().getIRLedHandler();
+            if (handler == null) {
+                workspaceBlock.logErrorAndThrow("Unable to find ir led handler for camera: <{}>", entity.getTitle());
+            } else {
+                handler.accept(onOffType.boolValue());
+            }
+        }),
+
+        AudioAlarm("Audio alarm", (entity, onOffType, workspaceBlock) -> {
             entity.getCameraHandler().audioDetected(onOffType.boolValue());
-        }, BaseFFmpegCameraHandler::setAudioThreshold),
+        }),
 
-        Motion((entity, onOffType, scratch, workspaceBlock, next) -> {
-            BroadcastLock motionAlarm = scratch.broadcastLockManager.getOrCreateLock(workspaceBlock, MOTION_ALARM + ":" + entity.getEntityID());
-            workspaceBlock.subscribeToLock(motionAlarm, state -> ((OnOffType) state).boolValue() == onOffType.boolValue(),
-                    next::handle);
-        }, (entity, onOffType, scratch, workspaceBlock) -> {
+        MotionAlarm("Motion alarm", (entity, onOffType, workspaceBlock) -> {
             entity.getCameraHandler().motionDetected(onOffType.boolValue(), CHANNEL_EXTERNAL_MOTION);
-        }, BaseFFmpegCameraHandler::setMotionThreshold);
+        });
 
-        private final AlarmHandler handler;
-        private final FireAlarmHandler fireHandler;
-        private final SetAlarmThresholdHandler alarmThresholdHandler;
+        @Getter
+        private final String value;
 
-        private interface AlarmHandler {
-            void handle(BaseFFmpegStreamEntity entity, OnOffType.OnOffTypeEnum onOffType, Scratch3CameraBlocks scratch, WorkspaceBlock workspaceBlock, WorkspaceBlock next);
-        }
+        private final SetHandler handler;
 
-        private interface FireAlarmHandler {
-            void handle(BaseFFmpegStreamEntity entity, OnOffType.OnOffTypeEnum onOffType, Scratch3CameraBlocks scratch, WorkspaceBlock workspaceBlock);
-        }
-
-        private interface SetAlarmThresholdHandler {
-            void handle(BaseFFmpegCameraHandler fFmpegHandler, int threshold);
+        private interface SetHandler {
+            void handle(BaseFFmpegStreamEntity entity, OnOffType.OnOffTypeEnum onOffType, WorkspaceBlock workspaceBlock);
         }
     }
 
     @RequiredArgsConstructor
-    private enum CameraReportCommands {
-        AudioAlarmThreshold((workspaceBlock, scratch) -> {
-            return scratch.getEntity(workspaceBlock).getAudioThreshold();
+    private enum BoolHatMenuEnum implements KeyValueEnum {
+        AudioAlarm("Audio alarm", (entity, onOffType, scratch, workspaceBlock, next) -> {
+            BroadcastLock audioAlarm = scratch.broadcastLockManager.getOrCreateLock(workspaceBlock, CHANNEL_AUDIO_ALARM + ":" + entity.getEntityID());
+            workspaceBlock.subscribeToLock(audioAlarm, state -> ((OnOffType) state).boolValue() == onOffType.boolValue(), next::handle);
         }),
-        MotionAlarmThreshold((workspaceBlock, scratch) -> {
-            return scratch.getEntity(workspaceBlock).getMotionThreshold();
-        }),
-        LastMotionType((workspaceBlock, scratch) -> {
-            return scratch.getEntity(workspaceBlock).getCameraHandler().getAttributes().getOrDefault(CHANNEL_LAST_MOTION_TYPE, StringType.EMPTY).toString();
-        }),
-        LastImage((workspaceBlock, scratch) -> {
-            return new RawType(scratch.getEntity(workspaceBlock).getLastSnapshot(), MimeTypeUtils.IMAGE_JPEG_VALUE);
+
+        MotionAlarm("Motion alarm", (entity, onOffType, scratch, workspaceBlock, next) -> {
+            BroadcastLock motionAlarm = scratch.broadcastLockManager.getOrCreateLock(workspaceBlock, MOTION_ALARM + ":" + entity.getEntityID());
+            workspaceBlock.subscribeToLock(motionAlarm, state -> ((OnOffType) state).boolValue() == onOffType.boolValue(),
+                    next::handle);
         });
 
+        @Getter
+        private final String value;
+        private final AlarmHandler handler;
+
+        private interface AlarmHandler {
+            void handle(BaseFFmpegStreamEntity entity, OnOffType.OnOffTypeEnum onOffType, Scratch3CameraBlocks scratch, WorkspaceBlock workspaceBlock, WorkspaceBlock next);
+        }
+    }
+
+    @RequiredArgsConstructor
+    private enum SetCameraIntParamEnum implements KeyValueEnum {
+        AudioAlarm("Audio alarm", (entity, value, scratch, workspaceBlock) -> {
+            entity.setAudioThreshold(value);
+        }),
+
+        MotionAlarm("Motion alarm", (entity, value, scratch, workspaceBlock) -> {
+            entity.setMotionThreshold(value);
+        });
+
+        @Getter
+        private final String value;
+        private final SetCameraIntParamHandler handler;
+
+        private interface SetCameraIntParamHandler {
+            void handle(BaseFFmpegStreamEntity entity, int value, Scratch3CameraBlocks scratch, WorkspaceBlock workspaceBlock);
+        }
+    }
+
+    @RequiredArgsConstructor
+    private enum CameraProfileReportCommands implements KeyValueEnum {
+        Snapshot("Snapshot", (workspaceBlock, scratch, cameraProfile) -> {
+            return cameraProfile.entity.getCameraHandler().recordImageSync(cameraProfile.profile);
+        }),
+        LastPlayback("Last playback", (workspaceBlock, scratch, cameraProfile) -> {
+            BaseFFmpegStreamEntity entity = cameraProfile.entity;
+            if (entity instanceof VideoPlaybackStorage) {
+                String profile = cameraProfile.profile;
+                VideoPlaybackStorage.PlaybackFile playbackFile = entity.getLastPlaybackFile(workspaceBlock.getEntityContext(), profile);
+                if (playbackFile == null) {
+                    return null;
+                }
+                Path path = TouchHomeUtils.getMediaPath().resolve("camera").resolve(entity.getEntityID()).resolve("playback")
+                        .resolve(playbackFile.id);
+
+                VideoPlaybackStorage.DownloadFile downloadFile;
+
+                if (Files.exists(path)) {
+                    downloadFile = new VideoPlaybackStorage.DownloadFile(new UrlResource(path.toUri()), Files.size(path), playbackFile.id);
+                } else {
+                    downloadFile = Failsafe.with(PLAYBACK_DOWNLOAD_FILE_RETRY_POLICY)
+                            .onFailure(event -> {
+                                log.error("Unable to download playback file: <{}>. <{}>. Msg: <{}>",
+                                        entity.getTitle(),
+                                        playbackFile.id,
+                                        CommonUtils.getErrorMessage(event.getFailure()));
+                            })
+                            .get(context -> {
+                                log.info("Reply <{}>. Download playback video file <{}>. <{}>", context.getAttemptCount(), entity.getTitle(), playbackFile.id);
+                                return entity.downloadPlaybackFile(workspaceBlock.getEntityContext(), "main", playbackFile.id, path);
+                            });
+                }
+                return new RawType(IOUtils.toByteArray(downloadFile.stream.getInputStream()), "video/mp4", playbackFile.name);
+            }
+            workspaceBlock.logErrorAndThrow("Camera not support playback storage");
+            return null;
+        });
+
+        @Getter
+        private final String value;
+        private final CameraProfileHandler handler;
+
+        interface CameraProfileHandler {
+            RawType handle(WorkspaceBlock workspaceBlock, Scratch3CameraBlocks scratch3CameraBlocks, CameraWithProfile cameraProfile) throws IOException;
+        }
+    }
+
+    @RequiredArgsConstructor
+    private enum CameraReportCommands implements KeyValueEnum {
+        IRValue("IR led value", (workspaceBlock, scratch) -> {
+            BaseFFmpegStreamEntity entity = scratch.getEntity(workspaceBlock, scratch.ffmpegCameraMenu);
+            Supplier<Boolean> handler = entity.getBaseBrandCameraHandler().getIrLedValueHandler();
+            if (handler == null) {
+                workspaceBlock.logErrorAndThrow("Unable to find ir led get value handler for camera: <{}>", entity.getTitle());
+            } else {
+                return OnOffType.of(handler.get());
+            }
+            return null;
+        }),
+        AudioAlarmThreshold("Audio alarm threshold", (workspaceBlock, scratch) -> {
+            return scratch.getEntity(workspaceBlock, scratch.ffmpegCameraMenu).getAudioThreshold();
+        }),
+        MotionAlarmThreshold("Motion alarm threshold", (workspaceBlock, scratch) -> {
+            return scratch.getEntity(workspaceBlock, scratch.ffmpegCameraMenu).getMotionThreshold();
+        }),
+        LastMotionType("Last motion type", (workspaceBlock, scratch) -> {
+            return scratch.getEntity(workspaceBlock, scratch.ffmpegCameraMenu)
+                    .getCameraHandler().getAttributes().getOrDefault(CHANNEL_LAST_MOTION_TYPE, StringType.EMPTY).toString();
+        }),
+        LastImage("Last image", (workspaceBlock, scratch) -> {
+            return new RawType(scratch.getEntity(workspaceBlock, scratch.ffmpegCameraMenu).getLastSnapshot(), MimeTypeUtils.IMAGE_JPEG_VALUE);
+        });
+
+        @Getter
+        private final String value;
         private final BiFunction<WorkspaceBlock, Scratch3CameraBlocks, Object> reportFn;
     }
 
-    private void setAlarmThresholdCommand(WorkspaceBlock workspaceBlock) {
-        workspaceBlock.getMenuValue("ALARM", this.alarmMenu).alarmThresholdHandler
-                .handle(getEntity(workspaceBlock).getCameraHandler(), workspaceBlock.getInputInteger(VALUE));
+    @SneakyThrows
+    private RawType getCameraWithProfileParameterReporter(WorkspaceBlock workspaceBlock) {
+        CameraWithProfile cameraProfile = getCameraProfile(workspaceBlock);
+        CameraProfileReportCommands command = workspaceBlock.getMenuValue(ENTITY, this.cameraProfileReportCommandMenu);
+        return command.handler.handle(workspaceBlock, this, cameraProfile);
+    }
+
+    private void setIntParamCommand(WorkspaceBlock workspaceBlock) {
+        workspaceBlock.getMenuValue(ENTITY, this.intParamMenu).handler
+                .handle(getEntity(workspaceBlock, this.ffmpegCameraMenu), workspaceBlock.getInputInteger(VALUE), this, workspaceBlock);
+    }
+
+    private void setBoolParamCommand(WorkspaceBlock workspaceBlock) {
+        workspaceBlock.getMenuValue(ENTITY, this.boolParamMenu).handler
+                .handle(getEntity(workspaceBlock, this.ffmpegCameraMenu), workspaceBlock.getMenuValue(ON_OFF, this.onOffMenu), workspaceBlock);
     }
 
     private RawType getGifMP4Reporter(WorkspaceBlock workspaceBlock) {
@@ -215,27 +362,21 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         getFFmpegHandler(workspaceBlock).startSnapshot();
     }*/
 
-    private void fireAlarmCommand(WorkspaceBlock workspaceBlock) {
-        OnOffType.OnOffTypeEnum onOffType = workspaceBlock.getMenuValue(ON_OFF, this.onOffMenu);
-        AlarmEnum alarmEnum = workspaceBlock.getMenuValue("ALARM", this.alarmMenu);
-        alarmEnum.fireHandler.handle(getEntity(workspaceBlock), onOffType, this, workspaceBlock);
-    }
-
-    private void listenAlarmHat(WorkspaceBlock workspaceBlock) {
-        AlarmEnum alarmEnum = workspaceBlock.getMenuValue("ALARM", this.alarmMenu);
+    private void listenBoolHat(WorkspaceBlock workspaceBlock) {
+        BoolHatMenuEnum boolHatMenuEnum = workspaceBlock.getMenuValue("ALARM", this.boolHatMenu);
         workspaceBlock.handleNext(next -> {
-            BaseFFmpegStreamEntity entity = getEntity(workspaceBlock);
+            BaseFFmpegStreamEntity entity = getEntity(workspaceBlock, this.ffmpegCameraMenu);
 
             workspaceBlock.onRelease(() -> entity.getCameraHandler().removeMotionAlarmListener(workspaceBlock.getId()));
             entity.getCameraHandler().startOrAddMotionAlarmListener(workspaceBlock.getId());
 
             OnOffType.OnOffTypeEnum onOffType = workspaceBlock.getMenuValue(ON_OFF, this.onOffMenu);
-            alarmEnum.handler.handle(entity, onOffType, this, workspaceBlock, next);
+            boolHatMenuEnum.handler.handle(entity, onOffType, this, workspaceBlock, next);
         });
     }
 
-    private <T extends BaseFFmpegStreamEntity> T getEntity(WorkspaceBlock workspaceBlock) {
-        BaseFFmpegStreamEntity entity = workspaceBlock.getMenuValueEntityRequired(VIDEO_STREAM, this.ffmpegCameraMenu);
+    private <T extends BaseFFmpegStreamEntity> T getEntity(WorkspaceBlock workspaceBlock, MenuBlock.ServerMenuBlock serverMenuBlock) {
+        BaseFFmpegStreamEntity entity = workspaceBlock.getMenuValueEntityRequired(VIDEO_STREAM, serverMenuBlock);
         if (!entity.isStart()) {
             throw new RuntimeException("Video camera " + entity.getTitle() + " not started");
         }
@@ -255,9 +396,6 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
     @RequiredArgsConstructor
     public enum RecordType {
         Gif(BaseFFmpegCameraHandler::recordGifSync, BaseFFmpegCameraHandler::recordGif, MediaType.IMAGE_GIF_VALUE),
-        Image(BaseFFmpegCameraHandler::recordGifSync, (baseFFmpegCameraHandler, fileName, profile, secondsToRecord) -> {
-            baseFFmpegCameraHandler.recordImageSync(profile);
-        }, MediaType.IMAGE_JPEG_VALUE),
         Mp4(BaseFFmpegCameraHandler::recordMp4Sync, BaseFFmpegCameraHandler::recordMp4, "video/mp4");
         private final GetDataHandler getHandler;
         private final RecordHandler recordHandler;

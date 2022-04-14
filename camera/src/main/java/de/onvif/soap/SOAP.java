@@ -20,6 +20,7 @@ import org.onvif.ver10.events.wsdl.CreatePullPointSubscription;
 import org.onvif.ver10.events.wsdl.PullMessages;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.common.util.CommonUtils;
 import org.w3c.dom.Document;
 
 import javax.xml.bind.*;
@@ -179,7 +180,7 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
                         Channel ch = future.channel();
                         ch.writeAndFlush(httpRequest);
                     } else {
-                        onvifDeviceState.cameraUnreachable(future.cause() == null ? "" : TouchHomeUtils.getErrorMessage(future.cause()));
+                        onvifDeviceState.cameraUnreachable(future.cause() == null ? "" : CommonUtils.getErrorMessage(future.cause()));
                     }
                 });
     }
@@ -273,10 +274,10 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
                 soapResponseElem = unmarshaller.unmarshal(document);
             } catch (UnmarshalException e) {
                 onvifDeviceState.getLogger().warn("Could not unmarshal for <{}>, ended in SOAP fault. Source: '{}'",
-                        soapResponseClass.getSimpleName(), TouchHomeUtils.toString(document));
+                        soapResponseClass.getSimpleName(), CommonUtils.toString(document));
                 if (throwError) {
                     throw new IllegalStateException("Error unmarshal for " + soapResponseClass.getSimpleName() +
-                            ". Doc: " + TouchHomeUtils.toString(document));
+                            ". Doc: " + CommonUtils.toString(document));
                 }
             }
 

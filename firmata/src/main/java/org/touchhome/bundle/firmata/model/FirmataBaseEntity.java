@@ -23,6 +23,7 @@ import org.touchhome.bundle.firmata.provider.FirmataDeviceCommunicator;
 import org.touchhome.bundle.firmata.provider.IODeviceWrapper;
 import org.touchhome.bundle.firmata.provider.command.FirmataRegisterCommand;
 import org.touchhome.bundle.firmata.provider.command.PendingRegistrationContext;
+import org.touchhome.common.util.CommonUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
@@ -82,7 +83,7 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
     @UIContextMenuAction("UPLOAD_SKETCH_MANUALLY")
     public void uploadSketchManually(EntityContext entityContext) {
         ArduinoConsolePlugin arduinoConsolePlugin = entityContext.getBean(ArduinoConsolePlugin.class);
-        String content = TouchHomeUtils.getResourceAsString("firmata", "arduino_firmata.ino");
+        String content = CommonUtils.getResourceAsString("firmata", "arduino_firmata.ino");
         String commName = this.getCommunicatorName();
         String sketch = "#define COMM_" + commName + "\n" + content;
         arduinoConsolePlugin.save(new FileModel("arduino_firmata_" + commName + ".ino", sketch, null, false));

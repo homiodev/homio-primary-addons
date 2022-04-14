@@ -1,7 +1,7 @@
 package org.touchhome.bundle.camera.scanner;
 
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.Lang;
+import org.touchhome.common.util.Lang;
 import org.touchhome.bundle.api.service.scan.ItemDiscoverySupport;
 
 import java.util.ArrayList;

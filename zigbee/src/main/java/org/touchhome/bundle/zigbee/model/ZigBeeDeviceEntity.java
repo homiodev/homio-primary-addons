@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.Lang;
 import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.DeviceBaseEntity;
 import org.touchhome.bundle.api.model.ActionResponseModel;
@@ -28,6 +27,7 @@ import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
 import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryDurationSetting;
 import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
+import org.touchhome.common.util.Lang;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;

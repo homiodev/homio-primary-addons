@@ -13,6 +13,7 @@ import org.touchhome.bundle.camera.handler.BaseCameraStreamServerHandler;
 import org.touchhome.bundle.camera.handler.BaseFFmpegCameraHandler;
 import org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants;
 import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
+import org.touchhome.common.util.CommonUtils;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class UsbCameraHandler extends BaseFFmpegCameraHandler<UsbCameraEntity> {
 
         ffmpegUsbStream = new Ffmpeg("FFmpegUSB_UDP", "FFmpeg usb udp re streamer", this, log,
                 IpCameraBindingConstants.FFmpegFormat.GENERAL, ffmpegLocation,
-                "-loglevel warning " + (TouchHomeUtils.OS.isLinux() ? "-f v4l2" : "-f dshow"), url,
+                "-loglevel warning " + (CommonUtils.OS.isLinux() ? "-f v4l2" : "-f dshow"), url,
                 String.join(" ", outputParams),
                 outputs.stream().map(o -> "[f=mpegts]udp://" + o + "?pkt_size=1316").collect(Collectors.joining("|")),
                 "", "", null);
