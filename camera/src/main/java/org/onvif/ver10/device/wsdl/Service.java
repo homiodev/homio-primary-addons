@@ -1,34 +1,29 @@
 //
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
+// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert
+// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>
+// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren.
+// Generiert: 2014.02.04 um 12:22:03 PM CET
 //
 
 package org.onvif.ver10.device.wsdl;
 
+import org.onvif.ver10.schema.OnvifVersion;
+import org.w3c.dom.Element;
+
+import javax.xml.bind.annotation.*;
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyAttribute;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
-import org.onvif.ver10.schema.OnvifVersion;
-import org.w3c.dom.Element;
 
 /**
  * <p>
  * Java-Klasse f�r Service complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="Service">
  *   <complexContent>
@@ -55,8 +50,8 @@ import org.w3c.dom.Element;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Service", propOrder = { "namespace", "xAddr", "capabilities", "version", "any" })
@@ -79,9 +74,9 @@ public class Service {
 
 	/**
 	 * Ruft den Wert der namespace-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getNamespace() {
 		return namespace;
@@ -89,10 +84,10 @@ public class Service {
 
 	/**
 	 * Legt den Wert der namespace-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setNamespace(String value) {
 		this.namespace = value;
@@ -100,9 +95,9 @@ public class Service {
 
 	/**
 	 * Ruft den Wert der xAddr-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getXAddr() {
 		return xAddr;
@@ -110,10 +105,10 @@ public class Service {
 
 	/**
 	 * Legt den Wert der xAddr-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setXAddr(String value) {
 		this.xAddr = value;
@@ -121,9 +116,9 @@ public class Service {
 
 	/**
 	 * Ruft den Wert der capabilities-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Service.Capabilities }
-	 * 
+	 *
 	 */
 	public Service.Capabilities getCapabilities() {
 		return capabilities;
@@ -131,10 +126,10 @@ public class Service {
 
 	/**
 	 * Legt den Wert der capabilities-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Service.Capabilities }
-	 * 
+	 *
 	 */
 	public void setCapabilities(Service.Capabilities value) {
 		this.capabilities = value;
@@ -142,9 +137,9 @@ public class Service {
 
 	/**
 	 * Ruft den Wert der version-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link OnvifVersion }
-	 * 
+	 *
 	 */
 	public OnvifVersion getVersion() {
 		return version;
@@ -152,10 +147,10 @@ public class Service {
 
 	/**
 	 * Legt den Wert der version-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link OnvifVersion }
-	 * 
+	 *
 	 */
 	public void setVersion(OnvifVersion value) {
 		this.version = value;
@@ -163,23 +158,23 @@ public class Service {
 
 	/**
 	 * Gets the value of the any property.
-	 * 
+	 *
 	 * <p>
 	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
 	 * This is why there is not a <CODE>set</CODE> method for the any property.
-	 * 
+	 *
 	 * <p>
 	 * For example, to add a new item, do as follows:
-	 * 
+	 *
 	 * <pre>
 	 * getAny().add(newItem);
 	 * </pre>
-	 * 
-	 * 
+	 *
+	 *
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list {@link Element } {@link Object }
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public List<Object> getAny() {
 		if (any == null) {
@@ -190,13 +185,13 @@ public class Service {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {
@@ -206,10 +201,10 @@ public class Service {
 	/**
 	 * <p>
 	 * Java-Klasse f�r anonymous complex type.
-	 * 
+	 *
 	 * <p>
 	 * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
-	 * 
+	 *
 	 * <pre>
 	 * <complexType>
 	 *   <complexContent>
@@ -221,8 +216,8 @@ public class Service {
 	 *   </complexContent>
 	 * </complexType>
 	 * </pre>
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@XmlAccessorType(XmlAccessType.FIELD)
 	@XmlType(name = "", propOrder = { "any" })
@@ -233,9 +228,9 @@ public class Service {
 
 		/**
 		 * Ruft den Wert der any-Eigenschaft ab.
-		 * 
+		 *
 		 * @return possible object is {@link Element } {@link Object }
-		 * 
+		 *
 		 */
 		public Object getAny() {
 			return any;
@@ -243,10 +238,10 @@ public class Service {
 
 		/**
 		 * Legt den Wert der any-Eigenschaft fest.
-		 * 
+		 *
 		 * @param value
 		 *            allowed object is {@link Element } {@link Object }
-		 * 
+		 *
 		 */
 		public void setAny(Object value) {
 			this.any = value;

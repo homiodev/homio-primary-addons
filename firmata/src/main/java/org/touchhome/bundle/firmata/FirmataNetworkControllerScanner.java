@@ -6,8 +6,9 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.micro.MicroControllerScanner;
 import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
-import org.touchhome.common.model.ProgressBar;
 import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
+import org.touchhome.bundle.firmata.setting.FirmataScanPortRangeSetting;
+import org.touchhome.common.model.ProgressBar;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -29,11 +30,15 @@ public class FirmataNetworkControllerScanner implements MicroControllerScanner {
     @Override
     public BaseItemsDiscovery.DeviceScannerResult scan(EntityContext entityContext, ProgressBar progressBar, String headerConfirmButtonKey) {
         Set<String> existedDevices = new HashSet<>();
-        Map<String, Callable<Integer>> tasks = networkHardwareRepository.buildPingIpAddressTasks(log, Collections.singleton(port), timeout, (ipAddress, integer) -> {
-            if (!FirmataBundleEntryPoint.foundController(entityContext, null, null, ipAddress, headerConfirmButtonKey)) {
-                existedDevices.add(ipAddress);
-            }
-        });
+        Map<String, Callable<Integer>> tasks = new HashMap<>();
+        Set<String> ipRangeList = entityContext.setting().getValue(FirmataScanPortRangeSetting.class);
+        for (String ipRange : ipRangeList) {
+            tasks.putAll(networkHardwareRepository.buildPingIpAddressTasks(ipRange, log, Collections.singleton(port), timeout, (ipAddress, integer) -> {
+                if (!FirmataBundleEntryPoint.foundController(entityContext, null, null, ipAddress, headerConfirmButtonKey)) {
+                    existedDevices.add(ipAddress);
+                }
+            }));
+        }
 
         List<Integer> availableIpAddresses = entityContext.bgp().runInBatchAndGet("firmata-ip-scan", 5 * 60, 8, tasks,
                 completedTaskCount -> progressBar.progress(100 / 256F * completedTaskCount, "Firmata bundle scanned " + completedTaskCount + "/255"));

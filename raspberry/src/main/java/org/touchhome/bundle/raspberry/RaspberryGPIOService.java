@@ -5,27 +5,28 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.io.spi.SpiDevice;
 import com.pi4j.wiringpi.Gpio;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.raspberry.settings.RaspberryOneWireIntervalSetting;
 import org.touchhome.common.model.UpdatableValue;
 import org.touchhome.common.util.CommonUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -38,10 +39,11 @@ public class RaspberryGPIOService {
     @Getter
     private final Map<RaspberryGpioPin, List<PinListener>> digitalListeners = new ConcurrentHashMap<>();
     private final Map<RaspberryGpioPin, UpdatableValue<Boolean>> inputGpioValues = new ConcurrentHashMap<>();
-    private GpioController gpio;
     private Boolean available;
     @Value("${w1BaseDir:/sys/devices/w1_bus_master1}")
     private Path w1BaseDir;
+    private boolean dirtyState;
+    private static boolean rpiStateInitialised = false;
 
     @SneakyThrows
     void init() {
@@ -49,7 +51,29 @@ public class RaspberryGPIOService {
             digitalListeners.put(pin, new CopyOnWriteArrayList<>());
         }
 
+        File rpiStateFile = TouchHomeUtils.getConfigPath().resolve("rpi_state.json").toFile();
+        entityContext.bgp().schedule("rpi-save-state", 60, TimeUnit.SECONDS, () -> {
+            if (dirtyState) {
+                log.info("Save rpi gpio state");
+                RpiState rpiState = new RpiState();
+                rpiState.setPinStates(GpioFactory.getInstance().getProvisionedPins().stream().map(gpioPin ->
+                        new RpiState.PinState(gpioPin.getPin().getName(), gpioPin.getMode(),
+                                gpioPin.getPullResistance())).collect(Collectors.toList()));
+                CommonUtils.OBJECT_MAPPER.writeValue(rpiStateFile, rpiState);
+            }
+        }, true);
+
         if (isGPIOAvailable()) {
+            if (!rpiStateInitialised) {
+                if (rpiStateFile.exists()) {
+                    RpiState rpiState = CommonUtils.OBJECT_MAPPER.readValue(rpiStateFile, RpiState.class);
+                    for (RpiState.PinState pinState : rpiState.getPinStates()) {
+                        RaspberryGpioPin pin = RaspberryGpioPin.fromValue(pinState.getName());
+                        gpioPinDigital(pin, pinState.getMode(), pinState.getPullResistance());
+                    }
+                }
+                rpiStateInitialised = true;
+            }
             RaspberryGpioPin.occupyPins("1-Wire", RaspberryGpioPin.PIN7);
             for (RaspberryGpioPin pin : RaspberryGpioPin.values(PinMode.DIGITAL_INPUT, PinPullResistance.PULL_DOWN)) {
                 if (pin.getOccupied() == null) {
@@ -68,20 +92,13 @@ public class RaspberryGPIOService {
         }
     }
 
-    private GpioController getGpio() {
-        if (gpio == null) {
-            gpio = GpioFactory.getInstance();
-        }
-        return gpio;
-    }
-
     public boolean isGPIOAvailable() {
         if (available == null) {
             if (EntityContext.isDevEnvironment()) {
                 available = false;
             } else {
                 try {
-                    getGpio();
+                    GpioFactory.getInstance();
                     available = true;
                 } catch (Throwable ignore) {
                     available = false;
@@ -124,20 +141,23 @@ public class RaspberryGPIOService {
         return (GpioPinDigitalOutput) gpioPinDigital(pin, PinMode.DIGITAL_OUTPUT, null);
     }
 
-    private GpioPinDigital gpioPinDigital(RaspberryGpioPin pin, PinMode pinMode, PinPullResistance pinPullResistance) {
+    public GpioPinDigital gpioPinDigital(RaspberryGpioPin pin, PinMode pinMode, PinPullResistance pinPullResistance) {
         if (pin.getOccupied() != null) {
             throw new IllegalArgumentException("Unable to get GpioPinDigital for occupied pin by: " + pin.getOccupied());
         }
         assertDigitalInputPin(pin, PinMode.DIGITAL_INPUT, "Unable to get GpioPinDigital for pin: " + pin.name());
-        GpioPinDigital provisionedPin = (GpioPinDigital) getGpio().getProvisionedPin(pin.getPin());
+        GpioPinDigital provisionedPin = (GpioPinDigital) GpioFactory.getInstance().getProvisionedPin(pin.getPin());
         if (provisionedPin == null) {
-            provisionedPin = (GpioPinDigital) getGpio().provisionPin(pin.getPin(), pin.name(), pinMode);
+            provisionedPin = (GpioPinDigital) GpioFactory.getInstance().provisionPin(pin.getPin(), pin.name(), pinMode);
+            dirtyState = true;
         }
         if (provisionedPin.getMode() != pinMode) {
             provisionedPin.setMode(pinMode);
+            dirtyState = true;
         }
         if (pinPullResistance != null && pin.getPin().supportsPinPullResistance() && provisionedPin.getPullResistance() != pinPullResistance) {
             provisionedPin.setPullResistance(pinPullResistance);
+            dirtyState = true;
         }
         return provisionedPin;
     }
@@ -286,7 +306,7 @@ public class RaspberryGPIOService {
         if (EntityContext.isDevEnvironment()) {
             return Collections.singletonList("28-test000011");
         }
-        if (CommonUtils.OS.isLinux() && Files.exists(w1BaseDir.resolve("w1_master_slaves"))) {
+        if (SystemUtils.IS_OS_LINUX && Files.exists(w1BaseDir.resolve("w1_master_slaves"))) {
             return Files.readAllLines(w1BaseDir.resolve("w1_master_slaves")).stream()
                     .filter(sensorID -> sensorID != null && sensorID.startsWith("28-"))
                     .collect(Collectors.toList());
@@ -296,7 +316,7 @@ public class RaspberryGPIOService {
     }
 
     public GpioPin getGpioPin(RaspberryGpioPin gpioPin) {
-        return getGpio().getProvisionedPin(gpioPin.getPin());
+        return GpioFactory.getInstance().getProvisionedPin(gpioPin.getPin());
     }
 
     @AllArgsConstructor
@@ -304,5 +324,21 @@ public class RaspberryGPIOService {
         @Getter
         private String name;
         private Consumer<GpioPinDigitalStateChangeEvent> consumer;
+    }
+
+    @Getter
+    @Setter
+    private static class RpiState {
+        private List<PinState> pinStates;
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        private static class PinState {
+            private String name;
+            private PinMode mode;
+            private PinPullResistance pullResistance;
+        }
     }
 }

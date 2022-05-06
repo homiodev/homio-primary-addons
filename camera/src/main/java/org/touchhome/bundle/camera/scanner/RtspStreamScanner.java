@@ -16,26 +16,25 @@ import io.netty.util.CharsetUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.common.util.Lang;
 import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
-import org.touchhome.common.model.ProgressBar;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
 import org.touchhome.bundle.camera.CameraCoordinator;
 import org.touchhome.bundle.camera.entity.RtspVideoStreamEntity;
 import org.touchhome.bundle.camera.rtsp.message.sdp.SdpMessage;
 import org.touchhome.bundle.camera.rtsp.message.sdp.SdpParser;
+import org.touchhome.bundle.camera.setting.CameraScanPortRangeSetting;
 import org.touchhome.bundle.camera.setting.rtsp.ScanRtspIpAddressMaxPingTimeoutSetting;
 import org.touchhome.bundle.camera.setting.rtsp.ScanRtspPortsSetting;
 import org.touchhome.bundle.camera.setting.rtsp.ScanRtspUrlsSetting;
+import org.touchhome.common.model.ProgressBar;
+import org.touchhome.common.util.Lang;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -139,19 +138,13 @@ public class RtspStreamScanner implements VideoStreamScanner {
         Set<Integer> ports = entityContext.setting().getValue(ScanRtspPortsSetting.class);
         int pingTimeout = entityContext.setting().getValue(ScanRtspIpAddressMaxPingTimeoutSetting.class);
         Set<String> urls = entityContext.setting().getValue(ScanRtspUrlsSetting.class);
+        Set<String> ipRangeList = entityContext.setting().getValue(CameraScanPortRangeSetting.class);
 
-        Map<String, Callable<Integer>> tasks = networkHardwareRepository.buildPingIpAddressTasks(log, ports, pingTimeout, (ipAddress, port) -> {
-            log.info("Rtsp ip alive: <{}:{}>. Send 'DESCRIBE' request to all possible urls {}...", ipAddress, port, urls.size());
-            for (String url : urls) {
-                String rtspURL = "rtsp://" + ipAddress + ":" + port + url.trim();
-                try {
-                    // create separate connection for each rtsp url, because remove host may close connection on their side.
-                    bootstrap.attr(URL, URI.create(rtspURL)).connect(ipAddress, port).addListener(ON_CONNECTED);
-                } catch (Exception ex) {
-                    log.warn("Unable to check rtsp url: <{}>. Msg: {}", rtspURL, ex.getMessage());
-                }
-            }
-        });
+        Map<String, Callable<Integer>> tasks = new HashMap<>();
+        for (String ipRange : ipRangeList) {
+            tasks.putAll(networkHardwareRepository.buildPingIpAddressTasks(ipRange, log, ports, pingTimeout, ipAliveHandler(urls)));
+        }
+
         List<Integer> availableRtspAddresses = entityContext.bgp().runInBatchAndGet("scan-rtsp-batch-result",
                 pingTimeout * tasks.size() / 1000, THREAD_COUNT, tasks,
                 completedTaskCount -> progressBar.progress(100 / (float) tasks.size() * completedTaskCount,
@@ -165,6 +158,22 @@ public class RtspStreamScanner implements VideoStreamScanner {
         log.info("Found {} rtcp streams", availableRtspAddresses.stream().filter(Objects::nonNull).count());
 
         return result;
+    }
+
+    @NotNull
+    private BiConsumer<String, Integer> ipAliveHandler(Set<String> urls) {
+        return (ipAddress, port) -> {
+            log.info("Rtsp ip alive: <{}:{}>. Send 'DESCRIBE' request to all possible urls {}...", ipAddress, port, urls.size());
+            for (String url : urls) {
+                String rtspURL = "rtsp://" + ipAddress + ":" + port + url.trim();
+                try {
+                    // create separate connection for each rtsp url, because remove host may close connection on their side.
+                    bootstrap.attr(URL, URI.create(rtspURL)).connect(ipAddress, port).addListener(ON_CONNECTED);
+                } catch (Exception ex) {
+                    log.warn("Unable to check rtsp url: <{}>. Msg: {}", rtspURL, ex.getMessage());
+                }
+            }
+        };
     }
 
     private NioEventLoopGroup reCreateBootstrap() {

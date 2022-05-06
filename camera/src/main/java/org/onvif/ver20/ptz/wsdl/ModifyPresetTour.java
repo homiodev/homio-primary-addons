@@ -1,11 +1,8 @@
 package org.onvif.ver20.ptz.wsdl;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.PresetTour;
+
+import javax.xml.bind.annotation.*;
 
 /**
  * <p>

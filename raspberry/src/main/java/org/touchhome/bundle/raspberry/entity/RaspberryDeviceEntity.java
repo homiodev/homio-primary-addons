@@ -20,6 +20,7 @@ import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
 import org.touchhome.bundle.raspberry.fs.RaspberryFileSystem;
+import org.touchhome.common.util.CommonUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.Transient;
@@ -33,7 +34,7 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
         implements BaseFileSystemEntity<RaspberryDeviceEntity, RaspberryFileSystem> {
 
     public static final String PREFIX = "raspb_";
-    public static final String DEFAULT_DEVICE_ENTITY_ID = PREFIX + "LocalRaspberry";
+    public static final String DEFAULT_DEVICE_ENTITY_ID = PREFIX + TouchHomeUtils.APP_UUID;
 
     private static Map<String, RaspberryFileSystem> fileSystemMap = new HashMap<>();
 
@@ -53,7 +54,7 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
 
     @UIField(order = 200)
     public String getFileSystemRoot() {
-        return getJsonData("fs_root", TouchHomeUtils.getRootPath().toString());
+        return getJsonData("fs_root", CommonUtils.getRootPath().toString());
     }
 
     public void setFileSystemRoot(String value) {

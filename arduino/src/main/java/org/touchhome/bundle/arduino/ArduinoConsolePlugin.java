@@ -2,11 +2,11 @@ package org.touchhome.bundle.arduino;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.SystemUtils;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePluginEditor;
 import org.touchhome.bundle.api.console.dependency.ConsolePluginRequireZipDependency;
-import org.touchhome.common.exception.ServerException;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.FileContentType;
 import org.touchhome.bundle.api.model.FileModel;
@@ -17,7 +17,7 @@ import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.arduino.setting.ConsoleArduinoUploadUsingProgrammerSetting;
 import org.touchhome.bundle.arduino.setting.ConsoleArduinoVerboseSetting;
 import org.touchhome.bundle.arduino.setting.header.*;
-import org.touchhome.common.util.CommonUtils;
+import org.touchhome.common.exception.ServerException;
 import processing.app.BaseNoGui;
 import processing.app.PreferencesData;
 import processing.app.Sketch;
@@ -65,7 +65,7 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor,
     @Override
     public String getDependencyURL() {
         return String.format("%s/arduino-ide-setup-%s.7z", entityContext.getEnv("artifactoryFilesURL"),
-                CommonUtils.OS.isWindows() ? "win" : "linux");
+                SystemUtils.IS_OS_LINUX ? "linux" : "win");
     }
 
     public void init() {

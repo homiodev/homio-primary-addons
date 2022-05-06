@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.raspberry.console.GpioConsolePlugin;
 import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
 
 import static org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity.DEFAULT_DEVICE_ENTITY_ID;
@@ -15,13 +16,13 @@ import static org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity.DEFAUL
 public class RaspberryEntryPoint implements BundleEntryPoint {
 
     private final EntityContext entityContext;
-    private final RaspberryGPIOService raspberryGPIOService;
 
     public void init() {
         if (entityContext.getEntity(DEFAULT_DEVICE_ENTITY_ID) == null) {
             entityContext.save(new RaspberryDeviceEntity().computeEntityID(() -> DEFAULT_DEVICE_ENTITY_ID));
         }
-        raspberryGPIOService.init();
+        entityContext.getBean(RaspberryGPIOService.class).init();
+        entityContext.getBean(GpioConsolePlugin.class).init();
     }
 
     @Override

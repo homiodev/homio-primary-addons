@@ -1,9 +1,8 @@
 package org.touchhome.bundle.camera.ffmpeg;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.springframework.data.util.Pair;
 import org.touchhome.bundle.api.hquery.api.*;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
-import org.touchhome.common.util.CommonUtils;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -47,7 +46,7 @@ public interface FfmpegInputDeviceHardwareRepository {
 
     default Set<String> getStrings(String prefix, Supplier<List<String>> windowDeviceFetcher) {
         Set<String> devices = new HashSet<>();
-        if (CommonUtils.OS.isLinux()) {
+        if (SystemUtils.IS_OS_LINUX) {
             File DEV = new File("/dev");
             String[] names = DEV.list((dir, name) -> dir.getName().equals("dev") && name.startsWith(prefix) && Character.isDigit(name.charAt(5)));
             for (String name : names) {

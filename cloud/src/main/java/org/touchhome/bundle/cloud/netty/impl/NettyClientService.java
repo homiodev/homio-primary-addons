@@ -12,7 +12,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.UserEntity;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerConnectionMessageSetting;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerConnectionStatusSetting;
 import org.touchhome.bundle.cloud.netty.setting.CloudServerUrlSetting;
@@ -69,16 +68,6 @@ public class NettyClientService {
 
     private void connectToServer() {
         UserEntity user = entityContext.getEntity(ADMIN_USER);
-        if (user.isPasswordNotSet(null)) {
-            updateConnectionStatus(serverConnectionStatus, "CLOUD.USER_HAS_NO_PASSWORD");
-            log.warn("Unable start server discovering. User password is empty");
-            return;
-        }
-        if (user.getKeystore() == null) {
-            updateConnectionStatus(serverConnectionStatus, "CLOUD.USER_HAS_NO_KEYSTORE");
-            log.warn("Unable start server discovering. User keystore is empty");
-            return;
-        }
         this.listenClientsThread = new Thread(() -> {
             while (!Thread.currentThread().isInterrupted()) {
                 log.info("Starting netty client");

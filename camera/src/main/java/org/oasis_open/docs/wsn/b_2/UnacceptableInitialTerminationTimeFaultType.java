@@ -1,15 +1,11 @@
 package org.oasis_open.docs.wsn.b_2;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import lombok.Getter;
 import lombok.Setter;
 import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
+
+import javax.xml.bind.annotation.*;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 @Getter
 @Setter

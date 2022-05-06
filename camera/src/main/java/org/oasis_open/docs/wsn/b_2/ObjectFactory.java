@@ -1,18 +1,19 @@
 //
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
+// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert
+// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>
+// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren.
+// Generiert: 2014.02.04 um 12:22:03 PM CET
 //
 
 package org.oasis_open.docs.wsn.b_2;
+
+import org.w3._2005._08.addressing.EndpointReferenceType;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
-import org.w3._2005._08.addressing.EndpointReferenceType;
 
 /**
  * This object contains factory methods for each Java content interface and Java element interface generated in the org.oasis_open.docs.wsn.b_2 package.
@@ -20,7 +21,7 @@ import org.w3._2005._08.addressing.EndpointReferenceType;
  * An ObjectFactory allows you to programatically construct new instances of the Java representation for XML content. The Java representation of XML content can consist of schema
  * derived interfaces and classes representing the binding of schema type definitions, element declarations and model groups. Factory methods for each of these are provided in this
  * class.
- * 
+ *
  */
 @XmlRegistry
 public class ObjectFactory {
@@ -67,14 +68,14 @@ public class ObjectFactory {
 
 	/**
 	 * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.oasis_open.docs.wsn.b_2
-	 * 
+	 *
 	 */
 	public ObjectFactory() {
 	}
 
 	/**
 	 * Create an instance of {@link Subscribe }
-	 * 
+	 *
 	 */
 	public Subscribe createSubscribe() {
 		return new Subscribe();
@@ -82,7 +83,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link NotificationMessageHolderType }
-	 * 
+	 *
 	 */
 	public NotificationMessageHolderType createNotificationMessageHolderType() {
 		return new NotificationMessageHolderType();
@@ -90,7 +91,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link TopicExpressionDialectUnknownFaultType }
-	 * 
+	 *
 	 */
 	public TopicExpressionDialectUnknownFaultType createTopicExpressionDialectUnknownFaultType() {
 		return new TopicExpressionDialectUnknownFaultType();
@@ -98,7 +99,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link QueryExpressionType }
-	 * 
+	 *
 	 */
 	public QueryExpressionType createQueryExpressionType() {
 		return new QueryExpressionType();
@@ -106,7 +107,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link UnableToGetMessagesFaultType }
-	 * 
+	 *
 	 */
 	public UnableToGetMessagesFaultType createUnableToGetMessagesFaultType() {
 		return new UnableToGetMessagesFaultType();
@@ -114,7 +115,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link ResumeSubscription }
-	 * 
+	 *
 	 */
 	public ResumeSubscription createResumeSubscription() {
 		return new ResumeSubscription();
@@ -122,7 +123,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link ResumeFailedFaultType }
-	 * 
+	 *
 	 */
 	public ResumeFailedFaultType createResumeFailedFaultType() {
 		return new ResumeFailedFaultType();
@@ -130,7 +131,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link InvalidProducerPropertiesExpressionFaultType }
-	 * 
+	 *
 	 */
 	public InvalidProducerPropertiesExpressionFaultType createInvalidProducerPropertiesExpressionFaultType() {
 		return new InvalidProducerPropertiesExpressionFaultType();
@@ -138,7 +139,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link DestroyPullPointResponse }
-	 * 
+	 *
 	 */
 	public DestroyPullPointResponse createDestroyPullPointResponse() {
 		return new DestroyPullPointResponse();
@@ -146,7 +147,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link PauseSubscriptionResponse }
-	 * 
+	 *
 	 */
 	public PauseSubscriptionResponse createPauseSubscriptionResponse() {
 		return new PauseSubscriptionResponse();
@@ -154,7 +155,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link ResumeSubscriptionResponse }
-	 * 
+	 *
 	 */
 	public ResumeSubscriptionResponse createResumeSubscriptionResponse() {
 		return new ResumeSubscriptionResponse();
@@ -162,7 +163,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link SubscribeCreationFailedFaultType }
-	 * 
+	 *
 	 */
 	public SubscribeCreationFailedFaultType createSubscribeCreationFailedFaultType() {
 		return new SubscribeCreationFailedFaultType();
@@ -170,7 +171,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link RenewResponse }
-	 * 
+	 *
 	 */
 	public RenewResponse createRenewResponse() {
 		return new RenewResponse();
@@ -178,7 +179,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link UnableToDestroySubscriptionFaultType }
-	 * 
+	 *
 	 */
 	public UnableToDestroySubscriptionFaultType createUnableToDestroySubscriptionFaultType() {
 		return new UnableToDestroySubscriptionFaultType();
@@ -186,7 +187,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link UnrecognizedPolicyRequestFaultType }
-	 * 
+	 *
 	 */
 	public UnrecognizedPolicyRequestFaultType createUnrecognizedPolicyRequestFaultType() {
 		return new UnrecognizedPolicyRequestFaultType();
@@ -194,7 +195,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link FilterType }
-	 * 
+	 *
 	 */
 	public FilterType createFilterType() {
 		return new FilterType();
@@ -202,7 +203,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link Subscribe.SubscriptionPolicy }
-	 * 
+	 *
 	 */
 	public Subscribe.SubscriptionPolicy createSubscribeSubscriptionPolicy() {
 		return new Subscribe.SubscriptionPolicy();
@@ -210,7 +211,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link NotificationProducerRP }
-	 * 
+	 *
 	 */
 	public NotificationProducerRP createNotificationProducerRP() {
 		return new NotificationProducerRP();
@@ -218,7 +219,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link TopicExpressionType }
-	 * 
+	 *
 	 */
 	public TopicExpressionType createTopicExpressionType() {
 		return new TopicExpressionType();
@@ -226,7 +227,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link GetMessages }
-	 * 
+	 *
 	 */
 	public GetMessages createGetMessages() {
 		return new GetMessages();
@@ -234,7 +235,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link Renew }
-	 * 
+	 *
 	 */
 	public Renew createRenew() {
 		return new Renew();
@@ -242,7 +243,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link UseRaw }
-	 * 
+	 *
 	 */
 	public UseRaw createUseRaw() {
 		return new UseRaw();
@@ -250,7 +251,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link CreatePullPoint }
-	 * 
+	 *
 	 */
 	public CreatePullPoint createCreatePullPoint() {
 		return new CreatePullPoint();
@@ -258,7 +259,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link NotifyMessageNotSupportedFaultType }
-	 * 
+	 *
 	 */
 	public NotifyMessageNotSupportedFaultType createNotifyMessageNotSupportedFaultType() {
 		return new NotifyMessageNotSupportedFaultType();
@@ -266,7 +267,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link GetMessagesResponse }
-	 * 
+	 *
 	 */
 	public GetMessagesResponse createGetMessagesResponse() {
 		return new GetMessagesResponse();
@@ -274,7 +275,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link SubscribeResponse }
-	 * 
+	 *
 	 */
 	public SubscribeResponse createSubscribeResponse() {
 		return new SubscribeResponse();
@@ -282,7 +283,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link CreatePullPointResponse }
-	 * 
+	 *
 	 */
 	public CreatePullPointResponse createCreatePullPointResponse() {
 		return new CreatePullPointResponse();
@@ -290,7 +291,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link UnableToCreatePullPointFaultType }
-	 * 
+	 *
 	 */
 	public UnableToCreatePullPointFaultType createUnableToCreatePullPointFaultType() {
 		return new UnableToCreatePullPointFaultType();
@@ -298,7 +299,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link UnacceptableInitialTerminationTimeFaultType }
-	 * 
+	 *
 	 */
 	public UnacceptableInitialTerminationTimeFaultType createUnacceptableInitialTerminationTimeFaultType() {
 		return new UnacceptableInitialTerminationTimeFaultType();
@@ -306,7 +307,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link InvalidTopicExpressionFaultType }
-	 * 
+	 *
 	 */
 	public InvalidTopicExpressionFaultType createInvalidTopicExpressionFaultType() {
 		return new InvalidTopicExpressionFaultType();
@@ -314,7 +315,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link UnsupportedPolicyRequestFaultType }
-	 * 
+	 *
 	 */
 	public UnsupportedPolicyRequestFaultType createUnsupportedPolicyRequestFaultType() {
 		return new UnsupportedPolicyRequestFaultType();
@@ -322,7 +323,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link SubscriptionManagerRP }
-	 * 
+	 *
 	 */
 	public SubscriptionManagerRP createSubscriptionManagerRP() {
 		return new SubscriptionManagerRP();
@@ -330,7 +331,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link SubscriptionPolicyType }
-	 * 
+	 *
 	 */
 	public SubscriptionPolicyType createSubscriptionPolicyType() {
 		return new SubscriptionPolicyType();
@@ -338,7 +339,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link Notify }
-	 * 
+	 *
 	 */
 	public Notify createNotify() {
 		return new Notify();
@@ -346,7 +347,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link DestroyPullPoint }
-	 * 
+	 *
 	 */
 	public DestroyPullPoint createDestroyPullPoint() {
 		return new DestroyPullPoint();
@@ -354,7 +355,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link UnsubscribeResponse }
-	 * 
+	 *
 	 */
 	public UnsubscribeResponse createUnsubscribeResponse() {
 		return new UnsubscribeResponse();
@@ -362,7 +363,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link GetCurrentMessageResponse }
-	 * 
+	 *
 	 */
 	public GetCurrentMessageResponse createGetCurrentMessageResponse() {
 		return new GetCurrentMessageResponse();
@@ -370,7 +371,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link PauseFailedFaultType }
-	 * 
+	 *
 	 */
 	public PauseFailedFaultType createPauseFailedFaultType() {
 		return new PauseFailedFaultType();
@@ -378,7 +379,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link GetCurrentMessage }
-	 * 
+	 *
 	 */
 	public GetCurrentMessage createGetCurrentMessage() {
 		return new GetCurrentMessage();
@@ -386,7 +387,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link InvalidMessageContentExpressionFaultType }
-	 * 
+	 *
 	 */
 	public InvalidMessageContentExpressionFaultType createInvalidMessageContentExpressionFaultType() {
 		return new InvalidMessageContentExpressionFaultType();
@@ -394,7 +395,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link UnableToDestroyPullPointFaultType }
-	 * 
+	 *
 	 */
 	public UnableToDestroyPullPointFaultType createUnableToDestroyPullPointFaultType() {
 		return new UnableToDestroyPullPointFaultType();
@@ -402,7 +403,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link MultipleTopicsSpecifiedFaultType }
-	 * 
+	 *
 	 */
 	public MultipleTopicsSpecifiedFaultType createMultipleTopicsSpecifiedFaultType() {
 		return new MultipleTopicsSpecifiedFaultType();
@@ -410,7 +411,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link NoCurrentMessageOnTopicFaultType }
-	 * 
+	 *
 	 */
 	public NoCurrentMessageOnTopicFaultType createNoCurrentMessageOnTopicFaultType() {
 		return new NoCurrentMessageOnTopicFaultType();
@@ -418,7 +419,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link InvalidFilterFaultType }
-	 * 
+	 *
 	 */
 	public InvalidFilterFaultType createInvalidFilterFaultType() {
 		return new InvalidFilterFaultType();
@@ -426,7 +427,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link TopicNotSupportedFaultType }
-	 * 
+	 *
 	 */
 	public TopicNotSupportedFaultType createTopicNotSupportedFaultType() {
 		return new TopicNotSupportedFaultType();
@@ -434,7 +435,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link PauseSubscription }
-	 * 
+	 *
 	 */
 	public PauseSubscription createPauseSubscription() {
 		return new PauseSubscription();
@@ -442,7 +443,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link Unsubscribe }
-	 * 
+	 *
 	 */
 	public Unsubscribe createUnsubscribe() {
 		return new Unsubscribe();
@@ -450,7 +451,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link UnacceptableTerminationTimeFaultType }
-	 * 
+	 *
 	 */
 	public UnacceptableTerminationTimeFaultType createUnacceptableTerminationTimeFaultType() {
 		return new UnacceptableTerminationTimeFaultType();
@@ -458,7 +459,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link NotificationMessageHolderType.Message }
-	 * 
+	 *
 	 */
 	public NotificationMessageHolderType.Message createNotificationMessageHolderTypeMessage() {
 		return new NotificationMessageHolderType.Message();
@@ -466,7 +467,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link XMLGregorianCalendar }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "TerminationTime")
 	public JAXBElement<XMLGregorianCalendar> createTerminationTime(XMLGregorianCalendar value) {
@@ -475,7 +476,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link NotifyMessageNotSupportedFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "NotifyMessageNotSupportedFault")
 	public JAXBElement<NotifyMessageNotSupportedFaultType> createNotifyMessageNotSupportedFault(NotifyMessageNotSupportedFaultType value) {
@@ -484,7 +485,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link EndpointReferenceType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "ConsumerReference")
 	public JAXBElement<EndpointReferenceType> createConsumerReference(EndpointReferenceType value) {
@@ -493,7 +494,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link UnsupportedPolicyRequestFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "UnsupportedPolicyRequestFault")
 	public JAXBElement<UnsupportedPolicyRequestFaultType> createUnsupportedPolicyRequestFault(UnsupportedPolicyRequestFaultType value) {
@@ -502,7 +503,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link SubscriptionPolicyType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "SubscriptionPolicy")
 	public JAXBElement<SubscriptionPolicyType> createSubscriptionPolicy(SubscriptionPolicyType value) {
@@ -511,7 +512,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link NotificationMessageHolderType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "NotificationMessage")
 	public JAXBElement<NotificationMessageHolderType> createNotificationMessage(NotificationMessageHolderType value) {
@@ -520,7 +521,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link UnacceptableInitialTerminationTimeFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "UnacceptableInitialTerminationTimeFault")
 	public JAXBElement<UnacceptableInitialTerminationTimeFaultType> createUnacceptableInitialTerminationTimeFault(
@@ -531,7 +532,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link InvalidTopicExpressionFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "InvalidTopicExpressionFault")
 	public JAXBElement<InvalidTopicExpressionFaultType> createInvalidTopicExpressionFault(InvalidTopicExpressionFaultType value) {
@@ -540,7 +541,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "TopicExpressionDialect")
 	public JAXBElement<String> createTopicExpressionDialect(String value) {
@@ -549,7 +550,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link FilterType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "Filter")
 	public JAXBElement<FilterType> createFilter(FilterType value) {
@@ -558,7 +559,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link UnableToCreatePullPointFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "UnableToCreatePullPointFault")
 	public JAXBElement<UnableToCreatePullPointFaultType> createUnableToCreatePullPointFault(UnableToCreatePullPointFaultType value) {
@@ -567,7 +568,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link XMLGregorianCalendar }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "CreationTime")
 	public JAXBElement<XMLGregorianCalendar> createCreationTime(XMLGregorianCalendar value) {
@@ -576,7 +577,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link ResumeFailedFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "ResumeFailedFault")
 	public JAXBElement<ResumeFailedFaultType> createResumeFailedFault(ResumeFailedFaultType value) {
@@ -585,7 +586,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link InvalidProducerPropertiesExpressionFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "InvalidProducerPropertiesExpressionFault")
 	public JAXBElement<InvalidProducerPropertiesExpressionFaultType> createInvalidProducerPropertiesExpressionFault(
@@ -596,7 +597,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link UnableToGetMessagesFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "UnableToGetMessagesFault")
 	public JAXBElement<UnableToGetMessagesFaultType> createUnableToGetMessagesFault(UnableToGetMessagesFaultType value) {
@@ -605,7 +606,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link QueryExpressionType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "MessageContent")
 	public JAXBElement<QueryExpressionType> createMessageContent(QueryExpressionType value) {
@@ -614,7 +615,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link TopicExpressionDialectUnknownFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "TopicExpressionDialectUnknownFault")
 	public JAXBElement<TopicExpressionDialectUnknownFaultType> createTopicExpressionDialectUnknownFault(TopicExpressionDialectUnknownFaultType value) {
@@ -624,7 +625,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link UnableToDestroySubscriptionFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "UnableToDestroySubscriptionFault")
 	public JAXBElement<UnableToDestroySubscriptionFaultType> createUnableToDestroySubscriptionFault(UnableToDestroySubscriptionFaultType value) {
@@ -634,7 +635,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link UnrecognizedPolicyRequestFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "UnrecognizedPolicyRequestFault")
 	public JAXBElement<UnrecognizedPolicyRequestFaultType> createUnrecognizedPolicyRequestFault(UnrecognizedPolicyRequestFaultType value) {
@@ -643,7 +644,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link SubscribeCreationFailedFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "SubscribeCreationFailedFault")
 	public JAXBElement<SubscribeCreationFailedFaultType> createSubscribeCreationFailedFault(SubscribeCreationFailedFaultType value) {
@@ -652,7 +653,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link EndpointReferenceType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "ProducerReference")
 	public JAXBElement<EndpointReferenceType> createProducerReference(EndpointReferenceType value) {
@@ -661,7 +662,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link NoCurrentMessageOnTopicFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "NoCurrentMessageOnTopicFault")
 	public JAXBElement<NoCurrentMessageOnTopicFaultType> createNoCurrentMessageOnTopicFault(NoCurrentMessageOnTopicFaultType value) {
@@ -670,7 +671,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link MultipleTopicsSpecifiedFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "MultipleTopicsSpecifiedFault")
 	public JAXBElement<MultipleTopicsSpecifiedFaultType> createMultipleTopicsSpecifiedFault(MultipleTopicsSpecifiedFaultType value) {
@@ -679,7 +680,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link UnacceptableTerminationTimeFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "UnacceptableTerminationTimeFault")
 	public JAXBElement<UnacceptableTerminationTimeFaultType> createUnacceptableTerminationTimeFault(UnacceptableTerminationTimeFaultType value) {
@@ -689,7 +690,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link XMLGregorianCalendar }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "CurrentTime")
 	public JAXBElement<XMLGregorianCalendar> createCurrentTime(XMLGregorianCalendar value) {
@@ -698,7 +699,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link TopicExpressionType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "TopicExpression")
 	public JAXBElement<TopicExpressionType> createTopicExpression(TopicExpressionType value) {
@@ -707,7 +708,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link QueryExpressionType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "ProducerProperties")
 	public JAXBElement<QueryExpressionType> createProducerProperties(QueryExpressionType value) {
@@ -716,7 +717,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link TopicNotSupportedFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "TopicNotSupportedFault")
 	public JAXBElement<TopicNotSupportedFaultType> createTopicNotSupportedFault(TopicNotSupportedFaultType value) {
@@ -725,7 +726,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link InvalidFilterFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "InvalidFilterFault")
 	public JAXBElement<InvalidFilterFaultType> createInvalidFilterFault(InvalidFilterFaultType value) {
@@ -734,7 +735,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "FixedTopicSet", defaultValue = "true")
 	public JAXBElement<Boolean> createFixedTopicSet(Boolean value) {
@@ -743,7 +744,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link TopicExpressionType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "Topic")
 	public JAXBElement<TopicExpressionType> createTopic(TopicExpressionType value) {
@@ -752,7 +753,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link UnableToDestroyPullPointFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "UnableToDestroyPullPointFault")
 	public JAXBElement<UnableToDestroyPullPointFaultType> createUnableToDestroyPullPointFault(UnableToDestroyPullPointFaultType value) {
@@ -761,7 +762,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link InvalidMessageContentExpressionFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "InvalidMessageContentExpressionFault")
 	public JAXBElement<InvalidMessageContentExpressionFaultType> createInvalidMessageContentExpressionFault(InvalidMessageContentExpressionFaultType value) {
@@ -771,7 +772,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link PauseFailedFaultType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "PauseFailedFault")
 	public JAXBElement<PauseFailedFaultType> createPauseFailedFault(PauseFailedFaultType value) {
@@ -780,7 +781,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link EndpointReferenceType }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "SubscriptionReference")
 	public JAXBElement<EndpointReferenceType> createSubscriptionReference(EndpointReferenceType value) {
@@ -789,7 +790,7 @@ public class ObjectFactory {
 
 	/**
 	 * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}
-	 * 
+	 *
 	 */
 	@XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "InitialTerminationTime", scope = Subscribe.class)
 	public JAXBElement<String> createSubscribeInitialTerminationTime(String value) {

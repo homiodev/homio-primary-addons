@@ -14,7 +14,6 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.api.state.StringType;
 import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.util.GroupTracker;
@@ -27,8 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.concurrent.*;
-
-import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
 /**
  * Not used yet or at all

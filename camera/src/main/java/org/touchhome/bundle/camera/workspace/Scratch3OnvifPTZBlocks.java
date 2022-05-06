@@ -11,13 +11,10 @@ import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.camera.CameraEntryPoint;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static org.touchhome.bundle.camera.workspace.Scratch3CameraBlocks.VIDEO_STREAM;
 
 @Log4j2
 @Getter

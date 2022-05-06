@@ -4,14 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.common.util.Lang;
-import org.touchhome.common.model.ProgressBar;
 import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
 import org.touchhome.bundle.camera.entity.UsbCameraEntity;
 import org.touchhome.bundle.camera.ffmpeg.FFmpegVideoDevice;
 import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
-import org.touchhome.bundle.camera.util.FFMPEGDependencyExecutableInstaller;
+import org.touchhome.common.model.ProgressBar;
+import org.touchhome.common.util.Lang;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -25,8 +24,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UsbCameraScanner implements VideoStreamScanner {
 
-    private final FFMPEGDependencyExecutableInstaller installer;
-
     @Override
     public String getName() {
         return "scan-usb-camera";
@@ -35,10 +32,6 @@ public class UsbCameraScanner implements VideoStreamScanner {
     @Override
     public BaseItemsDiscovery.DeviceScannerResult scan(EntityContext entityContext, ProgressBar progressBar, String headerConfirmButtonKey) {
         BaseItemsDiscovery.DeviceScannerResult result = new BaseItemsDiscovery.DeviceScannerResult();
-        if (installer.isRequireInstallDependencies(entityContext, true)) {
-            entityContext.ui().sendWarningMessage("Install ffmpeg to scan usb devices");
-            return result;
-        }
         FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
         String ffmpegPath = entityContext.setting().getValue(FFMPEGInstallPathSetting.class, Paths.get("ffmpeg")).toString();
         List<FFmpegVideoDevice> foundUsbVideoCameraDevices = new ArrayList<>();

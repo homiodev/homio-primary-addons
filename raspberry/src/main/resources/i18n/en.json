@@ -1,4 +1,10 @@
 {
+  "ACTION": {
+    "PULL_UP_RESISTOR": "Pull up resister",
+    "PULL_DOWN_RESISTOR": "Pull down resister",
+    "SET_HIGH": "Set HIGH state",
+    "SET_LOW": "Set LOW state"
+  },
   "WORKSPACE": {
     "raspberry": "Raspberry"
   },
@@ -6,6 +12,7 @@
     "name": "Raspberry",
     "setting": {
       "label": "Raspberry settings",
+      "st_ConsoleHeaderSelectRaspberryBoardSetting": "Select board",
       "st_RaspberryOneWireIntervalSetting": "1-Wire request interval"
     }
   }

@@ -7,7 +7,6 @@ import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public interface BaseBrandCameraHandler {

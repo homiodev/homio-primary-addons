@@ -1,11 +1,8 @@
 package org.onvif.ver20.media.wsdl;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.MetadataConfiguration;
+
+import javax.xml.bind.annotation.*;
 
 
 /**

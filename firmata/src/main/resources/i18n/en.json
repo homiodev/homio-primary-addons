@@ -8,6 +8,7 @@
     "name": "Firmata",
     "setting": {
       "label": "Firmata settings",
+      "st_FirmataScanPortRangeSetting": "Scan port range",
       "st_FirmataWatchDogIntervalSetting": "Watch dog max inactivity"
     }
   },

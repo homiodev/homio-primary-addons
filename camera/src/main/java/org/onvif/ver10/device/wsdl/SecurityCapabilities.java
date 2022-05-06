@@ -1,30 +1,26 @@
 //
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
+// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert
+// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>
+// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren.
+// Generiert: 2014.02.04 um 12:22:03 PM CET
 //
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.*;
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyAttribute;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * <p>
  * Java-Klasse f�r SecurityCapabilities complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType name="SecurityCapabilities">
  *   <complexContent>
@@ -50,8 +46,8 @@ import javax.xml.namespace.QName;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "SecurityCapabilities")
@@ -94,9 +90,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der tls10-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isTLS10() {
 		return tls10;
@@ -104,10 +100,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der tls10-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setTLS10(Boolean value) {
 		this.tls10 = value;
@@ -115,9 +111,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der tls11-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isTLS11() {
 		return tls11;
@@ -125,10 +121,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der tls11-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setTLS11(Boolean value) {
 		this.tls11 = value;
@@ -136,9 +132,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der tls12-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isTLS12() {
 		return tls12;
@@ -146,10 +142,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der tls12-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setTLS12(Boolean value) {
 		this.tls12 = value;
@@ -157,9 +153,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der onboardKeyGeneration-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isOnboardKeyGeneration() {
 		return onboardKeyGeneration;
@@ -167,10 +163,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der onboardKeyGeneration-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setOnboardKeyGeneration(Boolean value) {
 		this.onboardKeyGeneration = value;
@@ -178,9 +174,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der accessPolicyConfig-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isAccessPolicyConfig() {
 		return accessPolicyConfig;
@@ -188,10 +184,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der accessPolicyConfig-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setAccessPolicyConfig(Boolean value) {
 		this.accessPolicyConfig = value;
@@ -199,9 +195,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der defaultAccessPolicy-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isDefaultAccessPolicy() {
 		return defaultAccessPolicy;
@@ -209,10 +205,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der defaultAccessPolicy-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setDefaultAccessPolicy(Boolean value) {
 		this.defaultAccessPolicy = value;
@@ -220,9 +216,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der dot1X-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isDot1X() {
 		return dot1X;
@@ -230,10 +226,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der dot1X-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setDot1X(Boolean value) {
 		this.dot1X = value;
@@ -241,9 +237,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der remoteUserHandling-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isRemoteUserHandling() {
 		return remoteUserHandling;
@@ -251,10 +247,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der remoteUserHandling-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setRemoteUserHandling(Boolean value) {
 		this.remoteUserHandling = value;
@@ -262,9 +258,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der x509Token-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isX509Token() {
 		return x509Token;
@@ -272,10 +268,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der x509Token-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setX509Token(Boolean value) {
 		this.x509Token = value;
@@ -283,9 +279,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der samlToken-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isSAMLToken() {
 		return samlToken;
@@ -293,10 +289,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der samlToken-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setSAMLToken(Boolean value) {
 		this.samlToken = value;
@@ -304,9 +300,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der kerberosToken-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isKerberosToken() {
 		return kerberosToken;
@@ -314,10 +310,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der kerberosToken-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setKerberosToken(Boolean value) {
 		this.kerberosToken = value;
@@ -325,9 +321,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der usernameToken-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isUsernameToken() {
 		return usernameToken;
@@ -335,10 +331,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der usernameToken-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setUsernameToken(Boolean value) {
 		this.usernameToken = value;
@@ -346,9 +342,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der httpDigest-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isHttpDigest() {
 		return httpDigest;
@@ -356,10 +352,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der httpDigest-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setHttpDigest(Boolean value) {
 		this.httpDigest = value;
@@ -367,9 +363,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der relToken-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public Boolean isRELToken() {
 		return relToken;
@@ -377,10 +373,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der relToken-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Boolean }
-	 * 
+	 *
 	 */
 	public void setRELToken(Boolean value) {
 		this.relToken = value;
@@ -388,23 +384,23 @@ public class SecurityCapabilities {
 
 	/**
 	 * Gets the value of the supportedEAPMethods property.
-	 * 
+	 *
 	 * <p>
 	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
 	 * This is why there is not a <CODE>set</CODE> method for the supportedEAPMethods property.
-	 * 
+	 *
 	 * <p>
 	 * For example, to add a new item, do as follows:
-	 * 
+	 *
 	 * <pre>
 	 * getSupportedEAPMethods().add(newItem);
 	 * </pre>
-	 * 
-	 * 
+	 *
+	 *
 	 * <p>
 	 * Objects of the following type(s) are allowed in the list {@link Integer }
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public List<Integer> getSupportedEAPMethods() {
 		if (supportedEAPMethods == null) {
@@ -415,9 +411,9 @@ public class SecurityCapabilities {
 
 	/**
 	 * Ruft den Wert der maxUsers-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link Integer }
-	 * 
+	 *
 	 */
 	public Integer getMaxUsers() {
 		return maxUsers;
@@ -425,10 +421,10 @@ public class SecurityCapabilities {
 
 	/**
 	 * Legt den Wert der maxUsers-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link Integer }
-	 * 
+	 *
 	 */
 	public void setMaxUsers(Integer value) {
 		this.maxUsers = value;
@@ -436,13 +432,13 @@ public class SecurityCapabilities {
 
 	/**
 	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 * 
+	 *
 	 * <p>
 	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 * 
+	 *
 	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return always non-null
 	 */
 	public Map<QName, String> getOtherAttributes() {

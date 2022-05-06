@@ -7,12 +7,12 @@ import cc.arduino.contributions.packages.ContributedPlatform;
 import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePlugin;
-import org.touchhome.common.exception.ServerException;
-import org.touchhome.common.model.ProgressBar;
 import org.touchhome.bundle.api.setting.SettingPluginPackageInstall;
 import org.touchhome.bundle.api.setting.console.ConsoleSettingPlugin;
 import org.touchhome.bundle.arduino.ArduinoConfiguration;
 import org.touchhome.bundle.arduino.ArduinoConsolePlugin;
+import org.touchhome.common.exception.ServerException;
+import org.touchhome.common.model.ProgressBar;
 import processing.app.BaseNoGui;
 
 import java.util.ArrayList;

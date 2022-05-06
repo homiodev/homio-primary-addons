@@ -1,13 +1,15 @@
 package de.onvif.soap;
 
-import java.io.*;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.soap.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.*;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.*;
-import javax.xml.soap.*;
-import org.w3c.dom.Node;
-import org.w3c.dom.*;
 
 public class DeviceDiscovery {
     public static String WS_DISCOVERY_SOAP_VERSION = "SOAP 1.2 Protocol";

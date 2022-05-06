@@ -13,13 +13,11 @@ import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.util.SecureString;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.handler.BaseFFmpegCameraHandler;
-import org.touchhome.bundle.camera.util.FFMPEGDependencyExecutableInstaller;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-@RequireExecutableDependency(installer = FFMPEGDependencyExecutableInstaller.class)
 public abstract class BaseFFmpegStreamEntity<T extends BaseFFmpegStreamEntity, H extends BaseFFmpegCameraHandler>
         extends BaseVideoCameraEntity<T, H> {
 

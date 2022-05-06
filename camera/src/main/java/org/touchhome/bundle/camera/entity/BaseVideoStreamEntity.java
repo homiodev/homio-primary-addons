@@ -15,7 +15,6 @@ import org.touchhome.bundle.api.ui.action.UIActionHandler;
 import org.touchhome.bundle.api.ui.field.action.HasDynamicContextMenuActions;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.camera.scanner.VideoStreamScanner;
-import org.touchhome.bundle.camera.util.FFMPEGDependencyExecutableInstaller;
 
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -32,9 +31,6 @@ import java.util.Collection;
 @UISidebarButton(buttonIcon = "fas fa-qrcode", buttonIconColor = "#ED703E",
         buttonTitle = "TITLE.SCAN_VIDEO_STREAMS",
         handlerClass = BaseVideoStreamEntity.VideoStreamDiscovery.class)
-@UISidebarButton(buttonIcon = "fab fa-instalod", buttonIconColor = "#39B84E",
-        buttonTitle = "TITLE.INSTALL_FFMPEG",
-        handlerClass = FFMPEGDependencyExecutableInstaller.class)
 public abstract class BaseVideoStreamEntity<T extends BaseVideoStreamEntity> extends DeviceBaseEntity<T>
         implements HasDynamicContextMenuActions {
 

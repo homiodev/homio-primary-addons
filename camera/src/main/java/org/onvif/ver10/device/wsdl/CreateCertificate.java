@@ -1,18 +1,13 @@
 //
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2014.02.04 um 12:22:03 PM CET 
+// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.5-2 generiert
+// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>
+// �nderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren.
+// Generiert: 2014.02.04 um 12:22:03 PM CET
 //
 
 package org.onvif.ver10.device.wsdl;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -20,10 +15,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 /**
  * <p>
  * Java-Klasse f�r anonymous complex type.
- * 
+ *
  * <p>
  * Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
- * 
+ *
  * <pre>
  * <complexType>
  *   <complexContent>
@@ -38,8 +33,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   </complexContent>
  * </complexType>
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = { "certificateID", "subject", "validNotBefore", "validNotAfter" })
@@ -61,9 +56,9 @@ public class CreateCertificate {
 
 	/**
 	 * Ruft den Wert der certificateID-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getCertificateID() {
 		return certificateID;
@@ -71,10 +66,10 @@ public class CreateCertificate {
 
 	/**
 	 * Legt den Wert der certificateID-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setCertificateID(String value) {
 		this.certificateID = value;
@@ -82,9 +77,9 @@ public class CreateCertificate {
 
 	/**
 	 * Ruft den Wert der subject-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link String }
-	 * 
+	 *
 	 */
 	public String getSubject() {
 		return subject;
@@ -92,10 +87,10 @@ public class CreateCertificate {
 
 	/**
 	 * Legt den Wert der subject-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link String }
-	 * 
+	 *
 	 */
 	public void setSubject(String value) {
 		this.subject = value;
@@ -103,9 +98,9 @@ public class CreateCertificate {
 
 	/**
 	 * Ruft den Wert der validNotBefore-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link XMLGregorianCalendar }
-	 * 
+	 *
 	 */
 	public XMLGregorianCalendar getValidNotBefore() {
 		return validNotBefore;
@@ -113,10 +108,10 @@ public class CreateCertificate {
 
 	/**
 	 * Legt den Wert der validNotBefore-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link XMLGregorianCalendar }
-	 * 
+	 *
 	 */
 	public void setValidNotBefore(XMLGregorianCalendar value) {
 		this.validNotBefore = value;
@@ -124,9 +119,9 @@ public class CreateCertificate {
 
 	/**
 	 * Ruft den Wert der validNotAfter-Eigenschaft ab.
-	 * 
+	 *
 	 * @return possible object is {@link XMLGregorianCalendar }
-	 * 
+	 *
 	 */
 	public XMLGregorianCalendar getValidNotAfter() {
 		return validNotAfter;
@@ -134,10 +129,10 @@ public class CreateCertificate {
 
 	/**
 	 * Legt den Wert der validNotAfter-Eigenschaft fest.
-	 * 
+	 *
 	 * @param value
 	 *            allowed object is {@link XMLGregorianCalendar }
-	 * 
+	 *
 	 */
 	public void setValidNotAfter(XMLGregorianCalendar value) {
 		this.validNotAfter = value;

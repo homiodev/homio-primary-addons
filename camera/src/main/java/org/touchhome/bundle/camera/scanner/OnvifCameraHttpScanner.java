@@ -7,24 +7,21 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.common.model.ProgressBar;
-import org.touchhome.common.util.CommonUtils;
-import org.touchhome.common.util.Lang;
 import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
 import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
 import org.touchhome.bundle.camera.onvif.OnvifDiscovery;
+import org.touchhome.bundle.camera.setting.CameraScanPortRangeSetting;
 import org.touchhome.bundle.camera.setting.onvif.ScanOnvifHttpDefaultPasswordAuthSetting;
 import org.touchhome.bundle.camera.setting.onvif.ScanOnvifHttpDefaultUserAuthSetting;
 import org.touchhome.bundle.camera.setting.onvif.ScanOnvifHttpMaxPingTimeoutSetting;
 import org.touchhome.bundle.camera.setting.onvif.ScanOnvifPortsSetting;
+import org.touchhome.common.model.ProgressBar;
+import org.touchhome.common.util.CommonUtils;
+import org.touchhome.common.util.Lang;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -69,9 +66,13 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
 
         Set<Integer> ports = entityContext.setting().getValue(ScanOnvifPortsSetting.class);
         int pingTimeout = entityContext.setting().getValue(ScanOnvifHttpMaxPingTimeoutSetting.class);
+        Set<String> ipRangeList = entityContext.setting().getValue(CameraScanPortRangeSetting.class);
 
-        Map<String, Callable<Integer>> tasks = networkHardwareRepository.buildPingIpAddressTasks(log, ports, pingTimeout, (ipAddress, port) ->
-                buildCameraTask(rediscoverIpAddresses, allSavedCameraEntities, existsCameraByIpPort, user, password, ipAddress, port));
+        Map<String, Callable<Integer>> tasks = new HashMap<>();
+        for (String ipRange : ipRangeList) {
+            tasks.putAll(networkHardwareRepository.buildPingIpAddressTasks(ipRange, log, ports, pingTimeout, (ipAddress, port) ->
+                    buildCameraTask(rediscoverIpAddresses, allSavedCameraEntities, existsCameraByIpPort, user, password, ipAddress, port)));
+        }
 
         entityContext.bgp().runOnceOnInternetUp("scan-onvif-camera", () -> {
             List<Integer> availableOnvifCameras = entityContext.bgp().runInBatchAndGet("scan-onvif-http-batch-result",

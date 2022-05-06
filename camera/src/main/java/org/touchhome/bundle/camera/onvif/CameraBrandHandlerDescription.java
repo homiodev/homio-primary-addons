@@ -2,7 +2,6 @@ package org.touchhome.bundle.camera.onvif;
 
 import lombok.SneakyThrows;
 import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
-import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.impl.CameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.impl.OnvifBrandHandler;
 
