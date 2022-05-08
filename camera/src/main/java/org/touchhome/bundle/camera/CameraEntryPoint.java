@@ -90,14 +90,14 @@ public class CameraEntryPoint implements BundleEntryPoint {
         // lister start/stop status, any changes
         entityContext.event().addEntityUpdateListener(BaseVideoCameraEntity.class, "camera-change-listener", (cameraEntity, oldCameraEntity) -> {
             BaseCameraHandler cameraHandler = cameraEntity.getCameraHandler();
+            cameraHandler.updateCameraEntity(cameraEntity);
+
             if (cameraEntity.isStart() && !cameraHandler.isHandlerInitialized()) {
-                cameraHandler.initialize(cameraEntity);
+                cameraHandler.initialize();
             } else if (!cameraEntity.isStart() && cameraHandler.isHandlerInitialized()) {
                 cameraHandler.disposeAndSetStatus(Status.OFFLINE, "Camera not started");
             } else if (/*TODO: cameraHandler.isHandlerInitialized() && */detectIfRequireRestartHandler(oldCameraEntity, cameraEntity)) {
-                cameraHandler.restart("Restart camera handler", cameraEntity, true);
-            } else {
-                cameraHandler.setCameraEntity(cameraEntity); // to avoid optimistic lock
+                cameraHandler.restart("Restart camera handler", true);
             }
             // change camera name if possible
             if (oldCameraEntity != null && !Objects.equals(cameraEntity.getName(), oldCameraEntity.getName())) {
@@ -123,7 +123,9 @@ public class CameraEntryPoint implements BundleEntryPoint {
                 if (!cameraEntity.isStart()) {
                     entityContext.save(cameraEntity.setStart(true));
                 } else {
-                    cameraEntity.getCameraHandler().initialize(cameraEntity);
+                    BaseCameraHandler handler = cameraEntity.getCameraHandler();
+                    handler.updateCameraEntity(cameraEntity);
+                    handler.initialize();
                 }
             }
         }

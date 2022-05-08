@@ -1,14 +1,10 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
 import com.zsmartsystems.zigbee.CommandResult;
-import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
-import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclFanControlCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.api.state.DecimalType;
-import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 
 import java.util.concurrent.ExecutionException;
 
@@ -17,7 +13,7 @@ import java.util.concurrent.ExecutionException;
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:fancontrol", clientClusters = {ZclFanControlCluster.CLUSTER_ID})
-public class ZigBeeConverterFanControl extends ZigBeeBaseChannelConverter implements ZclAttributeListener {
+public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
 
     private static final int MODE_OFF = 0;
     private static final int MODE_LOW = 1;
@@ -26,15 +22,23 @@ public class ZigBeeConverterFanControl extends ZigBeeBaseChannelConverter implem
     private static final int MODE_ON = 4;
     private static final int MODE_AUTO = 5;
 
-    private ZclFanControlCluster cluster;
-    private ZclAttribute fanModeAttribute;
+    public ZigBeeConverterFanControl() {
+        super(ZclClusterType.FAN_CONTROL, ZclFanControlCluster.ATTR_FANMODE, 1,
+                REPORTING_PERIOD_DEFAULT_MAX, null);
+    }
+
+    @Override
+    protected boolean initializeDeviceFailed() {
+        pollingPeriod = POLLING_PERIOD_HIGH;
+        return true;
+    }
 
     @Override
     public boolean initializeDevice() {
         ZclFanControlCluster serverCluster = (ZclFanControlCluster) endpoint
                 .getInputCluster(ZclFanControlCluster.CLUSTER_ID);
         if (serverCluster == null) {
-            log.error("{}/{}: Error opening device fan controls", endpoint.getIeeeAddress());
+            log.error("{}/{}: Error opening device fan controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
@@ -44,7 +48,7 @@ public class ZigBeeConverterFanControl extends ZigBeeBaseChannelConverter implem
                 // Configure reporting
                 ZclAttribute attribute = serverCluster.getAttribute(ZclFanControlCluster.ATTR_FANMODE);
                 CommandResult reportingResponse = attribute.setReporting(1, REPORTING_PERIOD_DEFAULT_MAX).get();
-                handleReportingResponseHight(reportingResponse);
+                handleReportingResponseHigh(reportingResponse);
             } else {
                 pollingPeriod = POLLING_PERIOD_HIGH;
             }
@@ -56,18 +60,27 @@ public class ZigBeeConverterFanControl extends ZigBeeBaseChannelConverter implem
     }
 
     @Override
-    public boolean initializeConverter() {
-        cluster = (ZclFanControlCluster) endpoint.getInputCluster(ZclFanControlCluster.CLUSTER_ID);
-        if (cluster == null) {
-            log.error("{}/{}: Error opening device fan controls", endpoint.getIeeeAddress());
-            return false;
+    protected void handleReportingResponseDuringInitializeDevice(CommandResult reportingResponse) {
+        handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, REPORTING_PERIOD_DEFAULT_MAX);
+    }
+
+    /*@Override
+    public void handleCommand(final ZigBeeCommand command) {
+        int value;
+        if (command instanceof OnOffType) {
+            value = command == OnOffType.ON ? MODE_ON : MODE_OFF;
+        } else if (command instanceof DecimalType) {
+            value = ((DecimalType) command).intValue();
+        } else {
+            log.debug("{}/{}: Unabled to convert fan mode {}", endpoint.getIeeeAddress(),endpoint.getEndpointId(), command);
+            return;
         }
 
-        fanModeAttribute = cluster.getAttribute(ZclFanControlCluster.ATTR_FANMODE);
+        fanModeAttribute.writeValue(value);
+    }*/
 
-        // TODO: Detect the supported features and provide these as a description
-        ZclAttribute fanSequenceAttribute = cluster.getAttribute(ZclFanControlCluster.ATTR_FANMODESEQUENCE);
-        Integer sequence = (Integer) fanSequenceAttribute.readValue(Long.MAX_VALUE);
+    //ZclAttribute fanSequenceAttribute = cluster.getAttribute(ZclFanControlCluster.ATTR_FANMODESEQUENCE);
+    // Integer sequence = (Integer) fanSequenceAttribute.readValue(Long.MAX_VALUE);
         /*if (sequence != null) {
             List<StateOption> options = new ArrayList<>();
             switch (sequence) {
@@ -102,59 +115,4 @@ public class ZigBeeConverterFanControl extends ZigBeeBaseChannelConverter implem
             stateDescription = new StateDescription(BigDecimal.ZERO, BigDecimal.valueOf(9), BigDecimal.valueOf(1), "",
                     false, options);
         }*/
-
-        // Add the listener
-        cluster.addAttributeListener(this);
-
-        return true;
-    }
-
-    @Override
-    public void disposeConverter() {
-        log.debug("{}/{}: Closing device fan control cluster", endpoint.getIeeeAddress());
-
-        cluster.removeAttributeListener(this);
-    }
-
-    @Override
-    protected void handleRefresh() {
-        fanModeAttribute.readValue(0);
-    }
-
-    /*@Override
-    public void handleCommand(final ZigBeeCommand command) {
-        int value;
-        if (command instanceof OnOffType) {
-            value = command == OnOffType.ON ? MODE_ON : MODE_OFF;
-        } else if (command instanceof DecimalType) {
-            value = ((DecimalType) command).intValue();
-        } else {
-            log.debug("{}/{}: Unabled to convert fan mode {}", endpoint.getIeeeAddress(),endpoint.getEndpointId(), command);
-            return;
-        }
-
-        fanModeAttribute.writeValue(value);
-    }*/
-
-    @Override
-    public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-        ZclFanControlCluster cluster = (ZclFanControlCluster) endpoint.getInputCluster(ZclFanControlCluster.CLUSTER_ID);
-        if (cluster == null) {
-            log.trace("{}/{}: Fan control cluster not found", endpoint.getIeeeAddress());
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public void attributeUpdated(ZclAttribute attribute, Object val) {
-        log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
-        if (attribute.getClusterType() == ZclClusterType.FAN_CONTROL
-                && attribute.getId() == ZclFanControlCluster.ATTR_FANMODE) {
-            Integer value = (Integer) val;
-            if (value != null) {
-                updateChannelState(new DecimalType(value));
-            }
-        }
-    }
 }

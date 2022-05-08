@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 @Getter
 public class OnvifDeviceState {
-    @Setter
+
     private OnvifCameraEntity onvifCameraEntity;
     private String HOST_IP;
     private String originalIp;
@@ -77,9 +77,8 @@ public class OnvifDeviceState {
     }
 
     @SneakyThrows
-    public OnvifDeviceState(String ip, int onvifPort, int serverPort, String user, String password, Logger log) {
+    public OnvifDeviceState(Logger log) {
         this.log = log;
-        updateParameters(ip, onvifPort, serverPort, user, password);
         this.soap = new SOAP(this);
         this.initialDevices = new InitialDevices(this, soap);
         this.ptzDevices = new PtzDevices(this, soap);
@@ -341,6 +340,12 @@ public class OnvifDeviceState {
 
     public void runOncePerMinute() {
         this.eventDevices.runOncePerMinute();
+    }
+
+    public void setOnvifCameraEntity(OnvifCameraEntity onvifCameraEntity) {
+        this.onvifCameraEntity = onvifCameraEntity;
+        updateParameters(onvifCameraEntity.getIp(), onvifCameraEntity.getOnvifPort(),
+                onvifCameraEntity.getServerPort(), onvifCameraEntity.getUser(), onvifCameraEntity.getPassword().asString());
     }
 
     @EqualsAndHashCode

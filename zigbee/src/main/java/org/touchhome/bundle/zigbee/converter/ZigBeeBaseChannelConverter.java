@@ -21,9 +21,14 @@ import java.util.concurrent.Future;
 @Log4j2
 public abstract class ZigBeeBaseChannelConverter {
 
-    protected final int REPORTING_PERIOD_DEFAULT_MAX = 7200;
+    /**
+     * Default polling period (in seconds).
+     */
+    public static final int POLLING_PERIOD_DEFAULT = 7200;
 
-    protected final int POLLING_PERIOD_HIGH = 300;
+    public static final int REPORTING_PERIOD_DEFAULT_MAX = 7200;
+
+    public static final int POLLING_PERIOD_HIGH = 300;
 
     @Getter
     protected int pollingPeriod = Integer.MAX_VALUE;
@@ -48,13 +53,6 @@ public abstract class ZigBeeBaseChannelConverter {
      */
     private ZigBeeCoordinatorHandler coordinator = null;
     private boolean pooling = false;
-
-    /**
-     * Constructor. Creates a new instance of the {@link ZigBeeBaseChannelConverter} class.
-     */
-    public ZigBeeBaseChannelConverter() {
-        super();
-    }
 
     /**
      * Creates the converter handler.
@@ -148,7 +146,7 @@ public abstract class ZigBeeBaseChannelConverter {
         handleReportingResponse(reportResponse, REPORTING_PERIOD_DEFAULT_MAX, REPORTING_PERIOD_DEFAULT_MAX);
     }
 
-    protected void handleReportingResponseHight(CommandResult reportResponse) {
+    protected void handleReportingResponseHigh(CommandResult reportResponse) {
         handleReportingResponse(reportResponse, POLLING_PERIOD_HIGH, REPORTING_PERIOD_DEFAULT_MAX);
     }
 
@@ -243,18 +241,19 @@ public abstract class ZigBeeBaseChannelConverter {
         return zclCluster.getAttribute(attributeID).readValue(Long.MAX_VALUE);
     }
 
-    protected void updateServerPoolingPeriod(ZclCluster serverCluster, int attributeId, boolean isUpdate) throws InterruptedException, ExecutionException {
-        updateServerPoolingPeriod(serverCluster, attributeId, isUpdate, null);
-    }
-
     // Configure reporting
-    protected void updateServerPoolingPeriod(ZclCluster serverCluster, int attributeId, boolean isUpdate, Object reportableChange) throws InterruptedException, ExecutionException {
-        ZigBeeDeviceEntity zbe = zigBeeDevice.getZigBeeDeviceEntity();
-        CommandResult reportingResponse = serverCluster.setReporting(attributeId, zbe.getReportingTimeMin(), zbe.getReportingTimeMax(), reportableChange).get();
-        if (isUpdate) {
-            handleReportingResponse(reportingResponse, zbe.getPoolingPeriod(), zbe.getReportingTimeMax());
-        } else {
-            handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, zbe.getPoolingPeriod());
+    protected void updateServerPoolingPeriod(ZclCluster serverCluster, int attributeId, boolean isUpdate) {
+        try {
+            ZigBeeDeviceEntity zbe = zigBeeDevice.getZigBeeDeviceEntity();
+            CommandResult reportingResponse = serverCluster.setReporting(attributeId, zbe.getReportingTimeMin(),
+                    zbe.getReportingTimeMax(), zbe.getReportingChange()).get();
+            if (isUpdate) {
+                handleReportingResponse(reportingResponse, zbe.getPoolingPeriod(), zbe.getReportingTimeMax());
+            } else {
+                handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, zbe.getPoolingPeriod());
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            log.debug("{}/{}: Exception setting reporting", endpoint.getIeeeAddress(), endpoint.getEndpointId(), e);
         }
     }
 

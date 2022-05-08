@@ -67,7 +67,7 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
                 String response = firmataDeviceCommunicator.restart();
                 return ActionResponseModel.showSuccess(response);
             } catch (Exception ex) {
-                return ActionResponseModel.showError(ex.getMessage());
+                return ActionResponseModel.showError(ex);
             }
         }
         return ActionResponseModel.showWarn("ACTION.COMMUNICATOR.NOT_FOUND");

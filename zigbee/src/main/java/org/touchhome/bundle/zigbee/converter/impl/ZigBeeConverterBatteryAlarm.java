@@ -1,18 +1,15 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
-import com.zsmartsystems.zigbee.CommandResult;
-import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
-import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
+import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster;
-import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.StringType;
-import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 
 import java.util.concurrent.ExecutionException;
 
 import static com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster.ATTR_BATTERYALARMSTATE;
+import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.POWER_CONFIGURATION;
 import static java.time.Duration.ofHours;
 import static java.time.Duration.ofMinutes;
 
@@ -34,7 +31,7 @@ import static java.time.Duration.ofMinutes;
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:battery_alarm", clientClusters = {ZclPowerConfigurationCluster.CLUSTER_ID})
-public class ZigBeeConverterBatteryAlarm extends ZigBeeBaseChannelConverter implements ZclAttributeListener {
+public class ZigBeeConverterBatteryAlarm extends ZigBeeInputBaseConverter {
 
     public static final String STATE_OPTION_BATTERY_THRESHOLD_1 = "threshold1";
     public static final String STATE_OPTION_BATTERY_THRESHOLD_2 = "threshold2";
@@ -51,72 +48,24 @@ public class ZigBeeConverterBatteryAlarm extends ZigBeeBaseChannelConverter impl
 
     private static final int BATTERY_ALARM_POLLING_PERIOD = (int) ofMinutes(30).getSeconds();
 
-    private ZclPowerConfigurationCluster cluster;
+    public ZigBeeConverterBatteryAlarm() {
+        super(POWER_CONFIGURATION, ATTR_BATTERYALARMSTATE, ALARMSTATE_MIN_REPORTING_INTERVAL,
+                ALARMSTATE_MAX_REPORTING_INTERVAL, null);
+    }
 
     @Override
-    public boolean initializeDevice() {
-        log.debug("{}/{}: Initialising device battery alarm converter", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+    protected boolean initializeDeviceFailed() {
+        pollingPeriod = BATTERY_ALARM_POLLING_PERIOD;
+        log.debug("{}/{}: Could not bind to the power configuration cluster; polling battery alarm state every {} seconds",
+                endpoint.getIeeeAddress(), endpoint.getEndpointId(), BATTERY_ALARM_POLLING_PERIOD);
+        return false;
+    }
 
-        ZclPowerConfigurationCluster serverCluster = (ZclPowerConfigurationCluster) endpoint
-                .getInputCluster(ZclPowerConfigurationCluster.CLUSTER_ID);
-        if (serverCluster == null) {
-            log.error("{}/{}: Error opening power configuration cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
-            return false;
-        }
-
+    @Override
+    protected boolean acceptEndpointExtra(ZclCluster cluster) {
         try {
-            CommandResult bindResponse = bind(serverCluster).get();
-            if (bindResponse.isSuccess()) {
-                CommandResult reportingResponse = serverCluster.setReporting(ATTR_BATTERYALARMSTATE, ALARMSTATE_MIN_REPORTING_INTERVAL, ALARMSTATE_MAX_REPORTING_INTERVAL).get();
-                handleReportingResponse(reportingResponse, BATTERY_ALARM_POLLING_PERIOD, ALARMSTATE_MAX_REPORTING_INTERVAL);
-            } else {
-                pollingPeriod = BATTERY_ALARM_POLLING_PERIOD;
-                log.debug("{}/{}: Could not bind to the power configuration cluster; polling battery alarm state every {} seconds",
-                        endpoint.getIeeeAddress(), endpoint.getEndpointId(), BATTERY_ALARM_POLLING_PERIOD);
-                return false;
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            log.error("{}/{}: Exception setting reporting of battery alarm state ", endpoint.getIeeeAddress(), endpoint.getEndpointId(), e);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean initializeConverter() {
-        cluster = (ZclPowerConfigurationCluster) endpoint.getInputCluster(ZclPowerConfigurationCluster.CLUSTER_ID);
-        if (cluster == null) {
-            log.error("{}/{}: Error opening power configuration cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
-            return false;
-        }
-
-        // Add a listener
-        cluster.addAttributeListener(this);
-        return true;
-    }
-
-    @Override
-    public void disposeConverter() {
-        log.debug("{}/{}: Closing battery alarm converter", endpoint.getIeeeAddress(), endpoint.getEndpointId());
-        cluster.removeAttributeListener(this);
-    }
-
-    @Override
-    protected void handleRefresh() {
-        cluster.getBatteryAlarmState(0);
-    }
-
-    @Override
-    public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-        ZclPowerConfigurationCluster powerConfigurationCluster = (ZclPowerConfigurationCluster) endpoint.getInputCluster(ZclPowerConfigurationCluster.CLUSTER_ID);
-        if (powerConfigurationCluster == null) {
-            log.trace("{}: Power configuration cluster not found on endpoint {}", endpoint.getIeeeAddress(), endpoint.getEndpointId());
-            return false;
-        }
-
-        try {
-            if (!powerConfigurationCluster.discoverAttributes(false).get() && !powerConfigurationCluster.isAttributeSupported(ZclPowerConfigurationCluster.ATTR_BATTERYALARMSTATE)) {
-                log.trace("{}: Power configuration cluster battery alarm state not supported", endpoint.getIeeeAddress());
+            if (!cluster.discoverAttributes(false).get() && !cluster.isAttributeSupported(ATTR_BATTERYALARMSTATE)) {
+                log.trace("{}/{}: Power configuration cluster battery alarm state not supported", endpoint.getIeeeAddress(), endpoint.getEndpointId());
                 return false;
             }
         } catch (InterruptedException | ExecutionException e) {
@@ -127,25 +76,22 @@ public class ZigBeeConverterBatteryAlarm extends ZigBeeBaseChannelConverter impl
     }
 
     @Override
-    public void attributeUpdated(ZclAttribute attribute, Object val) {
-        if (attribute.getClusterType() == ZclClusterType.POWER_CONFIGURATION && attribute.getId() == ZclPowerConfigurationCluster.ATTR_BATTERYALARMSTATE) {
+    protected void updateValue(Object val, ZclAttribute attribute) {
+        log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
 
-            log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
+        // The value is a 32-bit bitmap, represented by an Integer
+        Integer value = (Integer) val;
 
-            // The value is a 32-bit bitmap, represented by an Integer
-            Integer value = (Integer) val;
-
-            if ((value & MIN_THRESHOLD_BITMASK) != 0) {
-                updateChannelState(new StringType(STATE_OPTION_BATTERY_MIN_THRESHOLD));
-            } else if ((value & THRESHOLD_1_BITMASK) != 0) {
-                updateChannelState(new StringType(STATE_OPTION_BATTERY_THRESHOLD_1));
-            } else if ((value & THRESHOLD_2_BITMASK) != 0) {
-                updateChannelState(new StringType(STATE_OPTION_BATTERY_THRESHOLD_2));
-            } else if ((value & THRESHOLD_3_BITMASK) != 0) {
-                updateChannelState(new StringType(STATE_OPTION_BATTERY_THRESHOLD_3));
-            } else {
-                updateChannelState(new StringType(STATE_OPTION_BATTERY_NO_THRESHOLD));
-            }
+        if ((value & MIN_THRESHOLD_BITMASK) != 0) {
+            updateChannelState(new StringType(STATE_OPTION_BATTERY_MIN_THRESHOLD));
+        } else if ((value & THRESHOLD_1_BITMASK) != 0) {
+            updateChannelState(new StringType(STATE_OPTION_BATTERY_THRESHOLD_1));
+        } else if ((value & THRESHOLD_2_BITMASK) != 0) {
+            updateChannelState(new StringType(STATE_OPTION_BATTERY_THRESHOLD_2));
+        } else if ((value & THRESHOLD_3_BITMASK) != 0) {
+            updateChannelState(new StringType(STATE_OPTION_BATTERY_THRESHOLD_3));
+        } else {
+            updateChannelState(new StringType(STATE_OPTION_BATTERY_NO_THRESHOLD));
         }
     }
 }

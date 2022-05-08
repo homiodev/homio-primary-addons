@@ -26,7 +26,7 @@ public class HttpSOAPConnection {
     public HttpSOAPConnection() throws SOAPException {
         try {
             this.messageFactory = MessageFactory.newInstance("Dynamic Protocol");
-        } catch (NoSuchMethodError var2) {
+        } catch (NoSuchMethodError ex) {
             this.messageFactory = MessageFactory.newInstance();
         } catch (Exception ex) {
             log.error("SAAJ0001.p2p.cannot.create.msg.factory", ex);
@@ -148,7 +148,7 @@ public class HttpSOAPConnection {
 
             try {
                 responseCode = httpConnection.getResponseCode();
-                if (responseCode == 500) {
+                if (responseCode != 200) {
                     isFailure = true;
                 }
             } catch (IOException ex) {
@@ -166,48 +166,46 @@ public class HttpSOAPConnection {
 
         SOAPMessage response = null;
         InputStream httpIn = null;
-        if (responseCode == 200 || isFailure) {
-            try {
-                headers = new MimeHeaders();
-                int i = 1;
+        try {
+            headers = new MimeHeaders();
+            int i = 1;
 
-                while (true) {
-                    String key = httpConnection.getHeaderFieldKey(i);
-                    String value = httpConnection.getHeaderField(i);
-                    if (key == null && value == null) {
-                        httpIn = isFailure ? httpConnection.getErrorStream() : httpConnection.getInputStream();
-                        InputStream stream = IOUtils.toBufferedInputStream(httpIn);
-                        int length = httpConnection.getContentLength() == -1 ? stream.available() : httpConnection.getContentLength();
-                        if (length == 0) {
-                            log.warn("SAAJ0014.p2p.content.zero");
-                        } else {
-                            response = this.messageFactory.createMessage(headers, stream);
-                        }
-                        break;
+            while (true) {
+                String key = httpConnection.getHeaderFieldKey(i);
+                String value = httpConnection.getHeaderField(i);
+                if (key == null && value == null) {
+                    httpIn = isFailure ? httpConnection.getErrorStream() : httpConnection.getInputStream();
+                    InputStream stream = IOUtils.toBufferedInputStream(httpIn);
+                    int length = httpConnection.getContentLength() == -1 ? stream.available() : httpConnection.getContentLength();
+                    if (length == 0) {
+                        log.warn("SAAJ0014.p2p.content.zero");
+                    } else {
+                        response = this.messageFactory.createMessage(headers, stream);
                     }
-
-                    if (key != null) {
-                        StringTokenizer values = new StringTokenizer(value, ",");
-
-                        while (values.hasMoreTokens()) {
-                            headers.addHeader(key, values.nextToken().trim());
-                        }
-                    }
-
-                    ++i;
-                }
-            } catch (SOAPException var33) {
-                throw var33;
-            } catch (Exception var34) {
-                log.error("SAAJ0010.p2p.cannot.read.resp", var34);
-                throw new ServerException("Unable to read response: " + var34.getMessage());
-            } finally {
-                if (httpIn != null) {
-                    httpIn.close();
+                    break;
                 }
 
-                httpConnection.disconnect();
+                if (key != null) {
+                    StringTokenizer values = new StringTokenizer(value, ",");
+
+                    while (values.hasMoreTokens()) {
+                        headers.addHeader(key, values.nextToken().trim());
+                    }
+                }
+
+                ++i;
             }
+        } catch (SOAPException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            log.error("SAAJ0010.p2p.cannot.read.resp", ex);
+            throw new ServerException("Unable to read response: " + ex.getMessage());
+        } finally {
+            if (httpIn != null) {
+                httpIn.close();
+            }
+
+            httpConnection.disconnect();
         }
 
         return response;
@@ -270,7 +268,7 @@ public class HttpSOAPConnection {
                                 throw new IllegalArgumentException();
                         }
                     }
-                } catch (NumberFormatException var7) {
+                } catch (NumberFormatException ex) {
                     throw new IllegalArgumentException();
                 }
             }

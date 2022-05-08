@@ -76,7 +76,7 @@ public class ZclDoorLockConfig implements ZclClusterConfigHandler {
                 continue;
             }
 
-            log.debug("{}: Update DoorLock configuration property {}->{} ({})", doorLockCluster.getZigBeeAddress(),
+            log.debug("{}/{}: Update DoorLock configuration property {}->{} ({})", doorLockCluster.getZigBeeAddress(),
                     configurationParameter.getKey(), configurationParameter.getValue(),
                     configurationParameter.getValue().getClass().getSimpleName());
             Object response = null;
@@ -100,7 +100,7 @@ public class ZclDoorLockConfig implements ZclClusterConfigHandler {
                     response = BigInteger.valueOf(doorLockCluster.getAutoRelockTime(0));
                     break;
                 default:
-                    log.warn("{}: Unhandled configuration property {}", doorLockCluster.getZigBeeAddress(),
+                    log.warn("{}/{}: Unhandled configuration property {}", doorLockCluster.getZigBeeAddress(),
                             configurationParameter.getKey());
                     break;
             }

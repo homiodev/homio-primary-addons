@@ -66,7 +66,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
 
     void tryInitializeDevice(Status coordinatorStatus) {
         if (coordinatorStatus != Status.ONLINE) {
-            log.trace("{}: Coordinator is unknown or not online.", nodeIeeeAddress);
+            log.trace("{}/{}: Coordinator is unknown or not online.", nodeIeeeAddress);
             zigBeeNodeDescription.setNodeInitialized(false);
             updateStatus(Status.OFFLINE, "Coordinator unknown status");
             stopPolling();

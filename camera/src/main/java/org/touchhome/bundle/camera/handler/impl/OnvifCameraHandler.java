@@ -97,61 +97,56 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     private OnvifDeviceState onvifDeviceState;
     private EntityContextBGP.ThreadContext<Void> pullConfigSchedule;
 
-    public OnvifCameraHandler(OnvifCameraEntity cameraEntity, EntityContext entityContext) {
-        super(cameraEntity, entityContext);
-        initializeOnvifDeviceState(cameraEntity);
+    public OnvifCameraHandler(OnvifCameraEntity ce, EntityContext entityContext) {
+        super(ce, entityContext);
+        onvifDeviceState = new OnvifDeviceState(log);
+        onvifDeviceState.setOnvifCameraEntity(ce);
+
+        onvifDeviceState.setUnreachableHandler(message -> this.disposeAndSetStatus(Status.OFFLINE, message));
+
+        onvifDeviceState.getEventDevices().subscribe("RuleEngine/CellMotionDetector/Motion",
+                (dataName, dataValue) -> motionDetected(dataValue.equals("true"), CHANNEL_CELL_MOTION_ALARM));
+        onvifDeviceState.getEventDevices().subscribe("VideoSource/MotionAlarm",
+                (dataName, dataValue) -> motionDetected(dataValue.equals("true"), CHANNEL_MOTION_ALARM));
+        onvifDeviceState.getEventDevices().subscribe("AudioAnalytics/Audio/DetectedSound",
+                (dataName, dataValue) -> audioDetected(dataValue.equals("true")));
+        onvifDeviceState.getEventDevices().subscribe("RuleEngine/FieldDetector/ObjectsInside",
+                (dataName, dataValue) -> motionDetected(dataValue.equals("true"), CHANNEL_FIELD_DETECTION_ALARM));
+        onvifDeviceState.getEventDevices().subscribe("RuleEngine/LineDetector/Crossed",
+                (dataName, dataValue) -> motionDetected(dataName.equals("ObjectId"), CHANNEL_LINE_CROSSING_ALARM));
+        onvifDeviceState.getEventDevices().subscribe("RuleEngine/TamperDetector/Tamper",
+                (dataName, dataValue) -> setAttribute(CHANNEL_TAMPER_ALARM, OnOffType.of(dataValue.equals("true"))));
+        onvifDeviceState.getEventDevices().subscribe("Device/HardwareFailure/StorageFailure",
+                (dataName, dataValue) -> setAttribute(CHANNEL_STORAGE_ALARM, OnOffType.of(dataValue.equals("true"))));
+
+        onvifDeviceState.getEventDevices().subscribe(
+                "VideoSource/ImageTooDark/AnalyticsService",
+                "VideoSource/ImageTooDark/ImagingService",
+                "VideoSource/ImageTooDark/RecordingService",
+                (dataName, dataValue) -> setAttribute(CHANNEL_TOO_DARK_ALARM, OnOffType.of(dataValue.equals("true"))));
+
+        onvifDeviceState.getEventDevices().subscribe(
+                "VideoSource/GlobalSceneChange/AnalyticsService",
+                "VideoSource/GlobalSceneChange/ImagingService",
+                "VideoSource/GlobalSceneChange/RecordingService",
+                (dataName, dataValue) -> setAttribute(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.of(dataValue.equals("true"))));
+
+        onvifDeviceState.getEventDevices().subscribe(
+                "VideoSource/ImageTooBright/AnalyticsService",
+                "VideoSource/ImageTooBright/ImagingService",
+                "VideoSource/ImageTooBright/RecordingService",
+                (dataName, dataValue) -> setAttribute(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.of(dataValue.equals("true"))));
+
+        onvifDeviceState.getEventDevices().subscribe(
+                "VideoSource/ImageTooBlurry/AnalyticsService",
+                "VideoSource/ImageTooBlurry/ImagingService",
+                "VideoSource/ImageTooBlurry/RecordingService",
+                (dataName, dataValue) -> setAttribute(CHANNEL_TOO_BLURRY_ALARM, OnOffType.of(dataValue.equals("true"))));
     }
 
-    private void initializeOnvifDeviceState(OnvifCameraEntity ce) {
-        if (onvifDeviceState != null) {
-            onvifDeviceState.updateParameters(ce.getIp(), ce.getOnvifPort(), ce.getServerPort(),
-                    ce.getUser(), ce.getPassword().asString());
-        } else {
-            onvifDeviceState = new OnvifDeviceState(ce.getIp(), ce.getOnvifPort(),
-                    ce.getServerPort(),
-                    ce.getUser(), ce.getPassword().asString(), log);
-            onvifDeviceState.setOnvifCameraEntity(ce);
-            onvifDeviceState.setUnreachableHandler(message -> this.disposeAndSetStatus(Status.OFFLINE, message));
-
-            onvifDeviceState.getEventDevices().subscribe("RuleEngine/CellMotionDetector/Motion",
-                    (dataName, dataValue) -> motionDetected(dataValue.equals("true"), CHANNEL_CELL_MOTION_ALARM));
-            onvifDeviceState.getEventDevices().subscribe("VideoSource/MotionAlarm",
-                    (dataName, dataValue) -> motionDetected(dataValue.equals("true"), CHANNEL_MOTION_ALARM));
-            onvifDeviceState.getEventDevices().subscribe("AudioAnalytics/Audio/DetectedSound",
-                    (dataName, dataValue) -> audioDetected(dataValue.equals("true")));
-            onvifDeviceState.getEventDevices().subscribe("RuleEngine/FieldDetector/ObjectsInside",
-                    (dataName, dataValue) -> motionDetected(dataValue.equals("true"), CHANNEL_FIELD_DETECTION_ALARM));
-            onvifDeviceState.getEventDevices().subscribe("RuleEngine/LineDetector/Crossed",
-                    (dataName, dataValue) -> motionDetected(dataName.equals("ObjectId"), CHANNEL_LINE_CROSSING_ALARM));
-            onvifDeviceState.getEventDevices().subscribe("RuleEngine/TamperDetector/Tamper",
-                    (dataName, dataValue) -> setAttribute(CHANNEL_TAMPER_ALARM, OnOffType.of(dataValue.equals("true"))));
-            onvifDeviceState.getEventDevices().subscribe("Device/HardwareFailure/StorageFailure",
-                    (dataName, dataValue) -> setAttribute(CHANNEL_STORAGE_ALARM, OnOffType.of(dataValue.equals("true"))));
-
-            onvifDeviceState.getEventDevices().subscribe(
-                    "VideoSource/ImageTooDark/AnalyticsService",
-                    "VideoSource/ImageTooDark/ImagingService",
-                    "VideoSource/ImageTooDark/RecordingService",
-                    (dataName, dataValue) -> setAttribute(CHANNEL_TOO_DARK_ALARM, OnOffType.of(dataValue.equals("true"))));
-
-            onvifDeviceState.getEventDevices().subscribe(
-                    "VideoSource/GlobalSceneChange/AnalyticsService",
-                    "VideoSource/GlobalSceneChange/ImagingService",
-                    "VideoSource/GlobalSceneChange/RecordingService",
-                    (dataName, dataValue) -> setAttribute(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.of(dataValue.equals("true"))));
-
-            onvifDeviceState.getEventDevices().subscribe(
-                    "VideoSource/ImageTooBright/AnalyticsService",
-                    "VideoSource/ImageTooBright/ImagingService",
-                    "VideoSource/ImageTooBright/RecordingService",
-                    (dataName, dataValue) -> setAttribute(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.of(dataValue.equals("true"))));
-
-            onvifDeviceState.getEventDevices().subscribe(
-                    "VideoSource/ImageTooBlurry/AnalyticsService",
-                    "VideoSource/ImageTooBlurry/ImagingService",
-                    "VideoSource/ImageTooBlurry/RecordingService",
-                    (dataName, dataValue) -> setAttribute(CHANNEL_TOO_BLURRY_ALARM, OnOffType.of(dataValue.equals("true"))));
-        }
+    @Override
+    public void updateCameraEntity(OnvifCameraEntity ce) {
+        onvifDeviceState.setOnvifCameraEntity(ce);
     }
 
     // false clears the stored user/pass hash, true creates the hash

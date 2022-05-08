@@ -18,6 +18,7 @@ import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
 import org.touchhome.bundle.camera.ui.CameraActionsContext;
 import org.touchhome.common.util.CommonUtils;
+import org.touchhome.common.util.FlowMap;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -96,7 +97,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         entityContext.setting().listenValueAndGet(FFMPEGInstallPathSetting.class, "listen-ffmpeg-path-" + cameraEntityID,
                 path -> {
                     this.ffmpegLocation = path.toString();
-                    this.restart("ffmpeg location changed", null, false);
+                    this.restart("ffmpeg location changed", false);
                 });
     }
 
@@ -104,21 +105,19 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
 
     protected abstract void pollCameraRunnable();
 
-    public final boolean initialize(T cameraEntity) {
+    public void updateCameraEntity(T ce) {
+
+    }
+
+    public final boolean initialize() {
         if (isHandlerInitialized) {
             return true;
         }
         log.info("Initialize camera: <{}>", cameraEntity.getTitle());
         isHandlerInitialized = true;
         try {
-            if (cameraEntity == null) {
-                if (this.cameraEntity == null) {
-                    throw new RuntimeException("Unable to init camera with id: " + cameraEntityID);
-                }
-            } else if (!cameraEntity.getEntityID().equals(cameraEntityID)) {
+            if (!cameraEntity.getEntityID().equals(cameraEntityID)) {
                 throw new RuntimeException("Unable to init camera <" + cameraEntity + "> with different id than: " + cameraEntityID);
-            } else {
-                this.cameraEntity = cameraEntity;
             }
 
             log.info("Init camera: <{}>", this.cameraEntity.getTitle());
@@ -134,7 +133,8 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
 
     protected abstract void initialize0(T cameraEntity);
 
-    public final void disposeAndSetStatus(Status status, String reason) {
+    // synchronized to work properly with isHandlerInitialized
+    public synchronized final void disposeAndSetStatus(Status status, String reason) {
         if (isHandlerInitialized) {
             // need here to avoid infinite loop
             isHandlerInitialized = false;
@@ -142,9 +142,15 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
             log.warn("Set camera <{}> to status <{}>. Msg: <{}>", cameraEntity.getTitle(), status, reason);
 
             cameraEntity.setStatus(status, reason);
-            entityContext.updateDelayed(this.cameraEntity, e -> e.setStart(false));
-            entityContext.ui().sendEntityUpdated(this.cameraEntity);
+            if (cameraEntity.isStart()) {
+                cameraEntity.setStart(false);
+                entityContext.save(cameraEntity);
+            }
             this.stateListeners.values().forEach(h -> h.accept(status));
+            if (status == Status.ERROR) {
+                entityContext.ui().sendErrorMessage("DISPOSE_CAMERA",
+                        FlowMap.of("TITLE", cameraEntity.getTitle(), "REASON", reason));
+            }
 
             // need set to true to handle dispose !!!
             isHandlerInitialized = true;
@@ -193,13 +199,13 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         Optional.ofNullable(pollCameraJob).ifPresent(EntityContextBGP.ThreadContext::cancel);
     }
 
-    public final boolean restart(String reason, T cameraEntity, boolean force) {
+    public final boolean restart(String reason, boolean force) {
         if (force && !this.isHandlerInitialized) {
-            return initialize(cameraEntity);
+            return initialize();
         } else if (isCameraOnline) { // if already offline dont try reconnecting in 6 seconds, we want 30sec wait.
             updateStatus(Status.OFFLINE, reason); // will try to reconnect again as camera may be rebooting.
             dispose();
-            return initialize(cameraEntity);
+            return initialize();
         }
         return false;
     }

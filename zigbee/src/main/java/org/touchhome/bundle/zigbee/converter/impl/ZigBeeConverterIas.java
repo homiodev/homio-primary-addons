@@ -40,13 +40,13 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
 
     @Override
     public boolean initializeDevice() {
-        log.debug("{}: Initialising device IAS Zone cluster for {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
+        log.debug("{}/{}: Initialising device IAS Zone cluster for {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
                 zigBeeConverterEndpoint.getClusterName());
 
         ZclIasZoneCluster serverClusterIasZone = (ZclIasZoneCluster) endpoint
                 .getInputCluster(ZclIasZoneCluster.CLUSTER_ID);
         if (serverClusterIasZone == null) {
-            log.error("{}: Error opening IAS zone cluster", endpoint.getIeeeAddress());
+            log.error("{}/{}: Error opening IAS zone cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
@@ -60,7 +60,7 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
                 handleReportingResponse(reportingResponse);
             }
         } catch (InterruptedException | ExecutionException e) {
-            log.debug("{}: Exception configuring ias zone status reporting", endpoint.getIeeeAddress(), e);
+            log.debug("{}/{}: Exception configuring ias zone status reporting", endpoint.getIeeeAddress(), e);
             return false;
         }
         return true;
@@ -68,12 +68,12 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
 
     @Override
     public boolean initializeConverter() {
-        log.debug("{}: Initialising device IAS Zone cluster for {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
+        log.debug("{}/{}: Initialising device IAS Zone cluster for {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
                 zigBeeConverterEndpoint.getClusterName());
 
         clusterIasZone = (ZclIasZoneCluster) endpoint.getInputCluster(ZclIasZoneCluster.CLUSTER_ID);
         if (clusterIasZone == null) {
-            log.error("{}: Error opening IAS zone cluster", endpoint.getIeeeAddress());
+            log.error("{}/{}: Error opening IAS zone cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
         // Add a listener, then request the status
@@ -85,7 +85,7 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
 
     @Override
     public void disposeConverter() {
-        log.debug("{}: Closing device IAS zone cluster", endpoint.getIeeeAddress());
+        log.debug("{}/{}: Closing device IAS zone cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
 
         clusterIasZone.removeCommandListener(this);
         clusterIasZone.removeAttributeListener(this);
@@ -111,17 +111,17 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
             }
         }
         if (zoneTypeId == null) {
-            log.debug("{}: Did not get IAS zone type", endpoint.getIeeeAddress());
+            log.debug("{}/{}: Did not get IAS zone type", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
         ZoneTypeEnum zoneType = ZoneTypeEnum.getByValue(zoneTypeId);
-        log.debug("{}: IAS zone type {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), zoneType);
+        log.debug("{}/{}: IAS zone type {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), zoneType);
         return zoneType == requiredZoneType;
     }
 
     protected boolean hasIasZoneInputCluster(ZigBeeEndpoint endpoint) {
         if (endpoint.getInputCluster(ZclIasZoneCluster.CLUSTER_ID) == null) {
-            log.trace("{}: IAS zone cluster not found", endpoint.getIeeeAddress());
+            log.trace("{}/{}: IAS zone cluster not found", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
@@ -130,7 +130,7 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
 
     @Override
     public boolean commandReceived(ZclCommand command) {
-        log.debug("{}: ZigBee command report {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), command);
+        log.debug("{}/{}: ZigBee command report {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), command);
         if (command instanceof ZoneStatusChangeNotificationCommand) {
             ZoneStatusChangeNotificationCommand zoneStatus = (ZoneStatusChangeNotificationCommand) command;
             updateChannelState(zoneStatus.getZoneStatus());
@@ -144,7 +144,7 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
 
     @Override
     public void attributeUpdated(ZclAttribute attribute, Object val) {
-        log.debug("{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
+        log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
         if (attribute.getClusterType() == ZclClusterType.IAS_ZONE
                 && attribute.getId() == ZclIasZoneCluster.ATTR_ZONESTATUS) {
             updateChannelState((Integer) val);

@@ -40,7 +40,7 @@ public class ZigBeeConverterTemperature extends ZigBeeBaseChannelConverter imple
         ZclTemperatureMeasurementCluster serverCluster = (ZclTemperatureMeasurementCluster) endpoint
                 .getInputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID);
         if (serverCluster == null) {
-            log.error("{}/{}: Error opening device temperature measurement cluster", endpoint.getIeeeAddress());
+            log.error("{}/{}: Error opening device temperature measurement cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
@@ -53,7 +53,7 @@ public class ZigBeeConverterTemperature extends ZigBeeBaseChannelConverter imple
                 CommandResult reportingResponse = attribute.setReporting(1, REPORTING_PERIOD_DEFAULT_MAX, 0.1).get();
                 handleReportingResponse(reportingResponse);
             } else {
-                log.debug("{}/{}: Failed to bind temperature measurement cluster", endpoint.getIeeeAddress());
+                log.debug("{}/{}: Failed to bind temperature measurement cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error("{}/{}: Exception setting reporting ", endpoint.getIeeeAddress(), e);
@@ -79,7 +79,7 @@ public class ZigBeeConverterTemperature extends ZigBeeBaseChannelConverter imple
         }
 
         if (cluster == null && clusterClient == null) {
-            log.error("{}/{}: Error opening device temperature measurement cluster", endpoint.getIeeeAddress());
+            log.error("{}/{}: Error opening device temperature measurement cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
@@ -124,7 +124,7 @@ public class ZigBeeConverterTemperature extends ZigBeeBaseChannelConverter imple
     public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
         if (endpoint.getOutputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID) == null
                 && endpoint.getInputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID) == null) {
-            log.trace("{}/{}: Temperature measurement cluster not found", endpoint.getIeeeAddress());
+            log.trace("{}/{}: Temperature measurement cluster not found", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 

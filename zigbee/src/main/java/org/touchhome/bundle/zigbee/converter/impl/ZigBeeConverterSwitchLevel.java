@@ -54,16 +54,16 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     @Override
     public boolean initializeDevice() {
         if (initializeDeviceServer()) {
-            log.debug("{}: Level control device initialized as server", endpoint.getIeeeAddress());
+            log.debug("{}/{}: Level control device initialized as server", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return true;
         }
 
         if (initializeDeviceClient()) {
-            log.debug("{}: Level control device initialized as client", endpoint.getIeeeAddress());
+            log.debug("{}/{}: Level control device initialized as client", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return true;
         }
 
-        log.error("{}: Error opening device level controls", endpoint.getIeeeAddress());
+        log.error("{}/{}: Error opening device level controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
         return false;
     }
 
@@ -71,7 +71,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
         ZclLevelControlCluster serverClusterLevelControl = (ZclLevelControlCluster) endpoint
                 .getInputCluster(ZclLevelControlCluster.CLUSTER_ID);
         if (serverClusterLevelControl == null) {
-            log.trace("{}: Error opening device level controls", endpoint.getIeeeAddress());
+            log.trace("{}/{}: Error opening device level controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
@@ -79,10 +79,14 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
             CommandResult bindResponse = bind(serverClusterLevelControl).get();
             if (bindResponse.isSuccess()) {
                 // Configure reporting
-                updateServerPoolingPeriod(serverClusterLevelControl, ZclLevelControlCluster.ATTR_CURRENTLEVEL, false, 1);
+                CommandResult reportingResponse = serverClusterLevelControl.setReporting(ZclLevelControlCluster.ATTR_CURRENTLEVEL,
+                        zigBeeDevice.getZigBeeDeviceEntity().getReportingTimeMin(),
+                        zigBeeDevice.getZigBeeDeviceEntity().getReportingTimeMax(), 1).get();
+                handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH,
+                        zigBeeDevice.getZigBeeDeviceEntity().getPoolingPeriod());
             } else {
                 pollingPeriod = POLLING_PERIOD_HIGH;
-                log.debug("{}: Failed to bind level control cluster", endpoint.getIeeeAddress());
+                log.debug("{}/{}: Failed to bind level control cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error(String.format("%s: Exception setting level control reporting ", endpoint.getIeeeAddress()), e);
@@ -91,7 +95,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
 
         ZclOnOffCluster serverClusterOnOff = (ZclOnOffCluster) endpoint.getInputCluster(ZclOnOffCluster.CLUSTER_ID);
         if (serverClusterOnOff == null) {
-            log.trace("{}: Error opening device level controls", endpoint.getIeeeAddress());
+            log.trace("{}/{}: Error opening device level controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
@@ -99,10 +103,14 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
             CommandResult bindResponse = bind(serverClusterOnOff).get();
             if (bindResponse.isSuccess()) {
                 // Configure reporting
-                updateServerPoolingPeriod(serverClusterOnOff, ZclOnOffCluster.ATTR_ONOFF, false);
+                CommandResult reportingResponse = serverClusterLevelControl.setReporting(ZclOnOffCluster.ATTR_ONOFF,
+                        zigBeeDevice.getZigBeeDeviceEntity().getReportingTimeMin(),
+                        zigBeeDevice.getZigBeeDeviceEntity().getReportingTimeMax()).get();
+                handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH,
+                        zigBeeDevice.getZigBeeDeviceEntity().getPoolingPeriod());
             } else {
                 pollingPeriod = POLLING_PERIOD_HIGH;
-                log.debug("{}: Failed to bind on off control cluster", endpoint.getIeeeAddress());
+                log.debug("{}/{}: Failed to bind on off control cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
                 return false;
             }
         } catch (InterruptedException | ExecutionException e) {
@@ -116,14 +124,15 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     private boolean initializeDeviceClient() {
         ZclLevelControlCluster clusterLevelControl = (ZclLevelControlCluster) endpoint.getOutputCluster(ZclLevelControlCluster.CLUSTER_ID);
         if (clusterLevelControl == null) {
-            log.trace("{}: Error opening device level controls", endpoint.getIeeeAddress());
+            log.trace("{}/{}: Error opening device level controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
         try {
             CommandResult bindResponse = bind(clusterLevelControl).get();
             if (!bindResponse.isSuccess()) {
-                log.error("{}: Error 0x{} setting client binding", endpoint.getIeeeAddress(), Integer.toHexString(bindResponse.getStatusCode()));
+                log.error("{}/{}: Error 0x{} setting client binding", endpoint.getIeeeAddress(),
+                        endpoint.getEndpointId(), Integer.toHexString(bindResponse.getStatusCode()));
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error(String.format("%s: Exception setting level control reporting ", endpoint.getIeeeAddress()), e);
@@ -132,14 +141,15 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
 
         ZclOnOffCluster clusterOnOff = (ZclOnOffCluster) endpoint.getOutputCluster(ZclOnOffCluster.CLUSTER_ID);
         if (clusterOnOff == null) {
-            log.trace("{}: Error opening device on off controls", endpoint.getIeeeAddress());
+            log.trace("{}/{}: Error opening device on off controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
         try {
             CommandResult bindResponse = bind(clusterOnOff).get();
             if (!bindResponse.isSuccess()) {
-                log.error("{}: Error 0x{} setting client binding", endpoint.getIeeeAddress(), Integer.toHexString(bindResponse.getStatusCode()));
+                log.error("{}/{}: Error 0x{} setting client binding", endpoint.getIeeeAddress(),
+                        endpoint.getEndpointId(), Integer.toHexString(bindResponse.getStatusCode()));
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error(String.format("%s: Exception setting on off reporting ", endpoint.getIeeeAddress()), e);
@@ -154,16 +164,16 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
         updateScheduler = Executors.newSingleThreadScheduledExecutor();
 
         if (initializeConverterServer()) {
-            log.debug("{}: Level control initialized as server", endpoint.getIeeeAddress());
+            log.debug("{}/{}: Level control initialized as server", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return true;
         }
 
         if (initializeConverterClient()) {
-            log.debug("{}: Level control initialized as client", endpoint.getIeeeAddress());
+            log.debug("{}/{}: Level control initialized as client", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return true;
         }
 
-        log.error("{}: Error opening device level controls", endpoint.getIeeeAddress());
+        log.error("{}/{}: Error opening device level controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
         return false;
     }
 
@@ -171,13 +181,13 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
         clusterLevelControlServer = (ZclLevelControlCluster) endpoint
                 .getInputCluster(ZclLevelControlCluster.CLUSTER_ID);
         if (clusterLevelControlServer == null) {
-            log.trace("{}: Error opening device level controls", endpoint.getIeeeAddress());
+            log.trace("{}/{}: Error opening device level controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
         clusterOnOffServer = (ZclOnOffCluster) endpoint.getInputCluster(ZclOnOffCluster.CLUSTER_ID);
         if (clusterOnOffServer == null) {
-            log.trace("{}: Error opening device on off controls", endpoint.getIeeeAddress());
+            log.trace("{}/{}: Error opening device on off controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
@@ -207,13 +217,13 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
         clusterLevelControlClient = (ZclLevelControlCluster) endpoint
                 .getOutputCluster(ZclLevelControlCluster.CLUSTER_ID);
         if (clusterLevelControlClient == null) {
-            log.trace("{}: Error opening device level controls", endpoint.getIeeeAddress());
+            log.trace("{}/{}: Error opening device level controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
         clusterOnOffClient = (ZclOnOffCluster) endpoint.getOutputCluster(ZclOnOffCluster.CLUSTER_ID);
         if (clusterOnOffClient == null) {
-            log.trace("{}: Error opening device on off controls", endpoint.getIeeeAddress());
+            log.trace("{}/{}: Error opening device on off controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
@@ -273,7 +283,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
         } else if (command instanceof IncreaseDecreaseType) {
             handleIncreaseDecreaseCommand((IncreaseDecreaseType) command);
         } else {
-            log.warn("{}: Level converter only accepts DecimalType, IncreaseDecreaseType and OnOffType - not {}",
+            log.warn("{}/{}: Level converter only accepts DecimalType, IncreaseDecreaseType and OnOffType - not {}",
                     endpoint.getIeeeAddress(), command.getClass().getSimpleName());
         }
 
@@ -281,11 +291,11 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
         lastCommand = command;
     }*/
 
-    /* *//**
+    /**
      * If we support the OnOff cluster then we should perform the same function as the SwitchOnoffConverter. Otherwise,
      * interpret ON commands as moving to level 100%, and OFF commands as moving to level 0%.
-     *//*
-    private void handleOnOffCommand(OnOffType cmdOnOff) {
+     */
+    /*private void handleOnOffCommand(OnOffType cmdOnOff) {
         if (clusterOnOffServer != null) {
             if (cmdOnOff == OnOffType.ON) {
                 clusterOnOffServer.onCommand();
@@ -349,7 +359,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
         if (endpoint.getInputCluster(ZclLevelControlCluster.CLUSTER_ID) == null
                 && endpoint.getOutputCluster(ZclLevelControlCluster.CLUSTER_ID) == null) {
-            log.trace("{}: Level control cluster not found", endpoint.getIeeeAddress());
+            log.trace("{}/{}: Level control cluster not found", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
 
@@ -358,12 +368,8 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
 
     @Override
     public void updateConfiguration() {
-        try {
-            updateServerPoolingPeriod(clusterLevelControlServer, ZclOnOffCluster.ATTR_ONOFF, true);
-            updateServerPoolingPeriod(clusterLevelControlServer, ZclLevelControlCluster.ATTR_CURRENTLEVEL, true, 1);
-        } catch (InterruptedException | ExecutionException e) {
-            log.debug("{}: Level control exception setting reporting", endpoint.getIeeeAddress(), e);
-        }
+        updateServerPoolingPeriod(clusterLevelControlServer, ZclOnOffCluster.ATTR_ONOFF, true);
+        updateServerPoolingPeriod(clusterLevelControlServer, ZclLevelControlCluster.ATTR_CURRENTLEVEL, true);
 
         if (configLevelControl != null) {
             configLevelControl.updateConfiguration();
@@ -372,13 +378,13 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
 
     @Override
     public synchronized void attributeUpdated(ZclAttribute attribute, Object val) {
-        log.debug("{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
+        log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
         if (attribute.getClusterType() == ZclClusterType.LEVEL_CONTROL
                 && attribute.getId() == ZclLevelControlCluster.ATTR_CURRENTLEVEL) {
             //lastLevel = levelToPercent((Integer) val);
             if (currentOnOffState.get()) {
                 // Note that state is only updated if the current On/Off state is TRUE (ie ON)
-                //   updateChannelState(lastLevel);
+                updateChannelState(lastLevel);
             }
         } else if (attribute.getClusterType() == ZclClusterType.ON_OFF && attribute.getId() == ZclOnOffCluster.ATTR_ONOFF) {
             if (attribute.getLastValue() != null) {
@@ -390,7 +396,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
 
     @Override
     public boolean commandReceived(ZclCommand command) {
-        log.debug("{}: ZigBee command received {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), command);
+        log.debug("{}/{}: ZigBee command received {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), command);
 
         // OnOff Cluster Commands
         if (command instanceof OnCommand) {
@@ -444,7 +450,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
                 level = levelCommand.getLevel();
             }
             clusterLevelControlClient.sendDefaultResponse(command, ZclStatus.SUCCESS);
-            //startTransitionTimer(time * 100, levelToPercent(level));
+            startTransitionTimer(time * 100, levelToPercent(level).doubleValue());
             return true;
         }
         if (command instanceof MoveCommand || command instanceof MoveWithOnOffCommand) {
@@ -562,13 +568,13 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
                     state = 100.0;
                 }
                 lastLevel = new DecimalType((int) state);
-                log.debug("{}: Level transition timer {}/{} updating to {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), count, steps,
-                        lastLevel);
+                log.debug("{}/{}: Level transition timer {}/{} updating to {}", endpoint.getIeeeAddress(),
+                        endpoint.getEndpointId(), count, steps, lastLevel);
                 currentOnOffState.set(state != 0);
                 // updateChannelState(lastLevel);
 
                 if (state == 0.0 || state == 100.0 || ++count == steps) {
-                    log.debug("{}: Level transition timer complete", endpoint.getIeeeAddress());
+                    log.debug("{}/{}: Level transition timer complete", endpoint.getIeeeAddress(), endpoint.getEndpointId());
                     updateTimer.cancel(true);
                     updateTimer = null;
                 }
@@ -584,15 +590,12 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     private void startOffTimer(int delay) {
         stopTransitionTimer();
 
-        updateTimer = updateScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                log.debug("{}: OnOff auto OFF timer expired", endpoint.getIeeeAddress());
-                lastLevel = DecimalType.ZERO;
-                currentOnOffState.set(false);
-                updateChannelState(OnOffType.OFF);
-                updateTimer = null;
-            }
+        updateTimer = updateScheduler.schedule(() -> {
+            log.debug("{}/{}: OnOff auto OFF timer expired", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+            lastLevel = DecimalType.ZERO;
+            currentOnOffState.set(false);
+            updateChannelState(OnOffType.OFF);
+            updateTimer = null;
         }, delay, TimeUnit.MILLISECONDS);
     }
 
@@ -628,7 +631,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
         }
     }
 
-    /**
+    /*
      * Starts a timer after which the Stop command will be sent
      *
      * @param delay the number of milliseconds to wait before setting the value to OFF

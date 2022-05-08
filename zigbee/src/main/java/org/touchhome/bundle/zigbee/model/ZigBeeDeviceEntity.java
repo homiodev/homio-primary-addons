@@ -76,6 +76,15 @@ public final class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntit
         return getJsonData("reportingTimeMax", 900);
     }
 
+    @UIField(onlyEdit = true, order = 102)
+    @UIFieldNumber(min = 1, max = 86400)
+    public Integer getReportingChange() {
+        if (getJsonData().has("reportingChange")) {
+            return getJsonData().getInt("reportingChange");
+        }
+        return null;
+    }
+
     // The time period in seconds between subsequent polls
     @UIField(onlyEdit = true, order = 103)
     @UIFieldNumber(min = 15, max = 86400)

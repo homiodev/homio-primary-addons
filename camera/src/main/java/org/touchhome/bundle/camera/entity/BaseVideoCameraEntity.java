@@ -88,7 +88,7 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
 
     @UIField(order = 16, inlineEdit = true)
     public boolean isAutoStart() {
-        return getJsonData("autoStart", false);
+        return getJsonData("autoStart", true);
     }
 
     public BaseVideoCameraEntity<T, H> setAutoStart(boolean start) {
@@ -168,9 +168,7 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
             @UIActionInput(name = "secondsToRecord", type = UIActionInput.Type.number, value = "10", min = 5, max = 100)
     })
     public ActionResponseModel recordMP4(JSONObject params) {
-        if (cameraHandler == null) {
-            return ActionResponseModel.showError("Camera handler is empty");
-        }
+        checkCameraOnline();
         String filename = getFileNameToRecord(params);
         int secondsToRecord = params.getInt("secondsToRecord");
         log.debug("Recording {}.mp4 for {} seconds.", filename, secondsToRecord);
@@ -183,14 +181,21 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
             @UIActionInput(name = "secondsToRecord", type = UIActionInput.Type.number, value = "3", min = 1, max = 10)
     })
     public ActionResponseModel recordGif(JSONObject params) {
-        if (cameraHandler == null) {
-            return ActionResponseModel.showError("Camera handler is empty");
-        }
+        checkCameraOnline();
         String filename = getFileNameToRecord(params);
         int secondsToRecord = params.getInt("secondsToRecord");
         log.debug("Recording {}.gif for {} seconds.", filename, secondsToRecord);
         cameraHandler.recordGif(filename, null, secondsToRecord);
         return ActionResponseModel.showSuccess("SUCCESS");
+    }
+
+    protected void checkCameraOnline() {
+        if (cameraHandler == null) {
+            throw new ServerException("Camera handler is empty");
+        }
+        if (!cameraHandler.isCameraOnline()) {
+            throw new ServerException("CAMERA.OFFLINE");
+        }
     }
 
     private String getFileNameToRecord(JSONObject params) {
@@ -232,11 +237,6 @@ public abstract class BaseVideoCameraEntity<T extends BaseVideoCameraEntity, H e
     @Override
     public String getTitle() {
         return StringUtils.defaultIfBlank(getName(), StringUtils.defaultIfBlank(getDefaultName(), getEntityID()));
-    }
-
-    @Override
-    public void afterUpdate(EntityContext entityContext) {
-        setStatus(Status.UNKNOWN);
     }
 
     public Path getFolder() {

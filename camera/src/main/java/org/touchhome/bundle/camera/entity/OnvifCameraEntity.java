@@ -40,11 +40,11 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
         return null;
     }
 
-    @UIField(order = 12, readOnly = true)
+    @UIField(order = 12, readOnly = true, hideOnEmpty = true)
     @UIFieldColorStatusMatch
     public String getEventSubscription() {
         OnvifCameraHandler cameraHandler = getCameraHandler();
-        if (cameraHandler != null) {
+        if (cameraHandler != null && cameraHandler.isCameraOnline()) {
             String subscriptionError = cameraHandler.getOnvifDeviceState().getSubscriptionError();
             if (subscriptionError != null) {
                 return Status.ERROR.name() + " " + subscriptionError;
@@ -237,11 +237,9 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
 
     @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off")
     public ActionResponseModel reboot() {
-        if (this.getCameraHandler().isHandlerInitialized()) {
-            String response = this.getCameraHandler().getOnvifDeviceState().getInitialDevices().reboot();
-            return ActionResponseModel.showSuccess(response);
-        }
-        return ActionResponseModel.showWarn("VIDEO_STREAM.CAMERA_NOT_INIT");
+        checkCameraOnline();
+        String response = this.getCameraHandler().getOnvifDeviceState().getInitialDevices().reboot();
+        return ActionResponseModel.showSuccess(response);
     }
 
     @Override
@@ -253,19 +251,20 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
             }
 
             if (StringUtils.isEmpty(getIeeeAddress()) || getStatus() == Status.REQUIRE_AUTH) {
-                uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", "fas fa-sign-in-alt", null, null,
+                uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", "fas fa-sign-in-alt", null, 250,
                         (entityContext, params) -> {
 
                             String user = params.getString("user");
                             String password = params.getString("pwd");
-                            OnvifCameraEntity entity = this;
-                            OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getIp(), getOnvifPort(), 0, user, password, log);
+                            OnvifCameraEntity entity = entityContext.getEntity(getEntityID());
+                            OnvifDeviceState onvifDeviceState = new OnvifDeviceState(log);
+                            onvifDeviceState.updateParameters(entity.getIp(), entity.getOnvifPort(), 0, user, password);
                             try {
                                 onvifDeviceState.checkForErrors();
-                                setUser(user);
-                                setPassword(password);
-                                setName(onvifDeviceState.getInitialDevices().getName());
-                                setIeeeAddress(onvifDeviceState.getIEEEAddress());
+                                entity.setUser(user);
+                                entity.setPassword(password);
+                                entity.setName(onvifDeviceState.getInitialDevices().getName());
+                                entity.setIeeeAddress(onvifDeviceState.getIEEEAddress());
 
                                 entityContext.save(entity);
                                 entityContext.ui().sendSuccessMessage("Onvif camera: " + getTitle() + " authenticated successfully");
@@ -274,6 +273,7 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
                             }
                             return null;
                         }).editDialog(dialogBuilder -> {
+                    dialogBuilder.setTitle(null, "fas fa-sign-in-alt");
                     dialogBuilder.addTextInput("user", getUser(), true);
                     dialogBuilder.addTextInput("pwd", getPassword().asString(), false);
                 });

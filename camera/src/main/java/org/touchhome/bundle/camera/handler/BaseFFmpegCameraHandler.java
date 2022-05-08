@@ -23,6 +23,7 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.state.*;
 import org.touchhome.bundle.camera.entity.AbilityToStreamHLSOverFFmpeg;
 import org.touchhome.bundle.camera.entity.BaseFFmpegStreamEntity;
+import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
 import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.ui.UICameraAction;

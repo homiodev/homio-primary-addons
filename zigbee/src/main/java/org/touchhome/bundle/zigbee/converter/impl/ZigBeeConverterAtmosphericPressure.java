@@ -107,7 +107,7 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeBaseChannelConvert
     @Override
     public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
         if (endpoint.getInputCluster(ZclPressureMeasurementCluster.CLUSTER_ID) == null) {
-            log.trace("{}/{}: Pressure measurement cluster not found", endpoint.getIeeeAddress());
+            log.trace("{}/{}: Pressure measurement cluster not found", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return false;
         }
         return true;

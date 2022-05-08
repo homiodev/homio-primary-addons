@@ -57,17 +57,17 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
     }
 
     @Override
-    public synchronized boolean initializeConverter() {
+    public boolean initializeConverter() {
         for (ButtonType.ButtonPressType buttonPressType : ButtonType.ButtonPressType.values()) {
-            /*TODO: EventSpec eventSpec = parseEventSpec(channel.getProperties(), buttonPressType);
+            /* TODO: HOW it works ;) EventSpec eventSpec = parseEventSpec(channel.getProperties(), buttonPressType);
             if (eventSpec != null) {
                 handledEvents.put(buttonPressType, eventSpec);
             }*/
         }
 
         if (handledEvents.isEmpty()) {
-            log.error("{}: No command is specified for any of the possible button press types in channel {}",
-                    endpoint.getIeeeAddress(), zigBeeConverterEndpoint);
+            log.error("{}/{}: No command is specified for any of the possible button press types in channel {}",
+                    endpoint.getIeeeAddress(), endpoint.getEndpointId(), zigBeeConverterEndpoint);
             return false;
         }
 
@@ -83,12 +83,12 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
     @Override
     public void disposeConverter() {
         for (ZclCluster clientCluster : clientClusters) {
-            log.debug("{}: Closing client cluster {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), clientCluster.getClusterId());
+            log.debug("{}/{}: Closing client cluster {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), clientCluster.getClusterId());
             clientCluster.removeCommandListener(this);
         }
 
         for (ZclCluster serverCluster : serverClusters) {
-            log.debug("{}: Closing server cluster {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), serverCluster.getClusterId());
+            log.debug("{}/{}: Closing server cluster {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), serverCluster.getClusterId());
             serverCluster.removeAttributeListener(this);
         }
     }
@@ -104,7 +104,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
     public boolean commandReceived(ZclCommand command) {
         ButtonType.ButtonPressType buttonPressType = getButtonPressType(command);
         if (buttonPressType != null) {
-            log.debug("{}: Matching ZigBee command for press type {} received: {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
+            log.debug("{}/{}: Matching ZigBee command for press type {} received: {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
                     buttonPressType, command);
             updateChannelState(new ButtonType(buttonPressType));
             return true;
@@ -116,7 +116,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
     public void attributeUpdated(ZclAttribute attribute, Object value) {
         ButtonType.ButtonPressType buttonPressType = getButtonPressType(attribute, value);
         if (buttonPressType != null) {
-            log.debug("{}: Matching ZigBee attribute for press type {} received: {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
+            log.debug("{}/{}: Matching ZigBee attribute for press type {} received: {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
                     buttonPressType, attribute);
             updateChannelState(new ButtonType(buttonPressType));
         }
@@ -151,7 +151,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
         try {
             clusterId = parseId(clusterProperty);
         } catch (NumberFormatException e) {
-            log.warn("{}: Could not parse cluster property {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), clusterProperty);
+            log.warn("{}/{}: Could not parse cluster property {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), clusterProperty);
             return null;
         }
 
@@ -159,7 +159,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
         boolean hasAttribute = properties.containsKey(getParameterName(ATTRIBUTE_ID, pressType));
 
         if (hasCommand && hasAttribute) {
-            log.warn("{}: Only one of command or attribute can be used", endpoint.getIeeeAddress());
+            log.warn("{}/{}: Only one of command or attribute can be used", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return null;
         }
 
@@ -176,7 +176,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
         String attributeValue = properties.get(getParameterName(ATTRIBUTE_VALUE, pressType));
 
         if (attributeIdProperty == null) {
-            log.warn("{}: Missing attribute id", endpoint.getIeeeAddress());
+            log.warn("{}/{}: Missing attribute id", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return null;
         }
 
@@ -185,12 +185,13 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
         try {
             attributeId = parseId(attributeIdProperty);
         } catch (NumberFormatException e) {
-            log.warn("{}: Could not parse attribute property {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attributeIdProperty);
+            log.warn("{}/{}: Could not parse attribute property {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attributeIdProperty);
             return null;
         }
 
         if (attributeValue == null) {
-            log.warn("{}: No attribute value for attribute {} specified", endpoint.getIeeeAddress(), attributeId);
+            log.warn("{}/{}: No attribute value for attribute {} specified", endpoint.getIeeeAddress(),
+                    endpoint.getEndpointId(), attributeId);
             return null;
         }
 
@@ -203,7 +204,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
         String commandParameterValue = properties.get(getParameterName(PARAM_VALUE, pressType));
 
         if (commandProperty == null) {
-            log.warn("{}: Missing command", endpoint.getIeeeAddress());
+            log.warn("{}/{}: Missing command", endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return null;
         }
 
@@ -212,14 +213,14 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
         try {
             commandId = parseId(commandProperty);
         } catch (NumberFormatException e) {
-            log.warn("{}: Could not parse command property {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), commandProperty);
+            log.warn("{}/{}: Could not parse command property {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), commandProperty);
             return null;
         }
 
         if ((commandParameterName != null && commandParameterValue == null)
                 || (commandParameterName == null && commandParameterValue != null)) {
-            log.warn("{}: When specifiying a command parameter, both name and value must be specified",
-                    endpoint.getIeeeAddress());
+            log.warn("{}/{}: When specifiying a command parameter, both name and value must be specified",
+                    endpoint.getIeeeAddress(), endpoint.getEndpointId());
             return null;
         }
 
@@ -252,7 +253,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
 
             ZclCluster cluster = getClusterById.apply(clusterId);
             if (cluster == null) {
-                log.error("{}: Error opening {} cluster {} on endpoint {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), clusterType,
+                log.error("{}/{}: Error opening {} cluster {} on endpoint {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), clusterType,
                         clusterId, endpoint.getEndpointId());
                 return false;
             }
@@ -260,11 +261,11 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
             try {
                 CommandResult bindResponse = bind(cluster).get();
                 if (!bindResponse.isSuccess()) {
-                    log.error("{}: Error 0x{} setting {} binding for cluster {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
+                    log.error("{}/{}: Error 0x{} setting {} binding for cluster {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
                             toHexString(bindResponse.getStatusCode()), clusterType, clusterId);
                 }
             } catch (InterruptedException | ExecutionException e) {
-                log.error("{}: Exception setting {} binding to cluster {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), clusterType,
+                log.error("{}/{}: Exception setting {} binding to cluster {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), clusterType,
                         clusterId, e);
             }
 
@@ -327,8 +328,8 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
                 Object result = propertyGetter.invoke(command);
                 return Objects.equals(result.toString(), commandParameterValue);
             } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException e) {
-                log.warn("{}: Could not read parameter {} for command {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
+                     | InvocationTargetException e) {
+                log.warn("{}/{}: Could not read parameter {} for command {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
                         commandParameterName, command, e);
                 return false;
             }
