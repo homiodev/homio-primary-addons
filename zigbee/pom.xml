@@ -14,7 +14,7 @@
 
     <properties>
         <zsmartsystems.version>1.4.5</zsmartsystems.version>
-        <xstream.version>1.4.15</xstream.version>
+        <xstream.version>1.4.19</xstream.version>
     </properties>
 
     <dependencies>
