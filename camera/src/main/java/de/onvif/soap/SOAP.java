@@ -222,13 +222,13 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
      */
     public <T> T createSOAPRequest(Object soapRequestElem, Class<T> soapResponseClass, String soapUri, String xAddr, boolean throwError)
             throws IOException, SOAPException, JAXBException, ParserConfigurationException {
-        SOAPConnection soapConnection = null;
+        HttpSOAPConnection soapConnection = null;
         SOAPMessage soapResponse = null;
 
         try {
             // Create SOAP Connection
             SOAPConnectionFactory soapConnectionFactory = SOAPConnectionFactory.newInstance();
-            soapConnection = soapConnectionFactory.createConnection();
+            soapConnection = new HttpSOAPConnection();
 
             SOAPMessage soapMessage = createSoapMessage(soapRequestElem, xAddr);
 
@@ -290,13 +290,6 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
         } catch (ParserConfigurationException | JAXBException | IOException e) {
             onvifDeviceState.getLogger().error("Unhandled exception: " + e.getMessage());
             throw e;
-        } finally {
-            try {
-                if (soapConnection != null) {
-                    soapConnection.close();
-                }
-            } catch (SOAPException ignored) {
-            }
         }
     }
 
@@ -328,7 +321,7 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
             se.addNamespaceDeclaration("wsu", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");
 
             SOAPElement securityElem = header.addChildElement("Security", "wsse");
-            // securityElem.setAttribute("SOAP-ENV:mustUnderstand", "1");
+            securityElem.setAttribute("mustUnderstand", "1");
 
             SOAPElement usernameTokenElem = securityElem.addChildElement("UsernameToken", "wsse");
 

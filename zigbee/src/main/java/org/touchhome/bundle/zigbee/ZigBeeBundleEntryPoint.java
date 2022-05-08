@@ -113,6 +113,9 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
         entityContext.setting().listenValue(ZigBeeInstallCodeSetting.class, "zb-install-code-changed", code ->
                 coordinatorHandler.addInstallCode(code));
 
+        entityContext.setting().listenValue(ZigBeeMeshUpdatePeriodSetting.class, "zb-install-mesh-changed", value ->
+                coordinatorHandler.meshUpdatePeriod(value));
+
         reInitialize();
     }
 

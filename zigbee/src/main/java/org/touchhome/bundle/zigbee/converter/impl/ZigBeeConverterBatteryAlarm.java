@@ -128,7 +128,7 @@ public class ZigBeeConverterBatteryAlarm extends ZigBeeBaseChannelConverter impl
 
     @Override
     public void attributeUpdated(ZclAttribute attribute, Object val) {
-        if (attribute.getCluster() == ZclClusterType.POWER_CONFIGURATION && attribute.getId() == ZclPowerConfigurationCluster.ATTR_BATTERYALARMSTATE) {
+        if (attribute.getClusterType() == ZclClusterType.POWER_CONFIGURATION && attribute.getId() == ZclPowerConfigurationCluster.ATTR_BATTERYALARMSTATE) {
 
             log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
 

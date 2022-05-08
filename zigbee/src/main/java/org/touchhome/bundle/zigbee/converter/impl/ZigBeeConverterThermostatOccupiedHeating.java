@@ -39,7 +39,7 @@ public class ZigBeeConverterThermostatOccupiedHeating extends ZigBeeBaseChannelC
                 // Configure reporting
                 ZclAttribute attribute = serverCluster.getAttribute(ZclThermostatCluster.ATTR_OCCUPIEDHEATINGSETPOINT);
                 CommandResult reportingResponse = attribute
-                        .setReporting(1, REPORTING_PERIOD_DEFAULT_MAX, 0.1).get();
+                        .setReporting(1, REPORTING_PERIOD_DEFAULT_MAX, 10).get();
                 handleReportingResponse(reportingResponse);
             } else {
                 log.debug("{}: Failed to bind thermostat cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
@@ -123,7 +123,7 @@ public class ZigBeeConverterThermostatOccupiedHeating extends ZigBeeBaseChannelC
     @Override
     public void attributeUpdated(ZclAttribute attribute, Object val) {
         log.debug("{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
-        if (attribute.getCluster() == ZclClusterType.THERMOSTAT
+        if (attribute.getClusterType() == ZclClusterType.THERMOSTAT
                 && attribute.getId() == ZclThermostatCluster.ATTR_OCCUPIEDHEATINGSETPOINT) {
             updateChannelState(valueToTemperature((Integer) val));
         }

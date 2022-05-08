@@ -107,7 +107,7 @@ public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeInputBaseC
     @Override
     public void attributeUpdated(ZclAttribute attribute, Object val) {
         log.debug("{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), attribute);
-        if (attribute.getCluster() == ZclClusterType.METERING
+        if (attribute.getClusterType() == ZclClusterType.METERING
                 && attribute.getId() == getInputAttributeId()) {
             double value = (Integer) val;
             BigDecimal valueCalibrated = BigDecimal.valueOf(value * multiplier / divisor);

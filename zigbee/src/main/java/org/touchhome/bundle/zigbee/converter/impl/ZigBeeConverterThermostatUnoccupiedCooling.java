@@ -36,7 +36,7 @@ public class ZigBeeConverterThermostatUnoccupiedCooling extends ZigBeeBaseChanne
             // Configure reporting
             ZclAttribute attribute = serverCluster.getAttribute(ZclThermostatCluster.ATTR_UNOCCUPIEDCOOLINGSETPOINT);
             CommandResult reportingResponse = attribute
-                    .setReporting(1, REPORTING_PERIOD_DEFAULT_MAX, 0.1).get();
+                    .setReporting(1, REPORTING_PERIOD_DEFAULT_MAX, 10).get();
             handleReportingResponse(reportingResponse);
             if (!bindResponse.isSuccess()) {
             } else {
@@ -122,7 +122,7 @@ public class ZigBeeConverterThermostatUnoccupiedCooling extends ZigBeeBaseChanne
     @Override
     public void attributeUpdated(ZclAttribute attribute, Object val) {
         log.debug("{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
-        if (attribute.getCluster() == ZclClusterType.THERMOSTAT
+        if (attribute.getClusterType() == ZclClusterType.THERMOSTAT
                 && attribute.getId() == ZclThermostatCluster.ATTR_UNOCCUPIEDCOOLINGSETPOINT) {
             updateChannelState(valueToTemperature((Integer) val));
         }

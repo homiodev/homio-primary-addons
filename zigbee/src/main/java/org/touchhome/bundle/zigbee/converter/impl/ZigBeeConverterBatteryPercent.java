@@ -82,21 +82,9 @@ public class ZigBeeConverterBatteryPercent extends ZigBeeBaseChannelConverter im
             return false;
         }
 
-        try {
-            if (!powerCluster.discoverAttributes(false).get() && !powerCluster
-                    .isAttributeSupported(ZclPowerConfigurationCluster.ATTR_BATTERYPERCENTAGEREMAINING)) {
-                log.trace("{}: Power configuration cluster battery percentage not supported",
-                        endpoint.getIeeeAddress());
-
-                return false;
-            } else if (powerCluster.getBatteryPercentageRemaining(Long.MAX_VALUE) == null) {
-                log.trace("{}: Power configuration cluster battery percentage returned null",
-                        endpoint.getIeeeAddress());
-                return false;
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            log.warn("{}: Exception discovering attributes in power configuration cluster",
-                    endpoint.getIeeeAddress(), e);
+        if (powerCluster.getBatteryPercentageRemaining(Long.MAX_VALUE) == null) {
+            log.trace("{}: Power configuration cluster battery percentage returned null",
+                    endpoint.getIeeeAddress());
             return false;
         }
 
@@ -106,7 +94,7 @@ public class ZigBeeConverterBatteryPercent extends ZigBeeBaseChannelConverter im
     @Override
     public void attributeUpdated(ZclAttribute attribute, Object val) {
         log.debug("{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
-        if (attribute.getCluster() == ZclClusterType.POWER_CONFIGURATION
+        if (attribute.getClusterType() == ZclClusterType.POWER_CONFIGURATION
                 && attribute.getId() == ZclPowerConfigurationCluster.ATTR_BATTERYPERCENTAGEREMAINING) {
             Integer value = (Integer) val;
             updateChannelState(new DecimalType(value / 2));

@@ -3,9 +3,10 @@ package org.touchhome.bundle.camera.setting;
 import org.touchhome.bundle.api.hardware.network.NetworkDescription;
 import org.touchhome.bundle.api.setting.SettingPlugin;
 import org.touchhome.bundle.api.setting.SettingPluginTextSet;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
 
 import java.util.Set;
+
+import static org.touchhome.bundle.api.util.TouchHomeUtils.MACHINE_IP_ADDRESS;
 
 public class CameraScanPortRangeSetting implements SettingPluginTextSet, SettingPlugin<Set<String>> {
 
@@ -21,6 +22,6 @@ public class CameraScanPortRangeSetting implements SettingPluginTextSet, Setting
 
     @Override
     public String[] defaultValue() {
-        return new String[]{TouchHomeUtils.MACHINE_IP_ADDRESS.substring(0, TouchHomeUtils.MACHINE_IP_ADDRESS.lastIndexOf(".")) + "-255"};
+        return new String[]{MACHINE_IP_ADDRESS.substring(0, MACHINE_IP_ADDRESS.lastIndexOf(".") + 1) + "0-255"};
     }
 }

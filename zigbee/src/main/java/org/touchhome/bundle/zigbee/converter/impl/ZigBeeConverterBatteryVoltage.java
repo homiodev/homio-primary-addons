@@ -82,30 +82,24 @@ public class ZigBeeConverterBatteryVoltage extends ZigBeeBaseChannelConverter im
             return false;
         }
 
-        try {
-            if (!powerCluster.discoverAttributes(false).get()
-                    && !powerCluster.isAttributeSupported(ZclPowerConfigurationCluster.ATTR_BATTERYVOLTAGE)) {
-                log.trace("{}: Power configuration cluster battery voltage not supported",
-                        endpoint.getIeeeAddress());
-
-                return false;
-            } else if (powerCluster.getBatteryVoltage(Long.MAX_VALUE) == null) {
-                log.trace("{}: Power configuration cluster battery voltage returned null",
-                        endpoint.getIeeeAddress());
-                return false;
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            log.warn("{}/{}: Exception discovering attributes in power configuration cluster",
-                    endpoint.getIeeeAddress(), endpoint.getEndpointId(), e);
+        if (powerCluster.getBatteryVoltage(Long.MAX_VALUE) == null) {
+            log.trace("{}: Power configuration cluster battery voltage returned null", endpoint.getIeeeAddress());
             return false;
         }
+
+        if (powerCluster.getBatteryVoltage(Long.MAX_VALUE) == null) {
+            log.warn("{}/{}: Exception discovering attributes in power configuration cluster",
+                    endpoint.getIeeeAddress(), endpoint.getEndpointId());
+            return false;
+        }
+
         return true;
     }
 
     @Override
     public void attributeUpdated(ZclAttribute attribute, Object val) {
         log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
-        if (attribute.getCluster() == ZclClusterType.POWER_CONFIGURATION
+        if (attribute.getClusterType() == ZclClusterType.POWER_CONFIGURATION
                 && attribute.getId() == ZclPowerConfigurationCluster.ATTR_BATTERYVOLTAGE) {
             Integer value = (Integer) val;
             if (value == 0xFF) {

@@ -23,6 +23,7 @@ public class ZigBeeConverterThermostatLocalTemperature extends ZigBeeBaseChannel
     private final int INVALID_TEMPERATURE = 0x8000;
 
     private ZclThermostatCluster cluster;
+    private ZclAttribute attribute;
 
     @Override
     public boolean initializeDevice() {
@@ -38,8 +39,8 @@ public class ZigBeeConverterThermostatLocalTemperature extends ZigBeeBaseChannel
             CommandResult bindResponse = bind(serverCluster).get();
             if (bindResponse.isSuccess()) {
                 // Configure reporting
-                CommandResult reportingResponse = serverCluster
-                        .setLocalTemperatureReporting(1, REPORTING_PERIOD_DEFAULT_MAX, 0.1)
+                ZclAttribute attribute = serverCluster.getAttribute(ZclThermostatCluster.ATTR_LOCALTEMPERATURE);
+                CommandResult reportingResponse = attribute.setReporting(1, REPORTING_PERIOD_DEFAULT_MAX, 10)
                         .get();
                 handleReportingResponse(reportingResponse);
             } else {
@@ -61,6 +62,12 @@ public class ZigBeeConverterThermostatLocalTemperature extends ZigBeeBaseChannel
             return false;
         }
 
+        attribute = cluster.getAttribute(ZclThermostatCluster.ATTR_LOCALTEMPERATURE);
+        if (attribute == null) {
+            log.error("{}: Error opening device thermostat local temperature attribute", endpoint.getIeeeAddress());
+            return false;
+        }
+
         // Add a listener, then request the status
         cluster.addAttributeListener(this);
         return true;
@@ -73,7 +80,7 @@ public class ZigBeeConverterThermostatLocalTemperature extends ZigBeeBaseChannel
 
     @Override
     protected void handleRefresh() {
-        cluster.getLocalTemperature(0);
+        attribute.readValue(0);
     }
 
     @Override
@@ -83,6 +90,13 @@ public class ZigBeeConverterThermostatLocalTemperature extends ZigBeeBaseChannel
             log.trace("{}/{}: Thermostat cluster not found", endpoint.getIeeeAddress());
             return false;
         }
+
+       /* ZclAttribute attribute = cluster.getAttribute(ZclThermostatCluster.ATTR_LOCALTEMPERATURE);
+        Object value = attribute.readValue(Long.MAX_VALUE);
+        if (value == null) {
+            logger.trace("{}: Thermostat local temperature returned null", endpoint.getIeeeAddress());
+            return null;
+        }*/
 
         try {
             if (!cluster.discoverAttributes(false).get()) {
@@ -106,7 +120,7 @@ public class ZigBeeConverterThermostatLocalTemperature extends ZigBeeBaseChannel
     @Override
     public void attributeUpdated(ZclAttribute attribute, Object val) {
         log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
-        if (attribute.getCluster() == ZclClusterType.THERMOSTAT
+        if (attribute.getClusterType() == ZclClusterType.THERMOSTAT
                 && attribute.getId() == ZclThermostatCluster.ATTR_LOCALTEMPERATURE) {
             Integer value = (Integer) val;
             if (value != null && value != INVALID_TEMPERATURE) {

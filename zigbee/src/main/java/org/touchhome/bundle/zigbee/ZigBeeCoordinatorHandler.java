@@ -258,7 +258,7 @@ public abstract class ZigBeeCoordinatorHandler
 
         // Add the extensions to the network
         ZigBeeDiscoveryExtension discoveryExtension = new ZigBeeDiscoveryExtension();
-        discoveryExtension.setUpdatePeriod(meshUpdateTime);
+        discoveryExtension.setUpdateMeshPeriod(meshUpdateTime);
         networkManager.addExtension(discoveryExtension);
 
         networkManager.addExtension(new ZigBeeIasCieExtension());
@@ -614,6 +614,13 @@ public abstract class ZigBeeCoordinatorHandler
 
     public void addZigBeeDevice(ZigBeeDevice zigBeeDevice) {
         this.zigBeeDevices.put(zigBeeDevice.getNodeIeeeAddress().toString(), zigBeeDevice);
+    }
+
+    public void meshUpdatePeriod(Integer value) {
+        ZigBeeDiscoveryExtension extension = (ZigBeeDiscoveryExtension) networkManager.getExtension(ZigBeeDiscoveryExtension.class);
+        if (extension != null) {
+            extension.setUpdateMeshPeriod(value);
+        }
     }
 
     @ToString

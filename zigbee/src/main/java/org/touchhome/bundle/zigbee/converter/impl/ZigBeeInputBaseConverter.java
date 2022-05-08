@@ -88,7 +88,7 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
     @Override
     public void attributeUpdated(ZclAttribute attribute, Object val) {
         log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
-        if (attribute.getCluster() == getZclClusterType() && attribute.getId() == this.getInputAttributeId()) {
+        if (attribute.getClusterType() == getZclClusterType() && attribute.getId() == this.getInputAttributeId()) {
             updateValue(val);
         }
     }

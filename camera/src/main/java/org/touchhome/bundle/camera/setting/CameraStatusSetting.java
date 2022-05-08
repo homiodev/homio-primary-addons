@@ -18,6 +18,11 @@ public class CameraStatusSetting implements SettingPluginStatus {
     }
 
     @Override
+    public boolean isVisible(EntityContext entityContext) {
+        return false;
+    }
+
+    @Override
     public List<BundleStatusInfo> getTransientStatuses(EntityContext entityContext) {
         List<BundleStatusInfo> list = new ArrayList<>();
         for (BaseVideoStreamEntity baseVideoStreamEntity : entityContext.findAll(BaseVideoStreamEntity.class)) {

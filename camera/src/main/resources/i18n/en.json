@@ -33,7 +33,8 @@
   "placeholder": {
     "st_ScanRtspPortsSetting": "Type RTSP ports to scan",
     "st_ScanOnvifPortsSetting": "Type port",
-    "st_ScanRtspUrlsSetting": "Type url"
+    "st_ScanRtspUrlsSetting": "Type url",
+    "st_CameraScanPortRangeSetting": "Scan port range i.e.: 192.168.0.0-255"
   },
   "camera": {
     "name": "Camera",

@@ -4,6 +4,9 @@
     "firmata-onewire": "Firmata 1-Wire sensors",
     "firmata-ic": "Firmata I2C devices"
   },
+  "placeholder": {
+    "st_FirmataScanPortRangeSetting": "Scan port range i.e.: 192.168.0.0-255"
+  },
   "firmata": {
     "name": "Firmata",
     "setting": {
