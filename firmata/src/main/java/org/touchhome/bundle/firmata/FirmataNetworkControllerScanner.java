@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.entity.micro.MicroControllerScanner;
 import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
 import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
+import org.touchhome.bundle.api.service.scan.MicroControllerScanner;
 import org.touchhome.bundle.firmata.setting.FirmataScanPortRangeSetting;
 import org.touchhome.common.model.ProgressBar;
 

@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 @Getter
 public class OnvifDeviceState {
 
-    private OnvifCameraEntity onvifCameraEntity;
     private String HOST_IP;
     private String originalIp;
 
@@ -179,13 +178,13 @@ public class OnvifDeviceState {
     }
 
     @SneakyThrows
-    public void initFully(OnvifCameraEntity onvifCameraEntity) {
+    public void initFully(int onvifMediaProfile, boolean supportOnvifEvents) {
         this.init();
         this.profiles = initialDevices.getProfiles();
         this.resolutionProfiles = new TreeMap<>(this.profiles.stream().collect(Collectors.toMap(profile ->
                 new VideoEncodeResolution(profile.getVideoEncoderConfiguration().getResolution()), Function.identity())));
 
-        int activeProfileIndex = onvifCameraEntity.getOnvifMediaProfile() >= this.profiles.size() ? 0 : onvifCameraEntity.getOnvifMediaProfile();
+        int activeProfileIndex = onvifMediaProfile >= this.profiles.size() ? 0 : onvifMediaProfile;
         Profile profile = this.profiles.size() > activeProfileIndex ? this.profiles.get(activeProfileIndex) : null;
         if (profile != null) {
             this.profileToken = profile.getToken();
@@ -195,7 +194,7 @@ public class OnvifDeviceState {
             ptzDevices.initFully();
         }
 
-        if (onvifCameraEntity.getBaseBrandCameraHandler().isSupportOnvifEvents()) {
+        if (supportOnvifEvents) {
             eventDevices.initFully();
         }
     }
@@ -340,12 +339,6 @@ public class OnvifDeviceState {
 
     public void runOncePerMinute() {
         this.eventDevices.runOncePerMinute();
-    }
-
-    public void setOnvifCameraEntity(OnvifCameraEntity onvifCameraEntity) {
-        this.onvifCameraEntity = onvifCameraEntity;
-        updateParameters(onvifCameraEntity.getIp(), onvifCameraEntity.getOnvifPort(),
-                onvifCameraEntity.getServerPort(), onvifCameraEntity.getUser(), onvifCameraEntity.getPassword().asString());
     }
 
     @EqualsAndHashCode

@@ -100,7 +100,8 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     public OnvifCameraHandler(OnvifCameraEntity ce, EntityContext entityContext) {
         super(ce, entityContext);
         onvifDeviceState = new OnvifDeviceState(log);
-        onvifDeviceState.setOnvifCameraEntity(ce);
+        onvifDeviceState.updateParameters(ce.getIp(), ce.getOnvifPort(),
+                ce.getServerPort(), ce.getUser(), ce.getPassword().asString());
 
         onvifDeviceState.setUnreachableHandler(message -> this.disposeAndSetStatus(Status.OFFLINE, message));
 
@@ -146,7 +147,11 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
 
     @Override
     public void updateCameraEntity(OnvifCameraEntity ce) {
-        onvifDeviceState.setOnvifCameraEntity(ce);
+        this.cameraEntity = ce;
+        if (onvifDeviceState != null) {
+            onvifDeviceState.updateParameters(ce.getIp(), ce.getOnvifPort(),
+                    ce.getServerPort(), ce.getUser(), ce.getPassword().asString());
+        }
     }
 
     // false clears the stored user/pass hash, true creates the hash
@@ -734,23 +739,24 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
     }
 
     @Override
-    protected void initialize0(OnvifCameraEntity cameraEntity) {
+    protected void initialize0() {
         if (!onvifDeviceState.isOnline()) {
             throw new RuntimeException("Unable connect to offline camera");
         }
-        this.onvifDeviceState.initFully(this.cameraEntity);
-        super.initialize0(cameraEntity);
+        this.onvifDeviceState.initFully(cameraEntity.getOnvifMediaProfile(),
+                cameraEntity.getBaseBrandCameraHandler().isSupportOnvifEvents());
+        super.initialize0();
 
         setAttribute("PROFILES", new ObjectType(onvifDeviceState.getProfiles()));
-        snapshotUri = getCorrectUrlFormat(this.cameraEntity.getSnapshotUrl());
-        mjpegUri = getCorrectUrlFormat(this.cameraEntity.getMjpegUrl());
+        snapshotUri = getCorrectUrlFormat(cameraEntity.getSnapshotUrl());
+        mjpegUri = getCorrectUrlFormat(cameraEntity.getMjpegUrl());
 
-        this.cameraEntity.getBaseBrandCameraHandler().initialize(entityContext);
+        cameraEntity.getBaseBrandCameraHandler().initialize(entityContext);
 
-        pullConfigSchedule = entityContext.bgp().schedule("Camera " + this.cameraEntity.getEntityID() + " run per minute", 30000,
+        pullConfigSchedule = entityContext.bgp().schedule("Camera " + cameraEntity.getEntityID() + " run per minute", 30000,
                 60, TimeUnit.SECONDS, () -> {
                     onvifDeviceState.runOncePerMinute();
-                    this.cameraEntity.getBaseBrandCameraHandler().runOncePerMinute(entityContext);
+                    cameraEntity.getBaseBrandCameraHandler().runOncePerMinute(entityContext);
                 }, false, false);
 
         if (("ffmpeg".equals(snapshotUri) || isEmpty(snapshotUri)) && isEmpty(getRtspUri(null))) {
@@ -758,7 +764,8 @@ public class OnvifCameraHandler extends BaseFFmpegCameraHandler<OnvifCameraEntit
         }
 
         if (snapshotUri.equals("ffmpeg")) {
-            log.warn("Camera <{}> has no snapshot url. Will use your CPU and FFmpeg to create snapshots from the cameras RTSP.", this.cameraEntity.getTitle());
+            log.warn("Camera <{}> has no snapshot url. Will use your CPU and FFmpeg to create snapshots from the cameras RTSP.",
+                    cameraEntity.getTitle());
             snapshotUri = "";
         }
         setAttribute("SNAPSHOT_URI", new StringType(snapshotUri));

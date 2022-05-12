@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.entity.BaseEntity;
-import org.touchhome.bundle.api.entity.micro.MicroControllerBaseEntity;
+import org.touchhome.bundle.api.entity.types.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.FileModel;
 import org.touchhome.bundle.api.model.OptionModel;
@@ -145,9 +144,9 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
     public static class SelectTargetFirmataDeviceLoader implements DynamicOptionLoader {
 
         @Override
-        public List<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
-            return entityContext.getBean(FirmataRegisterCommand.class).getPendingRegistrations().entrySet().stream()
-                    .filter(entry -> ((FirmataBaseEntity) baseEntity).allowRegistrationType(entry.getValue()))
+        public List<OptionModel> loadOptions(DynamicOptionLoaderParameters parameters) {
+            return parameters.getEntityContext().getBean(FirmataRegisterCommand.class).getPendingRegistrations().entrySet().stream()
+                    .filter(entry -> ((FirmataBaseEntity) parameters.getBaseEntity()).allowRegistrationType(entry.getValue()))
                     .map(entry -> OptionModel.of(Short.toString(entry.getKey()), entry.getKey() + "/" + entry.getValue()))
                     .collect(Collectors.toList());
         }

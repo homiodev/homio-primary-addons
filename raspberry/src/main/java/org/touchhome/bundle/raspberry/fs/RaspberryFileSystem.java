@@ -5,13 +5,13 @@ import lombok.SneakyThrows;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.storage.CachedFileSystem;
 import org.touchhome.bundle.api.entity.storage.VendorFileSystem;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -54,11 +54,7 @@ public class RaspberryFileSystem extends VendorFileSystem<RaspberryDeviceEntity,
         if (!path.toString().startsWith(getEntity().getFileSystemRoot())) {
             path = Paths.get(getEntity().getFileSystemRoot()).resolve(path);
         }
-        if (append) {
-            Files.write(path, content, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
-        } else {
-            Files.write(path, content, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
-        }
+        TouchHomeUtils.writeToFile(path, content, append);
     }
 
     @SneakyThrows

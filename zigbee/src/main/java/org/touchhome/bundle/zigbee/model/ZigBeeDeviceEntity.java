@@ -102,8 +102,8 @@ public final class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntit
         return this;
     }
 
-    @UIField(order = 50, type = UIFieldType.TextSelectBoxDynamic)
-    @UIFieldSelection(SelectModelIdentifierDynamicLoader.class)
+    @UIField(order = 50)
+    @UIFieldSelection(value = SelectModelIdentifierDynamicLoader.class, allowInputRawText = true)
     @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier", color = "#A7D21E")
     public String getModelIdentifier() {
         return getJsonData("modelIdentifier");

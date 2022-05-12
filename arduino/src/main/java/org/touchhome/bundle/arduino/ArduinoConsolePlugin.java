@@ -224,14 +224,14 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor,
         if (BaseNoGui.getSketchbookFolder() == null) {
             return;
         }
-        Path sketchFile = null;
+        Path sketchFile;
         if (fileName.contains("~~~")) { // contains example path. Read full content and copy to example file
             OptionModel foundModel = Optional.ofNullable(ConsoleHeaderArduinoSketchNameSetting.buildExamplePath(true)).map(e -> e.findByKey(fileName)).orElse(null);
             if (foundModel != null) {
                 Path path = Paths.get(foundModel.getJson().getString("path"));
                 save(new FileModel(path.getFileName().toString(), new String(Files.readAllBytes(path)), FileContentType.cpp, false));
-                return;
             }
+            return;
         } else {
             if (!fileName.endsWith(".ino")) {
                 throw new ServerException("Arduino file " + fileName + " must ends with .ino");
@@ -246,7 +246,7 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor,
                 Files.createDirectories(sketchFile.getParent());
                 Files.copy(BaseNoGui.getPortableFolder().toPath().resolve("default_sketch.txt"), sketchFile);
             } else {
-                throw new ServerException("Unable to find file: " + sketchFile.toString());
+                throw new ServerException("Unable to find file: " + sketchFile);
             }
         }
 

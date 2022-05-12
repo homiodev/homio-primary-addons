@@ -113,7 +113,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
         @UIContextMenuAction("ACTION.INITIALIZE_ZIGBEE_NODE")
         public ActionResponseModel initializeZigBeeNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return ActionResponseModel.showSuccess(zigBeeDeviceEntity.initializeZigBeeNode());
+            return zigBeeDeviceEntity.initializeZigBeeNode();
         }
 
         @UIContextMenuAction("ACTION.SHOW_NODE_DESCRIPTION")
@@ -128,17 +128,17 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
         @UIContextMenuAction("ACTION.REDISCOVERY")
         public ActionResponseModel rediscoveryNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return ActionResponseModel.showSuccess(zigBeeDeviceEntity.rediscoveryNode());
+            return zigBeeDeviceEntity.rediscoveryNode();
         }
 
         @UIContextMenuAction("ACTION.PERMIT_JOIN")
         public ActionResponseModel permitJoin(ZigBeeDeviceEntity zigBeeDeviceEntity, EntityContext entityContext) {
-            return ActionResponseModel.showSuccess(zigBeeDeviceEntity.permitJoin(entityContext));
+            return zigBeeDeviceEntity.permitJoin(entityContext);
         }
 
         @UIContextMenuAction("ACTION.ZIGBEE_PULL_CHANNELS")
         public ActionResponseModel pullChannels(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return ActionResponseModel.showSuccess(zigBeeDeviceEntity.pullChannels());
+            return zigBeeDeviceEntity.pullChannels();
         }
     }
 }

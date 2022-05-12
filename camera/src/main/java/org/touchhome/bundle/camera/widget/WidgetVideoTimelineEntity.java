@@ -71,11 +71,11 @@ public class WidgetVideoTimelineEntity extends WidgetBaseEntity<WidgetVideoTimel
     public static class VideoTimelineDataSourceDynamicOptionLoader implements DynamicOptionLoader {
 
         @Override
-        public List<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
+        public List<OptionModel> loadOptions(DynamicOptionLoaderParameters parameters) {
             List<OptionModel> list = new ArrayList<>();
             for (BaseVideoCameraEntity entity : entityContext.findAll(BaseVideoCameraEntity.class)) {
                 if (entity.getBaseBrandCameraHandler() instanceof VideoPlaybackStorage) {
-                    list.add(OptionModel.of(entity.getEntityID(), entity.getTitle()));
+                        list.add(OptionModel.of(entity.getEntityID(), entity.getTitle()));
                 }
             }
             return list;

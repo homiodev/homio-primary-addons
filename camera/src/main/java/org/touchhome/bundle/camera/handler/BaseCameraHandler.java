@@ -42,7 +42,6 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     public ReentrantLock lockCurrentSnapshot = new ReentrantLock();
     @Getter
     protected byte[] latestSnapshot = new byte[0];
-    @Setter
     @Getter
     protected T cameraEntity;
     protected String cameraEntityID;
@@ -74,7 +73,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
     private UIInputBuilder uiInputBuilder;
 
     public BaseCameraHandler(T cameraEntity, EntityContext entityContext) {
-        setCameraEntity(cameraEntity);
+        updateCameraEntity(cameraEntity);
         this.cameraEntityID = cameraEntity.getEntityID();
 
         this.entityContext = entityContext;
@@ -121,7 +120,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
             }
 
             log.info("Init camera: <{}>", this.cameraEntity.getTitle());
-            initialize0(cameraEntity);
+            initialize0();
             cameraConnectionJob = entityContext.bgp().schedule("poll-camera-connection-" + cameraEntityID,
                     60, TimeUnit.SECONDS, this::pollingCameraConnection, true, true);
             return true;
@@ -131,7 +130,7 @@ public abstract class BaseCameraHandler<T extends BaseVideoCameraEntity> impleme
         return false;
     }
 
-    protected abstract void initialize0(T cameraEntity);
+    protected abstract void initialize0();
 
     // synchronized to work properly with isHandlerInitialized
     public synchronized final void disposeAndSetStatus(Status status, String reason) {

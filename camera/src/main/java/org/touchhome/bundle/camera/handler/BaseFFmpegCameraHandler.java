@@ -88,12 +88,12 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
     }
 
     @Override
-    protected void initialize0(T cameraEntity) {
+    protected void initialize0() {
         this.snapshotSource = initSnapshotInput();
         this.snapshotInputOptions = getFFMPEGInputOptions() + " -threads 1 -skip_frame nokey -hide_banner -loglevel warning -an";
-        this.mp4OutOptions = String.join(" ", this.cameraEntity.getMp4OutOptions());
-        this.gifOutOptions = String.join(" ", this.cameraEntity.getGifOutOptions());
-        this.mgpegOutOptions = String.join(" ", this.cameraEntity.getMjpegOutOptions());
+        this.mp4OutOptions = String.join(" ", cameraEntity.getMp4OutOptions());
+        this.gifOutOptions = String.join(" ", cameraEntity.getGifOutOptions());
+        this.mgpegOutOptions = String.join(" ", cameraEntity.getMjpegOutOptions());
 
         String rtspUri = getRtspUri(null);
 
@@ -101,22 +101,22 @@ public abstract class BaseFFmpegCameraHandler<T extends BaseFFmpegStreamEntity> 
                 FFmpegFormat.MJPEG, ffmpegLocation,
                 getFFMPEGInputOptions() + " -hide_banner -loglevel warning", rtspUri,
                 mgpegOutOptions, "http://127.0.0.1:" + serverPort + "/ipcamera.jpg",
-                this.cameraEntity.getUser(), this.cameraEntity.getPassword().asString(), null);
+                cameraEntity.getUser(), cameraEntity.getPassword().asString(), null);
         setAttribute("FFMPEG_MJPEG", new StringType(String.join(" ", ffmpegMjpeg.getCommandArrayList())));
 
         ffmpegSnapshot = new Ffmpeg("FFmpegSnapshot", "FFmpeg snapshot", this, log,
                 FFmpegFormat.SNAPSHOT, ffmpegLocation, snapshotInputOptions, rtspUri,
-                this.cameraEntity.getSnapshotOutOptionsAsString(),
+                cameraEntity.getSnapshotOutOptionsAsString(),
                 "http://127.0.0.1:" + serverPort + "/snapshot.jpg",
-                this.cameraEntity.getUser(), this.cameraEntity.getPassword().asString(), () -> {
+                cameraEntity.getUser(), cameraEntity.getPassword().asString(), () -> {
         });
         setAttribute("FFMPEG_SNAPSHOT", new StringType(String.join(" ", ffmpegSnapshot.getCommandArrayList())));
 
-        if (this.cameraEntity instanceof AbilityToStreamHLSOverFFmpeg) {
+        if (cameraEntity instanceof AbilityToStreamHLSOverFFmpeg) {
             ffmpegHLS = new Ffmpeg("FFmpegHLS", "FFmpeg HLS", this, log, FFmpegFormat.HLS, ffmpegLocation,
                     "-hide_banner -loglevel warning " + getFFMPEGInputOptions(), createHlsRtspUri(),
                     buildHlsOptions(), getFfmpegHLSOutputPath().resolve("ipcamera.m3u8").toString(),
-                    this.cameraEntity.getUser(), this.cameraEntity.getPassword().asString(), () -> setAttribute(CHANNEL_START_STREAM, OnOffType.OFF));
+                    cameraEntity.getUser(), cameraEntity.getPassword().asString(), () -> setAttribute(CHANNEL_START_STREAM, OnOffType.OFF));
             setAttribute("FFMPEG_HLS", new StringType(String.join(" ", ffmpegHLS.getCommandArrayList())));
         }
 

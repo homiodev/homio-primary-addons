@@ -5,11 +5,9 @@ import org.firmata4j.IODevice;
 import org.firmata4j.firmata.FirmataDevice;
 import org.firmata4j.transport.NetworkTransport;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.UIField;
-import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.firmata.FirmataBundleEntryPoint;
@@ -27,9 +25,9 @@ public final class FirmataNetworkEntity extends FirmataBaseEntity<FirmataNetwork
 
     public static final String PREFIX = "fmntw_";
 
-    @UIField(order = 22, type = UIFieldType.TextSelectBoxDynamic)
+    @UIField(order = 22)
     @Pattern(regexp = "(\\d{1,3}\\.){3}\\d{1,3}", message = "validation.host_port")
-    @UIFieldSelection(SelectFirmataIpDeviceLoader.class)
+    @UIFieldSelection(value = SelectFirmataIpDeviceLoader.class, allowInputRawText = true)
     @UIFieldSelectValueOnEmpty(label = "selection.selectIp", color = "#A7D21E")
     public String getIp() {
         return getJsonData("ip");
@@ -93,7 +91,7 @@ public final class FirmataNetworkEntity extends FirmataBaseEntity<FirmataNetwork
     public static class SelectFirmataIpDeviceLoader implements DynamicOptionLoader {
 
         @Override
-        public Collection<OptionModel> loadOptions(BaseEntity baseEntity, EntityContext entityContext, String[] staticParameters) {
+        public Collection<OptionModel> loadOptions(DynamicOptionLoaderParameters parameters) {
             Map<String, FirmataBundleEntryPoint.UdpPayload> udpFoundDevices = FirmataBundleEntryPoint.getUdpFoundDevices();
             return udpFoundDevices.entrySet().stream().map(e -> OptionModel.of(e.getKey(), e.getValue().toString())).collect(Collectors.toList());
         }
