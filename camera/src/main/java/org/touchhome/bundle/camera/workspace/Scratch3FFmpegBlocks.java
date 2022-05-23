@@ -7,18 +7,17 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.video.ffmpeg.FFMPEG;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.camera.CameraEntryPoint;
-import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
-import org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants;
-import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.touchhome.bundle.api.video.ffmpeg.FFMPEGFormat.RTSP_ALARMS;
 import static org.touchhome.common.util.CommonUtils.addToListSafe;
 
 @Log4j2
@@ -56,8 +55,9 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
         FfmpegBuilder ffmpegBuilder = new FfmpegBuilder();
         applyParentBlocks(ffmpegBuilder, workspaceBlock.getParent());
 
-        String ffmpegLocation = entityContext.setting().getValue(FFMPEGInstallPathSetting.class).toString();
-        Ffmpeg ffmpeg = new Ffmpeg("FFMpeg_" + workspaceBlock.getId(), "FFMpeg workspace general command", new Ffmpeg.FFmpegHandler() {
+        String ffmpegLocation = entityContext.setting().getFFMPEGInstallPath().toString();
+        FFMPEG ffmpeg = new FFMPEG("FFMPEG_" + workspaceBlock.getId(),
+                "FFMpeg workspace general FFMPEG", new FFMPEG.FFMPEGHandler() {
             @Override
             public String getEntityID() {
                 return null;
@@ -78,7 +78,7 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
                 log.error("FFmpeg error: <{}>", error);
 
             }
-        }, log, IpCameraBindingConstants.FFmpegFormat.RTSP_ALARMS, ffmpegLocation, String.join(" ", ffmpegBuilder.inputArgs), input,
+        }, log, RTSP_ALARMS, ffmpegLocation, String.join(" ", ffmpegBuilder.inputArgs), input,
                 String.join(" ", ffmpegBuilder.outputArgs),
                 output, "", "", null);
         workspaceBlock.setState("wait ffmpeg to finish");

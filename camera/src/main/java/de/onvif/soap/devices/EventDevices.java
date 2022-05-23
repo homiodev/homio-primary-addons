@@ -87,6 +87,7 @@ public class EventDevices {
             soap.sendSOAPSubscribeRequestAsync(new PullMessages());
             log.info("Successfully fetched onvif message subscription: <{}>",
                     onvifDeviceState.getSubscriptionIpLessUri());
+            onvifDeviceState.setSubscriptionError(null);
         } catch (Exception ex) {
             onvifDeviceState.setSubscriptionError(ex.getMessage());
             log.error("Unable to fetch onvif message subscription");

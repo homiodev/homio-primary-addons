@@ -20,9 +20,7 @@
     "InstarBrandHandler": "Instar Brand",
     "WidgetVideoEntity": "Video",
     "OnvifCameraEntity": "Onvif Camera",
-    "UsbCameraEntity": "Usb Camera",
-    "HlsVideoStreamEntity": "Hls stream",
-    "RtspVideoStreamEntity": "Rtsp stream"
+    "UsbCameraEntity": "Usb Camera"
   },
   "WORKSPACE": {
     "camera": "Camera",
@@ -42,7 +40,6 @@
       "label": "Camera settings",
       "st_CameraScanPortRangeSetting": "Scan port range",
       "st_ScanRtspUrlsSetting": "RTSP urls to scan",
-      "st_FFMPEGInstallPathSetting": "FFmpeg install path",
       "st_ScanRtspIpAddressMaxPingTimeoutSetting": "Rtsp max ping timeout",
       "st_ScanRtspPortsSetting": "RTSP scan ports",
       "st_ScanOnvifHttpDefaultPasswordAuthSetting": "Scan onvif http password",
@@ -136,7 +133,6 @@
   },
   "field": {
     "eventSubscription": "Event subscription",
-    "lastAnswerFromCamera": "Last answer from camera",
     "snapshotPollInterval": "Snapshot poll interval(sec)",
     "cameraHandler": "Last answer from camera",
     "segmentTime": "Segment time(sec)",

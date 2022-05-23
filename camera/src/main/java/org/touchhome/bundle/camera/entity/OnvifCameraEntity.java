@@ -1,5 +1,6 @@
 package org.touchhome.bundle.camera.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.onvif.soap.OnvifDeviceState;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,28 +10,80 @@ import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.model.ActionResponseModel;
+import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.*;
 import org.touchhome.bundle.api.ui.field.action.HasDynamicContextMenuActions;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.action.v1.UIEntityItemBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
+import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.util.SecureString;
+import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
+import org.touchhome.bundle.api.video.DownloadFile;
+import org.touchhome.bundle.api.video.VideoPlaybackStorage;
+import org.touchhome.bundle.camera.CameraCoordinator;
+import org.touchhome.bundle.camera.handler.BaseBrandCameraHandler;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.camera.onvif.brand.CameraBrandHandlerDescription;
 import org.touchhome.common.util.Lang;
 
 import javax.persistence.Entity;
+import javax.persistence.Transient;
+import java.net.URI;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @Log4j2
 @Setter
 @Getter
 @Entity
 @Accessors(chain = true)
-public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity, OnvifCameraHandler>
-        implements AbilityToStreamHLSOverFFmpeg<OnvifCameraEntity>, HasDynamicContextMenuActions {
+public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEntity, OnvifCameraHandler>
+        implements HasDynamicContextMenuActions, VideoPlaybackStorage {
 
     public static final String PREFIX = "onvifcam_";
+
+    @Transient
+    @JsonIgnore
+    private BaseBrandCameraHandler baseBrandCameraHandler;
+
+    @UIField(order = 16)
+    @RestartHandlerOnChange
+    @UIFieldSelection(SelectCameraBrand.class)
+    public String getCameraType() {
+        return getJsonData("cameraType", CameraBrandHandlerDescription.DEFAULT_BRAND.getID());
+    }
+
+    public OnvifCameraEntity setCameraType(String cameraType) {
+        return setJsonData("cameraType", cameraType);
+    }
+
+    @Override
+    public void afterFetch(EntityContext entityContext) {
+        super.afterFetch(entityContext);
+        baseBrandCameraHandler = CameraCoordinator.entityToCameraBrands.computeIfAbsent(getEntityID(), entityID -> {
+            String cameraType = getCameraType();
+            if (cameraType != null && CameraCoordinator.cameraBrands.containsKey(cameraType)) {
+                CameraBrandHandlerDescription cameraBrandHandlerDescription = CameraCoordinator.cameraBrands.get(cameraType);
+                return cameraBrandHandlerDescription.newInstance(OnvifCameraEntity.this);
+            }
+            return null;
+        });
+    }
+
+    public static class SelectCameraBrand implements DynamicOptionLoader {
+
+        @Override
+        public Collection<OptionModel> loadOptions(DynamicOptionLoaderParameters parameters) {
+            return OptionModel.list(CameraCoordinator.cameraBrands.keySet());
+        }
+    }
 
     @UIField(order = 1, readOnly = true, hideOnEmpty = true, fullWidth = true, bg = "#334842", type = UIFieldType.HTML)
     public String getDescription() {
@@ -41,10 +94,10 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
     }
 
     @UIField(order = 12, readOnly = true, hideOnEmpty = true)
-    @UIFieldColorStatusMatch
+    @UIFieldColorStatusMatch(handlePrefixes = true)
     public String getEventSubscription() {
-        OnvifCameraHandler cameraHandler = getCameraHandler();
-        if (cameraHandler != null && cameraHandler.isCameraOnline()) {
+        OnvifCameraHandler cameraHandler = getVideoHandler();
+        if (cameraHandler != null && cameraHandler.isVideoOnline()) {
             String subscriptionError = cameraHandler.getOnvifDeviceState().getSubscriptionError();
             if (subscriptionError != null) {
                 return Status.ERROR.name() + " " + subscriptionError;
@@ -129,9 +182,9 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
     @UIFieldIgnoreGetDefault
     public String getSnapshotUrl() {
         String snapshotUrl = getJsonData("snapshotUrl");
-        if (getCameraHandler() != null && getCameraHandler().isHandlerInitialized() &&
+        if (getVideoHandler() != null && getVideoHandler().isHandlerInitialized() &&
                 (StringUtils.isEmpty(snapshotUrl) || snapshotUrl.equals("ffmpeg"))) {
-            snapshotUrl = getCameraHandler().getOnvifDeviceState().getMediaDevices().getSnapshotUri();
+            snapshotUrl = getVideoHandler().getOnvifDeviceState().getMediaDevices().getSnapshotUri();
         }
         return StringUtils.isEmpty(snapshotUrl) ? "ffmpeg" : snapshotUrl;
     }
@@ -200,7 +253,12 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
     }
 
     @Override
-    public OnvifCameraHandler createCameraHandler(EntityContext entityContext) {
+    public String getFolderName() {
+        return "camera";
+    }
+
+    @Override
+    public OnvifCameraHandler createVideoHandler(EntityContext entityContext) {
         return new OnvifCameraHandler(this, entityContext);
     }
 
@@ -237,8 +295,8 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
 
     @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off")
     public ActionResponseModel reboot() {
-        checkCameraOnline();
-        String response = this.getCameraHandler().getOnvifDeviceState().getInitialDevices().reboot();
+        checkVideoOnline();
+        String response = this.getVideoHandler().getOnvifDeviceState().getInitialDevices().reboot();
         return ActionResponseModel.showSuccess(response);
     }
 
@@ -267,9 +325,11 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
                                 entity.setIeeeAddress(onvifDeviceState.getIEEEAddress());
 
                                 entityContext.save(entity);
-                                entityContext.ui().sendSuccessMessage("Onvif camera: " + getTitle() + " authenticated successfully");
+                                entityContext.ui()
+                                        .sendSuccessMessage("Onvif camera: " + getTitle() + " authenticated successfully");
                             } catch (Exception ex) {
-                                entityContext.ui().sendWarningMessage("Onvif camera: " + getTitle() + " fault response: " + ex.getMessage());
+                                entityContext.ui().sendWarningMessage(
+                                        "Onvif camera: " + getTitle() + " fault response: " + ex.getMessage());
                             }
                             return null;
                         }).editDialog(dialogBuilder -> {
@@ -281,5 +341,32 @@ public class OnvifCameraEntity extends BaseFFmpegStreamEntity<OnvifCameraEntity,
         }
 
         return uiInputBuilder;
+    }
+
+    @Override
+    public LinkedHashMap<Long, Boolean> getAvailableDaysPlaybacks(EntityContext entityContext, String profile, Date from, Date to)
+            throws Exception {
+        return ((VideoPlaybackStorage) baseBrandCameraHandler).getAvailableDaysPlaybacks(entityContext, profile, from, to);
+    }
+
+    @Override
+    public List<PlaybackFile> getPlaybackFiles(EntityContext entityContext, String profile, Date from, Date to) throws Exception {
+        return ((VideoPlaybackStorage) baseBrandCameraHandler).getPlaybackFiles(entityContext, profile, from, to);
+    }
+
+    @Override
+    public DownloadFile downloadPlaybackFile(EntityContext entityContext, String profile, String fileId, Path path)
+            throws Exception {
+        return ((VideoPlaybackStorage) baseBrandCameraHandler).downloadPlaybackFile(entityContext, profile, fileId, path);
+    }
+
+    @Override
+    public URI getPlaybackVideoURL(EntityContext entityContext, String fileId) throws Exception {
+        return ((VideoPlaybackStorage) baseBrandCameraHandler).getPlaybackVideoURL(entityContext, fileId);
+    }
+
+    @Override
+    public PlaybackFile getLastPlaybackFile(EntityContext entityContext, String profile) {
+        return ((VideoPlaybackStorage) baseBrandCameraHandler).getLastPlaybackFile(entityContext, profile);
     }
 }

@@ -1,7 +1,5 @@
 package org.touchhome.bundle.camera.widget;
 
-import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.widget.WidgetBaseEntity;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
@@ -9,7 +7,7 @@ import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldNumber;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.video.VideoPlaybackStorage;
-import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
+import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 
 import javax.persistence.Entity;
 import java.util.ArrayList;
@@ -73,9 +71,9 @@ public class WidgetVideoTimelineEntity extends WidgetBaseEntity<WidgetVideoTimel
         @Override
         public List<OptionModel> loadOptions(DynamicOptionLoaderParameters parameters) {
             List<OptionModel> list = new ArrayList<>();
-            for (BaseVideoCameraEntity entity : entityContext.findAll(BaseVideoCameraEntity.class)) {
+            for (OnvifCameraEntity entity : parameters.getEntityContext().findAll(OnvifCameraEntity.class)) {
                 if (entity.getBaseBrandCameraHandler() instanceof VideoPlaybackStorage) {
-                        list.add(OptionModel.of(entity.getEntityID(), entity.getTitle()));
+                    list.add(OptionModel.of(entity.getEntityID(), entity.getTitle()));
                 }
             }
             return list;

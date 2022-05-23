@@ -5,14 +5,13 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
+import org.touchhome.bundle.api.service.scan.VideoStreamScanner;
+import org.touchhome.bundle.api.video.ffmpeg.FFMPEGVideoDevice;
+import org.touchhome.bundle.api.video.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.entity.UsbCameraEntity;
-import org.touchhome.bundle.camera.ffmpeg.FFmpegVideoDevice;
-import org.touchhome.bundle.camera.ffmpeg.FfmpegInputDeviceHardwareRepository;
-import org.touchhome.bundle.camera.setting.FFMPEGInstallPathSetting;
 import org.touchhome.common.model.ProgressBar;
 import org.touchhome.common.util.Lang;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,11 +29,12 @@ public class UsbCameraScanner implements VideoStreamScanner {
     }
 
     @Override
-    public BaseItemsDiscovery.DeviceScannerResult scan(EntityContext entityContext, ProgressBar progressBar, String headerConfirmButtonKey) {
+    public BaseItemsDiscovery.DeviceScannerResult scan(EntityContext entityContext, ProgressBar progressBar,
+                                                       String headerConfirmButtonKey) {
         BaseItemsDiscovery.DeviceScannerResult result = new BaseItemsDiscovery.DeviceScannerResult();
         FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
-        String ffmpegPath = entityContext.setting().getValue(FFMPEGInstallPathSetting.class, Paths.get("ffmpeg")).toString();
-        List<FFmpegVideoDevice> foundUsbVideoCameraDevices = new ArrayList<>();
+        String ffmpegPath = entityContext.setting().getFFMPEGInstallPath().toString();
+        List<FFMPEGVideoDevice> foundUsbVideoCameraDevices = new ArrayList<>();
 
         for (String deviceName : repository.getVideoDevices(ffmpegPath)) {
             foundUsbVideoCameraDevices.add(repository.createVideoInputDevice(ffmpegPath, deviceName).setName(deviceName));
@@ -43,7 +43,7 @@ public class UsbCameraScanner implements VideoStreamScanner {
                 .collect(Collectors.toMap(UsbCameraEntity::getIeeeAddress, Function.identity()));
 
         // search if new devices not found and send confirm to ui
-        for (FFmpegVideoDevice foundUsbVideoDevice : foundUsbVideoCameraDevices) {
+        for (FFMPEGVideoDevice foundUsbVideoDevice : foundUsbVideoCameraDevices) {
             if (!existsUsbCamera.containsKey(foundUsbVideoDevice.getName())) {
                 result.getNewCount().incrementAndGet();
                 handleDevice(headerConfirmButtonKey, foundUsbVideoDevice.getName(), foundUsbVideoDevice.getName(), entityContext,

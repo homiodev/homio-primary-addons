@@ -14,7 +14,7 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
+import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.util.GroupTracker;
 import org.touchhome.bundle.camera.onvif.util.StreamServerGroupHandler;
@@ -56,7 +56,7 @@ public class IpCameraGroupHandler {
     private GroupTracker groupTracker;
 
     public IpCameraGroupHandler(/*WidgetLiveStreamEntity widgetLiveStreamEntity,*/ String hostIp, GroupTracker groupTracker) {
-//        this.widgetLiveStreamEntity = widgetLiveStreamEntity;
+        //        this.widgetLiveStreamEntity = widgetLiveStreamEntity;
         this.hostIp = hostIp;
         this.groupTracker = groupTracker;
     }
@@ -74,7 +74,7 @@ public class IpCameraGroupHandler {
         String camerasm3u8 = "";
         OnvifCameraHandler handle = cameraOrder.get(cameraIndex);
         try {
-            Path file = handle.getFfmpegHLSOutputPath().resolve("ipcamera.m3u8");
+            Path file = handle.getFfmpegHLSOutputPath().resolve("ipvideo.m3u8");
             camerasm3u8 = new String(Files.readAllBytes(file));
         } catch (IOException e) {
             log.warn("Error occured fetching a groupDisplay cameras m3u8 file :{}", e.getMessage());
@@ -135,7 +135,7 @@ public class IpCameraGroupHandler {
         int numberOfSegments = howManySegments(m3u8File);
         log.debug("Using {} segmented files to make up a poll period.", numberOfSegments);
         m3u8File = keepLast(m3u8File, numberOfSegments);
-        m3u8File = m3u8File.replace("ipcamera", cameraIndex + "ipcamera"); // add index so we can then fetch output path
+        m3u8File = m3u8File.replace("ipvideo", cameraIndex + "ipvideo"); // add index so we can then fetch output path
         if (entries > numberOfSegments * 3) {
             playingNow = removeFromStart(playingNow, entries - (numberOfSegments * 3));
         }
@@ -177,7 +177,8 @@ public class IpCameraGroupHandler {
                     log.info("IpCamera file server for a group of cameras has started on port {} for all NIC's.",
                             serverPort);
                 } catch (Exception e) {
-                    updateStatus(Status.OFFLINE, "Exception occurred when starting the streaming server. Try changing the serverPort to another number.");
+                    updateStatus(Status.OFFLINE, "Exception occurred when starting the streaming server. Try changing the serverPort to another " +
+                            "number.");
                 }
             }
         }
@@ -191,7 +192,7 @@ public class IpCameraGroupHandler {
         log.info("Update stateType: <{}>. State: <{}>", stateType, state.toString());
     }
 
-    void addCamera(BaseVideoCameraEntity cameraEntity) {
+    void addCamera(BaseFFMPEGVideoStreamEntity cameraEntity) {
         if (groupTracker.onlineCameraMap.containsKey(cameraEntity.getEntityID()) && cameraEntity.getStatus() == Status.ONLINE) {
             OnvifCameraHandler onvifCameraHandler = groupTracker.onlineCameraMap.get(cameraEntity.getEntityID());
             if (!cameraOrder.contains(onvifCameraHandler)) {
@@ -206,7 +207,7 @@ public class IpCameraGroupHandler {
     }
 
     // Event based. This is called as each camera comes online after the group handler is registered.
-    public void cameraOnline(BaseVideoCameraEntity cameraEntity) {
+    public void cameraOnline(BaseFFMPEGVideoStreamEntity cameraEntity) {
         log.debug("New camera {} came online, checking if part of this group", cameraEntity.getEntityID());
         //widgetLiveStreamEntity.getSeries().stream().filter(s -> s.getDataSource().equals(cameraEntity.getEntityID()))
         //      .findAny().ifPresent(WidgetVideoSeriesEntity -> {
@@ -217,7 +218,7 @@ public class IpCameraGroupHandler {
     // Event based. This is called as each camera comes online after the group handler is registered.
     public void cameraOffline(OnvifCameraHandler handle) {
         if (cameraOrder.remove(handle)) {
-            log.info("Camera {} went offline and was removed from a group.", handle.getCameraEntity().getTitle());
+            log.info("Camera {} went offline and was removed from a group.", handle.getVideoStreamEntity().getTitle());
         }
     }
 

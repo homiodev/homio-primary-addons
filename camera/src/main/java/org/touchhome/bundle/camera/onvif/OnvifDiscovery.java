@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.IOUtils;
 import org.touchhome.bundle.camera.CameraCoordinator;
+import org.touchhome.bundle.camera.onvif.brand.CameraBrandHandlerDescription;
 import org.touchhome.bundle.camera.onvif.util.Helper;
 
 import java.math.BigDecimal;

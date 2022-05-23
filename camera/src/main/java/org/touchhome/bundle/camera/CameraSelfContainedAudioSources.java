@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.audio.SelfContainedAudioSourceContainer;
 import org.touchhome.bundle.api.model.OptionModel;
-import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
+import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 
@@ -24,10 +24,10 @@ public class CameraSelfContainedAudioSources implements SelfContainedAudioSource
     @Override
     public Collection<OptionModel> getAudioSource() {
         Collection<OptionModel> models = new ArrayList<>();
-        for (BaseVideoCameraEntity cameraEntity : entityContext.findAll(BaseVideoCameraEntity.class)) {
+        for (BaseFFMPEGVideoStreamEntity cameraEntity : entityContext.findAll(BaseFFMPEGVideoStreamEntity.class)) {
             // get sources from onvif audio streams
             if (cameraEntity.isStart() && cameraEntity instanceof OnvifCameraEntity) {
-                OnvifCameraHandler cameraHandler = (OnvifCameraHandler) cameraEntity.getCameraHandler();
+                OnvifCameraHandler cameraHandler = (OnvifCameraHandler) cameraEntity.getVideoHandler();
                 for (AudioSource audioSource : cameraHandler.getOnvifDeviceState().getMediaDevices().getAudioSources()) {
                     models.add(OptionModel.of(audioSource.getToken()));
                 }

@@ -9,12 +9,12 @@ import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.state.StringType;
-import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
+import org.touchhome.bundle.api.video.ui.UIVideoAction;
+import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
-import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
-import org.touchhome.bundle.camera.onvif.BrandCameraHasAudioAlarm;
+import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasAudioAlarm;
 import org.touchhome.bundle.camera.onvif.util.Helper;
-import org.touchhome.bundle.camera.ui.UICameraAction;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -30,7 +30,7 @@ public class InstarBrandHandler extends BaseOnvifCameraBrandHandler implements B
     private String requestUrl = "Empty";
     private int audioThreshold;
 
-    public InstarBrandHandler(BaseVideoCameraEntity cameraEntity) {
+    public InstarBrandHandler(OnvifCameraEntity cameraEntity) {
         super(cameraEntity);
     }
 
@@ -124,14 +124,15 @@ public class InstarBrandHandler extends BaseOnvifCameraBrandHandler implements B
         }
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")
+    @UIVideoAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")
     public void enableMotionAlarm(boolean on) {
         int val = boolToInt(on);
         onvifCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setmdattr&-enable=" + val +
-                "&-name=1&cmd=setmdattr&-enable=" + val + "&-name=2&cmd=setmdattr&-enable=" + val + "&-name=3&cmd=setmdattr&-enable=" + val + "&-name=4");
+                "&-name=1&cmd=setmdattr&-enable=" + val + "&-name=2&cmd=setmdattr&-enable=" + val + "&-name=3&cmd=setmdattr&-enable=" + val +
+                "&-name=4");
     }
 
-    @UICameraAction(name = CHANNEL_TEXT_OVERLAY, order = 100, icon = "fas fa-paragraph")
+    @UIVideoAction(name = CHANNEL_TEXT_OVERLAY, order = 100, icon = "fas fa-paragraph")
     public void textOverlay(String value) {
         String text = Helper.encodeSpecialChars(value);
         if (text.isEmpty()) {
@@ -141,7 +142,7 @@ public class InstarBrandHandler extends BaseOnvifCameraBrandHandler implements B
         }
     }
 
-    @UICameraAction(name = CHANNEL_AUTO_LED, order = 60, icon = "fas fa-lightbulb")
+    @UIVideoAction(name = CHANNEL_AUTO_LED, order = 60, icon = "fas fa-lightbulb")
     public void autoLED(boolean on) {
         getIRLedHandler().accept(on);
     }
@@ -162,13 +163,13 @@ public class InstarBrandHandler extends BaseOnvifCameraBrandHandler implements B
         return () -> Optional.ofNullable(getAttribute(CHANNEL_ENABLE_LED)).map(State::boolValue).orElse(false);
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_PIR_ALARM, order = 120, icon = "fas fa-compress-alt")
+    @UIVideoAction(name = CHANNEL_ENABLE_PIR_ALARM, order = 120, icon = "fas fa-compress-alt")
     public void enablePirAlarm(boolean on) {
         onvifCameraHandler.sendHttpGET("/param.cgi?cmd=setpirattr&-pir_enable=" + boolToInt(on));
     }
 
 
-    @UICameraAction(name = CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, order = 250, icon = "fas fa-external-link-square-alt")
+    @UIVideoAction(name = CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, order = 250, icon = "fas fa-external-link-square-alt")
     public void enableExternalAlarmInput(boolean on) {
         onvifCameraHandler.sendHttpGET("/param.cgi?cmd=setioattr&-io_enable=" + boolToInt(on));
     }

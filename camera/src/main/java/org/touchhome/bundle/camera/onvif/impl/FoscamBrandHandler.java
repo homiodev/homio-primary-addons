@@ -7,14 +7,13 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
+import org.touchhome.bundle.api.video.ui.UIVideoAction;
+import org.touchhome.bundle.api.video.ui.UIVideoActionGetter;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
-import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
-import org.touchhome.bundle.camera.onvif.BrandCameraHasAudioAlarm;
-import org.touchhome.bundle.camera.onvif.BrandCameraHasMotionAlarm;
+import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasAudioAlarm;
+import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.onvif.util.Helper;
-import org.touchhome.bundle.camera.ui.UICameraAction;
-import org.touchhome.bundle.camera.ui.UICameraActionGetter;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -30,7 +29,7 @@ public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler implements B
     private static final String CG = "/cgi-bin/CGIProxy.fcgi?cmd=";
     private int audioThreshold;
 
-    public FoscamBrandHandler(BaseVideoCameraEntity cameraEntity) {
+    public FoscamBrandHandler(OnvifCameraEntity cameraEntity) {
         super(cameraEntity);
     }
 
@@ -98,7 +97,7 @@ public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler implements B
         }
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_LED, order = 50, icon = "far fa-lightbulb")
+    @UIVideoAction(name = CHANNEL_ENABLE_LED, order = 50, icon = "far fa-lightbulb")
     public void enableLED(boolean on) {
         getIRLedHandler().accept(on);
     }
@@ -122,7 +121,7 @@ public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler implements B
         return () -> Optional.ofNullable(getAttribute(CHANNEL_ENABLE_LED)).map(State::boolValue).orElse(false);
     }
 
-    @UICameraAction(name = CHANNEL_AUTO_LED, order = 60, icon = "fas fa-lightbulb")
+    @UIVideoAction(name = CHANNEL_AUTO_LED, order = 60, icon = "fas fa-lightbulb")
     public void autoLED(boolean on) {
         if (on) {
             setAttribute(CHANNEL_ENABLE_LED, null/*UnDefType.UNDEF*/);
@@ -155,11 +154,11 @@ public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler implements B
     @Override
     public void setMotionAlarmThreshold(int threshold) {
         if (threshold > 0) {
-            if (onvifCameraHandler.getCameraEntity().getCustomAudioAlarmUrl().isEmpty()) {
+            if (onvifCameraHandler.getVideoStreamEntity().getCustomAudioAlarmUrl().isEmpty()) {
                 onvifCameraHandler.sendHttpGET(CG + "setAudioAlarmConfig&isEnable=1&usr="
                         + username + "&pwd=" + password);
             } else {
-                onvifCameraHandler.sendHttpGET(onvifCameraHandler.getCameraEntity().getCustomAudioAlarmUrl());
+                onvifCameraHandler.sendHttpGET(onvifCameraHandler.getVideoStreamEntity().getCustomAudioAlarmUrl());
             }
         } else {
             onvifCameraHandler.sendHttpGET(CG + "setAudioAlarmConfig&isEnable=0&usr="
@@ -167,21 +166,21 @@ public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler implements B
         }
     }
 
-    @UICameraActionGetter(CHANNEL_ENABLE_MOTION_ALARM)
+    @UIVideoActionGetter(CHANNEL_ENABLE_MOTION_ALARM)
     public State getEnableMotionAlarm() {
         return getAttribute(CHANNEL_ENABLE_MOTION_ALARM);
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")
+    @UIVideoAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")
     public void setEnableMotionAlarm(boolean on) {
         if (on) {
-            if (onvifCameraHandler.getCameraEntity().getCustomMotionAlarmUrl().isEmpty()) {
+            if (onvifCameraHandler.getVideoStreamEntity().getCustomMotionAlarmUrl().isEmpty()) {
                 onvifCameraHandler.sendHttpGET(CG + "setMotionDetectConfig&isEnable=1&usr="
                         + username + "&pwd=" + password);
                 onvifCameraHandler.sendHttpGET(CG + "setMotionDetectConfig1&isEnable=1&usr="
                         + username + "&pwd=" + password);
             } else {
-                onvifCameraHandler.sendHttpGET(onvifCameraHandler.getCameraEntity().getCustomMotionAlarmUrl());
+                onvifCameraHandler.sendHttpGET(onvifCameraHandler.getVideoStreamEntity().getCustomMotionAlarmUrl());
             }
         } else {
             onvifCameraHandler.sendHttpGET(CG + "setMotionDetectConfig&isEnable=0&usr="
@@ -199,7 +198,7 @@ public class FoscamBrandHandler extends BaseOnvifCameraBrandHandler implements B
 
     @Override
     public void initialize(EntityContext entityContext) {
-        OnvifCameraEntity cameraEntity = onvifCameraHandler.getCameraEntity();
+        OnvifCameraEntity cameraEntity = onvifCameraHandler.getVideoStreamEntity();
         // Foscam needs any special char like spaces (%20) to be encoded for URLs.
         cameraEntity.setUser(Helper.encodeSpecialChars(cameraEntity.getUser()));
         cameraEntity.setPassword(Helper.encodeSpecialChars(cameraEntity.getPassword().asString()));

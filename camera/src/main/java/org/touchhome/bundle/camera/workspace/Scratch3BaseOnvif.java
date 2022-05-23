@@ -23,7 +23,7 @@ public interface Scratch3BaseOnvif {
     }
 
     default OnvifCameraHandler getOnvifHandler(WorkspaceBlock workspaceBlock) {
-        return getOnvifEntity(workspaceBlock).getCameraHandler();
+        return getOnvifEntity(workspaceBlock).getVideoHandler();
     }
 
     default OnvifCameraEntity getOnvifEntity(WorkspaceBlock workspaceBlock) {

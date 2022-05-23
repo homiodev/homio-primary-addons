@@ -69,7 +69,9 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
                                 sendString(ctx, debugMe, "application/x-mpegurl");
                                 return;
                             } else {
-                                log.warn("HLS requires the groups startStream channel to be turned on first. Just starting it now.");
+                                log.warn(
+                                        "HLS requires the groups startStream channel to be turned on first. Just starting it " +
+                                                "now.");
                                 ipCameraGroupHandler.start(OnOffType.ON);
                             }
                             break;
@@ -166,8 +168,8 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
         } else if (cause.toString().contains("An existing connection was forcibly closed by the remote host")) {
             log.debug("An existing connection was forcibly closed by the remote host");
         } else if (cause.toString().contains("(No such file or directory)")) {
-            log.info(
-                    "IpCameras file server could not find the requested file. This may happen if ffmpeg is still creating the file.");
+            log.info("IpCameras file server could not find the requested file. " +
+                    "This may happen if ffmpeg is still creating the file.");
         } else {
             log.warn("Exception caught from stream server:{}", cause.getMessage());
         }

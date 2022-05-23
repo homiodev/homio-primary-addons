@@ -8,14 +8,14 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
+import org.touchhome.bundle.api.video.ui.UIVideoAction;
+import org.touchhome.bundle.api.video.ui.UIVideoActionGetter;
+import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
-import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
-import org.touchhome.bundle.camera.onvif.BrandCameraHasAudioAlarm;
-import org.touchhome.bundle.camera.onvif.BrandCameraHasMotionAlarm;
+import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasAudioAlarm;
+import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.onvif.util.Helper;
-import org.touchhome.bundle.camera.ui.UICameraAction;
-import org.touchhome.bundle.camera.ui.UICameraActionGetter;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -32,7 +32,7 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
 
     private int audioThreshold;
 
-    public DahuaBrandHandler(BaseVideoCameraEntity cameraEntity) {
+    public DahuaBrandHandler(OnvifCameraEntity cameraEntity) {
         super(cameraEntity);
     }
 
@@ -226,32 +226,32 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
         }
     }
 
-    @UICameraActionGetter(CHANNEL_ENABLE_PRIVACY_MODE)
+    @UIVideoActionGetter(CHANNEL_ENABLE_PRIVACY_MODE)
     public State getEnablePrivacyMode() {
         return getAttribute(CHANNEL_ENABLE_PRIVACY_MODE);
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_PRIVACY_MODE, order = 70, icon = "fas fa-user-secret")
+    @UIVideoAction(name = CHANNEL_ENABLE_PRIVACY_MODE, order = 70, icon = "fas fa-user-secret")
     public void setEnablePrivacyMode(boolean on) {
         onvifCameraHandler.sendHttpGET(CM + "setConfig&LeLensMask[0].Enable=" + on);
     }
 
-    @UICameraAction(name = CHANNEL_ACTIVATE_ALARM_OUTPUT2, order = 47, icon = "fas fa-bell")
+    @UIVideoAction(name = CHANNEL_ACTIVATE_ALARM_OUTPUT2, order = 47, icon = "fas fa-bell")
     public void activateAlarmOutput2(boolean on) {
         onvifCameraHandler.sendHttpGET(CM + "setConfig&AlarmOut[1].Mode=" + boolToInt(on));
     }
 
-    @UICameraAction(name = CHANNEL_ACTIVATE_ALARM_OUTPUT, order = 45, icon = "fas fa-bell")
+    @UIVideoAction(name = CHANNEL_ACTIVATE_ALARM_OUTPUT, order = 45, icon = "fas fa-bell")
     public void activateAlarmOutput(boolean on) {
         onvifCameraHandler.sendHttpGET(CM + "setConfig&AlarmOut[1].Mode=" + boolToInt(on));
     }
 
-    @UICameraActionGetter(CHANNEL_ENABLE_MOTION_ALARM)
+    @UIVideoActionGetter(CHANNEL_ENABLE_MOTION_ALARM)
     public State getEnableMotionAlarm() {
         return getAttribute(CHANNEL_ENABLE_MOTION_ALARM);
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")
+    @UIVideoAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")
     public void setEnableMotionAlarm(boolean on) {
         if (on) {
             onvifCameraHandler.sendHttpGET(CM + "setConfig&MotionDetect[0].Enable=true&MotionDetect[0].EventHandler.Dejitter=1");
@@ -260,12 +260,12 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
         }
     }
 
-    @UICameraActionGetter(CHANNEL_ENABLE_LINE_CROSSING_ALARM)
+    @UIVideoActionGetter(CHANNEL_ENABLE_LINE_CROSSING_ALARM)
     public State getEnableLineCrossingAlarm() {
         return getAttribute(CHANNEL_ENABLE_LINE_CROSSING_ALARM);
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_LINE_CROSSING_ALARM, order = 150, icon = "fas fa-grip-lines-vertical")
+    @UIVideoAction(name = CHANNEL_ENABLE_LINE_CROSSING_ALARM, order = 150, icon = "fas fa-grip-lines-vertical")
     public void setEnableLineCrossingAlarm(boolean on) {
         onvifCameraHandler.sendHttpGET(CM + "setConfig&VideoAnalyseRule[0][1].Enable=" + on);
     }
@@ -291,7 +291,7 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
         }
     }
 
-    @UICameraAction(name = CHANNEL_AUTO_LED, order = 60, icon = "fas fa-lightbulb")
+    @UIVideoAction(name = CHANNEL_AUTO_LED, order = 60, icon = "fas fa-lightbulb")
     public void autoLED(boolean on) {
         if (on) {
             setAttribute(CHANNEL_ENABLE_LED, null/*UnDefType.UNDEF*/);
@@ -299,7 +299,7 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
         }
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_LED, order = 50, icon = "far fa-lightbulb")
+    @UIVideoAction(name = CHANNEL_ENABLE_LED, order = 50, icon = "far fa-lightbulb")
     public void enableLED(boolean on) {
         getIRLedHandler().accept(on);
     }
@@ -326,7 +326,7 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
         return () -> Optional.ofNullable(getAttribute(CHANNEL_ENABLE_LED)).map(State::boolValue).orElse(false);
     }
 
-    @UICameraAction(name = CHANNEL_TEXT_OVERLAY, order = 100, icon = "fas fa-paragraph")
+    @UIVideoAction(name = CHANNEL_TEXT_OVERLAY, order = 100, icon = "fas fa-paragraph")
     public void textOverlay(String value) {
         String text = Helper.encodeSpecialChars(value);
         if (text.isEmpty()) {
@@ -349,7 +349,7 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
         // Check for alarms, channel for NVRs appears not to work at filtering.
         if (onvifCameraHandler.streamIsStopped("/cgi-bin/eventManager.cgi?action=attach&codes=[All]")) {
             log.info("The alarm stream was not running for camera {}, re-starting it now",
-                    onvifCameraHandler.getCameraEntity().getIp());
+                    onvifCameraHandler.getVideoStreamEntity().getIp());
             onvifCameraHandler.sendHttpGET("/cgi-bin/eventManager.cgi?action=attach&codes=[All]");
         }
     }
@@ -357,10 +357,10 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
     @Override
     public void initialize(EntityContext entityContext) {
         if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
-            onvifCameraHandler.setMjpegUri("/cgi-bin/mjpg/video.cgi?channel=" + onvifCameraHandler.getCameraEntity().getNvrChannel() + "&subtype=1");
+            onvifCameraHandler.setMjpegUri("/cgi-bin/mjpg/video.cgi?channel=" + onvifCameraHandler.getVideoStreamEntity().getNvrChannel() + "&subtype=1");
         }
         if (StringUtils.isEmpty(onvifCameraHandler.getSnapshotUri())) {
-            onvifCameraHandler.setSnapshotUri("/cgi-bin/snapshot.cgi?channel=" + onvifCameraHandler.getCameraEntity().getNvrChannel());
+            onvifCameraHandler.setSnapshotUri("/cgi-bin/snapshot.cgi?channel=" + onvifCameraHandler.getVideoStreamEntity().getNvrChannel());
         }
     }
 

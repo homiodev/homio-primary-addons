@@ -1,4 +1,4 @@
-package org.touchhome.bundle.camera.onvif;
+package org.touchhome.bundle.camera.onvif.brand;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -12,17 +12,16 @@ import org.springframework.http.MediaType;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
-import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
+import org.touchhome.bundle.api.video.VideoActionsContext;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.BaseBrandCameraHandler;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.ui.CameraActionBuilder;
-import org.touchhome.bundle.camera.ui.CameraActionsContext;
 
 import java.nio.charset.StandardCharsets;
 
 @Log4j2
-public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler implements CameraActionsContext, BaseBrandCameraHandler {
+public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler implements VideoActionsContext, BaseBrandCameraHandler {
 
     protected final OnvifCameraHandler onvifCameraHandler;
     protected final int nvrChannel;
@@ -31,7 +30,7 @@ public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler i
     protected final String password;
     protected final String ip;
     @Getter
-    protected final OnvifCameraEntity cameraEntity;
+    protected final OnvifCameraEntity videoStreamEntity;
     @Getter
     protected final EntityContext entityContext;
 
@@ -41,17 +40,17 @@ public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler i
         this.username = null;
         this.password = null;
         this.ip = null;
-        this.cameraEntity = null;
+        this.videoStreamEntity = null;
         this.entityContext = null;
     }
 
-    public BaseOnvifCameraBrandHandler(BaseVideoCameraEntity entity) {
-        this.cameraEntity = (OnvifCameraEntity) entity;
-        this.onvifCameraHandler = cameraEntity.getCameraHandler();
-        this.nvrChannel = cameraEntity.getNvrChannel();
-        this.username = cameraEntity.getUser();
-        this.password = cameraEntity.getPassword().asString();
-        this.ip = cameraEntity.getIp();
+    public BaseOnvifCameraBrandHandler(OnvifCameraEntity entity) {
+        this.videoStreamEntity = entity;
+        this.onvifCameraHandler = videoStreamEntity.getVideoHandler();
+        this.nvrChannel = videoStreamEntity.getNvrChannel();
+        this.username = videoStreamEntity.getUser();
+        this.password = videoStreamEntity.getPassword().asString();
+        this.ip = videoStreamEntity.getIp();
         this.entityContext = onvifCameraHandler.getEntityContext();
     }
 
@@ -106,7 +105,7 @@ public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler i
 
     protected FullHttpRequest buildFullHttpRequest(String httpPutURL, String xml, HttpMethod httpMethod, MediaType mediaType) {
         FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod(httpMethod.name()), httpPutURL);
-        request.headers().set(HttpHeaderNames.HOST, onvifCameraHandler.getCameraEntity().getIp());
+        request.headers().set(HttpHeaderNames.HOST, onvifCameraHandler.getVideoStreamEntity().getIp());
         request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
         request.headers().add(HttpHeaderNames.CONTENT_TYPE, mediaType.toString());
         ByteBuf bbuf = Unpooled.copiedBuffer(xml, StandardCharsets.UTF_8);

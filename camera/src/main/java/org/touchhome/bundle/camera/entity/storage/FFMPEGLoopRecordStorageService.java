@@ -6,14 +6,14 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.entity.DeviceBaseEntity;
 import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
-import org.touchhome.bundle.api.entity.storage.CameraBaseStorageService;
+import org.touchhome.bundle.api.entity.storage.VideoBaseStorageService;
 import org.touchhome.bundle.api.ui.UISidebarChildren;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
-import org.touchhome.bundle.camera.entity.BaseFFmpegStreamEntity;
-import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
-import org.touchhome.bundle.camera.handler.BaseFFmpegCameraHandler;
-import org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
+import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
+import org.touchhome.bundle.api.video.ffmpeg.FFMPEG;
 import org.touchhome.common.util.CommonUtils;
 
 import javax.persistence.Entity;
@@ -24,16 +24,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.touchhome.bundle.api.video.ffmpeg.FFMPEGFormat.RECORD;
+
 @Log4j2
 @Setter
 @Getter
 @Entity
 @UISidebarChildren(icon = "rest/bundle/image/camera/rpi-loop-record.png", color = "#0088CC")
-public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFMPEGLoopRecordStorageService> {
+public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMPEGLoopRecordStorageService> {
 
     public static final String PREFIX = "ffmpeglr_";
 
-    private static Map<String, Ffmpeg> ffmpegServices = new HashMap<>();
+    private static Map<String, FFMPEG> ffmpegServices = new HashMap<>();
 
     @UIField(order = 11)
     @RestartHandlerOnChange
@@ -137,7 +139,7 @@ public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFM
     @Override
     public void startRecord(String id, String output, String profile, DeviceBaseEntity deviceEntity) {
         stopRecord(id, output, deviceEntity);
-        if (!(deviceEntity instanceof BaseFFmpegStreamEntity)) {
+        if (!(deviceEntity instanceof BaseFFMPEGVideoStreamEntity)) {
             throw new IllegalArgumentException("Unable to start video record for non ffmpeg compatible source");
         }
 
@@ -145,10 +147,10 @@ public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFM
             throw new IllegalArgumentException("To record to hls output need set file extension as .m3u8");
         }
 
-        BaseFFmpegStreamEntity cameraEntity = (BaseFFmpegStreamEntity) deviceEntity;
-        BaseFFmpegCameraHandler cameraHandler = cameraEntity.getCameraHandler();
+        BaseFFMPEGVideoStreamEntity videoStreamEntity = (BaseFFMPEGVideoStreamEntity) deviceEntity;
+        BaseFFMPEGVideoStreamHandler videoStreamHandler = videoStreamEntity.getVideoHandler();
 
-        Ffmpeg.FFmpegHandler ffmpegHandler = new Ffmpeg.FFmpegHandler() {
+        FFMPEG.FFMPEGHandler ffmpegHandler = new FFMPEG.FFMPEGHandler() {
             @Override
             public String getEntityID() {
                 return deviceEntity.getEntityID();
@@ -172,25 +174,26 @@ public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFM
         String target = buildOutput(output);
         Path path = Paths.get(target);
         if (!path.isAbsolute()) {
-            path = cameraEntity.getFolder(profile).resolve("ffmpeg").resolve(target);
+            path = TouchHomeUtils.getMediaPath().resolve(videoStreamEntity.getFolderName() + "_" + profile)
+                    .resolve("ffmpeg").resolve(target);
         }
         Path folder = path.getParent();
         CommonUtils.createDirectoriesIfNotExists(folder);
 
-        String source = cameraHandler.getRtspUri(profile);
+        String source = videoStreamHandler.getRtspUri(profile);
         log.info("Start ffmpeg video recording from source: <{}> to: <{}>", source, path);
-        Ffmpeg ffmpeg = new Ffmpeg("FFmpegLoopRecord", "FFMPEG loop record", ffmpegHandler, log,
-                IpCameraBindingConstants.FFmpegFormat.RECORD, cameraHandler.getFfmpegLocation(),
+        FFMPEG ffmpeg = new FFMPEG("FFMPEGLoopRecord_" + getEntityID(), "FFMPEG loop record", ffmpegHandler, log,
+                RECORD, videoStreamHandler.getFfmpegLocation(),
                 getVerbose() ? "" : "-hide_banner -loglevel warning", source,
                 buildFFMPEGRecordCommand(folder), path.toString(),
-                cameraEntity.getUser(), cameraEntity.getPassword().asString(), null);
+                videoStreamEntity.getUser(), videoStreamEntity.getPassword().asString(), null);
         ffmpegServices.put(id, ffmpeg);
         ffmpeg.startConverting();
     }
 
     @Override
     public void stopRecord(String id, String output, DeviceBaseEntity cameraEntity) {
-        Ffmpeg ffmpeg = ffmpegServices.remove(id);
+        FFMPEG ffmpeg = ffmpegServices.remove(id);
         if (ffmpeg != null) {
             ffmpeg.stopConverting();
         }
@@ -229,7 +232,7 @@ public class FFMPEGLoopRecordStorageService extends CameraBaseStorageService<FFM
             options.add("-segment_format mp4");
 
             options.add("-segment_list_type m3u8");
-            options.add("-segment_list " + folder.resolve("playlist.m3u8").toString());
+            options.add("-segment_list " + folder.resolve("playlist.m3u8"));
         }
 
         return String.join(" ", options);

@@ -11,14 +11,14 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.state.StringType;
-import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
+import org.touchhome.bundle.api.video.ui.UIVideoAction;
+import org.touchhome.bundle.api.video.ui.UIVideoActionGetter;
+import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
-import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
-import org.touchhome.bundle.camera.onvif.BrandCameraHasMotionAlarm;
+import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.onvif.util.ChannelTracking;
 import org.touchhome.bundle.camera.onvif.util.Helper;
-import org.touchhome.bundle.camera.ui.UICameraAction;
-import org.touchhome.bundle.camera.ui.UICameraActionGetter;
 
 import static org.touchhome.bundle.camera.onvif.util.IpCameraBindingConstants.*;
 
@@ -32,7 +32,7 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
     private int lineCount, vmdCount, leftCount, takenCount, faceCount, pirCount, fieldCount;
     private boolean checkAlarmInput;
 
-    public HikvisionBrandHandler(BaseVideoCameraEntity cameraEntity) {
+    public HikvisionBrandHandler(OnvifCameraEntity cameraEntity) {
         super(cameraEntity);
     }
 
@@ -280,12 +280,12 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
         }
     }
 
-    @UICameraActionGetter(CHANNEL_TEXT_OVERLAY)
+    @UIVideoActionGetter(CHANNEL_TEXT_OVERLAY)
     public State getTextOverlay() {
         return getAttribute(CHANNEL_TEXT_OVERLAY);
     }
 
-    @UICameraAction(name = CHANNEL_TEXT_OVERLAY, order = 100, icon = "fas fa-paragraph")
+    @UIVideoAction(name = CHANNEL_TEXT_OVERLAY, order = 100, icon = "fas fa-paragraph")
     public void setTextOverlay(String command) {
         onvifCameraHandler.getLog().debug("Changing text overlay to {}", command);
         if (command.isEmpty()) {
@@ -299,30 +299,30 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
         }
     }
 
-    @UICameraActionGetter(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT)
+    @UIVideoActionGetter(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT)
     public State getEnableExternalAlarmInput() {
         return getAttribute(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT);
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, order = 250, icon = "fas fa-external-link-square-alt")
+    @UIVideoAction(name = CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, order = 250, icon = "fas fa-external-link-square-alt")
     public void setEnableExternalAlarmInput(boolean on) {
         onvifCameraHandler.getLog().debug("Changing enabled state of the external input 1 to {}", on);
         hikChangeSetting("/ISAPI/System/IO/inputs/" + nvrChannel, "enabled", "<enabled>" + on + "</enabled>");
     }
 
-    @UICameraActionGetter(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT)
+    @UIVideoActionGetter(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT)
     public State getTriggerExternalAlarmInput() {
         return getAttribute(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT);
     }
 
-    @UICameraAction(name = CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT, order = 300, icon = "fas fa-external-link-alt")
+    @UIVideoAction(name = CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT, order = 300, icon = "fas fa-external-link-alt")
     public void setTriggerExternalAlarmInput(boolean on) {
         onvifCameraHandler.getLog().debug("Changing triggering state of the external input 1 to {}", on);
         hikChangeSetting("/ISAPI/System/IO/inputs/" + nvrChannel, "triggering",
                 "<triggering>" + (on ? "high" : "low") + "</triggering>");
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_PIR_ALARM, order = 120, icon = "fas fa-compress-alt")
+    @UIVideoAction(name = CHANNEL_ENABLE_PIR_ALARM, order = 120, icon = "fas fa-compress-alt")
     public void enablePirAlarm(boolean on) {
         hikChangeSetting("/ISAPI/WLAlarm/PIR", "enabled", "<enabled>" + on + "</enabled>");
     }
@@ -332,35 +332,35 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
         hikChangeSetting("/ISAPI/WLAlarm/PIR", "enabled", "<enabled>" + (threshold > 0) + "</enabled>");
     }
 
-    @UICameraActionGetter(CHANNEL_ENABLE_LINE_CROSSING_ALARM)
+    @UIVideoActionGetter(CHANNEL_ENABLE_LINE_CROSSING_ALARM)
     public State getEnableLineCrossingAlarm() {
         return getAttribute(CHANNEL_ENABLE_LINE_CROSSING_ALARM);
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_LINE_CROSSING_ALARM, order = 150, icon = "fas fa-grip-lines-vertical")
+    @UIVideoAction(name = CHANNEL_ENABLE_LINE_CROSSING_ALARM, order = 150, icon = "fas fa-grip-lines-vertical")
     public void setEnableLineCrossingAlarm(boolean on) {
         hikChangeSetting("/ISAPI/Smart/LineDetection/" + nvrChannel + "01", "enabled",
                 "<enabled>" + on + "</enabled>");
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")
+    @UIVideoAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")
     public void enableMotionAlarm(boolean on) {
         hikChangeSetting("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "01/motionDetection",
                 "enabled", "<enabled>" + on + "</enabled>");
     }
 
-    @UICameraActionGetter(CHANNEL_ENABLE_FIELD_DETECTION_ALARM)
+    @UIVideoActionGetter(CHANNEL_ENABLE_FIELD_DETECTION_ALARM)
     public State getEnableFieldDetectionAlarm() {
         return getAttribute(CHANNEL_ENABLE_FIELD_DETECTION_ALARM);
     }
 
-    @UICameraAction(name = CHANNEL_ENABLE_FIELD_DETECTION_ALARM, order = 140, icon = "fas fa-shield-alt")
+    @UIVideoAction(name = CHANNEL_ENABLE_FIELD_DETECTION_ALARM, order = 140, icon = "fas fa-shield-alt")
     public void setEnableFieldDetectionAlarm(boolean on) {
         hikChangeSetting("/ISAPI/Smart/FieldDetection/" + nvrChannel + "01", "enabled",
                 "<enabled>" + on + "</enabled>");
     }
 
-    @UICameraAction(name = CHANNEL_ACTIVATE_ALARM_OUTPUT, order = 45, icon = "fas fa-bell")
+    @UIVideoAction(name = CHANNEL_ACTIVATE_ALARM_OUTPUT, order = 45, icon = "fas fa-bell")
     public void activateAlarmOutput(boolean on) {
         hikSendXml("/ISAPI/System/IO/outputs/" + nvrChannel + "/trigger",
                 "<IOPortData version=\"1.0\" xmlns=\"http://www.hikvision.com/ver10/XMLSchema\">\r\n    <outputState>" +
@@ -383,7 +383,7 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
     public void pollCameraRunnable(OnvifCameraHandler onvifCameraHandler) {
         if (onvifCameraHandler.streamIsStopped("/ISAPI/Event/notification/alertStream")) {
             log.info("The alarm stream was not running for camera {}, re-starting it now",
-                    onvifCameraHandler.getCameraEntity().getIp());
+                    onvifCameraHandler.getVideoStreamEntity().getIp());
             onvifCameraHandler.sendHttpGET("/ISAPI/Event/notification/alertStream");
         }
     }
@@ -391,10 +391,12 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
     @Override
     public void initialize(EntityContext entityContext) {
         if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
-            onvifCameraHandler.setMjpegUri("/ISAPI/Streaming/channels/" + onvifCameraHandler.getCameraEntity().getNvrChannel() + "02" + "/httppreview");
+            onvifCameraHandler.setMjpegUri("/ISAPI/Streaming/channels/" + onvifCameraHandler.getVideoStreamEntity().getNvrChannel() + "02" +
+                    "/httppreview");
         }
         if (StringUtils.isEmpty(onvifCameraHandler.getSnapshotUri())) {
-            onvifCameraHandler.setSnapshotUri("/ISAPI/Streaming/channels/" + onvifCameraHandler.getCameraEntity().getNvrChannel() + "01/picture");
+            onvifCameraHandler.setSnapshotUri("/ISAPI/Streaming/channels/" + onvifCameraHandler.getVideoStreamEntity().getNvrChannel() + "01" +
+                    "/picture");
         }
     }
 

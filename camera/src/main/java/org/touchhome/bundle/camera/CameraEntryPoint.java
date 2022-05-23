@@ -12,12 +12,12 @@ import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.netty.NettyUtils;
 import org.touchhome.bundle.api.setting.SettingPluginStatus;
-import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
-import org.touchhome.bundle.camera.ffmpeg.Ffmpeg;
-import org.touchhome.bundle.camera.handler.BaseCameraHandler;
+import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
+import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
+import org.touchhome.bundle.api.video.ffmpeg.FFMPEG;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
-import org.touchhome.bundle.camera.onvif.BaseOnvifCameraBrandHandler;
-import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
+import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.onvif.brand.CameraBrandHandlerDescription;
 import org.touchhome.bundle.camera.scanner.OnvifCameraHttpScanner;
 import org.touchhome.bundle.camera.setting.CameraStatusSetting;
 
@@ -58,8 +58,8 @@ public class CameraEntryPoint implements BundleEntryPoint {
 
     public void init() {
         entityContext.bgp().registerThreadsPuller("camera-ffmpeg", threadPuller -> {
-            for (Map.Entry<String, Ffmpeg> threadEntry : Ffmpeg.ffmpegMap.entrySet()) {
-                Ffmpeg ffmpeg = threadEntry.getValue();
+            for (Map.Entry<String, FFMPEG> threadEntry : FFMPEG.ffmpegMap.entrySet()) {
+                FFMPEG ffmpeg = threadEntry.getValue();
                 if (ffmpeg.getIsAlive()) {
                     threadPuller.addThread(threadEntry.getKey(), ffmpeg.getDescription(), ffmpeg.getCreationDate(),
                             "working", null,
@@ -77,10 +77,10 @@ public class CameraEntryPoint implements BundleEntryPoint {
         }
 
         // listen if camera entity removed
-        entityContext.event().addEntityRemovedListener(BaseVideoCameraEntity.class, "camera-remove-listener", cameraEntity -> {
+        entityContext.event().addEntityRemovedListener(BaseFFMPEGVideoStreamEntity.class, "camera-remove-listener", cameraEntity -> {
             CameraCoordinator.removeSpdMessage(cameraEntity.getIeeeAddress());
             // remove camera handler
-            BaseCameraHandler handler = NettyUtils.removeBootstrapServer(cameraEntity.getEntityID());
+            BaseFFMPEGVideoStreamHandler handler = NettyUtils.removeBootstrapServer(cameraEntity.getEntityID());
             if (handler != null) {
                 handler.dispose();
                 handler.deleteDirectories();
@@ -88,24 +88,25 @@ public class CameraEntryPoint implements BundleEntryPoint {
         });
 
         // lister start/stop status, any changes
-        entityContext.event().addEntityUpdateListener(BaseVideoCameraEntity.class, "camera-change-listener", (cameraEntity, oldCameraEntity) -> {
-            BaseCameraHandler cameraHandler = cameraEntity.getCameraHandler();
-            cameraHandler.updateCameraEntity(cameraEntity);
+        entityContext.event().addEntityUpdateListener(BaseFFMPEGVideoStreamEntity.class, "camera-change-listener",
+                (cameraEntity, oldCameraEntity) -> {
+                    BaseFFMPEGVideoStreamHandler cameraHandler = cameraEntity.getVideoHandler();
+                    cameraHandler.updateVideoStreamEntity(cameraEntity);
 
-            if (cameraEntity.isStart() && !cameraHandler.isHandlerInitialized()) {
-                cameraHandler.initialize();
-            } else if (!cameraEntity.isStart() && cameraHandler.isHandlerInitialized()) {
-                cameraHandler.disposeAndSetStatus(Status.OFFLINE, "Camera not started");
-            } else if (/*TODO: cameraHandler.isHandlerInitialized() && */detectIfRequireRestartHandler(oldCameraEntity, cameraEntity)) {
-                cameraHandler.restart("Restart camera handler", true);
-            }
-            // change camera name if possible
-            if (oldCameraEntity != null && !Objects.equals(cameraEntity.getName(), oldCameraEntity.getName())) {
-                if (cameraHandler instanceof OnvifCameraHandler) {
-                    ((OnvifCameraHandler) cameraHandler).getOnvifDeviceState().getInitialDevices().setName(cameraEntity.getName());
-                }
-            }
-        });
+                    if (cameraEntity.isStart() && !cameraHandler.isHandlerInitialized()) {
+                        cameraHandler.initialize();
+                    } else if (!cameraEntity.isStart() && cameraHandler.isHandlerInitialized()) {
+                        cameraHandler.disposeAndSetStatus(Status.OFFLINE, "Camera not started");
+                    } else if (/*TODO: cameraHandler.isHandlerInitialized() && */detectIfRequireRestartHandler(oldCameraEntity, cameraEntity)) {
+                        cameraHandler.restart("Restart camera handler", true);
+                    }
+                    // change camera name if possible
+                    if (oldCameraEntity != null && !Objects.equals(cameraEntity.getName(), oldCameraEntity.getName())) {
+                        if (cameraHandler instanceof OnvifCameraHandler) {
+                            ((OnvifCameraHandler) cameraHandler).getOnvifDeviceState().getInitialDevices().setName(cameraEntity.getName());
+                        }
+                    }
+                });
 
         entityContext.bgp().runOnceOnInternetUp("scan camera", () -> {
             // fire rescan whole possible items to see if ip address has been changed
@@ -117,14 +118,14 @@ public class CameraEntryPoint implements BundleEntryPoint {
     }
 
     private void fireStartCamera() {
-        for (BaseVideoCameraEntity cameraEntity : entityContext.findAll(BaseVideoCameraEntity.class)) {
-            BaseCameraHandler cameraHandler = cameraEntity.getCameraHandler();
+        for (BaseFFMPEGVideoStreamEntity cameraEntity : entityContext.findAll(BaseFFMPEGVideoStreamEntity.class)) {
+            BaseFFMPEGVideoStreamHandler cameraHandler = cameraEntity.getVideoHandler();
             if ((cameraEntity.isStart() || cameraEntity.isAutoStart()) && !cameraHandler.isHandlerInitialized()) {
                 if (!cameraEntity.isStart()) {
                     entityContext.save(cameraEntity.setStart(true));
                 } else {
-                    BaseCameraHandler handler = cameraEntity.getCameraHandler();
-                    handler.updateCameraEntity(cameraEntity);
+                    BaseFFMPEGVideoStreamHandler handler = cameraEntity.getVideoHandler();
+                    handler.updateVideoStreamEntity(cameraEntity);
                     handler.initialize();
                 }
             }

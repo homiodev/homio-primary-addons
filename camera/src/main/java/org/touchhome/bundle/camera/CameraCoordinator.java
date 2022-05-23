@@ -2,7 +2,7 @@ package org.touchhome.bundle.camera;
 
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.camera.handler.BaseBrandCameraHandler;
-import org.touchhome.bundle.camera.onvif.CameraBrandHandlerDescription;
+import org.touchhome.bundle.camera.onvif.brand.CameraBrandHandlerDescription;
 import org.touchhome.bundle.camera.rtsp.message.sdp.SdpMessage;
 
 import java.util.HashMap;

@@ -21,6 +21,9 @@ import org.touchhome.bundle.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.dialog.UIStickyDialogItemBuilder;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
+import org.touchhome.bundle.api.video.VideoActionsContext;
+import org.touchhome.bundle.api.video.ui.UIVideoAction;
+import org.touchhome.bundle.api.video.ui.UIVideoActionGetter;
 import org.touchhome.common.util.CommonUtils;
 
 import java.lang.reflect.Constructor;
@@ -34,27 +37,27 @@ import java.util.function.Function;
 @Log4j2
 public class CameraActionBuilder {
 
-    public static void assembleActions(CameraActionsContext instance, UIInputBuilder uiInputBuilder) {
+    public static void assembleActions(VideoActionsContext instance, UIInputBuilder uiInputBuilder) {
         Set<String> handledMethods = new HashSet<>();
-        for (Method method : MethodUtils.getMethodsWithAnnotation(instance.getClass(), UICameraAction.class, true, false)) {
+        for (Method method : MethodUtils.getMethodsWithAnnotation(instance.getClass(), UIVideoAction.class, true, false)) {
             UICameraActionConditional cameraActionConditional = method.getDeclaredAnnotation(UICameraActionConditional.class);
             if (handledMethods.add(method.getName()) && (cameraActionConditional == null ||
                     CommonUtils.newInstance(cameraActionConditional.value()).test(instance))) {
 
-                UICameraAction uiCameraAction = method.getDeclaredAnnotation(UICameraAction.class);
+                UIVideoAction uiVideoAction = method.getDeclaredAnnotation(UIVideoAction.class);
                 Parameter actionParameter = method.getParameters()[0];
                 Function<String, Object> actionParameterConverter = buildParameterActionConverter(actionParameter);
 
                 UIFieldType type;
-                if (uiCameraAction.type() == UICameraAction.ActionType.AutoDiscover) {
+                if (uiVideoAction.type() == UIVideoAction.ActionType.AutoDiscover) {
                     if (method.isAnnotationPresent(UICameraSelectionAttributeValues.class) || method.isAnnotationPresent(UIFieldSelection.class)) {
                         type = UIFieldType.SelectBox;
                     } else {
                         type = getFieldTypeFromMethod(actionParameter);
                     }
                 } else {
-                    type = uiCameraAction.type() == UICameraAction.ActionType.Dimmer
-                            ? UIFieldType.Slider : uiCameraAction.type() == UICameraAction.ActionType.Switch
+                    type = uiVideoAction.type() == UIVideoAction.ActionType.Dimmer
+                            ? UIFieldType.Slider : uiVideoAction.type() == UIVideoAction.ActionType.Switch
                             ? UIFieldType.Boolean : UIFieldType.String;
                 }
 
@@ -69,37 +72,37 @@ public class CameraActionBuilder {
 
                 UIEntityItemBuilder uiEntityItemBuilder;
                 UILayoutBuilder layoutBuilder = uiInputBuilder;
-                if (StringUtils.isNotEmpty(uiCameraAction.group())) {
+                if (StringUtils.isNotEmpty(uiVideoAction.group())) {
 
-                    if (StringUtils.isEmpty(uiCameraAction.subGroup())) {
-                        layoutBuilder = uiInputBuilder.addFlex(uiCameraAction.group(), uiCameraAction.order())
+                    if (StringUtils.isEmpty(uiVideoAction.subGroup())) {
+                        layoutBuilder = uiInputBuilder.addFlex(uiVideoAction.group(), uiVideoAction.order())
                                 .columnFlexDirection()
-                                .setBorderArea(uiCameraAction.group());
+                                .setBorderArea(uiVideoAction.group());
                     } else {
                         UIStickyDialogItemBuilder stickyLayoutBuilder = layoutBuilder.addStickyDialogButton(
-                                uiCameraAction.group() + "_sb", uiCameraAction.subGroupIcon(), null, uiCameraAction.order())
-                                .editButton(buttonItemBuilder -> buttonItemBuilder.setText(uiCameraAction.group()));
+                                        uiVideoAction.group() + "_sb", uiVideoAction.subGroupIcon(), null, uiVideoAction.order())
+                                .editButton(buttonItemBuilder -> buttonItemBuilder.setText(uiVideoAction.group()));
 
-                        layoutBuilder = stickyLayoutBuilder.addFlex(uiCameraAction.subGroup(), uiCameraAction.order())
-                                .setBorderArea(uiCameraAction.subGroup())
+                        layoutBuilder = stickyLayoutBuilder.addFlex(uiVideoAction.subGroup(), uiVideoAction.order())
+                                .setBorderArea(uiVideoAction.subGroup())
                                 .columnFlexDirection();
                     }
                 }
                 UICameraDimmerButton[] buttons = method.getDeclaredAnnotationsByType(UICameraDimmerButton.class);
                 if (buttons.length > 0) {
-                    if (uiCameraAction.type() != UICameraAction.ActionType.Dimmer) {
+                    if (uiVideoAction.type() != UIVideoAction.ActionType.Dimmer) {
                         throw new RuntimeException("Method " + method.getName() + " annotated with @UICameraDimmerButton, but @UICameraAction has no dimmer type");
                     }
-                    UIFlexLayoutBuilder flex = layoutBuilder.addFlex("dimmer", uiCameraAction.order());
-                    UIMultiButtonItemBuilder multiButtonItemBuilder = flex.addMultiButton("dimm_btns", actionHandler, uiCameraAction.order());
+                    UIFlexLayoutBuilder flex = layoutBuilder.addFlex("dimmer", uiVideoAction.order());
+                    UIMultiButtonItemBuilder multiButtonItemBuilder = flex.addMultiButton("dimm_btns", actionHandler, uiVideoAction.order());
                     for (UICameraDimmerButton button : buttons) {
                         multiButtonItemBuilder.addButton(button.name(), button.icon(), null);
                     }
                     layoutBuilder = flex;
                 }
 
-                uiEntityItemBuilder = (UIEntityItemBuilder) createUIEntity(uiCameraAction, type, layoutBuilder, actionHandler)
-                        .setIcon(uiCameraAction.icon(), uiCameraAction.iconColor());
+                uiEntityItemBuilder = (UIEntityItemBuilder) createUIEntity(uiVideoAction, type, layoutBuilder, actionHandler)
+                        .setIcon(uiVideoAction.icon(), uiVideoAction.iconColor());
 
                 if (type == UIFieldType.SelectBox) {
                     if (actionParameter.getType().isEnum()) {
@@ -136,13 +139,15 @@ public class CameraActionBuilder {
                         uiEntityItemBuilder.addFetchValueHandler("update-selection", () -> {
                             ((UISelectBoxItemBuilder) uiEntityItemBuilder)
                                     .setOptions(dynamicOptionLoader.loadOptions(
-                                            instance.getCameraEntity(),
-                                            instance.getEntityContext(),
-                                            attributeValues.staticParameters()));
+                                            new DynamicOptionLoader.DynamicOptionLoaderParameters(
+                                                    instance.getVideoStreamEntity(),
+                                                    instance.getEntityContext(),
+                                                    attributeValues.staticParameters(), null)
+                                    ));
                         });
                     }
                 }
-                Method getter = findGetter(instance, uiCameraAction.name());
+                Method getter = findGetter(instance, uiVideoAction.name());
 
                 // add update value handler
                 if (getter != null) {
@@ -155,7 +160,7 @@ public class CameraActionBuilder {
                             uiEntityItemBuilder.setValue(type.getConvertToObject().apply(value));
                         } catch (Exception ex) {
                             log.error("Unable to fetch getter value for action: <{}>. Msg: <{}>",
-                                    uiCameraAction.name(), CommonUtils.getErrorMessage(ex));
+                                    uiVideoAction.name(), CommonUtils.getErrorMessage(ex));
                         }
                     });
                 }
@@ -163,28 +168,28 @@ public class CameraActionBuilder {
         }
     }
 
-    private static UIEntityItemBuilder<?, ?> createUIEntity(UICameraAction uiCameraAction, UIFieldType type,
+    private static UIEntityItemBuilder<?, ?> createUIEntity(UIVideoAction uiVideoAction, UIFieldType type,
                                                             UILayoutBuilder layoutBuilder,
                                                             UIActionHandler handler) {
         switch (type) {
             case SelectBox:
-                return layoutBuilder.addSelectBox(uiCameraAction.name(), handler, uiCameraAction.order()).setSelectReplacer(uiCameraAction.min(),
-                        uiCameraAction.max(), uiCameraAction.selectReplacer());
+                return layoutBuilder.addSelectBox(uiVideoAction.name(), handler, uiVideoAction.order()).setSelectReplacer(uiVideoAction.min(),
+                        uiVideoAction.max(), uiVideoAction.selectReplacer());
             case Slider:
-                return layoutBuilder.addSlider(uiCameraAction.name(), 0, uiCameraAction.min(),
-                        uiCameraAction.max(), handler, UISliderItemBuilder.SliderType.Regular, uiCameraAction.order());
+                return layoutBuilder.addSlider(uiVideoAction.name(), 0, uiVideoAction.min(),
+                        uiVideoAction.max(), handler, UISliderItemBuilder.SliderType.Regular, uiVideoAction.order());
             case Boolean:
-                return layoutBuilder.addCheckbox(uiCameraAction.name(), false, handler, uiCameraAction.order());
+                return layoutBuilder.addCheckbox(uiVideoAction.name(), false, handler, uiVideoAction.order());
             case String:
-                return layoutBuilder.addInfo(uiCameraAction.name(), uiCameraAction.order());
+                return layoutBuilder.addInfo(uiVideoAction.name(), uiVideoAction.order());
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }
     }
 
     private static Method findGetter(Object instance, String name) {
-        for (Method method : MethodUtils.getMethodsWithAnnotation(instance.getClass(), UICameraActionGetter.class, true, true)) {
-            if (method.getDeclaredAnnotation(UICameraActionGetter.class).value().equals(name)) {
+        for (Method method : MethodUtils.getMethodsWithAnnotation(instance.getClass(), UIVideoActionGetter.class, true, true)) {
+            if (method.getDeclaredAnnotation(UIVideoActionGetter.class).value().equals(name)) {
                 return method;
             }
         }

@@ -153,7 +153,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                 }
             } else if (response.status().code() != 200) {
                 onvifCameraHandler.getLog().debug("Camera at IP:{} gave a reply with a response code of :{}",
-                        onvifCameraHandler.getCameraEntity().getIp(), response.status().code());
+                        onvifCameraHandler.getVideoStreamEntity().getIp(), response.status().code());
             }
         }
         // Pass the Message back to the pipeline for the next handler to process//
