@@ -209,7 +209,7 @@ public class IpCameraGroupHandler {
     public void cameraOnline(BaseVideoCameraEntity cameraEntity) {
         log.debug("New camera {} came online, checking if part of this group", cameraEntity.getEntityID());
         //widgetLiveStreamEntity.getSeries().stream().filter(s -> s.getDataSource().equals(cameraEntity.getEntityID()))
-        //      .findAny().ifPresent(widgetCameraSeriesEntity -> {
+        //      .findAny().ifPresent(WidgetVideoSeriesEntity -> {
         //     addCamera(cameraEntity);
         // });
     }

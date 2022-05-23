@@ -18,7 +18,7 @@
     "HikvisionBrandHandler":"Hikvision Brand",
     "AmcrestBrandHandler": " Amcrest Brand",
     "InstarBrandHandler": "Instar Brand",
-    "WidgetCameraEntity": "Camera",
+    "WidgetVideoEntity": "Video",
     "OnvifCameraEntity": "Onvif Camera",
     "UsbCameraEntity": "Usb Camera",
     "HlsVideoStreamEntity": "Hls stream",

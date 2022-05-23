@@ -7,12 +7,12 @@ import javax.validation.constraints.Max;
 import java.util.Set;
 
 @Entity
-public class WidgetCameraEntity extends WidgetBaseEntityAndSeries<WidgetCameraEntity, WidgetCameraSeriesEntity> {
+public class WidgetVideoEntity extends WidgetBaseEntityAndSeries<WidgetVideoEntity, WidgetVideoSeriesEntity> {
 
-    public static final String PREFIX = "wtcam_";
+    public static final String PREFIX = "wtvid_";
 
     @Max(4) // allow max 4 cameras
-    public Set<WidgetCameraSeriesEntity> getSeries() {
+    public Set<WidgetVideoSeriesEntity> getSeries() {
         return super.getSeries();
     }
 

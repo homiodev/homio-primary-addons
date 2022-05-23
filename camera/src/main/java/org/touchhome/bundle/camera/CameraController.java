@@ -18,8 +18,8 @@ import org.touchhome.bundle.camera.entity.BaseVideoCameraEntity;
 import org.touchhome.bundle.camera.entity.BaseVideoStreamEntity;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
-import org.touchhome.bundle.camera.widget.WidgetCameraEntity;
-import org.touchhome.bundle.camera.widget.WidgetCameraSeriesEntity;
+import org.touchhome.bundle.camera.widget.WidgetVideoEntity;
+import org.touchhome.bundle.camera.widget.WidgetVideoSeriesEntity;
 import org.touchhome.common.exception.NotFoundException;
 
 import java.util.ArrayList;
@@ -66,9 +66,9 @@ public class CameraController {
 
     @GetMapping("/{entityID}")
     public List<CameraEntityResponse> getCameraData(@PathVariable("entityID") String entityID) {
-        WidgetCameraEntity entity = entityContext.getEntity(entityID);
+        WidgetVideoEntity entity = entityContext.getEntity(entityID);
         List<CameraEntityResponse> result = new ArrayList<>();
-        for (WidgetCameraSeriesEntity item : entity.getSeries()) {
+        for (WidgetVideoSeriesEntity item : entity.getSeries()) {
             String[] keys = item.getDataSource().split("~~~");
             BaseVideoStreamEntity baseVideoStreamEntity = entityContext.getEntity(keys[0]);
             if (baseVideoStreamEntity != null) {
@@ -84,8 +84,8 @@ public class CameraController {
     public void fireCameraAction(@PathVariable("entityID") String entityID,
                                  @PathVariable("seriesEntityID") String seriesEntityID,
                                  @RequestBody CameraActionRequest cameraActionRequest) {
-        WidgetCameraEntity entity = entityContext.getEntity(entityID);
-        WidgetCameraSeriesEntity series = entity.getSeries().stream().filter(s -> s.getEntityID().equals(seriesEntityID)).findAny().orElse(null);
+        WidgetVideoEntity entity = entityContext.getEntity(entityID);
+        WidgetVideoSeriesEntity series = entity.getSeries().stream().filter(s -> s.getEntityID().equals(seriesEntityID)).findAny().orElse(null);
         if (series == null) {
             throw new NotFoundException("Unable to find series: " + seriesEntityID + " for entity: " + entity.getTitle());
         }
