@@ -49,7 +49,7 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
 
     @Override
     public String getShortTitle() {
-        return "Rpi";
+        return "Raspi";
     }
 
     @UIField(order = 200)
@@ -70,6 +70,14 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
     public void afterFetch(EntityContext entityContext) {
         super.afterFetch(entityContext);
         gatherAvailableLinks(entityContext);
+    }
+
+    @Override
+    protected void beforeDelete() {
+        if (getEntityID().equals(DEFAULT_DEVICE_ENTITY_ID)) {
+            throw new IllegalStateException("Unable to remove primary Raspberry entity");
+        }
+        super.beforeDelete();
     }
 
     @Override
@@ -104,6 +112,16 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
             }
         }
         return "";
+    }
+
+    @Override
+    public String getIcon() {
+        return "fa-brands fa-raspberry-pi";
+    }
+
+    @Override
+    public String getIconColor() {
+        return "#C70039";
     }
 
     @Override

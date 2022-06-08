@@ -33,6 +33,7 @@ import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.ui.UICameraSelectionAttributeValues;
+import org.touchhome.common.util.CommonUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -110,7 +111,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements
 
     @Override
     public URI getPlaybackVideoURL(EntityContext entityContext, String fileId) throws URISyntaxException {
-        Path path = TouchHomeUtils.getTmpPath().resolve(fileId);
+        Path path = CommonUtils.getTmpPath().resolve(fileId);
         if (Files.exists(path)) {
             return path.toUri();
         } else {
