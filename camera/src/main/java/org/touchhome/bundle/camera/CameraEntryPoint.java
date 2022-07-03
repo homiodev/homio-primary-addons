@@ -35,22 +35,6 @@ public class CameraEntryPoint implements BundleEntryPoint {
     private final EntityContext entityContext;
     private EntityContextBGP.ThreadContext<Void> cameraRunPerMinuteSchedule;
 
-    @SneakyThrows
-    private static boolean detectIfRequireRestartHandler(Object oldCameraEntity, Object cameraEntity) {
-        if (oldCameraEntity == null) { // in case if just created
-            return false;
-        }
-        Method[] methods = MethodUtils.getMethodsWithAnnotation(cameraEntity.getClass(), RestartHandlerOnChange.class, true, false);
-        for (Method method : methods) {
-            Object newValue = MethodUtils.invokeMethod(cameraEntity, method.getName());
-            Object oldValue = MethodUtils.invokeMethod(oldCameraEntity, method.getName());
-            if (!Objects.equals(newValue, oldValue)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public int order() {
         return 300;
@@ -87,7 +71,7 @@ public class CameraEntryPoint implements BundleEntryPoint {
             }
         });
 
-        // lister start/stop status, any changes
+        // lister start/stop status and any changes that require restart camera handler
         entityContext.event().addEntityUpdateListener(BaseFFMPEGVideoStreamEntity.class, "camera-change-listener",
                 (cameraEntity, oldCameraEntity) -> {
                     BaseFFMPEGVideoStreamHandler cameraHandler = cameraEntity.getVideoHandler();
@@ -108,7 +92,7 @@ public class CameraEntryPoint implements BundleEntryPoint {
                     }
                 });
 
-        entityContext.bgp().runOnceOnInternetUp("scan camera", () -> {
+        entityContext.bgp().runOnceOnInternetUp("scan-cameras", () -> {
             // fire rescan whole possible items to see if ip address has been changed
             entityContext.getBean(OnvifCameraHttpScanner.class).executeScan(entityContext, null, null, true);
         });
@@ -122,7 +106,7 @@ public class CameraEntryPoint implements BundleEntryPoint {
             BaseFFMPEGVideoStreamHandler cameraHandler = cameraEntity.getVideoHandler();
             if ((cameraEntity.isStart() || cameraEntity.isAutoStart()) && !cameraHandler.isHandlerInitialized()) {
                 if (!cameraEntity.isStart()) {
-                    entityContext.save(cameraEntity.setStart(true));
+                    entityContext.save(cameraEntity.setStart(true)); // start=true is a trigger to start camera
                 } else {
                     BaseFFMPEGVideoStreamHandler handler = cameraEntity.getVideoHandler();
                     handler.updateVideoStreamEntity(cameraEntity);
@@ -140,5 +124,21 @@ public class CameraEntryPoint implements BundleEntryPoint {
     @Override
     public Class<? extends SettingPluginStatus> getBundleStatusSetting() {
         return CameraStatusSetting.class;
+    }
+
+    @SneakyThrows
+    private static boolean detectIfRequireRestartHandler(Object oldCameraEntity, Object cameraEntity) {
+        if (oldCameraEntity == null) { // in case if just created
+            return false;
+        }
+        Method[] methods = MethodUtils.getMethodsWithAnnotation(cameraEntity.getClass(), RestartHandlerOnChange.class, true, false);
+        for (Method method : methods) {
+            Object newValue = MethodUtils.invokeMethod(cameraEntity, method.getName());
+            Object oldValue = MethodUtils.invokeMethod(oldCameraEntity, method.getName());
+            if (!Objects.equals(newValue, oldValue)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

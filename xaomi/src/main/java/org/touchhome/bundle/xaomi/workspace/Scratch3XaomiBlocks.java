@@ -61,18 +61,21 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
         this.cubeEventMenu.subMenu(MagicCubeEvent.MOVE, MoveSide.class);
         this.cubeEventMenu.subMenu(MagicCubeEvent.TAP_TWICE, TapSide.class);
 
-        this.cubeSensorMenu = MenuBlock.ofServer("cubeSensorMenu", ZIGBEE_MODEL_URL + CUBE_MODE_IDENTIFIER, "Magic Cube", "-");
+        this.cubeSensorMenu =
+                MenuBlock.ofServer("cubeSensorMenu", ZIGBEE_MODEL_URL + CUBE_MODE_IDENTIFIER, "Magic Cube");
 
         this.magicCubeEvent = Scratch3Block.ofHandler(1, "when_cube_event", BlockType.hat,
                 "Cube [CUBE_SENSOR] event [EVENT]", this::magicCubeEventHandler);
         this.magicCubeEvent.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
         this.magicCubeEvent.addArgument(EVENT, this.cubeEventMenu);
 
-        this.magicCubeLastValue = Scratch3Block.ofReporter(2, "cube_value",  "Cube [CUBE_SENSOR] last value [EVENT]", this::cubeLastValueEvaluate);
+        this.magicCubeLastValue =
+                Scratch3Block.ofReporter(2, "cube_value", "Cube [CUBE_SENSOR] last value [EVENT]", this::cubeLastValueEvaluate);
         this.magicCubeLastValue.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
         this.magicCubeLastValue.addArgument(EVENT, this.cubeEventMenu);
 
-        zigBeeDeviceUpdateValueListener.addDescribeHandlerByModel(CUBE_MODE_IDENTIFIER, (state) -> "Magic cube <" + new CubeValueDescriptor(state) + ">", false);
+        zigBeeDeviceUpdateValueListener.addDescribeHandlerByModel(CUBE_MODE_IDENTIFIER,
+                (state) -> "Magic cube <" + new CubeValueDescriptor(state) + ">", false);
     }
 
     private Object cubeLastValueEvaluate(WorkspaceBlock workspaceBlock) {

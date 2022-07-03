@@ -62,15 +62,29 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
 
         // Menu
-        this.alarmSensorMenu = MenuBlock.ofServer("alarmSensorMenu", ZIGBEE_ALARM_URL, "Alarm Sensor", "-");
-        this.smokeSensorMenu = MenuBlock.ofServer("smokeSensorMenu", ZIGBEE_CLUSTER_NAME_URL + ZigBeeConverterIasFireIndicator.CLUSTER_NAME, "Smoke sensor", "-");
-        this.waterSensorMenu = MenuBlock.ofServer("waterSensorMenu", ZIGBEE_CLUSTER_NAME_URL + ZigBeeConverterIasWaterSensor.CLUSTER_NAME, "Water sensor", "-");
-        this.illuminanceSensorMenu = MenuBlock.ofServer("illuminanceSensorMenu", ZIGBEE_CLUSTER_ID_URL + ZclIlluminanceMeasurementCluster.CLUSTER_ID, "Illuminance Sensor", "-", ZclIlluminanceMeasurementCluster.CLUSTER_ID);
-        this.occupancySensorMenu = MenuBlock.ofServer("occupancySensorMenu", ZIGBEE_CLUSTER_ID_URL + ZclOccupancySensingCluster.CLUSTER_ID, "Occupancy Sensor", "-", ZclOccupancySensingCluster.CLUSTER_ID);
+        this.alarmSensorMenu = MenuBlock.ofServer("alarmSensorMenu", ZIGBEE_ALARM_URL, "Alarm Sensor");
+        this.smokeSensorMenu =
+                MenuBlock.ofServer("smokeSensorMenu", ZIGBEE_CLUSTER_NAME_URL + ZigBeeConverterIasFireIndicator.CLUSTER_NAME,
+                        "Smoke sensor");
+        this.waterSensorMenu =
+                MenuBlock.ofServer("waterSensorMenu", ZIGBEE_CLUSTER_NAME_URL + ZigBeeConverterIasWaterSensor.CLUSTER_NAME,
+                        "Water sensor");
+        this.illuminanceSensorMenu =
+                MenuBlock.ofServer("illuminanceSensorMenu", ZIGBEE_CLUSTER_ID_URL + ZclIlluminanceMeasurementCluster.CLUSTER_ID,
+                        "Illuminance Sensor", "-", ZclIlluminanceMeasurementCluster.CLUSTER_ID);
+        this.occupancySensorMenu =
+                MenuBlock.ofServer("occupancySensorMenu", ZIGBEE_CLUSTER_ID_URL + ZclOccupancySensingCluster.CLUSTER_ID,
+                        "Occupancy Sensor", "-", ZclOccupancySensingCluster.CLUSTER_ID);
 
-        this.temperatureSensorMenu = MenuBlock.ofServer("temperatureSensorMenu", ZIGBEE_CLUSTER_ID_URL + ZclTemperatureMeasurementCluster.CLUSTER_ID, "Temperature Sensor", "-", ZclTemperatureMeasurementCluster.CLUSTER_ID);
-        this.pressureSensorMenu = MenuBlock.ofServer("pressureSensorMenu", ZIGBEE_CLUSTER_ID_URL + ZclPressureMeasurementCluster.CLUSTER_ID, "Pressure Sensor", "-", ZclPressureMeasurementCluster.CLUSTER_ID);
-        this.humiditySensorMenu = MenuBlock.ofServer("humiditySensorMenu", ZIGBEE_CLUSTER_ID_URL + ZclRelativeHumidityMeasurementCluster.CLUSTER_ID, "Humidity Sensor", "-", ZclRelativeHumidityMeasurementCluster.CLUSTER_ID);
+        this.temperatureSensorMenu =
+                MenuBlock.ofServer("temperatureSensorMenu", ZIGBEE_CLUSTER_ID_URL + ZclTemperatureMeasurementCluster.CLUSTER_ID,
+                        "Temperature Sensor", "-", ZclTemperatureMeasurementCluster.CLUSTER_ID);
+        this.pressureSensorMenu =
+                MenuBlock.ofServer("pressureSensorMenu", ZIGBEE_CLUSTER_ID_URL + ZclPressureMeasurementCluster.CLUSTER_ID,
+                        "Pressure Sensor", "-", ZclPressureMeasurementCluster.CLUSTER_ID);
+        this.humiditySensorMenu =
+                MenuBlock.ofServer("humiditySensorMenu", ZIGBEE_CLUSTER_ID_URL + ZclRelativeHumidityMeasurementCluster.CLUSTER_ID,
+                        "Humidity Sensor", "-", ZclRelativeHumidityMeasurementCluster.CLUSTER_ID);
 
         // illuminance sensor
         this.illuminanceValue = of(Scratch3Block.ofReporter(10, "illuminance_value",
@@ -162,12 +176,16 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
                 ZclIasZoneCluster.CLUSTER_ID, ZigBeeConverterIasFireIndicator.CLUSTER_NAME, SMOKE_SENSOR, smokeSensorMenu));
     }
 
-    private ScratchDeviceState fetchValueFromDevice(WorkspaceBlock workspaceBlock, int clustersId, String sensor, MenuBlock.ServerMenuBlock menuBlock) {
-        return Scratch3ZigBeeBlocks.fetchValueFromDevice(zigBeeDeviceUpdateValueListener, workspaceBlock, new Integer[]{clustersId}, sensor, menuBlock);
+    private ScratchDeviceState fetchValueFromDevice(WorkspaceBlock workspaceBlock, int clustersId, String sensor,
+                                                    MenuBlock.ServerMenuBlock menuBlock) {
+        return Scratch3ZigBeeBlocks.fetchValueFromDevice(zigBeeDeviceUpdateValueListener, workspaceBlock,
+                new Integer[]{clustersId}, sensor, menuBlock);
     }
 
     private boolean motionDetectedEvaluate(WorkspaceBlock workspaceBlock) {
-        ScratchDeviceState scratchDeviceState = fetchValueFromDevice(workspaceBlock, ZclOccupancySensingCluster.CLUSTER_ID, OCCUPANCY_SENSOR, occupancySensorMenu);
+        ScratchDeviceState scratchDeviceState =
+                fetchValueFromDevice(workspaceBlock, ZclOccupancySensingCluster.CLUSTER_ID, OCCUPANCY_SENSOR,
+                        occupancySensorMenu);
         if (scratchDeviceState != null && !scratchDeviceState.isHandled()) {
             scratchDeviceState.setHandled(true);
             return true;
@@ -176,18 +194,22 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
     }
 
     private float humidityValueEvaluate(WorkspaceBlock workspaceBlock) {
-        return fetchFloat(fetchValueFromDevice(workspaceBlock, ZclRelativeHumidityMeasurementCluster.CLUSTER_ID, HUMIDITY_SENSOR, humiditySensorMenu));
+        return fetchFloat(fetchValueFromDevice(workspaceBlock, ZclRelativeHumidityMeasurementCluster.CLUSTER_ID, HUMIDITY_SENSOR,
+                humiditySensorMenu));
     }
 
     private float pressureValueEvaluate(WorkspaceBlock workspaceBlock) {
-        return fetchFloat(fetchValueFromDevice(workspaceBlock, ZclPressureMeasurementCluster.CLUSTER_ID, PRESSURE_SENSOR, pressureSensorMenu));
+        return fetchFloat(fetchValueFromDevice(workspaceBlock, ZclPressureMeasurementCluster.CLUSTER_ID, PRESSURE_SENSOR,
+                pressureSensorMenu));
     }
 
     private float temperatureValueEvaluate(WorkspaceBlock workspaceBlock) {
-        return fetchFloat(fetchValueFromDevice(workspaceBlock, ZclTemperatureMeasurementCluster.CLUSTER_ID, TEMPERATURE_SENSOR, temperatureSensorMenu));
+        return fetchFloat(fetchValueFromDevice(workspaceBlock, ZclTemperatureMeasurementCluster.CLUSTER_ID, TEMPERATURE_SENSOR,
+                temperatureSensorMenu));
     }
 
     private int illuminanceValueEvaluate(WorkspaceBlock workspaceBlock) {
-        return fetchInt(fetchValueFromDevice(workspaceBlock, ZclIlluminanceMeasurementCluster.CLUSTER_ID, ILLUMINANCE_SENSOR, illuminanceSensorMenu));
+        return fetchInt(fetchValueFromDevice(workspaceBlock, ZclIlluminanceMeasurementCluster.CLUSTER_ID, ILLUMINANCE_SENSOR,
+                illuminanceSensorMenu));
     }
 }

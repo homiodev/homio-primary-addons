@@ -39,7 +39,7 @@ public class Scratch3OnvifCameraAlarmBlocks extends Scratch3ExtensionBlocks impl
         this.broadcastLockManager = broadcastLockManager;
 
         // Menu
-        this.onvifCameraMenu = MenuBlock.ofServerItems("cameraMenu", OnvifCameraEntity.class);
+        this.onvifCameraMenu = MenuBlock.ofServerItems("cameraMenu", OnvifCameraEntity.class, "Onvif camera");
 
         // Hats
         this.whenFaceDetectionAlarm = withServerOnvif(Scratch3Block.ofHat(10, "alarm_face_detected",

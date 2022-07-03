@@ -7,6 +7,7 @@ import cc.arduino.contributions.libraries.LibraryInstaller;
 import cc.arduino.contributions.packages.ContributionInstaller;
 import cc.arduino.files.DeleteFilesOnShutdown;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.common.util.ArchiveUtil;
 import processing.app.BaseNoGui;
 import processing.app.Platform;
 import processing.app.PreferencesData;
@@ -30,6 +31,13 @@ public class ArduinoConfiguration {
         if (platform == null) {
             try {
                 Path arduinoPath = Paths.get(System.getProperty("APP_DIR"));
+
+                if (!ArchiveUtil.isValidArchive(arduinoPath.resolve("arduino-dependencies.7z"))) {
+                    log.warn("Skip creating ardiono platform because no dependencies installed");
+                    return null;
+                }
+
+                log.info("Create arduino platform. App path: <{}>", arduinoPath);
                 BaseNoGui.initPlatform();
 
                 Thread deleteFilesOnShutdownThread = new Thread(DeleteFilesOnShutdown.INSTANCE);
@@ -60,7 +68,9 @@ public class ArduinoConfiguration {
                 BaseNoGui.onBoardOrPortChange();
 
                 platform = BaseNoGui.getPlatform();
-            } catch (Exception ignore) {
+                log.info("Arduino platform success created");
+            } catch (Exception ex) {
+                log.warn("Error while init arduino platform", ex);
             }
         }
         return platform;
@@ -71,7 +81,8 @@ public class ArduinoConfiguration {
             try {
                 contributionInstaller = new ContributionInstaller(getPlatform(), gpgDetachedSignatureVerifier);
 
-                Set<String> packageIndexURLs = new HashSet<>(PreferencesData.getCollection(Constants.PREF_BOARDS_MANAGER_ADDITIONAL_URLS));
+                Set<String> packageIndexURLs =
+                        new HashSet<>(PreferencesData.getCollection(Constants.PREF_BOARDS_MANAGER_ADDITIONAL_URLS));
                 packageIndexURLs.add("http://arduino.esp8266.com/stable/package_esp8266com_index.json");
                 PreferencesData.setCollection(Constants.PREF_BOARDS_MANAGER_ADDITIONAL_URLS, packageIndexURLs);
 
@@ -90,7 +101,8 @@ public class ArduinoConfiguration {
         if (libraryInstaller == null) {
             try {
                 libraryInstaller = new LibraryInstaller(getPlatform(), gpgDetachedSignatureVerifier);
-            } catch (Exception ignore) {
+            } catch (Exception ex) {
+                log.warn("Error while create library installer");
             }
         }
         return libraryInstaller;

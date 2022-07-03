@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
 import org.touchhome.bundle.api.service.scan.VideoStreamScanner;
+import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
 import org.touchhome.bundle.api.video.ffmpeg.FFMPEGVideoDevice;
 import org.touchhome.bundle.api.video.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.entity.UsbCameraEntity;
@@ -33,7 +34,7 @@ public class UsbCameraScanner implements VideoStreamScanner {
                                                        String headerConfirmButtonKey) {
         BaseItemsDiscovery.DeviceScannerResult result = new BaseItemsDiscovery.DeviceScannerResult();
         FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
-        String ffmpegPath = entityContext.setting().getFFMPEGInstallPath().toString();
+        String ffmpegPath = BaseFFMPEGVideoStreamHandler.getFfmpegLocation();
         List<FFMPEGVideoDevice> foundUsbVideoCameraDevices = new ArrayList<>();
 
         for (String deviceName : repository.getVideoDevices(ffmpegPath)) {

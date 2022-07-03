@@ -18,9 +18,6 @@ public class RaspberryEntryPoint implements BundleEntryPoint {
     private final EntityContext entityContext;
 
     public void init() {
-        if (entityContext.getEntity(DEFAULT_DEVICE_ENTITY_ID) == null) {
-            entityContext.save(new RaspberryDeviceEntity().computeEntityID(() -> DEFAULT_DEVICE_ENTITY_ID));
-        }
         entityContext.getBean(RaspberryGPIOService.class).init();
         entityContext.getBean(GpioConsolePlugin.class).init();
     }

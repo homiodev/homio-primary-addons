@@ -18,6 +18,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import org.touchhome.bundle.api.EntityContext;
@@ -26,6 +27,7 @@ import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.telegram.TelegramEntity;
 import org.touchhome.bundle.telegram.commands.*;
+import org.touchhome.common.util.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,12 +79,18 @@ public class TelegramService {
                 entityContext.ui().sendWarningMessage("Telegram bot not running. Requires settings.");
                 telegramEntity.setStatus(Status.ERROR, isEmpty(telegramEntity.getBotName()) ?
                         "Require bot name field" : "Require bot token field");
-
             }
         } catch (Exception ex) {
-            entityContext.ui().sendErrorMessage("Unable to start telegram bot: ", ex);
-            log.error("Unable to start telegram bot", ex);
-            telegramEntity.setStatusError(ex);
+            String msg = "Unable to start telegram bot: " + CommonUtils.getErrorMessage(ex);
+            if (ex.getCause() instanceof TelegramApiRequestException) {
+                Integer errorCode = ((TelegramApiRequestException) ex.getCause()).getErrorCode();
+                if (errorCode == 404) {
+                    msg = "Telegram bot with provided name and token not exists";
+                }
+            }
+            entityContext.ui().sendErrorMessage(msg);
+            log.error(msg, ex);
+            telegramEntity.setStatusError(msg);
         }
     }
 
@@ -99,20 +107,23 @@ public class TelegramService {
         }
     }
 
-    public void sendPhoto(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile, String caption) {
+    public void sendPhoto(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile,
+                          String caption) {
         getTelegramBot(telegramEntity).sendPhoto(checkUsers(users), inputFile, caption);
     }
 
-    public void sendVideo(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile, String caption) {
+    public void sendVideo(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile,
+                          String caption) {
         getTelegramBot(telegramEntity).sendVideo(checkUsers(users), inputFile, caption);
     }
 
-    public Message sendMessage(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, String message, String[] buttons) {
+    public Message sendMessage(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, String message,
+                               String[] buttons) {
         return getTelegramBot(telegramEntity).sendMessage(checkUsers(users), message, buttons);
     }
 
     private List<TelegramEntity.TelegramUser> checkUsers(List<TelegramEntity.TelegramUser> users) {
-        if(users.isEmpty()) {
+        if (users.isEmpty()) {
             throw new IllegalStateException("Telegram bot has no registered users");
         }
         return users;
@@ -152,7 +163,8 @@ public class TelegramService {
             log.info("Registering default action'...");
             registerDefaultAction(((absSender, message) -> {
 
-                log.warn("Telegram User {} is trying to execute unknown command '{}'.", message.getFrom().getId(), message.getText());
+                log.warn("Telegram User {} is trying to execute unknown command '{}'.", message.getFrom().getId(),
+                        message.getText());
 
                 SendMessage text = new SendMessage();
                 text.setChatId(Long.toString(message.getChatId()));
@@ -236,14 +248,17 @@ public class TelegramService {
                         update.getCallbackQuery().getData(),
                         update.getCallbackQuery().getFrom().getId());
                 TelegramService.this.broadcastLockManager.signalAll(TELEGRAM_EVENT_PREFIX + messageId, telegramAnswer);
-                TelegramService.this.broadcastLockManager.signalAll(TELEGRAM_EVENT_PREFIX + messageId + "_" + telegramAnswer.getData(), telegramAnswer);
+                TelegramService.this.broadcastLockManager.signalAll(
+                        TELEGRAM_EVENT_PREFIX + messageId + "_" + telegramAnswer.getData(), telegramAnswer);
                 AnswerCallbackQuery query = new AnswerCallbackQuery(update.getCallbackQuery().getId());
                 query.setText("Done");
                 this.execute(query);
 
                 // remove buttons
-                EditMessageReplyMarkup editReplyMarkup = new EditMessageReplyMarkup(Long.toString(update.getCallbackQuery().getFrom().getId()), update.getCallbackQuery().getMessage().getMessageId(), null,
-                        new InlineKeyboardMarkup(new ArrayList<>()));
+                EditMessageReplyMarkup editReplyMarkup =
+                        new EditMessageReplyMarkup(Long.toString(update.getCallbackQuery().getFrom().getId()),
+                                update.getCallbackQuery().getMessage().getMessageId(), null,
+                                new InlineKeyboardMarkup(new ArrayList<>()));
                 this.execute(editReplyMarkup);
             }
             log.debug("Income message {}", update.getMessage() != null ?

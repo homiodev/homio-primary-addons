@@ -2,6 +2,7 @@ package org.touchhome.bundle.arduino;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.SystemUtils;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
@@ -32,6 +33,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class ArduinoConsolePlugin implements ConsolePluginEditor,
@@ -57,9 +59,11 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor,
 
     @Override
     public void afterDependencyInstalled() {
-        // try initialise platform
-        ArduinoConfiguration.getPlatform();
-        entityContext.ui().reloadWindow("Re-Initialize page after install dependencies");
+        // try to initialise platform
+        if (ArduinoConfiguration.getPlatform() != null) {
+            this.init();
+            entityContext.ui().reloadWindow("Re-Initialize page after install dependencies");
+        }
     }
 
     @Override
@@ -68,7 +72,16 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor,
                 SystemUtils.IS_OS_LINUX ? "linux" : "win");
     }
 
+    @Override
+    public String dependencyName() {
+        return "arduino-dependencies.7z";
+    }
+
     public void init() {
+        if (requireInstallDependencies()) {
+            log.info("Skip init arduino");
+            return;
+        }
         this.open(this.content.getName(), true);
 
         entityContext.setting().listenValueAndGet(ConsoleHeaderArduinoGetBoardsSetting.class, "avr-board",
@@ -195,11 +208,13 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor,
             for (UserLibrary library : BaseNoGui.librariesIndexer.getInstalledLibraries()) {
                 Path hFile = library.getSrcFolder().toPath().resolve(includeSource + ".h");
                 if (Files.exists(hFile)) {
-                    files.add(new FileModel(includeSource + ".h", new String(Files.readAllBytes(hFile)), FileContentType.cpp, true));
+                    files.add(new FileModel(includeSource + ".h", new String(Files.readAllBytes(hFile)), FileContentType.cpp,
+                            true));
 
                     Path cppFile = library.getSrcFolder().toPath().resolve(includeSource + ".cpp");
                     if (Files.exists(cppFile)) {
-                        files.add(new FileModel(includeSource + ".cpp", new String(Files.readAllBytes(cppFile)), FileContentType.cpp, true));
+                        files.add(new FileModel(includeSource + ".cpp", new String(Files.readAllBytes(cppFile)),
+                                FileContentType.cpp, true));
                     }
                 }
             }
@@ -226,10 +241,12 @@ public class ArduinoConsolePlugin implements ConsolePluginEditor,
         }
         Path sketchFile;
         if (fileName.contains("~~~")) { // contains example path. Read full content and copy to example file
-            OptionModel foundModel = Optional.ofNullable(ConsoleHeaderArduinoSketchNameSetting.buildExamplePath(true)).map(e -> e.findByKey(fileName)).orElse(null);
+            OptionModel foundModel = Optional.ofNullable(ConsoleHeaderArduinoSketchNameSetting.buildExamplePath(true))
+                    .map(e -> e.findByKey(fileName)).orElse(null);
             if (foundModel != null) {
                 Path path = Paths.get(foundModel.getJson().getString("path"));
-                save(new FileModel(path.getFileName().toString(), new String(Files.readAllBytes(path)), FileContentType.cpp, false));
+                save(new FileModel(path.getFileName().toString(), new String(Files.readAllBytes(path)), FileContentType.cpp,
+                        false));
             }
             return;
         } else {

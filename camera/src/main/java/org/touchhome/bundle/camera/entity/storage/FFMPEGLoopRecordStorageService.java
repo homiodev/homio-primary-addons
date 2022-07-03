@@ -183,7 +183,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
         String source = videoStreamHandler.getRtspUri(profile);
         log.info("Start ffmpeg video recording from source: <{}> to: <{}>", source, path);
         FFMPEG ffmpeg = new FFMPEG("FFMPEGLoopRecord_" + getEntityID(), "FFMPEG loop record", ffmpegHandler, log,
-                RECORD, videoStreamHandler.getFfmpegLocation(),
+                RECORD, BaseFFMPEGVideoStreamHandler.getFfmpegLocation(),
                 getVerbose() ? "" : "-hide_banner -loglevel warning", source,
                 buildFFMPEGRecordCommand(folder), path.toString(),
                 videoStreamEntity.getUser(), videoStreamEntity.getPassword().asString(), null);

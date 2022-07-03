@@ -100,7 +100,7 @@ public abstract class FirmataBaseEntity<T extends FirmataBaseEntity<T>> extends 
     }
 
     @Override
-    public String getShortTitle() {
+    public String getDefaultName() {
         return "Firmata";
     }
 

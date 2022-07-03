@@ -53,12 +53,12 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
                 p.getPin().getSupportedPinModes().contains(PinMode.DIGITAL_INPUT));
         this.pwmPinMenu = MenuBlock.ofStatic("pwmPinMenu", RaspberryGpioPin.class, RaspberryGpioPin.PIN12, p -> p.name().equals("PIN12") || p.name().equals("PIN33"));
 
-        this.rpiIdMenu = MenuBlock.ofServerItems("rpiIdMenu", RaspberryDeviceEntity.class);
+        this.rpiIdMenu = MenuBlock.ofServerItems("rpiIdMenu", RaspberryDeviceEntity.class, "Raspberry");
         this.onOffMenu = MenuBlock.ofStatic("onOffMenu", OnOffType.OnOffTypeEnum.class, OnOffType.OnOffTypeEnum.On);
 
         this.pullMenu = MenuBlock.ofStatic("pullMenu", PinPullResistance.class, PinPullResistance.PULL_UP);
 
-        this.ds18b20Menu = MenuBlock.ofServer("ds18b20Menu", "rest/raspberry/DS18B20", "-", "-");
+        this.ds18b20Menu = MenuBlock.ofServer("ds18b20Menu", "rest/raspberry/DS18B20", "DS18B20");
 
         this.writePin = of(Scratch3Block.ofHandler(0, "set_gpio", BlockType.command, "Set [ONOFF] to pin [PIN] of [RPI]", this::writePin), this.allPinMenu);
         this.writePin.addArgument("ONOFF", this.onOffMenu);

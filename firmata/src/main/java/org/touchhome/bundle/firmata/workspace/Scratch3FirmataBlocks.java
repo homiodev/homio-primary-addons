@@ -63,11 +63,11 @@ public class Scratch3FirmataBlocks extends Scratch3FirmataBaseBlock {
         this.getTimeValueCommand = getTimeValueCommand;
 
         // Menu
-        this.pinMenuDigital = MenuBlock.ofServer("pinMenuDigital", REST_PIN + Pin.Mode.OUTPUT).setDependency(this.firmataIdMenu);
-        this.pinMenuPwm = MenuBlock.ofServer("pinMenuPwm", REST_PIN + Pin.Mode.PWM).setDependency(this.firmataIdMenu);
-        this.pinMenuAnalog = MenuBlock.ofServer("pinMenuAnalog", REST_PIN + Pin.Mode.ANALOG).setDependency(this.firmataIdMenu);
-        this.pinMenuServo = MenuBlock.ofServer("pinMenuAnalog", REST_PIN + Pin.Mode.SERVO).setDependency(this.firmataIdMenu);
-        this.pinMenuAll = MenuBlock.ofServer("pinMenuAll", REST_PIN).setDependency(this.firmataIdMenu);
+        this.pinMenuDigital = MenuBlock.ofServer("pinMenuDigital", REST_PIN + Pin.Mode.OUTPUT, "Digital pin").setDependency(this.firmataIdMenu);
+        this.pinMenuPwm = MenuBlock.ofServer("pinMenuPwm", REST_PIN + Pin.Mode.PWM, "Pwm pin").setDependency(this.firmataIdMenu);
+        this.pinMenuAnalog = MenuBlock.ofServer("pinMenuAnalog", REST_PIN + Pin.Mode.ANALOG, "Analog pin").setDependency(this.firmataIdMenu);
+        this.pinMenuServo = MenuBlock.ofServer("pinMenuAnalog", REST_PIN + Pin.Mode.SERVO, "Servo pin").setDependency(this.firmataIdMenu);
+        this.pinMenuAll = MenuBlock.ofServer("pinMenuAll", REST_PIN, "Pin").setDependency(this.firmataIdMenu);
 
         this.onOffMenu = MenuBlock.ofStatic("onOffMenu", OnOffType.OnOffTypeEnum.class, OnOffType.OnOffTypeEnum.Off);
         this.opMenu = MenuBlock.ofStatic("opMenu", CompareType.class, CompareType.GREATER);
@@ -189,13 +189,11 @@ public class Scratch3FirmataBlocks extends Scratch3FirmataBaseBlock {
     private void whenPinChangedHandler(WorkspaceBlock workspaceBlock, Function<Object, Boolean> checkFn) {
         workspaceBlock.handleNextOptional(next -> {
             Integer pinNum = getPin(workspaceBlock, this.pinMenuAll);
-            if (pinNum != null) {
-                execute(workspaceBlock, true, entity -> {
-                    Pin pin = entity.getDevice().getIoDevice().getPin(pinNum);
-                    BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock, entity.getTarget() + "_pin_" + pin.getIndex());
-                    workspaceBlock.subscribeToLock(lock, checkFn, next::handle);
-                });
-            }
+            execute(workspaceBlock, true, entity -> {
+                Pin pin = entity.getDevice().getIoDevice().getPin(pinNum);
+                BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock, entity.getTarget() + "_pin_" + pin.getIndex());
+                workspaceBlock.subscribeToLock(lock, checkFn, next::handle);
+            });
         });
     }
 

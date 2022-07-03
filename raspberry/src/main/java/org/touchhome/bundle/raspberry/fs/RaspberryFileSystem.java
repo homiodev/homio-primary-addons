@@ -1,19 +1,19 @@
 package org.touchhome.bundle.raspberry.fs;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.web.multipart.MultipartFile;
-import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.entity.storage.CachedFileSystem;
-import org.touchhome.bundle.api.entity.storage.VendorFileSystem;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
-import org.touchhome.common.model.FileSystemItem;
+import org.touchhome.common.fs.FileObject;
+import org.touchhome.common.fs.FileSystemProvider;
 import org.touchhome.common.util.ArchiveUtil;
+import org.touchhome.common.util.CommonUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,48 +22,51 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.apache.commons.lang3.StringUtils.defaultString;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static org.touchhome.bundle.api.util.TouchHomeUtils.TIKA;
 
-public class RaspberryFileSystem
-        extends VendorFileSystem<RaspberryDeviceEntity, RaspberryFileSystem.RaspberryCacheFileSystem, RaspberryDeviceEntity> {
+@AllArgsConstructor
+public class RaspberryFileSystem implements FileSystemProvider {
 
-    public RaspberryFileSystem(RaspberryDeviceEntity entity, EntityContext entityContext) {
-        super(entity, entityContext);
-        this.setDrive(entity);
-        this.dispose();
-    }
+    @Getter
+    private RaspberryDeviceEntity entity;
 
     @Override
-    protected void onEntityUpdated() {
-        if (!this.getRoot().getSource().file.getPath().equals(getEntity().getFileSystemRoot())) {
-            this.dispose();
+    public Path getArchiveAsLocalPath(@NotNull String id) {
+        Path path = buildPath(id);
+        if (!Files.exists(path)) {
+            throw new IllegalArgumentException("Id: " + id + " is not a local path");
         }
-    }
-
-    @Override
-    public void dispose() {
-        setRoot(new RaspberryCacheFileSystem(new RaspberryFile(new File(getEntity().getFileSystemRoot())), null));
-    }
-
-    @Override
-    public FileSystemItem getArchiveEntries(String[] archivePath, String password) {
-        Path path = buildPath(archivePath);
-        List<File> files = ArchiveUtil.getArchiveEntries(path, password);
-        return buildRoot(path, files);
+        return path;
     }
 
     @Override
     @SneakyThrows
-    public Collection<FileSystemItem> getChild(String[] filePath) {
-        List<FileSystemItem> fmPaths = new ArrayList<>();
-        try (Stream<Path> stream = Files.list(buildPath(filePath))) {
+    public Set<FileObject> getChildren(@NotNull String id) {
+        Set<FileObject> fmPaths = new HashSet<>();
+        Path parentPath = buildPath(id);
+        if (Files.exists(parentPath)) {
+            if (ArchiveUtil.isArchive(parentPath)) {
+                List<File> files = ArchiveUtil.getArchiveEntries(parentPath, null);
+                return buildArchiveEntries(parentPath, files, false).getChildren();
+            }
+        } else {
+            Path archivePath = getArchivePath(parentPath);
+            if (archivePath != null) {
+                List<File> children = ArchiveUtil.getChildren(archivePath, archivePath.relativize(parentPath).toString());
+                return children.stream().map(c -> buildFileObject(c, c.isDirectory(),
+                                archivePath.resolve(c.getPath()).toString(), null))
+                        .collect(Collectors.toSet());
+            }
+        }
+        try (Stream<Path> stream = Files.list(parentPath)) {
             for (Path path : stream.collect(Collectors.toList())) {
                 try {
                     if (!Files.isHidden(path)) {
-                        fmPaths.add(buildFileSystemItem(path, path.toFile()));
+                        fmPaths.add(buildFileObject(path, path.toFile()));
                     }
                 } catch (AccessDeniedException ex) {
-                    fmPaths.add(buildFileSystemItem(path, path.toFile()));
+                    fmPaths.add(buildFileObject(path, path.toFile()));
                 }
             }
         }
@@ -71,289 +74,365 @@ public class RaspberryFileSystem
     }
 
     @Override
+    @SneakyThrows
+    public Set<FileObject> getChildrenRecursively(@NotNull String parentId) {
+        FileObject root = new FileObject();
+        buildFileObjectRecursively(buildPath(parentId), root);
+        return root.getChildren();
+    }
+
+    // not optimised
+    private void buildFileObjectRecursively(Path parentPath, FileObject root) throws IOException {
+        try (Stream<Path> stream = Files.list(parentPath)) {
+            for (Path path : stream.collect(Collectors.toList())) {
+                try {
+                    if (!Files.isHidden(path)) {
+                        FileObject childFileObject = root.addChild(buildFileObject(path, path.toFile()));
+                        if (Files.isDirectory(path)) {
+                            buildFileObjectRecursively(path, childFileObject);
+                        }
+                    }
+                } catch (AccessDeniedException ignore) {
+                }
+            }
+        }
+    }
+
+    @Override
+    @SneakyThrows
+    public Set<FileObject> toFileObjects(@NotNull Set<String> ids) {
+        Set<FileObject> fmPaths = new HashSet<>();
+        Map<Path, Set<Path>> archiveIds = new HashMap<>();
+        for (String id : ids) {
+            Path path = buildPath(id);
+            if (Files.exists(path)) {
+                if (!Files.isHidden(path) && Files.isReadable(path)) {
+                    fmPaths.add(buildFileObject(path, path.toFile()));
+                }
+            } else {
+                Path archivePath = getArchivePath(path);
+                if (archivePath != null) {
+                    archiveIds.putIfAbsent(archivePath, new HashSet<>());
+                    archiveIds.get(archivePath).add(path);
+                }
+            }
+        }
+        for (Map.Entry<Path, Set<Path>> entry : archiveIds.entrySet()) {
+            List<File> archiveEntries = ArchiveUtil.getArchiveEntries(entry.getKey(), null);
+            Map<String, Path> valueToKey =
+                    entry.getValue().stream().collect(Collectors.toMap(p -> entry.getKey().relativize(p).toString(), p -> p));
+
+            for (File archiveEntry : archiveEntries) {
+                Path path = valueToKey.get(archiveEntry.toString());
+                if (path != null) {
+                    fmPaths.add(buildFileObject(path, archiveEntry));
+                }
+            }
+        }
+        return fmPaths;
+    }
+
+    @Override
+    @SneakyThrows
+    public InputStream getEntryInputStream(@NotNull String id) {
+        Path path = buildPath(id);
+        if (!Files.exists(path)) {
+            // try check if path is archive;
+            Path archivePath = getArchivePath(path);
+            if (archivePath != null) {
+                return ArchiveUtil.downloadArchiveEntry(archivePath, archivePath.relativize(path).toString(), null);
+            }
+        } else {
+            return Files.newInputStream(path);
+        }
+        throw new IllegalArgumentException("Unable to find entry: " + path);
+    }
+
+    @Override
     public long getTotalSpace() {
-        return new File(getEntity().getFileSystemRoot()).getTotalSpace();
+        return new File(entity.getFileSystemRoot()).getTotalSpace();
     }
 
     @Override
     public long getUsedSpace() {
-        File file = new File(getEntity().getFileSystemRoot());
+        File file = new File(entity.getFileSystemRoot());
         return file.getTotalSpace() - file.getUsableSpace();
     }
 
-    @SneakyThrows
     @Override
-    public FileSystemItem upload(String[] parentPath, String fileName, byte[] content, boolean append, boolean replace) {
-        Path path = buildPath(parentPath).resolve(fileName);
-        if (!replace && Files.exists(path)) {
-            throw new FileAlreadyExistsException("File '" + path.getFileName() + "' already exists");
-        }
-        TouchHomeUtils.writeToFile(path, content, append);
-        return buildRoot(Collections.singletonList(path));
+    public boolean restart(boolean force) {
+        return true;
     }
 
     @Override
-    public FileSystemItem upload(String[] parentPath, MultipartFile[] files, boolean replace) throws Exception {
-        Path parent = buildPath(parentPath);
-        List<Path> result = new ArrayList<>();
-        for (MultipartFile file : files) {
-            Path nodePath = parent.resolve(defaultString(file.getOriginalFilename(), ""));
-            if (!replace && Files.exists(nodePath)) {
-                throw new FileAlreadyExistsException("File '" + nodePath.getFileName() + "' already exists");
-            }
-            TouchHomeUtils.writeToFile(nodePath, file.getInputStream(), false);
-            result.add(nodePath);
-        }
-        return buildRoot(result);
+    public void setEntity(Object entity) {
+        this.entity = (RaspberryDeviceEntity) entity;
+
     }
 
-    @SneakyThrows
     @Override
-    public void delete(List<String[]> sourceFilePathList) {
-        for (String[] filePath : sourceFilePathList) {
-            Path path = buildPath(filePath);
+    @SneakyThrows
+    public FileObject delete(Set<String> ids) {
+        Set<Path> removedFiles = new HashSet<>();
+        Map<Path, Set<String>> archiveIds = new HashMap<>();
+        for (String id : ids) {
+            Path path = buildPath(id);
             if (Files.isDirectory(path)) {
-                FileUtils.deleteDirectory(path.toFile());
-
+                removedFiles.addAll(CommonUtils.removeFileOrDirectory(path));
             } else {
-                Files.deleteIfExists(path);
+                if (Files.exists(path)) {
+                    removedFiles.add(path);
+                    Files.delete(path);
+                } else {
+                    Path archivePath = getArchivePath(path);
+                    if (archivePath != null) {
+                        archiveIds.putIfAbsent(archivePath, new HashSet<>());
+                        archiveIds.get(archivePath).add(archivePath.relativize(path).toString());
+                    }
+                }
             }
         }
+        for (Map.Entry<Path, Set<String>> entry : archiveIds.entrySet()) {
+            Set<Path> removedPathList = ArchiveUtil.removeEntries(entry.getKey(), entry.getValue(), null);
+            for (Path path : removedPathList) {
+                if (entry.getValue().contains(path.toString())) {
+                    removedFiles.add(entry.getKey().resolve(path.toString())); // build local path
+                }
+            }
+        }
+        return buildRoot(removedFiles);
     }
 
-    @NotNull
-    private Path buildPath(String[] filePath) {
-        Path path = Paths.get("", filePath);
-        if (!path.toString().startsWith(getEntity().getFileSystemRoot())) {
-            path = Paths.get(getEntity().getFileSystemRoot()).resolve(path);
+    private Path buildPath(String id) {
+        Path path = Paths.get(id);
+        if (!path.toString().startsWith(entity.getFileSystemRoot())) {
+            path = Paths.get(entity.getFileSystemRoot()).resolve(path);
         }
         return path;
     }
 
     @Override
-    public FileSystemItem createFolder(String[] parentPath, String name) throws Exception {
-        Path path = buildPath(parentPath).resolve(name);
+    @SneakyThrows
+    public FileObject create(@NotNull String parentId, @NotNull String name, boolean isDir, UploadOption uploadOption) {
+        Path path = buildPath(parentId).resolve(name);
         if (Files.exists(path)) {
-            throw new FileAlreadyExistsException("Folder " + name + " already exists");
+            if (uploadOption == UploadOption.Error) {
+                throw new FileAlreadyExistsException("Folder " + name + " already exists");
+            }
+            return buildRoot(Collections.singletonList(path));
         }
-        Path dir = Files.createDirectories(path);
-        return buildRoot(Collections.singletonList(dir));
-    }
-
-    @Override
-    public FileSystemItem rename(String[] filePath, String newName) throws Exception {
-        Path path = buildPath(filePath);
-        Path created = Files.move(path, path.resolveSibling(newName), StandardCopyOption.REPLACE_EXISTING);
-        return buildRoot(Collections.singletonList(created));
-    }
-
-    @Override
-    public FileSystemItem copy(List<String[]> sourceFilePathList, String[] targetFilePath, boolean removeSource,
-                               boolean replaceExisting)
-            throws Exception {
-        List<Path> result = new ArrayList<>();
-        CopyOption[] options = replaceExisting ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING} : new CopyOption[0];
-        for (String[] sourceFilePath : sourceFilePathList) {
-            Path sourcePath = buildPath(sourceFilePath);
-            Path targetPath = buildPath(targetFilePath);
-            if (Files.isDirectory(sourcePath)) {
-                Files.walk(sourcePath).forEach(source -> {
-                    Path destination = targetPath.resolve(source.toString().substring(sourcePath.toString().length()));
-                    try {
-                        Files.copy(source, destination, options);
-                        result.add(destination);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
-                FileUtils.deleteDirectory(sourcePath.toFile());
+        Path resultPath = null;
+        if (Files.exists(path)) {
+            if (uploadOption == UploadOption.SkipExist) return null;
+            else if (!isDir && uploadOption == UploadOption.Error) throw new FileAlreadyExistsException("File already exist");
+        }
+        try {
+            if (isDir) {
+                resultPath = Files.createDirectories(path);
             } else {
-                try {
-                    Path path = Files.copy(sourcePath, targetPath.resolve(sourcePath.getFileName()), options);
-                    result.add(path);
-                } catch (Exception ignore) {} // ignore if not replace
-                if (removeSource) {
-                    Files.delete(sourcePath);
+                resultPath = Files.createFile(path);
+            }
+        } catch (NoSuchFileException ex) {
+            Path archivePath = getArchivePath(path);
+            if (archivePath != null) {
+                Path entryPath = archivePath.relativize(path);
+                Pair<FileObject, FileObject> entryTree = FileObject.buildTree(entryPath);
+                // mark entry as file or dir
+                if (!isDir) {
+                    entryTree.getRight().getAttributes().setDir(false);
+                    entryTree.getRight().setInputStream(new ByteArrayInputStream(new byte[0]));
                 }
+                ArchiveUtil.addToArchive(archivePath, Collections.singleton(entryTree.getLeft()));
+                return buildArchiveEntries(archivePath, ArchiveUtil.getArchiveEntries(archivePath, null), true);
             }
         }
+        return resultPath == null ? null : buildRoot(Collections.singletonList(resultPath));
+    }
 
+    private Path getArchivePath(Path path) {
+        Path cursor = path;
+        do {
+            if (Files.exists(cursor) && ArchiveUtil.isArchive(cursor)) {
+                return cursor;
+            }
+        } while ((cursor = cursor.getParent()) != null);
+        return null;
+    }
+
+    @Override
+    @SneakyThrows
+    public FileObject rename(@NotNull String id, @NotNull String newName, UploadOption uploadOption) {
+        Path path = buildPath(id);
+        if (Files.exists(path)) {
+            Path target = path.resolveSibling(newName);
+            if (Files.exists(target) && uploadOption == UploadOption.Error) {
+                throw new FileAlreadyExistsException("File " + newName + " already exists");
+            }
+            Path created = Files.move(path, target, REPLACE_EXISTING);
+            return buildRoot(Collections.singletonList(created));
+        } else {
+            Path archivePath = getArchivePath(path);
+            if (archivePath != null) {
+                String entryName = archivePath.relativize(path).toString();
+                ArchiveUtil.renameEntry(archivePath, entryName, newName);
+                return buildArchiveEntries(archivePath, ArchiveUtil.getArchiveEntries(archivePath, null), true);
+            }
+        }
+        throw new IllegalStateException("File '" + id + "' not found");
+    }
+
+    @Override
+    @SneakyThrows
+    public FileObject copy(@NotNull Collection<FileObject> entries, @NotNull String targetId, UploadOption uploadOption) {
+        CopyOption[] options = uploadOption == UploadOption.Replace ? new CopyOption[]{REPLACE_EXISTING} : new CopyOption[0];
+        List<Path> result = new ArrayList<>();
+        Path targetPath = buildPath(targetId);
+        copyEntries(entries, targetPath, options, result);
+        result.add(targetPath);
         return buildRoot(result);
     }
 
     @Override
-    public List<ArchiveFormat> getSupportArchiveFormat() {
-        return Stream.of(ArchiveUtil.ZipFormat.values()).map(format ->
-                        new ArchiveFormat(format.name(), format.getName(), Arrays.asList(format.getExtensions())))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public FileSystemItem archive(List<String[]> sourceFilePath, String[] targetFilePath, String format, String level,
-                                  String password, boolean removeSource) throws IOException {
-        Path target = buildPath(targetFilePath);
-        List<Path> paths = sourceFilePath.stream().map(this::buildPath).collect(Collectors.toList());
-        Path zipFile = ArchiveUtil.zip(paths, target,
-                ArchiveUtil.ZipFormat.valueOf(format), level, password, null);
-        if (removeSource) {
-            for (Path path : paths) {
-                FileUtils.forceDelete(path.toFile());
-            }
+    public Set<FileObject> loadTreeUpToChild(@NotNull String id) {
+        Path targetPath = buildPath(id);
+        if (!Files.exists(targetPath)) {
+            return null;
         }
-        return buildRoot(Collections.singletonList(zipFile));
-    }
-
-    @Override
-    public FileSystemItem unArchive(String[] sourceFilePath, String[] targetFilePath, String password,
-                                    boolean removeSource, String fileHandler)
-            throws Exception {
-        Path sourcePath = buildPath(sourceFilePath);
-        ArchiveUtil.UnzipFileIssueHandler issueHandler = ArchiveUtil.UnzipFileIssueHandler.valueOf(fileHandler);
-        List<Path> paths = ArchiveUtil.unzip(sourcePath, buildPath(targetFilePath), password, null, issueHandler);
-        if (removeSource) {
-            FileUtils.forceDelete(sourcePath.toFile());
+        Set<FileObject> rootChildren = getChildren("");
+        Set<FileObject> currentChildren = rootChildren;
+        Path pathId = Paths.get("");
+        for (Path pathItem : Paths.get(id)) {
+            Path pathItemId = pathId.resolve(pathItem);
+            String pathItemIdStr = pathItemId.toString().replaceAll("\\\\", "/");
+            FileObject foundedObject =
+                    currentChildren.stream().filter(c -> c.getId().equals(pathItemIdStr)).findAny().orElseThrow(() ->
+                            new IllegalStateException("Unable find object: " + pathItemIdStr));
+            currentChildren = getChildren(pathItemIdStr);
+            foundedObject.addChildren(currentChildren);
+            pathId = pathItemId;
         }
-        return buildRoot(paths);
+        return rootChildren;
     }
 
-    private FileSystemItem buildRoot(Path basePath, List<File> files) {
-        Path root = Paths.get(getEntity().getFileSystemRoot()).resolve(basePath);
-        FileSystemItem rootPath = this.buildFileSystemItem(root, root.toFile());
-        for (File file : files) {
-            Path pathCursor = root;
-            FileSystemItem cursor = rootPath;
-            for (Path pathItem : file.toPath()) {
-                pathCursor = pathCursor.resolve(pathItem);
-                cursor = cursor.addChild(false, buildFileSystemItem(pathCursor, file));
+    public void copyEntries(Collection<FileObject> entries, Path targetPath, CopyOption[] options, List<Path> result)
+            throws IOException {
+        // if copying to archive
+        Path archivePath = getArchivePath(targetPath);
+        if (archivePath != null) {
+            Path pathInArchive = archivePath.relativize(targetPath);
+            if (!pathInArchive.toString().isEmpty()) {
+                Pair<FileObject, FileObject> tree = FileObject.buildTree(pathInArchive);
+                tree.getRight().addChildren(entries);
+                entries = Collections.singletonList(tree.getLeft());
             }
+            for (FileObject entry : entries) {
+                result.addAll(entry.toPath(archivePath));
+            }
+
+            ArchiveUtil.addToArchive(archivePath, entries);
+            return;
         }
-        return rootPath;
-    }
 
-    private FileSystemItem buildRoot(List<Path> paths) {
-        Path root = Paths.get(getEntity().getFileSystemRoot());
-        FileSystemItem rootPath = this.buildFileSystemItem(root, root.toFile());
-        for (Path path : paths) {
-            Path pathCursor = root;
-            FileSystemItem cursor = rootPath;
-            for (Path pathItem : root.relativize(path)) {
-                pathCursor = pathCursor.resolve(pathItem);
-                cursor = cursor.addChild(false, buildFileSystemItem(pathCursor, pathCursor.toFile()));
-            }
-        }
-        return rootPath;
-    }
-
-    @Override
-    public DownloadData download(String[] filePath, boolean tryUpdateCache, String password) throws Exception {
-        Path path = buildPath(filePath);
-        InputStream stream = null;
-        if (!Files.exists(path)) {
-            // try check if path is archive;
-            Path cursor = path;
-            while ((cursor = cursor.getParent()) != null) {
-                if (Files.exists(cursor) && ArchiveUtil.isArchive(cursor)) {
-                    stream = ArchiveUtil.downloadArchiveEntry(cursor, cursor.relativize(path).toString(), password);
-                    break;
-                }
-            }
+        boolean hasFileInPathname = !CommonUtils.getExtension(targetPath.toString()).isEmpty();
+        if (!hasFileInPathname) {
+            Files.createDirectories(targetPath);
         } else {
-            stream = Files.newInputStream(path);
+            Files.createDirectories(targetPath.getParent());
         }
-        return new DownloadData(path.getFileName().toString(), Files.probeContentType(path), null, stream);
+
+        // check if targetPath already has fileName
+        if (entries.size() == 1 && !entries.iterator().next().getAttributes().isDir()) {
+            FileObject entry = entries.iterator().next();
+            Path entryPath = hasFileInPathname ? targetPath : targetPath.resolve(entry.getName());
+            try (InputStream stream = entry.getInputStream()) {
+                Files.copy(stream, entryPath, options);
+            }
+            result.add(entryPath);
+            return;
+        }
+        for (FileObject entry : entries) {
+            Path entryPath = targetPath.resolve(entry.getName());
+            result.add(entryPath);
+
+            if (!entry.getAttributes().isDir()) {
+                try (InputStream stream = entry.getInputStream()) {
+                    Files.copy(stream, entryPath, options);
+                }
+            } else {
+                Files.createDirectories(entryPath);
+                copyEntries(entry.getFileSystem().getChildren(entry), entryPath, options, result);
+            }
+        }
     }
 
-    private FileSystemItem buildFileSystemItem(Path path, File file) {
-        String fullPath = path.toAbsolutePath().toString().substring(getEntity().getFileSystemRoot().length());
+    @SneakyThrows
+    private FileObject buildFileObject(Path path, File file) {
+        String fullPath = path.toAbsolutePath().toString().substring(entity.getFileSystemRoot().length());
         if (!SystemUtils.IS_OS_LINUX) {
             fullPath = fullPath.replaceAll("\\\\", "/");
         }
         if (fullPath.startsWith("/")) {
             fullPath = fullPath.substring(1);
         }
-        return new FileSystemItem(file.isDirectory(),
-                file.isDirectory() && Objects.requireNonNull(file.list()).length == 0,
-                file.getName(), fullPath, file.length(), file.lastModified(), null);
+        boolean isDirectory = file.isDirectory();
+        return buildFileObject(file, isDirectory, fullPath, isDirectory ? null :
+                StringUtils.defaultString(Files.probeContentType(path), TIKA.detect(path)));
     }
 
-    public static class RaspberryCacheFileSystem
-            extends CachedFileSystem<RaspberryCacheFileSystem, RaspberryFile, RaspberryDeviceEntity> {
+    private FileObject buildFileObject(File file, boolean isDirectory, String fullPath, String contentType) {
+        return new FileObject(isDirectory, file.isDirectory() && Objects.requireNonNull(file.list()).length == 0,
+                file.getName(), fullPath, file.length(), file.lastModified(), this, contentType);
+    }
 
-        public RaspberryCacheFileSystem(RaspberryFile source, RaspberryCacheFileSystem parent) {
-            super(source, parent, false);
+    private FileObject buildArchiveEntries(Path archivePath, List<File> files, boolean includeRoot) {
+        Path root = Paths.get(entity.getFileSystemRoot());
+        if (!includeRoot) {
+            root = root.resolve(archivePath);
+        }
+        final FileObject rootPath = this.buildFileObject(root, root.toFile());
+
+        FileObject cursorRoot = rootPath;
+        if (includeRoot) {
+            Path pathCursor = root;
+            for (Path pathItem : root.relativize(archivePath)) {
+                pathCursor = pathCursor.resolve(pathItem);
+                cursorRoot = cursorRoot.addChild(buildFileObject(pathCursor, pathCursor.toFile()));
+            }
         }
 
-        @SneakyThrows
-        @Override
-        protected RaspberryFile readFileFromServer(RaspberryDeviceEntity driver) {
-            return new RaspberryFile(new File(getSource().getId()));
+        for (File file : files) {
+            Path pathCursor = Paths.get(entity.getFileSystemRoot()).resolve(archivePath);
+            FileObject cursor = cursorRoot;
+            for (Path pathItem : file.toPath()) {
+                pathCursor = pathCursor.resolve(pathItem);
+                cursor = cursor.addChild(buildFileObject(pathCursor, file));
+            }
         }
+        evaluateEmptyFolders(rootPath);
+        return rootPath;
+    }
 
-        @Override
-        protected int getFSMaxLevel() {
-            return 5;
+    private void evaluateEmptyFolders(FileObject parentPath) {
+        if (parentPath.getChildren() == null) {
+            parentPath.getAttributes().setEmpty(true);
+            return;
         }
-
-        @Override
-        protected RaspberryCacheFileSystem newInstance(RaspberryFile source, RaspberryCacheFileSystem parent) {
-            return new RaspberryCacheFileSystem(source, parent);
-        }
-
-        @SneakyThrows
-        @Override
-        protected Collection<RaspberryFile> searchForChildren(RaspberryFile serverSource, RaspberryDeviceEntity driver) {
-            File[] files = serverSource.file.listFiles();
-            return files == null ? Collections.emptySet() : Stream.of(files).map(RaspberryFile::new).collect(Collectors.toList());
-        }
-
-        @Override
-        public DownloadData download(RaspberryDeviceEntity drive) throws Exception {
-            Path path = getSource().file.toPath();
-            return new VendorFileSystem.DownloadData(this.getSource().getName(), Files.probeContentType(path), null,
-                    Files.newInputStream(path));
-        }
-
-        @Override
-        @SneakyThrows
-        protected byte[] downloadContent(RaspberryDeviceEntity drive) {
-            return Files.readAllBytes(getSource().file.toPath());
+        for (FileObject child : parentPath.getChildren()) {
+            evaluateEmptyFolders(child);
         }
     }
 
-    @RequiredArgsConstructor
-    private static class RaspberryFile implements CachedFileSystem.SourceFileCapability {
-        private final File file;
-
-        @Override
-        public String getId() {
-            return file.getPath();
+    private FileObject buildRoot(Collection<Path> paths) {
+        Path root = Paths.get(entity.getFileSystemRoot());
+        FileObject rootPath = this.buildFileObject(root, root.toFile());
+        for (Path path : paths) {
+            Path pathCursor = root;
+            FileObject cursor = rootPath;
+            for (Path pathItem : root.relativize(path)) {
+                pathCursor = pathCursor.resolve(pathItem);
+                cursor = cursor.addChild(buildFileObject(pathCursor, pathCursor.toFile()));
+            }
         }
-
-        @Override
-        public String getName() {
-            return file.getName();
-        }
-
-        @Override
-        public Long getLastModifiedTime() {
-            return file.lastModified();
-        }
-
-        @Override
-        public boolean setLastModifiedTime(long time) {
-            return file.setLastModified(time);
-        }
-
-        @Override
-        public boolean isFolder() {
-            return file.isDirectory();
-        }
-
-        @Override
-        public Long size() {
-            return file.length();
-        }
-
-
+        return rootPath;
     }
 }

@@ -49,7 +49,7 @@ public class UsbCameraHandler extends BaseFFMPEGVideoStreamHandler<UsbCameraEnti
         outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + (videoStreamEntity.getStreamStartPort() + 1));
 
         ffmpegUsbStream = new FFMPEG("FFmpegUSB_UDP", "FFmpeg usb udp re streamer", this, log,
-                GENERAL, ffmpegLocation,
+                GENERAL, BaseFFMPEGVideoStreamHandler.getFfmpegLocation(),
                 "-loglevel warning " + (SystemUtils.IS_OS_LINUX ? "-f v4l2" : "-f dshow"), url,
                 String.join(" ", outputParams),
                 outputs.stream().map(o -> "[f=mpegts]udp://" + o + "?pkt_size=1316").collect(Collectors.joining("|")),
@@ -68,7 +68,7 @@ public class UsbCameraHandler extends BaseFFMPEGVideoStreamHandler<UsbCameraEnti
 
     @Override
     public void testOnline() {
-        String ffmpegPath = entityContext.setting().getFFMPEGInstallPath().toString();
+        String ffmpegPath = BaseFFMPEGVideoStreamHandler.getFfmpegLocation();
         FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
         Set<String> aliveVideoDevices = repository.getVideoDevices(ffmpegPath);
         if (!aliveVideoDevices.contains(getVideoStreamEntity().getIeeeAddress())) {

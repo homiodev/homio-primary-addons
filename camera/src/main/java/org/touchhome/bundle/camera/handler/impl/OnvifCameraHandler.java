@@ -521,7 +521,7 @@ public class OnvifCameraHandler extends BaseFFMPEGVideoStreamHandler<OnvifCamera
                 inputOptions = "-rtsp_transport tcp";
             }
         }
-        if (!inputOptions.contains("asd")) {
+        if (!inputOptions.contains("stimeout")) {
             inputOptions += " -stimeout " + TimeUnit.SECONDS.toMicros(10);
         }
         return inputOptions;

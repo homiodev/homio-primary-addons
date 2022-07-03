@@ -47,6 +47,7 @@ public class RaspberryGPIOService {
 
     @SneakyThrows
     void init() {
+        log.info("Init gpio");
         for (RaspberryGpioPin pin : RaspberryGpioPin.values(PinMode.DIGITAL_INPUT, null)) {
             digitalListeners.put(pin, new CopyOnWriteArrayList<>());
         }
@@ -89,6 +90,7 @@ public class RaspberryGPIOService {
                 log.info("Fire switch HotSpot on Gpio event");
                 wirelessManager.enableHotspot(60);
             });*/
+            log.info("Done init gpio");
         }
     }
 

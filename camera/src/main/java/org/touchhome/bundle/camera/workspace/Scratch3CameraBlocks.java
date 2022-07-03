@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.concurrent.Executors;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -94,11 +95,11 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         this.broadcastLockManager = broadcastLockManager;
 
         // Menu
-        this.cameraRecordHandler = MenuBlock.ofServerItems(RECORD_STORAGE_MENU, VideoBaseStorageService.class);
-        this.ffmpegCameraMenu = MenuBlock.ofServerItems("ffmpegCameraMenu", BaseFFMPEGVideoStreamEntity.class);
+        this.cameraRecordHandler = MenuBlock.ofServerItems(RECORD_STORAGE_MENU, VideoBaseStorageService.class, "Record storage");
+        this.ffmpegCameraMenu = MenuBlock.ofServerItems("ffmpegCameraMenu", BaseFFMPEGVideoStreamEntity.class, "Camera");
         this.ffmpegCameraMenuWithProfiles =
-                MenuBlock.ofServer("ffmpegCameraMenuWithProfiles", "rest/camera/ffmpegWithProfiles", "-", "-");
-        /*this.profileMenu = MenuBlock.ofServer("profileMenu", "/rest/camera/profiles", "-", "-")
+                MenuBlock.ofServer("ffmpegCameraMenuWithProfiles", "rest/camera/ffmpegWithProfiles", "Camera");
+        /*this.profileMenu = MenuBlock.ofServer("profileMenu", "/rest/camera/profiles")
                 .setDependency(this.ffmpegCameraMenu);*/
         this.onOffMenu = MenuBlock.ofStatic("onOff", OnOffType.OnOffTypeEnum.class, OnOffType.OnOffTypeEnum.On);
         this.recordTypeMenu = MenuBlock.ofStatic("recordType", RecordType.class, RecordType.Mp4);
@@ -120,9 +121,9 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         this.whenBoolHat.addArgument(ON_OFF, this.onOffMenu);
 
         this.recordVideo = withServerFfmpegAndProfile(Scratch3Block.ofCommand(15, "record",
-                "Record [VIDEO_STREAM] to file [NAME] using [FS]", this::recordCameraHandler));
+                "Infinite record [VIDEO_STREAM] to file [NAME] using [FS]", this::recordCameraHandler));
         this.recordVideo.addArgument("FS", this.cameraRecordHandler);
-        this.recordVideo.addArgument("NAME", "output-%03d.mp4");
+        this.recordVideo.addArgument("NAME", "video-%03d.mp4");
 
         // Reporters
         this.getCameraParameterReporter = withServerFfmpeg(Scratch3Block.ofReporter(33, "camReporter",
@@ -144,11 +145,11 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
                 "Record image of [VIDEO_STREAM]", this::firePollImageCommand));*/
 
         this.recordGifOrMP4Command = withServerFfmpegAndProfile(Scratch3Block.ofCommand(150, "record_gif_mp4",
-                "Record [RECORD_TYPE] [TIME]sec. to file [FILE_NAME] of [VIDEO_STREAM]",
+                "Record [RECORD_TYPE] [TIME]sec. to file [NAME] of [VIDEO_STREAM]",
                 this::fireRecordGifMP4Command));
         this.recordGifOrMP4Command.addArgument(RECORD_TYPE, this.recordTypeMenu);
         this.recordGifOrMP4Command.addArgument("TIME", ArgumentType.number, "5");
-        this.recordGifOrMP4Command.addArgument("FILE_NAME", ArgumentType.string, "name");
+        this.recordGifOrMP4Command.addArgument("NAME", ArgumentType.string, "${YEAR}/${MONTH}/video-${TIME}");
 
         this.setIntParamCommand = withServerFfmpeg(Scratch3Block.ofCommand(160, "set_int_param",
                 "Set [ENTITY] as [VALUE] of [VIDEO_STREAM]", this::setIntParamCommand));
@@ -156,7 +157,7 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         this.setIntParamCommand.addArgument(VALUE, 35);
 
         this.setBoolParamCommand = withServerFfmpeg(Scratch3Block.ofCommand(170, "set_bool_param",
-                "Set [ENTITY] as [ON_OFF] of [VIDEO_STREAM]", this::setBoolParamCommand));
+                "Fire event [ENTITY] as [ON_OFF] of [VIDEO_STREAM]", this::setBoolParamCommand));
         this.setBoolParamCommand.addArgument(ENTITY, this.boolParamMenu);
         this.setBoolParamCommand.addArgument(ON_OFF, this.onOffMenu);
     }
@@ -384,10 +385,14 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
 
     private void fireRecordGifMP4Command(WorkspaceBlock workspaceBlock) {
         CameraWithProfile camera = getCameraProfile(workspaceBlock);
-        workspaceBlock.getMenuValue(RECORD_TYPE, this.recordTypeMenu).recordHandler
-                .record(camera.entity.getVideoHandler(), camera.profile,
-                        workspaceBlock.getInputString("FILE_NAME"),
-                        workspaceBlock.getInputInteger("TIME"));
+        String fileName = workspaceBlock.getInputStringRequired("NAME");
+        RecordType recordType = workspaceBlock.getMenuValue(RECORD_TYPE, this.recordTypeMenu);
+        BaseFFMPEGVideoStreamHandler videoHandler = camera.entity.getVideoHandler();
+        Path basePath = recordType.getBasePath(videoHandler);
+        Path path = BaseFFMPEGVideoStreamEntity.buildFilePathForRecord(basePath, fileName, recordType.ext);
+        workspaceBlock.logInfo("Record <{}> to <{}>", recordType, path);
+        recordType.recordHandler.record(videoHandler, path, camera.profile,
+                workspaceBlock.getInputInteger("TIME"));
     }
 
     /*private void firePollImageCommand(WorkspaceBlock workspaceBlock) {
@@ -395,7 +400,7 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
     }*/
 
     private void listenBoolHat(WorkspaceBlock workspaceBlock) {
-        BoolHatMenuEnum boolHatMenuEnum = workspaceBlock.getMenuValue("ALARM", this.boolHatMenu);
+        BoolHatMenuEnum boolHatMenuEnum = workspaceBlock.getMenuValue(VALUE, this.boolHatMenu);
         workspaceBlock.handleNext(next -> {
             BaseFFMPEGVideoStreamEntity entity = getEntity(workspaceBlock, this.ffmpegCameraMenu);
 
@@ -428,18 +433,27 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
 
     @RequiredArgsConstructor
     public enum RecordType {
-        Gif(BaseFFMPEGVideoStreamHandler::recordGifSync, BaseFFMPEGVideoStreamHandler::recordGif, MediaType.IMAGE_GIF_VALUE),
-        Mp4(BaseFFMPEGVideoStreamHandler::recordMp4Sync, BaseFFMPEGVideoStreamHandler::recordMp4, "video/mp4");
+        Gif(BaseFFMPEGVideoStreamHandler::recordGifSync, BaseFFMPEGVideoStreamHandler::recordGif, MediaType.IMAGE_GIF_VALUE,
+                "gif"),
+        Mp4(BaseFFMPEGVideoStreamHandler::recordMp4Sync, BaseFFMPEGVideoStreamHandler::recordMp4, "video/mp4", "mp4");
         private final GetDataHandler getHandler;
         private final RecordHandler recordHandler;
         public final String mimeType;
+        public final String ext;
+
+        public Path getBasePath(BaseFFMPEGVideoStreamHandler videoHandler) {
+            if (this == RecordType.Gif) {
+                return videoHandler.getFfmpegGifOutputPath();
+            }
+            return videoHandler.getFfmpegMP4OutputPath();
+        }
 
         private interface GetDataHandler {
             byte[] getData(BaseFFMPEGVideoStreamHandler handler, String profile, int time);
         }
 
         private interface RecordHandler {
-            void record(BaseFFMPEGVideoStreamHandler handler, String fileName, String profile, int time);
+            void record(BaseFFMPEGVideoStreamHandler handler, Path filePath, String profile, int time);
         }
     }
 

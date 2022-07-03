@@ -67,13 +67,13 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         this.broadcastLockManager = broadcastLockManager;
 
         // Menu
-        this.telegramEntityUsersMenu = MenuBlock.ofServer("telegramEntityUsersMenu", "rest/telegram/entityUser",
-                "-", "-");
+        this.telegramEntityUsersMenu = MenuBlock.ofServer("telegramEntityUsersMenu", "rest/telegram/entityUser", "Telegram");
         this.levelMenu = MenuBlock.ofStatic("levelMenu", Level.class, Level.info);
         this.buttonsMenu = MenuBlock.ofStaticKV("buttonsMenu", QuestionButtons.class, QuestionButtons.YesNo);
 
 
-        this.getCommand = Scratch3Block.ofHandler(10, "get_msg", BlockType.hat, "On command [COMMAND] | Desc: [DESCR]", this::whenGetMessage);
+        this.getCommand = Scratch3Block.ofHandler(10, "get_msg", BlockType.hat, "On command [COMMAND] | Desc: [DESCR]",
+                this::whenGetMessage);
         this.getCommand.addArgument(COMMAND, "bulb4_on");
         this.getCommand.addArgument(DESCR, "Turn on bulb 4");
 
@@ -165,7 +165,8 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         }
     }
 
-    private Message sendTelegramMessage(WorkspaceBlock workspaceBlock, String[] buttons, Function<String, String> messagePreUpdate) {
+    private Message sendTelegramMessage(WorkspaceBlock workspaceBlock, String[] buttons,
+                                        Function<String, String> messagePreUpdate) {
         Pair<TelegramEntity, List<TelegramEntity.TelegramUser>> context = getEntityAndUsers(workspaceBlock);
         String message = workspaceBlock.getInputString(MESSAGE);
         try {
@@ -175,7 +176,8 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
                 message = "```" + message + "```";
             } catch (Exception ignore) {
             }
-            return telegramService.sendMessage(context.getFirst(), context.getSecond(), messagePreUpdate.apply(escape(message)), buttons);
+            return telegramService.sendMessage(context.getFirst(), context.getSecond(), messagePreUpdate.apply(escape(message)),
+                    buttons);
         } catch (Exception ex) {
             workspaceBlock.logError("Error send telegram message " + ex);
         }
@@ -220,7 +222,8 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         } else {
             List<TelegramEntity.TelegramUser> users = telegramEntity.getUsers();
             if (users.isEmpty()) {
-                workspaceBlock.logWarn("Unable to find any registered users. Please open telegram bot and run command '/register'");
+                workspaceBlock.logWarn(
+                        "Unable to find any registered users. Please open telegram bot and run command '/register'");
             }
             return Pair.of(telegramEntity, users);
         }

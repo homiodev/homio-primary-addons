@@ -14,6 +14,7 @@ import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.video.AbilityToStreamHLSOverFFMPEG;
 import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
+import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
 import org.touchhome.bundle.api.video.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.handler.impl.UsbCameraHandler;
 
@@ -115,9 +116,9 @@ public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity
 
         @Override
         public Collection<OptionModel> loadOptions(DynamicOptionLoaderParameters parameters) {
-            Path path = parameters.getEntityContext().setting().getFFMPEGInstallPath();
+            String ffmpegLocation = BaseFFMPEGVideoStreamHandler.getFfmpegLocation();
             return OptionModel.list(parameters.getEntityContext().getBean(FfmpegInputDeviceHardwareRepository.class)
-                    .getAudioDevices(path.toString()));
+                    .getAudioDevices(ffmpegLocation));
         }
     }
 }

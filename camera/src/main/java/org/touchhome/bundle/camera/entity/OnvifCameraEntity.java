@@ -65,6 +65,11 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     }
 
     @Override
+    public String getTitle() {
+        return super.getTitle();
+    }
+
+    @Override
     public void afterFetch(EntityContext entityContext) {
         super.afterFetch(entityContext);
         baseBrandCameraHandler = CameraCoordinator.entityToCameraBrands.computeIfAbsent(getEntityID(), entityID -> {

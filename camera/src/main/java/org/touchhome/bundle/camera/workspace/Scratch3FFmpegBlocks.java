@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
 import org.touchhome.bundle.api.video.ffmpeg.FFMPEG;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.BlockType;
@@ -55,7 +56,7 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
         FfmpegBuilder ffmpegBuilder = new FfmpegBuilder();
         applyParentBlocks(ffmpegBuilder, workspaceBlock.getParent());
 
-        String ffmpegLocation = entityContext.setting().getFFMPEGInstallPath().toString();
+        String ffmpegLocation = BaseFFMPEGVideoStreamHandler.getFfmpegLocation();
         FFMPEG ffmpeg = new FFMPEG("FFMPEG_" + workspaceBlock.getId(),
                 "FFMpeg workspace general FFMPEG", new FFMPEG.FFMPEGHandler() {
             @Override

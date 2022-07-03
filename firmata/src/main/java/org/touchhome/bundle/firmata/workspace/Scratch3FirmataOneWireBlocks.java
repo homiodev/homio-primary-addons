@@ -31,8 +31,10 @@ public class Scratch3FirmataOneWireBlocks extends Scratch3FirmataBaseBlock {
                                         BroadcastLockManager broadcastLockManager) {
         super("#83A044", entityContext, firmataBundleEntryPoint, broadcastLockManager, "onewire");
 
-        this.pinMenu1Wire = MenuBlock.ofServer(PIN, REST_PIN + Pin.Mode.ONEWIRE).setDependency(firmataIdMenu);
-        this.menuTemperatureAddress = MenuBlock.ofServer("pinMenu1WireAddress", ONE_REST + ONE_WIRE.DS18B20.TEMPERATURE_FAMILY).setDependency(firmataIdMenu, this.pinMenu1Wire);
+        this.pinMenu1Wire = MenuBlock.ofServer(PIN, REST_PIN + Pin.Mode.ONEWIRE, "1-Wire").setDependency(firmataIdMenu);
+        this.menuTemperatureAddress = MenuBlock.ofServer("pinMenu1WireAddress",
+                        ONE_REST + ONE_WIRE.DS18B20.TEMPERATURE_FAMILY, "Temperature address")
+                .setDependency(firmataIdMenu, this.pinMenu1Wire);
 
         this.ds18b20Value = ofPin(Scratch3Block.ofReporter(10, "DS18B20",
                 "DS18B20(1-Wire) on [PIN] address [ADDRESS] of [FIRMATA]", this::getDS18B20Value), this.pinMenu1Wire);
@@ -41,9 +43,7 @@ public class Scratch3FirmataOneWireBlocks extends Scratch3FirmataBaseBlock {
 
     private float getDS18B20Value(WorkspaceBlock workspaceBlock) {
         Long longAddress = workspaceBlock.getMenuValue("ADDRESS", this.menuTemperatureAddress, Long.class);
-        if (longAddress == null) {
-            return -1;
-        }
+
         ByteBuffer address = OneWireDevice.toByteArray(longAddress);
         return execute(workspaceBlock, false, this.pinMenu1Wire, (entity, pin) -> {
             entity.getDevice().getIoOneWire().sendOneWireConfig(pin.getIndex(), true);
@@ -57,7 +57,8 @@ public class Scratch3FirmataOneWireBlocks extends Scratch3FirmataBaseBlock {
 
             // Read Scratchpad
             payload = ByteBuffer.allocate(1).put(ONE_WIRE.DS18B20.READ_SCRATCHPAD_COMMAND);
-            byte[] data = entity.getDevice().getIoOneWire().sendOneWireWriteAndRead(pin.getIndex(), address, payload, ONE_WIRE.DS18B20.READ_COUNT, null, true);
+            byte[] data = entity.getDevice().getIoOneWire()
+                    .sendOneWireWriteAndRead(pin.getIndex(), address, payload, ONE_WIRE.DS18B20.READ_COUNT, null, true);
             return (float) (data == null ? -1 : ((data[1] & 0xFF) << 8) | data[0] & 0xFF) / 16;
         });
     }

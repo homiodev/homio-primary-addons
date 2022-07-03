@@ -33,6 +33,7 @@ import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.ui.UICameraSelectionAttributeValues;
+import org.touchhome.common.exception.LoginFailedException;
 import org.touchhome.common.util.CommonUtils;
 
 import java.net.URI;
@@ -493,7 +494,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements
                     new LoginRequest.User(videoStreamEntity.getUser(), videoStreamEntity.getPassword().asString()));
             Root root = firePost("cmd=Login", false, new ReolinkCmd(0, "Login", loginRequest))[0];
             if (root.getError() != null) {
-                throw new IllegalStateException(root.getError().toString());
+                throw new LoginFailedException(root.getError().toString());
             }
             this.tokenExpiration = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(root.value.token.leaseTime);
             this.token = root.value.token.name;

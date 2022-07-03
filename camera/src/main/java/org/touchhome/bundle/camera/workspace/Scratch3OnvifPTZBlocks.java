@@ -47,7 +47,7 @@ public class Scratch3OnvifPTZBlocks extends Scratch3ExtensionBlocks implements S
         setParent("media");
 
         // Menu
-        this.onvifCameraMenu = MenuBlock.ofServerItems("onvifCameraMenu", OnvifCameraEntity.class);
+        this.onvifCameraMenu = MenuBlock.ofServerItems("onvifCameraMenu", OnvifCameraEntity.class, "Onvif camera");
         this.panActionTypeMenu = MenuBlock.ofStatic("panActionTypeMenu", PanActionType.class, PanActionType.Left);
         this.tiltActionTypeMenu = MenuBlock.ofStatic("tiltActionTypeMenu", TiltActionType.class, TiltActionType.Up);
         this.zoomActionTypeMenu = MenuBlock.ofStatic("zoomActionTypeMenu", ZoomActionType.class, ZoomActionType.In);

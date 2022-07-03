@@ -25,9 +25,7 @@ import org.touchhome.common.util.CommonUtils;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<RaspberryDeviceEntity>
@@ -35,8 +33,6 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
 
     public static final String PREFIX = "raspb_";
     public static final String DEFAULT_DEVICE_ENTITY_ID = PREFIX + TouchHomeUtils.APP_UUID;
-
-    private static Map<String, RaspberryFileSystem> fileSystemMap = new HashMap<>();
 
     @Getter
     @Setter
@@ -48,7 +44,7 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
     private List<AvailableLink> availableLinks;
 
     @Override
-    public String getShortTitle() {
+    public String getDefaultName() {
         return "Raspi";
     }
 
@@ -130,23 +126,13 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
     }
 
     @Override
-    public RaspberryFileSystem getFileSystem(EntityContext entityContext) {
-        return fileSystemMap.computeIfAbsent(getEntityID(), s -> new RaspberryFileSystem(this, entityContext));
-    }
-
-    @Override
-    public Map<String, RaspberryFileSystem> getFileSystemMap() {
-        return fileSystemMap;
+    public RaspberryFileSystem buildFileSystem(EntityContext entityContext) {
+        return new RaspberryFileSystem(this);
     }
 
     @Override
     public long getConnectionHashCode() {
         return 0;
-    }
-
-    @Override
-    public String getDefaultName() {
-        return getShortTitle();
     }
 
     @Override
@@ -156,7 +142,7 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
 
     @Getter
     @AllArgsConstructor
-    public final class AvailableLink {
+    public static final class AvailableLink {
         private OptionModel key;
         private String value;
     }
