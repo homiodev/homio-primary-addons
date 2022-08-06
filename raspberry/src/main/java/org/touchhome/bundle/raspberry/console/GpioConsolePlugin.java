@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GpioConsolePlugin implements ConsolePluginTable<GpioConsolePlugin.GpioPluginEntity> {
 
+    @Getter
     private final EntityContext entityContext;
     private final RaspberryGPIOService raspberryGPIOService;
     private String selectedRaspberry;

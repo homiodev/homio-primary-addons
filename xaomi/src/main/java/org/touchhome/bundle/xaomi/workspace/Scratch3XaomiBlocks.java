@@ -16,8 +16,6 @@ import org.touchhome.bundle.xaomi.XaomiEntryPoint;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.ZigBeeCoordinatorHandlerSetting;
-import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
 import org.touchhome.bundle.zigbee.workspace.ScratchDeviceState;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
@@ -40,7 +38,6 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
     private final Scratch3Block magicCubeLastValue;
     private final BroadcastLockManager broadcastLockManager;
     private final ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener;
-    private ZigBeeCoordinatorHandler coordinatorHandler;
 
     public Scratch3XaomiBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
                                ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
@@ -49,13 +46,6 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
         setParent("zigbee");
         this.broadcastLockManager = broadcastLockManager;
         this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
-        this.entityContext.setting().listenValue(ZigBeeStatusSetting.class, "zb-wp-xaomi-workspace", status -> {
-            if (status.isOnline()) {
-                this.coordinatorHandler = this.entityContext.setting().getValue(ZigBeeCoordinatorHandlerSetting.class);
-            } else {
-                this.coordinatorHandler = null;
-            }
-        });
 
         this.cubeEventMenu = MenuBlock.ofStatic("cubeEventMenu", MagicCubeEvent.class, MagicCubeEvent.ANY_EVENT);
         this.cubeEventMenu.subMenu(MagicCubeEvent.MOVE, MoveSide.class);

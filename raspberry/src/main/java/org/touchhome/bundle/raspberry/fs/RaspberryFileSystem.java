@@ -8,7 +8,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
-import org.touchhome.common.fs.FileObject;
+import org.touchhome.common.fs.TreeNode;
 import org.touchhome.common.fs.FileSystemProvider;
 import org.touchhome.common.util.ArchiveUtil;
 import org.touchhome.common.util.CommonUtils;
@@ -42,8 +42,8 @@ public class RaspberryFileSystem implements FileSystemProvider {
 
     @Override
     @SneakyThrows
-    public Set<FileObject> getChildren(@NotNull String id) {
-        Set<FileObject> fmPaths = new HashSet<>();
+    public Set<TreeNode> getChildren(@NotNull String id) {
+        Set<TreeNode> fmPaths = new HashSet<>();
         Path parentPath = buildPath(id);
         if (Files.exists(parentPath)) {
             if (ArchiveUtil.isArchive(parentPath)) {
@@ -54,7 +54,7 @@ public class RaspberryFileSystem implements FileSystemProvider {
             Path archivePath = getArchivePath(parentPath);
             if (archivePath != null) {
                 List<File> children = ArchiveUtil.getChildren(archivePath, archivePath.relativize(parentPath).toString());
-                return children.stream().map(c -> buildFileObject(c, c.isDirectory(),
+                return children.stream().map(c -> buildTreeNode(c, c.isDirectory(),
                                 archivePath.resolve(c.getPath()).toString(), null))
                         .collect(Collectors.toSet());
             }
@@ -63,10 +63,10 @@ public class RaspberryFileSystem implements FileSystemProvider {
             for (Path path : stream.collect(Collectors.toList())) {
                 try {
                     if (!Files.isHidden(path)) {
-                        fmPaths.add(buildFileObject(path, path.toFile()));
+                        fmPaths.add(buildTreeNode(path, path.toFile()));
                     }
                 } catch (AccessDeniedException ex) {
-                    fmPaths.add(buildFileObject(path, path.toFile()));
+                    fmPaths.add(buildTreeNode(path, path.toFile()));
                 }
             }
         }
@@ -75,21 +75,21 @@ public class RaspberryFileSystem implements FileSystemProvider {
 
     @Override
     @SneakyThrows
-    public Set<FileObject> getChildrenRecursively(@NotNull String parentId) {
-        FileObject root = new FileObject();
-        buildFileObjectRecursively(buildPath(parentId), root);
+    public Set<TreeNode> getChildrenRecursively(@NotNull String parentId) {
+        TreeNode root = new TreeNode();
+        buildTreeNodeRecursively(buildPath(parentId), root);
         return root.getChildren();
     }
 
     // not optimised
-    private void buildFileObjectRecursively(Path parentPath, FileObject root) throws IOException {
+    private void buildTreeNodeRecursively(Path parentPath, TreeNode root) throws IOException {
         try (Stream<Path> stream = Files.list(parentPath)) {
             for (Path path : stream.collect(Collectors.toList())) {
                 try {
                     if (!Files.isHidden(path)) {
-                        FileObject childFileObject = root.addChild(buildFileObject(path, path.toFile()));
+                        TreeNode childTreeNode = root.addChild(buildTreeNode(path, path.toFile()));
                         if (Files.isDirectory(path)) {
-                            buildFileObjectRecursively(path, childFileObject);
+                            buildTreeNodeRecursively(path, childTreeNode);
                         }
                     }
                 } catch (AccessDeniedException ignore) {
@@ -100,14 +100,14 @@ public class RaspberryFileSystem implements FileSystemProvider {
 
     @Override
     @SneakyThrows
-    public Set<FileObject> toFileObjects(@NotNull Set<String> ids) {
-        Set<FileObject> fmPaths = new HashSet<>();
+    public Set<TreeNode> toTreeNodes(@NotNull Set<String> ids) {
+        Set<TreeNode> fmPaths = new HashSet<>();
         Map<Path, Set<Path>> archiveIds = new HashMap<>();
         for (String id : ids) {
             Path path = buildPath(id);
             if (Files.exists(path)) {
                 if (!Files.isHidden(path) && Files.isReadable(path)) {
-                    fmPaths.add(buildFileObject(path, path.toFile()));
+                    fmPaths.add(buildTreeNode(path, path.toFile()));
                 }
             } else {
                 Path archivePath = getArchivePath(path);
@@ -125,7 +125,7 @@ public class RaspberryFileSystem implements FileSystemProvider {
             for (File archiveEntry : archiveEntries) {
                 Path path = valueToKey.get(archiveEntry.toString());
                 if (path != null) {
-                    fmPaths.add(buildFileObject(path, archiveEntry));
+                    fmPaths.add(buildTreeNode(path, archiveEntry));
                 }
             }
         }
@@ -172,7 +172,7 @@ public class RaspberryFileSystem implements FileSystemProvider {
 
     @Override
     @SneakyThrows
-    public FileObject delete(Set<String> ids) {
+    public TreeNode delete(Set<String> ids) {
         Set<Path> removedFiles = new HashSet<>();
         Map<Path, Set<String>> archiveIds = new HashMap<>();
         for (String id : ids) {
@@ -213,7 +213,7 @@ public class RaspberryFileSystem implements FileSystemProvider {
 
     @Override
     @SneakyThrows
-    public FileObject create(@NotNull String parentId, @NotNull String name, boolean isDir, UploadOption uploadOption) {
+    public TreeNode create(@NotNull String parentId, @NotNull String name, boolean isDir, UploadOption uploadOption) {
         Path path = buildPath(parentId).resolve(name);
         if (Files.exists(path)) {
             if (uploadOption == UploadOption.Error) {
@@ -236,7 +236,7 @@ public class RaspberryFileSystem implements FileSystemProvider {
             Path archivePath = getArchivePath(path);
             if (archivePath != null) {
                 Path entryPath = archivePath.relativize(path);
-                Pair<FileObject, FileObject> entryTree = FileObject.buildTree(entryPath);
+                Pair<TreeNode, TreeNode> entryTree = TreeNode.buildTree(entryPath);
                 // mark entry as file or dir
                 if (!isDir) {
                     entryTree.getRight().getAttributes().setDir(false);
@@ -261,7 +261,7 @@ public class RaspberryFileSystem implements FileSystemProvider {
 
     @Override
     @SneakyThrows
-    public FileObject rename(@NotNull String id, @NotNull String newName, UploadOption uploadOption) {
+    public TreeNode rename(@NotNull String id, @NotNull String newName, UploadOption uploadOption) {
         Path path = buildPath(id);
         if (Files.exists(path)) {
             Path target = path.resolveSibling(newName);
@@ -283,7 +283,7 @@ public class RaspberryFileSystem implements FileSystemProvider {
 
     @Override
     @SneakyThrows
-    public FileObject copy(@NotNull Collection<FileObject> entries, @NotNull String targetId, UploadOption uploadOption) {
+    public TreeNode copy(@NotNull Collection<TreeNode> entries, @NotNull String targetId, UploadOption uploadOption) {
         CopyOption[] options = uploadOption == UploadOption.Replace ? new CopyOption[]{REPLACE_EXISTING} : new CopyOption[0];
         List<Path> result = new ArrayList<>();
         Path targetPath = buildPath(targetId);
@@ -293,18 +293,18 @@ public class RaspberryFileSystem implements FileSystemProvider {
     }
 
     @Override
-    public Set<FileObject> loadTreeUpToChild(@NotNull String id) {
+    public Set<TreeNode> loadTreeUpToChild(@NotNull String id) {
         Path targetPath = buildPath(id);
         if (!Files.exists(targetPath)) {
             return null;
         }
-        Set<FileObject> rootChildren = getChildren("");
-        Set<FileObject> currentChildren = rootChildren;
+        Set<TreeNode> rootChildren = getChildren("");
+        Set<TreeNode> currentChildren = rootChildren;
         Path pathId = Paths.get("");
         for (Path pathItem : Paths.get(id)) {
             Path pathItemId = pathId.resolve(pathItem);
             String pathItemIdStr = pathItemId.toString().replaceAll("\\\\", "/");
-            FileObject foundedObject =
+            TreeNode foundedObject =
                     currentChildren.stream().filter(c -> c.getId().equals(pathItemIdStr)).findAny().orElseThrow(() ->
                             new IllegalStateException("Unable find object: " + pathItemIdStr));
             currentChildren = getChildren(pathItemIdStr);
@@ -314,18 +314,18 @@ public class RaspberryFileSystem implements FileSystemProvider {
         return rootChildren;
     }
 
-    public void copyEntries(Collection<FileObject> entries, Path targetPath, CopyOption[] options, List<Path> result)
+    public void copyEntries(Collection<TreeNode> entries, Path targetPath, CopyOption[] options, List<Path> result)
             throws IOException {
         // if copying to archive
         Path archivePath = getArchivePath(targetPath);
         if (archivePath != null) {
             Path pathInArchive = archivePath.relativize(targetPath);
             if (!pathInArchive.toString().isEmpty()) {
-                Pair<FileObject, FileObject> tree = FileObject.buildTree(pathInArchive);
+                Pair<TreeNode, TreeNode> tree = TreeNode.buildTree(pathInArchive);
                 tree.getRight().addChildren(entries);
                 entries = Collections.singletonList(tree.getLeft());
             }
-            for (FileObject entry : entries) {
+            for (TreeNode entry : entries) {
                 result.addAll(entry.toPath(archivePath));
             }
 
@@ -342,7 +342,7 @@ public class RaspberryFileSystem implements FileSystemProvider {
 
         // check if targetPath already has fileName
         if (entries.size() == 1 && !entries.iterator().next().getAttributes().isDir()) {
-            FileObject entry = entries.iterator().next();
+            TreeNode entry = entries.iterator().next();
             Path entryPath = hasFileInPathname ? targetPath : targetPath.resolve(entry.getName());
             try (InputStream stream = entry.getInputStream()) {
                 Files.copy(stream, entryPath, options);
@@ -350,7 +350,7 @@ public class RaspberryFileSystem implements FileSystemProvider {
             result.add(entryPath);
             return;
         }
-        for (FileObject entry : entries) {
+        for (TreeNode entry : entries) {
             Path entryPath = targetPath.resolve(entry.getName());
             result.add(entryPath);
 
@@ -366,7 +366,7 @@ public class RaspberryFileSystem implements FileSystemProvider {
     }
 
     @SneakyThrows
-    private FileObject buildFileObject(Path path, File file) {
+    private TreeNode buildTreeNode(Path path, File file) {
         String fullPath = path.toAbsolutePath().toString().substring(entity.getFileSystemRoot().length());
         if (!SystemUtils.IS_OS_LINUX) {
             fullPath = fullPath.replaceAll("\\\\", "/");
@@ -375,62 +375,62 @@ public class RaspberryFileSystem implements FileSystemProvider {
             fullPath = fullPath.substring(1);
         }
         boolean isDirectory = file.isDirectory();
-        return buildFileObject(file, isDirectory, fullPath, isDirectory ? null :
+        return buildTreeNode(file, isDirectory, fullPath, isDirectory ? null :
                 StringUtils.defaultString(Files.probeContentType(path), TIKA.detect(path)));
     }
 
-    private FileObject buildFileObject(File file, boolean isDirectory, String fullPath, String contentType) {
-        return new FileObject(isDirectory, file.isDirectory() && Objects.requireNonNull(file.list()).length == 0,
+    private TreeNode buildTreeNode(File file, boolean isDirectory, String fullPath, String contentType) {
+        return new TreeNode(isDirectory, file.isDirectory() && Objects.requireNonNull(file.list()).length == 0,
                 file.getName(), fullPath, file.length(), file.lastModified(), this, contentType);
     }
 
-    private FileObject buildArchiveEntries(Path archivePath, List<File> files, boolean includeRoot) {
+    private TreeNode buildArchiveEntries(Path archivePath, List<File> files, boolean includeRoot) {
         Path root = Paths.get(entity.getFileSystemRoot());
         if (!includeRoot) {
             root = root.resolve(archivePath);
         }
-        final FileObject rootPath = this.buildFileObject(root, root.toFile());
+        final TreeNode rootPath = this.buildTreeNode(root, root.toFile());
 
-        FileObject cursorRoot = rootPath;
+        TreeNode cursorRoot = rootPath;
         if (includeRoot) {
             Path pathCursor = root;
             for (Path pathItem : root.relativize(archivePath)) {
                 pathCursor = pathCursor.resolve(pathItem);
-                cursorRoot = cursorRoot.addChild(buildFileObject(pathCursor, pathCursor.toFile()));
+                cursorRoot = cursorRoot.addChild(buildTreeNode(pathCursor, pathCursor.toFile()));
             }
         }
 
         for (File file : files) {
             Path pathCursor = Paths.get(entity.getFileSystemRoot()).resolve(archivePath);
-            FileObject cursor = cursorRoot;
+            TreeNode cursor = cursorRoot;
             for (Path pathItem : file.toPath()) {
                 pathCursor = pathCursor.resolve(pathItem);
-                cursor = cursor.addChild(buildFileObject(pathCursor, file));
+                cursor = cursor.addChild(buildTreeNode(pathCursor, file));
             }
         }
         evaluateEmptyFolders(rootPath);
         return rootPath;
     }
 
-    private void evaluateEmptyFolders(FileObject parentPath) {
+    private void evaluateEmptyFolders(TreeNode parentPath) {
         if (parentPath.getChildren() == null) {
             parentPath.getAttributes().setEmpty(true);
             return;
         }
-        for (FileObject child : parentPath.getChildren()) {
+        for (TreeNode child : parentPath.getChildren()) {
             evaluateEmptyFolders(child);
         }
     }
 
-    private FileObject buildRoot(Collection<Path> paths) {
+    private TreeNode buildRoot(Collection<Path> paths) {
         Path root = Paths.get(entity.getFileSystemRoot());
-        FileObject rootPath = this.buildFileObject(root, root.toFile());
+        TreeNode rootPath = this.buildTreeNode(root, root.toFile());
         for (Path path : paths) {
             Path pathCursor = root;
-            FileObject cursor = rootPath;
+            TreeNode cursor = rootPath;
             for (Path pathItem : root.relativize(path)) {
                 pathCursor = pathCursor.resolve(pathItem);
-                cursor = cursor.addChild(buildFileObject(pathCursor, pathCursor.toFile()));
+                cursor = cursor.addChild(buildTreeNode(pathCursor, pathCursor.toFile()));
             }
         }
         return rootPath;

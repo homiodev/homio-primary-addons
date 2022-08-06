@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 @Log4j2
+public
 class ZigBeeIsAliveTracker {
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();

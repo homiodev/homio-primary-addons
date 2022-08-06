@@ -5,7 +5,14 @@
     "firmata-ic": "Firmata I2C devices"
   },
   "placeholder": {
-    "st_FirmataScanPortRangeSetting": "Scan port range i.e.: 192.168.0.0-255"
+    "st_FirmataScanPortRangeSetting": "Scan port range i.e.: 192.168.0.0-255",
+    "st_ConsoleHeaderArduinoIncludeLibrarySetting": "Include library",
+    "st_ConsoleHeaderArduinoIncludeLibrarySetting_unavailable": "Select board first",
+    "st_ConsoleHeaderArduinoPortSetting": "Arduino port",
+    "st_ConsoleHeaderArduinoPortSetting_unavailable": "No ports available",
+    "st_ConsoleHeaderArduinoGetBoardsSetting": "Board",
+    "st_ConsoleHeaderArduinoProgrammerSetting": "Programmer",
+    "st_ConsoleHeaderArduinoProgrammerSetting_unavailable": "No programmers available for this board"
   },
   "firmata": {
     "name": "Firmata",
@@ -24,5 +31,27 @@
       "UPLOAD_SKETCH": "Upload sketch automatically",
       "UPLOAD_SKETCH_MANUALLY": "Upload sketch manually"
     }
+  },
+  "arduino": {
+    "PASSWORD_DESCRIPTION": "Board password to upload a new sketch",
+    "setting": {
+      "st_ConsoleHeaderArduinoPortSetting": "Select arduino port",
+      "st_ConsoleHeaderArduinoGetBoardInfoSetting": "Get board info",
+      "st_ConsoleHeaderArduinoDeploySketchSetting": "Deploy sketch to board",
+      "st_ConsoleHeaderArduinoBuildSketchSetting": "Verify/Compile sketch",
+      "st_ConsoleHeaderArduinoGetBoardsSetting": "Select board",
+      "st_ConsoleHeaderGetBoardsDynamicSetting": "Additional settings",
+      "st_ConsoleHeaderArduinoIncludeLibrarySetting": "Load example",
+      "st_ConsoleHeaderGetBoardInfoSetting": "Get board info"
+    }
+  },
+  "CONSOLE": {
+    "st_ConsoleArduinoFetchEsp8266PackagesSetting": "Download esp8266 boards",
+    "st_ConsoleArduinoLibraryManagerSetting": "Library Manager",
+    "st_ConsoleArduinoBoardManagerSetting": "Boards Manager",
+    "st_ConsoleArduinoBoardPasswordSetting": "Board password",
+    "st_ConsoleArduinoUploadUsingProgrammerSetting": "Upload Using Programmer",
+    "st_ConsoleArduinoProgrammerSetting": "Programmer",
+    "st_ConsoleArduinoVerboseSetting": "Verbose"
   }
 }

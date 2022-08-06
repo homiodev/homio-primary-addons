@@ -3,6 +3,7 @@ package org.touchhome.bundle.serial;
 import com.fazecast.jSerialComm.SerialPort;
 import com.pi4j.io.serial.DataBits;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.touchhome.bundle.api.EntityContext;
@@ -21,7 +22,8 @@ public class RawSerialPortCommunicator extends BaseSerialPort {
     @Getter
     private final CircularFifoQueue<ConsolePluginComplexLines.ComplexString> buffer = new CircularFifoQueue<>(1000);
 
-    public RawSerialPortCommunicator(SerialPort serialPort, EntityContext entityContext, ConsolePluginCommunicator consolePluginCommunicator) {
+    public RawSerialPortCommunicator(SerialPort serialPort, EntityContext entityContext,
+                                     ConsolePluginCommunicator consolePluginCommunicator) {
         super("", entityContext, serialPort, 9600, PortFlowControl.FLOWCONTROL_OUT_NONE, () ->
                 entityContext.ui().sendErrorMessage("SERIAL_PORT.EXCEPTION"), null);
         this.communicatorConsolePlugin = consolePluginCommunicator;
@@ -36,8 +38,10 @@ public class RawSerialPortCommunicator extends BaseSerialPort {
     }
 
     @Override
+    @SneakyThrows
     protected void handleSerialEvent(byte[] buf) {
-        ConsolePluginComplexLines.ComplexString data = ConsolePluginComplexLines.ComplexString.of(new String(buf), System.currentTimeMillis());
+        ConsolePluginComplexLines.ComplexString data =
+                ConsolePluginComplexLines.ComplexString.of(new String(buf), System.currentTimeMillis());
         buffer.add(data);
         communicatorConsolePlugin.dataReceived(data);
     }

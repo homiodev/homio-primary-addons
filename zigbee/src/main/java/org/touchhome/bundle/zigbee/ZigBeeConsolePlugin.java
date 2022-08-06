@@ -1,16 +1,11 @@
 package org.touchhome.bundle.zigbee;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import lombok.*;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePluginTable;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.setting.SettingPluginStatus;
 import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
@@ -19,7 +14,7 @@ import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
+import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 import org.touchhome.bundle.zigbee.setting.header.ConsoleHeaderZigBeeDiscoveryButtonSetting;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
@@ -27,12 +22,14 @@ import java.util.*;
 
 import static org.touchhome.bundle.api.util.Constants.DANGER_COLOR;
 
-@Component
 @RequiredArgsConstructor
 public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlugin.ZigBeeConsoleDescription> {
 
-    private final ZigBeeBundleEntryPoint zigbeeBundleContext;
+    @Getter
     private final EntityContext entityContext;
+
+    @Setter
+    private ZigbeeCoordinatorEntity coordinator;
 
     @Override
     public int order() {
@@ -41,25 +38,27 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
     @Override
     public boolean isEnabled() {
-        return entityContext.setting().getValue(ZigBeeStatusSetting.class, SettingPluginStatus.UNKNOWN).isOnline();
+        return coordinator.getStatus() == Status.ONLINE;
     }
 
     @Override
     public Collection<ZigBeeConsoleDescription> getValue() {
         List<ZigBeeConsoleDescription> res = new ArrayList<>();
-        for (ZigBeeDevice zigBeeDevice : zigbeeBundleContext.getCoordinatorHandler().getZigBeeDevices().values()) {
-            ZigBeeNodeDescription desc = zigBeeDevice.getZigBeeNodeDescription();
-            ZigBeeDeviceEntity entity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + zigBeeDevice.getNodeIeeeAddress().toString());
+        for (ZigBeeDeviceEntity device : coordinator.getDevices()) {
+           // ZigBeeNodeDescription desc = zigBeeDevice.getZigBeeNodeDescription();
+            ZigBeeNodeDescription desc = device.getZigBeeDevice().getZigBeeNodeDescription();
             res.add(new ZigBeeConsoleDescription(
-                    entity.getName(),
-                    zigBeeDevice.getNodeIeeeAddress().toString(),
-                    desc.getDeviceStatus(),
-                    desc.getDeviceStatusMessage(),
-                    desc.getModelIdentifier(),
+                    device.getName(),
+                    device.getIeeeAddress(),
+                    device.getStatus(),
+                    device.getStatusMessage(),
+                    device.getModelIdentifier(),
                     desc.getFetchInfoStatus(),
-                    !zigBeeDevice.getZigBeeConverterEndpoints().isEmpty(),
-                    zigBeeDevice.getZigBeeNodeDescription().isNodeInitialized() && !zigBeeDevice.getZigBeeConverterEndpoints().isEmpty(),
-                    entity.getEntityID()
+                    !device.getZigBeeDevice().getZigBeeConverterEndpoints().isEmpty(),
+                    device.getZigBeeDevice().getZigBeeNodeDescription().isNodeInitialized() &&
+                            !device.getZigBeeDevice().getZigBeeConverterEndpoints().isEmpty(),
+                    desc.getLastUpdateTime(),
+                    device.getEntityID()
             ));
         }
         return res;
@@ -109,6 +108,9 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
         @UIFieldColorBooleanMatch
         private boolean initialized;
 
+        @UIField(order = 8)
+        private Date lastUpdate;
+
         private String entityID;
 
         @UIContextMenuAction("ACTION.INITIALIZE_ZIGBEE_NODE")
@@ -118,11 +120,12 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
         @UIContextMenuAction("ACTION.SHOW_NODE_DESCRIPTION")
         public ActionResponseModel showNodeDescription(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-            return ActionResponseModel.showJson(zigBeeDeviceEntity.getZigBeeNodeDescription());
+            return ActionResponseModel.showJson("Zigbee node description", zigBeeDeviceEntity.getZigBeeNodeDescription());
         }
 
         @UIContextMenuAction("ACTION.SHOW_LAST_VALUES")
-        public ActionResponseModel showLastValues(ZigBeeDeviceEntity zigBeeDeviceEntity, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
+        public ActionResponseModel showLastValues(ZigBeeDeviceEntity zigBeeDeviceEntity,
+                                                  ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
             return zigBeeDeviceEntity.showLastValues(zigBeeDeviceEntity, zigBeeDeviceUpdateValueListener);
         }
 
@@ -133,7 +136,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
         @UIContextMenuAction("ACTION.PERMIT_JOIN")
         public ActionResponseModel permitJoin(ZigBeeDeviceEntity zigBeeDeviceEntity, EntityContext entityContext) {
-            return zigBeeDeviceEntity.permitJoin(entityContext);
+            return zigBeeDeviceEntity.permitJoin();
         }
 
         @UIContextMenuAction("ACTION.ZIGBEE_PULL_CHANNELS")

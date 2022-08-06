@@ -1,6 +1,5 @@
 package de.onvif.soap;
 
-import com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -24,6 +23,7 @@ import org.w3c.dom.Document;
 
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,7 +44,15 @@ import java.util.function.Consumer;
 
 public class SOAP implements OnvifCodec.OnvifEventHandler {
 
-    public static final DatatypeFactory DATATYPE_FACTORY = new DatatypeFactoryImpl();
+    public static final DatatypeFactory DATATYPE_FACTORY;
+
+    static {
+        try {
+            DATATYPE_FACTORY = DatatypeFactory.newInstance();
+        } catch (DatatypeConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Setter
     private boolean logging = Boolean.parseBoolean(System.getProperty("soap.debug", "false"));
@@ -142,9 +150,11 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
         }
         if (!handled) {
             if (code != 200) {
-                onvifDeviceState.getLogger().error("Accepted not expected onvif soap message with code: <{}>. Msg: <{}>", code, message);
+                onvifDeviceState.getLogger()
+                        .error("Accepted not expected onvif soap message with code: <{}>. Msg: <{}>", code, message);
             } else {
-                onvifDeviceState.getLogger().warn("Accepted not expected onvif soap message with code: <{}>. Msg: <{}>", code, message);
+                onvifDeviceState.getLogger()
+                        .warn("Accepted not expected onvif soap message with code: <{}>. Msg: <{}>", code, message);
             }
         }
     }
@@ -179,7 +189,8 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
                         Channel ch = future.channel();
                         ch.writeAndFlush(httpRequest);
                     } else {
-                        onvifDeviceState.cameraUnreachable(future.cause() == null ? "" : CommonUtils.getErrorMessage(future.cause()));
+                        onvifDeviceState.cameraUnreachable(
+                                future.cause() == null ? "" : CommonUtils.getErrorMessage(future.cause()));
                     }
                 });
     }
@@ -206,7 +217,8 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
         soapMessage.writeTo(outputStream);
         String fullXml = outputStream.toString();
         if (logging) {
-            onvifDeviceState.getLogger().info("Request async SOAP Message (" + soapRequestElem.getClass().getSimpleName() + "): ");
+            onvifDeviceState.getLogger()
+                    .info("Request async SOAP Message (" + soapRequestElem.getClass().getSimpleName() + "): ");
             onvifDeviceState.getLogger().info("{}", fullXml);
         }
 
@@ -220,7 +232,8 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
     /**
      * @return SOAP Response Element
      */
-    public <T> T createSOAPRequest(Object soapRequestElem, Class<T> soapResponseClass, String soapUri, String xAddr, boolean throwError)
+    public <T> T createSOAPRequest(Object soapRequestElem, Class<T> soapResponseClass, String soapUri, String xAddr,
+                                   boolean throwError)
             throws IOException, SOAPException, JAXBException, ParserConfigurationException {
         HttpSOAPConnection soapConnection = null;
         SOAPMessage soapResponse = null;
@@ -234,7 +247,8 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
 
             // Print the request message
             if (logging) {
-                onvifDeviceState.getLogger().info("Request sync SOAP Message (" + soapRequestElem.getClass().getSimpleName() + "): ");
+                onvifDeviceState.getLogger()
+                        .info("Request sync SOAP Message (" + soapRequestElem.getClass().getSimpleName() + "): ");
                 ByteArrayOutputStream bout = new ByteArrayOutputStream();
                 soapMessage.writeTo(bout);
                 onvifDeviceState.getLogger().info("{}", bout.toString());
@@ -285,7 +299,8 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
             throw new ConnectException(e.getMessage());
         } catch (SOAPException e) {
             onvifDeviceState.getLogger().error(
-                    "Unexpected response. Response should be from class " + soapResponseClass + ", but response is: " + soapResponse);
+                    "Unexpected response. Response should be from class " + soapResponseClass + ", but response is: " +
+                            soapResponse);
             throw e;
         } catch (ParserConfigurationException | JAXBException | IOException e) {
             onvifDeviceState.getLogger().error("Unhandled exception: " + e.getMessage());
@@ -293,7 +308,8 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
         }
     }
 
-    protected SOAPMessage createSoapMessage(Object soapRequestElem, String xAddr) throws SOAPException, ParserConfigurationException,
+    protected SOAPMessage createSoapMessage(Object soapRequestElem, String xAddr)
+            throws SOAPException, ParserConfigurationException,
             JAXBException {
         MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
         SOAPMessage soapMessage = messageFactory.createMessage();
@@ -317,8 +333,10 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
             SOAPPart sp = soapMessage.getSOAPPart();
             SOAPEnvelope se = sp.getEnvelope();
             SOAPHeader header = soapMessage.getSOAPHeader();
-            se.addNamespaceDeclaration("wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd");
-            se.addNamespaceDeclaration("wsu", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");
+            se.addNamespaceDeclaration("wsse",
+                    "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd");
+            se.addNamespaceDeclaration("wsu",
+                    "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");
 
             SOAPElement securityElem = header.addChildElement("Security", "wsse");
             securityElem.setAttribute("mustUnderstand", "1");
@@ -329,11 +347,13 @@ public class SOAP implements OnvifCodec.OnvifEventHandler {
             usernameElem.setTextContent(onvifDeviceState.getUsername());
 
             SOAPElement passwordElem = usernameTokenElem.addChildElement("Password", "wsse");
-            passwordElem.setAttribute("Type", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest");
+            passwordElem.setAttribute("Type",
+                    "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest");
             passwordElem.setTextContent(encrypedPassword);
 
             SOAPElement nonceElem = usernameTokenElem.addChildElement("Nonce", "wsse");
-            nonceElem.setAttribute("EncodingType", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary");
+            nonceElem.setAttribute("EncodingType",
+                    "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary");
             nonceElem.setTextContent(onvifDeviceState.getEncryptedNonce());
 
             SOAPElement createdElem = usernameTokenElem.addChildElement("Created", "wsu");

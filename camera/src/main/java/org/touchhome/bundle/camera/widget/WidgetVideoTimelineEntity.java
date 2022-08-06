@@ -1,6 +1,7 @@
 package org.touchhome.bundle.camera.widget;
 
 import org.touchhome.bundle.api.entity.widget.WidgetBaseEntity;
+import org.touchhome.bundle.api.entity.widget.WidgetGroup;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.UIField;
@@ -17,6 +18,11 @@ import java.util.List;
 public class WidgetVideoTimelineEntity extends WidgetBaseEntity<WidgetVideoTimelineEntity> {
 
     public static final String PREFIX = "wtvtl_";
+
+    @Override
+    public WidgetGroup getGroup() {
+        return WidgetGroup.Media;
+    }
 
     @UIField(order = 33, showInContextMenu = true)
     public Boolean getShowButtons() {

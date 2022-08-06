@@ -11,7 +11,6 @@ import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.workspace.WorkspaceEventListener;
 import org.touchhome.bundle.zigbee.ZigBeeDevice;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
-import org.touchhome.bundle.zigbee.setting.ZigBeeLogEventsButtonsSetting;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,9 +28,12 @@ public final class ZigBeeDeviceUpdateValueListener implements WorkspaceEventList
 
     private final EntityContext entityContext;
 
-    private final Map<Integer, Pair<Function<ScratchDeviceState, String>, Boolean>> deviceStateDescribeEventHandlerByClusterID = new HashMap<>();
-    private final Map<String, Pair<Function<ScratchDeviceState, String>, Boolean>> deviceStateDescribeEventHandlerByClusterName = new HashMap<>();
-    private final Map<String, Pair<Function<ScratchDeviceState, String>, Boolean>> deviceStateDescribeEventHandlerByModelIdentifier = new HashMap<>();
+    private final Map<Integer, Pair<Function<ScratchDeviceState, String>, Boolean>> deviceStateDescribeEventHandlerByClusterID =
+            new HashMap<>();
+    private final Map<String, Pair<Function<ScratchDeviceState, String>, Boolean>> deviceStateDescribeEventHandlerByClusterName =
+            new HashMap<>();
+    private final Map<String, Pair<Function<ScratchDeviceState, String>, Boolean>>
+            deviceStateDescribeEventHandlerByModelIdentifier = new HashMap<>();
 
     private final Map<String, List<Consumer<ScratchDeviceState>>> miDeviceListeners = new HashMap<>();
     private final Map<String, List<Consumer<ScratchDeviceState>>> ieeeAddressListeners = new HashMap<>();
@@ -92,7 +94,7 @@ public final class ZigBeeDeviceUpdateValueListener implements WorkspaceEventList
     }
 
     private void logZigBeeEvent(ZigBeeDevice zigBeeDevice, ZigBeeDeviceStateUUID uuid, ScratchDeviceState scratchDeviceState) {
-        if (entityContext.setting().getValue(ZigBeeLogEventsButtonsSetting.class)) {
+        if (zigBeeDevice.getZigBeeDeviceEntity().getCoordinatorEntity().isLogEvents()) {
             if (logZigBeeEvent(scratchDeviceState, deviceStateDescribeEventHandlerByClusterID.get(uuid.getClusterId()))) {
                 return;
             }
@@ -113,7 +115,8 @@ public final class ZigBeeDeviceUpdateValueListener implements WorkspaceEventList
         }
     }
 
-    private boolean logZigBeeEvent(ScratchDeviceState scratchDeviceState, Pair<Function<ScratchDeviceState, String>, Boolean> handler) {
+    private boolean logZigBeeEvent(ScratchDeviceState scratchDeviceState,
+                                   Pair<Function<ScratchDeviceState, String>, Boolean> handler) {
         if (handler != null) {
             logZigBeeEvent(handler, scratchDeviceState);
             return true;
@@ -121,7 +124,8 @@ public final class ZigBeeDeviceUpdateValueListener implements WorkspaceEventList
         return false;
     }
 
-    private void logZigBeeEvent(Pair<Function<ScratchDeviceState, String>, Boolean> consumer, ScratchDeviceState scratchDeviceState) {
+    private void logZigBeeEvent(Pair<Function<ScratchDeviceState, String>, Boolean> consumer,
+                                ScratchDeviceState scratchDeviceState) {
         String value = consumer.getKey().apply(scratchDeviceState);
         if (consumer.getValue()) {
             value += ": " + scratchDeviceState.getState() + " (" + scratchDeviceState.getUuid().getClusterName() + ")";
@@ -133,11 +137,13 @@ public final class ZigBeeDeviceUpdateValueListener implements WorkspaceEventList
         deviceStateDescribeEventHandlerByClusterID.put(clusterID, Pair.of(consumer, logState));
     }
 
-    public void addDescribeHandlerByClusterName(String clusterName, Function<ScratchDeviceState, String> consumer, boolean logState) {
+    public void addDescribeHandlerByClusterName(String clusterName, Function<ScratchDeviceState, String> consumer,
+                                                boolean logState) {
         deviceStateDescribeEventHandlerByClusterName.put(clusterName, Pair.of(consumer, logState));
     }
 
-    public void addDescribeHandlerByModel(String modelIdentifier, Function<ScratchDeviceState, String> consumer, boolean logState) {
+    public void addDescribeHandlerByModel(String modelIdentifier, Function<ScratchDeviceState, String> consumer,
+                                          boolean logState) {
         deviceStateDescribeEventHandlerByModelIdentifier.put(modelIdentifier, Pair.of(consumer, logState));
     }
 
@@ -168,7 +174,8 @@ public final class ZigBeeDeviceUpdateValueListener implements WorkspaceEventList
         miDeviceListeners.get(modelIdentifier).add(listener);
     }
 
-    void addLinkListener(ZigBeeDeviceStateUUID zigBeeDeviceStateUUID, String varId, String description, Consumer<ScratchDeviceState> listener) {
+    void addLinkListener(ZigBeeDeviceStateUUID zigBeeDeviceStateUUID, String varId, String description,
+                         Consumer<ScratchDeviceState> listener) {
         linkListeners.put(zigBeeDeviceStateUUID, new LinkDescription(varId, description, listener));
     }
 

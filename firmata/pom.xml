@@ -14,9 +14,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.touchhome.bundle</groupId>
-            <artifactId>touchhome-bundle-arduino</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.touchhome</groupId>
+            <artifactId>arduino-core</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

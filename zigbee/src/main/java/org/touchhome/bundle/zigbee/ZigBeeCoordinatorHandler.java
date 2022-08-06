@@ -20,18 +20,18 @@ import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.EntityContextBGP;
+import org.touchhome.bundle.api.model.HasEntityIdentifier;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.setting.SettingPluginStatus;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.internal.ZigBeeDataStore;
-import org.touchhome.bundle.zigbee.setting.ZigBeeNetworkIdSetting;
-import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
-import org.touchhome.bundle.zigbee.setting.advanced.*;
+import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
+import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The {@link ZigBeeCoordinatorHandler} is responsible for handling commands,
@@ -45,7 +45,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 @Log4j2
 public abstract class ZigBeeCoordinatorHandler
-        implements ZigBeeNetworkStateListener, ZigBeeNetworkNodeListener {
+        implements ZigBeeNetworkStateListener, ZigBeeNetworkNodeListener, HasEntityIdentifier {
 
     /**
      * Default ZigBeeAlliance09 link key
@@ -58,66 +58,86 @@ public abstract class ZigBeeCoordinatorHandler
 
     @Getter
     private final Map<String, ZigBeeDevice> zigBeeDevices = new ConcurrentHashMap<>();
+    private static final int RECONNECT_RATE = 5;
+
     /**
      * The factory to create the converters for the different zigbeeRequireEndpoints.
      */
     private final ZigBeeChannelConverterFactory channelFactory;
+    private final Class<?> serializerClass = DefaultSerializer.class;
+    private final Class<?> deserializerClass = DefaultDeserializer.class;
+    private final ZigBeeCoordinatorDescription zigBeeCoordinatorDescription = new ZigBeeCoordinatorDescription();
+
+    @Getter
+    private final ZigBeeDiscoveryService discoveryService;
+
+    private final ZigBeeConsolePlugin zigBeeConsolePlugin;
 
     @Getter
     private ZigBeeTransportTransmit zigBeeTransport;
     private ZigBeeKey linkKey;
     private ZigBeeKey networkKey;
-    private Integer panId;
-    private Integer channelId;
     private ExtendedPanId extendedPanId;
+
     @Getter
     @Setter
     private IeeeAddress nodeIeeeAddress = null;
     private ZigBeeNetworkManager networkManager;
-    private Class<?> serializerClass = DefaultSerializer.class;
-    private Class<?> deserializerClass = DefaultDeserializer.class;
     private ZigBeeDataStore networkDataStore;
     private TransportConfig transportConfig;
-
-    private ZigBeeCoordinatorDescription zigBeeCoordinatorDescription = new ZigBeeCoordinatorDescription();
 
     /**
      * Set to true on startup if we want to reinitialize the network
      */
     private boolean initializeNetwork = false;
 
-    public ZigBeeCoordinatorHandler(ZigBeeChannelConverterFactory channelFactory, EntityContext entityContext) {
-        this.channelFactory = channelFactory;
+    private EntityContextBGP.ThreadContext<Void> restartJob;
+    private EntityContextBGP.ThreadContext<Void> reconnectPollingTimer;
+    private final Object reconnectLock = new Object();
+    private boolean currentReconnectAttemptFinished = false;
+
+    @Getter
+    @Setter
+    private ZigbeeCoordinatorEntity coordinator;
+    @Getter
+    private boolean initialized;
+
+    public ZigBeeCoordinatorHandler(EntityContext entityContext) {
+        this.channelFactory = entityContext.getBean(ZigBeeChannelConverterFactory.class);
         this.entityContext = entityContext;
+        this.discoveryService = new ZigBeeDiscoveryService(entityContext);
+        this.addNetworkNodeListener(this.discoveryService);
+
+        this.zigBeeConsolePlugin = new ZigBeeConsolePlugin(entityContext);
     }
 
-    void initialize() {
-        log.info("Initializing ZigBee network.");
+    public void initialize() {
+        initialized = false;
+        log.info("Initializing ZigBee network. '{}'", coordinator);
 
-        panId = entityContext.setting().getValue(ZigBeePanIdSetting.class);
-        channelId = entityContext.setting().getValue(ZigBeeChannelIdSetting.class);
-        extendedPanId = new ExtendedPanId(entityContext.setting().getValue(ZigBeeExtendedPanIdSetting.class));
-        String linkKeyString = entityContext.setting().getValue(ZigBeeLinkKeySetting.class);
-        String networkKeyString = entityContext.setting().getValue(ZigBeeNetworkKeySetting.class);
+        extendedPanId = new ExtendedPanId(coordinator.getExtendedPanId());
 
-        if (extendedPanId == null || extendedPanId.equals(new ExtendedPanId()) || panId == 0) {
+        if (coordinator.getPanId() == 0 || extendedPanId.equals(new ExtendedPanId())) {
             initializeNetwork = true;
             log.debug("ExtendedPanId or PanId not set: initializeNetwork=true");
         }
 
         // Process the network key
         try {
-            log.debug("Network Key String {}", networkKeyString);
-            networkKey = new ZigBeeKey(networkKeyString);
+            log.debug("Network Key String {}", coordinator.getNetworkKey());
+            networkKey = new ZigBeeKey(coordinator.getNetworkKey());
         } catch (IllegalArgumentException e) {
             networkKey = new ZigBeeKey();
             log.debug("Network Key String has invalid format. Revert to default key.");
         }
 
+        boolean updateEntity = false;
+
         // If no key exists, generateBooleanLink a random key and save it back to the configuration
         if (!networkKey.isValid()) {
             networkKey = ZigBeeKey.createRandom();
-            entityContext.setting().setValueSilence(ZigBeeNetworkKeySetting.class, networkKey.toString());
+            updateEntity = true;
+            coordinator.setNetworkKey(networkKey.toString());
             log.debug("Network key initialised {}", networkKey);
         }
 
@@ -125,20 +145,21 @@ public abstract class ZigBeeCoordinatorHandler
 
         // Process the link key
         try {
-            log.debug("Link Key String {}", linkKeyString);
-            linkKey = new ZigBeeKey(linkKeyString);
+            log.debug("Link Key String {}", coordinator.getLinkKey());
+            linkKey = new ZigBeeKey(coordinator.getLinkKey());
         } catch (IllegalArgumentException e) {
             linkKey = KEY_ZIGBEE_ALLIANCE_O9;
-            entityContext.setting().setValueSilence(ZigBeeLinkKeySetting.class, linkKey.toString());
+            updateEntity = true;
+            coordinator.setLinkKey(linkKey.toString());
             log.debug("Link Key String has invalid format. Revert to default key.");
         }
 
         log.debug("Initialising network");
 
-        if (panId == 0) {
-            panId = (int) Math.floor((Math.random() * 65534));
-            log.debug("Created random ZigBee PAN ID [{}].", String.format("%04X", panId));
-            entityContext.setting().setValueSilence(ZigBeePanIdSetting.class, panId);
+        if (coordinator.getPanId() == 0) {
+            coordinator.setPanId((int) Math.floor((Math.random() * 65534)));
+            log.debug("Created random ZigBee PAN ID [{}].", String.format("%04X", coordinator.getPanId()));
+            updateEntity = true;
         }
 
         if (extendedPanId != null && !extendedPanId.isValid()) {
@@ -149,13 +170,19 @@ public abstract class ZigBeeCoordinatorHandler
             extendedPanId = new ExtendedPanId(pan);
             log.debug("Created random ZigBee extended PAN ID [{}].", extendedPanId);
 
-            entityContext.setting().setValueSilence(ZigBeeExtendedPanIdSetting.class, extendedPanId.toString());
+            updateEntity = true;
+            coordinator.setExtendedPanId(extendedPanId.toString());
+        }
+
+        if (updateEntity) {
+            entityContext.save(coordinator, false);
         }
 
         log.debug("Link key final array {}", linkKey);
         initializeNetwork = false;
 
         initializeDongle();
+        initialized = true;
     }
 
     protected abstract void initializeDongle();
@@ -168,7 +195,17 @@ public abstract class ZigBeeCoordinatorHandler
         // Can be overridden to provide dongle specific configuration
     }
 
-    public void dispose() {
+    public void dispose(String reason) {
+        // If we have scheduled tasks, stop them
+        if (restartJob != null) {
+            restartJob.cancel();
+        }
+
+        // shutdown reconnect task
+        if (reconnectPollingTimer != null) {
+            reconnectPollingTimer.cancel();
+        }
+
         if (networkManager != null) {
             for (ZigBeeNetworkNodeListener listener : nodeListeners) {
                 networkManager.removeNetworkNodeListener(listener);
@@ -181,9 +218,16 @@ public abstract class ZigBeeCoordinatorHandler
             networkManager.shutdown();
         }
 
-        if (networkDataStore != null) {
+        // not sure we need remove network file
+        /*if (networkDataStore != null) {
             networkDataStore.delete();
+        }*/
+        for (ZigBeeDeviceEntity device : this.coordinator.getDevices()) {
+            device.setStatus(Status.OFFLINE, "Disposed");
         }
+        this.coordinator.setStatus(Status.OFFLINE, reason);
+        this.initialized = false;
+        entityContext.unRegisterConsolePlugin("zigbee-console-" + coordinator.getEntityID());
     }
 
     /**
@@ -191,18 +235,17 @@ public abstract class ZigBeeCoordinatorHandler
      * Called by bridge implementations after they have initialised their interfaces.
      */
     protected void startZigBee(ZigBeeTransportTransmit zigbeeTransport, TransportConfig transportConfig) {
-        updateStatus(Status.UNKNOWN, "");
+        coordinator.setStatus(Status.UNKNOWN, "");
 
         this.zigBeeTransport = zigbeeTransport;
         this.transportConfig = transportConfig;
 
         // Start the network. This is a scheduled task to ensure we give the coordinator some time to initialise itself!
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                initialiseZigBee();
-            }
-        }, 1000);
+        this.restartJob = entityContext.bgp().schedule("zigBee-network-starting", 1, TimeUnit.SECONDS, () -> {
+            log.debug("ZigBee network starting");
+            this.restartJob = null;
+            initialiseZigBee();
+        }, true, true);
     }
 
     /**
@@ -213,11 +256,11 @@ public abstract class ZigBeeCoordinatorHandler
     private synchronized void initialiseZigBee() {
         log.debug("Initialising ZigBee coordinator");
 
-        String networkId = Optional.ofNullable(entityContext.setting().getValue(ZigBeeNetworkIdSetting.class))
-                .map(path -> path.getFileName().toString()).orElse(null);
+        String networkId = coordinator.getNetworkId();
         if (StringUtils.isEmpty(networkId)) {
             networkId = UUID.randomUUID().toString();
-            entityContext.setting().setValueSilence(ZigBeeNetworkIdSetting.class, Paths.get(networkId));
+            coordinator.setNetworkId(networkId);
+            entityContext.save(coordinator, false);
         }
 
         log.warn("ZigBee use networkID: <{}>", networkId);
@@ -244,21 +287,19 @@ public abstract class ZigBeeCoordinatorHandler
             case SUCCESS:
                 break;
             case BAD_RESPONSE:
-                updateStatus(Status.OFFLINE, "zigbee.OFFLINE_BAD_RESPONSE");
+                coordinator.setStatus(Status.OFFLINE, "zigbee.OFFLINE_BAD_RESPONSE");
                 return;
             case COMMUNICATION_ERROR:
-                updateStatus(Status.OFFLINE, "zigbee.OFFLINE_COMMS_FAIL");
+                coordinator.setStatus(Status.OFFLINE, "zigbee.OFFLINE_COMMS_FAIL");
                 return;
             default:
-                updateStatus(Status.OFFLINE, "zigbee.OFFLINE_INITIALIZE_FAIL");
+                coordinator.setStatus(Status.OFFLINE, "zigbee.OFFLINE_INITIALIZE_FAIL");
                 return;
         }
 
-        int meshUpdateTime = entityContext.setting().getValue(ZigBeeMeshUpdatePeriodSetting.class);
-
         // Add the extensions to the network
         ZigBeeDiscoveryExtension discoveryExtension = new ZigBeeDiscoveryExtension();
-        discoveryExtension.setUpdateMeshPeriod(meshUpdateTime);
+        discoveryExtension.setUpdateMeshPeriod(coordinator.getMeshUpdatePeriod());
         networkManager.addExtension(discoveryExtension);
 
         networkManager.addExtension(new ZigBeeIasCieExtension());
@@ -299,13 +340,17 @@ public abstract class ZigBeeCoordinatorHandler
             log.debug("Network key initialise {}", networkKey);
             networkManager.setZigBeeLinkKey(linkKey);
             networkManager.setZigBeeNetworkKey(networkKey);
-            networkManager.setZigBeeChannel(ZigBeeChannel.create(channelId == 0 ? 11 : channelId));
-            networkManager.setZigBeePanId(panId);
+            networkManager.setZigBeeChannel(ZigBeeChannel.create(getChannelId(coordinator)));
+            networkManager.setZigBeePanId(coordinator.getPanId());
             networkManager.setZigBeeExtendedPanId(extendedPanId);
         }
 
-        TrustCentreJoinMode linkMode = entityContext.setting().getValue(ZigBeeTrustCenterModeSetting.class);
-        if (linkMode != null) {
+        addInstallCode(coordinator.getInstallCode());
+
+        transportConfig.addOption(TransportConfigOption.RADIO_TX_POWER, coordinator.getTxPower());
+
+        if (coordinator.getTrustCentreJoinMode() != -1) {
+            TrustCentreJoinMode linkMode = TrustCentreJoinMode.values()[coordinator.getTrustCentreJoinMode()];
             log.debug("Config zigbee trustcentremode: {}", linkMode);
             transportConfig.addOption(TransportConfigOption.TRUST_CENTRE_JOIN_MODE, linkMode);
         }
@@ -314,7 +359,7 @@ public abstract class ZigBeeCoordinatorHandler
 
         // Call startup. The setting of the bring to ONLINE will be done via the state listener.
         if (networkManager.startup(initializeNetwork) != ZigBeeStatus.SUCCESS) {
-            updateStatus(Status.OFFLINE, "OFFLINE_STARTUP_FAIL");
+            coordinator.setStatus(Status.OFFLINE, "OFFLINE_STARTUP_FAIL");
             return;
         }
 
@@ -325,10 +370,6 @@ public abstract class ZigBeeCoordinatorHandler
         log.debug("ZigBee initialise done. <{}>", zigBeeCoordinatorDescription.toString());
 
         initializeDongleSpecific();
-    }
-
-    protected void updateStatus(Status deviceStatus, String statusMessage) {
-        entityContext.setting().setValue(ZigBeeStatusSetting.class, SettingPluginStatus.of(deviceStatus, statusMessage));
     }
 
     /**
@@ -482,11 +523,68 @@ public abstract class ZigBeeCoordinatorHandler
         log.debug("{}: networkStateUpdated called with state={}", nodeIeeeAddress, state);
         switch (state) {
             case ONLINE:
-                updateStatus(Status.ONLINE, "");
+                coordinator.setStatusOnline();
+                if (reconnectPollingTimer != null) {
+                    reconnectPollingTimer.cancel();
+                    reconnectPollingTimer = null;
+                }
                 break;
             case OFFLINE:
-                updateStatus(Status.OFFLINE, "COMMUNICATION_ERROR");
+                coordinator.setStatus(Status.OFFLINE, "COMMUNICATION_ERROR");
+                startReconnectJobIfNotRunning();
                 break;
+        }
+        if (state != ZigBeeNetworkState.INITIALISING && state != ZigBeeNetworkState.UNINITIALISED) {
+            notifyReconnectJobAboutFinishedInitialization();
+        }
+    }
+
+    private void startReconnectJobIfNotRunning() {
+        if (reconnectPollingTimer != null) {
+            return;
+        }
+
+        reconnectPollingTimer = entityContext.bgp().schedule("zigbee-reconnect", 1000, RECONNECT_RATE, TimeUnit.SECONDS, () -> {
+            ZigBeeNetworkState state = networkManager.getNetworkState();
+            if (state == ZigBeeNetworkState.ONLINE || state == ZigBeeNetworkState.INITIALISING) {
+                return;
+            }
+
+            log.info("ZigBee dongle inactivity timer. Reinitializing ZigBee");
+
+            // Close everything that has been started prior to initializing the serial port
+            if (restartJob != null) {
+                restartJob.cancel();
+            }
+            networkManager.shutdown();
+
+            synchronized (reconnectLock) {
+                currentReconnectAttemptFinished = false;
+            }
+
+            // Initialize the network again
+            initializeDongle();
+
+            waitForReconnectAttemptToFinish();
+        }, true, true);
+    }
+
+    private void waitForReconnectAttemptToFinish() {
+        synchronized (reconnectLock) {
+            try {
+                while (!currentReconnectAttemptFinished) {
+                    reconnectLock.wait();
+                }
+            } catch (InterruptedException e) {
+                // thread may be killed if callback reports that we are connected again
+            }
+        }
+    }
+
+    private void notifyReconnectJobAboutFinishedInitialization() {
+        synchronized (reconnectLock) {
+            currentReconnectAttemptFinished = true;
+            reconnectLock.notifyAll();
         }
     }
 
@@ -530,9 +628,11 @@ public abstract class ZigBeeCoordinatorHandler
         }
         networkManager.removeNode(node);
 
-        ZigBeeDevice zigBeeDevice = zigBeeDevices.get(nodeIeeeAddress.toString());
-        zigBeeDevice.dispose();
-        zigBeeDevices.remove(nodeIeeeAddress.toString());
+        ZigBeeDevice zigBeeDevice = zigBeeDevices.remove(nodeIeeeAddress.toString());
+        if (zigBeeDevice != null) {
+            zigBeeDevice.dispose();
+        }
+        networkDataStore.removeNode(nodeIeeeAddress);
     }
 
     /**
@@ -564,7 +664,7 @@ public abstract class ZigBeeCoordinatorHandler
      * @param forceRemoval true to remove the node from the network, even if the leave request fails
      * @return true if the command is sent
      */
-    public boolean leave(IeeeAddress address, boolean forceRemoval) {
+    public void leave(IeeeAddress address, boolean forceRemoval) {
         // First we want to make sure that join is disabled
         networkManager.permitJoin(0);
 
@@ -572,13 +672,12 @@ public abstract class ZigBeeCoordinatorHandler
         ZigBeeNode node = networkManager.getNode(address);
         if (node == null) {
             log.debug("{}: ZigBee leave command - node not found", address);
-            return false;
+            return;
         }
 
         log.debug("{}: ZigBee leave command to {}", address, node.getNetworkAddress());
 
         networkManager.leave(node.getNetworkAddress(), node.getIeeeAddress(), forceRemoval);
-        return true;
     }
 
     /**
@@ -604,7 +703,7 @@ public abstract class ZigBeeCoordinatorHandler
     }
 
     public void scanStart(int duration) {
-        if (!entityContext.setting().getValue(ZigBeeStatusSetting.class).isOnline()) {
+        if (coordinator.getStatus() != Status.ONLINE) {
             entityContext.ui().sendWarningMessage("DEVICE.OFFLINE", "Unable to ");
             log.debug("ZigBee coordinator is offline - aborted scan for");
         } else {
@@ -616,11 +715,60 @@ public abstract class ZigBeeCoordinatorHandler
         this.zigBeeDevices.put(zigBeeDevice.getNodeIeeeAddress().toString(), zigBeeDevice);
     }
 
-    public void meshUpdatePeriod(Integer value) {
-        ZigBeeDiscoveryExtension extension = (ZigBeeDiscoveryExtension) networkManager.getExtension(ZigBeeDiscoveryExtension.class);
-        if (extension != null) {
-            extension.setUpdateMeshPeriod(value);
+    public void restartIfRequire(ZigbeeCoordinatorEntity newEntity) {
+        TransportConfig transportConfig = new TransportConfig();
+        boolean reinitialise = false;
+
+        if (newEntity.getTrustCentreJoinMode() != -1 &&
+                newEntity.getTrustCentreJoinMode() != coordinator.getTrustCentreJoinMode()) {
+            TrustCentreJoinMode linkMode = TrustCentreJoinMode.values()[newEntity.getTrustCentreJoinMode()];
+            transportConfig.addOption(TransportConfigOption.TRUST_CENTRE_JOIN_MODE, linkMode);
         }
+        if (getChannelId(newEntity) != getChannelId(coordinator)) {
+            networkManager.setZigBeeChannel(ZigBeeChannel.create(getChannelId(newEntity)));
+        }
+        if (!Objects.equals(newEntity.getLinkKey(), coordinator.getLinkKey()) ||
+                !Objects.equals(newEntity.getNetworkKey(), coordinator.getNetworkKey()) ||
+                newEntity.getPowerMode() != coordinator.getPowerMode() ||
+                !Objects.equals(newEntity.getLinkKey(), coordinator.getLinkKey()) ||
+                newEntity.getPortBaud() != coordinator.getPortBaud() ||
+                newEntity.getFlowControl() != coordinator.getFlowControl() ||
+                !Objects.equals(newEntity.getPort(), coordinator.getPort()) ||
+                !Objects.equals(newEntity.getExtendedPanId(), coordinator.getExtendedPanId()) ||
+                !Objects.equals(newEntity.getLinkKey(), coordinator.getLinkKey()) ||
+                !Objects.equals(newEntity.getLinkKey(), coordinator.getLinkKey()) ||
+                !Objects.equals(newEntity.getLinkKey(), coordinator.getLinkKey()) ||
+                !Objects.equals(newEntity.getLinkKey(), coordinator.getLinkKey())) {
+            reinitialise = true;
+        }
+
+        if (newEntity.getMeshUpdatePeriod() != coordinator.getMeshUpdatePeriod()) {
+            ZigBeeDiscoveryExtension extension = (ZigBeeDiscoveryExtension) networkManager
+                    .getExtension(ZigBeeDiscoveryExtension.class);
+            if (extension != null) {
+                extension.setUpdateMeshPeriod(newEntity.getMeshUpdatePeriod());
+            }
+        }
+
+        if (!Objects.equals(newEntity.getInstallCode(), coordinator.getInstallCode())) {
+            addInstallCode(newEntity.getInstallCode());
+        }
+
+        // If we added any transport layer configuration, pass it down
+        if (transportConfig.getOptions().size() != 0) {
+            zigBeeTransport.updateTransportConfig(transportConfig);
+        }
+
+        // If we need to reinitialise the bridge to change driver parameters, do so
+        setCoordinator(newEntity);
+        if (reinitialise) {
+            dispose("reinitialise");
+            initialize();
+        }
+    }
+
+    private int getChannelId(ZigbeeCoordinatorEntity entity) {
+        return entity.getChannelId() == 0 ? 11 : entity.getChannelId();
     }
 
     @ToString
@@ -636,5 +784,12 @@ public abstract class ZigBeeCoordinatorHandler
         ExtendedPanId extendedPanId;
         String macAddress;
         String firmwareVersion;
+    }
+
+    public void setCoordinator(ZigbeeCoordinatorEntity coordinator) {
+        this.coordinator = coordinator;
+        this.discoveryService.setCoordinator(coordinator);
+        this.zigBeeConsolePlugin.setCoordinator(coordinator);
+        entityContext.registerConsolePlugin("zigbee-console-" + coordinator.getEntityID(), this.zigBeeConsolePlugin);
     }
 }

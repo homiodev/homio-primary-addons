@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.firmata.arduino.ArduinoConsolePlugin;
 import org.touchhome.bundle.firmata.model.FirmataBaseEntity;
 import org.touchhome.bundle.firmata.model.FirmataNetworkEntity;
 import org.touchhome.bundle.firmata.provider.FirmataCommandPlugins;
@@ -30,6 +31,7 @@ public class FirmataBundleEntryPoint implements BundleEntryPoint {
     private static final Map<String, UdpPayload> udpFoundDevices = new HashMap<>();
 
     private final EntityContext entityContext;
+    private final ArduinoConsolePlugin arduinoConsolePlugin;
 
     @Getter
     private final FirmataDeviceRepository firmataDeviceRepository;
@@ -92,6 +94,7 @@ public class FirmataBundleEntryPoint implements BundleEntryPoint {
     }
 
     public void init() {
+        arduinoConsolePlugin.init();
         restartFirmataProviders();
         this.entityContext.event().addEntityUpdateListener(FirmataBaseEntity.class, "firmata-restart-comm-listen", FirmataBaseEntity::restartCommunicator);
 

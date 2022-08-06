@@ -11,9 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class CameraCoordinator {
 
-    public static Map<String, BaseBrandCameraHandler> entityToCameraBrands = new HashMap<>();
+    public static Map<String, BaseBrandCameraHandler> entityToCameraBrands = new ConcurrentHashMap<>();
 
-    public static Map<String, CameraBrandHandlerDescription> cameraBrands = new HashMap<>();
+    public static Map<String, CameraBrandHandlerDescription> cameraBrands = new ConcurrentHashMap<>();
 
     private static Map<String, SdpMessage> rtspUrlToSdpMessage = new ConcurrentHashMap<>();
 

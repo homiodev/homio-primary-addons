@@ -12,6 +12,7 @@ import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.netty.NettyUtils;
 import org.touchhome.bundle.api.setting.SettingPluginStatus;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
 import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
 import org.touchhome.bundle.api.video.ffmpeg.FFMPEG;
@@ -81,7 +82,8 @@ public class CameraEntryPoint implements BundleEntryPoint {
                         cameraHandler.initialize();
                     } else if (!cameraEntity.isStart() && cameraHandler.isHandlerInitialized()) {
                         cameraHandler.disposeAndSetStatus(Status.OFFLINE, "Camera not started");
-                    } else if (/*TODO: cameraHandler.isHandlerInitialized() && */detectIfRequireRestartHandler(oldCameraEntity, cameraEntity)) {
+                    } else if (/*TODO: cameraHandler.isHandlerInitialized() && */
+                            TouchHomeUtils.isRequireRestartHandler(oldCameraEntity, cameraEntity)) {
                         cameraHandler.restart("Restart camera handler", true);
                     }
                     // change camera name if possible
@@ -124,21 +126,5 @@ public class CameraEntryPoint implements BundleEntryPoint {
     @Override
     public Class<? extends SettingPluginStatus> getBundleStatusSetting() {
         return CameraStatusSetting.class;
-    }
-
-    @SneakyThrows
-    private static boolean detectIfRequireRestartHandler(Object oldCameraEntity, Object cameraEntity) {
-        if (oldCameraEntity == null) { // in case if just created
-            return false;
-        }
-        Method[] methods = MethodUtils.getMethodsWithAnnotation(cameraEntity.getClass(), RestartHandlerOnChange.class, true, false);
-        for (Method method : methods) {
-            Object newValue = MethodUtils.invokeMethod(cameraEntity, method.getName());
-            Object oldValue = MethodUtils.invokeMethod(oldCameraEntity, method.getName());
-            if (!Objects.equals(newValue, oldValue)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

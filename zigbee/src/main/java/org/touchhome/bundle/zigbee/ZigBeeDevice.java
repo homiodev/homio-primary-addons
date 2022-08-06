@@ -12,7 +12,6 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.requireEndpoint.RequireEndpoint;
 import org.touchhome.bundle.zigbee.requireEndpoint.ZigBeeRequireEndpoints;
-import org.touchhome.bundle.zigbee.setting.ZigBeeStatusSetting;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,8 +36,8 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
     @Setter
     private int pollingPeriod = 86400;
     @Getter
-    private ZigBeeNodeDescription zigBeeNodeDescription;
-    private ZigBeeDiscoveryService discoveryService;
+    private final ZigBeeNodeDescription zigBeeNodeDescription;
+    private final ZigBeeDiscoveryService discoveryService;
     @Getter
     private ZigBeeDeviceEntity zigBeeDeviceEntity;
 
@@ -54,7 +53,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         this.discoveryService.getCoordinatorHandler().addNetworkNodeListener(this);
         this.discoveryService.getCoordinatorHandler().addAnnounceListener(this);
 
-        tryInitializeDevice(discoveryService.getEntityContext().setting().getValue(ZigBeeStatusSetting.class).getStatus());
+        tryInitializeDevice(discoveryService.getCoordinator().getStatus());
 
         // register listener for reset timer if any updates from any endpoint
         this.discoveryService.getDeviceUpdateListener().addIeeeAddressListener(this.nodeIeeeAddress.toString(), state ->
@@ -64,9 +63,9 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         });
     }
 
-    void tryInitializeDevice(Status coordinatorStatus) {
+    private void tryInitializeDevice(Status coordinatorStatus) {
         if (coordinatorStatus != Status.ONLINE) {
-            log.trace("{}/{}: Coordinator is unknown or not online.", nodeIeeeAddress);
+            log.trace("{}: Coordinator is unknown or not online.", nodeIeeeAddress);
             zigBeeNodeDescription.setNodeInitialized(false);
             updateStatus(Status.OFFLINE, "Coordinator unknown status");
             stopPolling();
@@ -262,6 +261,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
     }
 
     private void updateStatus(Status deviceStatus, String deviceStatusMessage) {
+        this.zigBeeDeviceEntity.setStatus(deviceStatus, deviceStatusMessage);
         if (this.zigBeeNodeDescription.getDeviceStatus() != deviceStatus) {
             this.zigBeeNodeDescription.setDeviceStatus(deviceStatus);
             this.zigBeeNodeDescription.setDeviceStatusMessage(deviceStatusMessage);

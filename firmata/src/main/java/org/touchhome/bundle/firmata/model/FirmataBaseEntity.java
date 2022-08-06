@@ -15,7 +15,7 @@ import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
-import org.touchhome.bundle.arduino.ArduinoConsolePlugin;
+import org.touchhome.bundle.firmata.arduino.ArduinoConsolePlugin;
 import org.touchhome.bundle.firmata.provider.FirmataDeviceCommunicator;
 import org.touchhome.bundle.firmata.provider.IODeviceWrapper;
 import org.touchhome.bundle.firmata.provider.command.FirmataRegisterCommand;

@@ -1,6 +1,7 @@
 package org.touchhome.bundle.serial;
 
 import com.fazecast.jSerialComm.SerialPort;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import static org.touchhome.bundle.api.util.Constants.PRIMARY_COLOR;
 @RequiredArgsConstructor
 public class SerialPortConsolePlugin implements ConsolePluginCommunicator {
 
+    @Getter
     private final EntityContext entityContext;
     private RawSerialPortCommunicator rawSerialPortCommunicator;
     private ConsoleHeaderSerialPortSendEndLine.EndLineType endLineType;
