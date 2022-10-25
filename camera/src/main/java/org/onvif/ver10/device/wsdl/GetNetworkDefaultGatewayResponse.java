@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.NetworkGateway;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "networkGateway" })
+@XmlType(name = "", propOrder = {"networkGateway"})
 @XmlRootElement(name = "GetNetworkDefaultGatewayResponse")
 public class GetNetworkDefaultGatewayResponse {
 
-	@XmlElement(name = "NetworkGateway", required = true)
-	protected NetworkGateway networkGateway;
+  @XmlElement(name = "NetworkGateway", required = true)
+  protected NetworkGateway networkGateway;
 
-	/**
-	 * Ruft den Wert der networkGateway-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link NetworkGateway }
-	 *
-	 */
-	public NetworkGateway getNetworkGateway() {
-		return networkGateway;
-	}
+  /**
+   * Ruft den Wert der networkGateway-Eigenschaft ab.
+   *
+   * @return possible object is {@link NetworkGateway }
+   */
+  public NetworkGateway getNetworkGateway() {
+    return networkGateway;
+  }
 
-	/**
-	 * Legt den Wert der networkGateway-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link NetworkGateway }
-	 *
-	 */
-	public void setNetworkGateway(NetworkGateway value) {
-		this.networkGateway = value;
-	}
+  /**
+   * Legt den Wert der networkGateway-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link NetworkGateway }
+   */
+  public void setNetworkGateway(NetworkGateway value) {
+    this.networkGateway = value;
+  }
 
 }

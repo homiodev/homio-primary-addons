@@ -1,9 +1,12 @@
 package org.onvif.ver20.ptz.wsdl;
 
-import org.onvif.ver10.schema.PTZSpeed;
-
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.Duration;
+import org.onvif.ver10.schema.PTZSpeed;
 
 /**
  * <p>
@@ -25,82 +28,71 @@ import javax.xml.datatype.Duration;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "profileToken", "velocity", "timeout" })
+@XmlType(name = "", propOrder = {"profileToken", "velocity", "timeout"})
 @XmlRootElement(name = "ContinuousMove")
 public class ContinuousMove {
 
-	@XmlElement(name = "ProfileToken", required = true)
-	protected String profileToken;
-	@XmlElement(name = "Velocity", required = true)
-	protected PTZSpeed velocity;
-	@XmlElement(name = "Timeout")
-	protected Duration timeout;
+  @XmlElement(name = "ProfileToken", required = true)
+  protected String profileToken;
+  @XmlElement(name = "Velocity", required = true)
+  protected PTZSpeed velocity;
+  @XmlElement(name = "Timeout")
+  protected Duration timeout;
 
-	/**
-	 * Ruft den Wert der profileToken-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getProfileToken() {
-		return profileToken;
-	}
+  /**
+   * Ruft den Wert der profileToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getProfileToken() {
+    return profileToken;
+  }
 
-	/**
-	 * Legt den Wert der profileToken-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setProfileToken(String value) {
-		this.profileToken = value;
-	}
+  /**
+   * Legt den Wert der profileToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setProfileToken(String value) {
+    this.profileToken = value;
+  }
 
-	/**
-	 * Ruft den Wert der velocity-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZSpeed }
-	 *
-	 */
-	public PTZSpeed getVelocity() {
-		return velocity;
-	}
+  /**
+   * Ruft den Wert der velocity-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZSpeed }
+   */
+  public PTZSpeed getVelocity() {
+    return velocity;
+  }
 
-	/**
-	 * Legt den Wert der velocity-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZSpeed }
-	 *
-	 */
-	public void setVelocity(PTZSpeed value) {
-		this.velocity = value;
-	}
+  /**
+   * Legt den Wert der velocity-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZSpeed }
+   */
+  public void setVelocity(PTZSpeed value) {
+    this.velocity = value;
+  }
 
-	/**
-	 * Ruft den Wert der timeout-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Duration }
-	 *
-	 */
-	public Duration getTimeout() {
-		return timeout;
-	}
+  /**
+   * Ruft den Wert der timeout-Eigenschaft ab.
+   *
+   * @return possible object is {@link Duration }
+   */
+  public Duration getTimeout() {
+    return timeout;
+  }
 
-	/**
-	 * Legt den Wert der timeout-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Duration }
-	 *
-	 */
-	public void setTimeout(Duration value) {
-		this.timeout = value;
-	}
+  /**
+   * Legt den Wert der timeout-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Duration }
+   */
+  public void setTimeout(Duration value) {
+    this.timeout = value;
+  }
 
 }

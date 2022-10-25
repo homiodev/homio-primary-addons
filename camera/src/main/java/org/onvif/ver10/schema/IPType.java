@@ -20,32 +20,31 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "IPType")
 @XmlEnum
 public enum IPType {
 
-	@XmlEnumValue("IPv4")
-	I_PV_4("IPv4"), @XmlEnumValue("IPv6")
-	I_PV_6("IPv6");
-	private final String value;
+  @XmlEnumValue("IPv4")
+  I_PV_4("IPv4"), @XmlEnumValue("IPv6")
+  I_PV_6("IPv6");
+  private final String value;
 
-	IPType(String v) {
-		value = v;
-	}
+  IPType(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static IPType fromValue(String v) {
+    for (IPType c : IPType.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static IPType fromValue(String v) {
-		for (IPType c : IPType.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

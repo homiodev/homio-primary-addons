@@ -21,33 +21,32 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "PropertyOperation")
 @XmlEnum
 public enum PropertyOperation {
 
-	@XmlEnumValue("Initialized")
-	INITIALIZED("Initialized"), @XmlEnumValue("Deleted")
-	DELETED("Deleted"), @XmlEnumValue("Changed")
-	CHANGED("Changed");
-	private final String value;
+  @XmlEnumValue("Initialized")
+  INITIALIZED("Initialized"), @XmlEnumValue("Deleted")
+  DELETED("Deleted"), @XmlEnumValue("Changed")
+  CHANGED("Changed");
+  private final String value;
 
-	PropertyOperation(String v) {
-		value = v;
-	}
+  PropertyOperation(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static PropertyOperation fromValue(String v) {
+    for (PropertyOperation c : PropertyOperation.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static PropertyOperation fromValue(String v) {
-		for (PropertyOperation c : PropertyOperation.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

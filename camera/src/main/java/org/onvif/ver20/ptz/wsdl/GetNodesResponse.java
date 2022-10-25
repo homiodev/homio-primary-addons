@@ -1,10 +1,13 @@
 package org.onvif.ver20.ptz.wsdl;
 
-import org.onvif.ver10.schema.PTZNode;
-
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import org.onvif.ver10.schema.PTZNode;
 
 /**
  * <p>
@@ -24,42 +27,38 @@ import java.util.List;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "ptzNode" })
+@XmlType(name = "", propOrder = {"ptzNode"})
 @XmlRootElement(name = "GetNodesResponse")
 public class GetNodesResponse {
 
-	@XmlElement(name = "PTZNode")
-	protected List<PTZNode> ptzNode;
+  @XmlElement(name = "PTZNode")
+  protected List<PTZNode> ptzNode;
 
-	/**
-	 * Gets the value of the ptzNode property.
-	 *
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
-	 * This is why there is not a <CODE>set</CODE> method for the ptzNode property.
-	 *
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 *
-	 * <pre>
-	 * getPTZNode().add(newItem);
-	 * </pre>
-	 *
-	 *
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list {@link PTZNode }
-	 *
-	 *
-	 */
-	public List<PTZNode> getPTZNode() {
-		if (ptzNode == null) {
-			ptzNode = new ArrayList<PTZNode>();
-		}
-		return this.ptzNode;
-	}
+  /**
+   * Gets the value of the ptzNode property.
+   *
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
+   * This is why there is not a <CODE>set</CODE> method for the ptzNode property.
+   *
+   * <p>
+   * For example, to add a new item, do as follows:
+   *
+   * <pre>
+   * getPTZNode().add(newItem);
+   * </pre>
+   *
+   *
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link PTZNode }
+   */
+  public List<PTZNode> getPTZNode() {
+    if (ptzNode == null) {
+      ptzNode = new ArrayList<PTZNode>();
+    }
+    return this.ptzNode;
+  }
 
 }

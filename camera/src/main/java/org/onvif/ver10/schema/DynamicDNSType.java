@@ -21,33 +21,32 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "DynamicDNSType")
 @XmlEnum
 public enum DynamicDNSType {
 
-	@XmlEnumValue("NoUpdate")
-	NO_UPDATE("NoUpdate"), @XmlEnumValue("ClientUpdates")
-	CLIENT_UPDATES("ClientUpdates"), @XmlEnumValue("ServerUpdates")
-	SERVER_UPDATES("ServerUpdates");
-	private final String value;
+  @XmlEnumValue("NoUpdate")
+  NO_UPDATE("NoUpdate"), @XmlEnumValue("ClientUpdates")
+  CLIENT_UPDATES("ClientUpdates"), @XmlEnumValue("ServerUpdates")
+  SERVER_UPDATES("ServerUpdates");
+  private final String value;
 
-	DynamicDNSType(String v) {
-		value = v;
-	}
+  DynamicDNSType(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static DynamicDNSType fromValue(String v) {
+    for (DynamicDNSType c : DynamicDNSType.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static DynamicDNSType fromValue(String v) {
-		for (DynamicDNSType c : DynamicDNSType.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

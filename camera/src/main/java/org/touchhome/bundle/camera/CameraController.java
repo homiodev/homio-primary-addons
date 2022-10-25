@@ -1,5 +1,7 @@
 package org.touchhome.bundle.camera;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.onvif.ver10.schema.Profile;
@@ -13,36 +15,33 @@ import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Log4j2
 @RestController
 @RequestMapping("/rest/camera")
 @RequiredArgsConstructor
 public class CameraController {
 
-    private final EntityContext entityContext;
+  private final EntityContext entityContext;
 
-    @GetMapping("/ffmpegWithProfiles")
-    public List<OptionModel> getAllFFmpegWithProfiles() {
-        List<OptionModel> list = new ArrayList<>();
-        for (BaseFFMPEGVideoStreamEntity videoStreamEntity : entityContext.findAll(BaseFFMPEGVideoStreamEntity.class)) {
-            if (videoStreamEntity.getStatus() == Status.ONLINE && videoStreamEntity.isStart()) {
-                if (videoStreamEntity instanceof OnvifCameraEntity) {
-                    for (Profile profile : ((OnvifCameraHandler) videoStreamEntity.getVideoHandler()).getOnvifDeviceState()
-                            .getProfiles()) {
-                        list.add(OptionModel.of(videoStreamEntity.getEntityID() + "/" + profile.getToken(),
-                                videoStreamEntity.getTitle() + " (" +
-                                        profile.getVideoEncoderConfiguration().getResolution().toString() + ")"));
-                    }
-                } else {
-                    list.add(OptionModel.of(videoStreamEntity.getEntityID(), videoStreamEntity.getTitle()));
-                }
-            }
+  @GetMapping("/ffmpegWithProfiles")
+  public List<OptionModel> getAllFFmpegWithProfiles() {
+    List<OptionModel> list = new ArrayList<>();
+    for (BaseFFMPEGVideoStreamEntity videoStreamEntity : entityContext.findAll(BaseFFMPEGVideoStreamEntity.class)) {
+      if (videoStreamEntity.getStatus() == Status.ONLINE && videoStreamEntity.isStart()) {
+        if (videoStreamEntity instanceof OnvifCameraEntity) {
+          for (Profile profile : ((OnvifCameraHandler) videoStreamEntity.getVideoHandler()).getOnvifDeviceState()
+              .getProfiles()) {
+            list.add(OptionModel.of(videoStreamEntity.getEntityID() + "/" + profile.getToken(),
+                videoStreamEntity.getTitle() + " (" +
+                    profile.getVideoEncoderConfiguration().getResolution().toString() + ")"));
+          }
+        } else {
+          list.add(OptionModel.of(videoStreamEntity.getEntityID(), videoStreamEntity.getTitle()));
         }
-        return list;
+      }
     }
+    return list;
+  }
 
     /*@GetMapping("/profiles")
     public List<OptionModel> getCameraProfiles(@RequestParam(name = FFMPEG_CAMERA_MENU, required = false) String cameraEntityID) {

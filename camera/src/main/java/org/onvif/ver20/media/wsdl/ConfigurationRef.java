@@ -12,57 +12,45 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class ConfigurationRef {
 
-    @XmlElement(name = "Type", required = true)
-    protected String type;
-    @XmlElement(name = "Token")
-    protected String token;
+  @XmlElement(name = "Type", required = true)
+  protected String type;
+  @XmlElement(name = "Token")
+  protected String token;
 
-    /**
-     * Ruft den Wert der type-Eigenschaft ab.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
-    public String getType() {
-        return type;
-    }
+  /**
+   * Ruft den Wert der type-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getType() {
+    return type;
+  }
 
-    /**
-     * Legt den Wert der type-Eigenschaft fest.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
-    public void setType(String value) {
-        this.type = value;
-    }
+  /**
+   * Legt den Wert der type-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setType(String value) {
+    this.type = value;
+  }
 
-    /**
-     * Ruft den Wert der token-Eigenschaft ab.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
-    public String getToken() {
-        return token;
-    }
+  /**
+   * Ruft den Wert der token-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getToken() {
+    return token;
+  }
 
-    /**
-     * Legt den Wert der token-Eigenschaft fest.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
-    public void setToken(String value) {
-        this.token = value;
-    }
+  /**
+   * Legt den Wert der token-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setToken(String value) {
+    this.token = value;
+  }
 
 }

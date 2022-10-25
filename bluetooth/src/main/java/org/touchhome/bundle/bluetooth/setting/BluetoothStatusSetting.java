@@ -4,8 +4,8 @@ import org.touchhome.bundle.api.setting.SettingPluginStatus;
 
 public class BluetoothStatusSetting implements SettingPluginStatus {
 
-    @Override
-    public int order() {
-        return 0;
-    }
+  @Override
+  public int order() {
+    return 0;
+  }
 }

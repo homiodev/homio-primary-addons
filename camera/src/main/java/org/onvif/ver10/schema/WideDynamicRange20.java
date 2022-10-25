@@ -26,58 +26,50 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "WideDynamicRange20", propOrder = { "mode", "level" })
+@XmlType(name = "WideDynamicRange20", propOrder = {"mode", "level"})
 public class WideDynamicRange20 {
 
-	@XmlElement(name = "Mode", required = true)
-	protected WideDynamicMode mode;
-	@XmlElement(name = "Level")
-	protected Float level;
+  @XmlElement(name = "Mode", required = true)
+  protected WideDynamicMode mode;
+  @XmlElement(name = "Level")
+  protected Float level;
 
-	/**
-	 * Ruft den Wert der mode-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link WideDynamicMode }
-	 *
-	 */
-	public WideDynamicMode getMode() {
-		return mode;
-	}
+  /**
+   * Ruft den Wert der mode-Eigenschaft ab.
+   *
+   * @return possible object is {@link WideDynamicMode }
+   */
+  public WideDynamicMode getMode() {
+    return mode;
+  }
 
-	/**
-	 * Legt den Wert der mode-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link WideDynamicMode }
-	 *
-	 */
-	public void setMode(WideDynamicMode value) {
-		this.mode = value;
-	}
+  /**
+   * Legt den Wert der mode-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link WideDynamicMode }
+   */
+  public void setMode(WideDynamicMode value) {
+    this.mode = value;
+  }
 
-	/**
-	 * Ruft den Wert der level-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getLevel() {
-		return level;
-	}
+  /**
+   * Ruft den Wert der level-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getLevel() {
+    return level;
+  }
 
-	/**
-	 * Legt den Wert der level-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setLevel(Float value) {
-		this.level = value;
-	}
+  /**
+   * Legt den Wert der level-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setLevel(Float value) {
+    this.level = value;
+  }
 
 }

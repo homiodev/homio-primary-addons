@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.DiscoveryMode;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "remoteDiscoveryMode" })
+@XmlType(name = "", propOrder = {"remoteDiscoveryMode"})
 @XmlRootElement(name = "SetRemoteDiscoveryMode")
 public class SetRemoteDiscoveryMode {
 
-	@XmlElement(name = "RemoteDiscoveryMode", required = true)
-	protected DiscoveryMode remoteDiscoveryMode;
+  @XmlElement(name = "RemoteDiscoveryMode", required = true)
+  protected DiscoveryMode remoteDiscoveryMode;
 
-	/**
-	 * Ruft den Wert der remoteDiscoveryMode-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link DiscoveryMode }
-	 *
-	 */
-	public DiscoveryMode getRemoteDiscoveryMode() {
-		return remoteDiscoveryMode;
-	}
+  /**
+   * Ruft den Wert der remoteDiscoveryMode-Eigenschaft ab.
+   *
+   * @return possible object is {@link DiscoveryMode }
+   */
+  public DiscoveryMode getRemoteDiscoveryMode() {
+    return remoteDiscoveryMode;
+  }
 
-	/**
-	 * Legt den Wert der remoteDiscoveryMode-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link DiscoveryMode }
-	 *
-	 */
-	public void setRemoteDiscoveryMode(DiscoveryMode value) {
-		this.remoteDiscoveryMode = value;
-	}
+  /**
+   * Legt den Wert der remoteDiscoveryMode-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link DiscoveryMode }
+   */
+  public void setRemoteDiscoveryMode(DiscoveryMode value) {
+    this.remoteDiscoveryMode = value;
+  }
 
 }

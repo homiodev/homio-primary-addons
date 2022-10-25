@@ -7,11 +7,14 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import org.onvif.ver10.schema.BackupFile;
-
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import org.onvif.ver10.schema.BackupFile;
 
 /**
  * <p>
@@ -31,42 +34,38 @@ import java.util.List;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "backupFiles" })
+@XmlType(name = "", propOrder = {"backupFiles"})
 @XmlRootElement(name = "GetSystemBackupResponse")
 public class GetSystemBackupResponse {
 
-	@XmlElement(name = "BackupFiles", required = true)
-	protected List<BackupFile> backupFiles;
+  @XmlElement(name = "BackupFiles", required = true)
+  protected List<BackupFile> backupFiles;
 
-	/**
-	 * Gets the value of the backupFiles property.
-	 *
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
-	 * This is why there is not a <CODE>set</CODE> method for the backupFiles property.
-	 *
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 *
-	 * <pre>
-	 * getBackupFiles().add(newItem);
-	 * </pre>
-	 *
-	 *
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list {@link BackupFile }
-	 *
-	 *
-	 */
-	public List<BackupFile> getBackupFiles() {
-		if (backupFiles == null) {
-			backupFiles = new ArrayList<BackupFile>();
-		}
-		return this.backupFiles;
-	}
+  /**
+   * Gets the value of the backupFiles property.
+   *
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
+   * This is why there is not a <CODE>set</CODE> method for the backupFiles property.
+   *
+   * <p>
+   * For example, to add a new item, do as follows:
+   *
+   * <pre>
+   * getBackupFiles().add(newItem);
+   * </pre>
+   *
+   *
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link BackupFile }
+   */
+  public List<BackupFile> getBackupFiles() {
+    if (backupFiles == null) {
+      backupFiles = new ArrayList<BackupFile>();
+    }
+    return this.backupFiles;
+  }
 
 }

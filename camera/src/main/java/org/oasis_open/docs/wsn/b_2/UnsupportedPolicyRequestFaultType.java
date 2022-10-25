@@ -1,26 +1,25 @@
 package org.oasis_open.docs.wsn.b_2;
 
-import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.List;
+import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "UnsupportedPolicyRequestFaultType", propOrder = { "unsupportedPolicy" })
+@XmlType(name = "UnsupportedPolicyRequestFaultType", propOrder = {"unsupportedPolicy"})
 public class UnsupportedPolicyRequestFaultType extends BaseFaultType {
 
-	@XmlElement(name = "UnsupportedPolicy")
-	protected List<QName> unsupportedPolicy;
+  @XmlElement(name = "UnsupportedPolicy")
+  protected List<QName> unsupportedPolicy;
 
-	public List<QName> getUnsupportedPolicy() {
-		if (unsupportedPolicy == null) {
-			unsupportedPolicy = new ArrayList<>();
-		}
-		return this.unsupportedPolicy;
-	}
+  public List<QName> getUnsupportedPolicy() {
+    if (unsupportedPolicy == null) {
+      unsupportedPolicy = new ArrayList<>();
+    }
+    return this.unsupportedPolicy;
+  }
 }

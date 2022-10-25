@@ -1,8 +1,11 @@
 package org.onvif.ver20.media.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.OSDConfiguration;
-
-import javax.xml.bind.annotation.*;
 
 
 /**
@@ -21,8 +24,6 @@ import javax.xml.bind.annotation.*;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -31,31 +32,25 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name = "SetOSD")
 public class SetOSD {
 
-    @XmlElement(name = "OSD", required = true)
-    protected OSDConfiguration osd;
+  @XmlElement(name = "OSD", required = true)
+  protected OSDConfiguration osd;
 
-    /**
-     * Ruft den Wert der osd-Eigenschaft ab.
-     *
-     * @return
-     *     possible object is
-     *     {@link OSDConfiguration }
-     *
-     */
-    public OSDConfiguration getOSD() {
-        return osd;
-    }
+  /**
+   * Ruft den Wert der osd-Eigenschaft ab.
+   *
+   * @return possible object is {@link OSDConfiguration }
+   */
+  public OSDConfiguration getOSD() {
+    return osd;
+  }
 
-    /**
-     * Legt den Wert der osd-Eigenschaft fest.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link OSDConfiguration }
-     *
-     */
-    public void setOSD(OSDConfiguration value) {
-        this.osd = value;
-    }
+  /**
+   * Legt den Wert der osd-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link OSDConfiguration }
+   */
+  public void setOSD(OSDConfiguration value) {
+    this.osd = value;
+  }
 
 }

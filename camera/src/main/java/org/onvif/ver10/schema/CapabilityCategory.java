@@ -8,30 +8,30 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum CapabilityCategory {
 
-	@XmlEnumValue("All")
-	ALL("All"), @XmlEnumValue("Analytics")
-	ANALYTICS("Analytics"), @XmlEnumValue("Device")
-	DEVICE("Device"), @XmlEnumValue("Events")
-	EVENTS("Events"), @XmlEnumValue("Imaging")
-	IMAGING("Imaging"), @XmlEnumValue("Media")
-	MEDIA("Media"), PTZ("PTZ");
-	private final String value;
+  @XmlEnumValue("All")
+  ALL("All"), @XmlEnumValue("Analytics")
+  ANALYTICS("Analytics"), @XmlEnumValue("Device")
+  DEVICE("Device"), @XmlEnumValue("Events")
+  EVENTS("Events"), @XmlEnumValue("Imaging")
+  IMAGING("Imaging"), @XmlEnumValue("Media")
+  MEDIA("Media"), PTZ("PTZ");
+  private final String value;
 
-	CapabilityCategory(String v) {
-		value = v;
-	}
+  CapabilityCategory(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static CapabilityCategory fromValue(String v) {
+    for (CapabilityCategory c : CapabilityCategory.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static CapabilityCategory fromValue(String v) {
-		for (CapabilityCategory c : CapabilityCategory.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

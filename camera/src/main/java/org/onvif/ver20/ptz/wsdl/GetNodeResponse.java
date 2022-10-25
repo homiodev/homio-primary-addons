@@ -1,8 +1,11 @@
 package org.onvif.ver20.ptz.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.PTZNode;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -22,36 +25,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "ptzNode" })
+@XmlType(name = "", propOrder = {"ptzNode"})
 @XmlRootElement(name = "GetNodeResponse")
 public class GetNodeResponse {
 
-	@XmlElement(name = "PTZNode", required = true)
-	protected PTZNode ptzNode;
+  @XmlElement(name = "PTZNode", required = true)
+  protected PTZNode ptzNode;
 
-	/**
-	 * Ruft den Wert der ptzNode-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZNode }
-	 *
-	 */
-	public PTZNode getPTZNode() {
-		return ptzNode;
-	}
+  /**
+   * Ruft den Wert der ptzNode-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZNode }
+   */
+  public PTZNode getPTZNode() {
+    return ptzNode;
+  }
 
-	/**
-	 * Legt den Wert der ptzNode-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZNode }
-	 *
-	 */
-	public void setPTZNode(PTZNode value) {
-		this.ptzNode = value;
-	}
+  /**
+   * Legt den Wert der ptzNode-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZNode }
+   */
+  public void setPTZNode(PTZNode value) {
+    this.ptzNode = value;
+  }
 
 }

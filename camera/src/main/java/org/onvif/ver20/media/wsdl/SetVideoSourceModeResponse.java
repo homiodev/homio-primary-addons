@@ -1,6 +1,10 @@
 package org.onvif.ver20.media.wsdl;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -19,8 +23,6 @@ import javax.xml.bind.annotation.*;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -29,23 +31,21 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name = "SetVideoSourceModeResponse")
 public class SetVideoSourceModeResponse {
 
-    @XmlElement(name = "Reboot")
-    protected boolean reboot;
+  @XmlElement(name = "Reboot")
+  protected boolean reboot;
 
-    /**
-     * Ruft den Wert der reboot-Eigenschaft ab.
-     *
-     */
-    public boolean isReboot() {
-        return reboot;
-    }
+  /**
+   * Ruft den Wert der reboot-Eigenschaft ab.
+   */
+  public boolean isReboot() {
+    return reboot;
+  }
 
-    /**
-     * Legt den Wert der reboot-Eigenschaft fest.
-     *
-     */
-    public void setReboot(boolean value) {
-        this.reboot = value;
-    }
+  /**
+   * Legt den Wert der reboot-Eigenschaft fest.
+   */
+  public void setReboot(boolean value) {
+    this.reboot = value;
+  }
 
 }

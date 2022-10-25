@@ -11,17 +11,17 @@ import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 @CameraBrandHandler(name = "Onvif")
 public class OnvifBrandHandler extends BaseOnvifCameraBrandHandler {
 
-    public OnvifBrandHandler(OnvifCameraEntity cameraEntity) {
-        super(cameraEntity);
-    }
+  public OnvifBrandHandler(OnvifCameraEntity cameraEntity) {
+    super(cameraEntity);
+  }
 
-    @Override
-    public boolean isSupportOnvifEvents() {
-        return true;
-    }
+  @Override
+  public boolean isSupportOnvifEvents() {
+    return true;
+  }
 
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        ReferenceCountUtil.release(msg);
-    }
+  @Override
+  public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    ReferenceCountUtil.release(msg);
+  }
 }

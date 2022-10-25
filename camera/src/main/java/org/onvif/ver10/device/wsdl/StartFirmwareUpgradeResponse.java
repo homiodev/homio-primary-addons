@@ -7,7 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.Duration;
 
 /**
@@ -30,83 +35,72 @@ import javax.xml.datatype.Duration;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "uploadUri", "uploadDelay", "expectedDownTime" })
+@XmlType(name = "", propOrder = {"uploadUri", "uploadDelay", "expectedDownTime"})
 @XmlRootElement(name = "StartFirmwareUpgradeResponse")
 public class StartFirmwareUpgradeResponse {
 
-	@XmlElement(name = "UploadUri", required = true)
-	@XmlSchemaType(name = "anyURI")
-	protected String uploadUri;
-	@XmlElement(name = "UploadDelay", required = true)
-	protected Duration uploadDelay;
-	@XmlElement(name = "ExpectedDownTime", required = true)
-	protected Duration expectedDownTime;
+  @XmlElement(name = "UploadUri", required = true)
+  @XmlSchemaType(name = "anyURI")
+  protected String uploadUri;
+  @XmlElement(name = "UploadDelay", required = true)
+  protected Duration uploadDelay;
+  @XmlElement(name = "ExpectedDownTime", required = true)
+  protected Duration expectedDownTime;
 
-	/**
-	 * Ruft den Wert der uploadUri-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getUploadUri() {
-		return uploadUri;
-	}
+  /**
+   * Ruft den Wert der uploadUri-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getUploadUri() {
+    return uploadUri;
+  }
 
-	/**
-	 * Legt den Wert der uploadUri-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setUploadUri(String value) {
-		this.uploadUri = value;
-	}
+  /**
+   * Legt den Wert der uploadUri-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setUploadUri(String value) {
+    this.uploadUri = value;
+  }
 
-	/**
-	 * Ruft den Wert der uploadDelay-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Duration }
-	 *
-	 */
-	public Duration getUploadDelay() {
-		return uploadDelay;
-	}
+  /**
+   * Ruft den Wert der uploadDelay-Eigenschaft ab.
+   *
+   * @return possible object is {@link Duration }
+   */
+  public Duration getUploadDelay() {
+    return uploadDelay;
+  }
 
-	/**
-	 * Legt den Wert der uploadDelay-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Duration }
-	 *
-	 */
-	public void setUploadDelay(Duration value) {
-		this.uploadDelay = value;
-	}
+  /**
+   * Legt den Wert der uploadDelay-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Duration }
+   */
+  public void setUploadDelay(Duration value) {
+    this.uploadDelay = value;
+  }
 
-	/**
-	 * Ruft den Wert der expectedDownTime-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Duration }
-	 *
-	 */
-	public Duration getExpectedDownTime() {
-		return expectedDownTime;
-	}
+  /**
+   * Ruft den Wert der expectedDownTime-Eigenschaft ab.
+   *
+   * @return possible object is {@link Duration }
+   */
+  public Duration getExpectedDownTime() {
+    return expectedDownTime;
+  }
 
-	/**
-	 * Legt den Wert der expectedDownTime-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Duration }
-	 *
-	 */
-	public void setExpectedDownTime(Duration value) {
-		this.expectedDownTime = value;
-	}
+  /**
+   * Legt den Wert der expectedDownTime-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Duration }
+   */
+  public void setExpectedDownTime(Duration value) {
+    this.expectedDownTime = value;
+  }
 
 }

@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.NTPInformation;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "ntpInformation" })
+@XmlType(name = "", propOrder = {"ntpInformation"})
 @XmlRootElement(name = "GetNTPResponse")
 public class GetNTPResponse {
 
-	@XmlElement(name = "NTPInformation", required = true)
-	protected NTPInformation ntpInformation;
+  @XmlElement(name = "NTPInformation", required = true)
+  protected NTPInformation ntpInformation;
 
-	/**
-	 * Ruft den Wert der ntpInformation-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link NTPInformation }
-	 *
-	 */
-	public NTPInformation getNTPInformation() {
-		return ntpInformation;
-	}
+  /**
+   * Ruft den Wert der ntpInformation-Eigenschaft ab.
+   *
+   * @return possible object is {@link NTPInformation }
+   */
+  public NTPInformation getNTPInformation() {
+    return ntpInformation;
+  }
 
-	/**
-	 * Legt den Wert der ntpInformation-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link NTPInformation }
-	 *
-	 */
-	public void setNTPInformation(NTPInformation value) {
-		this.ntpInformation = value;
-	}
+  /**
+   * Legt den Wert der ntpInformation-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link NTPInformation }
+   */
+  public void setNTPInformation(NTPInformation value) {
+    this.ntpInformation = value;
+  }
 
 }

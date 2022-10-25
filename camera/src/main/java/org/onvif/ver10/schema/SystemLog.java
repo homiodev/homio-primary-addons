@@ -24,58 +24,50 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SystemLog", propOrder = { "binary", "string" })
+@XmlType(name = "SystemLog", propOrder = {"binary", "string"})
 public class SystemLog {
 
-	@XmlElement(name = "Binary")
-	protected AttachmentData binary;
-	@XmlElement(name = "String")
-	protected String string;
+  @XmlElement(name = "Binary")
+  protected AttachmentData binary;
+  @XmlElement(name = "String")
+  protected String string;
 
-	/**
-	 * Ruft den Wert der binary-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link AttachmentData }
-	 *
-	 */
-	public AttachmentData getBinary() {
-		return binary;
-	}
+  /**
+   * Ruft den Wert der binary-Eigenschaft ab.
+   *
+   * @return possible object is {@link AttachmentData }
+   */
+  public AttachmentData getBinary() {
+    return binary;
+  }
 
-	/**
-	 * Legt den Wert der binary-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link AttachmentData }
-	 *
-	 */
-	public void setBinary(AttachmentData value) {
-		this.binary = value;
-	}
+  /**
+   * Legt den Wert der binary-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link AttachmentData }
+   */
+  public void setBinary(AttachmentData value) {
+    this.binary = value;
+  }
 
-	/**
-	 * Ruft den Wert der string-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getString() {
-		return string;
-	}
+  /**
+   * Ruft den Wert der string-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getString() {
+    return string;
+  }
 
-	/**
-	 * Legt den Wert der string-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setString(String value) {
-		this.string = value;
-	}
+  /**
+   * Legt den Wert der string-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setString(String value) {
+    this.string = value;
+  }
 
 }

@@ -8,27 +8,27 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum Direction {
 
-	@XmlEnumValue("Left")
-	LEFT("Left"), @XmlEnumValue("Right")
-	RIGHT("Right"), @XmlEnumValue("Any")
-	ANY("Any");
-	private final String value;
+  @XmlEnumValue("Left")
+  LEFT("Left"), @XmlEnumValue("Right")
+  RIGHT("Right"), @XmlEnumValue("Any")
+  ANY("Any");
+  private final String value;
 
-	Direction(String v) {
-		value = v;
-	}
+  Direction(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static Direction fromValue(String v) {
+    for (Direction c : Direction.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static Direction fromValue(String v) {
-		for (Direction c : Direction.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

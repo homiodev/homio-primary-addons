@@ -1,11 +1,11 @@
 package org.onvif.ver10.schema;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>
@@ -28,110 +28,97 @@ import java.util.List;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "FocusOptions", propOrder = { "autoFocusModes", "defaultSpeed", "nearLimit", "farLimit" })
+@XmlType(name = "FocusOptions", propOrder = {"autoFocusModes", "defaultSpeed", "nearLimit", "farLimit"})
 public class FocusOptions {
 
-	@XmlElement(name = "AutoFocusModes")
-	protected List<AutoFocusMode> autoFocusModes;
-	@XmlElement(name = "DefaultSpeed", required = true)
-	protected FloatRange defaultSpeed;
-	@XmlElement(name = "NearLimit", required = true)
-	protected FloatRange nearLimit;
-	@XmlElement(name = "FarLimit", required = true)
-	protected FloatRange farLimit;
+  @XmlElement(name = "AutoFocusModes")
+  protected List<AutoFocusMode> autoFocusModes;
+  @XmlElement(name = "DefaultSpeed", required = true)
+  protected FloatRange defaultSpeed;
+  @XmlElement(name = "NearLimit", required = true)
+  protected FloatRange nearLimit;
+  @XmlElement(name = "FarLimit", required = true)
+  protected FloatRange farLimit;
 
-	/**
-	 * Gets the value of the autoFocusModes property.
-	 *
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
-	 * This is why there is not a <CODE>set</CODE> method for the autoFocusModes property.
-	 *
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 *
-	 * <pre>
-	 * getAutoFocusModes().add(newItem);
-	 * </pre>
-	 *
-	 *
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list {@link AutoFocusMode }
-	 *
-	 *
-	 */
-	public List<AutoFocusMode> getAutoFocusModes() {
-		if (autoFocusModes == null) {
-			autoFocusModes = new ArrayList<AutoFocusMode>();
-		}
-		return this.autoFocusModes;
-	}
+  /**
+   * Gets the value of the autoFocusModes property.
+   *
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
+   * This is why there is not a <CODE>set</CODE> method for the autoFocusModes property.
+   *
+   * <p>
+   * For example, to add a new item, do as follows:
+   *
+   * <pre>
+   * getAutoFocusModes().add(newItem);
+   * </pre>
+   *
+   *
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link AutoFocusMode }
+   */
+  public List<AutoFocusMode> getAutoFocusModes() {
+    if (autoFocusModes == null) {
+      autoFocusModes = new ArrayList<AutoFocusMode>();
+    }
+    return this.autoFocusModes;
+  }
 
-	/**
-	 * Ruft den Wert der defaultSpeed-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link FloatRange }
-	 *
-	 */
-	public FloatRange getDefaultSpeed() {
-		return defaultSpeed;
-	}
+  /**
+   * Ruft den Wert der defaultSpeed-Eigenschaft ab.
+   *
+   * @return possible object is {@link FloatRange }
+   */
+  public FloatRange getDefaultSpeed() {
+    return defaultSpeed;
+  }
 
-	/**
-	 * Legt den Wert der defaultSpeed-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link FloatRange }
-	 *
-	 */
-	public void setDefaultSpeed(FloatRange value) {
-		this.defaultSpeed = value;
-	}
+  /**
+   * Legt den Wert der defaultSpeed-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link FloatRange }
+   */
+  public void setDefaultSpeed(FloatRange value) {
+    this.defaultSpeed = value;
+  }
 
-	/**
-	 * Ruft den Wert der nearLimit-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link FloatRange }
-	 *
-	 */
-	public FloatRange getNearLimit() {
-		return nearLimit;
-	}
+  /**
+   * Ruft den Wert der nearLimit-Eigenschaft ab.
+   *
+   * @return possible object is {@link FloatRange }
+   */
+  public FloatRange getNearLimit() {
+    return nearLimit;
+  }
 
-	/**
-	 * Legt den Wert der nearLimit-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link FloatRange }
-	 *
-	 */
-	public void setNearLimit(FloatRange value) {
-		this.nearLimit = value;
-	}
+  /**
+   * Legt den Wert der nearLimit-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link FloatRange }
+   */
+  public void setNearLimit(FloatRange value) {
+    this.nearLimit = value;
+  }
 
-	/**
-	 * Ruft den Wert der farLimit-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link FloatRange }
-	 *
-	 */
-	public FloatRange getFarLimit() {
-		return farLimit;
-	}
+  /**
+   * Ruft den Wert der farLimit-Eigenschaft ab.
+   *
+   * @return possible object is {@link FloatRange }
+   */
+  public FloatRange getFarLimit() {
+    return farLimit;
+  }
 
-	/**
-	 * Legt den Wert der farLimit-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link FloatRange }
-	 *
-	 */
-	public void setFarLimit(FloatRange value) {
-		this.farLimit = value;
-	}
+  /**
+   * Legt den Wert der farLimit-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link FloatRange }
+   */
+  public void setFarLimit(FloatRange value) {
+    this.farLimit = value;
+  }
 
 }

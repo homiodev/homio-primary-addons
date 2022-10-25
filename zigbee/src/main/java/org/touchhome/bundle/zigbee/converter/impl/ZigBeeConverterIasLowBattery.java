@@ -9,14 +9,14 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 @ZigBeeConverter(name = "zigbee:iaslowbattery", description = "Low battery alarm", clientClusters = {ZclIasZoneCluster.CLUSTER_ID})
 public class ZigBeeConverterIasLowBattery extends ZigBeeConverterIas {
 
-    @Override
-    public boolean initializeConverter() {
-        bitTest = CIE_BATTERY;
-        return super.initializeConverter();
-    }
+  @Override
+  public boolean initializeConverter() {
+    bitTest = CIE_BATTERY;
+    return super.initializeConverter();
+  }
 
-    @Override
-    public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-        return hasIasZoneInputCluster(endpoint);
-    }
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
+    return hasIasZoneInputCluster(endpoint);
+  }
 }

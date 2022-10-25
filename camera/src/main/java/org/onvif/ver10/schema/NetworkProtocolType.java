@@ -20,20 +20,19 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "NetworkProtocolType")
 @XmlEnum
 public enum NetworkProtocolType {
 
-	HTTP, HTTPS, RTSP;
+  HTTP, HTTPS, RTSP;
 
-	public String value() {
-		return name();
-	}
+  public static NetworkProtocolType fromValue(String v) {
+    return valueOf(v);
+  }
 
-	public static NetworkProtocolType fromValue(String v) {
-		return valueOf(v);
-	}
+  public String value() {
+    return name();
+  }
 
 }

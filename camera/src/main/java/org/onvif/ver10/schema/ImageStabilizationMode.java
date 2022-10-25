@@ -22,31 +22,30 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "ImageStabilizationMode")
 @XmlEnum
 public enum ImageStabilizationMode {
 
-	OFF("OFF"), ON("ON"), AUTO("AUTO"), @XmlEnumValue("Extended")
-	EXTENDED("Extended");
-	private final String value;
+  OFF("OFF"), ON("ON"), AUTO("AUTO"), @XmlEnumValue("Extended")
+  EXTENDED("Extended");
+  private final String value;
 
-	ImageStabilizationMode(String v) {
-		value = v;
-	}
+  ImageStabilizationMode(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static ImageStabilizationMode fromValue(String v) {
+    for (ImageStabilizationMode c : ImageStabilizationMode.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static ImageStabilizationMode fromValue(String v) {
-		for (ImageStabilizationMode c : ImageStabilizationMode.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

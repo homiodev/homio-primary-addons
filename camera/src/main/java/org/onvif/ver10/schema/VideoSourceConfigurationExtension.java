@@ -24,58 +24,50 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "VideoSourceConfigurationExtension", propOrder = { "rotate", "extension" })
+@XmlType(name = "VideoSourceConfigurationExtension", propOrder = {"rotate", "extension"})
 public class VideoSourceConfigurationExtension {
 
-	@XmlElement(name = "Rotate")
-	protected Rotate rotate;
-	@XmlElement(name = "Extension")
-	protected VideoSourceConfigurationExtension2 extension;
+  @XmlElement(name = "Rotate")
+  protected Rotate rotate;
+  @XmlElement(name = "Extension")
+  protected VideoSourceConfigurationExtension2 extension;
 
-	/**
-	 * Ruft den Wert der rotate-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Rotate }
-	 *
-	 */
-	public Rotate getRotate() {
-		return rotate;
-	}
+  /**
+   * Ruft den Wert der rotate-Eigenschaft ab.
+   *
+   * @return possible object is {@link Rotate }
+   */
+  public Rotate getRotate() {
+    return rotate;
+  }
 
-	/**
-	 * Legt den Wert der rotate-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Rotate }
-	 *
-	 */
-	public void setRotate(Rotate value) {
-		this.rotate = value;
-	}
+  /**
+   * Legt den Wert der rotate-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Rotate }
+   */
+  public void setRotate(Rotate value) {
+    this.rotate = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link VideoSourceConfigurationExtension2 }
-	 *
-	 */
-	public VideoSourceConfigurationExtension2 getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link VideoSourceConfigurationExtension2 }
+   */
+  public VideoSourceConfigurationExtension2 getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link VideoSourceConfigurationExtension2 }
-	 *
-	 */
-	public void setExtension(VideoSourceConfigurationExtension2 value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link VideoSourceConfigurationExtension2 }
+   */
+  public void setExtension(VideoSourceConfigurationExtension2 value) {
+    this.extension = value;
+  }
 
 }

@@ -27,58 +27,50 @@ import javax.xml.datatype.Duration;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DurationRange", propOrder = { "min", "max" })
+@XmlType(name = "DurationRange", propOrder = {"min", "max"})
 public class DurationRange {
 
-	@XmlElement(name = "Min", required = true)
-	protected Duration min;
-	@XmlElement(name = "Max", required = true)
-	protected Duration max;
+  @XmlElement(name = "Min", required = true)
+  protected Duration min;
+  @XmlElement(name = "Max", required = true)
+  protected Duration max;
 
-	/**
-	 * Ruft den Wert der min-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Duration }
-	 *
-	 */
-	public Duration getMin() {
-		return min;
-	}
+  /**
+   * Ruft den Wert der min-Eigenschaft ab.
+   *
+   * @return possible object is {@link Duration }
+   */
+  public Duration getMin() {
+    return min;
+  }
 
-	/**
-	 * Legt den Wert der min-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Duration }
-	 *
-	 */
-	public void setMin(Duration value) {
-		this.min = value;
-	}
+  /**
+   * Legt den Wert der min-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Duration }
+   */
+  public void setMin(Duration value) {
+    this.min = value;
+  }
 
-	/**
-	 * Ruft den Wert der max-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Duration }
-	 *
-	 */
-	public Duration getMax() {
-		return max;
-	}
+  /**
+   * Ruft den Wert der max-Eigenschaft ab.
+   *
+   * @return possible object is {@link Duration }
+   */
+  public Duration getMax() {
+    return max;
+  }
 
-	/**
-	 * Legt den Wert der max-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Duration }
-	 *
-	 */
-	public void setMax(Duration value) {
-		this.max = value;
-	}
+  /**
+   * Legt den Wert der max-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Duration }
+   */
+  public void setMax(Duration value) {
+    this.max = value;
+  }
 
 }

@@ -1,9 +1,13 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 /**
  * <p>
@@ -26,98 +30,86 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "IOCapabilities", propOrder = { "inputConnectors", "relayOutputs", "extension" })
+@XmlType(name = "IOCapabilities", propOrder = {"inputConnectors", "relayOutputs", "extension"})
 public class IOCapabilities {
 
-	@XmlElement(name = "InputConnectors")
-	protected Integer inputConnectors;
-	@XmlElement(name = "RelayOutputs")
-	protected Integer relayOutputs;
-	@XmlElement(name = "Extension")
-	protected IOCapabilitiesExtension extension;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "InputConnectors")
+  protected Integer inputConnectors;
+  @XmlElement(name = "RelayOutputs")
+  protected Integer relayOutputs;
+  @XmlElement(name = "Extension")
+  protected IOCapabilitiesExtension extension;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der inputConnectors-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Integer }
-	 *
-	 */
-	public Integer getInputConnectors() {
-		return inputConnectors;
-	}
+  /**
+   * Ruft den Wert der inputConnectors-Eigenschaft ab.
+   *
+   * @return possible object is {@link Integer }
+   */
+  public Integer getInputConnectors() {
+    return inputConnectors;
+  }
 
-	/**
-	 * Legt den Wert der inputConnectors-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Integer }
-	 *
-	 */
-	public void setInputConnectors(Integer value) {
-		this.inputConnectors = value;
-	}
+  /**
+   * Legt den Wert der inputConnectors-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Integer }
+   */
+  public void setInputConnectors(Integer value) {
+    this.inputConnectors = value;
+  }
 
-	/**
-	 * Ruft den Wert der relayOutputs-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Integer }
-	 *
-	 */
-	public Integer getRelayOutputs() {
-		return relayOutputs;
-	}
+  /**
+   * Ruft den Wert der relayOutputs-Eigenschaft ab.
+   *
+   * @return possible object is {@link Integer }
+   */
+  public Integer getRelayOutputs() {
+    return relayOutputs;
+  }
 
-	/**
-	 * Legt den Wert der relayOutputs-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Integer }
-	 *
-	 */
-	public void setRelayOutputs(Integer value) {
-		this.relayOutputs = value;
-	}
+  /**
+   * Legt den Wert der relayOutputs-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Integer }
+   */
+  public void setRelayOutputs(Integer value) {
+    this.relayOutputs = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link IOCapabilitiesExtension }
-	 *
-	 */
-	public IOCapabilitiesExtension getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link IOCapabilitiesExtension }
+   */
+  public IOCapabilitiesExtension getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link IOCapabilitiesExtension }
-	 *
-	 */
-	public void setExtension(IOCapabilitiesExtension value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link IOCapabilitiesExtension }
+   */
+  public void setExtension(IOCapabilitiesExtension value) {
+    this.extension = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

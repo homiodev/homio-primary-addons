@@ -24,58 +24,50 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ImagingOptions20Extension2", propOrder = { "irCutFilterAutoAdjustment", "extension" })
+@XmlType(name = "ImagingOptions20Extension2", propOrder = {"irCutFilterAutoAdjustment", "extension"})
 public class ImagingOptions20Extension2 {
 
-	@XmlElement(name = "IrCutFilterAutoAdjustment")
-	protected IrCutFilterAutoAdjustmentOptions irCutFilterAutoAdjustment;
-	@XmlElement(name = "Extension")
-	protected ImagingOptions20Extension3 extension;
+  @XmlElement(name = "IrCutFilterAutoAdjustment")
+  protected IrCutFilterAutoAdjustmentOptions irCutFilterAutoAdjustment;
+  @XmlElement(name = "Extension")
+  protected ImagingOptions20Extension3 extension;
 
-	/**
-	 * Ruft den Wert der irCutFilterAutoAdjustment-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link IrCutFilterAutoAdjustmentOptions }
-	 *
-	 */
-	public IrCutFilterAutoAdjustmentOptions getIrCutFilterAutoAdjustment() {
-		return irCutFilterAutoAdjustment;
-	}
+  /**
+   * Ruft den Wert der irCutFilterAutoAdjustment-Eigenschaft ab.
+   *
+   * @return possible object is {@link IrCutFilterAutoAdjustmentOptions }
+   */
+  public IrCutFilterAutoAdjustmentOptions getIrCutFilterAutoAdjustment() {
+    return irCutFilterAutoAdjustment;
+  }
 
-	/**
-	 * Legt den Wert der irCutFilterAutoAdjustment-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link IrCutFilterAutoAdjustmentOptions }
-	 *
-	 */
-	public void setIrCutFilterAutoAdjustment(IrCutFilterAutoAdjustmentOptions value) {
-		this.irCutFilterAutoAdjustment = value;
-	}
+  /**
+   * Legt den Wert der irCutFilterAutoAdjustment-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link IrCutFilterAutoAdjustmentOptions }
+   */
+  public void setIrCutFilterAutoAdjustment(IrCutFilterAutoAdjustmentOptions value) {
+    this.irCutFilterAutoAdjustment = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link ImagingOptions20Extension3 }
-	 *
-	 */
-	public ImagingOptions20Extension3 getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link ImagingOptions20Extension3 }
+   */
+  public ImagingOptions20Extension3 getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link ImagingOptions20Extension3 }
-	 *
-	 */
-	public void setExtension(ImagingOptions20Extension3 value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ImagingOptions20Extension3 }
+   */
+  public void setExtension(ImagingOptions20Extension3 value) {
+    this.extension = value;
+  }
 
 }

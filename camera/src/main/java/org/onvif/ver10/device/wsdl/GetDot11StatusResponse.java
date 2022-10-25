@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.Dot11Status;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "status" })
+@XmlType(name = "", propOrder = {"status"})
 @XmlRootElement(name = "GetDot11StatusResponse")
 public class GetDot11StatusResponse {
 
-	@XmlElement(name = "Status", required = true)
-	protected Dot11Status status;
+  @XmlElement(name = "Status", required = true)
+  protected Dot11Status status;
 
-	/**
-	 * Ruft den Wert der status-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Dot11Status }
-	 *
-	 */
-	public Dot11Status getStatus() {
-		return status;
-	}
+  /**
+   * Ruft den Wert der status-Eigenschaft ab.
+   *
+   * @return possible object is {@link Dot11Status }
+   */
+  public Dot11Status getStatus() {
+    return status;
+  }
 
-	/**
-	 * Legt den Wert der status-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Dot11Status }
-	 *
-	 */
-	public void setStatus(Dot11Status value) {
-		this.status = value;
-	}
+  /**
+   * Legt den Wert der status-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Dot11Status }
+   */
+  public void setStatus(Dot11Status value) {
+    this.status = value;
+  }
 
 }

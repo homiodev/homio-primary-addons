@@ -18,22 +18,21 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- *
  */
 @XmlType(name = "ToneCompensationMode")
 @XmlEnum
 public enum ToneCompensationMode {
 
-    OFF,
-    ON,
-    AUTO;
+  OFF,
+  ON,
+  AUTO;
 
-    public String value() {
-        return name();
-    }
+  public static ToneCompensationMode fromValue(String v) {
+    return valueOf(v);
+  }
 
-    public static ToneCompensationMode fromValue(String v) {
-        return valueOf(v);
-    }
+  public String value() {
+    return name();
+  }
 
 }

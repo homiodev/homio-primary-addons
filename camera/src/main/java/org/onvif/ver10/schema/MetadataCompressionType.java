@@ -19,33 +19,32 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- *
  */
 @XmlType(name = "MetadataCompressionType")
 @XmlEnum
 public enum MetadataCompressionType {
 
-    @XmlEnumValue("None")
-    NONE("None"),
-    GZIP("GZIP"),
-    EXI("EXI");
-    private final String value;
+  @XmlEnumValue("None")
+  NONE("None"),
+  GZIP("GZIP"),
+  EXI("EXI");
+  private final String value;
 
-    MetadataCompressionType(String v) {
-        value = v;
-    }
+  MetadataCompressionType(String v) {
+    value = v;
+  }
 
-    public String value() {
-        return value;
+  public static MetadataCompressionType fromValue(String v) {
+    for (MetadataCompressionType c : MetadataCompressionType.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
     }
+    throw new IllegalArgumentException(v);
+  }
 
-    public static MetadataCompressionType fromValue(String v) {
-        for (MetadataCompressionType c: MetadataCompressionType.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
-    }
+  public String value() {
+    return value;
+  }
 
 }

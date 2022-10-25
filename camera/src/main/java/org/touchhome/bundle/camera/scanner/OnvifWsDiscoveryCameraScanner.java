@@ -1,5 +1,9 @@
 package org.touchhome.bundle.camera.scanner;
 
+import java.net.UnknownHostException;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
@@ -10,52 +14,47 @@ import org.touchhome.bundle.camera.onvif.OnvifDiscovery;
 import org.touchhome.common.model.ProgressBar;
 import org.touchhome.common.util.Lang;
 
-import java.net.UnknownHostException;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 @Log4j2
 @Component
 public class OnvifWsDiscoveryCameraScanner implements VideoStreamScanner {
 
-    @Override
-    public String getName() {
-        return "scan-ws-discovery-camera";
-    }
+  @Override
+  public String getName() {
+    return "scan-ws-discovery-camera";
+  }
 
-    @Override
-    public BaseItemsDiscovery.DeviceScannerResult scan(EntityContext entityContext, ProgressBar progressBar, String headerConfirmButtonKey) {
-        OnvifDiscovery onvifDiscovery = new OnvifDiscovery();
-        BaseItemsDiscovery.DeviceScannerResult result = new BaseItemsDiscovery.DeviceScannerResult();
-        try {
-            Map<String, OnvifCameraEntity> existsCamera = entityContext.findAll(OnvifCameraEntity.class)
-                    .stream().collect(Collectors.toMap(OnvifCameraEntity::getIp, Function.identity()));
+  @Override
+  public BaseItemsDiscovery.DeviceScannerResult scan(EntityContext entityContext, ProgressBar progressBar, String headerConfirmButtonKey) {
+    OnvifDiscovery onvifDiscovery = new OnvifDiscovery();
+    BaseItemsDiscovery.DeviceScannerResult result = new BaseItemsDiscovery.DeviceScannerResult();
+    try {
+      Map<String, OnvifCameraEntity> existsCamera = entityContext.findAll(OnvifCameraEntity.class)
+          .stream().collect(Collectors.toMap(OnvifCameraEntity::getIp, Function.identity()));
 
-            onvifDiscovery.discoverCameras((brand, ipAddress, onvifPort) -> {
-                if (!existsCamera.containsKey(ipAddress)) {
-                    result.getNewCount().incrementAndGet();
-                    handleDevice(headerConfirmButtonKey,
-                            "onvif-" + ipAddress,
-                            brand + "/" + ipAddress, entityContext,
-                            messages -> {
-                                messages.add(Lang.getServerMessage("VIDEO_STREAM.PORT", "PORT", String.valueOf(onvifPort)));
-                                messages.add(Lang.getServerMessage("VIDEO_STREAM.BRAND", "BRAND", brand.getName()));
-                            },
-                            () -> {
-                                log.info("Confirm save onvif camera with ip address: <{}>", ipAddress);
-                                entityContext.save(new OnvifCameraEntity()
-                                        .setIp(ipAddress)
-                                        .setOnvifPort(onvifPort)
-                                        .setCameraType(brand.getID()));
-                            });
-                } else {
-                    result.getExistedCount().incrementAndGet();
-                }
-            });
-        } catch (UnknownHostException | InterruptedException e) {
-            log.warn("IpCamera Discovery has an issue discovering the network settings to find cameras with. Try setting up the camera manually.");
+      onvifDiscovery.discoverCameras((brand, ipAddress, onvifPort) -> {
+        if (!existsCamera.containsKey(ipAddress)) {
+          result.getNewCount().incrementAndGet();
+          handleDevice(headerConfirmButtonKey,
+              "onvif-" + ipAddress,
+              brand + "/" + ipAddress, entityContext,
+              messages -> {
+                messages.add(Lang.getServerMessage("VIDEO_STREAM.PORT", "PORT", String.valueOf(onvifPort)));
+                messages.add(Lang.getServerMessage("VIDEO_STREAM.BRAND", "BRAND", brand.getName()));
+              },
+              () -> {
+                log.info("Confirm save onvif camera with ip address: <{}>", ipAddress);
+                entityContext.save(new OnvifCameraEntity()
+                    .setIp(ipAddress)
+                    .setOnvifPort(onvifPort)
+                    .setCameraType(brand.getID()));
+              });
+        } else {
+          result.getExistedCount().incrementAndGet();
         }
-        return result;
+      });
+    } catch (UnknownHostException | InterruptedException e) {
+      log.warn("IpCamera Discovery has an issue discovering the network settings to find cameras with. Try setting up the camera manually.");
     }
+    return result;
+  }
 }

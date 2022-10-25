@@ -24,53 +24,46 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "IPv4NetworkInterface", propOrder = { "enabled", "config" })
+@XmlType(name = "IPv4NetworkInterface", propOrder = {"enabled", "config"})
 public class IPv4NetworkInterface {
 
-	@XmlElement(name = "Enabled")
-	protected boolean enabled;
-	@XmlElement(name = "Config", required = true)
-	protected IPv4Configuration config;
+  @XmlElement(name = "Enabled")
+  protected boolean enabled;
+  @XmlElement(name = "Config", required = true)
+  protected IPv4Configuration config;
 
-	/**
-	 * Ruft den Wert der enabled-Eigenschaft ab.
-	 *
-	 */
-	public boolean isEnabled() {
-		return enabled;
-	}
+  /**
+   * Ruft den Wert der enabled-Eigenschaft ab.
+   */
+  public boolean isEnabled() {
+    return enabled;
+  }
 
-	/**
-	 * Legt den Wert der enabled-Eigenschaft fest.
-	 *
-	 */
-	public void setEnabled(boolean value) {
-		this.enabled = value;
-	}
+  /**
+   * Legt den Wert der enabled-Eigenschaft fest.
+   */
+  public void setEnabled(boolean value) {
+    this.enabled = value;
+  }
 
-	/**
-	 * Ruft den Wert der config-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link IPv4Configuration }
-	 *
-	 */
-	public IPv4Configuration getConfig() {
-		return config;
-	}
+  /**
+   * Ruft den Wert der config-Eigenschaft ab.
+   *
+   * @return possible object is {@link IPv4Configuration }
+   */
+  public IPv4Configuration getConfig() {
+    return config;
+  }
 
-	/**
-	 * Legt den Wert der config-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link IPv4Configuration }
-	 *
-	 */
-	public void setConfig(IPv4Configuration value) {
-		this.config = value;
-	}
+  /**
+   * Legt den Wert der config-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link IPv4Configuration }
+   */
+  public void setConfig(IPv4Configuration value) {
+    this.config = value;
+  }
 
 }

@@ -1,16 +1,15 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
+import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.ELECTRICAL_MEASUREMENT;
+
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclElectricalMeasurementCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclMeteringCluster;
+import java.math.BigDecimal;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.QuantityType;
 import tec.uom.se.unit.Units;
-
-import java.math.BigDecimal;
-
-import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.ELECTRICAL_MEASUREMENT;
 
 /**
  * ZigBee channel converter for RMS voltage measurement
@@ -19,42 +18,41 @@ import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.ELECTRICAL_ME
 @ZigBeeConverter(name = "zigbee:electrical_rmsvoltage", clientClusters = {ZclElectricalMeasurementCluster.CLUSTER_ID})
 public class ZigBeeConverterMeasurementRmsVoltage extends ZigBeeInputBaseConverter {
 
-    public ZigBeeConverterMeasurementRmsVoltage() {
-        super(ELECTRICAL_MEASUREMENT, ZclElectricalMeasurementCluster.ATTR_RMSVOLTAGE, 3,
-                REPORTING_PERIOD_DEFAULT_MAX, 1);
-    }
+  private Integer divisor;
+  private Integer multiplier;
+  public ZigBeeConverterMeasurementRmsVoltage() {
+    super(ELECTRICAL_MEASUREMENT, ZclElectricalMeasurementCluster.ATTR_RMSVOLTAGE, 3,
+        REPORTING_PERIOD_DEFAULT_MAX, 1);
+  }
 
-    private Integer divisor;
-    private Integer multiplier;
+  static Integer determineDivisor(ZclCluster zclCluster) {
+    ZclAttribute divisorAttribute = zclCluster.getAttribute(ZclMeteringCluster.ATTR_DIVISOR);
+    Integer value = (Integer) divisorAttribute.readValue(Long.MAX_VALUE);
+    return value == null ? 1 : value;
+  }
 
-    @Override
-    protected void afterInitializeConverter() {
-        this.divisor = determineDivisor(getZclCluster());
-        this.multiplier = determineMultiplier(getZclCluster());
-    }
+  static Integer determineMultiplier(ZclCluster zclCluster) {
+    ZclAttribute divisorAttribute = zclCluster.getAttribute(ZclMeteringCluster.ATTR_MULTIPLIER);
+    Integer value = (Integer) divisorAttribute.readValue(Long.MAX_VALUE);
+    return value == null ? 1 : value;
+  }
 
-    @Override
-    protected boolean initializeDeviceFailed() {
-        pollingPeriod = POLLING_PERIOD_HIGH;
-        return true;
-    }
+  @Override
+  protected void afterInitializeConverter() {
+    this.divisor = determineDivisor(getZclCluster());
+    this.multiplier = determineMultiplier(getZclCluster());
+  }
 
-    @Override
-    protected void updateValue(Object val, ZclAttribute attribute) {
-        Integer value = (Integer) val;
-        BigDecimal valueInVolts = BigDecimal.valueOf((long) value * multiplier / divisor);
-        updateChannelState(new QuantityType<>(valueInVolts, Units.VOLT));
-    }
+  @Override
+  protected boolean initializeDeviceFailed() {
+    pollingPeriod = POLLING_PERIOD_HIGH;
+    return true;
+  }
 
-    static Integer determineDivisor(ZclCluster zclCluster) {
-        ZclAttribute divisorAttribute = zclCluster.getAttribute(ZclMeteringCluster.ATTR_DIVISOR);
-        Integer value = (Integer) divisorAttribute.readValue(Long.MAX_VALUE);
-        return value == null ? 1 : value;
-    }
-
-    static Integer determineMultiplier(ZclCluster zclCluster) {
-        ZclAttribute divisorAttribute = zclCluster.getAttribute(ZclMeteringCluster.ATTR_MULTIPLIER);
-        Integer value = (Integer) divisorAttribute.readValue(Long.MAX_VALUE);
-        return value == null ? 1 : value;
-    }
+  @Override
+  protected void updateValue(Object val, ZclAttribute attribute) {
+    Integer value = (Integer) val;
+    BigDecimal valueInVolts = BigDecimal.valueOf((long) value * multiplier / divisor);
+    updateChannelState(new QuantityType<>(valueInVolts, Units.VOLT));
+  }
 }

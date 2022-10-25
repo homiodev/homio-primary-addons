@@ -11,9 +11,10 @@ import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 @Getter
 @RequiredArgsConstructor
 public class ScratchDeviceState {
-    private final ZigBeeDevice zigBeeDevice;
-    private final ZigBeeDeviceStateUUID uuid;
-    private final State state;
-    private final long date = System.currentTimeMillis();
-    private boolean isHandled = false;
+
+  private final ZigBeeDevice zigBeeDevice;
+  private final ZigBeeDeviceStateUUID uuid;
+  private final State state;
+  private final long date = System.currentTimeMillis();
+  private boolean isHandled = false;
 }

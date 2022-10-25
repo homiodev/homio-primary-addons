@@ -7,22 +7,26 @@
 
 package org.oasis_open.docs.wsn.b_2;
 
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "any" })
+@XmlType(name = "", propOrder = {"any"})
 @XmlRootElement(name = "Unsubscribe")
 public class Unsubscribe {
 
-	@XmlAnyElement(lax = true)
-	protected List<Object> any;
+  @XmlAnyElement(lax = true)
+  protected List<Object> any;
 
-	public List<Object> getAny() {
-		if (any == null) {
-			any = new ArrayList<>();
-		}
-		return this.any;
-	}
+  public List<Object> getAny() {
+    if (any == null) {
+      any = new ArrayList<>();
+    }
+    return this.any;
+  }
 }

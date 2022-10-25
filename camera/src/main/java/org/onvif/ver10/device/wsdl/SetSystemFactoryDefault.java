@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.FactoryDefaultType;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "factoryDefault" })
+@XmlType(name = "", propOrder = {"factoryDefault"})
 @XmlRootElement(name = "SetSystemFactoryDefault")
 public class SetSystemFactoryDefault {
 
-	@XmlElement(name = "FactoryDefault", required = true)
-	protected FactoryDefaultType factoryDefault;
+  @XmlElement(name = "FactoryDefault", required = true)
+  protected FactoryDefaultType factoryDefault;
 
-	/**
-	 * Ruft den Wert der factoryDefault-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link FactoryDefaultType }
-	 *
-	 */
-	public FactoryDefaultType getFactoryDefault() {
-		return factoryDefault;
-	}
+  /**
+   * Ruft den Wert der factoryDefault-Eigenschaft ab.
+   *
+   * @return possible object is {@link FactoryDefaultType }
+   */
+  public FactoryDefaultType getFactoryDefault() {
+    return factoryDefault;
+  }
 
-	/**
-	 * Legt den Wert der factoryDefault-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link FactoryDefaultType }
-	 *
-	 */
-	public void setFactoryDefault(FactoryDefaultType value) {
-		this.factoryDefault = value;
-	}
+  /**
+   * Legt den Wert der factoryDefault-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link FactoryDefaultType }
+   */
+  public void setFactoryDefault(FactoryDefaultType value) {
+    this.factoryDefault = value;
+  }
 
 }

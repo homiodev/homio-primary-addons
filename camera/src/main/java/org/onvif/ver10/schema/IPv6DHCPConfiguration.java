@@ -22,34 +22,33 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "IPv6DHCPConfiguration")
 @XmlEnum
 public enum IPv6DHCPConfiguration {
 
-	@XmlEnumValue("Auto")
-	AUTO("Auto"), @XmlEnumValue("Stateful")
-	STATEFUL("Stateful"), @XmlEnumValue("Stateless")
-	STATELESS("Stateless"), @XmlEnumValue("Off")
-	OFF("Off");
-	private final String value;
+  @XmlEnumValue("Auto")
+  AUTO("Auto"), @XmlEnumValue("Stateful")
+  STATEFUL("Stateful"), @XmlEnumValue("Stateless")
+  STATELESS("Stateless"), @XmlEnumValue("Off")
+  OFF("Off");
+  private final String value;
 
-	IPv6DHCPConfiguration(String v) {
-		value = v;
-	}
+  IPv6DHCPConfiguration(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static IPv6DHCPConfiguration fromValue(String v) {
+    for (IPv6DHCPConfiguration c : IPv6DHCPConfiguration.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static IPv6DHCPConfiguration fromValue(String v) {
-		for (IPv6DHCPConfiguration c : IPv6DHCPConfiguration.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

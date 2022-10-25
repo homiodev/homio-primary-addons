@@ -1,6 +1,10 @@
 package org.onvif.ver20.ptz.wsdl;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
@@ -20,36 +24,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "auxiliaryResponse" })
+@XmlType(name = "", propOrder = {"auxiliaryResponse"})
 @XmlRootElement(name = "SendAuxiliaryCommandResponse")
 public class SendAuxiliaryCommandResponse {
 
-	@XmlElement(name = "AuxiliaryResponse", required = true)
-	protected String auxiliaryResponse;
+  @XmlElement(name = "AuxiliaryResponse", required = true)
+  protected String auxiliaryResponse;
 
-	/**
-	 * Ruft den Wert der auxiliaryResponse-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getAuxiliaryResponse() {
-		return auxiliaryResponse;
-	}
+  /**
+   * Ruft den Wert der auxiliaryResponse-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getAuxiliaryResponse() {
+    return auxiliaryResponse;
+  }
 
-	/**
-	 * Legt den Wert der auxiliaryResponse-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setAuxiliaryResponse(String value) {
-		this.auxiliaryResponse = value;
-	}
+  /**
+   * Legt den Wert der auxiliaryResponse-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setAuxiliaryResponse(String value) {
+    this.auxiliaryResponse = value;
+  }
 
 }

@@ -10,14 +10,14 @@ import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
 @ZigBeeConverter(name = "zigbee:ias_vibration", description = "Vibrate alarm", clientClusters = {ZclIasZoneCluster.CLUSTER_ID})
 public class ZigBeeConverterIasVibration extends ZigBeeConverterIas {
 
-    @Override
-    public boolean initializeConverter() {
-        bitTest = CIE_ALARM2;
-        return super.initializeConverter();
-    }
+  @Override
+  public boolean initializeConverter() {
+    bitTest = CIE_ALARM2;
+    return super.initializeConverter();
+  }
 
-    @Override
-    public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-        return supportsIasChannel(endpoint, ZoneTypeEnum.VIBRATION_MOVEMENT_SENSOR);
-    }
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
+    return supportsIasChannel(endpoint, ZoneTypeEnum.VIBRATION_MOVEMENT_SENSOR);
+  }
 }

@@ -1,8 +1,11 @@
 package org.onvif.ver20.imaging.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.ImagingOptions20;
-
-import javax.xml.bind.annotation.*;
 
 
 /**
@@ -21,8 +24,6 @@ import javax.xml.bind.annotation.*;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -31,31 +32,25 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name = "GetOptionsResponse")
 public class GetOptionsResponse {
 
-    @XmlElement(name = "ImagingOptions", required = true)
-    protected ImagingOptions20 imagingOptions;
+  @XmlElement(name = "ImagingOptions", required = true)
+  protected ImagingOptions20 imagingOptions;
 
-    /**
-     * Ruft den Wert der imagingOptions-Eigenschaft ab.
-     *
-     * @return
-     *     possible object is
-     *     {@link ImagingOptions20 }
-     *
-     */
-    public ImagingOptions20 getImagingOptions() {
-        return imagingOptions;
-    }
+  /**
+   * Ruft den Wert der imagingOptions-Eigenschaft ab.
+   *
+   * @return possible object is {@link ImagingOptions20 }
+   */
+  public ImagingOptions20 getImagingOptions() {
+    return imagingOptions;
+  }
 
-    /**
-     * Legt den Wert der imagingOptions-Eigenschaft fest.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link ImagingOptions20 }
-     *
-     */
-    public void setImagingOptions(ImagingOptions20 value) {
-        this.imagingOptions = value;
-    }
+  /**
+   * Legt den Wert der imagingOptions-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ImagingOptions20 }
+   */
+  public void setImagingOptions(ImagingOptions20 value) {
+    this.imagingOptions = value;
+  }
 
 }

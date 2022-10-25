@@ -3,9 +3,8 @@ package org.touchhome.bundle.zigbee.converter.impl.config;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclOnOffCluster;
-import lombok.extern.log4j.Log4j2;
-
 import java.math.BigDecimal;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * Configuration handler for the
@@ -13,19 +12,19 @@ import java.math.BigDecimal;
 @Log4j2
 public class ZclOnOffSwitchConfig implements ZclClusterConfigHandler {
 
-    private static final String CONFIG_ID = "zigbee_onoff_";
-    private static final String CONFIG_OFFWAITTIME = CONFIG_ID + "offwaittime";
-    private static final String CONFIG_ONTIME = CONFIG_ID + "ontime";
-    private static final String CONFIG_STARTUPONOFF = CONFIG_ID + "startuponoff";
+  private static final String CONFIG_ID = "zigbee_onoff_";
+  private static final String CONFIG_OFFWAITTIME = CONFIG_ID + "offwaittime";
+  private static final String CONFIG_ONTIME = CONFIG_ID + "ontime";
+  private static final String CONFIG_STARTUPONOFF = CONFIG_ID + "startuponoff";
 
-    private ZclOnOffCluster onoffCluster;
+  private ZclOnOffCluster onoffCluster;
 
-    @Override
-    public boolean initialize(ZclCluster cluster) {
-        onoffCluster = (ZclOnOffCluster) cluster;
-        ZclLevelControlConfig.initCluster(onoffCluster.discoverAttributes(false), log, onoffCluster.getZigBeeAddress(), onoffCluster.getClusterName());
+  @Override
+  public boolean initialize(ZclCluster cluster) {
+    onoffCluster = (ZclOnOffCluster) cluster;
+    ZclLevelControlConfig.initCluster(onoffCluster.discoverAttributes(false), log, onoffCluster.getZigBeeAddress(), onoffCluster.getClusterName());
 
-        // Build a list of configuration supported by this channel based on the attributes the cluster supports
+    // Build a list of configuration supported by this channel based on the attributes the cluster supports
 
         /*List<ParameterOption> options = new ArrayList<>();
 
@@ -53,13 +52,13 @@ public class ZclOnOffSwitchConfig implements ZclClusterConfigHandler {
 
         return !parameters.isEmpty();*/
 
-        return true;
-    }
+    return true;
+  }
 
-    @Override
-    public boolean updateConfiguration() {
-        return false;
-    }
+  @Override
+  public boolean updateConfiguration() {
+    return false;
+  }
 
     /*@Override
     public boolean updateConfiguration( Configuration currentConfiguration,
@@ -106,9 +105,9 @@ public class ZclOnOffSwitchConfig implements ZclClusterConfigHandler {
         return updated;
     }*/
 
-    private Integer configureAttribute(int attributeId, Object value) {
-        ZclAttribute attribute = onoffCluster.getAttribute(attributeId);
-        attribute.writeValue(((BigDecimal) (value)).intValue());
-        return (Integer) attribute.readValue(0);
-    }
+  private Integer configureAttribute(int attributeId, Object value) {
+    ZclAttribute attribute = onoffCluster.getAttribute(attributeId);
+    attribute.writeValue(((BigDecimal) (value)).intValue());
+    return (Integer) attribute.readValue(0);
+  }
 }

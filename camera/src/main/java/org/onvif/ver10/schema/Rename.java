@@ -24,58 +24,50 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Rename", propOrder = { "from", "to" })
+@XmlType(name = "Rename", propOrder = {"from", "to"})
 public class Rename {
 
-	@XmlElement(required = true)
-	protected ObjectId from;
-	@XmlElement(required = true)
-	protected ObjectId to;
+  @XmlElement(required = true)
+  protected ObjectId from;
+  @XmlElement(required = true)
+  protected ObjectId to;
 
-	/**
-	 * Ruft den Wert der from-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link ObjectId }
-	 *
-	 */
-	public ObjectId getFrom() {
-		return from;
-	}
+  /**
+   * Ruft den Wert der from-Eigenschaft ab.
+   *
+   * @return possible object is {@link ObjectId }
+   */
+  public ObjectId getFrom() {
+    return from;
+  }
 
-	/**
-	 * Legt den Wert der from-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link ObjectId }
-	 *
-	 */
-	public void setFrom(ObjectId value) {
-		this.from = value;
-	}
+  /**
+   * Legt den Wert der from-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ObjectId }
+   */
+  public void setFrom(ObjectId value) {
+    this.from = value;
+  }
 
-	/**
-	 * Ruft den Wert der to-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link ObjectId }
-	 *
-	 */
-	public ObjectId getTo() {
-		return to;
-	}
+  /**
+   * Ruft den Wert der to-Eigenschaft ab.
+   *
+   * @return possible object is {@link ObjectId }
+   */
+  public ObjectId getTo() {
+    return to;
+  }
 
-	/**
-	 * Legt den Wert der to-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link ObjectId }
-	 *
-	 */
-	public void setTo(ObjectId value) {
-		this.to = value;
-	}
+  /**
+   * Legt den Wert der to-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ObjectId }
+   */
+  public void setTo(ObjectId value) {
+    this.to = value;
+  }
 
 }

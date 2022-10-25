@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.BinaryData;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "pkcs10Request" })
+@XmlType(name = "", propOrder = {"pkcs10Request"})
 @XmlRootElement(name = "GetPkcs10RequestResponse")
 public class GetPkcs10RequestResponse {
 
-	@XmlElement(name = "Pkcs10Request", required = true)
-	protected BinaryData pkcs10Request;
+  @XmlElement(name = "Pkcs10Request", required = true)
+  protected BinaryData pkcs10Request;
 
-	/**
-	 * Ruft den Wert der pkcs10Request-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link BinaryData }
-	 *
-	 */
-	public BinaryData getPkcs10Request() {
-		return pkcs10Request;
-	}
+  /**
+   * Ruft den Wert der pkcs10Request-Eigenschaft ab.
+   *
+   * @return possible object is {@link BinaryData }
+   */
+  public BinaryData getPkcs10Request() {
+    return pkcs10Request;
+  }
 
-	/**
-	 * Legt den Wert der pkcs10Request-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link BinaryData }
-	 *
-	 */
-	public void setPkcs10Request(BinaryData value) {
-		this.pkcs10Request = value;
-	}
+  /**
+   * Legt den Wert der pkcs10Request-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link BinaryData }
+   */
+  public void setPkcs10Request(BinaryData value) {
+    this.pkcs10Request = value;
+  }
 
 }

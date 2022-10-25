@@ -1,9 +1,13 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 /**
  * <p>
@@ -27,121 +31,106 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "WhiteBalance20", propOrder = { "mode", "crGain", "cbGain", "extension" })
+@XmlType(name = "WhiteBalance20", propOrder = {"mode", "crGain", "cbGain", "extension"})
 public class WhiteBalance20 {
 
-	@XmlElement(name = "Mode", required = true)
-	protected WhiteBalanceMode mode;
-	@XmlElement(name = "CrGain")
-	protected Float crGain;
-	@XmlElement(name = "CbGain")
-	protected Float cbGain;
-	@XmlElement(name = "Extension")
-	protected WhiteBalance20Extension extension;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "Mode", required = true)
+  protected WhiteBalanceMode mode;
+  @XmlElement(name = "CrGain")
+  protected Float crGain;
+  @XmlElement(name = "CbGain")
+  protected Float cbGain;
+  @XmlElement(name = "Extension")
+  protected WhiteBalance20Extension extension;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der mode-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link WhiteBalanceMode }
-	 *
-	 */
-	public WhiteBalanceMode getMode() {
-		return mode;
-	}
+  /**
+   * Ruft den Wert der mode-Eigenschaft ab.
+   *
+   * @return possible object is {@link WhiteBalanceMode }
+   */
+  public WhiteBalanceMode getMode() {
+    return mode;
+  }
 
-	/**
-	 * Legt den Wert der mode-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link WhiteBalanceMode }
-	 *
-	 */
-	public void setMode(WhiteBalanceMode value) {
-		this.mode = value;
-	}
+  /**
+   * Legt den Wert der mode-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link WhiteBalanceMode }
+   */
+  public void setMode(WhiteBalanceMode value) {
+    this.mode = value;
+  }
 
-	/**
-	 * Ruft den Wert der crGain-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getCrGain() {
-		return crGain;
-	}
+  /**
+   * Ruft den Wert der crGain-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getCrGain() {
+    return crGain;
+  }
 
-	/**
-	 * Legt den Wert der crGain-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setCrGain(Float value) {
-		this.crGain = value;
-	}
+  /**
+   * Legt den Wert der crGain-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setCrGain(Float value) {
+    this.crGain = value;
+  }
 
-	/**
-	 * Ruft den Wert der cbGain-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getCbGain() {
-		return cbGain;
-	}
+  /**
+   * Ruft den Wert der cbGain-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getCbGain() {
+    return cbGain;
+  }
 
-	/**
-	 * Legt den Wert der cbGain-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setCbGain(Float value) {
-		this.cbGain = value;
-	}
+  /**
+   * Legt den Wert der cbGain-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setCbGain(Float value) {
+    this.cbGain = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link WhiteBalance20Extension }
-	 *
-	 */
-	public WhiteBalance20Extension getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link WhiteBalance20Extension }
+   */
+  public WhiteBalance20Extension getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link WhiteBalance20Extension }
-	 *
-	 */
-	public void setExtension(WhiteBalance20Extension value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link WhiteBalance20Extension }
+   */
+  public void setExtension(WhiteBalance20Extension value) {
+    this.extension = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

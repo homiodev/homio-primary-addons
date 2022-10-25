@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>touchhome-bundle</artifactId>
-        <groupId>org.touchhome.bundle</groupId>
-        <version>1.2.1-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <artifactId>touchhome-bundle-bluetooth</artifactId>
+  <dependencies>
+    <dependency>
+      <artifactId>touchhome-bluetooth</artifactId>
+      <groupId>org.touchhome</groupId>
+      <scope>provided</scope>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <artifactId>touchhome-bundle-cloud</artifactId>
+      <groupId>org.touchhome.bundle</groupId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 
-    <name>Bluetooth</name>
-    <artifactId>touchhome-bundle-bluetooth</artifactId>
-    <packaging>jar</packaging>
+  <modelVersion>4.0.0</modelVersion>
+  <name>Bluetooth</name>
+  <packaging>jar</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.touchhome</groupId>
-            <artifactId>touchhome-bluetooth</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.touchhome.bundle</groupId>
-            <artifactId>touchhome-bundle-cloud</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+  <parent>
+    <artifactId>touchhome-bundle</artifactId>
+    <groupId>org.touchhome.bundle</groupId>
+    <version>1.2.1-SNAPSHOT</version>
+  </parent>
 </project>

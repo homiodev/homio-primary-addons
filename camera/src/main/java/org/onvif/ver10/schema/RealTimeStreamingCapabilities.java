@@ -1,9 +1,13 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 /**
  * <p>
@@ -27,121 +31,106 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "RealTimeStreamingCapabilities", propOrder = { "rtpMulticast", "rtptcp", "rtprtsptcp", "extension" })
+@XmlType(name = "RealTimeStreamingCapabilities", propOrder = {"rtpMulticast", "rtptcp", "rtprtsptcp", "extension"})
 public class RealTimeStreamingCapabilities {
 
-	@XmlElement(name = "RTPMulticast")
-	protected Boolean rtpMulticast;
-	@XmlElement(name = "RTP_TCP")
-	protected Boolean rtptcp;
-	@XmlElement(name = "RTP_RTSP_TCP")
-	protected Boolean rtprtsptcp;
-	@XmlElement(name = "Extension")
-	protected RealTimeStreamingCapabilitiesExtension extension;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "RTPMulticast")
+  protected Boolean rtpMulticast;
+  @XmlElement(name = "RTP_TCP")
+  protected Boolean rtptcp;
+  @XmlElement(name = "RTP_RTSP_TCP")
+  protected Boolean rtprtsptcp;
+  @XmlElement(name = "Extension")
+  protected RealTimeStreamingCapabilitiesExtension extension;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der rtpMulticast-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isRTPMulticast() {
-		return rtpMulticast;
-	}
+  /**
+   * Ruft den Wert der rtpMulticast-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isRTPMulticast() {
+    return rtpMulticast;
+  }
 
-	/**
-	 * Legt den Wert der rtpMulticast-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setRTPMulticast(Boolean value) {
-		this.rtpMulticast = value;
-	}
+  /**
+   * Legt den Wert der rtpMulticast-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setRTPMulticast(Boolean value) {
+    this.rtpMulticast = value;
+  }
 
-	/**
-	 * Ruft den Wert der rtptcp-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isRTPTCP() {
-		return rtptcp;
-	}
+  /**
+   * Ruft den Wert der rtptcp-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isRTPTCP() {
+    return rtptcp;
+  }
 
-	/**
-	 * Legt den Wert der rtptcp-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setRTPTCP(Boolean value) {
-		this.rtptcp = value;
-	}
+  /**
+   * Legt den Wert der rtptcp-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setRTPTCP(Boolean value) {
+    this.rtptcp = value;
+  }
 
-	/**
-	 * Ruft den Wert der rtprtsptcp-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isRTPRTSPTCP() {
-		return rtprtsptcp;
-	}
+  /**
+   * Ruft den Wert der rtprtsptcp-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isRTPRTSPTCP() {
+    return rtprtsptcp;
+  }
 
-	/**
-	 * Legt den Wert der rtprtsptcp-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setRTPRTSPTCP(Boolean value) {
-		this.rtprtsptcp = value;
-	}
+  /**
+   * Legt den Wert der rtprtsptcp-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setRTPRTSPTCP(Boolean value) {
+    this.rtprtsptcp = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link RealTimeStreamingCapabilitiesExtension }
-	 *
-	 */
-	public RealTimeStreamingCapabilitiesExtension getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link RealTimeStreamingCapabilitiesExtension }
+   */
+  public RealTimeStreamingCapabilitiesExtension getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link RealTimeStreamingCapabilitiesExtension }
-	 *
-	 */
-	public void setExtension(RealTimeStreamingCapabilitiesExtension value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link RealTimeStreamingCapabilitiesExtension }
+   */
+  public void setExtension(RealTimeStreamingCapabilitiesExtension value) {
+    this.extension = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

@@ -24,58 +24,50 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Transport", propOrder = { "protocol", "tunnel" })
+@XmlType(name = "Transport", propOrder = {"protocol", "tunnel"})
 public class Transport {
 
-	@XmlElement(name = "Protocol", required = true)
-	protected TransportProtocol protocol;
-	@XmlElement(name = "Tunnel")
-	protected Transport tunnel;
+  @XmlElement(name = "Protocol", required = true)
+  protected TransportProtocol protocol;
+  @XmlElement(name = "Tunnel")
+  protected Transport tunnel;
 
-	/**
-	 * Ruft den Wert der protocol-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link TransportProtocol }
-	 *
-	 */
-	public TransportProtocol getProtocol() {
-		return protocol;
-	}
+  /**
+   * Ruft den Wert der protocol-Eigenschaft ab.
+   *
+   * @return possible object is {@link TransportProtocol }
+   */
+  public TransportProtocol getProtocol() {
+    return protocol;
+  }
 
-	/**
-	 * Legt den Wert der protocol-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link TransportProtocol }
-	 *
-	 */
-	public void setProtocol(TransportProtocol value) {
-		this.protocol = value;
-	}
+  /**
+   * Legt den Wert der protocol-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link TransportProtocol }
+   */
+  public void setProtocol(TransportProtocol value) {
+    this.protocol = value;
+  }
 
-	/**
-	 * Ruft den Wert der tunnel-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Transport }
-	 *
-	 */
-	public Transport getTunnel() {
-		return tunnel;
-	}
+  /**
+   * Ruft den Wert der tunnel-Eigenschaft ab.
+   *
+   * @return possible object is {@link Transport }
+   */
+  public Transport getTunnel() {
+    return tunnel;
+  }
 
-	/**
-	 * Legt den Wert der tunnel-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Transport }
-	 *
-	 */
-	public void setTunnel(Transport value) {
-		this.tunnel = value;
-	}
+  /**
+   * Legt den Wert der tunnel-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Transport }
+   */
+  public void setTunnel(Transport value) {
+    this.tunnel = value;
+  }
 
 }

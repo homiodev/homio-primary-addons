@@ -24,53 +24,46 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Mpeg4Configuration", propOrder = { "govLength", "mpeg4Profile" })
+@XmlType(name = "Mpeg4Configuration", propOrder = {"govLength", "mpeg4Profile"})
 public class Mpeg4Configuration {
 
-	@XmlElement(name = "GovLength")
-	protected int govLength;
-	@XmlElement(name = "Mpeg4Profile", required = true)
-	protected Mpeg4Profile mpeg4Profile;
+  @XmlElement(name = "GovLength")
+  protected int govLength;
+  @XmlElement(name = "Mpeg4Profile", required = true)
+  protected Mpeg4Profile mpeg4Profile;
 
-	/**
-	 * Ruft den Wert der govLength-Eigenschaft ab.
-	 *
-	 */
-	public int getGovLength() {
-		return govLength;
-	}
+  /**
+   * Ruft den Wert der govLength-Eigenschaft ab.
+   */
+  public int getGovLength() {
+    return govLength;
+  }
 
-	/**
-	 * Legt den Wert der govLength-Eigenschaft fest.
-	 *
-	 */
-	public void setGovLength(int value) {
-		this.govLength = value;
-	}
+  /**
+   * Legt den Wert der govLength-Eigenschaft fest.
+   */
+  public void setGovLength(int value) {
+    this.govLength = value;
+  }
 
-	/**
-	 * Ruft den Wert der mpeg4Profile-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Mpeg4Profile }
-	 *
-	 */
-	public Mpeg4Profile getMpeg4Profile() {
-		return mpeg4Profile;
-	}
+  /**
+   * Ruft den Wert der mpeg4Profile-Eigenschaft ab.
+   *
+   * @return possible object is {@link Mpeg4Profile }
+   */
+  public Mpeg4Profile getMpeg4Profile() {
+    return mpeg4Profile;
+  }
 
-	/**
-	 * Legt den Wert der mpeg4Profile-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Mpeg4Profile }
-	 *
-	 */
-	public void setMpeg4Profile(Mpeg4Profile value) {
-		this.mpeg4Profile = value;
-	}
+  /**
+   * Legt den Wert der mpeg4Profile-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Mpeg4Profile }
+   */
+  public void setMpeg4Profile(Mpeg4Profile value) {
+    this.mpeg4Profile = value;
+  }
 
 }

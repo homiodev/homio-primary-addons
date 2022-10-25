@@ -1,6 +1,10 @@
 package org.onvif.ver20.ptz.wsdl;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
@@ -22,82 +26,71 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "profileToken", "panTilt", "zoom" })
+@XmlType(name = "", propOrder = {"profileToken", "panTilt", "zoom"})
 @XmlRootElement(name = "Stop")
 public class Stop {
 
-	@XmlElement(name = "ProfileToken", required = true)
-	protected String profileToken;
-	@XmlElement(name = "PanTilt")
-	protected Boolean panTilt;
-	@XmlElement(name = "Zoom")
-	protected Boolean zoom;
+  @XmlElement(name = "ProfileToken", required = true)
+  protected String profileToken;
+  @XmlElement(name = "PanTilt")
+  protected Boolean panTilt;
+  @XmlElement(name = "Zoom")
+  protected Boolean zoom;
 
-	/**
-	 * Ruft den Wert der profileToken-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getProfileToken() {
-		return profileToken;
-	}
+  /**
+   * Ruft den Wert der profileToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getProfileToken() {
+    return profileToken;
+  }
 
-	/**
-	 * Legt den Wert der profileToken-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setProfileToken(String value) {
-		this.profileToken = value;
-	}
+  /**
+   * Legt den Wert der profileToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setProfileToken(String value) {
+    this.profileToken = value;
+  }
 
-	/**
-	 * Ruft den Wert der panTilt-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isPanTilt() {
-		return panTilt;
-	}
+  /**
+   * Ruft den Wert der panTilt-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isPanTilt() {
+    return panTilt;
+  }
 
-	/**
-	 * Legt den Wert der panTilt-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setPanTilt(Boolean value) {
-		this.panTilt = value;
-	}
+  /**
+   * Legt den Wert der panTilt-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setPanTilt(Boolean value) {
+    this.panTilt = value;
+  }
 
-	/**
-	 * Ruft den Wert der zoom-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isZoom() {
-		return zoom;
-	}
+  /**
+   * Ruft den Wert der zoom-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isZoom() {
+    return zoom;
+  }
 
-	/**
-	 * Legt den Wert der zoom-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setZoom(Boolean value) {
-		this.zoom = value;
-	}
+  /**
+   * Legt den Wert der zoom-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setZoom(Boolean value) {
+    this.zoom = value;
+  }
 
 }

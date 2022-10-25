@@ -1,11 +1,15 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 /**
  * <p>
@@ -29,127 +33,113 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PTZPresetTourStartingConditionOptions", propOrder = { "recurringTime", "recurringDuration", "direction", "extension" })
+@XmlType(name = "PTZPresetTourStartingConditionOptions", propOrder = {"recurringTime", "recurringDuration", "direction", "extension"})
 public class PTZPresetTourStartingConditionOptions {
 
-	@XmlElement(name = "RecurringTime")
-	protected IntRange recurringTime;
-	@XmlElement(name = "RecurringDuration")
-	protected DurationRange recurringDuration;
-	@XmlElement(name = "Direction")
-	protected List<PTZPresetTourDirection> direction;
-	@XmlElement(name = "Extension")
-	protected PTZPresetTourStartingConditionOptionsExtension extension;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "RecurringTime")
+  protected IntRange recurringTime;
+  @XmlElement(name = "RecurringDuration")
+  protected DurationRange recurringDuration;
+  @XmlElement(name = "Direction")
+  protected List<PTZPresetTourDirection> direction;
+  @XmlElement(name = "Extension")
+  protected PTZPresetTourStartingConditionOptionsExtension extension;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der recurringTime-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link IntRange }
-	 *
-	 */
-	public IntRange getRecurringTime() {
-		return recurringTime;
-	}
+  /**
+   * Ruft den Wert der recurringTime-Eigenschaft ab.
+   *
+   * @return possible object is {@link IntRange }
+   */
+  public IntRange getRecurringTime() {
+    return recurringTime;
+  }
 
-	/**
-	 * Legt den Wert der recurringTime-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link IntRange }
-	 *
-	 */
-	public void setRecurringTime(IntRange value) {
-		this.recurringTime = value;
-	}
+  /**
+   * Legt den Wert der recurringTime-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link IntRange }
+   */
+  public void setRecurringTime(IntRange value) {
+    this.recurringTime = value;
+  }
 
-	/**
-	 * Ruft den Wert der recurringDuration-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link DurationRange }
-	 *
-	 */
-	public DurationRange getRecurringDuration() {
-		return recurringDuration;
-	}
+  /**
+   * Ruft den Wert der recurringDuration-Eigenschaft ab.
+   *
+   * @return possible object is {@link DurationRange }
+   */
+  public DurationRange getRecurringDuration() {
+    return recurringDuration;
+  }
 
-	/**
-	 * Legt den Wert der recurringDuration-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link DurationRange }
-	 *
-	 */
-	public void setRecurringDuration(DurationRange value) {
-		this.recurringDuration = value;
-	}
+  /**
+   * Legt den Wert der recurringDuration-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link DurationRange }
+   */
+  public void setRecurringDuration(DurationRange value) {
+    this.recurringDuration = value;
+  }
 
-	/**
-	 * Gets the value of the direction property.
-	 *
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
-	 * This is why there is not a <CODE>set</CODE> method for the direction property.
-	 *
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 *
-	 * <pre>
-	 * getDirection().add(newItem);
-	 * </pre>
-	 *
-	 *
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list {@link PTZPresetTourDirection }
-	 *
-	 *
-	 */
-	public List<PTZPresetTourDirection> getDirection() {
-		if (direction == null) {
-			direction = new ArrayList<PTZPresetTourDirection>();
-		}
-		return this.direction;
-	}
+  /**
+   * Gets the value of the direction property.
+   *
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
+   * This is why there is not a <CODE>set</CODE> method for the direction property.
+   *
+   * <p>
+   * For example, to add a new item, do as follows:
+   *
+   * <pre>
+   * getDirection().add(newItem);
+   * </pre>
+   *
+   *
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link PTZPresetTourDirection }
+   */
+  public List<PTZPresetTourDirection> getDirection() {
+    if (direction == null) {
+      direction = new ArrayList<PTZPresetTourDirection>();
+    }
+    return this.direction;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZPresetTourStartingConditionOptionsExtension }
-	 *
-	 */
-	public PTZPresetTourStartingConditionOptionsExtension getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZPresetTourStartingConditionOptionsExtension }
+   */
+  public PTZPresetTourStartingConditionOptionsExtension getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZPresetTourStartingConditionOptionsExtension }
-	 *
-	 */
-	public void setExtension(PTZPresetTourStartingConditionOptionsExtension value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZPresetTourStartingConditionOptionsExtension }
+   */
+  public void setExtension(PTZPresetTourStartingConditionOptionsExtension value) {
+    this.extension = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

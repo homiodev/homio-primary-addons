@@ -14,36 +14,36 @@ import org.touchhome.bundle.zigbee.converter.warningdevice.WarningType;
 @ZigBeeConverter(name = "zigbee:warning_device", clientClusters = {ZclIasWdCluster.CLUSTER_ID})
 public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
 
-    private static final String CONFIG_PREFIX = "zigbee_iaswd_";
-    private static final String CONFIG_MAXDURATION = CONFIG_PREFIX + "maxDuration";
+  private static final String CONFIG_PREFIX = "zigbee_iaswd_";
+  private static final String CONFIG_MAXDURATION = CONFIG_PREFIX + "maxDuration";
 
-    private ZclIasWdCluster iasWdCluster;
+  private ZclIasWdCluster iasWdCluster;
 
-    @Override
-    public boolean initializeDevice() {
-        return true;
+  @Override
+  public boolean initializeDevice() {
+    return true;
+  }
+
+  @Override
+  public boolean initializeConverter() {
+    iasWdCluster = (ZclIasWdCluster) endpoint.getInputCluster(ZclIasWdCluster.CLUSTER_ID);
+    if (iasWdCluster == null) {
+      log.error("{}/{}: Error opening warning device controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+      return false;
     }
 
-    @Override
-    public boolean initializeConverter() {
-        iasWdCluster = (ZclIasWdCluster) endpoint.getInputCluster(ZclIasWdCluster.CLUSTER_ID);
-        if (iasWdCluster == null) {
-            log.error("{}/{}: Error opening warning device controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
-            return false;
-        }
+    return true;
+  }
 
-        return true;
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
+    if (endpoint.getInputCluster(ZclIasWdCluster.CLUSTER_ID) == null) {
+      log.trace("{}/{}: IAS WD cluster not found", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+      return false;
     }
 
-    @Override
-    public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-        if (endpoint.getInputCluster(ZclIasWdCluster.CLUSTER_ID) == null) {
-            log.trace("{}/{}: IAS WD cluster not found", endpoint.getIeeeAddress(), endpoint.getEndpointId());
-            return false;
-        }
-
-        return true;
-    }
+    return true;
+  }
 
     /*@Override
     public void updateConfiguration( Configuration currentConfiguration,
@@ -106,31 +106,31 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
         }
     }*/
 
-    private void sendWarning(WarningType warningType) {
-        iasWdCluster.startWarningCommand(
-                makeWarningHeader(warningType.getWarningMode(), warningType.isUseStrobe(), warningType.getSirenLevel()),
-                (int) warningType.getDuration().getSeconds());
-    }
+  private void sendWarning(WarningType warningType) {
+    iasWdCluster.startWarningCommand(
+        makeWarningHeader(warningType.getWarningMode(), warningType.isUseStrobe(), warningType.getSirenLevel()),
+        (int) warningType.getDuration().getSeconds());
+  }
 
-    private int makeWarningHeader(int warningMode, boolean useStrobe, int sirenLevel) {
-        int result = 0;
-        result |= warningMode;
-        result |= (useStrobe ? 1 : 0) << 4;
-        result |= sirenLevel << 6;
-        return result;
-    }
+  private int makeWarningHeader(int warningMode, boolean useStrobe, int sirenLevel) {
+    int result = 0;
+    result |= warningMode;
+    result |= (useStrobe ? 1 : 0) << 4;
+    result |= sirenLevel << 6;
+    return result;
+  }
 
-    private void squawk(SquawkType squawkType) {
-        iasWdCluster.squawk(
-                makeSquawkHeader(squawkType.getSquawkMode(), squawkType.isUseStrobe(), squawkType.getSquawkLevel()));
-    }
+  private void squawk(SquawkType squawkType) {
+    iasWdCluster.squawk(
+        makeSquawkHeader(squawkType.getSquawkMode(), squawkType.isUseStrobe(), squawkType.getSquawkLevel()));
+  }
 
-    private Integer makeSquawkHeader(int squawkMode, boolean useStrobe, int squawkLevel) {
-        int result = 0;
-        result |= squawkMode;
-        result |= (useStrobe ? 1 : 0) << 4;
-        result |= squawkLevel << 6;
-        return result;
-    }
+  private Integer makeSquawkHeader(int squawkMode, boolean useStrobe, int squawkLevel) {
+    int result = 0;
+    result |= squawkMode;
+    result |= (useStrobe ? 1 : 0) << 4;
+    result |= squawkLevel << 6;
+    return result;
+  }
 
 }

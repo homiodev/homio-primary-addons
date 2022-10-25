@@ -8,27 +8,27 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum Dot11AuthAndMangementSuite {
 
-	@XmlEnumValue("None")
-	NONE("None"), @XmlEnumValue("Dot1X")
-	DOT_1_X("Dot1X"), PSK("PSK"), @XmlEnumValue("Extended")
-	EXTENDED("Extended");
-	private final String value;
+  @XmlEnumValue("None")
+  NONE("None"), @XmlEnumValue("Dot1X")
+  DOT_1_X("Dot1X"), PSK("PSK"), @XmlEnumValue("Extended")
+  EXTENDED("Extended");
+  private final String value;
 
-	Dot11AuthAndMangementSuite(String v) {
-		value = v;
-	}
+  Dot11AuthAndMangementSuite(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static Dot11AuthAndMangementSuite fromValue(String v) {
+    for (Dot11AuthAndMangementSuite c : Dot11AuthAndMangementSuite.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static Dot11AuthAndMangementSuite fromValue(String v) {
-		for (Dot11AuthAndMangementSuite c : Dot11AuthAndMangementSuite.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

@@ -1,11 +1,15 @@
 package org.onvif.ver10.media.wsdl;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -14,15 +18,15 @@ import java.util.List;
 @XmlRootElement(name = "DeleteOSD")
 public class DeleteOSD {
 
-    @XmlElement(name = "OSDToken", required = true)
-    protected String osdToken;
-    @XmlAnyElement(lax = true)
-    protected List<Object> any;
+  @XmlElement(name = "OSDToken", required = true)
+  protected String osdToken;
+  @XmlAnyElement(lax = true)
+  protected List<Object> any;
 
-    public List<Object> getAny() {
-        if (any == null) {
-            any = new ArrayList<>();
-        }
-        return this.any;
+  public List<Object> getAny() {
+    if (any == null) {
+      any = new ArrayList<>();
     }
+    return this.any;
+  }
 }

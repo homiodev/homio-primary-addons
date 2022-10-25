@@ -1,9 +1,13 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 
 /**
@@ -25,8 +29,6 @@ import java.util.Map;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "StorageReferencePath", propOrder = {
@@ -36,103 +38,81 @@ import java.util.Map;
 })
 public class StorageReferencePath {
 
-    @XmlElement(name = "StorageToken", required = true)
-    protected String storageToken;
-    @XmlElement(name = "RelativePath")
-    protected String relativePath;
-    @XmlElement(name = "Extension")
-    protected StorageReferencePathExtension extension;
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "StorageToken", required = true)
+  protected String storageToken;
+  @XmlElement(name = "RelativePath")
+  protected String relativePath;
+  @XmlElement(name = "Extension")
+  protected StorageReferencePathExtension extension;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Ruft den Wert der storageToken-Eigenschaft ab.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
-    public String getStorageToken() {
-        return storageToken;
-    }
+  /**
+   * Ruft den Wert der storageToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getStorageToken() {
+    return storageToken;
+  }
 
-    /**
-     * Legt den Wert der storageToken-Eigenschaft fest.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
-    public void setStorageToken(String value) {
-        this.storageToken = value;
-    }
+  /**
+   * Legt den Wert der storageToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setStorageToken(String value) {
+    this.storageToken = value;
+  }
 
-    /**
-     * Ruft den Wert der relativePath-Eigenschaft ab.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
-    public String getRelativePath() {
-        return relativePath;
-    }
+  /**
+   * Ruft den Wert der relativePath-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getRelativePath() {
+    return relativePath;
+  }
 
-    /**
-     * Legt den Wert der relativePath-Eigenschaft fest.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
-    public void setRelativePath(String value) {
-        this.relativePath = value;
-    }
+  /**
+   * Legt den Wert der relativePath-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setRelativePath(String value) {
+    this.relativePath = value;
+  }
 
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return
-     *     possible object is
-     *     {@link StorageReferencePathExtension }
-     *
-     */
-    public StorageReferencePathExtension getExtension() {
-        return extension;
-    }
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link StorageReferencePathExtension }
+   */
+  public StorageReferencePathExtension getExtension() {
+    return extension;
+  }
 
-    /**
-     * Legt den Wert der extension-Eigenschaft fest.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link StorageReferencePathExtension }
-     *
-     */
-    public void setExtension(StorageReferencePathExtension value) {
-        this.extension = value;
-    }
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link StorageReferencePathExtension }
+   */
+  public void setExtension(StorageReferencePathExtension value) {
+    this.extension = value;
+  }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>
-     * the map is keyed by the name of the attribute and
-     * the value is the string value of the attribute.
-     *
-     * the map returned by this method is live, and you can add new attribute
-     * by updating the map directly. Because of this design, there's no setter.
-     *
-     *
-     * @return
-     *     always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

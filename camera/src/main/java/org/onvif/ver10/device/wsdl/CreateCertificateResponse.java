@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.Certificate;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "nvtCertificate" })
+@XmlType(name = "", propOrder = {"nvtCertificate"})
 @XmlRootElement(name = "CreateCertificateResponse")
 public class CreateCertificateResponse {
 
-	@XmlElement(name = "NvtCertificate", required = true)
-	protected Certificate nvtCertificate;
+  @XmlElement(name = "NvtCertificate", required = true)
+  protected Certificate nvtCertificate;
 
-	/**
-	 * Ruft den Wert der nvtCertificate-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Certificate }
-	 *
-	 */
-	public Certificate getNvtCertificate() {
-		return nvtCertificate;
-	}
+  /**
+   * Ruft den Wert der nvtCertificate-Eigenschaft ab.
+   *
+   * @return possible object is {@link Certificate }
+   */
+  public Certificate getNvtCertificate() {
+    return nvtCertificate;
+  }
 
-	/**
-	 * Legt den Wert der nvtCertificate-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Certificate }
-	 *
-	 */
-	public void setNvtCertificate(Certificate value) {
-		this.nvtCertificate = value;
-	}
+  /**
+   * Legt den Wert der nvtCertificate-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Certificate }
+   */
+  public void setNvtCertificate(Certificate value) {
+    this.nvtCertificate = value;
+  }
 
 }

@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.DiscoveryMode;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "discoveryMode" })
+@XmlType(name = "", propOrder = {"discoveryMode"})
 @XmlRootElement(name = "GetDiscoveryModeResponse")
 public class GetDiscoveryModeResponse {
 
-	@XmlElement(name = "DiscoveryMode", required = true)
-	protected DiscoveryMode discoveryMode;
+  @XmlElement(name = "DiscoveryMode", required = true)
+  protected DiscoveryMode discoveryMode;
 
-	/**
-	 * Ruft den Wert der discoveryMode-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link DiscoveryMode }
-	 *
-	 */
-	public DiscoveryMode getDiscoveryMode() {
-		return discoveryMode;
-	}
+  /**
+   * Ruft den Wert der discoveryMode-Eigenschaft ab.
+   *
+   * @return possible object is {@link DiscoveryMode }
+   */
+  public DiscoveryMode getDiscoveryMode() {
+    return discoveryMode;
+  }
 
-	/**
-	 * Legt den Wert der discoveryMode-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link DiscoveryMode }
-	 *
-	 */
-	public void setDiscoveryMode(DiscoveryMode value) {
-		this.discoveryMode = value;
-	}
+  /**
+   * Legt den Wert der discoveryMode-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link DiscoveryMode }
+   */
+  public void setDiscoveryMode(DiscoveryMode value) {
+    this.discoveryMode = value;
+  }
 
 }

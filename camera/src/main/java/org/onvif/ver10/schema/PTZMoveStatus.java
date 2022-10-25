@@ -24,58 +24,50 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PTZMoveStatus", propOrder = { "panTilt", "zoom" })
+@XmlType(name = "PTZMoveStatus", propOrder = {"panTilt", "zoom"})
 public class PTZMoveStatus {
 
-	@XmlElement(name = "PanTilt")
-	protected MoveStatus panTilt;
-	@XmlElement(name = "Zoom")
-	protected MoveStatus zoom;
+  @XmlElement(name = "PanTilt")
+  protected MoveStatus panTilt;
+  @XmlElement(name = "Zoom")
+  protected MoveStatus zoom;
 
-	/**
-	 * Ruft den Wert der panTilt-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link MoveStatus }
-	 *
-	 */
-	public MoveStatus getPanTilt() {
-		return panTilt;
-	}
+  /**
+   * Ruft den Wert der panTilt-Eigenschaft ab.
+   *
+   * @return possible object is {@link MoveStatus }
+   */
+  public MoveStatus getPanTilt() {
+    return panTilt;
+  }
 
-	/**
-	 * Legt den Wert der panTilt-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link MoveStatus }
-	 *
-	 */
-	public void setPanTilt(MoveStatus value) {
-		this.panTilt = value;
-	}
+  /**
+   * Legt den Wert der panTilt-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link MoveStatus }
+   */
+  public void setPanTilt(MoveStatus value) {
+    this.panTilt = value;
+  }
 
-	/**
-	 * Ruft den Wert der zoom-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link MoveStatus }
-	 *
-	 */
-	public MoveStatus getZoom() {
-		return zoom;
-	}
+  /**
+   * Ruft den Wert der zoom-Eigenschaft ab.
+   *
+   * @return possible object is {@link MoveStatus }
+   */
+  public MoveStatus getZoom() {
+    return zoom;
+  }
 
-	/**
-	 * Legt den Wert der zoom-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link MoveStatus }
-	 *
-	 */
-	public void setZoom(MoveStatus value) {
-		this.zoom = value;
-	}
+  /**
+   * Legt den Wert der zoom-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link MoveStatus }
+   */
+  public void setZoom(MoveStatus value) {
+    this.zoom = value;
+  }
 
 }

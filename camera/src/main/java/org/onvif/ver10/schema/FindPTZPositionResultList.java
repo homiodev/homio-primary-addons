@@ -1,11 +1,11 @@
 package org.onvif.ver10.schema;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>
@@ -26,64 +26,57 @@ import java.util.List;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "FindPTZPositionResultList", propOrder = { "searchState", "result" })
+@XmlType(name = "FindPTZPositionResultList", propOrder = {"searchState", "result"})
 public class FindPTZPositionResultList {
 
-	@XmlElement(name = "SearchState", required = true)
-	protected SearchState searchState;
-	@XmlElement(name = "Result")
-	protected List<FindPTZPositionResult> result;
+  @XmlElement(name = "SearchState", required = true)
+  protected SearchState searchState;
+  @XmlElement(name = "Result")
+  protected List<FindPTZPositionResult> result;
 
-	/**
-	 * Ruft den Wert der searchState-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link SearchState }
-	 *
-	 */
-	public SearchState getSearchState() {
-		return searchState;
-	}
+  /**
+   * Ruft den Wert der searchState-Eigenschaft ab.
+   *
+   * @return possible object is {@link SearchState }
+   */
+  public SearchState getSearchState() {
+    return searchState;
+  }
 
-	/**
-	 * Legt den Wert der searchState-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link SearchState }
-	 *
-	 */
-	public void setSearchState(SearchState value) {
-		this.searchState = value;
-	}
+  /**
+   * Legt den Wert der searchState-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link SearchState }
+   */
+  public void setSearchState(SearchState value) {
+    this.searchState = value;
+  }
 
-	/**
-	 * Gets the value of the result property.
-	 *
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
-	 * This is why there is not a <CODE>set</CODE> method for the result property.
-	 *
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 *
-	 * <pre>
-	 * getResult().add(newItem);
-	 * </pre>
-	 *
-	 *
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list {@link FindPTZPositionResult }
-	 *
-	 *
-	 */
-	public List<FindPTZPositionResult> getResult() {
-		if (result == null) {
-			result = new ArrayList<FindPTZPositionResult>();
-		}
-		return this.result;
-	}
+  /**
+   * Gets the value of the result property.
+   *
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
+   * This is why there is not a <CODE>set</CODE> method for the result property.
+   *
+   * <p>
+   * For example, to add a new item, do as follows:
+   *
+   * <pre>
+   * getResult().add(newItem);
+   * </pre>
+   *
+   *
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link FindPTZPositionResult }
+   */
+  public List<FindPTZPositionResult> getResult() {
+    if (result == null) {
+      result = new ArrayList<FindPTZPositionResult>();
+    }
+    return this.result;
+  }
 
 }

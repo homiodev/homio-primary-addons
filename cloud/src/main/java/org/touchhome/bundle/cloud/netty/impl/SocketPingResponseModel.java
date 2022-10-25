@@ -4,4 +4,5 @@ import lombok.Getter;
 
 @Getter
 class SocketPingResponseModel extends SocketBaseModel {
+
 }

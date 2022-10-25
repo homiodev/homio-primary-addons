@@ -10,14 +10,14 @@ import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
 @ZigBeeConverter(name = "zigbee:ias_motionintrusion", description = "Motion intrusion alarm", clientClusters = {ZclIasZoneCluster.CLUSTER_ID})
 public class ZigBeeConverterIasMotionIntrusion extends ZigBeeConverterIas {
 
-    @Override
-    public boolean initializeConverter() {
-        bitTest = CIE_ALARM1;
-        return super.initializeConverter();
-    }
+  @Override
+  public boolean initializeConverter() {
+    bitTest = CIE_ALARM1;
+    return super.initializeConverter();
+  }
 
-    @Override
-    public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-        return supportsIasChannel(endpoint, ZoneTypeEnum.MOTION_SENSOR);
-    }
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
+    return supportsIasChannel(endpoint, ZoneTypeEnum.MOTION_SENSOR);
+  }
 }

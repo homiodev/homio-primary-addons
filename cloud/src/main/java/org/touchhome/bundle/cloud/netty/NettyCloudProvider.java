@@ -15,23 +15,23 @@ import org.touchhome.bundle.cloud.netty.setting.CloudServerUrlSetting;
 @RequiredArgsConstructor
 public class NettyCloudProvider implements CloudProvider {
 
-    private final EntityContext entityContext;
+  private final EntityContext entityContext;
 
-    @Override
-    public String getStatus() {
-        String error = entityContext.setting().getValue(CloudServerConnectionMessageSetting.class);
-        ServerConnectionStatus status = entityContext.setting().getValue(CloudServerConnectionStatusSetting.class);
-        return (status == null ? "Unknown" : status.name()) + ". Errors: " + error + ". Url: " + entityContext.setting().getValue(CloudServerUrlSetting.class);
-    }
+  @Override
+  public String getStatus() {
+    String error = entityContext.setting().getValue(CloudServerConnectionMessageSetting.class);
+    ServerConnectionStatus status = entityContext.setting().getValue(CloudServerConnectionStatusSetting.class);
+    return (status == null ? "Unknown" : status.name()) + ". Errors: " + error + ". Url: " + entityContext.setting().getValue(CloudServerUrlSetting.class);
+  }
 
-    @Override
-    public void assembleBellNotifications(BellNotificationBuilder bellNotificationBuilder) {
-        UserEntity user = entityContext.getUser(false);
-        if (user != null && user.getKeystore() == null) {
-            bellNotificationBuilder.danger("keystore", "Keystore", "Keystore not found");
-        }
-        ServerConnectionStatus serverConnectionStatus = entityContext.setting().getValue(CloudServerConnectionStatusSetting.class);
-        bellNotificationBuilder.notification(serverConnectionStatus == ServerConnectionStatus.CONNECTED ? NotificationLevel.info : NotificationLevel.warning,
-                "cloud-status", "Cloud status", entityContext.setting().getValue(CloudServerConnectionMessageSetting.class));
+  @Override
+  public void assembleBellNotifications(BellNotificationBuilder bellNotificationBuilder) {
+    UserEntity user = entityContext.getUser(false);
+    if (user != null && user.getKeystore() == null) {
+      bellNotificationBuilder.danger("keystore", "Keystore", "Keystore not found");
     }
+    ServerConnectionStatus serverConnectionStatus = entityContext.setting().getValue(CloudServerConnectionStatusSetting.class);
+    bellNotificationBuilder.notification(serverConnectionStatus == ServerConnectionStatus.CONNECTED ? NotificationLevel.info : NotificationLevel.warning,
+        "cloud-status", "Cloud status", entityContext.setting().getValue(CloudServerConnectionMessageSetting.class));
+  }
 }

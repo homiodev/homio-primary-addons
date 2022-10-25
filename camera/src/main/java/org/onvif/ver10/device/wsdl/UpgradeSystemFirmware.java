@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.AttachmentData;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "firmware" })
+@XmlType(name = "", propOrder = {"firmware"})
 @XmlRootElement(name = "UpgradeSystemFirmware")
 public class UpgradeSystemFirmware {
 
-	@XmlElement(name = "Firmware", required = true)
-	protected AttachmentData firmware;
+  @XmlElement(name = "Firmware", required = true)
+  protected AttachmentData firmware;
 
-	/**
-	 * Ruft den Wert der firmware-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link AttachmentData }
-	 *
-	 */
-	public AttachmentData getFirmware() {
-		return firmware;
-	}
+  /**
+   * Ruft den Wert der firmware-Eigenschaft ab.
+   *
+   * @return possible object is {@link AttachmentData }
+   */
+  public AttachmentData getFirmware() {
+    return firmware;
+  }
 
-	/**
-	 * Legt den Wert der firmware-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link AttachmentData }
-	 *
-	 */
-	public void setFirmware(AttachmentData value) {
-		this.firmware = value;
-	}
+  /**
+   * Legt den Wert der firmware-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link AttachmentData }
+   */
+  public void setFirmware(AttachmentData value) {
+    this.firmware = value;
+  }
 
 }

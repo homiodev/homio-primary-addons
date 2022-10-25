@@ -7,10 +7,14 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 /**
  * <p>
@@ -38,259 +42,226 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "SystemCapabilities")
 public class SystemCapabilities {
 
-	@XmlAttribute(name = "DiscoveryResolve")
-	protected Boolean discoveryResolve;
-	@XmlAttribute(name = "DiscoveryBye")
-	protected Boolean discoveryBye;
-	@XmlAttribute(name = "RemoteDiscovery")
-	protected Boolean remoteDiscovery;
-	@XmlAttribute(name = "SystemBackup")
-	protected Boolean systemBackup;
-	@XmlAttribute(name = "SystemLogging")
-	protected Boolean systemLogging;
-	@XmlAttribute(name = "FirmwareUpgrade")
-	protected Boolean firmwareUpgrade;
-	@XmlAttribute(name = "HttpFirmwareUpgrade")
-	protected Boolean httpFirmwareUpgrade;
-	@XmlAttribute(name = "HttpSystemBackup")
-	protected Boolean httpSystemBackup;
-	@XmlAttribute(name = "HttpSystemLogging")
-	protected Boolean httpSystemLogging;
-	@XmlAttribute(name = "HttpSupportInformation")
-	protected Boolean httpSupportInformation;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlAttribute(name = "DiscoveryResolve")
+  protected Boolean discoveryResolve;
+  @XmlAttribute(name = "DiscoveryBye")
+  protected Boolean discoveryBye;
+  @XmlAttribute(name = "RemoteDiscovery")
+  protected Boolean remoteDiscovery;
+  @XmlAttribute(name = "SystemBackup")
+  protected Boolean systemBackup;
+  @XmlAttribute(name = "SystemLogging")
+  protected Boolean systemLogging;
+  @XmlAttribute(name = "FirmwareUpgrade")
+  protected Boolean firmwareUpgrade;
+  @XmlAttribute(name = "HttpFirmwareUpgrade")
+  protected Boolean httpFirmwareUpgrade;
+  @XmlAttribute(name = "HttpSystemBackup")
+  protected Boolean httpSystemBackup;
+  @XmlAttribute(name = "HttpSystemLogging")
+  protected Boolean httpSystemLogging;
+  @XmlAttribute(name = "HttpSupportInformation")
+  protected Boolean httpSupportInformation;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der discoveryResolve-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isDiscoveryResolve() {
-		return discoveryResolve;
-	}
+  /**
+   * Ruft den Wert der discoveryResolve-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isDiscoveryResolve() {
+    return discoveryResolve;
+  }
 
-	/**
-	 * Legt den Wert der discoveryResolve-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setDiscoveryResolve(Boolean value) {
-		this.discoveryResolve = value;
-	}
+  /**
+   * Legt den Wert der discoveryResolve-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setDiscoveryResolve(Boolean value) {
+    this.discoveryResolve = value;
+  }
 
-	/**
-	 * Ruft den Wert der discoveryBye-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isDiscoveryBye() {
-		return discoveryBye;
-	}
+  /**
+   * Ruft den Wert der discoveryBye-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isDiscoveryBye() {
+    return discoveryBye;
+  }
 
-	/**
-	 * Legt den Wert der discoveryBye-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setDiscoveryBye(Boolean value) {
-		this.discoveryBye = value;
-	}
+  /**
+   * Legt den Wert der discoveryBye-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setDiscoveryBye(Boolean value) {
+    this.discoveryBye = value;
+  }
 
-	/**
-	 * Ruft den Wert der remoteDiscovery-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isRemoteDiscovery() {
-		return remoteDiscovery;
-	}
+  /**
+   * Ruft den Wert der remoteDiscovery-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isRemoteDiscovery() {
+    return remoteDiscovery;
+  }
 
-	/**
-	 * Legt den Wert der remoteDiscovery-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setRemoteDiscovery(Boolean value) {
-		this.remoteDiscovery = value;
-	}
+  /**
+   * Legt den Wert der remoteDiscovery-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setRemoteDiscovery(Boolean value) {
+    this.remoteDiscovery = value;
+  }
 
-	/**
-	 * Ruft den Wert der systemBackup-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isSystemBackup() {
-		return systemBackup;
-	}
+  /**
+   * Ruft den Wert der systemBackup-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isSystemBackup() {
+    return systemBackup;
+  }
 
-	/**
-	 * Legt den Wert der systemBackup-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setSystemBackup(Boolean value) {
-		this.systemBackup = value;
-	}
+  /**
+   * Legt den Wert der systemBackup-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setSystemBackup(Boolean value) {
+    this.systemBackup = value;
+  }
 
-	/**
-	 * Ruft den Wert der systemLogging-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isSystemLogging() {
-		return systemLogging;
-	}
+  /**
+   * Ruft den Wert der systemLogging-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isSystemLogging() {
+    return systemLogging;
+  }
 
-	/**
-	 * Legt den Wert der systemLogging-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setSystemLogging(Boolean value) {
-		this.systemLogging = value;
-	}
+  /**
+   * Legt den Wert der systemLogging-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setSystemLogging(Boolean value) {
+    this.systemLogging = value;
+  }
 
-	/**
-	 * Ruft den Wert der firmwareUpgrade-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isFirmwareUpgrade() {
-		return firmwareUpgrade;
-	}
+  /**
+   * Ruft den Wert der firmwareUpgrade-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isFirmwareUpgrade() {
+    return firmwareUpgrade;
+  }
 
-	/**
-	 * Legt den Wert der firmwareUpgrade-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setFirmwareUpgrade(Boolean value) {
-		this.firmwareUpgrade = value;
-	}
+  /**
+   * Legt den Wert der firmwareUpgrade-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setFirmwareUpgrade(Boolean value) {
+    this.firmwareUpgrade = value;
+  }
 
-	/**
-	 * Ruft den Wert der httpFirmwareUpgrade-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isHttpFirmwareUpgrade() {
-		return httpFirmwareUpgrade;
-	}
+  /**
+   * Ruft den Wert der httpFirmwareUpgrade-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isHttpFirmwareUpgrade() {
+    return httpFirmwareUpgrade;
+  }
 
-	/**
-	 * Legt den Wert der httpFirmwareUpgrade-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setHttpFirmwareUpgrade(Boolean value) {
-		this.httpFirmwareUpgrade = value;
-	}
+  /**
+   * Legt den Wert der httpFirmwareUpgrade-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setHttpFirmwareUpgrade(Boolean value) {
+    this.httpFirmwareUpgrade = value;
+  }
 
-	/**
-	 * Ruft den Wert der httpSystemBackup-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isHttpSystemBackup() {
-		return httpSystemBackup;
-	}
+  /**
+   * Ruft den Wert der httpSystemBackup-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isHttpSystemBackup() {
+    return httpSystemBackup;
+  }
 
-	/**
-	 * Legt den Wert der httpSystemBackup-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setHttpSystemBackup(Boolean value) {
-		this.httpSystemBackup = value;
-	}
+  /**
+   * Legt den Wert der httpSystemBackup-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setHttpSystemBackup(Boolean value) {
+    this.httpSystemBackup = value;
+  }
 
-	/**
-	 * Ruft den Wert der httpSystemLogging-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isHttpSystemLogging() {
-		return httpSystemLogging;
-	}
+  /**
+   * Ruft den Wert der httpSystemLogging-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isHttpSystemLogging() {
+    return httpSystemLogging;
+  }
 
-	/**
-	 * Legt den Wert der httpSystemLogging-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setHttpSystemLogging(Boolean value) {
-		this.httpSystemLogging = value;
-	}
+  /**
+   * Legt den Wert der httpSystemLogging-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setHttpSystemLogging(Boolean value) {
+    this.httpSystemLogging = value;
+  }
 
-	/**
-	 * Ruft den Wert der httpSupportInformation-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Boolean }
-	 *
-	 */
-	public Boolean isHttpSupportInformation() {
-		return httpSupportInformation;
-	}
+  /**
+   * Ruft den Wert der httpSupportInformation-Eigenschaft ab.
+   *
+   * @return possible object is {@link Boolean }
+   */
+  public Boolean isHttpSupportInformation() {
+    return httpSupportInformation;
+  }
 
-	/**
-	 * Legt den Wert der httpSupportInformation-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Boolean }
-	 *
-	 */
-	public void setHttpSupportInformation(Boolean value) {
-		this.httpSupportInformation = value;
-	}
+  /**
+   * Legt den Wert der httpSupportInformation-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Boolean }
+   */
+  public void setHttpSupportInformation(Boolean value) {
+    this.httpSupportInformation = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

@@ -1,9 +1,12 @@
 package org.onvif.ver20.ptz.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.PTZSpeed;
 import org.onvif.ver10.schema.PTZVector;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -25,82 +28,71 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "profileToken", "position", "speed" })
+@XmlType(name = "", propOrder = {"profileToken", "position", "speed"})
 @XmlRootElement(name = "AbsoluteMove")
 public class AbsoluteMove {
 
-	@XmlElement(name = "ProfileToken", required = true)
-	protected String profileToken;
-	@XmlElement(name = "Position", required = true)
-	protected PTZVector position;
-	@XmlElement(name = "Speed")
-	protected PTZSpeed speed;
+  @XmlElement(name = "ProfileToken", required = true)
+  protected String profileToken;
+  @XmlElement(name = "Position", required = true)
+  protected PTZVector position;
+  @XmlElement(name = "Speed")
+  protected PTZSpeed speed;
 
-	/**
-	 * Ruft den Wert der profileToken-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getProfileToken() {
-		return profileToken;
-	}
+  /**
+   * Ruft den Wert der profileToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getProfileToken() {
+    return profileToken;
+  }
 
-	/**
-	 * Legt den Wert der profileToken-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setProfileToken(String value) {
-		this.profileToken = value;
-	}
+  /**
+   * Legt den Wert der profileToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setProfileToken(String value) {
+    this.profileToken = value;
+  }
 
-	/**
-	 * Ruft den Wert der position-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZVector }
-	 *
-	 */
-	public PTZVector getPosition() {
-		return position;
-	}
+  /**
+   * Ruft den Wert der position-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZVector }
+   */
+  public PTZVector getPosition() {
+    return position;
+  }
 
-	/**
-	 * Legt den Wert der position-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZVector }
-	 *
-	 */
-	public void setPosition(PTZVector value) {
-		this.position = value;
-	}
+  /**
+   * Legt den Wert der position-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZVector }
+   */
+  public void setPosition(PTZVector value) {
+    this.position = value;
+  }
 
-	/**
-	 * Ruft den Wert der speed-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZSpeed }
-	 *
-	 */
-	public PTZSpeed getSpeed() {
-		return speed;
-	}
+  /**
+   * Ruft den Wert der speed-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZSpeed }
+   */
+  public PTZSpeed getSpeed() {
+    return speed;
+  }
 
-	/**
-	 * Legt den Wert der speed-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZSpeed }
-	 *
-	 */
-	public void setSpeed(PTZSpeed value) {
-		this.speed = value;
-	}
+  /**
+   * Legt den Wert der speed-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZSpeed }
+   */
+  public void setSpeed(PTZSpeed value) {
+    this.speed = value;
+  }
 
 }

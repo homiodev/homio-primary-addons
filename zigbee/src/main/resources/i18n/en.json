@@ -1,8 +1,22 @@
 {
-  "WORKSPACE": {
+  "workspace": {
     "zigbee": "ZigBee",
     "zigbee-btn": "ZigBee buttons",
-    "zigbee-sensor": "ZigBee sensors"
+    "zigbee-sensor": "ZigBee sensors",
+    "zigbee_when_event_received": "Event when event received",
+    "zigbee_time_since_last_event": "Return time since last event",
+    "zigbee-btn_value": "Get button state",
+    "zigbee-btn_turn_on_off": "Turn on/off button",
+    "zigbee-btn_double_value": "Get 2 button state",
+    "zigbee-btn_double_turn_on_off": "Turn on/off 2 button",
+    "zigbee-sensor_illuminance_value": "Get illuminance value",
+    "zigbee-sensor_motion_value": "Get motion value",
+    "zigbee-sensor_temperature_value": "Get temperature value",
+    "zigbee-sensor_pressure_value": "Get pressure value",
+    "zigbee-sensor_humidity_value": "Get humidity value",
+    "zigbee-sensor_smoke_sensor_value": "Get smoke sensor value",
+    "zigbee-sensor_water_sensor_value": "Get water sensor value",
+    "zigbee-sensor_when_alarm_event_detected": "Event when alarm event detected"
   },
   "placeholder": {
     "st_ZigBeePortSetting": "Select ZigBee port",

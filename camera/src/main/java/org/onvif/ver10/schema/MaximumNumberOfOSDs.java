@@ -1,9 +1,13 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 /**
  * <p>
@@ -27,162 +31,142 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MaximumNumberOfOSDs")
 public class MaximumNumberOfOSDs {
 
-	@XmlAttribute(name = "Total", required = true)
-	protected int total;
-	@XmlAttribute(name = "Image")
-	protected Integer image;
-	@XmlAttribute(name = "PlainText")
-	protected Integer plainText;
-	@XmlAttribute(name = "Date")
-	protected Integer date;
-	@XmlAttribute(name = "Time")
-	protected Integer time;
-	@XmlAttribute(name = "DateAndTime")
-	protected Integer dateAndTime;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlAttribute(name = "Total", required = true)
+  protected int total;
+  @XmlAttribute(name = "Image")
+  protected Integer image;
+  @XmlAttribute(name = "PlainText")
+  protected Integer plainText;
+  @XmlAttribute(name = "Date")
+  protected Integer date;
+  @XmlAttribute(name = "Time")
+  protected Integer time;
+  @XmlAttribute(name = "DateAndTime")
+  protected Integer dateAndTime;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der total-Eigenschaft ab.
-	 *
-	 */
-	public int getTotal() {
-		return total;
-	}
+  /**
+   * Ruft den Wert der total-Eigenschaft ab.
+   */
+  public int getTotal() {
+    return total;
+  }
 
-	/**
-	 * Legt den Wert der total-Eigenschaft fest.
-	 *
-	 */
-	public void setTotal(int value) {
-		this.total = value;
-	}
+  /**
+   * Legt den Wert der total-Eigenschaft fest.
+   */
+  public void setTotal(int value) {
+    this.total = value;
+  }
 
-	/**
-	 * Ruft den Wert der image-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Integer }
-	 *
-	 */
-	public Integer getImage() {
-		return image;
-	}
+  /**
+   * Ruft den Wert der image-Eigenschaft ab.
+   *
+   * @return possible object is {@link Integer }
+   */
+  public Integer getImage() {
+    return image;
+  }
 
-	/**
-	 * Legt den Wert der image-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Integer }
-	 *
-	 */
-	public void setImage(Integer value) {
-		this.image = value;
-	}
+  /**
+   * Legt den Wert der image-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Integer }
+   */
+  public void setImage(Integer value) {
+    this.image = value;
+  }
 
-	/**
-	 * Ruft den Wert der plainText-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Integer }
-	 *
-	 */
-	public Integer getPlainText() {
-		return plainText;
-	}
+  /**
+   * Ruft den Wert der plainText-Eigenschaft ab.
+   *
+   * @return possible object is {@link Integer }
+   */
+  public Integer getPlainText() {
+    return plainText;
+  }
 
-	/**
-	 * Legt den Wert der plainText-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Integer }
-	 *
-	 */
-	public void setPlainText(Integer value) {
-		this.plainText = value;
-	}
+  /**
+   * Legt den Wert der plainText-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Integer }
+   */
+  public void setPlainText(Integer value) {
+    this.plainText = value;
+  }
 
-	/**
-	 * Ruft den Wert der date-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Integer }
-	 *
-	 */
-	public Integer getDate() {
-		return date;
-	}
+  /**
+   * Ruft den Wert der date-Eigenschaft ab.
+   *
+   * @return possible object is {@link Integer }
+   */
+  public Integer getDate() {
+    return date;
+  }
 
-	/**
-	 * Legt den Wert der date-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Integer }
-	 *
-	 */
-	public void setDate(Integer value) {
-		this.date = value;
-	}
+  /**
+   * Legt den Wert der date-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Integer }
+   */
+  public void setDate(Integer value) {
+    this.date = value;
+  }
 
-	/**
-	 * Ruft den Wert der time-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Integer }
-	 *
-	 */
-	public Integer getTime() {
-		return time;
-	}
+  /**
+   * Ruft den Wert der time-Eigenschaft ab.
+   *
+   * @return possible object is {@link Integer }
+   */
+  public Integer getTime() {
+    return time;
+  }
 
-	/**
-	 * Legt den Wert der time-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Integer }
-	 *
-	 */
-	public void setTime(Integer value) {
-		this.time = value;
-	}
+  /**
+   * Legt den Wert der time-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Integer }
+   */
+  public void setTime(Integer value) {
+    this.time = value;
+  }
 
-	/**
-	 * Ruft den Wert der dateAndTime-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Integer }
-	 *
-	 */
-	public Integer getDateAndTime() {
-		return dateAndTime;
-	}
+  /**
+   * Ruft den Wert der dateAndTime-Eigenschaft ab.
+   *
+   * @return possible object is {@link Integer }
+   */
+  public Integer getDateAndTime() {
+    return dateAndTime;
+  }
 
-	/**
-	 * Legt den Wert der dateAndTime-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Integer }
-	 *
-	 */
-	public void setDateAndTime(Integer value) {
-		this.dateAndTime = value;
-	}
+  /**
+   * Legt den Wert der dateAndTime-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Integer }
+   */
+  public void setDateAndTime(Integer value) {
+    this.dateAndTime = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

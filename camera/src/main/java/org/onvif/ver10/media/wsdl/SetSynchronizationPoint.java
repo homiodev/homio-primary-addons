@@ -7,7 +7,11 @@
 
 package org.onvif.ver10.media.wsdl;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
@@ -27,36 +31,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "profileToken" })
+@XmlType(name = "", propOrder = {"profileToken"})
 @XmlRootElement(name = "SetSynchronizationPoint")
 public class SetSynchronizationPoint {
 
-	@XmlElement(name = "ProfileToken", required = true)
-	protected String profileToken;
+  @XmlElement(name = "ProfileToken", required = true)
+  protected String profileToken;
 
-	/**
-	 * Ruft den Wert der profileToken-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getProfileToken() {
-		return profileToken;
-	}
+  /**
+   * Ruft den Wert der profileToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getProfileToken() {
+    return profileToken;
+  }
 
-	/**
-	 * Legt den Wert der profileToken-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setProfileToken(String value) {
-		this.profileToken = value;
-	}
+  /**
+   * Legt den Wert der profileToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setProfileToken(String value) {
+    this.profileToken = value;
+  }
 
 }

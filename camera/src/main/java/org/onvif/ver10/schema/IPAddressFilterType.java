@@ -20,32 +20,31 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "IPAddressFilterType")
 @XmlEnum
 public enum IPAddressFilterType {
 
-	@XmlEnumValue("Allow")
-	ALLOW("Allow"), @XmlEnumValue("Deny")
-	DENY("Deny");
-	private final String value;
+  @XmlEnumValue("Allow")
+  ALLOW("Allow"), @XmlEnumValue("Deny")
+  DENY("Deny");
+  private final String value;
 
-	IPAddressFilterType(String v) {
-		value = v;
-	}
+  IPAddressFilterType(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static IPAddressFilterType fromValue(String v) {
+    for (IPAddressFilterType c : IPAddressFilterType.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static IPAddressFilterType fromValue(String v) {
-		for (IPAddressFilterType c : IPAddressFilterType.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

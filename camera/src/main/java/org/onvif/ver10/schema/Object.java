@@ -1,9 +1,13 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 /**
  * <p>
@@ -26,98 +30,86 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Object", propOrder = { "appearance", "behaviour", "extension" })
+@XmlType(name = "Object", propOrder = {"appearance", "behaviour", "extension"})
 public class Object extends ObjectId {
 
-	@XmlElement(name = "Appearance")
-	protected Appearance appearance;
-	@XmlElement(name = "Behaviour")
-	protected Behaviour behaviour;
-	@XmlElement(name = "Extension")
-	protected ObjectExtension extension;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "Appearance")
+  protected Appearance appearance;
+  @XmlElement(name = "Behaviour")
+  protected Behaviour behaviour;
+  @XmlElement(name = "Extension")
+  protected ObjectExtension extension;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der appearance-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Appearance }
-	 *
-	 */
-	public Appearance getAppearance() {
-		return appearance;
-	}
+  /**
+   * Ruft den Wert der appearance-Eigenschaft ab.
+   *
+   * @return possible object is {@link Appearance }
+   */
+  public Appearance getAppearance() {
+    return appearance;
+  }
 
-	/**
-	 * Legt den Wert der appearance-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Appearance }
-	 *
-	 */
-	public void setAppearance(Appearance value) {
-		this.appearance = value;
-	}
+  /**
+   * Legt den Wert der appearance-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Appearance }
+   */
+  public void setAppearance(Appearance value) {
+    this.appearance = value;
+  }
 
-	/**
-	 * Ruft den Wert der behaviour-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Behaviour }
-	 *
-	 */
-	public Behaviour getBehaviour() {
-		return behaviour;
-	}
+  /**
+   * Ruft den Wert der behaviour-Eigenschaft ab.
+   *
+   * @return possible object is {@link Behaviour }
+   */
+  public Behaviour getBehaviour() {
+    return behaviour;
+  }
 
-	/**
-	 * Legt den Wert der behaviour-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Behaviour }
-	 *
-	 */
-	public void setBehaviour(Behaviour value) {
-		this.behaviour = value;
-	}
+  /**
+   * Legt den Wert der behaviour-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Behaviour }
+   */
+  public void setBehaviour(Behaviour value) {
+    this.behaviour = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link ObjectExtension }
-	 *
-	 */
-	public ObjectExtension getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link ObjectExtension }
+   */
+  public ObjectExtension getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link ObjectExtension }
-	 *
-	 */
-	public void setExtension(ObjectExtension value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ObjectExtension }
+   */
+  public void setExtension(ObjectExtension value) {
+    this.extension = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

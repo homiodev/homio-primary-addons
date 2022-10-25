@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>touchhome-bundle</artifactId>
-        <groupId>org.touchhome.bundle</groupId>
-        <version>1.2.1-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <artifactId>touchhome-bundle-zigbee</artifactId>
+  <dependencies>
+    <dependency>
+      <artifactId>com.zsmartsystems.zigbee.dongle.cc2531</artifactId>
+      <groupId>com.zsmartsystems.zigbee</groupId>
+      <version>${zsmartsystems.version}</version>
+    </dependency>
 
-    <name>ZigBee</name>
-    <artifactId>touchhome-bundle-zigbee</artifactId>
-    <packaging>jar</packaging>
+    <dependency>
+      <artifactId>xstream</artifactId>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <version>${xstream.version}</version>
+    </dependency>
 
-    <properties>
-        <zsmartsystems.version>1.4.7</zsmartsystems.version>
-        <xstream.version>1.4.19</xstream.version>
-    </properties>
+    <dependency>
+      <artifactId>com.zsmartsystems.zigbee</artifactId>
+      <groupId>com.zsmartsystems.zigbee</groupId>
+      <version>${zsmartsystems.version}</version>
+    </dependency>
+  </dependencies>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.zsmartsystems.zigbee</groupId>
-            <artifactId>com.zsmartsystems.zigbee.dongle.cc2531</artifactId>
-            <version>${zsmartsystems.version}</version>
-        </dependency>
+  <modelVersion>4.0.0</modelVersion>
+  <name>ZigBee</name>
+  <packaging>jar</packaging>
 
-        <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-            <version>${xstream.version}</version>
-        </dependency>
+  <parent>
+    <artifactId>touchhome-bundle</artifactId>
+    <groupId>org.touchhome.bundle</groupId>
+    <version>1.2.1-SNAPSHOT</version>
+  </parent>
 
-        <dependency>
-            <groupId>com.zsmartsystems.zigbee</groupId>
-            <artifactId>com.zsmartsystems.zigbee</artifactId>
-            <version>${zsmartsystems.version}</version>
-        </dependency>
-    </dependencies>
+  <properties>
+    <xstream.version>1.4.19</xstream.version>
+    <zsmartsystems.version>1.4.7</zsmartsystems.version>
+  </properties>
 </project>

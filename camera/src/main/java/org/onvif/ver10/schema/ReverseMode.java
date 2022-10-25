@@ -22,31 +22,30 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "ReverseMode")
 @XmlEnum
 public enum ReverseMode {
 
-	OFF("OFF"), ON("ON"), AUTO("AUTO"), @XmlEnumValue("Extended")
-	EXTENDED("Extended");
-	private final String value;
+  OFF("OFF"), ON("ON"), AUTO("AUTO"), @XmlEnumValue("Extended")
+  EXTENDED("Extended");
+  private final String value;
 
-	ReverseMode(String v) {
-		value = v;
-	}
+  ReverseMode(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static ReverseMode fromValue(String v) {
+    for (ReverseMode c : ReverseMode.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static ReverseMode fromValue(String v) {
-		for (ReverseMode c : ReverseMode.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

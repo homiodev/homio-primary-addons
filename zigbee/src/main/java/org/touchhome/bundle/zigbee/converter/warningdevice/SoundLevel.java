@@ -5,19 +5,19 @@ package org.touchhome.bundle.zigbee.converter.warningdevice;
  */
 public enum SoundLevel {
 
-    LOW(0),
-    MEDIUM(1),
-    HIGH(2),
-    VERY_HIGH(3);
+  LOW(0),
+  MEDIUM(1),
+  HIGH(2),
+  VERY_HIGH(3);
 
-    private int value;
+  private int value;
 
-    SoundLevel(int value) {
-        this.value = value;
-    }
+  SoundLevel(int value) {
+    this.value = value;
+  }
 
-    public int getValue() {
-        return value;
-    }
+  public int getValue() {
+    return value;
+  }
 
 }

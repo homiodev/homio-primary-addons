@@ -27,83 +27,72 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "IPAddress", propOrder = { "type", "iPv4Address", "iPv6Address" })
+@XmlType(name = "IPAddress", propOrder = {"type", "iPv4Address", "iPv6Address"})
 public class IPAddress {
 
-	@XmlElement(name = "Type", required = true)
-	protected IPType type;
-	@XmlElement(name = "IPv4Address")
-	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-	protected String iPv4Address;
-	@XmlElement(name = "IPv6Address")
-	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-	protected String iPv6Address;
+  @XmlElement(name = "Type", required = true)
+  protected IPType type;
+  @XmlElement(name = "IPv4Address")
+  @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+  protected String iPv4Address;
+  @XmlElement(name = "IPv6Address")
+  @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+  protected String iPv6Address;
 
-	/**
-	 * Ruft den Wert der type-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link IPType }
-	 *
-	 */
-	public IPType getType() {
-		return type;
-	}
+  /**
+   * Ruft den Wert der type-Eigenschaft ab.
+   *
+   * @return possible object is {@link IPType }
+   */
+  public IPType getType() {
+    return type;
+  }
 
-	/**
-	 * Legt den Wert der type-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link IPType }
-	 *
-	 */
-	public void setType(IPType value) {
-		this.type = value;
-	}
+  /**
+   * Legt den Wert der type-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link IPType }
+   */
+  public void setType(IPType value) {
+    this.type = value;
+  }
 
-	/**
-	 * Ruft den Wert der iPv4Address-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getIPv4Address() {
-		return iPv4Address;
-	}
+  /**
+   * Ruft den Wert der iPv4Address-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getIPv4Address() {
+    return iPv4Address;
+  }
 
-	/**
-	 * Legt den Wert der iPv4Address-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setIPv4Address(String value) {
-		this.iPv4Address = value;
-	}
+  /**
+   * Legt den Wert der iPv4Address-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setIPv4Address(String value) {
+    this.iPv4Address = value;
+  }
 
-	/**
-	 * Ruft den Wert der iPv6Address-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getIPv6Address() {
-		return iPv6Address;
-	}
+  /**
+   * Ruft den Wert der iPv6Address-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getIPv6Address() {
+    return iPv6Address;
+  }
 
-	/**
-	 * Legt den Wert der iPv6Address-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setIPv6Address(String value) {
-		this.iPv6Address = value;
-	}
+  /**
+   * Legt den Wert der iPv6Address-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setIPv6Address(String value) {
+    this.iPv6Address = value;
+  }
 
 }

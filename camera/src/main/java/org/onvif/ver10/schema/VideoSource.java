@@ -1,9 +1,13 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 /**
  * Representation of a physical video input.
@@ -29,116 +33,102 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "VideoSource", propOrder = { "framerate", "resolution", "imaging", "extension" })
+@XmlType(name = "VideoSource", propOrder = {"framerate", "resolution", "imaging", "extension"})
 public class VideoSource extends DeviceEntity {
 
-	@XmlElement(name = "Framerate")
-	protected float framerate;
-	@XmlElement(name = "Resolution", required = true)
-	protected VideoResolution resolution;
-	@XmlElement(name = "Imaging")
-	protected ImagingSettings imaging;
-	@XmlElement(name = "Extension")
-	protected VideoSourceExtension extension;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "Framerate")
+  protected float framerate;
+  @XmlElement(name = "Resolution", required = true)
+  protected VideoResolution resolution;
+  @XmlElement(name = "Imaging")
+  protected ImagingSettings imaging;
+  @XmlElement(name = "Extension")
+  protected VideoSourceExtension extension;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der framerate-Eigenschaft ab.
-	 *
-	 */
-	public float getFramerate() {
-		return framerate;
-	}
+  /**
+   * Ruft den Wert der framerate-Eigenschaft ab.
+   */
+  public float getFramerate() {
+    return framerate;
+  }
 
-	/**
-	 * Legt den Wert der framerate-Eigenschaft fest.
-	 *
-	 */
-	public void setFramerate(float value) {
-		this.framerate = value;
-	}
+  /**
+   * Legt den Wert der framerate-Eigenschaft fest.
+   */
+  public void setFramerate(float value) {
+    this.framerate = value;
+  }
 
-	/**
-	 * Ruft den Wert der resolution-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link VideoResolution }
-	 *
-	 */
-	public VideoResolution getResolution() {
-		return resolution;
-	}
+  /**
+   * Ruft den Wert der resolution-Eigenschaft ab.
+   *
+   * @return possible object is {@link VideoResolution }
+   */
+  public VideoResolution getResolution() {
+    return resolution;
+  }
 
-	/**
-	 * Legt den Wert der resolution-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link VideoResolution }
-	 *
-	 */
-	public void setResolution(VideoResolution value) {
-		this.resolution = value;
-	}
+  /**
+   * Legt den Wert der resolution-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link VideoResolution }
+   */
+  public void setResolution(VideoResolution value) {
+    this.resolution = value;
+  }
 
-	/**
-	 * Ruft den Wert der imaging-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link ImagingSettings }
-	 *
-	 */
-	public ImagingSettings getImaging() {
-		return imaging;
-	}
+  /**
+   * Ruft den Wert der imaging-Eigenschaft ab.
+   *
+   * @return possible object is {@link ImagingSettings }
+   */
+  public ImagingSettings getImaging() {
+    return imaging;
+  }
 
-	/**
-	 * Legt den Wert der imaging-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link ImagingSettings }
-	 *
-	 */
-	public void setImaging(ImagingSettings value) {
-		this.imaging = value;
-	}
+  /**
+   * Legt den Wert der imaging-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ImagingSettings }
+   */
+  public void setImaging(ImagingSettings value) {
+    this.imaging = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link VideoSourceExtension }
-	 *
-	 */
-	public VideoSourceExtension getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link VideoSourceExtension }
+   */
+  public VideoSourceExtension getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link VideoSourceExtension }
-	 *
-	 */
-	public void setExtension(VideoSourceExtension value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link VideoSourceExtension }
+   */
+  public void setExtension(VideoSourceExtension value) {
+    this.extension = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

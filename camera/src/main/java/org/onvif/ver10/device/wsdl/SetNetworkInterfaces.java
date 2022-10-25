@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.NetworkInterfaceSetConfiguration;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -30,59 +33,51 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "interfaceToken", "networkInterface" })
+@XmlType(name = "", propOrder = {"interfaceToken", "networkInterface"})
 @XmlRootElement(name = "SetNetworkInterfaces")
 public class SetNetworkInterfaces {
 
-	@XmlElement(name = "InterfaceToken", required = true)
-	protected String interfaceToken;
-	@XmlElement(name = "NetworkInterface", required = true)
-	protected NetworkInterfaceSetConfiguration networkInterface;
+  @XmlElement(name = "InterfaceToken", required = true)
+  protected String interfaceToken;
+  @XmlElement(name = "NetworkInterface", required = true)
+  protected NetworkInterfaceSetConfiguration networkInterface;
 
-	/**
-	 * Ruft den Wert der interfaceToken-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getInterfaceToken() {
-		return interfaceToken;
-	}
+  /**
+   * Ruft den Wert der interfaceToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getInterfaceToken() {
+    return interfaceToken;
+  }
 
-	/**
-	 * Legt den Wert der interfaceToken-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setInterfaceToken(String value) {
-		this.interfaceToken = value;
-	}
+  /**
+   * Legt den Wert der interfaceToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setInterfaceToken(String value) {
+    this.interfaceToken = value;
+  }
 
-	/**
-	 * Ruft den Wert der networkInterface-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link NetworkInterfaceSetConfiguration }
-	 *
-	 */
-	public NetworkInterfaceSetConfiguration getNetworkInterface() {
-		return networkInterface;
-	}
+  /**
+   * Ruft den Wert der networkInterface-Eigenschaft ab.
+   *
+   * @return possible object is {@link NetworkInterfaceSetConfiguration }
+   */
+  public NetworkInterfaceSetConfiguration getNetworkInterface() {
+    return networkInterface;
+  }
 
-	/**
-	 * Legt den Wert der networkInterface-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link NetworkInterfaceSetConfiguration }
-	 *
-	 */
-	public void setNetworkInterface(NetworkInterfaceSetConfiguration value) {
-		this.networkInterface = value;
-	}
+  /**
+   * Legt den Wert der networkInterface-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link NetworkInterfaceSetConfiguration }
+   */
+  public void setNetworkInterface(NetworkInterfaceSetConfiguration value) {
+    this.networkInterface = value;
+  }
 
 }

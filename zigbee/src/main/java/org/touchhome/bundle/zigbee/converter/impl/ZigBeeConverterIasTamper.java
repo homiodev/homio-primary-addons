@@ -9,15 +9,15 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 @ZigBeeConverter(name = "zigbee:ias_tamper", clientClusters = {ZclIasZoneCluster.CLUSTER_ID})
 public class ZigBeeConverterIasTamper extends ZigBeeConverterIas {
 
-    @Override
-    public boolean initializeConverter() {
-        bitTest = CIE_TAMPER;
-        return super.initializeConverter();
-    }
+  @Override
+  public boolean initializeConverter() {
+    bitTest = CIE_TAMPER;
+    return super.initializeConverter();
+  }
 
-    @Override
-    public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-        return hasIasZoneInputCluster(endpoint);
-    }
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
+    return hasIasZoneInputCluster(endpoint);
+  }
 
 }

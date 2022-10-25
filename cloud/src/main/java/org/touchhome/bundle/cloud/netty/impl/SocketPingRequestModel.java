@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 class SocketPingRequestModel extends SocketBaseModel {
-    private String user;
+
+  private String user;
 }

@@ -1,8 +1,11 @@
 package org.onvif.ver20.imaging.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.ImagingSettings20;
-
-import javax.xml.bind.annotation.*;
 
 
 /**
@@ -21,8 +24,6 @@ import javax.xml.bind.annotation.*;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -31,31 +32,25 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name = "GetImagingSettingsResponse")
 public class GetImagingSettingsResponse {
 
-    @XmlElement(name = "ImagingSettings", required = true)
-    protected ImagingSettings20 imagingSettings;
+  @XmlElement(name = "ImagingSettings", required = true)
+  protected ImagingSettings20 imagingSettings;
 
-    /**
-     * Ruft den Wert der imagingSettings-Eigenschaft ab.
-     *
-     * @return
-     *     possible object is
-     *     {@link ImagingSettings20 }
-     *
-     */
-    public ImagingSettings20 getImagingSettings() {
-        return imagingSettings;
-    }
+  /**
+   * Ruft den Wert der imagingSettings-Eigenschaft ab.
+   *
+   * @return possible object is {@link ImagingSettings20 }
+   */
+  public ImagingSettings20 getImagingSettings() {
+    return imagingSettings;
+  }
 
-    /**
-     * Legt den Wert der imagingSettings-Eigenschaft fest.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link ImagingSettings20 }
-     *
-     */
-    public void setImagingSettings(ImagingSettings20 value) {
-        this.imagingSettings = value;
-    }
+  /**
+   * Legt den Wert der imagingSettings-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ImagingSettings20 }
+   */
+  public void setImagingSettings(ImagingSettings20 value) {
+    this.imagingSettings = value;
+  }
 
 }

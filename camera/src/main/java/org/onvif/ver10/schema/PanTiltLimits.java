@@ -23,35 +23,30 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PanTiltLimits", propOrder = { "range" })
+@XmlType(name = "PanTiltLimits", propOrder = {"range"})
 public class PanTiltLimits {
 
-	@XmlElement(name = "Range", required = true)
-	protected Space2DDescription range;
+  @XmlElement(name = "Range", required = true)
+  protected Space2DDescription range;
 
-	/**
-	 * Ruft den Wert der range-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Space2DDescription }
-	 *
-	 */
-	public Space2DDescription getRange() {
-		return range;
-	}
+  /**
+   * Ruft den Wert der range-Eigenschaft ab.
+   *
+   * @return possible object is {@link Space2DDescription }
+   */
+  public Space2DDescription getRange() {
+    return range;
+  }
 
-	/**
-	 * Legt den Wert der range-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Space2DDescription }
-	 *
-	 */
-	public void setRange(Space2DDescription value) {
-		this.range = value;
-	}
+  /**
+   * Legt den Wert der range-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Space2DDescription }
+   */
+  public void setRange(Space2DDescription value) {
+    this.range = value;
+  }
 
 }

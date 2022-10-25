@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.IPAddressFilter;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "ipAddressFilter" })
+@XmlType(name = "", propOrder = {"ipAddressFilter"})
 @XmlRootElement(name = "SetIPAddressFilter")
 public class SetIPAddressFilter {
 
-	@XmlElement(name = "IPAddressFilter", required = true)
-	protected IPAddressFilter ipAddressFilter;
+  @XmlElement(name = "IPAddressFilter", required = true)
+  protected IPAddressFilter ipAddressFilter;
 
-	/**
-	 * Ruft den Wert der ipAddressFilter-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link IPAddressFilter }
-	 *
-	 */
-	public IPAddressFilter getIPAddressFilter() {
-		return ipAddressFilter;
-	}
+  /**
+   * Ruft den Wert der ipAddressFilter-Eigenschaft ab.
+   *
+   * @return possible object is {@link IPAddressFilter }
+   */
+  public IPAddressFilter getIPAddressFilter() {
+    return ipAddressFilter;
+  }
 
-	/**
-	 * Legt den Wert der ipAddressFilter-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link IPAddressFilter }
-	 *
-	 */
-	public void setIPAddressFilter(IPAddressFilter value) {
-		this.ipAddressFilter = value;
-	}
+  /**
+   * Legt den Wert der ipAddressFilter-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link IPAddressFilter }
+   */
+  public void setIPAddressFilter(IPAddressFilter value) {
+    this.ipAddressFilter = value;
+  }
 
 }

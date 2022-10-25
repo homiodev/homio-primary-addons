@@ -24,48 +24,42 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "OnvifVersion", propOrder = { "major", "minor" })
+@XmlType(name = "OnvifVersion", propOrder = {"major", "minor"})
 public class OnvifVersion {
 
-	@XmlElement(name = "Major")
-	protected int major;
-	@XmlElement(name = "Minor")
-	protected int minor;
+  @XmlElement(name = "Major")
+  protected int major;
+  @XmlElement(name = "Minor")
+  protected int minor;
 
-	/**
-	 * Ruft den Wert der major-Eigenschaft ab.
-	 *
-	 */
-	public int getMajor() {
-		return major;
-	}
+  /**
+   * Ruft den Wert der major-Eigenschaft ab.
+   */
+  public int getMajor() {
+    return major;
+  }
 
-	/**
-	 * Legt den Wert der major-Eigenschaft fest.
-	 *
-	 */
-	public void setMajor(int value) {
-		this.major = value;
-	}
+  /**
+   * Legt den Wert der major-Eigenschaft fest.
+   */
+  public void setMajor(int value) {
+    this.major = value;
+  }
 
-	/**
-	 * Ruft den Wert der minor-Eigenschaft ab.
-	 *
-	 */
-	public int getMinor() {
-		return minor;
-	}
+  /**
+   * Ruft den Wert der minor-Eigenschaft ab.
+   */
+  public int getMinor() {
+    return minor;
+  }
 
-	/**
-	 * Legt den Wert der minor-Eigenschaft fest.
-	 *
-	 */
-	public void setMinor(int value) {
-		this.minor = value;
-	}
+  /**
+   * Legt den Wert der minor-Eigenschaft fest.
+   */
+  public void setMinor(int value) {
+    this.minor = value;
+  }
 
 }

@@ -8,28 +8,28 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum AudioEncodingMimeNames {
 
-    PCMU("PCMU"),
-    @XmlEnumValue("G726")
-    G_726("G726"),
-    @XmlEnumValue("MP4A-LATM")
-    MP_4_A_LATM("MP4A-LATM");
-    private final String value;
+  PCMU("PCMU"),
+  @XmlEnumValue("G726")
+  G_726("G726"),
+  @XmlEnumValue("MP4A-LATM")
+  MP_4_A_LATM("MP4A-LATM");
+  private final String value;
 
-    AudioEncodingMimeNames(String v) {
-        value = v;
-    }
+  AudioEncodingMimeNames(String v) {
+    value = v;
+  }
 
-    public String value() {
-        return value;
+  public static AudioEncodingMimeNames fromValue(String v) {
+    for (AudioEncodingMimeNames c : AudioEncodingMimeNames.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
     }
+    throw new IllegalArgumentException(v);
+  }
 
-    public static AudioEncodingMimeNames fromValue(String v) {
-        for (AudioEncodingMimeNames c: AudioEncodingMimeNames.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
-    }
+  public String value() {
+    return value;
+  }
 
 }

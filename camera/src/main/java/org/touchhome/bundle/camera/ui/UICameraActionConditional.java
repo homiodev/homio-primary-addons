@@ -10,5 +10,5 @@ import java.util.function.Predicate;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UICameraActionConditional {
 
-    Class<? extends Predicate<Object>> value();
+  Class<? extends Predicate<Object>> value();
 }

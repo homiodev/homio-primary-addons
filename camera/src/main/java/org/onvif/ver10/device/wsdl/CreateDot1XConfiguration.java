@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.Dot1XConfiguration;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "dot1XConfiguration" })
+@XmlType(name = "", propOrder = {"dot1XConfiguration"})
 @XmlRootElement(name = "CreateDot1XConfiguration")
 public class CreateDot1XConfiguration {
 
-	@XmlElement(name = "Dot1XConfiguration", required = true)
-	protected Dot1XConfiguration dot1XConfiguration;
+  @XmlElement(name = "Dot1XConfiguration", required = true)
+  protected Dot1XConfiguration dot1XConfiguration;
 
-	/**
-	 * Ruft den Wert der dot1XConfiguration-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Dot1XConfiguration }
-	 *
-	 */
-	public Dot1XConfiguration getDot1XConfiguration() {
-		return dot1XConfiguration;
-	}
+  /**
+   * Ruft den Wert der dot1XConfiguration-Eigenschaft ab.
+   *
+   * @return possible object is {@link Dot1XConfiguration }
+   */
+  public Dot1XConfiguration getDot1XConfiguration() {
+    return dot1XConfiguration;
+  }
 
-	/**
-	 * Legt den Wert der dot1XConfiguration-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Dot1XConfiguration }
-	 *
-	 */
-	public void setDot1XConfiguration(Dot1XConfiguration value) {
-		this.dot1XConfiguration = value;
-	}
+  /**
+   * Legt den Wert der dot1XConfiguration-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Dot1XConfiguration }
+   */
+  public void setDot1XConfiguration(Dot1XConfiguration value) {
+    this.dot1XConfiguration = value;
+  }
 
 }

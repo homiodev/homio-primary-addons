@@ -1,33 +1,32 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
+import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.WINDOW_COVERING;
+
 import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeCommand;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclWindowCoveringCluster;
+import java.util.concurrent.Future;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
-
-import java.util.concurrent.Future;
-
-import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.WINDOW_COVERING;
 
 // TODO: not working
 @Log4j2
 @ZigBeeConverter(name = "zigbee:sensor_occupancy", description = "Occupancy level",
-        linkType = DeviceChannelLinkType.Boolean, clientClusters = {ZclWindowCoveringCluster.CLUSTER_ID})
+    linkType = DeviceChannelLinkType.Boolean, clientClusters = {ZclWindowCoveringCluster.CLUSTER_ID})
 public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter {
 
-    public ZigBeeConverterWindowCoveringLift() {
-        super(WINDOW_COVERING, ZclWindowCoveringCluster.ATTR_CURRENTPOSITIONLIFTPERCENTAGE, POLLING_PERIOD_HIGH);
-    }
+  public ZigBeeConverterWindowCoveringLift() {
+    super(WINDOW_COVERING, ZclWindowCoveringCluster.ATTR_CURRENTPOSITIONLIFTPERCENTAGE, POLLING_PERIOD_HIGH);
+  }
 
-    @Override
-    public boolean initializeDevice() {
-        ZclWindowCoveringCluster serverCluster = (ZclWindowCoveringCluster) endpoint
-                .getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
-        if (serverCluster == null) {
-            log.error("{}: Error opening device window covering controls", endpoint.getIeeeAddress());
-            return false;
-        }
+  @Override
+  public boolean initializeDevice() {
+    ZclWindowCoveringCluster serverCluster = (ZclWindowCoveringCluster) endpoint
+        .getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
+    if (serverCluster == null) {
+      log.error("{}: Error opening device window covering controls", endpoint.getIeeeAddress());
+      return false;
+    }
 
       /*  ZclReportingConfig reporting = new ZclReportingConfig(channel);
 
@@ -49,19 +48,19 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter 
             log.error("{}: Exception setting reporting ", endpoint.getIeeeAddress(), e);
         }*/
 
-        return true;
-    }
+    return true;
+  }
 
-    @Override
-    protected boolean initializeDeviceFailed() {
-        pollingPeriod = POLLING_PERIOD_HIGH;
-        return true;
-    }
+  @Override
+  protected boolean initializeDeviceFailed() {
+    pollingPeriod = POLLING_PERIOD_HIGH;
+    return true;
+  }
 
-    @Override
-    public Future<CommandResult> handleCommand(ZigBeeCommand command) {
-        // ZclWindowCoveringCommand zclCommand = null;
-        // UpDown MoveStop Percent Refresh
+  @Override
+  public Future<CommandResult> handleCommand(ZigBeeCommand command) {
+    // ZclWindowCoveringCommand zclCommand = null;
+    // UpDown MoveStop Percent Refresh
         /*if (command instanceof UpDownType) {
             switch ((UpDownType) command) {
                 case UP:
@@ -91,8 +90,8 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter 
         }
 
         clusterServer.sendCommand(zclCommand);*/
-        return null;
-    }
+    return null;
+  }
 
     /*@Override
     public Channel getChannel(ThingUID thingUID, ZigBeeEndpoint endpoint) {

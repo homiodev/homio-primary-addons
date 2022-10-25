@@ -20,42 +20,39 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "FactoryDefaultType")
 @XmlEnum
 public enum FactoryDefaultType {
 
-	/**
-	 * Indicates that a hard factory default is requested.
-	 *
-	 */
-	@XmlEnumValue("Hard")
-	HARD("Hard"),
+  /**
+   * Indicates that a hard factory default is requested.
+   */
+  @XmlEnumValue("Hard")
+  HARD("Hard"),
 
-	/**
-	 * Indicates that a soft factory default is requested.
-	 *
-	 */
-	@XmlEnumValue("Soft")
-	SOFT("Soft");
-	private final String value;
+  /**
+   * Indicates that a soft factory default is requested.
+   */
+  @XmlEnumValue("Soft")
+  SOFT("Soft");
+  private final String value;
 
-	FactoryDefaultType(String v) {
-		value = v;
-	}
+  FactoryDefaultType(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static FactoryDefaultType fromValue(String v) {
+    for (FactoryDefaultType c : FactoryDefaultType.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static FactoryDefaultType fromValue(String v) {
-		for (FactoryDefaultType c : FactoryDefaultType.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

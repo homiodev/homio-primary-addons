@@ -20,32 +20,31 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "Duplex")
 @XmlEnum
 public enum Duplex {
 
-	@XmlEnumValue("Full")
-	FULL("Full"), @XmlEnumValue("Half")
-	HALF("Half");
-	private final String value;
+  @XmlEnumValue("Full")
+  FULL("Full"), @XmlEnumValue("Half")
+  HALF("Half");
+  private final String value;
 
-	Duplex(String v) {
-		value = v;
-	}
+  Duplex(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static Duplex fromValue(String v) {
+    for (Duplex c : Duplex.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static Duplex fromValue(String v) {
-		for (Duplex c : Duplex.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

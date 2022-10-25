@@ -7,11 +7,14 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import org.onvif.ver10.schema.CertificateWithPrivateKey;
-
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import org.onvif.ver10.schema.CertificateWithPrivateKey;
 
 /**
  * <p>
@@ -31,42 +34,38 @@ import java.util.List;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "certificateWithPrivateKey" })
+@XmlType(name = "", propOrder = {"certificateWithPrivateKey"})
 @XmlRootElement(name = "LoadCertificateWithPrivateKey")
 public class LoadCertificateWithPrivateKey {
 
-	@XmlElement(name = "CertificateWithPrivateKey", required = true)
-	protected List<CertificateWithPrivateKey> certificateWithPrivateKey;
+  @XmlElement(name = "CertificateWithPrivateKey", required = true)
+  protected List<CertificateWithPrivateKey> certificateWithPrivateKey;
 
-	/**
-	 * Gets the value of the certificateWithPrivateKey property.
-	 *
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
-	 * This is why there is not a <CODE>set</CODE> method for the certificateWithPrivateKey property.
-	 *
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 *
-	 * <pre>
-	 * getCertificateWithPrivateKey().add(newItem);
-	 * </pre>
-	 *
-	 *
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list {@link CertificateWithPrivateKey }
-	 *
-	 *
-	 */
-	public List<CertificateWithPrivateKey> getCertificateWithPrivateKey() {
-		if (certificateWithPrivateKey == null) {
-			certificateWithPrivateKey = new ArrayList<CertificateWithPrivateKey>();
-		}
-		return this.certificateWithPrivateKey;
-	}
+  /**
+   * Gets the value of the certificateWithPrivateKey property.
+   *
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
+   * This is why there is not a <CODE>set</CODE> method for the certificateWithPrivateKey property.
+   *
+   * <p>
+   * For example, to add a new item, do as follows:
+   *
+   * <pre>
+   * getCertificateWithPrivateKey().add(newItem);
+   * </pre>
+   *
+   *
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link CertificateWithPrivateKey }
+   */
+  public List<CertificateWithPrivateKey> getCertificateWithPrivateKey() {
+    if (certificateWithPrivateKey == null) {
+      certificateWithPrivateKey = new ArrayList<CertificateWithPrivateKey>();
+    }
+    return this.certificateWithPrivateKey;
+  }
 
 }

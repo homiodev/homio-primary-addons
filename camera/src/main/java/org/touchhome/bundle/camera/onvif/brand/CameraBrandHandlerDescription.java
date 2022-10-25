@@ -6,31 +6,32 @@ import org.touchhome.bundle.camera.onvif.impl.CameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.impl.OnvifBrandHandler;
 
 public class CameraBrandHandlerDescription {
-    public static CameraBrandHandlerDescription DEFAULT_BRAND = new CameraBrandHandlerDescription(OnvifBrandHandler.class);
 
-    private final Class<? extends BaseOnvifCameraBrandHandler> brandHandler;
-    private final CameraBrandHandler cameraBrandHandler;
+  public static CameraBrandHandlerDescription DEFAULT_BRAND = new CameraBrandHandlerDescription(OnvifBrandHandler.class);
 
-    @SneakyThrows
-    public CameraBrandHandlerDescription(Class<? extends BaseOnvifCameraBrandHandler> brandHandler) {
-        this.brandHandler = brandHandler;
-        this.cameraBrandHandler = brandHandler.getDeclaredAnnotation(CameraBrandHandler.class);
-    }
+  private final Class<? extends BaseOnvifCameraBrandHandler> brandHandler;
+  private final CameraBrandHandler cameraBrandHandler;
 
-    public String getID() {
-        return brandHandler.getSimpleName();
-    }
+  @SneakyThrows
+  public CameraBrandHandlerDescription(Class<? extends BaseOnvifCameraBrandHandler> brandHandler) {
+    this.brandHandler = brandHandler;
+    this.cameraBrandHandler = brandHandler.getDeclaredAnnotation(CameraBrandHandler.class);
+  }
 
-    public String getName() {
-        return cameraBrandHandler.name();
-    }
+  public String getID() {
+    return brandHandler.getSimpleName();
+  }
 
-    public String getHandlerName() {
-        return cameraBrandHandler.handlerName();
-    }
+  public String getName() {
+    return cameraBrandHandler.name();
+  }
 
-    @SneakyThrows
-    public BaseOnvifCameraBrandHandler newInstance(OnvifCameraEntity baseVideoCameraEntity) {
-        return brandHandler.getConstructor(OnvifCameraEntity.class).newInstance(baseVideoCameraEntity);
-    }
+  public String getHandlerName() {
+    return cameraBrandHandler.handlerName();
+  }
+
+  @SneakyThrows
+  public BaseOnvifCameraBrandHandler newInstance(OnvifCameraEntity baseVideoCameraEntity) {
+    return brandHandler.getConstructor(OnvifCameraEntity.class).newInstance(baseVideoCameraEntity);
+  }
 }

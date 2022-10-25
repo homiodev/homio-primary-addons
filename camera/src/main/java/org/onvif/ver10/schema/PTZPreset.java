@@ -1,9 +1,14 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 /**
  * <p>
@@ -26,98 +31,86 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PTZPreset", propOrder = { "name", "ptzPosition" })
+@XmlType(name = "PTZPreset", propOrder = {"name", "ptzPosition"})
 public class PTZPreset {
 
-	@XmlElement(name = "Name")
-	protected String name;
-	@XmlElement(name = "PTZPosition")
-	protected PTZVector ptzPosition;
-	@XmlAttribute(name = "token")
-	protected String token;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "Name")
+  protected String name;
+  @XmlElement(name = "PTZPosition")
+  protected PTZVector ptzPosition;
+  @XmlAttribute(name = "token")
+  protected String token;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der name-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getName() {
-		return name;
-	}
+  /**
+   * Ruft den Wert der name-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getName() {
+    return name;
+  }
 
-	/**
-	 * Legt den Wert der name-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setName(String value) {
-		this.name = value;
-	}
+  /**
+   * Legt den Wert der name-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setName(String value) {
+    this.name = value;
+  }
 
-	/**
-	 * Ruft den Wert der ptzPosition-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZVector }
-	 *
-	 */
-	public PTZVector getPTZPosition() {
-		return ptzPosition;
-	}
+  /**
+   * Ruft den Wert der ptzPosition-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZVector }
+   */
+  public PTZVector getPTZPosition() {
+    return ptzPosition;
+  }
 
-	/**
-	 * Legt den Wert der ptzPosition-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZVector }
-	 *
-	 */
-	public void setPTZPosition(PTZVector value) {
-		this.ptzPosition = value;
-	}
+  /**
+   * Legt den Wert der ptzPosition-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZVector }
+   */
+  public void setPTZPosition(PTZVector value) {
+    this.ptzPosition = value;
+  }
 
-	/**
-	 * Ruft den Wert der token-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getToken() {
-		return token;
-	}
+  /**
+   * Ruft den Wert der token-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getToken() {
+    return token;
+  }
 
-	/**
-	 * Legt den Wert der token-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setToken(String value) {
-		this.token = value;
-	}
+  /**
+   * Legt den Wert der token-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setToken(String value) {
+    this.token = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

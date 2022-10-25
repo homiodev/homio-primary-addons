@@ -23,43 +23,42 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- *
  */
 @XmlType(name = "VideoEncodingProfiles")
 @XmlEnum
 public enum VideoEncodingProfiles {
 
-    @XmlEnumValue("Simple")
-    SIMPLE("Simple"),
-    @XmlEnumValue("AdvancedSimple")
-    ADVANCED_SIMPLE("AdvancedSimple"),
-    @XmlEnumValue("Baseline")
-    BASELINE("Baseline"),
-    @XmlEnumValue("Main")
-    MAIN("Main"),
-    @XmlEnumValue("Main10")
-    MAIN_10("Main10"),
-    @XmlEnumValue("Extended")
-    EXTENDED("Extended"),
-    @XmlEnumValue("High")
-    HIGH("High");
-    private final String value;
+  @XmlEnumValue("Simple")
+  SIMPLE("Simple"),
+  @XmlEnumValue("AdvancedSimple")
+  ADVANCED_SIMPLE("AdvancedSimple"),
+  @XmlEnumValue("Baseline")
+  BASELINE("Baseline"),
+  @XmlEnumValue("Main")
+  MAIN("Main"),
+  @XmlEnumValue("Main10")
+  MAIN_10("Main10"),
+  @XmlEnumValue("Extended")
+  EXTENDED("Extended"),
+  @XmlEnumValue("High")
+  HIGH("High");
+  private final String value;
 
-    VideoEncodingProfiles(String v) {
-        value = v;
-    }
+  VideoEncodingProfiles(String v) {
+    value = v;
+  }
 
-    public String value() {
-        return value;
+  public static VideoEncodingProfiles fromValue(String v) {
+    for (VideoEncodingProfiles c : VideoEncodingProfiles.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
     }
+    throw new IllegalArgumentException(v);
+  }
 
-    public static VideoEncodingProfiles fromValue(String v) {
-        for (VideoEncodingProfiles c: VideoEncodingProfiles.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
-    }
+  public String value() {
+    return value;
+  }
 
 }

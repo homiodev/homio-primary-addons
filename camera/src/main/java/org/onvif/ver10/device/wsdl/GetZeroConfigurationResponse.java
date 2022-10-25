@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.NetworkZeroConfiguration;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "zeroConfiguration" })
+@XmlType(name = "", propOrder = {"zeroConfiguration"})
 @XmlRootElement(name = "GetZeroConfigurationResponse")
 public class GetZeroConfigurationResponse {
 
-	@XmlElement(name = "ZeroConfiguration", required = true)
-	protected NetworkZeroConfiguration zeroConfiguration;
+  @XmlElement(name = "ZeroConfiguration", required = true)
+  protected NetworkZeroConfiguration zeroConfiguration;
 
-	/**
-	 * Ruft den Wert der zeroConfiguration-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link NetworkZeroConfiguration }
-	 *
-	 */
-	public NetworkZeroConfiguration getZeroConfiguration() {
-		return zeroConfiguration;
-	}
+  /**
+   * Ruft den Wert der zeroConfiguration-Eigenschaft ab.
+   *
+   * @return possible object is {@link NetworkZeroConfiguration }
+   */
+  public NetworkZeroConfiguration getZeroConfiguration() {
+    return zeroConfiguration;
+  }
 
-	/**
-	 * Legt den Wert der zeroConfiguration-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link NetworkZeroConfiguration }
-	 *
-	 */
-	public void setZeroConfiguration(NetworkZeroConfiguration value) {
-		this.zeroConfiguration = value;
-	}
+  /**
+   * Legt den Wert der zeroConfiguration-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link NetworkZeroConfiguration }
+   */
+  public void setZeroConfiguration(NetworkZeroConfiguration value) {
+    this.zeroConfiguration = value;
+  }
 
 }

@@ -20,20 +20,19 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "MoveStatus")
 @XmlEnum
 public enum MoveStatus {
 
-	IDLE, MOVING, UNKNOWN;
+  IDLE, MOVING, UNKNOWN;
 
-	public String value() {
-		return name();
-	}
+  public static MoveStatus fromValue(String v) {
+    return valueOf(v);
+  }
 
-	public static MoveStatus fromValue(String v) {
-		return valueOf(v);
-	}
+  public String value() {
+    return name();
+  }
 
 }

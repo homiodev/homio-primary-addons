@@ -1,6 +1,10 @@
 package org.onvif.ver20.ptz.wsdl;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
@@ -20,36 +24,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "nodeToken" })
+@XmlType(name = "", propOrder = {"nodeToken"})
 @XmlRootElement(name = "GetNode")
 public class GetNode {
 
-	@XmlElement(name = "NodeToken", required = true)
-	protected String nodeToken;
+  @XmlElement(name = "NodeToken", required = true)
+  protected String nodeToken;
 
-	/**
-	 * Ruft den Wert der nodeToken-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getNodeToken() {
-		return nodeToken;
-	}
+  /**
+   * Ruft den Wert der nodeToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getNodeToken() {
+    return nodeToken;
+  }
 
-	/**
-	 * Legt den Wert der nodeToken-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setNodeToken(String value) {
-		this.nodeToken = value;
-	}
+  /**
+   * Legt den Wert der nodeToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setNodeToken(String value) {
+    this.nodeToken = value;
+  }
 
 }

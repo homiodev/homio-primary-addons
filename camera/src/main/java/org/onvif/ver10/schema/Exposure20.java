@@ -36,289 +36,251 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Exposure20", propOrder = { "mode", "priority", "window", "minExposureTime", "maxExposureTime", "minGain", "maxGain", "minIris", "maxIris",
-		"exposureTime", "gain", "iris" })
+@XmlType(name = "Exposure20", propOrder = {"mode", "priority", "window", "minExposureTime", "maxExposureTime", "minGain", "maxGain", "minIris", "maxIris",
+    "exposureTime", "gain", "iris"})
 public class Exposure20 {
 
-	@XmlElement(name = "Mode", required = true)
-	protected ExposureMode mode;
-	@XmlElement(name = "Priority")
-	protected ExposurePriority priority;
-	@XmlElement(name = "Window")
-	protected Rectangle window;
-	@XmlElement(name = "MinExposureTime")
-	protected Float minExposureTime;
-	@XmlElement(name = "MaxExposureTime")
-	protected Float maxExposureTime;
-	@XmlElement(name = "MinGain")
-	protected Float minGain;
-	@XmlElement(name = "MaxGain")
-	protected Float maxGain;
-	@XmlElement(name = "MinIris")
-	protected Float minIris;
-	@XmlElement(name = "MaxIris")
-	protected Float maxIris;
-	@XmlElement(name = "ExposureTime")
-	protected Float exposureTime;
-	@XmlElement(name = "Gain")
-	protected Float gain;
-	@XmlElement(name = "Iris")
-	protected Float iris;
+  @XmlElement(name = "Mode", required = true)
+  protected ExposureMode mode;
+  @XmlElement(name = "Priority")
+  protected ExposurePriority priority;
+  @XmlElement(name = "Window")
+  protected Rectangle window;
+  @XmlElement(name = "MinExposureTime")
+  protected Float minExposureTime;
+  @XmlElement(name = "MaxExposureTime")
+  protected Float maxExposureTime;
+  @XmlElement(name = "MinGain")
+  protected Float minGain;
+  @XmlElement(name = "MaxGain")
+  protected Float maxGain;
+  @XmlElement(name = "MinIris")
+  protected Float minIris;
+  @XmlElement(name = "MaxIris")
+  protected Float maxIris;
+  @XmlElement(name = "ExposureTime")
+  protected Float exposureTime;
+  @XmlElement(name = "Gain")
+  protected Float gain;
+  @XmlElement(name = "Iris")
+  protected Float iris;
 
-	/**
-	 * Ruft den Wert der mode-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link ExposureMode }
-	 *
-	 */
-	public ExposureMode getMode() {
-		return mode;
-	}
+  /**
+   * Ruft den Wert der mode-Eigenschaft ab.
+   *
+   * @return possible object is {@link ExposureMode }
+   */
+  public ExposureMode getMode() {
+    return mode;
+  }
 
-	/**
-	 * Legt den Wert der mode-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link ExposureMode }
-	 *
-	 */
-	public void setMode(ExposureMode value) {
-		this.mode = value;
-	}
+  /**
+   * Legt den Wert der mode-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ExposureMode }
+   */
+  public void setMode(ExposureMode value) {
+    this.mode = value;
+  }
 
-	/**
-	 * Ruft den Wert der priority-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link ExposurePriority }
-	 *
-	 */
-	public ExposurePriority getPriority() {
-		return priority;
-	}
+  /**
+   * Ruft den Wert der priority-Eigenschaft ab.
+   *
+   * @return possible object is {@link ExposurePriority }
+   */
+  public ExposurePriority getPriority() {
+    return priority;
+  }
 
-	/**
-	 * Legt den Wert der priority-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link ExposurePriority }
-	 *
-	 */
-	public void setPriority(ExposurePriority value) {
-		this.priority = value;
-	}
+  /**
+   * Legt den Wert der priority-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ExposurePriority }
+   */
+  public void setPriority(ExposurePriority value) {
+    this.priority = value;
+  }
 
-	/**
-	 * Ruft den Wert der window-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Rectangle }
-	 *
-	 */
-	public Rectangle getWindow() {
-		return window;
-	}
+  /**
+   * Ruft den Wert der window-Eigenschaft ab.
+   *
+   * @return possible object is {@link Rectangle }
+   */
+  public Rectangle getWindow() {
+    return window;
+  }
 
-	/**
-	 * Legt den Wert der window-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Rectangle }
-	 *
-	 */
-	public void setWindow(Rectangle value) {
-		this.window = value;
-	}
+  /**
+   * Legt den Wert der window-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Rectangle }
+   */
+  public void setWindow(Rectangle value) {
+    this.window = value;
+  }
 
-	/**
-	 * Ruft den Wert der minExposureTime-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getMinExposureTime() {
-		return minExposureTime;
-	}
+  /**
+   * Ruft den Wert der minExposureTime-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getMinExposureTime() {
+    return minExposureTime;
+  }
 
-	/**
-	 * Legt den Wert der minExposureTime-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setMinExposureTime(Float value) {
-		this.minExposureTime = value;
-	}
+  /**
+   * Legt den Wert der minExposureTime-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setMinExposureTime(Float value) {
+    this.minExposureTime = value;
+  }
 
-	/**
-	 * Ruft den Wert der maxExposureTime-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getMaxExposureTime() {
-		return maxExposureTime;
-	}
+  /**
+   * Ruft den Wert der maxExposureTime-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getMaxExposureTime() {
+    return maxExposureTime;
+  }
 
-	/**
-	 * Legt den Wert der maxExposureTime-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setMaxExposureTime(Float value) {
-		this.maxExposureTime = value;
-	}
+  /**
+   * Legt den Wert der maxExposureTime-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setMaxExposureTime(Float value) {
+    this.maxExposureTime = value;
+  }
 
-	/**
-	 * Ruft den Wert der minGain-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getMinGain() {
-		return minGain;
-	}
+  /**
+   * Ruft den Wert der minGain-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getMinGain() {
+    return minGain;
+  }
 
-	/**
-	 * Legt den Wert der minGain-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setMinGain(Float value) {
-		this.minGain = value;
-	}
+  /**
+   * Legt den Wert der minGain-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setMinGain(Float value) {
+    this.minGain = value;
+  }
 
-	/**
-	 * Ruft den Wert der maxGain-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getMaxGain() {
-		return maxGain;
-	}
+  /**
+   * Ruft den Wert der maxGain-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getMaxGain() {
+    return maxGain;
+  }
 
-	/**
-	 * Legt den Wert der maxGain-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setMaxGain(Float value) {
-		this.maxGain = value;
-	}
+  /**
+   * Legt den Wert der maxGain-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setMaxGain(Float value) {
+    this.maxGain = value;
+  }
 
-	/**
-	 * Ruft den Wert der minIris-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getMinIris() {
-		return minIris;
-	}
+  /**
+   * Ruft den Wert der minIris-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getMinIris() {
+    return minIris;
+  }
 
-	/**
-	 * Legt den Wert der minIris-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setMinIris(Float value) {
-		this.minIris = value;
-	}
+  /**
+   * Legt den Wert der minIris-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setMinIris(Float value) {
+    this.minIris = value;
+  }
 
-	/**
-	 * Ruft den Wert der maxIris-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getMaxIris() {
-		return maxIris;
-	}
+  /**
+   * Ruft den Wert der maxIris-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getMaxIris() {
+    return maxIris;
+  }
 
-	/**
-	 * Legt den Wert der maxIris-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setMaxIris(Float value) {
-		this.maxIris = value;
-	}
+  /**
+   * Legt den Wert der maxIris-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setMaxIris(Float value) {
+    this.maxIris = value;
+  }
 
-	/**
-	 * Ruft den Wert der exposureTime-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getExposureTime() {
-		return exposureTime;
-	}
+  /**
+   * Ruft den Wert der exposureTime-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getExposureTime() {
+    return exposureTime;
+  }
 
-	/**
-	 * Legt den Wert der exposureTime-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setExposureTime(Float value) {
-		this.exposureTime = value;
-	}
+  /**
+   * Legt den Wert der exposureTime-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setExposureTime(Float value) {
+    this.exposureTime = value;
+  }
 
-	/**
-	 * Ruft den Wert der gain-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getGain() {
-		return gain;
-	}
+  /**
+   * Ruft den Wert der gain-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getGain() {
+    return gain;
+  }
 
-	/**
-	 * Legt den Wert der gain-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setGain(Float value) {
-		this.gain = value;
-	}
+  /**
+   * Legt den Wert der gain-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setGain(Float value) {
+    this.gain = value;
+  }
 
-	/**
-	 * Ruft den Wert der iris-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getIris() {
-		return iris;
-	}
+  /**
+   * Ruft den Wert der iris-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getIris() {
+    return iris;
+  }
 
-	/**
-	 * Legt den Wert der iris-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setIris(Float value) {
-		this.iris = value;
-	}
+  /**
+   * Legt den Wert der iris-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setIris(Float value) {
+    this.iris = value;
+  }
 
 }

@@ -11,21 +11,22 @@ import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
  * Converter for the occupancy sensor.
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:sensor_occupancy", description = "Occupancy level", linkType = DeviceChannelLinkType.Boolean, clientClusters = {ZclOccupancySensingCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:sensor_occupancy", description = "Occupancy level", linkType = DeviceChannelLinkType.Boolean, clientClusters = {
+    ZclOccupancySensingCluster.CLUSTER_ID})
 public class ZigBeeConverterOccupancy extends ZigBeeInputBaseConverter {
 
-    public ZigBeeConverterOccupancy() {
-        super(ZclClusterType.OCCUPANCY_SENSING, ZclOccupancySensingCluster.ATTR_OCCUPANCY,
-                1, REPORTING_PERIOD_DEFAULT_MAX, null);
-    }
+  public ZigBeeConverterOccupancy() {
+    super(ZclClusterType.OCCUPANCY_SENSING, ZclOccupancySensingCluster.ATTR_OCCUPANCY,
+        1, REPORTING_PERIOD_DEFAULT_MAX, null);
+  }
 
-    @Override
-    protected void updateValue(Object val, ZclAttribute attribute) {
-        Integer value = (Integer) val;
-        if (value != null && value == 1) {
-            updateChannelState(OnOffType.ON);
-        } else {
-            updateChannelState(OnOffType.OFF);
-        }
+  @Override
+  protected void updateValue(Object val, ZclAttribute attribute) {
+    Integer value = (Integer) val;
+    if (value != null && value == 1) {
+      updateChannelState(OnOffType.ON);
+    } else {
+      updateChannelState(OnOffType.OFF);
     }
+  }
 }

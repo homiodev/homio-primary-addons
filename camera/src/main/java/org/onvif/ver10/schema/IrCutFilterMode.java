@@ -20,20 +20,19 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "IrCutFilterMode")
 @XmlEnum
 public enum IrCutFilterMode {
 
-	ON, OFF, AUTO;
+  ON, OFF, AUTO;
 
-	public String value() {
-		return name();
-	}
+  public static IrCutFilterMode fromValue(String v) {
+    return valueOf(v);
+  }
 
-	public static IrCutFilterMode fromValue(String v) {
-		return valueOf(v);
-	}
+  public String value() {
+    return name();
+  }
 
 }

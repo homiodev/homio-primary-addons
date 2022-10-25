@@ -22,8 +22,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "StartStopMulticastStreaming", propOrder = {
@@ -31,31 +29,25 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class StartStopMulticastStreaming {
 
-    @XmlElement(name = "ProfileToken", required = true)
-    protected String profileToken;
+  @XmlElement(name = "ProfileToken", required = true)
+  protected String profileToken;
 
-    /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
-    public String getProfileToken() {
-        return profileToken;
-    }
+  /**
+   * Ruft den Wert der profileToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getProfileToken() {
+    return profileToken;
+  }
 
-    /**
-     * Legt den Wert der profileToken-Eigenschaft fest.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
-    public void setProfileToken(String value) {
-        this.profileToken = value;
-    }
+  /**
+   * Legt den Wert der profileToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setProfileToken(String value) {
+    this.profileToken = value;
+  }
 
 }

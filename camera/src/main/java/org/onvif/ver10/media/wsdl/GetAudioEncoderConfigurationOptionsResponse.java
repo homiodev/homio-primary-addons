@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.media.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.AudioEncoderConfigurationOptions;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "options" })
+@XmlType(name = "", propOrder = {"options"})
 @XmlRootElement(name = "GetAudioEncoderConfigurationOptionsResponse")
 public class GetAudioEncoderConfigurationOptionsResponse {
 
-	@XmlElement(name = "Options", required = true)
-	protected AudioEncoderConfigurationOptions options;
+  @XmlElement(name = "Options", required = true)
+  protected AudioEncoderConfigurationOptions options;
 
-	/**
-	 * Ruft den Wert der options-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link AudioEncoderConfigurationOptions }
-	 *
-	 */
-	public AudioEncoderConfigurationOptions getOptions() {
-		return options;
-	}
+  /**
+   * Ruft den Wert der options-Eigenschaft ab.
+   *
+   * @return possible object is {@link AudioEncoderConfigurationOptions }
+   */
+  public AudioEncoderConfigurationOptions getOptions() {
+    return options;
+  }
 
-	/**
-	 * Legt den Wert der options-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link AudioEncoderConfigurationOptions }
-	 *
-	 */
-	public void setOptions(AudioEncoderConfigurationOptions value) {
-		this.options = value;
-	}
+  /**
+   * Legt den Wert der options-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link AudioEncoderConfigurationOptions }
+   */
+  public void setOptions(AudioEncoderConfigurationOptions value) {
+    this.options = value;
+  }
 
 }

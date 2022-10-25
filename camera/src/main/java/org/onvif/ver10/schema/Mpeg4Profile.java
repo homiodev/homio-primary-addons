@@ -19,20 +19,19 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "Mpeg4Profile")
 @XmlEnum
 public enum Mpeg4Profile {
 
-	SP, ASP;
+  SP, ASP;
 
-	public String value() {
-		return name();
-	}
+  public static Mpeg4Profile fromValue(String v) {
+    return valueOf(v);
+  }
 
-	public static Mpeg4Profile fromValue(String v) {
-		return valueOf(v);
-	}
+  public String value() {
+    return name();
+  }
 
 }

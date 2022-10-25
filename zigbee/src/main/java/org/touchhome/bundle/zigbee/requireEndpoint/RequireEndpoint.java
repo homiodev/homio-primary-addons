@@ -11,16 +11,17 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
 @Setter
 @ToString
 public class RequireEndpoint {
-    private int endpoint;
-    private int inputCluster;
-    private String typeId;
 
-    public boolean match(ZigBeeConverter zigBeeConverter) {
-        return zigBeeConverter.name().equals(typeId) && ZigBeeController.containsAny(zigBeeConverter.clientClusters(), inputCluster);
-    }
+  private int endpoint;
+  private int inputCluster;
+  private String typeId;
 
-    public boolean match(ZigBeeConverterEndpoint converter) {
-        return converter.getClusterName().equals(typeId) && converter.getEndpointId() == endpoint &&
-                converter.getClusterId() == inputCluster;
-    }
+  public boolean match(ZigBeeConverter zigBeeConverter) {
+    return zigBeeConverter.name().equals(typeId) && ZigBeeController.containsAny(zigBeeConverter.clientClusters(), inputCluster);
+  }
+
+  public boolean match(ZigBeeConverterEndpoint converter) {
+    return converter.getClusterName().equals(typeId) && converter.getEndpointId() == endpoint &&
+        converter.getClusterId() == inputCluster;
+  }
 }

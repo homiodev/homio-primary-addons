@@ -24,58 +24,50 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "RelativeFocusOptions20", propOrder = { "distance", "speed" })
+@XmlType(name = "RelativeFocusOptions20", propOrder = {"distance", "speed"})
 public class RelativeFocusOptions20 {
 
-	@XmlElement(name = "Distance", required = true)
-	protected FloatRange distance;
-	@XmlElement(name = "Speed")
-	protected FloatRange speed;
+  @XmlElement(name = "Distance", required = true)
+  protected FloatRange distance;
+  @XmlElement(name = "Speed")
+  protected FloatRange speed;
 
-	/**
-	 * Ruft den Wert der distance-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link FloatRange }
-	 *
-	 */
-	public FloatRange getDistance() {
-		return distance;
-	}
+  /**
+   * Ruft den Wert der distance-Eigenschaft ab.
+   *
+   * @return possible object is {@link FloatRange }
+   */
+  public FloatRange getDistance() {
+    return distance;
+  }
 
-	/**
-	 * Legt den Wert der distance-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link FloatRange }
-	 *
-	 */
-	public void setDistance(FloatRange value) {
-		this.distance = value;
-	}
+  /**
+   * Legt den Wert der distance-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link FloatRange }
+   */
+  public void setDistance(FloatRange value) {
+    this.distance = value;
+  }
 
-	/**
-	 * Ruft den Wert der speed-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link FloatRange }
-	 *
-	 */
-	public FloatRange getSpeed() {
-		return speed;
-	}
+  /**
+   * Ruft den Wert der speed-Eigenschaft ab.
+   *
+   * @return possible object is {@link FloatRange }
+   */
+  public FloatRange getSpeed() {
+    return speed;
+  }
 
-	/**
-	 * Legt den Wert der speed-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link FloatRange }
-	 *
-	 */
-	public void setSpeed(FloatRange value) {
-		this.speed = value;
-	}
+  /**
+   * Legt den Wert der speed-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link FloatRange }
+   */
+  public void setSpeed(FloatRange value) {
+    this.speed = value;
+  }
 
 }

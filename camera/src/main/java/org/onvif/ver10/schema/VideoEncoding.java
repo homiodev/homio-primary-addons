@@ -21,32 +21,31 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "VideoEncoding")
 @XmlEnum
 public enum VideoEncoding {
 
-	JPEG("JPEG"), @XmlEnumValue("MPEG4")
-	MPEG_4("MPEG4"), @XmlEnumValue("H264")
-	H_264("H264");
-	private final String value;
+  JPEG("JPEG"), @XmlEnumValue("MPEG4")
+  MPEG_4("MPEG4"), @XmlEnumValue("H264")
+  H_264("H264");
+  private final String value;
 
-	VideoEncoding(String v) {
-		value = v;
-	}
+  VideoEncoding(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static VideoEncoding fromValue(String v) {
+    for (VideoEncoding c : VideoEncoding.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static VideoEncoding fromValue(String v) {
-		for (VideoEncoding c : VideoEncoding.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

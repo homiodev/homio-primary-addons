@@ -10,28 +10,28 @@ import lombok.extern.log4j.Log4j2;
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:thermostat_localtemp",
-        clientClusters = {ZclThermostatCluster.CLUSTER_ID})
+    clientClusters = {ZclThermostatCluster.CLUSTER_ID})
 public class ZigBeeConverterThermostatLocalTemperature extends ZigBeeInputBaseConverter {
 
-    private final int INVALID_TEMPERATURE = 0x8000;
+  private final int INVALID_TEMPERATURE = 0x8000;
 
-    private ZclThermostatCluster cluster;
-    private ZclAttribute attribute;
+  private ZclThermostatCluster cluster;
+  private ZclAttribute attribute;
 
-    public ZigBeeConverterThermostatLocalTemperature() {
-        super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_LOCALTEMPERATURE,
-                1, REPORTING_PERIOD_DEFAULT_MAX, 10);
+  public ZigBeeConverterThermostatLocalTemperature() {
+    super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_LOCALTEMPERATURE,
+        1, REPORTING_PERIOD_DEFAULT_MAX, 10);
+  }
+
+  @Override
+  public void attributeUpdated(ZclAttribute attribute, Object val) {
+    log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
+    if (attribute.getClusterType() == ZclClusterType.THERMOSTAT
+        && attribute.getId() == ZclThermostatCluster.ATTR_LOCALTEMPERATURE) {
+      Integer value = (Integer) val;
+      if (value != null && value != INVALID_TEMPERATURE) {
+        updateChannelState(valueToTemperature(value));
+      }
     }
-
-    @Override
-    public void attributeUpdated(ZclAttribute attribute, Object val) {
-        log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
-        if (attribute.getClusterType() == ZclClusterType.THERMOSTAT
-                && attribute.getId() == ZclThermostatCluster.ATTR_LOCALTEMPERATURE) {
-            Integer value = (Integer) val;
-            if (value != null && value != INVALID_TEMPERATURE) {
-                updateChannelState(valueToTemperature(value));
-            }
-        }
-    }
+  }
 }

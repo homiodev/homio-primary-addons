@@ -1,9 +1,13 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 /**
  * <p>
@@ -26,98 +30,86 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PTZPresetTourStatus", propOrder = { "state", "currentTourSpot", "extension" })
+@XmlType(name = "PTZPresetTourStatus", propOrder = {"state", "currentTourSpot", "extension"})
 public class PTZPresetTourStatus {
 
-	@XmlElement(name = "State", required = true)
-	protected PTZPresetTourState state;
-	@XmlElement(name = "CurrentTourSpot")
-	protected PTZPresetTourSpot currentTourSpot;
-	@XmlElement(name = "Extension")
-	protected PTZPresetTourStatusExtension extension;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "State", required = true)
+  protected PTZPresetTourState state;
+  @XmlElement(name = "CurrentTourSpot")
+  protected PTZPresetTourSpot currentTourSpot;
+  @XmlElement(name = "Extension")
+  protected PTZPresetTourStatusExtension extension;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der state-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZPresetTourState }
-	 *
-	 */
-	public PTZPresetTourState getState() {
-		return state;
-	}
+  /**
+   * Ruft den Wert der state-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZPresetTourState }
+   */
+  public PTZPresetTourState getState() {
+    return state;
+  }
 
-	/**
-	 * Legt den Wert der state-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZPresetTourState }
-	 *
-	 */
-	public void setState(PTZPresetTourState value) {
-		this.state = value;
-	}
+  /**
+   * Legt den Wert der state-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZPresetTourState }
+   */
+  public void setState(PTZPresetTourState value) {
+    this.state = value;
+  }
 
-	/**
-	 * Ruft den Wert der currentTourSpot-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZPresetTourSpot }
-	 *
-	 */
-	public PTZPresetTourSpot getCurrentTourSpot() {
-		return currentTourSpot;
-	}
+  /**
+   * Ruft den Wert der currentTourSpot-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZPresetTourSpot }
+   */
+  public PTZPresetTourSpot getCurrentTourSpot() {
+    return currentTourSpot;
+  }
 
-	/**
-	 * Legt den Wert der currentTourSpot-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZPresetTourSpot }
-	 *
-	 */
-	public void setCurrentTourSpot(PTZPresetTourSpot value) {
-		this.currentTourSpot = value;
-	}
+  /**
+   * Legt den Wert der currentTourSpot-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZPresetTourSpot }
+   */
+  public void setCurrentTourSpot(PTZPresetTourSpot value) {
+    this.currentTourSpot = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZPresetTourStatusExtension }
-	 *
-	 */
-	public PTZPresetTourStatusExtension getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZPresetTourStatusExtension }
+   */
+  public PTZPresetTourStatusExtension getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZPresetTourStatusExtension }
-	 *
-	 */
-	public void setExtension(PTZPresetTourStatusExtension value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZPresetTourStatusExtension }
+   */
+  public void setExtension(PTZPresetTourStatusExtension value) {
+    this.extension = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

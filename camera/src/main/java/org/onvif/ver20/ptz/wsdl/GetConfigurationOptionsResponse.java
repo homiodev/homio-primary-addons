@@ -1,8 +1,11 @@
 package org.onvif.ver20.ptz.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.PTZConfigurationOptions;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -22,36 +25,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "ptzConfigurationOptions" })
+@XmlType(name = "", propOrder = {"ptzConfigurationOptions"})
 @XmlRootElement(name = "GetConfigurationOptionsResponse")
 public class GetConfigurationOptionsResponse {
 
-	@XmlElement(name = "PTZConfigurationOptions", required = true)
-	protected PTZConfigurationOptions ptzConfigurationOptions;
+  @XmlElement(name = "PTZConfigurationOptions", required = true)
+  protected PTZConfigurationOptions ptzConfigurationOptions;
 
-	/**
-	 * Ruft den Wert der ptzConfigurationOptions-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZConfigurationOptions }
-	 *
-	 */
-	public PTZConfigurationOptions getPTZConfigurationOptions() {
-		return ptzConfigurationOptions;
-	}
+  /**
+   * Ruft den Wert der ptzConfigurationOptions-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZConfigurationOptions }
+   */
+  public PTZConfigurationOptions getPTZConfigurationOptions() {
+    return ptzConfigurationOptions;
+  }
 
-	/**
-	 * Legt den Wert der ptzConfigurationOptions-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZConfigurationOptions }
-	 *
-	 */
-	public void setPTZConfigurationOptions(PTZConfigurationOptions value) {
-		this.ptzConfigurationOptions = value;
-	}
+  /**
+   * Legt den Wert der ptzConfigurationOptions-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZConfigurationOptions }
+   */
+  public void setPTZConfigurationOptions(PTZConfigurationOptions value) {
+    this.ptzConfigurationOptions = value;
+  }
 
 }

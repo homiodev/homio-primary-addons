@@ -20,20 +20,19 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "RotateMode")
 @XmlEnum
 public enum RotateMode {
 
-	OFF, ON, AUTO;
+  OFF, ON, AUTO;
 
-	public String value() {
-		return name();
-	}
+  public static RotateMode fromValue(String v) {
+    return valueOf(v);
+  }
 
-	public static RotateMode fromValue(String v) {
-		return valueOf(v);
-	}
+  public String value() {
+    return name();
+  }
 
 }

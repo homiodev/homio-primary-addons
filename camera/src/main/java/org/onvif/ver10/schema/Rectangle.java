@@ -24,104 +24,90 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Rectangle")
 public class Rectangle {
 
-	@XmlAttribute(name = "bottom")
-	protected Float bottom;
-	@XmlAttribute(name = "top")
-	protected Float top;
-	@XmlAttribute(name = "right")
-	protected Float right;
-	@XmlAttribute(name = "left")
-	protected Float left;
+  @XmlAttribute(name = "bottom")
+  protected Float bottom;
+  @XmlAttribute(name = "top")
+  protected Float top;
+  @XmlAttribute(name = "right")
+  protected Float right;
+  @XmlAttribute(name = "left")
+  protected Float left;
 
-	/**
-	 * Ruft den Wert der bottom-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getBottom() {
-		return bottom;
-	}
+  /**
+   * Ruft den Wert der bottom-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getBottom() {
+    return bottom;
+  }
 
-	/**
-	 * Legt den Wert der bottom-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setBottom(Float value) {
-		this.bottom = value;
-	}
+  /**
+   * Legt den Wert der bottom-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setBottom(Float value) {
+    this.bottom = value;
+  }
 
-	/**
-	 * Ruft den Wert der top-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getTop() {
-		return top;
-	}
+  /**
+   * Ruft den Wert der top-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getTop() {
+    return top;
+  }
 
-	/**
-	 * Legt den Wert der top-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setTop(Float value) {
-		this.top = value;
-	}
+  /**
+   * Legt den Wert der top-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setTop(Float value) {
+    this.top = value;
+  }
 
-	/**
-	 * Ruft den Wert der right-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getRight() {
-		return right;
-	}
+  /**
+   * Ruft den Wert der right-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getRight() {
+    return right;
+  }
 
-	/**
-	 * Legt den Wert der right-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setRight(Float value) {
-		this.right = value;
-	}
+  /**
+   * Legt den Wert der right-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setRight(Float value) {
+    this.right = value;
+  }
 
-	/**
-	 * Ruft den Wert der left-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getLeft() {
-		return left;
-	}
+  /**
+   * Ruft den Wert der left-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getLeft() {
+    return left;
+  }
 
-	/**
-	 * Legt den Wert der left-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setLeft(Float value) {
-		this.left = value;
-	}
+  /**
+   * Legt den Wert der left-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setLeft(Float value) {
+    this.left = value;
+  }
 
 }

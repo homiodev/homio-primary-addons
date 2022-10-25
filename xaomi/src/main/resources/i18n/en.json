@@ -1,6 +1,8 @@
 {
-  "WORKSPACE": {
-    "xaomi": "Zigbee Xaomi"
+  "workspace": {
+    "xaomi": "Zigbee Xaomi",
+    "xaomi_when_cube_event": "Event when cube event occurs",
+    "xaomi_cube_value": "Get cube last value"
   },
   "xaomi": {
     "setting": {

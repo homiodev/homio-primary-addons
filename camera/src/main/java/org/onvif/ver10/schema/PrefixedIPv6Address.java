@@ -26,54 +26,47 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PrefixedIPv6Address", propOrder = { "address", "prefixLength" })
+@XmlType(name = "PrefixedIPv6Address", propOrder = {"address", "prefixLength"})
 public class PrefixedIPv6Address {
 
-	@XmlElement(name = "Address", required = true)
-	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-	protected String address;
-	@XmlElement(name = "PrefixLength")
-	protected int prefixLength;
+  @XmlElement(name = "Address", required = true)
+  @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+  protected String address;
+  @XmlElement(name = "PrefixLength")
+  protected int prefixLength;
 
-	/**
-	 * Ruft den Wert der address-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getAddress() {
-		return address;
-	}
+  /**
+   * Ruft den Wert der address-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getAddress() {
+    return address;
+  }
 
-	/**
-	 * Legt den Wert der address-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setAddress(String value) {
-		this.address = value;
-	}
+  /**
+   * Legt den Wert der address-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setAddress(String value) {
+    this.address = value;
+  }
 
-	/**
-	 * Ruft den Wert der prefixLength-Eigenschaft ab.
-	 *
-	 */
-	public int getPrefixLength() {
-		return prefixLength;
-	}
+  /**
+   * Ruft den Wert der prefixLength-Eigenschaft ab.
+   */
+  public int getPrefixLength() {
+    return prefixLength;
+  }
 
-	/**
-	 * Legt den Wert der prefixLength-Eigenschaft fest.
-	 *
-	 */
-	public void setPrefixLength(int value) {
-		this.prefixLength = value;
-	}
+  /**
+   * Legt den Wert der prefixLength-Eigenschaft fest.
+   */
+  public void setPrefixLength(int value) {
+    this.prefixLength = value;
+  }
 
 }

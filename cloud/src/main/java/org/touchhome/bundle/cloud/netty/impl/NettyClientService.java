@@ -1,11 +1,21 @@
 package org.touchhome.bundle.cloud.netty.impl;
 
+import static org.touchhome.bundle.api.entity.UserEntity.ADMIN_USER;
+
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.ssl.SslHandler;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -18,118 +28,111 @@ import org.touchhome.bundle.cloud.netty.setting.CloudServerUrlSetting;
 import org.touchhome.common.util.CommonUtils;
 import org.touchhome.common.util.SslUtil;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import static org.touchhome.bundle.api.entity.UserEntity.ADMIN_USER;
-
 @Log4j2
 //@Component
 @RequiredArgsConstructor
 public class NettyClientService {
 
-    private final DispatcherServletService dispatcherServletService;
-    private final EntityContext entityContext;
+  private final DispatcherServletService dispatcherServletService;
+  private final EntityContext entityContext;
 
-    @Value("${serverUseSSl:true}")
-    private boolean serverUseSSl;
+  @Value("${serverUseSSl:true}")
+  private boolean serverUseSSl;
 
-    private EventLoopGroup workGroup = new NioEventLoopGroup();
-    private Thread listenClientsThread;
+  private EventLoopGroup workGroup = new NioEventLoopGroup();
+  private Thread listenClientsThread;
 
-    private ServerConnectionStatus serverConnectionStatus;
+  private ServerConnectionStatus serverConnectionStatus;
 
-    public void postConstruct() {
-        // TODO: remove service for now
+  public void postConstruct() {
+    // TODO: remove service for now
         /*updateConnectionStatus(ServerConnectionStatus.NOT_CONNECTED, "");
         connectToServer();
         this.entityContext.listenSettingValueAsync(CloudServerRestartSetting.class, this::restart);
         this.entityContext.listenSettingValueAsync(CloudServerUrlSetting.class, this::restart);
         this.entityContext.listenSettingValueAsync(CloudServerPortSetting.class, this::restart);*/
-    }
+  }
 
-    private void restart() {
-        log.info("Start/restart connection to cloud");
-        if (serverConnectionStatus == ServerConnectionStatus.CONNECTED) {
-            try {
-                this.workGroup.shutdownGracefully().get(60, TimeUnit.SECONDS);
-                this.connectToServer();
-            } catch (TimeoutException ex) {
-                log.error("Unable to finish connection in 60 seconds");
-            } catch (Exception ex) {
-                log.error("Error stopping connect to server", ex);
-            }
-        } else {
-            this.connectToServer();
+  private void restart() {
+    log.info("Start/restart connection to cloud");
+    if (serverConnectionStatus == ServerConnectionStatus.CONNECTED) {
+      try {
+        this.workGroup.shutdownGracefully().get(60, TimeUnit.SECONDS);
+        this.connectToServer();
+      } catch (TimeoutException ex) {
+        log.error("Unable to finish connection in 60 seconds");
+      } catch (Exception ex) {
+        log.error("Error stopping connect to server", ex);
+      }
+    } else {
+      this.connectToServer();
+    }
+  }
+
+  private void connectToServer() {
+    UserEntity user = entityContext.getEntity(ADMIN_USER);
+    this.listenClientsThread = new Thread(() -> {
+      while (!Thread.currentThread().isInterrupted()) {
+        log.info("Starting netty client");
+        try {
+          connectLoop();
+          updateConnectionStatus(ServerConnectionStatus.DISCONNECTED, "");
+        } catch (Exception ex) {
+          log.error("Netty client finished with error: <{}>", CommonUtils.getErrorMessage(ex));
+          updateConnectionStatus(ServerConnectionStatus.DISCONNECTED_WIDTH_ERRORS, CommonUtils.getErrorMessage(ex));
         }
-    }
+        try {
+          TimeUnit.SECONDS.sleep(60);
+        } catch (InterruptedException ignore) {
+        }
+      }
+      log.error("Netty client finished");
+    }, "Thread - netty");
+    listenClientsThread.start();
+  }
 
-    private void connectToServer() {
-        UserEntity user = entityContext.getEntity(ADMIN_USER);
-        this.listenClientsThread = new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                log.info("Starting netty client");
-                try {
-                    connectLoop();
-                    updateConnectionStatus(ServerConnectionStatus.DISCONNECTED, "");
-                } catch (Exception ex) {
-                    log.error("Netty client finished with error: <{}>", CommonUtils.getErrorMessage(ex));
-                    updateConnectionStatus(ServerConnectionStatus.DISCONNECTED_WIDTH_ERRORS, CommonUtils.getErrorMessage(ex));
-                }
-                try {
-                    TimeUnit.SECONDS.sleep(60);
-                } catch (InterruptedException ignore) {
-                }
-            }
-            log.error("Netty client finished");
-        }, "Thread - netty");
-        listenClientsThread.start();
-    }
+  @SneakyThrows
+  private void connectLoop() {
+    Bootstrap bootstrap = new Bootstrap();
+    bootstrap.group(workGroup);
+    bootstrap.channel(NioSocketChannel.class);
+    bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
 
-    @SneakyThrows
-    private void connectLoop() {
-        Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(workGroup);
-        bootstrap.channel(NioSocketChannel.class);
-        bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+    String host = entityContext.setting().getValue(CloudServerUrlSetting.class);
+    Integer port = 8888;
 
-        String host = entityContext.setting().getValue(CloudServerUrlSetting.class);
-        Integer port = 8888;
+    bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+      public void initChannel(SocketChannel socketChannel) throws Exception {
+        log.info("Client init channel: <{}>", socketChannel.toString());
+        ChannelPipeline pipeline = socketChannel.pipeline();
 
-        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
-            public void initChannel(SocketChannel socketChannel) throws Exception {
-                log.info("Client init channel: <{}>", socketChannel.toString());
-                ChannelPipeline pipeline = socketChannel.pipeline();
+        if (NettyClientService.this.serverUseSSl) {
+          UserEntity user = entityContext.getEntity(ADMIN_USER);
+          SSLContext sslContext = SslUtil.createSSLContext(user.getKeystore(), user.getPassword());
+          SSLEngine engine = sslContext.createSSLEngine(host, port);
+          engine.setEnabledProtocols(new String[]{"TLSv1.2"});
+          engine.setUseClientMode(true);
+          pipeline.addLast(new SslHandler(engine, false));
+        }
 
-                if (NettyClientService.this.serverUseSSl) {
-                    UserEntity user = entityContext.getEntity(ADMIN_USER);
-                    SSLContext sslContext = SslUtil.createSSLContext(user.getKeystore(), user.getPassword());
-                    SSLEngine engine = sslContext.createSSLEngine(host, port);
-                    engine.setEnabledProtocols(new String[]{"TLSv1.2"});
-                    engine.setUseClientMode(true);
-                    pipeline.addLast(new SslHandler(engine, false));
-                }
+        pipeline.addLast(
+            new SocketModelEncoder(),
+            new SocketModelDecoder(),
+            new ClientProcessingHandler(dispatcherServletService));
+      }
+    });
+    ChannelFuture channelFuture = bootstrap.connect(host, port).sync();
+    updateConnectionStatus(ServerConnectionStatus.CONNECTED, "");
+    log.info("Netty client started");
 
-                pipeline.addLast(
-                        new SocketModelEncoder(),
-                        new SocketModelDecoder(),
-                        new ClientProcessingHandler(dispatcherServletService));
-            }
-        });
-        ChannelFuture channelFuture = bootstrap.connect(host, port).sync();
-        updateConnectionStatus(ServerConnectionStatus.CONNECTED, "");
-        log.info("Netty client started");
+    ChannelFuture future = channelFuture.channel().closeFuture().sync();
 
-        ChannelFuture future = channelFuture.channel().closeFuture().sync();
+    future.get();
+  }
 
-        future.get();
-    }
-
-    private void updateConnectionStatus(ServerConnectionStatus serverConnectionStatus, String errorStatus) {
-        this.serverConnectionStatus = serverConnectionStatus;
-        this.entityContext.setting().setValue(CloudServerConnectionMessageSetting.class, errorStatus);
-        this.entityContext.setting().setValue(CloudServerConnectionStatusSetting.class, serverConnectionStatus);
-    }
+  private void updateConnectionStatus(ServerConnectionStatus serverConnectionStatus, String errorStatus) {
+    this.serverConnectionStatus = serverConnectionStatus;
+    this.entityContext.setting().setValue(CloudServerConnectionMessageSetting.class, errorStatus);
+    this.entityContext.setting().setValue(CloudServerConnectionStatusSetting.class, serverConnectionStatus);
+  }
 }

@@ -24,53 +24,46 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "RelativeFocus", propOrder = { "distance", "speed" })
+@XmlType(name = "RelativeFocus", propOrder = {"distance", "speed"})
 public class RelativeFocus {
 
-	@XmlElement(name = "Distance")
-	protected float distance;
-	@XmlElement(name = "Speed")
-	protected Float speed;
+  @XmlElement(name = "Distance")
+  protected float distance;
+  @XmlElement(name = "Speed")
+  protected Float speed;
 
-	/**
-	 * Ruft den Wert der distance-Eigenschaft ab.
-	 *
-	 */
-	public float getDistance() {
-		return distance;
-	}
+  /**
+   * Ruft den Wert der distance-Eigenschaft ab.
+   */
+  public float getDistance() {
+    return distance;
+  }
 
-	/**
-	 * Legt den Wert der distance-Eigenschaft fest.
-	 *
-	 */
-	public void setDistance(float value) {
-		this.distance = value;
-	}
+  /**
+   * Legt den Wert der distance-Eigenschaft fest.
+   */
+  public void setDistance(float value) {
+    this.distance = value;
+  }
 
-	/**
-	 * Ruft den Wert der speed-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getSpeed() {
-		return speed;
-	}
+  /**
+   * Ruft den Wert der speed-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getSpeed() {
+    return speed;
+  }
 
-	/**
-	 * Legt den Wert der speed-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setSpeed(Float value) {
-		this.speed = value;
-	}
+  /**
+   * Legt den Wert der speed-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setSpeed(Float value) {
+    this.speed = value;
+  }
 
 }

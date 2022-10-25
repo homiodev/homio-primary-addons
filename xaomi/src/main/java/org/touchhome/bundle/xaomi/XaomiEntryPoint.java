@@ -10,12 +10,12 @@ import org.touchhome.bundle.api.BundleEntryPoint;
 @RequiredArgsConstructor
 public class XaomiEntryPoint implements BundleEntryPoint {
 
-    public void init() {
+  public void init() {
 
-    }
+  }
 
-    @Override
-    public int order() {
-        return 700;
-    }
+  @Override
+  public int order() {
+    return 700;
+  }
 }

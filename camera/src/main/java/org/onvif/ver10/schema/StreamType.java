@@ -20,32 +20,31 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "StreamType")
 @XmlEnum
 public enum StreamType {
 
-	@XmlEnumValue("RTP-Unicast")
-	RTP_UNICAST("RTP-Unicast"), @XmlEnumValue("RTP-Multicast")
-	RTP_MULTICAST("RTP-Multicast");
-	private final String value;
+  @XmlEnumValue("RTP-Unicast")
+  RTP_UNICAST("RTP-Unicast"), @XmlEnumValue("RTP-Multicast")
+  RTP_MULTICAST("RTP-Multicast");
+  private final String value;
 
-	StreamType(String v) {
-		value = v;
-	}
+  StreamType(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static StreamType fromValue(String v) {
+    for (StreamType c : StreamType.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static StreamType fromValue(String v) {
-		for (StreamType c : StreamType.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

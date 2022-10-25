@@ -10,14 +10,14 @@ import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
 @ZigBeeConverter(name = "zigbee:ias_standard_system", clientClusters = {ZclIasZoneCluster.CLUSTER_ID})
 public class ZigBeeConverterIasCieSystem extends ZigBeeConverterIas {
 
-    @Override
-    public boolean initializeConverter() {
-        bitTest = CIE_ALARM1;
-        return super.initializeConverter();
-    }
+  @Override
+  public boolean initializeConverter() {
+    bitTest = CIE_ALARM1;
+    return super.initializeConverter();
+  }
 
-    @Override
-    public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-        return supportsIasChannel(endpoint, ZoneTypeEnum.STANDARD_CIE);
-    }
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
+    return supportsIasChannel(endpoint, ZoneTypeEnum.STANDARD_CIE);
+  }
 }

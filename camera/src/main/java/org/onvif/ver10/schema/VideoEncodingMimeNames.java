@@ -20,36 +20,35 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- *
  */
 @XmlType(name = "VideoEncodingMimeNames")
 @XmlEnum
 public enum VideoEncodingMimeNames {
 
-    JPEG("JPEG"),
-    @XmlEnumValue("MPV4-ES")
-    MPV_4_ES("MPV4-ES"),
-    @XmlEnumValue("H264")
-    H_264("H264"),
-    @XmlEnumValue("H265")
-    H_265("H265");
-    private final String value;
+  JPEG("JPEG"),
+  @XmlEnumValue("MPV4-ES")
+  MPV_4_ES("MPV4-ES"),
+  @XmlEnumValue("H264")
+  H_264("H264"),
+  @XmlEnumValue("H265")
+  H_265("H265");
+  private final String value;
 
-    VideoEncodingMimeNames(String v) {
-        value = v;
-    }
+  VideoEncodingMimeNames(String v) {
+    value = v;
+  }
 
-    public String value() {
-        return value;
+  public static VideoEncodingMimeNames fromValue(String v) {
+    for (VideoEncodingMimeNames c : VideoEncodingMimeNames.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
     }
+    throw new IllegalArgumentException(v);
+  }
 
-    public static VideoEncodingMimeNames fromValue(String v) {
-        for (VideoEncodingMimeNames c: VideoEncodingMimeNames.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
-    }
+  public String value() {
+    return value;
+  }
 
 }

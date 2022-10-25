@@ -20,41 +20,38 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "SetDateTimeType")
 @XmlEnum
 public enum SetDateTimeType {
 
-	/**
-	 * Indicates that the date and time are set manually.
-	 *
-	 */
-	@XmlEnumValue("Manual")
-	MANUAL("Manual"),
+  /**
+   * Indicates that the date and time are set manually.
+   */
+  @XmlEnumValue("Manual")
+  MANUAL("Manual"),
 
-	/**
-	 * Indicates that the date and time are set through NTP
-	 *
-	 */
-	NTP("NTP");
-	private final String value;
+  /**
+   * Indicates that the date and time are set through NTP
+   */
+  NTP("NTP");
+  private final String value;
 
-	SetDateTimeType(String v) {
-		value = v;
-	}
+  SetDateTimeType(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static SetDateTimeType fromValue(String v) {
+    for (SetDateTimeType c : SetDateTimeType.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static SetDateTimeType fromValue(String v) {
-		for (SetDateTimeType c : SetDateTimeType.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

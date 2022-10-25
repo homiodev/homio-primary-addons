@@ -10,12 +10,12 @@ import org.touchhome.bundle.telegram.service.TelegramService;
 @Log4j2
 public final class TelegramStartCommand extends TelegramBaseCommand {
 
-    public TelegramStartCommand(TelegramService.TelegramBot telegramBot) {
-        super("start", "", telegramBot);
-    }
+  public TelegramStartCommand(TelegramService.TelegramBot telegramBot) {
+    super("start", "", telegramBot);
+  }
 
-    @Override
-    public void execute(AbsSender absSender, User user, Chat chat, String[] strings, StringBuilder sb, SendMessage message) {
-        TelegramHelpCommand.assembleCommands(telegramBot, sb, message);
-    }
+  @Override
+  public void execute(AbsSender absSender, User user, Chat chat, String[] strings, StringBuilder sb, SendMessage message) {
+    TelegramHelpCommand.assembleCommands(telegramBot, sb, message);
+  }
 }

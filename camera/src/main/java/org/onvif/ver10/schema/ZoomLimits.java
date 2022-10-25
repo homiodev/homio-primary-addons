@@ -23,35 +23,30 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ZoomLimits", propOrder = { "range" })
+@XmlType(name = "ZoomLimits", propOrder = {"range"})
 public class ZoomLimits {
 
-	@XmlElement(name = "Range", required = true)
-	protected Space1DDescription range;
+  @XmlElement(name = "Range", required = true)
+  protected Space1DDescription range;
 
-	/**
-	 * Ruft den Wert der range-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Space1DDescription }
-	 *
-	 */
-	public Space1DDescription getRange() {
-		return range;
-	}
+  /**
+   * Ruft den Wert der range-Eigenschaft ab.
+   *
+   * @return possible object is {@link Space1DDescription }
+   */
+  public Space1DDescription getRange() {
+    return range;
+  }
 
-	/**
-	 * Legt den Wert der range-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Space1DDescription }
-	 *
-	 */
-	public void setRange(Space1DDescription value) {
-		this.range = value;
-	}
+  /**
+   * Legt den Wert der range-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Space1DDescription }
+   */
+  public void setRange(Space1DDescription value) {
+    this.range = value;
+  }
 
 }

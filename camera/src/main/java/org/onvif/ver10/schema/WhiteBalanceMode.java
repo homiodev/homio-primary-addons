@@ -19,20 +19,19 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "WhiteBalanceMode")
 @XmlEnum
 public enum WhiteBalanceMode {
 
-	AUTO, MANUAL;
+  AUTO, MANUAL;
 
-	public String value() {
-		return name();
-	}
+  public static WhiteBalanceMode fromValue(String v) {
+    return valueOf(v);
+  }
 
-	public static WhiteBalanceMode fromValue(String v) {
-		return valueOf(v);
-	}
+  public String value() {
+    return name();
+  }
 
 }

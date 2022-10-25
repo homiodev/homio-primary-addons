@@ -1,9 +1,13 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 /**
  * <p>
@@ -28,144 +32,126 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "FocusConfiguration20", propOrder = { "autoFocusMode", "defaultSpeed", "nearLimit", "farLimit", "extension" })
+@XmlType(name = "FocusConfiguration20", propOrder = {"autoFocusMode", "defaultSpeed", "nearLimit", "farLimit", "extension"})
 public class FocusConfiguration20 {
 
-	@XmlElement(name = "AutoFocusMode", required = true)
-	protected AutoFocusMode autoFocusMode;
-	@XmlElement(name = "DefaultSpeed")
-	protected Float defaultSpeed;
-	@XmlElement(name = "NearLimit")
-	protected Float nearLimit;
-	@XmlElement(name = "FarLimit")
-	protected Float farLimit;
-	@XmlElement(name = "Extension")
-	protected FocusConfiguration20Extension extension;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "AutoFocusMode", required = true)
+  protected AutoFocusMode autoFocusMode;
+  @XmlElement(name = "DefaultSpeed")
+  protected Float defaultSpeed;
+  @XmlElement(name = "NearLimit")
+  protected Float nearLimit;
+  @XmlElement(name = "FarLimit")
+  protected Float farLimit;
+  @XmlElement(name = "Extension")
+  protected FocusConfiguration20Extension extension;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der autoFocusMode-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link AutoFocusMode }
-	 *
-	 */
-	public AutoFocusMode getAutoFocusMode() {
-		return autoFocusMode;
-	}
+  /**
+   * Ruft den Wert der autoFocusMode-Eigenschaft ab.
+   *
+   * @return possible object is {@link AutoFocusMode }
+   */
+  public AutoFocusMode getAutoFocusMode() {
+    return autoFocusMode;
+  }
 
-	/**
-	 * Legt den Wert der autoFocusMode-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link AutoFocusMode }
-	 *
-	 */
-	public void setAutoFocusMode(AutoFocusMode value) {
-		this.autoFocusMode = value;
-	}
+  /**
+   * Legt den Wert der autoFocusMode-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link AutoFocusMode }
+   */
+  public void setAutoFocusMode(AutoFocusMode value) {
+    this.autoFocusMode = value;
+  }
 
-	/**
-	 * Ruft den Wert der defaultSpeed-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getDefaultSpeed() {
-		return defaultSpeed;
-	}
+  /**
+   * Ruft den Wert der defaultSpeed-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getDefaultSpeed() {
+    return defaultSpeed;
+  }
 
-	/**
-	 * Legt den Wert der defaultSpeed-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setDefaultSpeed(Float value) {
-		this.defaultSpeed = value;
-	}
+  /**
+   * Legt den Wert der defaultSpeed-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setDefaultSpeed(Float value) {
+    this.defaultSpeed = value;
+  }
 
-	/**
-	 * Ruft den Wert der nearLimit-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getNearLimit() {
-		return nearLimit;
-	}
+  /**
+   * Ruft den Wert der nearLimit-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getNearLimit() {
+    return nearLimit;
+  }
 
-	/**
-	 * Legt den Wert der nearLimit-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setNearLimit(Float value) {
-		this.nearLimit = value;
-	}
+  /**
+   * Legt den Wert der nearLimit-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setNearLimit(Float value) {
+    this.nearLimit = value;
+  }
 
-	/**
-	 * Ruft den Wert der farLimit-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getFarLimit() {
-		return farLimit;
-	}
+  /**
+   * Ruft den Wert der farLimit-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getFarLimit() {
+    return farLimit;
+  }
 
-	/**
-	 * Legt den Wert der farLimit-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setFarLimit(Float value) {
-		this.farLimit = value;
-	}
+  /**
+   * Legt den Wert der farLimit-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setFarLimit(Float value) {
+    this.farLimit = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link FocusConfiguration20Extension }
-	 *
-	 */
-	public FocusConfiguration20Extension getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link FocusConfiguration20Extension }
+   */
+  public FocusConfiguration20Extension getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link FocusConfiguration20Extension }
-	 *
-	 */
-	public void setExtension(FocusConfiguration20Extension value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link FocusConfiguration20Extension }
+   */
+  public void setExtension(FocusConfiguration20Extension value) {
+    this.extension = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

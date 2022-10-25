@@ -7,72 +7,79 @@ import org.onvif.ver10.schema.AbsoluteFocus;
 import org.onvif.ver10.schema.FocusMove;
 import org.onvif.ver10.schema.ImagingOptions20;
 import org.onvif.ver10.schema.ImagingSettings20;
-import org.onvif.ver20.imaging.wsdl.*;
+import org.onvif.ver20.imaging.wsdl.GetImagingSettings;
+import org.onvif.ver20.imaging.wsdl.GetImagingSettingsResponse;
+import org.onvif.ver20.imaging.wsdl.GetOptions;
+import org.onvif.ver20.imaging.wsdl.GetOptionsResponse;
+import org.onvif.ver20.imaging.wsdl.Move;
+import org.onvif.ver20.imaging.wsdl.MoveResponse;
+import org.onvif.ver20.imaging.wsdl.SetImagingSettings;
+import org.onvif.ver20.imaging.wsdl.SetImagingSettingsResponse;
 
 @RequiredArgsConstructor
 public class ImagingDevices {
 
-    private final OnvifDeviceState onvifDeviceState;
-    private final SOAP soap;
+  private final OnvifDeviceState onvifDeviceState;
+  private final SOAP soap;
 
-    public ImagingOptions20 getOptions(String videoSourceToken) {
-        if (videoSourceToken == null) {
-            return null;
-        }
-
-        GetOptions request = new GetOptions();
-        request.setVideoSourceToken(videoSourceToken);
-
-        GetOptionsResponse response = soap.createSOAPImagingRequest(request, GetOptionsResponse.class);
-        return response == null ? null : response.getImagingOptions();
+  public ImagingOptions20 getOptions(String videoSourceToken) {
+    if (videoSourceToken == null) {
+      return null;
     }
 
-    public boolean moveFocus(String videoSourceToken, float absoluteFocusValue) {
-        if (videoSourceToken == null) {
-            return false;
-        }
+    GetOptions request = new GetOptions();
+    request.setVideoSourceToken(videoSourceToken);
 
-        Move request = new Move();
-        AbsoluteFocus absoluteFocus = new AbsoluteFocus();
-        absoluteFocus.setPosition(absoluteFocusValue);
+    GetOptionsResponse response = soap.createSOAPImagingRequest(request, GetOptionsResponse.class);
+    return response == null ? null : response.getImagingOptions();
+  }
 
-        FocusMove focusMove = new FocusMove();
-        focusMove.setAbsolute(absoluteFocus);
-
-        request.setVideoSourceToken(videoSourceToken);
-        request.setFocus(focusMove);
-
-        MoveResponse response = soap.createSOAPImagingRequest(request, MoveResponse.class);
-
-        return response != null;
+  public boolean moveFocus(String videoSourceToken, float absoluteFocusValue) {
+    if (videoSourceToken == null) {
+      return false;
     }
 
-    public ImagingSettings20 getImagingSettings(String videoSourceToken) {
-        if (videoSourceToken == null) {
-            return null;
-        }
+    Move request = new Move();
+    AbsoluteFocus absoluteFocus = new AbsoluteFocus();
+    absoluteFocus.setPosition(absoluteFocusValue);
 
-        GetImagingSettings request = new GetImagingSettings();
-        request.setVideoSourceToken(videoSourceToken);
+    FocusMove focusMove = new FocusMove();
+    focusMove.setAbsolute(absoluteFocus);
 
-        GetImagingSettingsResponse response = soap.createSOAPImagingRequest(request, GetImagingSettingsResponse.class);
-        return response == null ? null : response.getImagingSettings();
+    request.setVideoSourceToken(videoSourceToken);
+    request.setFocus(focusMove);
+
+    MoveResponse response = soap.createSOAPImagingRequest(request, MoveResponse.class);
+
+    return response != null;
+  }
+
+  public ImagingSettings20 getImagingSettings(String videoSourceToken) {
+    if (videoSourceToken == null) {
+      return null;
     }
 
-    public boolean setImagingSettings(String videoSourceToken, ImagingSettings20 imagingSettings) {
-        if (videoSourceToken == null) {
-            return false;
-        }
+    GetImagingSettings request = new GetImagingSettings();
+    request.setVideoSourceToken(videoSourceToken);
 
-        SetImagingSettings request = new SetImagingSettings();
-        request.setVideoSourceToken(videoSourceToken);
-        request.setImagingSettings(imagingSettings);
+    GetImagingSettingsResponse response = soap.createSOAPImagingRequest(request, GetImagingSettingsResponse.class);
+    return response == null ? null : response.getImagingSettings();
+  }
 
-        SetImagingSettingsResponse response = soap.createSOAPImagingRequest(request, SetImagingSettingsResponse.class);
-        return response != null;
+  public boolean setImagingSettings(String videoSourceToken, ImagingSettings20 imagingSettings) {
+    if (videoSourceToken == null) {
+      return false;
     }
 
-    public void dispose() {
+    SetImagingSettings request = new SetImagingSettings();
+    request.setVideoSourceToken(videoSourceToken);
+    request.setImagingSettings(imagingSettings);
 
-    }
+    SetImagingSettingsResponse response = soap.createSOAPImagingRequest(request, SetImagingSettingsResponse.class);
+    return response != null;
+  }
+
+  public void dispose() {
+
+  }
 }

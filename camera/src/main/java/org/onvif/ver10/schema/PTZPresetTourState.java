@@ -22,34 +22,33 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "PTZPresetTourState")
 @XmlEnum
 public enum PTZPresetTourState {
 
-	@XmlEnumValue("Idle")
-	IDLE("Idle"), @XmlEnumValue("Touring")
-	TOURING("Touring"), @XmlEnumValue("Paused")
-	PAUSED("Paused"), @XmlEnumValue("Extended")
-	EXTENDED("Extended");
-	private final String value;
+  @XmlEnumValue("Idle")
+  IDLE("Idle"), @XmlEnumValue("Touring")
+  TOURING("Touring"), @XmlEnumValue("Paused")
+  PAUSED("Paused"), @XmlEnumValue("Extended")
+  EXTENDED("Extended");
+  private final String value;
 
-	PTZPresetTourState(String v) {
-		value = v;
-	}
+  PTZPresetTourState(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static PTZPresetTourState fromValue(String v) {
+    for (PTZPresetTourState c : PTZPresetTourState.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static PTZPresetTourState fromValue(String v) {
-		for (PTZPresetTourState c : PTZPresetTourState.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

@@ -3,11 +3,10 @@ package org.touchhome.bundle.zigbee.converter.impl.config;
 import com.zsmartsystems.zigbee.ZigBeeEndpointAddress;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclLevelControlCluster;
-import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.Logger;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Configuration handler for the {@link ZclLevelControlCluster}
@@ -15,34 +14,34 @@ import java.util.concurrent.Future;
 @Log4j2
 public class ZclLevelControlConfig implements ZclClusterConfigHandler {
 
-    private static final String CONFIG_ID = "zigbee_levelcontrol_";
-    private static final String CONFIG_DEFAULTTRANSITIONTIME = CONFIG_ID + "transitiontimedefault";
-    private static final String CONFIG_ONOFFTRANSITIONTIME = CONFIG_ID + "transitiontimeonoff";
-    private static final String CONFIG_ONTRANSITIONTIME = CONFIG_ID + "transitiontimeon";
-    private static final String CONFIG_OFFTRANSITIONTIME = CONFIG_ID + "transitiontimeoff";
-    private static final String CONFIG_ONLEVEL = CONFIG_ID + "onlevel";
-    private static final String CONFIG_DEFAULTMOVERATE = CONFIG_ID + "defaultrate";
+  private static final String CONFIG_ID = "zigbee_levelcontrol_";
+  private static final String CONFIG_DEFAULTTRANSITIONTIME = CONFIG_ID + "transitiontimedefault";
+  private static final String CONFIG_ONOFFTRANSITIONTIME = CONFIG_ID + "transitiontimeonoff";
+  private static final String CONFIG_ONTRANSITIONTIME = CONFIG_ID + "transitiontimeon";
+  private static final String CONFIG_OFFTRANSITIONTIME = CONFIG_ID + "transitiontimeoff";
+  private static final String CONFIG_ONLEVEL = CONFIG_ID + "onlevel";
+  private static final String CONFIG_DEFAULTMOVERATE = CONFIG_ID + "defaultrate";
 
-    private ZclLevelControlCluster levelControlCluster;
-    private int defaultTransitionTime = 10;
+  private ZclLevelControlCluster levelControlCluster;
+  private int defaultTransitionTime = 10;
 
-    static void initCluster(Future<Boolean> booleanFuture, Logger log, ZigBeeEndpointAddress zigBeeAddress, String clusterName) {
-        try {
-            Boolean result = booleanFuture.get();
-            if (!result) {
-                log.debug("{}/{}: Unable to get supported attributes for {}.", zigBeeAddress,
-                        clusterName);
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            log.error("{}/{}: Error getting supported attributes for {}. ", zigBeeAddress,
-                    clusterName, e);
-        }
+  static void initCluster(Future<Boolean> booleanFuture, Logger log, ZigBeeEndpointAddress zigBeeAddress, String clusterName) {
+    try {
+      Boolean result = booleanFuture.get();
+      if (!result) {
+        log.debug("{}/{}: Unable to get supported attributes for {}.", zigBeeAddress,
+            clusterName);
+      }
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("{}/{}: Error getting supported attributes for {}. ", zigBeeAddress,
+          clusterName, e);
     }
+  }
 
-    @Override
-    public boolean initialize(ZclCluster cluster) {
-        levelControlCluster = (ZclLevelControlCluster) cluster;
-        initCluster(levelControlCluster.discoverAttributes(false), log, levelControlCluster.getZigBeeAddress(), levelControlCluster.getClusterName());
+  @Override
+  public boolean initialize(ZclCluster cluster) {
+    levelControlCluster = (ZclLevelControlCluster) cluster;
+    initCluster(levelControlCluster.discoverAttributes(false), log, levelControlCluster.getZigBeeAddress(), levelControlCluster.getClusterName());
 
         /*List<ParameterOption> options = new ArrayList<>();
         options.add(new ParameterOption("65535", "Use On/Off times"));
@@ -96,8 +95,8 @@ public class ZclLevelControlConfig implements ZclClusterConfigHandler {
 
         return !parameters.isEmpty();*/
 
-        return true;
-    }
+    return true;
+  }
 
     /*@Override
     public boolean updateConfiguration( Configuration currentConfiguration,
@@ -162,17 +161,17 @@ public class ZclLevelControlConfig implements ZclClusterConfigHandler {
         return updated;
     }*/
 
-    @Override
-    public boolean updateConfiguration() {
-        return false;
-    }
+  @Override
+  public boolean updateConfiguration() {
+    return false;
+  }
 
-    /**
-     * Gets the default transition time to be used when sending commands to the cluster
-     *
-     * @return the current defaultTransitionTime
-     */
-    public int getDefaultTransitionTime() {
-        return defaultTransitionTime;
-    }
+  /**
+   * Gets the default transition time to be used when sending commands to the cluster
+   *
+   * @return the current defaultTransitionTime
+   */
+  public int getDefaultTransitionTime() {
+    return defaultTransitionTime;
+  }
 }

@@ -1,9 +1,13 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 /**
  * <p>
@@ -29,167 +33,146 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "OSDConfiguration", propOrder = { "videoSourceConfigurationToken", "type", "position", "textString", "image", "extension" })
+@XmlType(name = "OSDConfiguration", propOrder = {"videoSourceConfigurationToken", "type", "position", "textString", "image", "extension"})
 public class OSDConfiguration extends DeviceEntity {
 
-	@XmlElement(name = "VideoSourceConfigurationToken", required = true)
-	protected OSDReference videoSourceConfigurationToken;
-	@XmlElement(name = "Type", required = true)
-	protected OSDType type;
-	@XmlElement(name = "Position", required = true)
-	protected OSDPosConfiguration position;
-	@XmlElement(name = "TextString")
-	protected OSDTextConfiguration textString;
-	@XmlElement(name = "Image")
-	protected OSDImgConfiguration image;
-	@XmlElement(name = "Extension")
-	protected OSDConfigurationExtension extension;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "VideoSourceConfigurationToken", required = true)
+  protected OSDReference videoSourceConfigurationToken;
+  @XmlElement(name = "Type", required = true)
+  protected OSDType type;
+  @XmlElement(name = "Position", required = true)
+  protected OSDPosConfiguration position;
+  @XmlElement(name = "TextString")
+  protected OSDTextConfiguration textString;
+  @XmlElement(name = "Image")
+  protected OSDImgConfiguration image;
+  @XmlElement(name = "Extension")
+  protected OSDConfigurationExtension extension;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der videoSourceConfigurationToken-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link OSDReference }
-	 *
-	 */
-	public OSDReference getVideoSourceConfigurationToken() {
-		return videoSourceConfigurationToken;
-	}
+  /**
+   * Ruft den Wert der videoSourceConfigurationToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link OSDReference }
+   */
+  public OSDReference getVideoSourceConfigurationToken() {
+    return videoSourceConfigurationToken;
+  }
 
-	/**
-	 * Legt den Wert der videoSourceConfigurationToken-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link OSDReference }
-	 *
-	 */
-	public void setVideoSourceConfigurationToken(OSDReference value) {
-		this.videoSourceConfigurationToken = value;
-	}
+  /**
+   * Legt den Wert der videoSourceConfigurationToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link OSDReference }
+   */
+  public void setVideoSourceConfigurationToken(OSDReference value) {
+    this.videoSourceConfigurationToken = value;
+  }
 
-	/**
-	 * Ruft den Wert der type-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link OSDType }
-	 *
-	 */
-	public OSDType getType() {
-		return type;
-	}
+  /**
+   * Ruft den Wert der type-Eigenschaft ab.
+   *
+   * @return possible object is {@link OSDType }
+   */
+  public OSDType getType() {
+    return type;
+  }
 
-	/**
-	 * Legt den Wert der type-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link OSDType }
-	 *
-	 */
-	public void setType(OSDType value) {
-		this.type = value;
-	}
+  /**
+   * Legt den Wert der type-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link OSDType }
+   */
+  public void setType(OSDType value) {
+    this.type = value;
+  }
 
-	/**
-	 * Ruft den Wert der position-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link OSDPosConfiguration }
-	 *
-	 */
-	public OSDPosConfiguration getPosition() {
-		return position;
-	}
+  /**
+   * Ruft den Wert der position-Eigenschaft ab.
+   *
+   * @return possible object is {@link OSDPosConfiguration }
+   */
+  public OSDPosConfiguration getPosition() {
+    return position;
+  }
 
-	/**
-	 * Legt den Wert der position-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link OSDPosConfiguration }
-	 *
-	 */
-	public void setPosition(OSDPosConfiguration value) {
-		this.position = value;
-	}
+  /**
+   * Legt den Wert der position-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link OSDPosConfiguration }
+   */
+  public void setPosition(OSDPosConfiguration value) {
+    this.position = value;
+  }
 
-	/**
-	 * Ruft den Wert der textString-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link OSDTextConfiguration }
-	 *
-	 */
-	public OSDTextConfiguration getTextString() {
-		return textString;
-	}
+  /**
+   * Ruft den Wert der textString-Eigenschaft ab.
+   *
+   * @return possible object is {@link OSDTextConfiguration }
+   */
+  public OSDTextConfiguration getTextString() {
+    return textString;
+  }
 
-	/**
-	 * Legt den Wert der textString-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link OSDTextConfiguration }
-	 *
-	 */
-	public void setTextString(OSDTextConfiguration value) {
-		this.textString = value;
-	}
+  /**
+   * Legt den Wert der textString-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link OSDTextConfiguration }
+   */
+  public void setTextString(OSDTextConfiguration value) {
+    this.textString = value;
+  }
 
-	/**
-	 * Ruft den Wert der image-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link OSDImgConfiguration }
-	 *
-	 */
-	public OSDImgConfiguration getImage() {
-		return image;
-	}
+  /**
+   * Ruft den Wert der image-Eigenschaft ab.
+   *
+   * @return possible object is {@link OSDImgConfiguration }
+   */
+  public OSDImgConfiguration getImage() {
+    return image;
+  }
 
-	/**
-	 * Legt den Wert der image-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link OSDImgConfiguration }
-	 *
-	 */
-	public void setImage(OSDImgConfiguration value) {
-		this.image = value;
-	}
+  /**
+   * Legt den Wert der image-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link OSDImgConfiguration }
+   */
+  public void setImage(OSDImgConfiguration value) {
+    this.image = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link OSDConfigurationExtension }
-	 *
-	 */
-	public OSDConfigurationExtension getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link OSDConfigurationExtension }
+   */
+  public OSDConfigurationExtension getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link OSDConfigurationExtension }
-	 *
-	 */
-	public void setExtension(OSDConfigurationExtension value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link OSDConfigurationExtension }
+   */
+  public void setExtension(OSDConfigurationExtension value) {
+    this.extension = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

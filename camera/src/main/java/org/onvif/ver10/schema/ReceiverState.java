@@ -22,56 +22,51 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "ReceiverState")
 @XmlEnum
 public enum ReceiverState {
 
-	/**
-	 * The receiver is not connected.
-	 *
-	 */
-	@XmlEnumValue("NotConnected")
-	NOT_CONNECTED("NotConnected"),
+  /**
+   * The receiver is not connected.
+   */
+  @XmlEnumValue("NotConnected")
+  NOT_CONNECTED("NotConnected"),
 
-	/**
-	 * The receiver is attempting to connect.
-	 *
-	 */
-	@XmlEnumValue("Connecting")
-	CONNECTING("Connecting"),
+  /**
+   * The receiver is attempting to connect.
+   */
+  @XmlEnumValue("Connecting")
+  CONNECTING("Connecting"),
 
-	/**
-	 * The receiver is connected.
-	 *
-	 */
-	@XmlEnumValue("Connected")
-	CONNECTED("Connected"),
+  /**
+   * The receiver is connected.
+   */
+  @XmlEnumValue("Connected")
+  CONNECTED("Connected"),
 
-	/**
-	 * This case should never happen.
-	 *
-	 */
-	@XmlEnumValue("Unknown")
-	UNKNOWN("Unknown");
-	private final String value;
+  /**
+   * This case should never happen.
+   */
+  @XmlEnumValue("Unknown")
+  UNKNOWN("Unknown");
+  private final String value;
 
-	ReceiverState(String v) {
-		value = v;
-	}
+  ReceiverState(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static ReceiverState fromValue(String v) {
+    for (ReceiverState c : ReceiverState.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static ReceiverState fromValue(String v) {
-		for (ReceiverState c : ReceiverState.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

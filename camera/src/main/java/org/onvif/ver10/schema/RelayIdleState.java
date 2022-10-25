@@ -20,32 +20,31 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "RelayIdleState")
 @XmlEnum
 public enum RelayIdleState {
 
-	@XmlEnumValue("closed")
-	CLOSED("closed"), @XmlEnumValue("open")
-	OPEN("open");
-	private final String value;
+  @XmlEnumValue("closed")
+  CLOSED("closed"), @XmlEnumValue("open")
+  OPEN("open");
+  private final String value;
 
-	RelayIdleState(String v) {
-		value = v;
-	}
+  RelayIdleState(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static RelayIdleState fromValue(String v) {
+    for (RelayIdleState c : RelayIdleState.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static RelayIdleState fromValue(String v) {
-		for (RelayIdleState c : RelayIdleState.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

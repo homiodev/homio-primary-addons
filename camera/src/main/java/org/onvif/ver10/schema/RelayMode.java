@@ -20,32 +20,31 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "RelayMode")
 @XmlEnum
 public enum RelayMode {
 
-	@XmlEnumValue("Monostable")
-	MONOSTABLE("Monostable"), @XmlEnumValue("Bistable")
-	BISTABLE("Bistable");
-	private final String value;
+  @XmlEnumValue("Monostable")
+  MONOSTABLE("Monostable"), @XmlEnumValue("Bistable")
+  BISTABLE("Bistable");
+  private final String value;
 
-	RelayMode(String v) {
-		value = v;
-	}
+  RelayMode(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static RelayMode fromValue(String v) {
+    for (RelayMode c : RelayMode.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static RelayMode fromValue(String v) {
-		for (RelayMode c : RelayMode.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

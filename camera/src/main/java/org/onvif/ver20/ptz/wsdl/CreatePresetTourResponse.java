@@ -1,6 +1,10 @@
 package org.onvif.ver20.ptz.wsdl;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
@@ -20,36 +24,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "presetTourToken" })
+@XmlType(name = "", propOrder = {"presetTourToken"})
 @XmlRootElement(name = "CreatePresetTourResponse")
 public class CreatePresetTourResponse {
 
-	@XmlElement(name = "PresetTourToken", required = true)
-	protected String presetTourToken;
+  @XmlElement(name = "PresetTourToken", required = true)
+  protected String presetTourToken;
 
-	/**
-	 * Ruft den Wert der presetTourToken-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getPresetTourToken() {
-		return presetTourToken;
-	}
+  /**
+   * Ruft den Wert der presetTourToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getPresetTourToken() {
+    return presetTourToken;
+  }
 
-	/**
-	 * Legt den Wert der presetTourToken-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setPresetTourToken(String value) {
-		this.presetTourToken = value;
-	}
+  /**
+   * Legt den Wert der presetTourToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setPresetTourToken(String value) {
+    this.presetTourToken = value;
+  }
 
 }

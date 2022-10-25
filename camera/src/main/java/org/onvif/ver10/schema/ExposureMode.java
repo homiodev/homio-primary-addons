@@ -19,20 +19,19 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "ExposureMode")
 @XmlEnum
 public enum ExposureMode {
 
-	AUTO, MANUAL;
+  AUTO, MANUAL;
 
-	public String value() {
-		return name();
-	}
+  public static ExposureMode fromValue(String v) {
+    return valueOf(v);
+  }
 
-	public static ExposureMode fromValue(String v) {
-		return valueOf(v);
-	}
+  public String value() {
+    return name();
+  }
 
 }

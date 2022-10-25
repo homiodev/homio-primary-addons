@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.Dot11Capabilities;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "capabilities" })
+@XmlType(name = "", propOrder = {"capabilities"})
 @XmlRootElement(name = "GetDot11CapabilitiesResponse")
 public class GetDot11CapabilitiesResponse {
 
-	@XmlElement(name = "Capabilities", required = true)
-	protected Dot11Capabilities capabilities;
+  @XmlElement(name = "Capabilities", required = true)
+  protected Dot11Capabilities capabilities;
 
-	/**
-	 * Ruft den Wert der capabilities-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Dot11Capabilities }
-	 *
-	 */
-	public Dot11Capabilities getCapabilities() {
-		return capabilities;
-	}
+  /**
+   * Ruft den Wert der capabilities-Eigenschaft ab.
+   *
+   * @return possible object is {@link Dot11Capabilities }
+   */
+  public Dot11Capabilities getCapabilities() {
+    return capabilities;
+  }
 
-	/**
-	 * Legt den Wert der capabilities-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Dot11Capabilities }
-	 *
-	 */
-	public void setCapabilities(Dot11Capabilities value) {
-		this.capabilities = value;
-	}
+  /**
+   * Legt den Wert der capabilities-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Dot11Capabilities }
+   */
+  public void setCapabilities(Dot11Capabilities value) {
+    this.capabilities = value;
+  }
 
 }

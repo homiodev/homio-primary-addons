@@ -1,145 +1,133 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.namespace.QName;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Appearance", propOrder = { "transformation", "shape", "color", "clazz", "extension" })
+@XmlType(name = "Appearance", propOrder = {"transformation", "shape", "color", "clazz", "extension"})
 public class Appearance {
 
-	@XmlElement(name = "Transformation")
-	protected Transformation transformation;
-	@XmlElement(name = "Shape")
-	protected ShapeDescriptor shape;
-	@XmlElement(name = "Color")
-	protected ColorDescriptor color;
-	@XmlElement(name = "Class")
-	protected ClassDescriptor clazz;
-	@XmlElement(name = "Extension")
-	protected AppearanceExtension extension;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "Transformation")
+  protected Transformation transformation;
+  @XmlElement(name = "Shape")
+  protected ShapeDescriptor shape;
+  @XmlElement(name = "Color")
+  protected ColorDescriptor color;
+  @XmlElement(name = "Class")
+  protected ClassDescriptor clazz;
+  @XmlElement(name = "Extension")
+  protected AppearanceExtension extension;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der transformation-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Transformation }
-	 *
-	 */
-	public Transformation getTransformation() {
-		return transformation;
-	}
+  /**
+   * Ruft den Wert der transformation-Eigenschaft ab.
+   *
+   * @return possible object is {@link Transformation }
+   */
+  public Transformation getTransformation() {
+    return transformation;
+  }
 
-	/**
-	 * Legt den Wert der transformation-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Transformation }
-	 *
-	 */
-	public void setTransformation(Transformation value) {
-		this.transformation = value;
-	}
+  /**
+   * Legt den Wert der transformation-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Transformation }
+   */
+  public void setTransformation(Transformation value) {
+    this.transformation = value;
+  }
 
-	/**
-	 * Ruft den Wert der shape-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link ShapeDescriptor }
-	 *
-	 */
-	public ShapeDescriptor getShape() {
-		return shape;
-	}
+  /**
+   * Ruft den Wert der shape-Eigenschaft ab.
+   *
+   * @return possible object is {@link ShapeDescriptor }
+   */
+  public ShapeDescriptor getShape() {
+    return shape;
+  }
 
-	/**
-	 * Legt den Wert der shape-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link ShapeDescriptor }
-	 *
-	 */
-	public void setShape(ShapeDescriptor value) {
-		this.shape = value;
-	}
+  /**
+   * Legt den Wert der shape-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ShapeDescriptor }
+   */
+  public void setShape(ShapeDescriptor value) {
+    this.shape = value;
+  }
 
-	/**
-	 * Ruft den Wert der color-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link ColorDescriptor }
-	 *
-	 */
-	public ColorDescriptor getColor() {
-		return color;
-	}
+  /**
+   * Ruft den Wert der color-Eigenschaft ab.
+   *
+   * @return possible object is {@link ColorDescriptor }
+   */
+  public ColorDescriptor getColor() {
+    return color;
+  }
 
-	/**
-	 * Legt den Wert der color-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link ColorDescriptor }
-	 *
-	 */
-	public void setColor(ColorDescriptor value) {
-		this.color = value;
-	}
+  /**
+   * Legt den Wert der color-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ColorDescriptor }
+   */
+  public void setColor(ColorDescriptor value) {
+    this.color = value;
+  }
 
-	/**
-	 * Ruft den Wert der clazz-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link ClassDescriptor }
-	 *
-	 */
-	public ClassDescriptor getClazz() {
-		return clazz;
-	}
+  /**
+   * Ruft den Wert der clazz-Eigenschaft ab.
+   *
+   * @return possible object is {@link ClassDescriptor }
+   */
+  public ClassDescriptor getClazz() {
+    return clazz;
+  }
 
-	/**
-	 * Legt den Wert der clazz-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link ClassDescriptor }
-	 *
-	 */
-	public void setClazz(ClassDescriptor value) {
-		this.clazz = value;
-	}
+  /**
+   * Legt den Wert der clazz-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ClassDescriptor }
+   */
+  public void setClazz(ClassDescriptor value) {
+    this.clazz = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link AppearanceExtension }
-	 *
-	 */
-	public AppearanceExtension getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link AppearanceExtension }
+   */
+  public AppearanceExtension getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link AppearanceExtension }
-	 *
-	 */
-	public void setExtension(AppearanceExtension value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link AppearanceExtension }
+   */
+  public void setExtension(AppearanceExtension value) {
+    this.extension = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

@@ -8,27 +8,27 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum DigitalIdleState {
 
-    @XmlEnumValue("closed")
-    CLOSED("closed"),
-    @XmlEnumValue("open")
-    OPEN("open");
-    private final String value;
+  @XmlEnumValue("closed")
+  CLOSED("closed"),
+  @XmlEnumValue("open")
+  OPEN("open");
+  private final String value;
 
-    DigitalIdleState(String v) {
-        value = v;
-    }
+  DigitalIdleState(String v) {
+    value = v;
+  }
 
-    public String value() {
-        return value;
+  public static DigitalIdleState fromValue(String v) {
+    for (DigitalIdleState c : DigitalIdleState.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
     }
+    throw new IllegalArgumentException(v);
+  }
 
-    public static DigitalIdleState fromValue(String v) {
-        for (DigitalIdleState c: DigitalIdleState.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
-    }
+  public String value() {
+    return value;
+  }
 
 }

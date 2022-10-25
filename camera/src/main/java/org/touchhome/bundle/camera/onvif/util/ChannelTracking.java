@@ -6,32 +6,33 @@ import io.netty.channel.Channel;
  * Can be used to find the handle for a HTTP channel if you know the URL. The reply can optionally be stored for later use.
  */
 public class ChannelTracking {
-    private String storedReply = "";
-    private String requestUrl = "";
-    private Channel channel;
 
-    public ChannelTracking(Channel channel, String requestUrl) {
-        this.channel = channel;
-        this.requestUrl = requestUrl;
-    }
+  private String storedReply = "";
+  private String requestUrl = "";
+  private Channel channel;
 
-    public String getRequestUrl() {
-        return requestUrl;
-    }
+  public ChannelTracking(Channel channel, String requestUrl) {
+    this.channel = channel;
+    this.requestUrl = requestUrl;
+  }
 
-    public Channel getChannel() {
-        return channel;
-    }
+  public String getRequestUrl() {
+    return requestUrl;
+  }
 
-    public void setChannel(Channel ch) {
-        channel = ch;
-    }
+  public Channel getChannel() {
+    return channel;
+  }
 
-    public String getReply() {
-        return storedReply;
-    }
+  public void setChannel(Channel ch) {
+    channel = ch;
+  }
 
-    public void setReply(String replyToStore) {
-        storedReply = replyToStore;
-    }
+  public String getReply() {
+    return storedReply;
+  }
+
+  public void setReply(String replyToStore) {
+    storedReply = replyToStore;
+  }
 }

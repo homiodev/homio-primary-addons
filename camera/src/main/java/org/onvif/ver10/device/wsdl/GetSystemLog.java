@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.SystemLogType;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "logType" })
+@XmlType(name = "", propOrder = {"logType"})
 @XmlRootElement(name = "GetSystemLog")
 public class GetSystemLog {
 
-	@XmlElement(name = "LogType", required = true)
-	protected SystemLogType logType;
+  @XmlElement(name = "LogType", required = true)
+  protected SystemLogType logType;
 
-	/**
-	 * Ruft den Wert der logType-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link SystemLogType }
-	 *
-	 */
-	public SystemLogType getLogType() {
-		return logType;
-	}
+  /**
+   * Ruft den Wert der logType-Eigenschaft ab.
+   *
+   * @return possible object is {@link SystemLogType }
+   */
+  public SystemLogType getLogType() {
+    return logType;
+  }
 
-	/**
-	 * Legt den Wert der logType-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link SystemLogType }
-	 *
-	 */
-	public void setLogType(SystemLogType value) {
-		this.logType = value;
-	}
+  /**
+   * Legt den Wert der logType-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link SystemLogType }
+   */
+  public void setLogType(SystemLogType value) {
+    this.logType = value;
+  }
 
 }

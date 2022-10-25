@@ -11,7 +11,7 @@ import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
 @Component
 public class Scratch3RaspberryFSBlocks extends Scratch3BaseFileSystemExtensionBlocks<RaspberryEntryPoint, RaspberryDeviceEntity> {
 
-    public Scratch3RaspberryFSBlocks(EntityContext entityContext, RaspberryEntryPoint raspberryEntryPoint) {
-        super("RaspFS", "#B04828", entityContext, raspberryEntryPoint, RaspberryDeviceEntity.class);
-    }
+  public Scratch3RaspberryFSBlocks(EntityContext entityContext, RaspberryEntryPoint raspberryEntryPoint) {
+    super("#B04828", entityContext, raspberryEntryPoint, RaspberryDeviceEntity.class);
+  }
 }

@@ -1,8 +1,11 @@
 package org.onvif.ver20.ptz.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.PTZConfiguration;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -23,54 +26,47 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "ptzConfiguration", "forcePersistence" })
+@XmlType(name = "", propOrder = {"ptzConfiguration", "forcePersistence"})
 @XmlRootElement(name = "SetConfiguration")
 public class SetConfiguration {
 
-	@XmlElement(name = "PTZConfiguration", required = true)
-	protected PTZConfiguration ptzConfiguration;
-	@XmlElement(name = "ForcePersistence")
-	protected boolean forcePersistence;
+  @XmlElement(name = "PTZConfiguration", required = true)
+  protected PTZConfiguration ptzConfiguration;
+  @XmlElement(name = "ForcePersistence")
+  protected boolean forcePersistence;
 
-	/**
-	 * Ruft den Wert der ptzConfiguration-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZConfiguration }
-	 *
-	 */
-	public PTZConfiguration getPTZConfiguration() {
-		return ptzConfiguration;
-	}
+  /**
+   * Ruft den Wert der ptzConfiguration-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZConfiguration }
+   */
+  public PTZConfiguration getPTZConfiguration() {
+    return ptzConfiguration;
+  }
 
-	/**
-	 * Legt den Wert der ptzConfiguration-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZConfiguration }
-	 *
-	 */
-	public void setPTZConfiguration(PTZConfiguration value) {
-		this.ptzConfiguration = value;
-	}
+  /**
+   * Legt den Wert der ptzConfiguration-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZConfiguration }
+   */
+  public void setPTZConfiguration(PTZConfiguration value) {
+    this.ptzConfiguration = value;
+  }
 
-	/**
-	 * Ruft den Wert der forcePersistence-Eigenschaft ab.
-	 *
-	 */
-	public boolean isForcePersistence() {
-		return forcePersistence;
-	}
+  /**
+   * Ruft den Wert der forcePersistence-Eigenschaft ab.
+   */
+  public boolean isForcePersistence() {
+    return forcePersistence;
+  }
 
-	/**
-	 * Legt den Wert der forcePersistence-Eigenschaft fest.
-	 *
-	 */
-	public void setForcePersistence(boolean value) {
-		this.forcePersistence = value;
-	}
+  /**
+   * Legt den Wert der forcePersistence-Eigenschaft fest.
+   */
+  public void setForcePersistence(boolean value) {
+    this.forcePersistence = value;
+  }
 
 }

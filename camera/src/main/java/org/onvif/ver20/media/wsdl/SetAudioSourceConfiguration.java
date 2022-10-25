@@ -1,8 +1,11 @@
 package org.onvif.ver20.media.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.AudioSourceConfiguration;
-
-import javax.xml.bind.annotation.*;
 
 
 /**
@@ -21,8 +24,6 @@ import javax.xml.bind.annotation.*;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -31,31 +32,25 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name = "SetAudioSourceConfiguration")
 public class SetAudioSourceConfiguration {
 
-    @XmlElement(name = "Configuration", required = true)
-    protected AudioSourceConfiguration configuration;
+  @XmlElement(name = "Configuration", required = true)
+  protected AudioSourceConfiguration configuration;
 
-    /**
-     * Ruft den Wert der configuration-Eigenschaft ab.
-     *
-     * @return
-     *     possible object is
-     *     {@link AudioSourceConfiguration }
-     *
-     */
-    public AudioSourceConfiguration getConfiguration() {
-        return configuration;
-    }
+  /**
+   * Ruft den Wert der configuration-Eigenschaft ab.
+   *
+   * @return possible object is {@link AudioSourceConfiguration }
+   */
+  public AudioSourceConfiguration getConfiguration() {
+    return configuration;
+  }
 
-    /**
-     * Legt den Wert der configuration-Eigenschaft fest.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link AudioSourceConfiguration }
-     *
-     */
-    public void setConfiguration(AudioSourceConfiguration value) {
-        this.configuration = value;
-    }
+  /**
+   * Legt den Wert der configuration-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link AudioSourceConfiguration }
+   */
+  public void setConfiguration(AudioSourceConfiguration value) {
+    this.configuration = value;
+  }
 
 }

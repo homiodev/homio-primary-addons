@@ -26,84 +26,74 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "IntRectangle")
 public class IntRectangle {
 
-	@XmlAttribute(name = "x", required = true)
-	protected int x;
-	@XmlAttribute(name = "y", required = true)
-	protected int y;
-	@XmlAttribute(name = "width", required = true)
-	protected int width;
-	@XmlAttribute(name = "height", required = true)
-	protected int height;
+  @XmlAttribute(name = "x", required = true)
+  protected int x;
+  @XmlAttribute(name = "y", required = true)
+  protected int y;
+  @XmlAttribute(name = "width", required = true)
+  protected int width;
+  @XmlAttribute(name = "height", required = true)
+  protected int height;
 
-	/**
-	 * Ruft den Wert der x-Eigenschaft ab.
-	 *
-	 */
-	public int getX() {
-		return x;
-	}
+  /**
+   * Ruft den Wert der x-Eigenschaft ab.
+   */
+  public int getX() {
+    return x;
+  }
 
-	/**
-	 * Legt den Wert der x-Eigenschaft fest.
-	 *
-	 */
-	public void setX(int value) {
-		this.x = value;
-	}
+  /**
+   * Legt den Wert der x-Eigenschaft fest.
+   */
+  public void setX(int value) {
+    this.x = value;
+  }
 
-	/**
-	 * Ruft den Wert der y-Eigenschaft ab.
-	 *
-	 */
-	public int getY() {
-		return y;
-	}
+  /**
+   * Ruft den Wert der y-Eigenschaft ab.
+   */
+  public int getY() {
+    return y;
+  }
 
-	/**
-	 * Legt den Wert der y-Eigenschaft fest.
-	 *
-	 */
-	public void setY(int value) {
-		this.y = value;
-	}
+  /**
+   * Legt den Wert der y-Eigenschaft fest.
+   */
+  public void setY(int value) {
+    this.y = value;
+  }
 
-	/**
-	 * Ruft den Wert der width-Eigenschaft ab.
-	 *
-	 */
-	public int getWidth() {
-		return width;
-	}
+  /**
+   * Ruft den Wert der width-Eigenschaft ab.
+   */
+  public int getWidth() {
+    return width;
+  }
 
-	/**
-	 * Legt den Wert der width-Eigenschaft fest.
-	 *
-	 */
-	public void setWidth(int value) {
-		this.width = value;
-	}
+  /**
+   * Legt den Wert der width-Eigenschaft fest.
+   */
+  public void setWidth(int value) {
+    this.width = value;
+  }
 
-	/**
-	 * Ruft den Wert der height-Eigenschaft ab.
-	 *
-	 */
-	public int getHeight() {
-		return height;
-	}
+  /**
+   * Ruft den Wert der height-Eigenschaft ab.
+   */
+  public int getHeight() {
+    return height;
+  }
 
-	/**
-	 * Legt den Wert der height-Eigenschaft fest.
-	 *
-	 */
-	public void setHeight(int value) {
-		this.height = value;
-	}
+  /**
+   * Legt den Wert der height-Eigenschaft fest.
+   */
+  public void setHeight(int value) {
+    this.height = value;
+  }
 
 }

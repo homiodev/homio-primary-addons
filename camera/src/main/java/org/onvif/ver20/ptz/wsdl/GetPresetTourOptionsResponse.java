@@ -1,8 +1,11 @@
 package org.onvif.ver20.ptz.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.PTZPresetTourOptions;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -22,36 +25,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "options" })
+@XmlType(name = "", propOrder = {"options"})
 @XmlRootElement(name = "GetPresetTourOptionsResponse")
 public class GetPresetTourOptionsResponse {
 
-	@XmlElement(name = "Options", required = true)
-	protected PTZPresetTourOptions options;
+  @XmlElement(name = "Options", required = true)
+  protected PTZPresetTourOptions options;
 
-	/**
-	 * Ruft den Wert der options-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZPresetTourOptions }
-	 *
-	 */
-	public PTZPresetTourOptions getOptions() {
-		return options;
-	}
+  /**
+   * Ruft den Wert der options-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZPresetTourOptions }
+   */
+  public PTZPresetTourOptions getOptions() {
+    return options;
+  }
 
-	/**
-	 * Legt den Wert der options-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZPresetTourOptions }
-	 *
-	 */
-	public void setOptions(PTZPresetTourOptions value) {
-		this.options = value;
-	}
+  /**
+   * Legt den Wert der options-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZPresetTourOptions }
+   */
+  public void setOptions(PTZPresetTourOptions value) {
+    this.options = value;
+  }
 
 }

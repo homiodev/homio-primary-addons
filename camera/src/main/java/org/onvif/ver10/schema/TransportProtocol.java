@@ -21,20 +21,19 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "TransportProtocol")
 @XmlEnum
 public enum TransportProtocol {
 
-	UDP, TCP, RTSP, HTTP;
+  UDP, TCP, RTSP, HTTP;
 
-	public String value() {
-		return name();
-	}
+  public static TransportProtocol fromValue(String v) {
+    return valueOf(v);
+  }
 
-	public static TransportProtocol fromValue(String v) {
-		return valueOf(v);
-	}
+  public String value() {
+    return name();
+  }
 
 }

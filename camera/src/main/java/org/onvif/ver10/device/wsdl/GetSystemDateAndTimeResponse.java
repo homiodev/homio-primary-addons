@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.SystemDateTime;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "systemDateAndTime" })
+@XmlType(name = "", propOrder = {"systemDateAndTime"})
 @XmlRootElement(name = "GetSystemDateAndTimeResponse")
 public class GetSystemDateAndTimeResponse {
 
-	@XmlElement(name = "SystemDateAndTime", required = true)
-	protected SystemDateTime systemDateAndTime;
+  @XmlElement(name = "SystemDateAndTime", required = true)
+  protected SystemDateTime systemDateAndTime;
 
-	/**
-	 * Ruft den Wert der systemDateAndTime-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link SystemDateTime }
-	 *
-	 */
-	public SystemDateTime getSystemDateAndTime() {
-		return systemDateAndTime;
-	}
+  /**
+   * Ruft den Wert der systemDateAndTime-Eigenschaft ab.
+   *
+   * @return possible object is {@link SystemDateTime }
+   */
+  public SystemDateTime getSystemDateAndTime() {
+    return systemDateAndTime;
+  }
 
-	/**
-	 * Legt den Wert der systemDateAndTime-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link SystemDateTime }
-	 *
-	 */
-	public void setSystemDateAndTime(SystemDateTime value) {
-		this.systemDateAndTime = value;
-	}
+  /**
+   * Legt den Wert der systemDateAndTime-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link SystemDateTime }
+   */
+  public void setSystemDateAndTime(SystemDateTime value) {
+    this.systemDateAndTime = value;
+  }
 
 }

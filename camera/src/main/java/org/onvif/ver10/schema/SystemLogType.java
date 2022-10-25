@@ -20,42 +20,39 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "SystemLogType")
 @XmlEnum
 public enum SystemLogType {
 
-	/**
-	 * Indicates that a system log is requested.
-	 *
-	 */
-	@XmlEnumValue("System")
-	SYSTEM("System"),
+  /**
+   * Indicates that a system log is requested.
+   */
+  @XmlEnumValue("System")
+  SYSTEM("System"),
 
-	/**
-	 * Indicates that a access log is requested.
-	 *
-	 */
-	@XmlEnumValue("Access")
-	ACCESS("Access");
-	private final String value;
+  /**
+   * Indicates that a access log is requested.
+   */
+  @XmlEnumValue("Access")
+  ACCESS("Access");
+  private final String value;
 
-	SystemLogType(String v) {
-		value = v;
-	}
+  SystemLogType(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static SystemLogType fromValue(String v) {
+    for (SystemLogType c : SystemLogType.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static SystemLogType fromValue(String v) {
-		for (SystemLogType c : SystemLogType.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

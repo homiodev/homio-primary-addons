@@ -10,14 +10,14 @@ import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
 @ZigBeeConverter(name = "zigbee:ias_contactportal1", description = "Contact alarm", clientClusters = {ZclIasZoneCluster.CLUSTER_ID})
 public class ZigBeeConverterIasContactPortal1 extends ZigBeeConverterIas {
 
-    @Override
-    public boolean initializeConverter() {
-        bitTest = CIE_ALARM1;
-        return super.initializeConverter();
-    }
+  @Override
+  public boolean initializeConverter() {
+    bitTest = CIE_ALARM1;
+    return super.initializeConverter();
+  }
 
-    @Override
-    public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-        return supportsIasChannel(endpoint, ZoneTypeEnum.CONTACT_SWITCH);
-    }
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
+    return supportsIasChannel(endpoint, ZoneTypeEnum.CONTACT_SWITCH);
+  }
 }

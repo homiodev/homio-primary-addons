@@ -1,6 +1,10 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
@@ -21,59 +25,51 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Scope", propOrder = { "scopeDef", "scopeItem" })
+@XmlType(name = "Scope", propOrder = {"scopeDef", "scopeItem"})
 public class Scope {
 
-	@XmlElement(name = "ScopeDef", required = true)
-	protected ScopeDefinition scopeDef;
-	@XmlElement(name = "ScopeItem", required = true)
-	@XmlSchemaType(name = "anyURI")
-	protected String scopeItem;
+  @XmlElement(name = "ScopeDef", required = true)
+  protected ScopeDefinition scopeDef;
+  @XmlElement(name = "ScopeItem", required = true)
+  @XmlSchemaType(name = "anyURI")
+  protected String scopeItem;
 
-	/**
-	 * Ruft den Wert der scopeDef-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link ScopeDefinition }
-	 *
-	 */
-	public ScopeDefinition getScopeDef() {
-		return scopeDef;
-	}
+  /**
+   * Ruft den Wert der scopeDef-Eigenschaft ab.
+   *
+   * @return possible object is {@link ScopeDefinition }
+   */
+  public ScopeDefinition getScopeDef() {
+    return scopeDef;
+  }
 
-	/**
-	 * Legt den Wert der scopeDef-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link ScopeDefinition }
-	 *
-	 */
-	public void setScopeDef(ScopeDefinition value) {
-		this.scopeDef = value;
-	}
+  /**
+   * Legt den Wert der scopeDef-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ScopeDefinition }
+   */
+  public void setScopeDef(ScopeDefinition value) {
+    this.scopeDef = value;
+  }
 
-	/**
-	 * Ruft den Wert der scopeItem-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getScopeItem() {
-		return scopeItem;
-	}
+  /**
+   * Ruft den Wert der scopeItem-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getScopeItem() {
+    return scopeItem;
+  }
 
-	/**
-	 * Legt den Wert der scopeItem-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setScopeItem(String value) {
-		this.scopeItem = value;
-	}
+  /**
+   * Legt den Wert der scopeItem-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setScopeItem(String value) {
+    this.scopeItem = value;
+  }
 
 }

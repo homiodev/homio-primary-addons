@@ -19,20 +19,19 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "Enabled")
 @XmlEnum
 public enum Enabled {
 
-	ENABLED, DISABLED;
+  ENABLED, DISABLED;
 
-	public String value() {
-		return name();
-	}
+  public static Enabled fromValue(String v) {
+    return valueOf(v);
+  }
 
-	public static Enabled fromValue(String v) {
-		return valueOf(v);
-	}
+  public String value() {
+    return name();
+  }
 
 }

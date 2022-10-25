@@ -25,81 +25,70 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "MoveOptions", propOrder = { "absolute", "relative", "continuous" })
+@XmlType(name = "MoveOptions", propOrder = {"absolute", "relative", "continuous"})
 public class MoveOptions {
 
-	@XmlElement(name = "Absolute")
-	protected AbsoluteFocusOptions absolute;
-	@XmlElement(name = "Relative")
-	protected RelativeFocusOptions relative;
-	@XmlElement(name = "Continuous")
-	protected ContinuousFocusOptions continuous;
+  @XmlElement(name = "Absolute")
+  protected AbsoluteFocusOptions absolute;
+  @XmlElement(name = "Relative")
+  protected RelativeFocusOptions relative;
+  @XmlElement(name = "Continuous")
+  protected ContinuousFocusOptions continuous;
 
-	/**
-	 * Ruft den Wert der absolute-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link AbsoluteFocusOptions }
-	 *
-	 */
-	public AbsoluteFocusOptions getAbsolute() {
-		return absolute;
-	}
+  /**
+   * Ruft den Wert der absolute-Eigenschaft ab.
+   *
+   * @return possible object is {@link AbsoluteFocusOptions }
+   */
+  public AbsoluteFocusOptions getAbsolute() {
+    return absolute;
+  }
 
-	/**
-	 * Legt den Wert der absolute-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link AbsoluteFocusOptions }
-	 *
-	 */
-	public void setAbsolute(AbsoluteFocusOptions value) {
-		this.absolute = value;
-	}
+  /**
+   * Legt den Wert der absolute-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link AbsoluteFocusOptions }
+   */
+  public void setAbsolute(AbsoluteFocusOptions value) {
+    this.absolute = value;
+  }
 
-	/**
-	 * Ruft den Wert der relative-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link RelativeFocusOptions }
-	 *
-	 */
-	public RelativeFocusOptions getRelative() {
-		return relative;
-	}
+  /**
+   * Ruft den Wert der relative-Eigenschaft ab.
+   *
+   * @return possible object is {@link RelativeFocusOptions }
+   */
+  public RelativeFocusOptions getRelative() {
+    return relative;
+  }
 
-	/**
-	 * Legt den Wert der relative-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link RelativeFocusOptions }
-	 *
-	 */
-	public void setRelative(RelativeFocusOptions value) {
-		this.relative = value;
-	}
+  /**
+   * Legt den Wert der relative-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link RelativeFocusOptions }
+   */
+  public void setRelative(RelativeFocusOptions value) {
+    this.relative = value;
+  }
 
-	/**
-	 * Ruft den Wert der continuous-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link ContinuousFocusOptions }
-	 *
-	 */
-	public ContinuousFocusOptions getContinuous() {
-		return continuous;
-	}
+  /**
+   * Ruft den Wert der continuous-Eigenschaft ab.
+   *
+   * @return possible object is {@link ContinuousFocusOptions }
+   */
+  public ContinuousFocusOptions getContinuous() {
+    return continuous;
+  }
 
-	/**
-	 * Legt den Wert der continuous-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link ContinuousFocusOptions }
-	 *
-	 */
-	public void setContinuous(ContinuousFocusOptions value) {
-		this.continuous = value;
-	}
+  /**
+   * Legt den Wert der continuous-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link ContinuousFocusOptions }
+   */
+  public void setContinuous(ContinuousFocusOptions value) {
+    this.continuous = value;
+  }
 
 }

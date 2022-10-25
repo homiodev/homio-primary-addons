@@ -5,24 +5,23 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntryPoint;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
 public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
-    private final EntityContext entityContext;
 
-    @Override
-    public void init() {
-        // lister start/stop status and any changes that require restart camera handler
-        entityContext.bgp().run("zigbee-init", () -> {
-            for (ZigbeeCoordinatorEntity coordinator : entityContext.findAll(ZigbeeCoordinatorEntity.class)) {
-                coordinator.initialize();
-            }
-        }, true);
+  private final EntityContext entityContext;
+
+  @Override
+  public void init() {
+    // lister start/stop status and any changes that require restart camera handler
+    entityContext.bgp().builder("zigbee-init").execute(() -> {
+      for (ZigbeeCoordinatorEntity coordinator : entityContext.findAll(ZigbeeCoordinatorEntity.class)) {
+        coordinator.initialize();
+      }
+    });
 
         /* entityContext.setting().listenValue(ZigBeeTrustCenterModeSetting.class, "zb-trust-center-changed", linkMode -> {
             TransportConfig transportConfig = new TransportConfig();
@@ -36,7 +35,7 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
             coordinatorHandler.getZigBeeTransport().updateTransportConfig(transportConfig);
         }); */
 
-        // TODO!!!!!!!!!!!!!!!!!!!!
+    // TODO!!!!!!!!!!!!!!!!!!!!
         /* this.entityContext.setting().listenValue(ZigBeeStatusSetting.class, "zb-status-changed", status -> {
             entityContext.ui().addHeaderButton("zb-status", status.isOnline() ? TouchHomeUtils.Colors.GREEN : TouchHomeUtils
             .Colors.RED,
@@ -62,11 +61,11 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
         /* entityContext.setting().listenValue(ZigBeeMeshUpdatePeriodSetting.class, "zb-install-mesh-changed", value ->
                 coordinatorHandler.meshUpdatePeriod(value));*/
 
-        // reInitialize();
-    }
+    // reInitialize();
+  }
 
-    @Override
-    public int order() {
-        return 600;
-    }
+  @Override
+  public int order() {
+    return 600;
+  }
 }

@@ -28,104 +28,90 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "IntRectangleRange", propOrder = { "xRange", "yRange", "widthRange", "heightRange" })
+@XmlType(name = "IntRectangleRange", propOrder = {"xRange", "yRange", "widthRange", "heightRange"})
 public class IntRectangleRange {
 
-	@XmlElement(name = "XRange", required = true)
-	protected IntRange xRange;
-	@XmlElement(name = "YRange", required = true)
-	protected IntRange yRange;
-	@XmlElement(name = "WidthRange", required = true)
-	protected IntRange widthRange;
-	@XmlElement(name = "HeightRange", required = true)
-	protected IntRange heightRange;
+  @XmlElement(name = "XRange", required = true)
+  protected IntRange xRange;
+  @XmlElement(name = "YRange", required = true)
+  protected IntRange yRange;
+  @XmlElement(name = "WidthRange", required = true)
+  protected IntRange widthRange;
+  @XmlElement(name = "HeightRange", required = true)
+  protected IntRange heightRange;
 
-	/**
-	 * Ruft den Wert der xRange-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link IntRange }
-	 *
-	 */
-	public IntRange getXRange() {
-		return xRange;
-	}
+  /**
+   * Ruft den Wert der xRange-Eigenschaft ab.
+   *
+   * @return possible object is {@link IntRange }
+   */
+  public IntRange getXRange() {
+    return xRange;
+  }
 
-	/**
-	 * Legt den Wert der xRange-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link IntRange }
-	 *
-	 */
-	public void setXRange(IntRange value) {
-		this.xRange = value;
-	}
+  /**
+   * Legt den Wert der xRange-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link IntRange }
+   */
+  public void setXRange(IntRange value) {
+    this.xRange = value;
+  }
 
-	/**
-	 * Ruft den Wert der yRange-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link IntRange }
-	 *
-	 */
-	public IntRange getYRange() {
-		return yRange;
-	}
+  /**
+   * Ruft den Wert der yRange-Eigenschaft ab.
+   *
+   * @return possible object is {@link IntRange }
+   */
+  public IntRange getYRange() {
+    return yRange;
+  }
 
-	/**
-	 * Legt den Wert der yRange-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link IntRange }
-	 *
-	 */
-	public void setYRange(IntRange value) {
-		this.yRange = value;
-	}
+  /**
+   * Legt den Wert der yRange-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link IntRange }
+   */
+  public void setYRange(IntRange value) {
+    this.yRange = value;
+  }
 
-	/**
-	 * Ruft den Wert der widthRange-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link IntRange }
-	 *
-	 */
-	public IntRange getWidthRange() {
-		return widthRange;
-	}
+  /**
+   * Ruft den Wert der widthRange-Eigenschaft ab.
+   *
+   * @return possible object is {@link IntRange }
+   */
+  public IntRange getWidthRange() {
+    return widthRange;
+  }
 
-	/**
-	 * Legt den Wert der widthRange-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link IntRange }
-	 *
-	 */
-	public void setWidthRange(IntRange value) {
-		this.widthRange = value;
-	}
+  /**
+   * Legt den Wert der widthRange-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link IntRange }
+   */
+  public void setWidthRange(IntRange value) {
+    this.widthRange = value;
+  }
 
-	/**
-	 * Ruft den Wert der heightRange-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link IntRange }
-	 *
-	 */
-	public IntRange getHeightRange() {
-		return heightRange;
-	}
+  /**
+   * Ruft den Wert der heightRange-Eigenschaft ab.
+   *
+   * @return possible object is {@link IntRange }
+   */
+  public IntRange getHeightRange() {
+    return heightRange;
+  }
 
-	/**
-	 * Legt den Wert der heightRange-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link IntRange }
-	 *
-	 */
-	public void setHeightRange(IntRange value) {
-		this.heightRange = value;
-	}
+  /**
+   * Legt den Wert der heightRange-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link IntRange }
+   */
+  public void setHeightRange(IntRange value) {
+    this.heightRange = value;
+  }
 
 }

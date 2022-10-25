@@ -4,9 +4,8 @@ import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclFanControlCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import lombok.extern.log4j.Log4j2;
-
 import java.util.concurrent.ExecutionException;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * This channel supports fan control
@@ -15,54 +14,54 @@ import java.util.concurrent.ExecutionException;
 @ZigBeeConverter(name = "zigbee:fancontrol", clientClusters = {ZclFanControlCluster.CLUSTER_ID})
 public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
 
-    private static final int MODE_OFF = 0;
-    private static final int MODE_LOW = 1;
-    private static final int MODE_MEDIUM = 2;
-    private static final int MODE_HIGH = 3;
-    private static final int MODE_ON = 4;
-    private static final int MODE_AUTO = 5;
+  private static final int MODE_OFF = 0;
+  private static final int MODE_LOW = 1;
+  private static final int MODE_MEDIUM = 2;
+  private static final int MODE_HIGH = 3;
+  private static final int MODE_ON = 4;
+  private static final int MODE_AUTO = 5;
 
-    public ZigBeeConverterFanControl() {
-        super(ZclClusterType.FAN_CONTROL, ZclFanControlCluster.ATTR_FANMODE, 1,
-                REPORTING_PERIOD_DEFAULT_MAX, null);
+  public ZigBeeConverterFanControl() {
+    super(ZclClusterType.FAN_CONTROL, ZclFanControlCluster.ATTR_FANMODE, 1,
+        REPORTING_PERIOD_DEFAULT_MAX, null);
+  }
+
+  @Override
+  protected boolean initializeDeviceFailed() {
+    pollingPeriod = POLLING_PERIOD_HIGH;
+    return true;
+  }
+
+  @Override
+  public boolean initializeDevice() {
+    ZclFanControlCluster serverCluster = (ZclFanControlCluster) endpoint
+        .getInputCluster(ZclFanControlCluster.CLUSTER_ID);
+    if (serverCluster == null) {
+      log.error("{}/{}: Error opening device fan controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+      return false;
     }
 
-    @Override
-    protected boolean initializeDeviceFailed() {
+    try {
+      CommandResult bindResponse = bind(serverCluster).get();
+      if (bindResponse.isSuccess()) {
+        // Configure reporting
+        ZclAttribute attribute = serverCluster.getAttribute(ZclFanControlCluster.ATTR_FANMODE);
+        CommandResult reportingResponse = attribute.setReporting(1, REPORTING_PERIOD_DEFAULT_MAX).get();
+        handleReportingResponseHigh(reportingResponse);
+      } else {
         pollingPeriod = POLLING_PERIOD_HIGH;
-        return true;
+      }
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("{}/{}: Exception setting reporting ", endpoint.getIeeeAddress(), e);
+      return false;
     }
+    return true;
+  }
 
-    @Override
-    public boolean initializeDevice() {
-        ZclFanControlCluster serverCluster = (ZclFanControlCluster) endpoint
-                .getInputCluster(ZclFanControlCluster.CLUSTER_ID);
-        if (serverCluster == null) {
-            log.error("{}/{}: Error opening device fan controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
-            return false;
-        }
-
-        try {
-            CommandResult bindResponse = bind(serverCluster).get();
-            if (bindResponse.isSuccess()) {
-                // Configure reporting
-                ZclAttribute attribute = serverCluster.getAttribute(ZclFanControlCluster.ATTR_FANMODE);
-                CommandResult reportingResponse = attribute.setReporting(1, REPORTING_PERIOD_DEFAULT_MAX).get();
-                handleReportingResponseHigh(reportingResponse);
-            } else {
-                pollingPeriod = POLLING_PERIOD_HIGH;
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            log.error("{}/{}: Exception setting reporting ", endpoint.getIeeeAddress(), e);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    protected void handleReportingResponseDuringInitializeDevice(CommandResult reportingResponse) {
-        handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, REPORTING_PERIOD_DEFAULT_MAX);
-    }
+  @Override
+  protected void handleReportingResponseDuringInitializeDevice(CommandResult reportingResponse) {
+    handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, REPORTING_PERIOD_DEFAULT_MAX);
+  }
 
     /*@Override
     public void handleCommand(final ZigBeeCommand command) {
@@ -79,8 +78,8 @@ public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
         fanModeAttribute.writeValue(value);
     }*/
 
-    //ZclAttribute fanSequenceAttribute = cluster.getAttribute(ZclFanControlCluster.ATTR_FANMODESEQUENCE);
-    // Integer sequence = (Integer) fanSequenceAttribute.readValue(Long.MAX_VALUE);
+  //ZclAttribute fanSequenceAttribute = cluster.getAttribute(ZclFanControlCluster.ATTR_FANMODESEQUENCE);
+  // Integer sequence = (Integer) fanSequenceAttribute.readValue(Long.MAX_VALUE);
         /*if (sequence != null) {
             List<StateOption> options = new ArrayList<>();
             switch (sequence) {

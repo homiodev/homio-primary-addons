@@ -14,42 +14,43 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class OnvifCodec extends ChannelDuplexHandler {
 
-    private String incomingMessage = "";
-    private final OnvifEventHandler onvifEventHandler;
-    private int code;
+  private final OnvifEventHandler onvifEventHandler;
+  private String incomingMessage = "";
+  private int code;
 
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        if (msg == null || ctx == null) {
-            return;
-        }
-        try {
-            if (msg instanceof HttpContent) {
-                HttpContent content = (HttpContent) msg;
-                incomingMessage += content.content().toString(CharsetUtil.UTF_8);
-            }
-            if (msg instanceof LastHttpContent) {
-                onvifEventHandler.handle(incomingMessage, code);
-                ctx.close();
-            }
-            if (msg instanceof DefaultHttpResponse) {
-                this.code = ((DefaultHttpResponse) msg).status().code();
-            }
-        } finally {
-            ReferenceCountUtil.release(msg);
-        }
+  @Override
+  public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    if (msg == null || ctx == null) {
+      return;
     }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        if (ctx == null || cause == null) {
-            return;
-        }
-        log.debug("Exception on ONVIF connection: {}", cause.getMessage());
+    try {
+      if (msg instanceof HttpContent) {
+        HttpContent content = (HttpContent) msg;
+        incomingMessage += content.content().toString(CharsetUtil.UTF_8);
+      }
+      if (msg instanceof LastHttpContent) {
+        onvifEventHandler.handle(incomingMessage, code);
         ctx.close();
+      }
+      if (msg instanceof DefaultHttpResponse) {
+        this.code = ((DefaultHttpResponse) msg).status().code();
+      }
+    } finally {
+      ReferenceCountUtil.release(msg);
     }
+  }
 
-    public interface OnvifEventHandler {
-        void handle(String message, int code);
+  @Override
+  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+    if (ctx == null || cause == null) {
+      return;
     }
+    log.debug("Exception on ONVIF connection: {}", cause.getMessage());
+    ctx.close();
+  }
+
+  public interface OnvifEventHandler {
+
+    void handle(String message, int code);
+  }
 }

@@ -24,53 +24,46 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "H264Configuration", propOrder = { "govLength", "h264Profile" })
+@XmlType(name = "H264Configuration", propOrder = {"govLength", "h264Profile"})
 public class H264Configuration {
 
-	@XmlElement(name = "GovLength")
-	protected int govLength;
-	@XmlElement(name = "H264Profile", required = true)
-	protected H264Profile h264Profile;
+  @XmlElement(name = "GovLength")
+  protected int govLength;
+  @XmlElement(name = "H264Profile", required = true)
+  protected H264Profile h264Profile;
 
-	/**
-	 * Ruft den Wert der govLength-Eigenschaft ab.
-	 *
-	 */
-	public int getGovLength() {
-		return govLength;
-	}
+  /**
+   * Ruft den Wert der govLength-Eigenschaft ab.
+   */
+  public int getGovLength() {
+    return govLength;
+  }
 
-	/**
-	 * Legt den Wert der govLength-Eigenschaft fest.
-	 *
-	 */
-	public void setGovLength(int value) {
-		this.govLength = value;
-	}
+  /**
+   * Legt den Wert der govLength-Eigenschaft fest.
+   */
+  public void setGovLength(int value) {
+    this.govLength = value;
+  }
 
-	/**
-	 * Ruft den Wert der h264Profile-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link H264Profile }
-	 *
-	 */
-	public H264Profile getH264Profile() {
-		return h264Profile;
-	}
+  /**
+   * Ruft den Wert der h264Profile-Eigenschaft ab.
+   *
+   * @return possible object is {@link H264Profile }
+   */
+  public H264Profile getH264Profile() {
+    return h264Profile;
+  }
 
-	/**
-	 * Legt den Wert der h264Profile-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link H264Profile }
-	 *
-	 */
-	public void setH264Profile(H264Profile value) {
-		this.h264Profile = value;
-	}
+  /**
+   * Legt den Wert der h264Profile-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link H264Profile }
+   */
+  public void setH264Profile(H264Profile value) {
+    this.h264Profile = value;
+  }
 
 }

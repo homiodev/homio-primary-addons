@@ -21,31 +21,30 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "EFlipMode")
 @XmlEnum
 public enum EFlipMode {
 
-	OFF("OFF"), ON("ON"), @XmlEnumValue("Extended")
-	EXTENDED("Extended");
-	private final String value;
+  OFF("OFF"), ON("ON"), @XmlEnumValue("Extended")
+  EXTENDED("Extended");
+  private final String value;
 
-	EFlipMode(String v) {
-		value = v;
-	}
+  EFlipMode(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static EFlipMode fromValue(String v) {
+    for (EFlipMode c : EFlipMode.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static EFlipMode fromValue(String v) {
-		for (EFlipMode c : EFlipMode.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

@@ -26,48 +26,42 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "FloatRange", propOrder = { "min", "max" })
+@XmlType(name = "FloatRange", propOrder = {"min", "max"})
 public class FloatRange {
 
-	@XmlElement(name = "Min")
-	protected float min;
-	@XmlElement(name = "Max")
-	protected float max;
+  @XmlElement(name = "Min")
+  protected float min;
+  @XmlElement(name = "Max")
+  protected float max;
 
-	/**
-	 * Ruft den Wert der min-Eigenschaft ab.
-	 *
-	 */
-	public float getMin() {
-		return min;
-	}
+  /**
+   * Ruft den Wert der min-Eigenschaft ab.
+   */
+  public float getMin() {
+    return min;
+  }
 
-	/**
-	 * Legt den Wert der min-Eigenschaft fest.
-	 *
-	 */
-	public void setMin(float value) {
-		this.min = value;
-	}
+  /**
+   * Legt den Wert der min-Eigenschaft fest.
+   */
+  public void setMin(float value) {
+    this.min = value;
+  }
 
-	/**
-	 * Ruft den Wert der max-Eigenschaft ab.
-	 *
-	 */
-	public float getMax() {
-		return max;
-	}
+  /**
+   * Ruft den Wert der max-Eigenschaft ab.
+   */
+  public float getMax() {
+    return max;
+  }
 
-	/**
-	 * Legt den Wert der max-Eigenschaft fest.
-	 *
-	 */
-	public void setMax(float value) {
-		this.max = value;
-	}
+  /**
+   * Legt den Wert der max-Eigenschaft fest.
+   */
+  public void setMax(float value) {
+    this.max = value;
+  }
 
 }

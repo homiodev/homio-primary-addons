@@ -25,66 +25,58 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Time", propOrder = { "hour", "minute", "second" })
+@XmlType(name = "Time", propOrder = {"hour", "minute", "second"})
 public class Time {
 
-	@XmlElement(name = "Hour")
-	protected int hour;
-	@XmlElement(name = "Minute")
-	protected int minute;
-	@XmlElement(name = "Second")
-	protected int second;
+  @XmlElement(name = "Hour")
+  protected int hour;
+  @XmlElement(name = "Minute")
+  protected int minute;
+  @XmlElement(name = "Second")
+  protected int second;
 
-	/**
-	 * Ruft den Wert der hour-Eigenschaft ab.
-	 *
-	 */
-	public int getHour() {
-		return hour;
-	}
+  /**
+   * Ruft den Wert der hour-Eigenschaft ab.
+   */
+  public int getHour() {
+    return hour;
+  }
 
-	/**
-	 * Legt den Wert der hour-Eigenschaft fest.
-	 *
-	 */
-	public void setHour(int value) {
-		this.hour = value;
-	}
+  /**
+   * Legt den Wert der hour-Eigenschaft fest.
+   */
+  public void setHour(int value) {
+    this.hour = value;
+  }
 
-	/**
-	 * Ruft den Wert der minute-Eigenschaft ab.
-	 *
-	 */
-	public int getMinute() {
-		return minute;
-	}
+  /**
+   * Ruft den Wert der minute-Eigenschaft ab.
+   */
+  public int getMinute() {
+    return minute;
+  }
 
-	/**
-	 * Legt den Wert der minute-Eigenschaft fest.
-	 *
-	 */
-	public void setMinute(int value) {
-		this.minute = value;
-	}
+  /**
+   * Legt den Wert der minute-Eigenschaft fest.
+   */
+  public void setMinute(int value) {
+    this.minute = value;
+  }
 
-	/**
-	 * Ruft den Wert der second-Eigenschaft ab.
-	 *
-	 */
-	public int getSecond() {
-		return second;
-	}
+  /**
+   * Ruft den Wert der second-Eigenschaft ab.
+   */
+  public int getSecond() {
+    return second;
+  }
 
-	/**
-	 * Legt den Wert der second-Eigenschaft fest.
-	 *
-	 */
-	public void setSecond(int value) {
-		this.second = value;
-	}
+  /**
+   * Legt den Wert der second-Eigenschaft fest.
+   */
+  public void setSecond(int value) {
+    this.second = value;
+  }
 
 }

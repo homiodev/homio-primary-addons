@@ -7,11 +7,14 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import org.onvif.ver10.schema.Certificate;
-
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import org.onvif.ver10.schema.Certificate;
 
 /**
  * <p>
@@ -31,42 +34,38 @@ import java.util.List;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "nvtCertificate" })
+@XmlType(name = "", propOrder = {"nvtCertificate"})
 @XmlRootElement(name = "GetCertificatesResponse")
 public class GetCertificatesResponse {
 
-	@XmlElement(name = "NvtCertificate")
-	protected List<Certificate> nvtCertificate;
+  @XmlElement(name = "NvtCertificate")
+  protected List<Certificate> nvtCertificate;
 
-	/**
-	 * Gets the value of the nvtCertificate property.
-	 *
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
-	 * This is why there is not a <CODE>set</CODE> method for the nvtCertificate property.
-	 *
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 *
-	 * <pre>
-	 * getNvtCertificate().add(newItem);
-	 * </pre>
-	 *
-	 *
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list {@link Certificate }
-	 *
-	 *
-	 */
-	public List<Certificate> getNvtCertificate() {
-		if (nvtCertificate == null) {
-			nvtCertificate = new ArrayList<Certificate>();
-		}
-		return this.nvtCertificate;
-	}
+  /**
+   * Gets the value of the nvtCertificate property.
+   *
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
+   * This is why there is not a <CODE>set</CODE> method for the nvtCertificate property.
+   *
+   * <p>
+   * For example, to add a new item, do as follows:
+   *
+   * <pre>
+   * getNvtCertificate().add(newItem);
+   * </pre>
+   *
+   *
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link Certificate }
+   */
+  public List<Certificate> getNvtCertificate() {
+    if (nvtCertificate == null) {
+      nvtCertificate = new ArrayList<Certificate>();
+    }
+    return this.nvtCertificate;
+  }
 
 }

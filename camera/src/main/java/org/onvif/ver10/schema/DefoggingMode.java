@@ -7,16 +7,16 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum DefoggingMode {
 
-    OFF,
-    ON,
-    AUTO;
+  OFF,
+  ON,
+  AUTO;
 
-    public String value() {
-        return name();
-    }
+  public static DefoggingMode fromValue(String v) {
+    return valueOf(v);
+  }
 
-    public static DefoggingMode fromValue(String v) {
-        return valueOf(v);
-    }
+  public String value() {
+    return name();
+  }
 
 }

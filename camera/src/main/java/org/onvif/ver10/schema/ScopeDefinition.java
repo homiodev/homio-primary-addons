@@ -20,32 +20,31 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "ScopeDefinition")
 @XmlEnum
 public enum ScopeDefinition {
 
-	@XmlEnumValue("Fixed")
-	FIXED("Fixed"), @XmlEnumValue("Configurable")
-	CONFIGURABLE("Configurable");
-	private final String value;
+  @XmlEnumValue("Fixed")
+  FIXED("Fixed"), @XmlEnumValue("Configurable")
+  CONFIGURABLE("Configurable");
+  private final String value;
 
-	ScopeDefinition(String v) {
-		value = v;
-	}
+  ScopeDefinition(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static ScopeDefinition fromValue(String v) {
+    for (ScopeDefinition c : ScopeDefinition.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static ScopeDefinition fromValue(String v) {
-		for (ScopeDefinition c : ScopeDefinition.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

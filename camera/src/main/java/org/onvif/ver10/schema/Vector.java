@@ -22,58 +22,50 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Vector")
 public class Vector {
 
-	@XmlAttribute(name = "x")
-	protected Float x;
-	@XmlAttribute(name = "y")
-	protected Float y;
+  @XmlAttribute(name = "x")
+  protected Float x;
+  @XmlAttribute(name = "y")
+  protected Float y;
 
-	/**
-	 * Ruft den Wert der x-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getX() {
-		return x;
-	}
+  /**
+   * Ruft den Wert der x-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getX() {
+    return x;
+  }
 
-	/**
-	 * Legt den Wert der x-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setX(Float value) {
-		this.x = value;
-	}
+  /**
+   * Legt den Wert der x-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setX(Float value) {
+    this.x = value;
+  }
 
-	/**
-	 * Ruft den Wert der y-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Float }
-	 *
-	 */
-	public Float getY() {
-		return y;
-	}
+  /**
+   * Ruft den Wert der y-Eigenschaft ab.
+   *
+   * @return possible object is {@link Float }
+   */
+  public Float getY() {
+    return y;
+  }
 
-	/**
-	 * Legt den Wert der y-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Float }
-	 *
-	 */
-	public void setY(Float value) {
-		this.y = value;
-	}
+  /**
+   * Legt den Wert der y-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Float }
+   */
+  public void setY(Float value) {
+    this.y = value;
+  }
 
 }

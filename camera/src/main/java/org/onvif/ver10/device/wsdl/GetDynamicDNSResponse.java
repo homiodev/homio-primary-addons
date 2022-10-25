@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.DynamicDNSInformation;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "dynamicDNSInformation" })
+@XmlType(name = "", propOrder = {"dynamicDNSInformation"})
 @XmlRootElement(name = "GetDynamicDNSResponse")
 public class GetDynamicDNSResponse {
 
-	@XmlElement(name = "DynamicDNSInformation", required = true)
-	protected DynamicDNSInformation dynamicDNSInformation;
+  @XmlElement(name = "DynamicDNSInformation", required = true)
+  protected DynamicDNSInformation dynamicDNSInformation;
 
-	/**
-	 * Ruft den Wert der dynamicDNSInformation-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link DynamicDNSInformation }
-	 *
-	 */
-	public DynamicDNSInformation getDynamicDNSInformation() {
-		return dynamicDNSInformation;
-	}
+  /**
+   * Ruft den Wert der dynamicDNSInformation-Eigenschaft ab.
+   *
+   * @return possible object is {@link DynamicDNSInformation }
+   */
+  public DynamicDNSInformation getDynamicDNSInformation() {
+    return dynamicDNSInformation;
+  }
 
-	/**
-	 * Legt den Wert der dynamicDNSInformation-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link DynamicDNSInformation }
-	 *
-	 */
-	public void setDynamicDNSInformation(DynamicDNSInformation value) {
-		this.dynamicDNSInformation = value;
-	}
+  /**
+   * Legt den Wert der dynamicDNSInformation-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link DynamicDNSInformation }
+   */
+  public void setDynamicDNSInformation(DynamicDNSInformation value) {
+    this.dynamicDNSInformation = value;
+  }
 
 }

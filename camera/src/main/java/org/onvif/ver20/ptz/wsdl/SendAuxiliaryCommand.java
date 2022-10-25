@@ -1,6 +1,10 @@
 package org.onvif.ver20.ptz.wsdl;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
@@ -21,59 +25,51 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "profileToken", "auxiliaryData" })
+@XmlType(name = "", propOrder = {"profileToken", "auxiliaryData"})
 @XmlRootElement(name = "SendAuxiliaryCommand")
 public class SendAuxiliaryCommand {
 
-	@XmlElement(name = "ProfileToken", required = true)
-	protected String profileToken;
-	@XmlElement(name = "AuxiliaryData", required = true)
-	protected String auxiliaryData;
+  @XmlElement(name = "ProfileToken", required = true)
+  protected String profileToken;
+  @XmlElement(name = "AuxiliaryData", required = true)
+  protected String auxiliaryData;
 
-	/**
-	 * Ruft den Wert der profileToken-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getProfileToken() {
-		return profileToken;
-	}
+  /**
+   * Ruft den Wert der profileToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getProfileToken() {
+    return profileToken;
+  }
 
-	/**
-	 * Legt den Wert der profileToken-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setProfileToken(String value) {
-		this.profileToken = value;
-	}
+  /**
+   * Legt den Wert der profileToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setProfileToken(String value) {
+    this.profileToken = value;
+  }
 
-	/**
-	 * Ruft den Wert der auxiliaryData-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getAuxiliaryData() {
-		return auxiliaryData;
-	}
+  /**
+   * Ruft den Wert der auxiliaryData-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getAuxiliaryData() {
+    return auxiliaryData;
+  }
 
-	/**
-	 * Legt den Wert der auxiliaryData-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setAuxiliaryData(String value) {
-		this.auxiliaryData = value;
-	}
+  /**
+   * Legt den Wert der auxiliaryData-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setAuxiliaryData(String value) {
+    this.auxiliaryData = value;
+  }
 
 }

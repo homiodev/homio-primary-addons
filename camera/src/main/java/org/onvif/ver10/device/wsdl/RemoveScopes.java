@@ -7,9 +7,14 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
@@ -29,43 +34,39 @@ import java.util.List;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "scopeItem" })
+@XmlType(name = "", propOrder = {"scopeItem"})
 @XmlRootElement(name = "RemoveScopes")
 public class RemoveScopes {
 
-	@XmlElement(name = "ScopeItem", required = true)
-	@XmlSchemaType(name = "anyURI")
-	protected List<String> scopeItem;
+  @XmlElement(name = "ScopeItem", required = true)
+  @XmlSchemaType(name = "anyURI")
+  protected List<String> scopeItem;
 
-	/**
-	 * Gets the value of the scopeItem property.
-	 *
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
-	 * This is why there is not a <CODE>set</CODE> method for the scopeItem property.
-	 *
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 *
-	 * <pre>
-	 * getScopeItem().add(newItem);
-	 * </pre>
-	 *
-	 *
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list {@link String }
-	 *
-	 *
-	 */
-	public List<String> getScopeItem() {
-		if (scopeItem == null) {
-			scopeItem = new ArrayList<String>();
-		}
-		return this.scopeItem;
-	}
+  /**
+   * Gets the value of the scopeItem property.
+   *
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
+   * This is why there is not a <CODE>set</CODE> method for the scopeItem property.
+   *
+   * <p>
+   * For example, to add a new item, do as follows:
+   *
+   * <pre>
+   * getScopeItem().add(newItem);
+   * </pre>
+   *
+   *
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link String }
+   */
+  public List<String> getScopeItem() {
+    if (scopeItem == null) {
+      scopeItem = new ArrayList<String>();
+    }
+    return this.scopeItem;
+  }
 
 }

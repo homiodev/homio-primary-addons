@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.media.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.MetadataConfiguration;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "configuration" })
+@XmlType(name = "", propOrder = {"configuration"})
 @XmlRootElement(name = "GetMetadataConfigurationResponse")
 public class GetMetadataConfigurationResponse {
 
-	@XmlElement(name = "Configuration", required = true)
-	protected MetadataConfiguration configuration;
+  @XmlElement(name = "Configuration", required = true)
+  protected MetadataConfiguration configuration;
 
-	/**
-	 * Ruft den Wert der configuration-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link MetadataConfiguration }
-	 *
-	 */
-	public MetadataConfiguration getConfiguration() {
-		return configuration;
-	}
+  /**
+   * Ruft den Wert der configuration-Eigenschaft ab.
+   *
+   * @return possible object is {@link MetadataConfiguration }
+   */
+  public MetadataConfiguration getConfiguration() {
+    return configuration;
+  }
 
-	/**
-	 * Legt den Wert der configuration-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link MetadataConfiguration }
-	 *
-	 */
-	public void setConfiguration(MetadataConfiguration value) {
-		this.configuration = value;
-	}
+  /**
+   * Legt den Wert der configuration-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link MetadataConfiguration }
+   */
+  public void setConfiguration(MetadataConfiguration value) {
+    this.configuration = value;
+  }
 
 }

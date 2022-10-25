@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.RemoteUser;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "remoteUser" })
+@XmlType(name = "", propOrder = {"remoteUser"})
 @XmlRootElement(name = "SetRemoteUser")
 public class SetRemoteUser {
 
-	@XmlElement(name = "RemoteUser")
-	protected RemoteUser remoteUser;
+  @XmlElement(name = "RemoteUser")
+  protected RemoteUser remoteUser;
 
-	/**
-	 * Ruft den Wert der remoteUser-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link RemoteUser }
-	 *
-	 */
-	public RemoteUser getRemoteUser() {
-		return remoteUser;
-	}
+  /**
+   * Ruft den Wert der remoteUser-Eigenschaft ab.
+   *
+   * @return possible object is {@link RemoteUser }
+   */
+  public RemoteUser getRemoteUser() {
+    return remoteUser;
+  }
 
-	/**
-	 * Legt den Wert der remoteUser-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link RemoteUser }
-	 *
-	 */
-	public void setRemoteUser(RemoteUser value) {
-		this.remoteUser = value;
-	}
+  /**
+   * Legt den Wert der remoteUser-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link RemoteUser }
+   */
+  public void setRemoteUser(RemoteUser value) {
+    this.remoteUser = value;
+  }
 
 }

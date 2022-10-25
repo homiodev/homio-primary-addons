@@ -8,26 +8,26 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum DiscoveryMode {
 
-	@XmlEnumValue("Discoverable")
-	DISCOVERABLE("Discoverable"), @XmlEnumValue("NonDiscoverable")
-	NON_DISCOVERABLE("NonDiscoverable");
-	private final String value;
+  @XmlEnumValue("Discoverable")
+  DISCOVERABLE("Discoverable"), @XmlEnumValue("NonDiscoverable")
+  NON_DISCOVERABLE("NonDiscoverable");
+  private final String value;
 
-	DiscoveryMode(String v) {
-		value = v;
-	}
+  DiscoveryMode(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static DiscoveryMode fromValue(String v) {
+    for (DiscoveryMode c : DiscoveryMode.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static DiscoveryMode fromValue(String v) {
-		for (DiscoveryMode c : DiscoveryMode.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

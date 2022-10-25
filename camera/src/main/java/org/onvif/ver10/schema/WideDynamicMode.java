@@ -19,20 +19,19 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "WideDynamicMode")
 @XmlEnum
 public enum WideDynamicMode {
 
-	OFF, ON;
+  OFF, ON;
 
-	public String value() {
-		return name();
-	}
+  public static WideDynamicMode fromValue(String v) {
+    return valueOf(v);
+  }
 
-	public static WideDynamicMode fromValue(String v) {
-		return valueOf(v);
-	}
+  public String value() {
+    return name();
+  }
 
 }

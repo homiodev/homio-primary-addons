@@ -7,7 +7,11 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
@@ -27,36 +31,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "message" })
+@XmlType(name = "", propOrder = {"message"})
 @XmlRootElement(name = "SystemRebootResponse")
 public class SystemRebootResponse {
 
-	@XmlElement(name = "Message", required = true)
-	protected String message;
+  @XmlElement(name = "Message", required = true)
+  protected String message;
 
-	/**
-	 * Ruft den Wert der message-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getMessage() {
-		return message;
-	}
+  /**
+   * Ruft den Wert der message-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getMessage() {
+    return message;
+  }
 
-	/**
-	 * Legt den Wert der message-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setMessage(String value) {
-		this.message = value;
-	}
+  /**
+   * Legt den Wert der message-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setMessage(String value) {
+    this.message = value;
+  }
 
 }

@@ -24,53 +24,46 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SecurityCapabilitiesExtension", propOrder = { "tls10", "extension" })
+@XmlType(name = "SecurityCapabilitiesExtension", propOrder = {"tls10", "extension"})
 public class SecurityCapabilitiesExtension {
 
-	@XmlElement(name = "TLS1.0")
-	protected boolean tls10;
-	@XmlElement(name = "Extension")
-	protected SecurityCapabilitiesExtension2 extension;
+  @XmlElement(name = "TLS1.0")
+  protected boolean tls10;
+  @XmlElement(name = "Extension")
+  protected SecurityCapabilitiesExtension2 extension;
 
-	/**
-	 * Ruft den Wert der tls10-Eigenschaft ab.
-	 *
-	 */
-	public boolean isTLS10() {
-		return tls10;
-	}
+  /**
+   * Ruft den Wert der tls10-Eigenschaft ab.
+   */
+  public boolean isTLS10() {
+    return tls10;
+  }
 
-	/**
-	 * Legt den Wert der tls10-Eigenschaft fest.
-	 *
-	 */
-	public void setTLS10(boolean value) {
-		this.tls10 = value;
-	}
+  /**
+   * Legt den Wert der tls10-Eigenschaft fest.
+   */
+  public void setTLS10(boolean value) {
+    this.tls10 = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link SecurityCapabilitiesExtension2 }
-	 *
-	 */
-	public SecurityCapabilitiesExtension2 getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link SecurityCapabilitiesExtension2 }
+   */
+  public SecurityCapabilitiesExtension2 getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link SecurityCapabilitiesExtension2 }
-	 *
-	 */
-	public void setExtension(SecurityCapabilitiesExtension2 value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link SecurityCapabilitiesExtension2 }
+   */
+  public void setExtension(SecurityCapabilitiesExtension2 value) {
+    this.extension = value;
+  }
 
 }

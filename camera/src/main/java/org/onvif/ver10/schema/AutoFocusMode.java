@@ -7,14 +7,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum AutoFocusMode {
 
-	AUTO, MANUAL;
+  AUTO, MANUAL;
 
-	public String value() {
-		return name();
-	}
+  public static AutoFocusMode fromValue(String v) {
+    return valueOf(v);
+  }
 
-	public static AutoFocusMode fromValue(String v) {
-		return valueOf(v);
-	}
+  public String value() {
+    return name();
+  }
 
 }

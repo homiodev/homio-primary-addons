@@ -1,10 +1,13 @@
 package org.onvif.ver20.media.wsdl;
 
-import org.onvif.ver10.schema.VideoSourceConfiguration;
-
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import org.onvif.ver10.schema.VideoSourceConfiguration;
 
 
 /**
@@ -23,8 +26,6 @@ import java.util.List;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -33,36 +34,31 @@ import java.util.List;
 @XmlRootElement(name = "GetVideoSourceConfigurationsResponse")
 public class GetVideoSourceConfigurationsResponse {
 
-    @XmlElement(name = "Configurations")
-    protected List<VideoSourceConfiguration> configurations;
+  @XmlElement(name = "Configurations")
+  protected List<VideoSourceConfiguration> configurations;
 
-    /**
-     * Gets the value of the configurations property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the configurations property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getConfigurations().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link VideoSourceConfiguration }
-     *
-     *
-     */
-    public List<VideoSourceConfiguration> getConfigurations() {
-        if (configurations == null) {
-            configurations = new ArrayList<VideoSourceConfiguration>();
-        }
-        return this.configurations;
+  /**
+   * Gets the value of the configurations property.
+   *
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
+   * This is why there is not a <CODE>set</CODE> method for the configurations property.
+   *
+   * <p>
+   * For example, to add a new item, do as follows:
+   * <pre>
+   *    getConfigurations().add(newItem);
+   * </pre>
+   *
+   *
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link VideoSourceConfiguration }
+   */
+  public List<VideoSourceConfiguration> getConfigurations() {
+    if (configurations == null) {
+      configurations = new ArrayList<VideoSourceConfiguration>();
     }
+    return this.configurations;
+  }
 
 }

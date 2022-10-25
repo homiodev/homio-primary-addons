@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.CertificateInformation;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "certificateInformation" })
+@XmlType(name = "", propOrder = {"certificateInformation"})
 @XmlRootElement(name = "GetCertificateInformationResponse")
 public class GetCertificateInformationResponse {
 
-	@XmlElement(name = "CertificateInformation", required = true)
-	protected CertificateInformation certificateInformation;
+  @XmlElement(name = "CertificateInformation", required = true)
+  protected CertificateInformation certificateInformation;
 
-	/**
-	 * Ruft den Wert der certificateInformation-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link CertificateInformation }
-	 *
-	 */
-	public CertificateInformation getCertificateInformation() {
-		return certificateInformation;
-	}
+  /**
+   * Ruft den Wert der certificateInformation-Eigenschaft ab.
+   *
+   * @return possible object is {@link CertificateInformation }
+   */
+  public CertificateInformation getCertificateInformation() {
+    return certificateInformation;
+  }
 
-	/**
-	 * Legt den Wert der certificateInformation-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link CertificateInformation }
-	 *
-	 */
-	public void setCertificateInformation(CertificateInformation value) {
-		this.certificateInformation = value;
-	}
+  /**
+   * Legt den Wert der certificateInformation-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link CertificateInformation }
+   */
+  public void setCertificateInformation(CertificateInformation value) {
+    this.certificateInformation = value;
+  }
 
 }

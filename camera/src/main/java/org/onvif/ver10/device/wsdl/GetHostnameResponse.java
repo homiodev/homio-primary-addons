@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.HostnameInformation;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "hostnameInformation" })
+@XmlType(name = "", propOrder = {"hostnameInformation"})
 @XmlRootElement(name = "GetHostnameResponse")
 public class GetHostnameResponse {
 
-	@XmlElement(name = "HostnameInformation", required = true)
-	protected HostnameInformation hostnameInformation;
+  @XmlElement(name = "HostnameInformation", required = true)
+  protected HostnameInformation hostnameInformation;
 
-	/**
-	 * Ruft den Wert der hostnameInformation-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link HostnameInformation }
-	 *
-	 */
-	public HostnameInformation getHostnameInformation() {
-		return hostnameInformation;
-	}
+  /**
+   * Ruft den Wert der hostnameInformation-Eigenschaft ab.
+   *
+   * @return possible object is {@link HostnameInformation }
+   */
+  public HostnameInformation getHostnameInformation() {
+    return hostnameInformation;
+  }
 
-	/**
-	 * Legt den Wert der hostnameInformation-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link HostnameInformation }
-	 *
-	 */
-	public void setHostnameInformation(HostnameInformation value) {
-		this.hostnameInformation = value;
-	}
+  /**
+   * Legt den Wert der hostnameInformation-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link HostnameInformation }
+   */
+  public void setHostnameInformation(HostnameInformation value) {
+    this.hostnameInformation = value;
+  }
 
 }

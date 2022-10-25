@@ -7,7 +7,11 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
@@ -27,31 +31,27 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "rebootNeeded" })
+@XmlType(name = "", propOrder = {"rebootNeeded"})
 @XmlRootElement(name = "SetHostnameFromDHCPResponse")
 public class SetHostnameFromDHCPResponse {
 
-	@XmlElement(name = "RebootNeeded")
-	protected boolean rebootNeeded;
+  @XmlElement(name = "RebootNeeded")
+  protected boolean rebootNeeded;
 
-	/**
-	 * Ruft den Wert der rebootNeeded-Eigenschaft ab.
-	 *
-	 */
-	public boolean isRebootNeeded() {
-		return rebootNeeded;
-	}
+  /**
+   * Ruft den Wert der rebootNeeded-Eigenschaft ab.
+   */
+  public boolean isRebootNeeded() {
+    return rebootNeeded;
+  }
 
-	/**
-	 * Legt den Wert der rebootNeeded-Eigenschaft fest.
-	 *
-	 */
-	public void setRebootNeeded(boolean value) {
-		this.rebootNeeded = value;
-	}
+  /**
+   * Legt den Wert der rebootNeeded-Eigenschaft fest.
+   */
+  public void setRebootNeeded(boolean value) {
+    this.rebootNeeded = value;
+  }
 
 }

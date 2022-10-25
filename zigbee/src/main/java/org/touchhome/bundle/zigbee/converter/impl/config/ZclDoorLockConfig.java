@@ -10,20 +10,20 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ZclDoorLockConfig implements ZclClusterConfigHandler {
 
-    private static final String CONFIG_ID = "zigbee_doorlock_";
-    private static final String CONFIG_SOUNDVOLUME = CONFIG_ID + "soundvolume";
-    private static final String CONFIG_ENABLEONETOUCHLOCKING = CONFIG_ID + "onetouchlocking";
-    private static final String CONFIG_ENABLELOCALPROGRAMMING = CONFIG_ID + "localprogramming";
-    private static final String CONFIG_AUTORELOCKTIME = CONFIG_ID + "autorelocktime";
+  private static final String CONFIG_ID = "zigbee_doorlock_";
+  private static final String CONFIG_SOUNDVOLUME = CONFIG_ID + "soundvolume";
+  private static final String CONFIG_ENABLEONETOUCHLOCKING = CONFIG_ID + "onetouchlocking";
+  private static final String CONFIG_ENABLELOCALPROGRAMMING = CONFIG_ID + "localprogramming";
+  private static final String CONFIG_AUTORELOCKTIME = CONFIG_ID + "autorelocktime";
 
-    private ZclDoorLockCluster doorLockCluster;
+  private ZclDoorLockCluster doorLockCluster;
 
-    @Override
-    public boolean initialize(ZclCluster cluster) {
-        doorLockCluster = (ZclDoorLockCluster) cluster;
-        ZclLevelControlConfig.initCluster(doorLockCluster.discoverAttributes(false), log, doorLockCluster.getZigBeeAddress(), doorLockCluster.getClusterName());
+  @Override
+  public boolean initialize(ZclCluster cluster) {
+    doorLockCluster = (ZclDoorLockCluster) cluster;
+    ZclLevelControlConfig.initCluster(doorLockCluster.discoverAttributes(false), log, doorLockCluster.getZigBeeAddress(), doorLockCluster.getClusterName());
 
-        // Build a list of configuration supported by this channel based on the attributes the cluster supports
+    // Build a list of configuration supported by this channel based on the attributes the cluster supports
         /*List<ParameterOption> options = new ArrayList<>();
 
         if (doorLockCluster.isAttributeSupported(ZclDoorLockCluster.ATTR_SOUNDVOLUME)) {
@@ -52,13 +52,13 @@ public class ZclDoorLockConfig implements ZclClusterConfigHandler {
         }
 
         return !parameters.isEmpty();*/
-        return true;
-    }
+    return true;
+  }
 
-    @Override
-    public boolean updateConfiguration() {
-        return false;
-    }
+  @Override
+  public boolean updateConfiguration() {
+    return false;
+  }
 
     /*@Override
     public boolean updateConfiguration( Configuration currentConfiguration,

@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.media.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.Profile;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "profile" })
+@XmlType(name = "", propOrder = {"profile"})
 @XmlRootElement(name = "GetProfileResponse")
 public class GetProfileResponse {
 
-	@XmlElement(name = "Profile", required = true)
-	protected Profile profile;
+  @XmlElement(name = "Profile", required = true)
+  protected Profile profile;
 
-	/**
-	 * Ruft den Wert der profile-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Profile }
-	 *
-	 */
-	public Profile getProfile() {
-		return profile;
-	}
+  /**
+   * Ruft den Wert der profile-Eigenschaft ab.
+   *
+   * @return possible object is {@link Profile }
+   */
+  public Profile getProfile() {
+    return profile;
+  }
 
-	/**
-	 * Legt den Wert der profile-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Profile }
-	 *
-	 */
-	public void setProfile(Profile value) {
-		this.profile = value;
-	}
+  /**
+   * Legt den Wert der profile-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Profile }
+   */
+  public void setProfile(Profile value) {
+    this.profile = value;
+  }
 
 }

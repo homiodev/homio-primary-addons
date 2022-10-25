@@ -21,39 +21,37 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "ModeOfOperation")
 @XmlEnum
 public enum ModeOfOperation {
 
-	@XmlEnumValue("Idle")
-	IDLE("Idle"), @XmlEnumValue("Active")
-	ACTIVE("Active"),
+  @XmlEnumValue("Idle")
+  IDLE("Idle"), @XmlEnumValue("Active")
+  ACTIVE("Active"),
 
-	/**
-	 * This case should never happen.
-	 *
-	 */
-	@XmlEnumValue("Unknown")
-	UNKNOWN("Unknown");
-	private final String value;
+  /**
+   * This case should never happen.
+   */
+  @XmlEnumValue("Unknown")
+  UNKNOWN("Unknown");
+  private final String value;
 
-	ModeOfOperation(String v) {
-		value = v;
-	}
+  ModeOfOperation(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static ModeOfOperation fromValue(String v) {
+    for (ModeOfOperation c : ModeOfOperation.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static ModeOfOperation fromValue(String v) {
-		for (ModeOfOperation c : ModeOfOperation.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

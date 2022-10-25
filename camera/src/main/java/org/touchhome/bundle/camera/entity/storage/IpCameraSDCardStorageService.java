@@ -16,21 +16,21 @@ import org.touchhome.bundle.api.ui.UISidebarChildren;
 @UISidebarChildren(icon = "rest/bundle/image/camera/memory-card.png", color = "#AACC00")
 public class IpCameraSDCardStorageService extends VideoBaseStorageService<IpCameraSDCardStorageService> {
 
-    public static final String PREFIX = "ipcsd_";
+  public static final String PREFIX = "ipcsd_";
 
-    @Override
-    public String getEntityPrefix() {
-        return PREFIX;
-    }
+  @Override
+  public String getEntityPrefix() {
+    return PREFIX;
+  }
 
-    @SneakyThrows
-    @Override
-    public void startRecord(String id, String output, String profile, DeviceBaseEntity deviceEntity) {
-        throw new NotImplementedException();
-    }
+  @SneakyThrows
+  @Override
+  public void startRecord(String id, String output, String profile, DeviceBaseEntity deviceEntity) {
+    throw new NotImplementedException();
+  }
 
-    @Override
-    public void stopRecord(String id, String output, DeviceBaseEntity cameraEntity) {
-        throw new NotImplementedException();
-    }
+  @Override
+  public void stopRecord(String id, String output, DeviceBaseEntity cameraEntity) {
+    throw new NotImplementedException();
+  }
 }

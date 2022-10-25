@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.SystemLog;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "systemLog" })
+@XmlType(name = "", propOrder = {"systemLog"})
 @XmlRootElement(name = "GetSystemLogResponse")
 public class GetSystemLogResponse {
 
-	@XmlElement(name = "SystemLog", required = true)
-	protected SystemLog systemLog;
+  @XmlElement(name = "SystemLog", required = true)
+  protected SystemLog systemLog;
 
-	/**
-	 * Ruft den Wert der systemLog-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link SystemLog }
-	 *
-	 */
-	public SystemLog getSystemLog() {
-		return systemLog;
-	}
+  /**
+   * Ruft den Wert der systemLog-Eigenschaft ab.
+   *
+   * @return possible object is {@link SystemLog }
+   */
+  public SystemLog getSystemLog() {
+    return systemLog;
+  }
 
-	/**
-	 * Legt den Wert der systemLog-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link SystemLog }
-	 *
-	 */
-	public void setSystemLog(SystemLog value) {
-		this.systemLog = value;
-	}
+  /**
+   * Legt den Wert der systemLog-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link SystemLog }
+   */
+  public void setSystemLog(SystemLog value) {
+    this.systemLog = value;
+  }
 
 }

@@ -7,11 +7,15 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import org.onvif.ver10.schema.BinaryData;
-
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.onvif.ver10.schema.BinaryData;
 
 /**
  * <p>
@@ -33,84 +37,73 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "certificateID", "subject", "attributes" })
+@XmlType(name = "", propOrder = {"certificateID", "subject", "attributes"})
 @XmlRootElement(name = "GetPkcs10Request")
 public class GetPkcs10Request {
 
-	@XmlElement(name = "CertificateID", required = true)
-	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-	@XmlSchemaType(name = "token")
-	protected String certificateID;
-	@XmlElement(name = "Subject")
-	protected String subject;
-	@XmlElement(name = "Attributes")
-	protected BinaryData attributes;
+  @XmlElement(name = "CertificateID", required = true)
+  @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+  @XmlSchemaType(name = "token")
+  protected String certificateID;
+  @XmlElement(name = "Subject")
+  protected String subject;
+  @XmlElement(name = "Attributes")
+  protected BinaryData attributes;
 
-	/**
-	 * Ruft den Wert der certificateID-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getCertificateID() {
-		return certificateID;
-	}
+  /**
+   * Ruft den Wert der certificateID-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getCertificateID() {
+    return certificateID;
+  }
 
-	/**
-	 * Legt den Wert der certificateID-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setCertificateID(String value) {
-		this.certificateID = value;
-	}
+  /**
+   * Legt den Wert der certificateID-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setCertificateID(String value) {
+    this.certificateID = value;
+  }
 
-	/**
-	 * Ruft den Wert der subject-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getSubject() {
-		return subject;
-	}
+  /**
+   * Ruft den Wert der subject-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getSubject() {
+    return subject;
+  }
 
-	/**
-	 * Legt den Wert der subject-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setSubject(String value) {
-		this.subject = value;
-	}
+  /**
+   * Legt den Wert der subject-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setSubject(String value) {
+    this.subject = value;
+  }
 
-	/**
-	 * Ruft den Wert der attributes-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link BinaryData }
-	 *
-	 */
-	public BinaryData getAttributes() {
-		return attributes;
-	}
+  /**
+   * Ruft den Wert der attributes-Eigenschaft ab.
+   *
+   * @return possible object is {@link BinaryData }
+   */
+  public BinaryData getAttributes() {
+    return attributes;
+  }
 
-	/**
-	 * Legt den Wert der attributes-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link BinaryData }
-	 *
-	 */
-	public void setAttributes(BinaryData value) {
-		this.attributes = value;
-	}
+  /**
+   * Legt den Wert der attributes-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link BinaryData }
+   */
+  public void setAttributes(BinaryData value) {
+    this.attributes = value;
+  }
 
 }

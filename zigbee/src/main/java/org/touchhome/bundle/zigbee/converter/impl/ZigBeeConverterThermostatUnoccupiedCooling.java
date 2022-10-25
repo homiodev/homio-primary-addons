@@ -12,10 +12,10 @@ import lombok.extern.log4j.Log4j2;
 @ZigBeeConverter(name = "zigbee:thermostat_unoccupiedcooling", clientClusters = {ZclThermostatCluster.CLUSTER_ID})
 public class ZigBeeConverterThermostatUnoccupiedCooling extends ZigBeeInputBaseConverter {
 
-    public ZigBeeConverterThermostatUnoccupiedCooling() {
-        super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_UNOCCUPIEDCOOLINGSETPOINT,
-                1, REPORTING_PERIOD_DEFAULT_MAX, 10);
-    }
+  public ZigBeeConverterThermostatUnoccupiedCooling() {
+    super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_UNOCCUPIEDCOOLINGSETPOINT,
+        1, REPORTING_PERIOD_DEFAULT_MAX, 10);
+  }
 
     /*@Override
     public void handleCommand(final ZigBeeCommand command) {
@@ -30,8 +30,8 @@ public class ZigBeeConverterThermostatUnoccupiedCooling extends ZigBeeInputBaseC
         attribute.writeValue(value);
     }*/
 
-    @Override
-    protected void updateValue(Object val, ZclAttribute attribute) {
-        updateChannelState(valueToTemperature((Integer) val));
-    }
+  @Override
+  protected void updateValue(Object val, ZclAttribute attribute) {
+    updateChannelState(valueToTemperature((Integer) val));
+  }
 }

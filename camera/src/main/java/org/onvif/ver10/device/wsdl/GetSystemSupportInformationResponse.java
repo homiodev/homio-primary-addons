@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.SupportInformation;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "supportInformation" })
+@XmlType(name = "", propOrder = {"supportInformation"})
 @XmlRootElement(name = "GetSystemSupportInformationResponse")
 public class GetSystemSupportInformationResponse {
 
-	@XmlElement(name = "SupportInformation", required = true)
-	protected SupportInformation supportInformation;
+  @XmlElement(name = "SupportInformation", required = true)
+  protected SupportInformation supportInformation;
 
-	/**
-	 * Ruft den Wert der supportInformation-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link SupportInformation }
-	 *
-	 */
-	public SupportInformation getSupportInformation() {
-		return supportInformation;
-	}
+  /**
+   * Ruft den Wert der supportInformation-Eigenschaft ab.
+   *
+   * @return possible object is {@link SupportInformation }
+   */
+  public SupportInformation getSupportInformation() {
+    return supportInformation;
+  }
 
-	/**
-	 * Legt den Wert der supportInformation-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link SupportInformation }
-	 *
-	 */
-	public void setSupportInformation(SupportInformation value) {
-		this.supportInformation = value;
-	}
+  /**
+   * Legt den Wert der supportInformation-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link SupportInformation }
+   */
+  public void setSupportInformation(SupportInformation value) {
+    this.supportInformation = value;
+  }
 
 }

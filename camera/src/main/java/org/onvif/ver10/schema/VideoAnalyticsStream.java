@@ -1,8 +1,12 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
@@ -23,41 +27,37 @@ import java.util.List;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "VideoAnalyticsStream", propOrder = { "frameOrExtension" })
+@XmlType(name = "VideoAnalyticsStream", propOrder = {"frameOrExtension"})
 public class VideoAnalyticsStream {
 
-	@XmlElements({ @XmlElement(name = "Frame", type = Frame.class), @XmlElement(name = "Extension", type = VideoAnalyticsStreamExtension.class) })
-	protected List<java.lang.Object> frameOrExtension;
+  @XmlElements({@XmlElement(name = "Frame", type = Frame.class), @XmlElement(name = "Extension", type = VideoAnalyticsStreamExtension.class)})
+  protected List<java.lang.Object> frameOrExtension;
 
-	/**
-	 * Gets the value of the frameOrExtension property.
-	 *
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
-	 * This is why there is not a <CODE>set</CODE> method for the frameOrExtension property.
-	 *
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 *
-	 * <pre>
-	 * getFrameOrExtension().add(newItem);
-	 * </pre>
-	 *
-	 *
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list {@link Frame } {@link VideoAnalyticsStreamExtension }
-	 *
-	 *
-	 */
-	public List<java.lang.Object> getFrameOrExtension() {
-		if (frameOrExtension == null) {
-			frameOrExtension = new ArrayList<java.lang.Object>();
-		}
-		return this.frameOrExtension;
-	}
+  /**
+   * Gets the value of the frameOrExtension property.
+   *
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned list will be present inside the JAXB object.
+   * This is why there is not a <CODE>set</CODE> method for the frameOrExtension property.
+   *
+   * <p>
+   * For example, to add a new item, do as follows:
+   *
+   * <pre>
+   * getFrameOrExtension().add(newItem);
+   * </pre>
+   *
+   *
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link Frame } {@link VideoAnalyticsStreamExtension }
+   */
+  public List<java.lang.Object> getFrameOrExtension() {
+    if (frameOrExtension == null) {
+      frameOrExtension = new ArrayList<java.lang.Object>();
+    }
+    return this.frameOrExtension;
+  }
 
 }

@@ -21,33 +21,32 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "PTZPresetTourDirection")
 @XmlEnum
 public enum PTZPresetTourDirection {
 
-	@XmlEnumValue("Forward")
-	FORWARD("Forward"), @XmlEnumValue("Backward")
-	BACKWARD("Backward"), @XmlEnumValue("Extended")
-	EXTENDED("Extended");
-	private final String value;
+  @XmlEnumValue("Forward")
+  FORWARD("Forward"), @XmlEnumValue("Backward")
+  BACKWARD("Backward"), @XmlEnumValue("Extended")
+  EXTENDED("Extended");
+  private final String value;
 
-	PTZPresetTourDirection(String v) {
-		value = v;
-	}
+  PTZPresetTourDirection(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static PTZPresetTourDirection fromValue(String v) {
+    for (PTZPresetTourDirection c : PTZPresetTourDirection.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static PTZPresetTourDirection fromValue(String v) {
-		for (PTZPresetTourDirection c : PTZPresetTourDirection.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

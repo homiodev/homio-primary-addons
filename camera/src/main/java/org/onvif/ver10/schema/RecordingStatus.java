@@ -24,42 +24,40 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "RecordingStatus")
 @XmlEnum
 public enum RecordingStatus {
 
-	@XmlEnumValue("Initiated")
-	INITIATED("Initiated"), @XmlEnumValue("Recording")
-	RECORDING("Recording"), @XmlEnumValue("Stopped")
-	STOPPED("Stopped"), @XmlEnumValue("Removing")
-	REMOVING("Removing"), @XmlEnumValue("Removed")
-	REMOVED("Removed"),
+  @XmlEnumValue("Initiated")
+  INITIATED("Initiated"), @XmlEnumValue("Recording")
+  RECORDING("Recording"), @XmlEnumValue("Stopped")
+  STOPPED("Stopped"), @XmlEnumValue("Removing")
+  REMOVING("Removing"), @XmlEnumValue("Removed")
+  REMOVED("Removed"),
 
-	/**
-	 * This case should never happen.
-	 *
-	 */
-	@XmlEnumValue("Unknown")
-	UNKNOWN("Unknown");
-	private final String value;
+  /**
+   * This case should never happen.
+   */
+  @XmlEnumValue("Unknown")
+  UNKNOWN("Unknown");
+  private final String value;
 
-	RecordingStatus(String v) {
-		value = v;
-	}
+  RecordingStatus(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static RecordingStatus fromValue(String v) {
+    for (RecordingStatus c : RecordingStatus.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static RecordingStatus fromValue(String v) {
-		for (RecordingStatus c : RecordingStatus.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

@@ -12,57 +12,45 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class GetConfiguration {
 
-    @XmlElement(name = "ConfigurationToken")
-    protected String configurationToken;
-    @XmlElement(name = "ProfileToken")
-    protected String profileToken;
+  @XmlElement(name = "ConfigurationToken")
+  protected String configurationToken;
+  @XmlElement(name = "ProfileToken")
+  protected String profileToken;
 
-    /**
-     * Ruft den Wert der configurationToken-Eigenschaft ab.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
-    public String getConfigurationToken() {
-        return configurationToken;
-    }
+  /**
+   * Ruft den Wert der configurationToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getConfigurationToken() {
+    return configurationToken;
+  }
 
-    /**
-     * Legt den Wert der configurationToken-Eigenschaft fest.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
-    public void setConfigurationToken(String value) {
-        this.configurationToken = value;
-    }
+  /**
+   * Legt den Wert der configurationToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setConfigurationToken(String value) {
+    this.configurationToken = value;
+  }
 
-    /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
-    public String getProfileToken() {
-        return profileToken;
-    }
+  /**
+   * Ruft den Wert der profileToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getProfileToken() {
+    return profileToken;
+  }
 
-    /**
-     * Legt den Wert der profileToken-Eigenschaft fest.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
-    public void setProfileToken(String value) {
-        this.profileToken = value;
-    }
+  /**
+   * Legt den Wert der profileToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setProfileToken(String value) {
+    this.profileToken = value;
+  }
 
 }

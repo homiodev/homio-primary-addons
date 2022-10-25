@@ -7,7 +7,11 @@
 
 package org.onvif.ver10.media.wsdl;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>
@@ -28,59 +32,51 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "configurationToken", "profileToken" })
+@XmlType(name = "", propOrder = {"configurationToken", "profileToken"})
 @XmlRootElement(name = "GetAudioOutputConfigurationOptions")
 public class GetAudioOutputConfigurationOptions {
 
-	@XmlElement(name = "ConfigurationToken")
-	protected String configurationToken;
-	@XmlElement(name = "ProfileToken")
-	protected String profileToken;
+  @XmlElement(name = "ConfigurationToken")
+  protected String configurationToken;
+  @XmlElement(name = "ProfileToken")
+  protected String profileToken;
 
-	/**
-	 * Ruft den Wert der configurationToken-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getConfigurationToken() {
-		return configurationToken;
-	}
+  /**
+   * Ruft den Wert der configurationToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getConfigurationToken() {
+    return configurationToken;
+  }
 
-	/**
-	 * Legt den Wert der configurationToken-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setConfigurationToken(String value) {
-		this.configurationToken = value;
-	}
+  /**
+   * Legt den Wert der configurationToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setConfigurationToken(String value) {
+    this.configurationToken = value;
+  }
 
-	/**
-	 * Ruft den Wert der profileToken-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getProfileToken() {
-		return profileToken;
-	}
+  /**
+   * Ruft den Wert der profileToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getProfileToken() {
+    return profileToken;
+  }
 
-	/**
-	 * Legt den Wert der profileToken-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setProfileToken(String value) {
-		this.profileToken = value;
-	}
+  /**
+   * Legt den Wert der profileToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setProfileToken(String value) {
+    this.profileToken = value;
+  }
 
 }

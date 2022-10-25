@@ -9,8 +9,14 @@
     "botName": "Bot name",
     "botToken": "Bot token"
   },
-  "WORKSPACE": {
-    "telegram": "Telegram"
+  "workspace": {
+    "telegram": "Telegram",
+    "telegram_get_msg": "Handle next block when received message from telegram",
+    "telegram_send_msg": "Send message to telegram",
+    "telegram_send_img": "Send media(audio/video/image/etc... to telegram",
+    "telegram_send_question": "Send question to telegram and wait response",
+    "telegram_send_question_if": "Send question to telegram and wait response",
+    "telegram_send_question_if_else": "Send question to telegram and wait response"
   },
   "selection": {
     "TelegramEntity": "Telegram"

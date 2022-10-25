@@ -2,37 +2,37 @@ package org.touchhome.bundle.camera.handler;
 
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 public interface BaseBrandCameraHandler {
-    boolean isSupportOnvifEvents();
 
-    void handleSetURL(ChannelPipeline pipeline, String httpRequestURL);
+  boolean isSupportOnvifEvents();
 
-    void assembleActions(UIInputBuilder uiInputBuilder);
+  void handleSetURL(ChannelPipeline pipeline, String httpRequestURL);
 
-    default ChannelHandler asBootstrapHandler() {
-        throw new RuntimeException("Unsupported bootstrap handler");
-    }
+  void assembleActions(UIInputBuilder uiInputBuilder);
 
-    void pollCameraRunnable(OnvifCameraHandler onvifCameraHandler);
+  default ChannelHandler asBootstrapHandler() {
+    throw new RuntimeException("Unsupported bootstrap handler");
+  }
 
-    void initialize(EntityContext entityContext);
+  void pollCameraRunnable(OnvifCameraHandler onvifCameraHandler);
 
-    void runOncePerMinute(EntityContext entityContext);
+  void initialize(EntityContext entityContext);
 
-    String getUrlToKeepOpenForIdleStateEvent();
+  void runOncePerMinute(EntityContext entityContext);
 
-    default Consumer<Boolean> getIRLedHandler() {
-        return null;
-    }
+  String getUrlToKeepOpenForIdleStateEvent();
 
-    default Supplier<Boolean> getIrLedValueHandler() {
-        return null;
-    }
+  default Consumer<Boolean> getIRLedHandler() {
+    return null;
+  }
+
+  default Supplier<Boolean> getIrLedValueHandler() {
+    return null;
+  }
 }

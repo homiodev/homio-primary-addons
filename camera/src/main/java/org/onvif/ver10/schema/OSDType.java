@@ -21,33 +21,32 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "OSDType")
 @XmlEnum
 public enum OSDType {
 
-	@XmlEnumValue("Text")
-	TEXT("Text"), @XmlEnumValue("Image")
-	IMAGE("Image"), @XmlEnumValue("Extended")
-	EXTENDED("Extended");
-	private final String value;
+  @XmlEnumValue("Text")
+  TEXT("Text"), @XmlEnumValue("Image")
+  IMAGE("Image"), @XmlEnumValue("Extended")
+  EXTENDED("Extended");
+  private final String value;
 
-	OSDType(String v) {
-		value = v;
-	}
+  OSDType(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static OSDType fromValue(String v) {
+    for (OSDType c : OSDType.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static OSDType fromValue(String v) {
-		for (OSDType c : OSDType.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

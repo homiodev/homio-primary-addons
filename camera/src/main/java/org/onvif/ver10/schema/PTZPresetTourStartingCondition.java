@@ -1,10 +1,14 @@
 package org.onvif.ver10.schema;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.datatype.Duration;
-import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.datatype.Duration;
+import javax.xml.namespace.QName;
 
 /**
  * <p>
@@ -28,121 +32,106 @@ import java.util.Map;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PTZPresetTourStartingCondition", propOrder = { "recurringTime", "recurringDuration", "direction", "extension" })
+@XmlType(name = "PTZPresetTourStartingCondition", propOrder = {"recurringTime", "recurringDuration", "direction", "extension"})
 public class PTZPresetTourStartingCondition {
 
-	@XmlElement(name = "RecurringTime")
-	protected Integer recurringTime;
-	@XmlElement(name = "RecurringDuration")
-	protected Duration recurringDuration;
-	@XmlElement(name = "Direction")
-	protected PTZPresetTourDirection direction;
-	@XmlElement(name = "Extension")
-	protected PTZPresetTourStartingConditionExtension extension;
-	@XmlAnyAttribute
-	private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+  @XmlElement(name = "RecurringTime")
+  protected Integer recurringTime;
+  @XmlElement(name = "RecurringDuration")
+  protected Duration recurringDuration;
+  @XmlElement(name = "Direction")
+  protected PTZPresetTourDirection direction;
+  @XmlElement(name = "Extension")
+  protected PTZPresetTourStartingConditionExtension extension;
+  @XmlAnyAttribute
+  private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-	/**
-	 * Ruft den Wert der recurringTime-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Integer }
-	 *
-	 */
-	public Integer getRecurringTime() {
-		return recurringTime;
-	}
+  /**
+   * Ruft den Wert der recurringTime-Eigenschaft ab.
+   *
+   * @return possible object is {@link Integer }
+   */
+  public Integer getRecurringTime() {
+    return recurringTime;
+  }
 
-	/**
-	 * Legt den Wert der recurringTime-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Integer }
-	 *
-	 */
-	public void setRecurringTime(Integer value) {
-		this.recurringTime = value;
-	}
+  /**
+   * Legt den Wert der recurringTime-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Integer }
+   */
+  public void setRecurringTime(Integer value) {
+    this.recurringTime = value;
+  }
 
-	/**
-	 * Ruft den Wert der recurringDuration-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Duration }
-	 *
-	 */
-	public Duration getRecurringDuration() {
-		return recurringDuration;
-	}
+  /**
+   * Ruft den Wert der recurringDuration-Eigenschaft ab.
+   *
+   * @return possible object is {@link Duration }
+   */
+  public Duration getRecurringDuration() {
+    return recurringDuration;
+  }
 
-	/**
-	 * Legt den Wert der recurringDuration-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Duration }
-	 *
-	 */
-	public void setRecurringDuration(Duration value) {
-		this.recurringDuration = value;
-	}
+  /**
+   * Legt den Wert der recurringDuration-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Duration }
+   */
+  public void setRecurringDuration(Duration value) {
+    this.recurringDuration = value;
+  }
 
-	/**
-	 * Ruft den Wert der direction-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZPresetTourDirection }
-	 *
-	 */
-	public PTZPresetTourDirection getDirection() {
-		return direction;
-	}
+  /**
+   * Ruft den Wert der direction-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZPresetTourDirection }
+   */
+  public PTZPresetTourDirection getDirection() {
+    return direction;
+  }
 
-	/**
-	 * Legt den Wert der direction-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZPresetTourDirection }
-	 *
-	 */
-	public void setDirection(PTZPresetTourDirection value) {
-		this.direction = value;
-	}
+  /**
+   * Legt den Wert der direction-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZPresetTourDirection }
+   */
+  public void setDirection(PTZPresetTourDirection value) {
+    this.direction = value;
+  }
 
-	/**
-	 * Ruft den Wert der extension-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link PTZPresetTourStartingConditionExtension }
-	 *
-	 */
-	public PTZPresetTourStartingConditionExtension getExtension() {
-		return extension;
-	}
+  /**
+   * Ruft den Wert der extension-Eigenschaft ab.
+   *
+   * @return possible object is {@link PTZPresetTourStartingConditionExtension }
+   */
+  public PTZPresetTourStartingConditionExtension getExtension() {
+    return extension;
+  }
 
-	/**
-	 * Legt den Wert der extension-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link PTZPresetTourStartingConditionExtension }
-	 *
-	 */
-	public void setExtension(PTZPresetTourStartingConditionExtension value) {
-		this.extension = value;
-	}
+  /**
+   * Legt den Wert der extension-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link PTZPresetTourStartingConditionExtension }
+   */
+  public void setExtension(PTZPresetTourStartingConditionExtension value) {
+    this.extension = value;
+  }
 
-	/**
-	 * Gets a map that contains attributes that aren't bound to any typed property on this class.
-	 *
-	 * <p>
-	 * the map is keyed by the name of the attribute and the value is the string value of the attribute.
-	 *
-	 * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
-	 *
-	 *
-	 * @return always non-null
-	 */
-	public Map<QName, String> getOtherAttributes() {
-		return otherAttributes;
-	}
+  /**
+   * Gets a map that contains attributes that aren't bound to any typed property on this class.
+   *
+   * <p>
+   * the map is keyed by the name of the attribute and the value is the string value of the attribute.
+   * <p>
+   * the map returned by this method is live, and you can add new attribute by updating the map directly. Because of this design, there's no setter.
+   *
+   * @return always non-null
+   */
+  public Map<QName, String> getOtherAttributes() {
+    return otherAttributes;
+  }
 
 }

@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.media.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.AudioSourceConfiguration;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -29,36 +32,31 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "configuration" })
+@XmlType(name = "", propOrder = {"configuration"})
 @XmlRootElement(name = "GetAudioSourceConfigurationResponse")
 public class GetAudioSourceConfigurationResponse {
 
-	@XmlElement(name = "Configuration", required = true)
-	protected AudioSourceConfiguration configuration;
+  @XmlElement(name = "Configuration", required = true)
+  protected AudioSourceConfiguration configuration;
 
-	/**
-	 * Ruft den Wert der configuration-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link AudioSourceConfiguration }
-	 *
-	 */
-	public AudioSourceConfiguration getConfiguration() {
-		return configuration;
-	}
+  /**
+   * Ruft den Wert der configuration-Eigenschaft ab.
+   *
+   * @return possible object is {@link AudioSourceConfiguration }
+   */
+  public AudioSourceConfiguration getConfiguration() {
+    return configuration;
+  }
 
-	/**
-	 * Legt den Wert der configuration-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link AudioSourceConfiguration }
-	 *
-	 */
-	public void setConfiguration(AudioSourceConfiguration value) {
-		this.configuration = value;
-	}
+  /**
+   * Legt den Wert der configuration-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link AudioSourceConfiguration }
+   */
+  public void setConfiguration(AudioSourceConfiguration value) {
+    this.configuration = value;
+  }
 
 }

@@ -27,82 +27,71 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "NetworkInterfaceInfo", propOrder = { "name", "hwAddress", "mtu" })
+@XmlType(name = "NetworkInterfaceInfo", propOrder = {"name", "hwAddress", "mtu"})
 public class NetworkInterfaceInfo {
 
-	@XmlElement(name = "Name")
-	protected String name;
-	@XmlElement(name = "HwAddress", required = true)
-	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-	protected String hwAddress;
-	@XmlElement(name = "MTU")
-	protected Integer mtu;
+  @XmlElement(name = "Name")
+  protected String name;
+  @XmlElement(name = "HwAddress", required = true)
+  @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+  protected String hwAddress;
+  @XmlElement(name = "MTU")
+  protected Integer mtu;
 
-	/**
-	 * Ruft den Wert der name-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getName() {
-		return name;
-	}
+  /**
+   * Ruft den Wert der name-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getName() {
+    return name;
+  }
 
-	/**
-	 * Legt den Wert der name-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setName(String value) {
-		this.name = value;
-	}
+  /**
+   * Legt den Wert der name-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setName(String value) {
+    this.name = value;
+  }
 
-	/**
-	 * Ruft den Wert der hwAddress-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getHwAddress() {
-		return hwAddress;
-	}
+  /**
+   * Ruft den Wert der hwAddress-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getHwAddress() {
+    return hwAddress;
+  }
 
-	/**
-	 * Legt den Wert der hwAddress-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setHwAddress(String value) {
-		this.hwAddress = value;
-	}
+  /**
+   * Legt den Wert der hwAddress-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setHwAddress(String value) {
+    this.hwAddress = value;
+  }
 
-	/**
-	 * Ruft den Wert der mtu-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Integer }
-	 *
-	 */
-	public Integer getMTU() {
-		return mtu;
-	}
+  /**
+   * Ruft den Wert der mtu-Eigenschaft ab.
+   *
+   * @return possible object is {@link Integer }
+   */
+  public Integer getMTU() {
+    return mtu;
+  }
 
-	/**
-	 * Legt den Wert der mtu-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Integer }
-	 *
-	 */
-	public void setMTU(Integer value) {
-		this.mtu = value;
-	}
+  /**
+   * Legt den Wert der mtu-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Integer }
+   */
+  public void setMTU(Integer value) {
+    this.mtu = value;
+  }
 
 }

@@ -25,71 +25,62 @@ import javax.xml.bind.annotation.XmlType;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "NetworkInterfaceConnectionSetting", propOrder = { "autoNegotiation", "speed", "duplex" })
+@XmlType(name = "NetworkInterfaceConnectionSetting", propOrder = {"autoNegotiation", "speed", "duplex"})
 public class NetworkInterfaceConnectionSetting {
 
-	@XmlElement(name = "AutoNegotiation")
-	protected boolean autoNegotiation;
-	@XmlElement(name = "Speed")
-	protected int speed;
-	@XmlElement(name = "Duplex", required = true)
-	protected Duplex duplex;
+  @XmlElement(name = "AutoNegotiation")
+  protected boolean autoNegotiation;
+  @XmlElement(name = "Speed")
+  protected int speed;
+  @XmlElement(name = "Duplex", required = true)
+  protected Duplex duplex;
 
-	/**
-	 * Ruft den Wert der autoNegotiation-Eigenschaft ab.
-	 *
-	 */
-	public boolean isAutoNegotiation() {
-		return autoNegotiation;
-	}
+  /**
+   * Ruft den Wert der autoNegotiation-Eigenschaft ab.
+   */
+  public boolean isAutoNegotiation() {
+    return autoNegotiation;
+  }
 
-	/**
-	 * Legt den Wert der autoNegotiation-Eigenschaft fest.
-	 *
-	 */
-	public void setAutoNegotiation(boolean value) {
-		this.autoNegotiation = value;
-	}
+  /**
+   * Legt den Wert der autoNegotiation-Eigenschaft fest.
+   */
+  public void setAutoNegotiation(boolean value) {
+    this.autoNegotiation = value;
+  }
 
-	/**
-	 * Ruft den Wert der speed-Eigenschaft ab.
-	 *
-	 */
-	public int getSpeed() {
-		return speed;
-	}
+  /**
+   * Ruft den Wert der speed-Eigenschaft ab.
+   */
+  public int getSpeed() {
+    return speed;
+  }
 
-	/**
-	 * Legt den Wert der speed-Eigenschaft fest.
-	 *
-	 */
-	public void setSpeed(int value) {
-		this.speed = value;
-	}
+  /**
+   * Legt den Wert der speed-Eigenschaft fest.
+   */
+  public void setSpeed(int value) {
+    this.speed = value;
+  }
 
-	/**
-	 * Ruft den Wert der duplex-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link Duplex }
-	 *
-	 */
-	public Duplex getDuplex() {
-		return duplex;
-	}
+  /**
+   * Ruft den Wert der duplex-Eigenschaft ab.
+   *
+   * @return possible object is {@link Duplex }
+   */
+  public Duplex getDuplex() {
+    return duplex;
+  }
 
-	/**
-	 * Legt den Wert der duplex-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link Duplex }
-	 *
-	 */
-	public void setDuplex(Duplex value) {
-		this.duplex = value;
-	}
+  /**
+   * Legt den Wert der duplex-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link Duplex }
+   */
+  public void setDuplex(Duplex value) {
+    this.duplex = value;
+  }
 
 }

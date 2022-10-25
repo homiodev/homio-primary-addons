@@ -7,9 +7,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.RelayOutputSettings;
-
-import javax.xml.bind.annotation.*;
 
 /**
  * <p>
@@ -30,59 +33,51 @@ import javax.xml.bind.annotation.*;
  *   </complexContent>
  * </complexType>
  * </pre>
- *
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "relayOutputToken", "properties" })
+@XmlType(name = "", propOrder = {"relayOutputToken", "properties"})
 @XmlRootElement(name = "SetRelayOutputSettings")
 public class SetRelayOutputSettings {
 
-	@XmlElement(name = "RelayOutputToken", required = true)
-	protected String relayOutputToken;
-	@XmlElement(name = "Properties", required = true)
-	protected RelayOutputSettings properties;
+  @XmlElement(name = "RelayOutputToken", required = true)
+  protected String relayOutputToken;
+  @XmlElement(name = "Properties", required = true)
+  protected RelayOutputSettings properties;
 
-	/**
-	 * Ruft den Wert der relayOutputToken-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link String }
-	 *
-	 */
-	public String getRelayOutputToken() {
-		return relayOutputToken;
-	}
+  /**
+   * Ruft den Wert der relayOutputToken-Eigenschaft ab.
+   *
+   * @return possible object is {@link String }
+   */
+  public String getRelayOutputToken() {
+    return relayOutputToken;
+  }
 
-	/**
-	 * Legt den Wert der relayOutputToken-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link String }
-	 *
-	 */
-	public void setRelayOutputToken(String value) {
-		this.relayOutputToken = value;
-	}
+  /**
+   * Legt den Wert der relayOutputToken-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link String }
+   */
+  public void setRelayOutputToken(String value) {
+    this.relayOutputToken = value;
+  }
 
-	/**
-	 * Ruft den Wert der properties-Eigenschaft ab.
-	 *
-	 * @return possible object is {@link RelayOutputSettings }
-	 *
-	 */
-	public RelayOutputSettings getProperties() {
-		return properties;
-	}
+  /**
+   * Ruft den Wert der properties-Eigenschaft ab.
+   *
+   * @return possible object is {@link RelayOutputSettings }
+   */
+  public RelayOutputSettings getProperties() {
+    return properties;
+  }
 
-	/**
-	 * Legt den Wert der properties-Eigenschaft fest.
-	 *
-	 * @param value
-	 *            allowed object is {@link RelayOutputSettings }
-	 *
-	 */
-	public void setProperties(RelayOutputSettings value) {
-		this.properties = value;
-	}
+  /**
+   * Legt den Wert der properties-Eigenschaft fest.
+   *
+   * @param value allowed object is {@link RelayOutputSettings }
+   */
+  public void setProperties(RelayOutputSettings value) {
+    this.properties = value;
+  }
 
 }

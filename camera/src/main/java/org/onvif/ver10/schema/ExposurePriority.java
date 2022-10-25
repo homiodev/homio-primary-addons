@@ -20,32 +20,31 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "ExposurePriority")
 @XmlEnum
 public enum ExposurePriority {
 
-	@XmlEnumValue("LowNoise")
-	LOW_NOISE("LowNoise"), @XmlEnumValue("FrameRate")
-	FRAME_RATE("FrameRate");
-	private final String value;
+  @XmlEnumValue("LowNoise")
+  LOW_NOISE("LowNoise"), @XmlEnumValue("FrameRate")
+  FRAME_RATE("FrameRate");
+  private final String value;
 
-	ExposurePriority(String v) {
-		value = v;
-	}
+  ExposurePriority(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static ExposurePriority fromValue(String v) {
+    for (ExposurePriority c : ExposurePriority.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static ExposurePriority fromValue(String v) {
-		for (ExposurePriority c : ExposurePriority.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

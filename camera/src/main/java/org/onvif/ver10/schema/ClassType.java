@@ -8,29 +8,29 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum ClassType {
 
-	@XmlEnumValue("Animal")
-	ANIMAL("Animal"), @XmlEnumValue("Face")
-	FACE("Face"), @XmlEnumValue("Human")
-	HUMAN("Human"), @XmlEnumValue("Vehical")
-	VEHICAL("Vehical"), @XmlEnumValue("Other")
-	OTHER("Other");
-	private final String value;
+  @XmlEnumValue("Animal")
+  ANIMAL("Animal"), @XmlEnumValue("Face")
+  FACE("Face"), @XmlEnumValue("Human")
+  HUMAN("Human"), @XmlEnumValue("Vehical")
+  VEHICAL("Vehical"), @XmlEnumValue("Other")
+  OTHER("Other");
+  private final String value;
 
-	ClassType(String v) {
-		value = v;
-	}
+  ClassType(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static ClassType fromValue(String v) {
+    for (ClassType c : ClassType.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static ClassType fromValue(String v) {
-		for (ClassType c : ClassType.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

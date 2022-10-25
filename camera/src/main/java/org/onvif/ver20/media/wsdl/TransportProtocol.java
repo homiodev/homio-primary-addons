@@ -20,36 +20,35 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
- *
  */
 @XmlType(name = "TransportProtocol")
 @XmlEnum
 public enum TransportProtocol {
 
-    @XmlEnumValue("RtspUnicast")
-    RTSP_UNICAST("RtspUnicast"),
-    @XmlEnumValue("RtspMulticast")
-    RTSP_MULTICAST("RtspMulticast"),
-    RTSP("RTSP"),
-    @XmlEnumValue("RtspOverHttp")
-    RTSP_OVER_HTTP("RtspOverHttp");
-    private final String value;
+  @XmlEnumValue("RtspUnicast")
+  RTSP_UNICAST("RtspUnicast"),
+  @XmlEnumValue("RtspMulticast")
+  RTSP_MULTICAST("RtspMulticast"),
+  RTSP("RTSP"),
+  @XmlEnumValue("RtspOverHttp")
+  RTSP_OVER_HTTP("RtspOverHttp");
+  private final String value;
 
-    TransportProtocol(String v) {
-        value = v;
-    }
+  TransportProtocol(String v) {
+    value = v;
+  }
 
-    public String value() {
-        return value;
+  public static TransportProtocol fromValue(String v) {
+    for (TransportProtocol c : TransportProtocol.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
     }
+    throw new IllegalArgumentException(v);
+  }
 
-    public static TransportProtocol fromValue(String v) {
-        for (TransportProtocol c: TransportProtocol.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
-    }
+  public String value() {
+    return value;
+  }
 
 }

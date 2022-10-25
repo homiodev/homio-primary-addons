@@ -23,35 +23,34 @@ import javax.xml.bind.annotation.XmlType;
  *   </restriction>
  * </simpleType>
  * </pre>
- *
  */
 @XmlType(name = "UserLevel")
 @XmlEnum
 public enum UserLevel {
 
-	@XmlEnumValue("Administrator")
-	ADMINISTRATOR("Administrator"), @XmlEnumValue("Operator")
-	OPERATOR("Operator"), @XmlEnumValue("User")
-	USER("User"), @XmlEnumValue("Anonymous")
-	ANONYMOUS("Anonymous"), @XmlEnumValue("Extended")
-	EXTENDED("Extended");
-	private final String value;
+  @XmlEnumValue("Administrator")
+  ADMINISTRATOR("Administrator"), @XmlEnumValue("Operator")
+  OPERATOR("Operator"), @XmlEnumValue("User")
+  USER("User"), @XmlEnumValue("Anonymous")
+  ANONYMOUS("Anonymous"), @XmlEnumValue("Extended")
+  EXTENDED("Extended");
+  private final String value;
 
-	UserLevel(String v) {
-		value = v;
-	}
+  UserLevel(String v) {
+    value = v;
+  }
 
-	public String value() {
-		return value;
-	}
+  public static UserLevel fromValue(String v) {
+    for (UserLevel c : UserLevel.values()) {
+      if (c.value.equals(v)) {
+        return c;
+      }
+    }
+    throw new IllegalArgumentException(v);
+  }
 
-	public static UserLevel fromValue(String v) {
-		for (UserLevel c : UserLevel.values()) {
-			if (c.value.equals(v)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(v);
-	}
+  public String value() {
+    return value;
+  }
 
 }

@@ -13,24 +13,24 @@ import org.touchhome.bundle.cloud.setting.ConsoleCloudProviderSetting;
 @RequiredArgsConstructor
 public class CloudEntryPoint implements BundleEntryPoint {
 
-    private final EntityContext entityContext;
+  private final EntityContext entityContext;
 
-    public void init() {
+  public void init() {
 
-    }
+  }
 
-    @Override
-    public int order() {
-        return 800;
-    }
+  @Override
+  public int order() {
+    return 800;
+  }
 
 
-    public void assembleBellNotifications(BellNotificationBuilder bellNotificationBuilder) {
-        entityContext.setting().getValue(ConsoleCloudProviderSetting.class).assembleBellNotifications(bellNotificationBuilder);
-    }
+  public void assembleBellNotifications(BellNotificationBuilder bellNotificationBuilder) {
+    entityContext.setting().getValue(ConsoleCloudProviderSetting.class).assembleBellNotifications(bellNotificationBuilder);
+  }
 
-    @Override
-    public BundleImageColorIndex getBundleImageColorIndex() {
-        return BundleImageColorIndex.THREE;
-    }
+  @Override
+  public BundleImageColorIndex getBundleImageColorIndex() {
+    return BundleImageColorIndex.THREE;
+  }
 }
