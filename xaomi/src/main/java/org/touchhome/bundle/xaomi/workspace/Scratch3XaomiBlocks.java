@@ -14,11 +14,8 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
-import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
-import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.xaomi.XaomiEntryPoint;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
@@ -34,35 +31,33 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
 
   private static final String CUBE_SENSOR = "CUBE_SENSOR";
 
-  private final Scratch3Block magicCubeEvent;
   private final MenuBlock.StaticMenuBlock cubeEventMenu;
   private final MenuBlock.ServerMenuBlock cubeSensorMenu;
-  private final Scratch3Block magicCubeLastValue;
-  private final BroadcastLockManager broadcastLockManager;
   private final ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener;
 
-  public Scratch3XaomiBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
-      ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener, XaomiEntryPoint xaomiEntryPoint) {
+  public Scratch3XaomiBlocks(EntityContext entityContext,
+      ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
+      XaomiEntryPoint xaomiEntryPoint) {
     super("#856d21", entityContext, xaomiEntryPoint);
     setParent("zigbee");
-    this.broadcastLockManager = broadcastLockManager;
     this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
 
-    this.cubeEventMenu = MenuBlock.ofStatic("cubeEventMenu", MagicCubeEvent.class, MagicCubeEvent.ANY_EVENT);
+    this.cubeEventMenu = menuStatic("cubeEventMenu", MagicCubeEvent.class, MagicCubeEvent.ANY_EVENT);
     this.cubeEventMenu.subMenu(MagicCubeEvent.MOVE, MoveSide.class);
     this.cubeEventMenu.subMenu(MagicCubeEvent.TAP_TWICE, TapSide.class);
 
-    this.cubeSensorMenu = MenuBlock.ofServer("cubeSensorMenu", ZIGBEE_MODEL_URL + CUBE_MODE_IDENTIFIER, "Magic Cube");
+    this.cubeSensorMenu = menuServer("cubeSensorMenu", ZIGBEE_MODEL_URL + CUBE_MODE_IDENTIFIER, "Magic Cube");
 
-    this.magicCubeEvent = Scratch3Block.ofHandler(1, "when_cube_event", BlockType.hat, "Cube [CUBE_SENSOR] event [EVENT]",
-        this::magicCubeEventHandler);
-    this.magicCubeEvent.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
-    this.magicCubeEvent.addArgument(EVENT, this.cubeEventMenu);
+    blockHat(1, "when_cube_event", "Cube [CUBE_SENSOR] event [EVENT]",
+        this::magicCubeEventHandler, block -> {
+          block.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
+          block.addArgument(EVENT, this.cubeEventMenu);
+        });
 
-    this.magicCubeLastValue =
-        Scratch3Block.ofReporter(2, "cube_value", "Cube [CUBE_SENSOR] last value [EVENT]", this::cubeLastValueEvaluate);
-    this.magicCubeLastValue.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
-    this.magicCubeLastValue.addArgument(EVENT, this.cubeEventMenu);
+    blockReporter(2, "cube_value", "Cube [CUBE_SENSOR] last value [EVENT]", this::cubeLastValueEvaluate, block -> {
+      block.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
+      block.addArgument(EVENT, this.cubeEventMenu);
+    });
 
     zigBeeDeviceUpdateValueListener.addDescribeHandlerByModel(CUBE_MODE_IDENTIFIER,
         (state) -> "Magic cube <" + new CubeValueDescriptor(state) + ">", false);
@@ -91,7 +86,7 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
         return;
       }
 
-      BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
+      BroadcastLock lock = workspaceBlock.getBroadcastLockManager().getOrCreateLock(workspaceBlock);
       Consumer<ScratchDeviceState> consumer = sds -> {
         CubeValueDescriptor cubeValueDescriptor = new CubeValueDescriptor(sds);
         if (cubeValueDescriptor.match(expectedMenuValue, tapSide, moveSide)) {

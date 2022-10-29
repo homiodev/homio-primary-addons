@@ -1,11 +1,11 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
+import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.METERING;
 import static org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterMeasurementRmsVoltage.determineDivisor;
 import static org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterMeasurementRmsVoltage.determineMultiplier;
 
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
-import com.zsmartsystems.zigbee.zcl.clusters.ZclMeteringCluster;
 import java.math.BigDecimal;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j2;
@@ -15,14 +15,13 @@ import org.touchhome.bundle.api.state.DecimalType;
  * ZigBee channel converter for instantaneous demand measurement
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:metering_instantaneous", clientClusters = {ZclMeteringCluster.CLUSTER_ID})
-public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeConverterMeteringBaseConverter {
+public class ZigBeeConverterMeteringBaseConverter extends ZigBeeInputBaseConverter {
 
   private double divisor = 1.0;
   private double multiplier = 1.0;
 
-  public ZigBeeConverterMeteringInstantaneousDemand() {
-    super(ZclMeteringCluster.ATTR_INSTANTANEOUSDEMAND);
+  public ZigBeeConverterMeteringBaseConverter(int attributeId) {
+    super(METERING, attributeId, 3, REPORTING_PERIOD_DEFAULT_MAX, 1);
   }
 
   @Override

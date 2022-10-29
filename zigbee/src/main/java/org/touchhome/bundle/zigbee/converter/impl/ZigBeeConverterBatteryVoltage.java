@@ -4,7 +4,6 @@ import static com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster
 import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.POWER_CONFIGURATION;
 
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
-import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster;
 import java.math.BigDecimal;
 import lombok.extern.log4j.Log4j2;
@@ -20,17 +19,6 @@ public class ZigBeeConverterBatteryVoltage extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterBatteryVoltage() {
     super(POWER_CONFIGURATION, ATTR_BATTERYVOLTAGE, 600, REPORTING_PERIOD_DEFAULT_MAX, 1);
-  }
-
-  @Override
-  protected boolean acceptEndpointExtra(ZclCluster cluster) {
-    if (((ZclPowerConfigurationCluster) cluster).getBatteryVoltage(Long.MAX_VALUE) == null) {
-      log.warn("{}/{}: Exception discovering attributes in power configuration cluster",
-          endpoint.getIeeeAddress(), endpoint.getEndpointId());
-      return false;
-    }
-
-    return true;
   }
 
   @Override

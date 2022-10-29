@@ -15,9 +15,6 @@ public class ZigBeeConverterThermostatLocalTemperature extends ZigBeeInputBaseCo
 
   private final int INVALID_TEMPERATURE = 0x8000;
 
-  private ZclThermostatCluster cluster;
-  private ZclAttribute attribute;
-
   public ZigBeeConverterThermostatLocalTemperature() {
     super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_LOCALTEMPERATURE,
         1, REPORTING_PERIOD_DEFAULT_MAX, 10);

@@ -15,8 +15,6 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
 import org.touchhome.bundle.api.video.ffmpeg.FFMPEG;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.scratch.BlockType;
-import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.camera.CameraEntryPoint;
 
@@ -26,23 +24,22 @@ import org.touchhome.bundle.camera.CameraEntryPoint;
 public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
 
   private static final int FFMPEG_WAIT_TO_START_TIMEOUT = 1000;
-  private final Scratch3Block fireFFmpegCommand;
-  private final Scratch3Block inputArgCommand;
-  private final Scratch3Block outputArgCommand;
 
   public Scratch3FFmpegBlocks(EntityContext entityContext, CameraEntryPoint cameraEntryPoint) {
     super("#87B023", entityContext, cameraEntryPoint, "ffmpeg");
     setParent("media");
 
-    this.inputArgCommand = ofValue(Scratch3Block.ofHandler(10, FFmpegApplyHandler.argsInput.name(), BlockType.command,
-        "Input arg [VALUE]", this::skipHandler), "");
-    this.outputArgCommand = ofValue(Scratch3Block.ofHandler(20, FFmpegApplyHandler.argsOutput.name(), BlockType.command,
-        "Output arg [VALUE]", this::skipHandler), "");
+    blockCommand(10, FFmpegApplyHandler.argsInput.name(), "Input arg [VALUE]", this::skipHandler, block -> {
+      block.addArgument(VALUE, "");
+    });
+    blockCommand(20, FFmpegApplyHandler.argsOutput.name(), "Output arg [VALUE]", this::skipHandler, block -> {
+      block.addArgument(VALUE, "");
+    });
 
-    this.fireFFmpegCommand = Scratch3Block.ofHandler(30, "fire_ffmpeg",
-        BlockType.command, "Run FFmpeg input [INPUT] output [OUTPUT]", this::fireFFmpegCommand);
-    this.fireFFmpegCommand.addArgument("INPUT", "");
-    this.fireFFmpegCommand.addArgument("OUTPUT", "");
+    blockCommand(30, "fire_ffmpeg", "Run FFmpeg input [INPUT] output [OUTPUT]", this::fireFFmpegCommand, block -> {
+      block.addArgument("INPUT", "");
+      block.addArgument("OUTPUT", "");
+    });
   }
 
   private void skipHandler(WorkspaceBlock workspaceBlock) {
@@ -81,7 +78,6 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
     }, log, RTSP_ALARMS, ffmpegLocation, String.join(" ", ffmpegBuilder.inputArgs), input,
         String.join(" ", ffmpegBuilder.outputArgs),
         output, "", "", null);
-    workspaceBlock.setState("wait ffmpeg to finish");
     try {
       ffmpeg.startConverting();
       // wait to able process start
@@ -112,11 +108,6 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
     }
     applyParentBlocks(ffmpegBuilder, parent.getParent());
     Scratch3FFmpegBlocks.FFmpegApplyHandler.valueOf(parent.getOpcode()).applyFn.accept(parent, ffmpegBuilder);
-  }
-
-  private Scratch3Block ofValue(Scratch3Block scratch3Block, String value) {
-    scratch3Block.addArgument(VALUE, value);
-    return scratch3Block;
   }
 
   @AllArgsConstructor

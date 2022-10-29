@@ -5,6 +5,7 @@ import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
+import com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import java.util.concurrent.ExecutionException;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
+import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -30,13 +32,13 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
   @Getter
   private ZclAttribute attribute;
 
-  public ZigBeeInputBaseConverter(ZclClusterType zclClusterType, int attributeId, int reportingFailedPollingInterval) {
+  public ZigBeeInputBaseConverter(ZclClusterType zclClusterType, int attributeId) {
     this.zclClusterType = zclClusterType;
     this.attributeId = attributeId;
     this.reportMinInterval = null;
     this.reportMaxInterval = null;
     this.reportableChange = null;
-    this.reportingFailedPollingInterval = reportingFailedPollingInterval;
+    this.reportingFailedPollingInterval = POLLING_PERIOD_DEFAULT;
   }
 
   @Override
@@ -50,13 +52,15 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
         CommandResult bindResponse = bind(zclCluster).get();
         if (bindResponse.isSuccess()) {
           ZclAttribute attribute = zclCluster.getAttribute(this.attributeId);
+          ZigBeeDeviceEntity entity = zigBeeDevice.getZigBeeDeviceEntity();
 
           if (reportMinInterval == null || reportMaxInterval == null) {
-            CommandResult reportingResponse = attribute.setReporting(zigBeeDevice.getZigBeeDeviceEntity().getReportingTimeMin(),
-                zigBeeDevice.getZigBeeDeviceEntity().getReportingTimeMax(),
-                zigBeeDevice.getZigBeeDeviceEntity().getReportingChange()).get();
+            CommandResult reportingResponse = attribute.setReporting(
+                entity.getReportingTimeMin(),
+                entity.getReportingTimeMax(),
+                entity.getReportingChange()).get();
             handleReportingResponse(reportingResponse, reportingFailedPollingInterval,
-                zigBeeDevice.getZigBeeDeviceEntity().getPoolingPeriod());
+                entity.getPoolingPeriod());
           } else {
             CommandResult reportingResponse = attribute.setReporting(reportMinInterval, reportMaxInterval, reportableChange).get();
             handleReportingResponseDuringInitializeDevice(reportingResponse);
@@ -131,11 +135,26 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
 
   @Override
   public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-    ZclCluster cluster = endpoint.getInputCluster(zclClusterType.getId());
+    ZclCluster cluster = getZclClusterInternal();
+
     if (cluster == null) {
-      log.trace("{}/{}: Binary input sensing cluster not found", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+      log.trace("{}/{}: Cluster '{}' not found", endpoint.getIeeeAddress(), endpoint.getEndpointId(), zclClusterType.getId());
       return false;
     }
+
+    ZclAttribute zclAttribute = cluster.getAttribute(attributeId);
+    if (zclAttribute == null) {
+      log.error("{}/{}: Error opening device {} attribute {}", endpoint.getIeeeAddress(),
+          endpoint.getEndpointId(), zclClusterType, attributeId);
+      return false;
+    }
+
+    Object value = zclAttribute.readValue(Long.MAX_VALUE);
+    if (value == null) {
+      log.warn("{}/{}: Exception reading attribute {} in cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attributeId);
+      return false;
+    }
+
     return acceptEndpointExtra(cluster);
   }
 

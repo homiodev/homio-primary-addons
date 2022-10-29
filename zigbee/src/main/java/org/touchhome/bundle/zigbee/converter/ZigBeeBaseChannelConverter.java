@@ -127,7 +127,7 @@ public abstract class ZigBeeBaseChannelConverter {
   }
 
   /**
-   * Creates a  if this converter supports features from the {@link ZigBeeEndpoint} If the converter doesn't support any features, it returns null.
+   * Check if this converter supports features from the {@link ZigBeeEndpoint} If the converter doesn't support any features, it returns null.
    * <p>
    * The converter should perform the following -:
    * <ul>
@@ -187,8 +187,25 @@ public abstract class ZigBeeBaseChannelConverter {
     return (int) (percent.floatValue() * 254.0f / 100.0f + 0.5f);
   }
 
+  /**
+   * Converts an integer value into a {@link QuantityType}. The temperature as an integer is assumed to be multiplied
+   * by 100 as per the ZigBee standard format.
+   *
+   * @param value the integer value to convert
+   * @return the {@link QuantityType}
+   */
   protected QuantityType valueToTemperature(int value) {
     return new QuantityType<>(BigDecimal.valueOf(value, 2), Units.CELSIUS);
+  }
+
+  /**
+   * Converts an 0-100 numeric value into a Percentage {@link QuantityType}.
+   *
+   * @param value the integer value to convert
+   * @return the {@link QuantityType}
+   */
+  protected QuantityType valueToPercentDimensionless(Number value) {
+    return new QuantityType<>(value, Units.PERCENT);
   }
 
   /**

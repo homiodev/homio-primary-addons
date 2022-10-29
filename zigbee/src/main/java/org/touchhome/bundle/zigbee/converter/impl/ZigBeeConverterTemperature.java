@@ -47,9 +47,8 @@ public class ZigBeeConverterTemperature extends ZigBeeBaseChannelConverter imple
       CommandResult bindResponse = bind(serverCluster).get();
       if (bindResponse.isSuccess()) {
         // Configure reporting
-        ZclAttribute attribute = serverCluster
-            .getAttribute(ZclTemperatureMeasurementCluster.ATTR_MEASUREDVALUE);
-        CommandResult reportingResponse = attribute.setReporting(1, REPORTING_PERIOD_DEFAULT_MAX, 0.1).get();
+        ZclAttribute attribute = serverCluster.getAttribute(ZclTemperatureMeasurementCluster.ATTR_MEASUREDVALUE);
+        CommandResult reportingResponse = attribute.setReporting(1, REPORTING_PERIOD_DEFAULT_MAX, 10).get();
         handleReportingResponse(reportingResponse);
       } else {
         log.debug("{}/{}: Failed to bind temperature measurement cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());

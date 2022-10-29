@@ -31,7 +31,6 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
-import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.telegram.TelegramEntity;
 import org.touchhome.bundle.telegram.commands.TelegramEventCommand;
 import org.touchhome.bundle.telegram.commands.TelegramHelpCommand;
@@ -47,16 +46,14 @@ public class TelegramService {
   public static final String TELEGRAM_EVENT_PREFIX = "telegram_";
   private final TelegramBotsApi botsApi;
   private final DefaultBotOptions botOptions;
-  private final BroadcastLockManager broadcastLockManager;
   private final Map<String, TelegramEventCommand> eventCommandMap = new HashMap<>();
 
   private final EntityContext entityContext;
-  private Map<String, TelegramBot> telegramBots = new HashMap<>();
+  private final Map<String, TelegramBot> telegramBots = new HashMap<>();
 
   @SneakyThrows
-  public TelegramService(EntityContext entityContext, BroadcastLockManager broadcastLockManager) {
+  public TelegramService(EntityContext entityContext) {
     this.entityContext = entityContext;
-    this.broadcastLockManager = broadcastLockManager;
     this.botsApi = new TelegramBotsApi(DefaultBotSession.class);
     this.botOptions = new DefaultBotOptions();
   }
@@ -250,9 +247,11 @@ public class TelegramService {
         TelegramAnswer telegramAnswer = new TelegramAnswer(messageId,
             update.getCallbackQuery().getData(),
             update.getCallbackQuery().getFrom().getId());
-        TelegramService.this.broadcastLockManager.signalAll(TELEGRAM_EVENT_PREFIX + messageId, telegramAnswer);
-        TelegramService.this.broadcastLockManager.signalAll(
-            TELEGRAM_EVENT_PREFIX + messageId + "_" + telegramAnswer.getData(), telegramAnswer);
+
+        TelegramService.this.entityContext.event()
+            .fireEvent(TELEGRAM_EVENT_PREFIX + messageId, telegramAnswer)
+            .fireEvent(TELEGRAM_EVENT_PREFIX + messageId + "_" + telegramAnswer.getData(), telegramAnswer);
+
         AnswerCallbackQuery query = new AnswerCallbackQuery(update.getCallbackQuery().getId());
         query.setText("Done");
         this.execute(query);

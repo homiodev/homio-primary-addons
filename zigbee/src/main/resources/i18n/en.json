@@ -1,4 +1,7 @@
 {
+  "selection": {
+    "ZigbeeCoordinatorEntity": "Zigbee coordinator"
+  },
   "workspace": {
     "zigbee": "ZigBee",
     "zigbee-btn": "ZigBee buttons",

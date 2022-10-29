@@ -22,9 +22,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.KeyValueEnum;
 import org.touchhome.bundle.api.state.RawType;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
-import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
@@ -49,56 +47,47 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
   private final MenuBlock.ServerMenuBlock telegramEntityUsersMenu;
   private final MenuBlock.StaticMenuBlock<QuestionButtons> buttonsMenu;
 
-  private final Scratch3Block sendMessageCommand;
-  private final Scratch3Block getCommand;
-  private final BroadcastLockManager broadcastLockManager;
-  private final Scratch3Block sendQuestionSplitCommand;
-  private final Scratch3Block sendImageMessageCommand;
-  private final Scratch3Block sendQuestionNoSplitCommand;
-  private final Scratch3Block sendQuestionSplitElseCommand;
-
   public Scratch3TelegramBlocks(TelegramService telegramService, EntityContext entityContext,
-      BroadcastLockManager broadcastLockManager,
       TelegramEntryPoint telegramEntryPoint) {
     super("#73868c", entityContext, telegramEntryPoint);
     setParent("communication");
     this.telegramService = telegramService;
-    this.broadcastLockManager = broadcastLockManager;
 
     // Menu
-    this.telegramEntityUsersMenu = MenuBlock.ofServer("telegramEntityUsersMenu", "rest/telegram/entityUser", "Telegram");
-    this.levelMenu = MenuBlock.ofStatic("levelMenu", Level.class, Level.info);
-    this.buttonsMenu = MenuBlock.ofStaticKV("buttonsMenu", QuestionButtons.class, QuestionButtons.YesNo);
+    this.telegramEntityUsersMenu = menuServer("telegramEntityUsersMenu", "rest/telegram/entityUser", "Telegram");
+    this.levelMenu = menuStatic("levelMenu", Level.class, Level.info);
+    this.buttonsMenu = menuStaticKV("buttonsMenu", QuestionButtons.class, QuestionButtons.YesNo);
 
-    this.getCommand = Scratch3Block.ofHandler(10, "get_msg", BlockType.hat, "On command [COMMAND] | Desc: [DESCR]",
-        this::whenGetMessage);
-    this.getCommand.addArgument(COMMAND, "bulb4_on");
-    this.getCommand.addArgument(DESCR, "Turn on bulb 4");
+    blockHat(10, "get_msg", "On command [COMMAND] | Desc: [DESCR]",
+        this::whenGetMessage, block -> {
+          block.addArgument(COMMAND, "bulb4_on");
+          block.addArgument(DESCR, "Turn on bulb 4");
+        });
 
-    this.sendMessageCommand = Scratch3Block.ofHandler(20, "send_msg", BlockType.command,
-        "Send [MESSAGE] to [USER]. [LEVEL]", this::sendMessageCommand);
-    this.sendMessageCommand.addArgument(MESSAGE, "msg");
-    this.sendMessageCommand.addArgument(USER, this.telegramEntityUsersMenu);
-    this.sendMessageCommand.addArgument(LEVEL, this.levelMenu);
+    blockCommand(20, "send_msg", "Send [MESSAGE] to [USER]. [LEVEL]", this::sendMessageCommand, block -> {
+      block.addArgument(MESSAGE, "msg");
+      block.addArgument(USER, this.telegramEntityUsersMenu);
+      block.addArgument(LEVEL, this.levelMenu);
+    });
 
-    this.sendImageMessageCommand = Scratch3Block.ofHandler(30, "send_img", BlockType.command,
-        "Send media [MESSAGE] to [USER] | Caption: [CAPTION]", this::sendIVAMessageCommand);
-    this.sendImageMessageCommand.addArgument(USER, this.telegramEntityUsersMenu);
-    this.sendImageMessageCommand.addArgument("CAPTION", "caption");
+    blockCommand(30, "send_img", "Send media [MESSAGE] to [USER] | Caption: [CAPTION]", this::sendIVAMessageCommand, block -> {
+      block.addArgument(USER, this.telegramEntityUsersMenu);
+      block.addArgument("CAPTION", "caption");
+    });
 
-    this.sendQuestionNoSplitCommand = ask(Scratch3Block.ofHandler(40, "send_question", BlockType.command,
+    ask(blockCommand(40, "send_question",
         "Ask&Wait [MESSAGE] to [USER] | [BUTTONS]", this::sendQuestionNoSplitCommand));
 
-    this.sendQuestionSplitCommand = ask(Scratch3Block.ofConditional(41, "send_question_if",
+    ask(blockCondition(41, "send_question_if",
         "Ask&Wait [MESSAGE] to [USER] | [BUTTONS]", this::sendQuestionSplitCommand));
 
-    this.sendQuestionSplitElseCommand = ask(Scratch3Block.ofConditional(42, "send_question_if_else",
+    ask(blockCondition(42, "send_question_if_else",
         "Ask&Wait [MESSAGE] to [USER] | [BUTTONS]", this::sendQuestionSplitElseCommand).addBranch("else"));
   }
 
   private static String escape(String text) {
     Matcher matcher = ESCAPE_PATTERN.matcher(text);
-    StringBuffer noteBuffer = new StringBuffer();
+    StringBuilder noteBuffer = new StringBuilder();
     while (matcher.find()) {
       String group = matcher.group();
       matcher.appendReplacement(noteBuffer, "\\\\" + group);
@@ -149,7 +138,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     String[] buttons = workspaceBlock.getMenuValue("BUTTONS", this.buttonsMenu).getValue().split("/");
     Message message = sendTelegramMessage(workspaceBlock, buttons, Function.identity());
     if (message != null) {
-      BroadcastLock lock = this.broadcastLockManager.getOrCreateLock(workspaceBlock,
+      BroadcastLock lock = workspaceBlock.getBroadcastLockManager().getOrCreateLock(workspaceBlock,
           TELEGRAM_EVENT_PREFIX + message.getMessageId());
       workspaceBlock.waitForLock(lock, entityContext.setting().getValue(TelegramSettingMaxQuestionMaxSeconds.class),
           TimeUnit.SECONDS, () -> {
@@ -192,7 +181,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     workspaceBlock.handleNext(next -> {
       String command = workspaceBlock.getInputString(COMMAND);
       String description = workspaceBlock.getInputString(DESCR);
-      BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
+      BroadcastLock lock = workspaceBlock.getBroadcastLockManager().getOrCreateLock(workspaceBlock);
       this.telegramService.registerEvent(command, description, workspaceBlock.getId(), lock);
       workspaceBlock.subscribeToLock(lock, next::handle);
     });

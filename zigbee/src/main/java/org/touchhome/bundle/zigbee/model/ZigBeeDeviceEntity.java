@@ -67,6 +67,28 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   @UIField(readOnly = true, order = 5, hideOnEmpty = true)
   private String ieeeAddress;
 
+  // The minimum time period in seconds between device state updates
+  @UIField(onlyEdit = true, order = 100)
+  @UIFieldNumber(min = 1, max = 86400)
+  private int reportingTimeMin = 1;
+
+  // The maximum time period in seconds between device state updates
+  @UIField(onlyEdit = true, order = 101)
+  @UIFieldNumber(min = 1, max = 86400)
+  private int reportingTimeMax = 900;
+
+  @UIField(onlyEdit = true, order = 102)
+  @UIFieldNumber(min = 1, max = 86400)
+  private int reportingChange = 10;
+
+  // The time period in seconds between subsequent polls
+  @UIField(onlyEdit = true, order = 103)
+  @UIFieldNumber(min = 15, max = 86400)
+  private int poolingPeriod = 900;
+
+  @JsonIgnore
+  private int networkAddress = 0;
+
   @Lob
   @Column(length = 10000) // 10kb
   @Convert(converter = JSONObjectConverter.class)
@@ -84,6 +106,7 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   @Transient
   @JsonIgnore
   private ZigBeeDevice zigBeeDevice;
+
   @Transient
   @UIField(order = 1000, type = UIFieldType.SelectBox, readOnly = true, color = "#7FBBCC")
   @UIFieldExpand
@@ -91,59 +114,16 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private List<AvailableLink> availableLinks;
 
-  public void setZigBeeDevice(ZigBeeDevice zigBeeDevice) {
-    this.zigBeeDevice = zigBeeDevice;
-  }
-
-  // The minimum time period in seconds between device state updates
-  @UIField(onlyEdit = true, order = 100)
-  @UIFieldNumber(min = 1, max = 86400)
-  public Integer getReportingTimeMin() {
-    return getJsonData("reportingTimeMin", 1);
-  }
-
-  // The maximum time period in seconds between device state updates
-  @UIField(onlyEdit = true, order = 101)
-  @UIFieldNumber(min = 1, max = 86400)
-  public Integer getReportingTimeMax() {
-    return getJsonData("reportingTimeMax", 900);
-  }
-
-  @UIField(onlyEdit = true, order = 102)
-  @UIFieldNumber(min = 1, max = 86400)
-  public Integer getReportingChange() {
-    if (getJsonData().has("reportingChange")) {
-      return getJsonData().getInt("reportingChange");
-    }
-    return null;
-  }
-
-  // The time period in seconds between subsequent polls
-  @UIField(onlyEdit = true, order = 103)
-  @UIFieldNumber(min = 15, max = 86400)
-  public Integer getPoolingPeriod() {
-    return getJsonData("poolingPeriod", 900);
-  }
-
-  @JsonIgnore
-  public int getNetworkAddress() {
-    return getJsonData("networkAddress", 0);
-  }
-
-  public ZigBeeDeviceEntity setNetworkAddress(Integer networkAddress) {
-    setJsonData("networkAddress", networkAddress);
-    return this;
-  }
-
   @UIField(order = 50)
   @UIFieldSelection(value = SelectModelIdentifierDynamicLoader.class, allowInputRawText = true)
   @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier", color = "#A7D21E")
-  public String getModelIdentifier() {
-    return getJsonData("modelIdentifier");
-  }
+  private String modelIdentifier;
 
-  ZigBeeDeviceEntity setModelIdentifier(String modelIdentifier) {
-    setJsonData("modelIdentifier", modelIdentifier);
+  private String imageIdentifier;
+
+
+  public ZigBeeDeviceEntity setModelIdentifier(String modelIdentifier) {
+    this.modelIdentifier = modelIdentifier;
     tryEvaluateImageIdentifier();
 
     if (this.getTitle().equals(this.getIeeeAddress())) {
@@ -157,14 +137,6 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
       }
     }
     return this;
-  }
-
-  public String getImageIdentifier() {
-    return getJsonData("imageIdentifier");
-  }
-
-  public void setImageIdentifier(String imageIdentifier) {
-    setJsonData("imageIdentifier", imageIdentifier);
   }
 
   @UIContextMenuAction("ACTION.INITIALIZE_ZIGBEE_NODE")
@@ -228,7 +200,7 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   private void tryEvaluateModelDescription(ZigBeeNodeDescription zigBeeNodeDescription) {
     if (zigBeeNodeDescription != null && zigBeeNodeDescription.getChannels() != null && this.getModelIdentifier() == null) {
       ZigBeeRequireEndpoint property = ZigBeeRequireEndpoints.get().findByNode(zigBeeNodeDescription);
-      setJsonData("modelIdentifier", property == null ? null : property.getModelId());
+      this.modelIdentifier = property == null ? null : property.getModelId();
     }
   }
 
@@ -250,7 +222,7 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
     super.afterFetch(entityContext);
 
     ZigBeeDevice device = coordinatorEntity.getZigBeeCoordinatorHandler().getZigBeeDevices().get(getIeeeAddress());
-    setZigBeeDevice(device);
+    this.zigBeeDevice = device;
 
     if (device != null) {
       ZigBeeNodeDescription zigBeeNodeDescription = device.getZigBeeNodeDescription();

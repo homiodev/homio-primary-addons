@@ -16,7 +16,7 @@ import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterWindowCoveringLift() {
-    super(WINDOW_COVERING, ZclWindowCoveringCluster.ATTR_CURRENTPOSITIONLIFTPERCENTAGE, POLLING_PERIOD_HIGH);
+    super(WINDOW_COVERING, ZclWindowCoveringCluster.ATTR_CURRENTPOSITIONLIFTPERCENTAGE);
   }
 
   @Override

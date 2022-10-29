@@ -1,16 +1,17 @@
 package org.touchhome.bundle.zigbee.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
@@ -30,11 +31,10 @@ import org.touchhome.bundle.api.ui.field.selection.UIFieldStaticSelection;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldTreeNodeSelection;
 import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.handler.CC2531Handler;
-import org.touchhome.common.util.CommonUtils;
 
 @Log4j2
 @Entity
-@UISidebarChildren(icon = "fas fa-circle-z", color = "#D46A06")
+@UISidebarChildren(icon = "fas fa-circle-nodes", color = "#D46A06")
 public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoordinatorEntity> {
 
   public static final String PREFIX = "zbc_";
@@ -119,13 +119,12 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
 
   @UIField(order = 70)
   @RestartHandlerOnChange
-  //////   @UIFieldClassSelection(value = ZigBeeCoordinatorHandler.class, basePackages = ["org.touchhome.bundle.zigbee"}])
-  public String getHandler() {
-    return getJsonData("ch", CC2531Handler.class.getSimpleName());
+  public ZigbeeCoordinator getHandler() {
+    return getJsonDataEnum("ch", ZigbeeCoordinator.CC2531Handler);
   }
 
-  public ZigbeeCoordinatorEntity setHandler(String value) {
-    setJsonData("ch", value);
+  public ZigbeeCoordinatorEntity setHandler(ZigbeeCoordinator zigbeeCoordinator) {
+    setJsonDataEnum("ch", zigbeeCoordinator);
     return this;
   }
 
@@ -317,19 +316,19 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
   }
 
   public @NotNull ZigBeeCoordinatorHandler getZigBeeCoordinatorHandler() {
-    return zigBeeCoordinatorHandlerMap.computeIfAbsent(getEntityID(), s -> {
-      try {
-        Constructor<?> constructor = CommonUtils.findObjectConstructor(Class.forName(getHandler()), EntityContext.class);
-        return (ZigBeeCoordinatorHandler) constructor.newInstance(getEntityContext());
-
-      } catch (Exception ex) {
-        throw new RuntimeException(ex);
-      }
-    });
+    return zigBeeCoordinatorHandlerMap.computeIfAbsent(getEntityID(), s ->
+        getHandler().coordinatorSupplier.apply(getEntityContext()));
   }
 
   @JsonIgnore
   public Set<ZigBeeDeviceEntity> getOnlineDevices() {
     return getDevices().stream().filter(d -> d.getStatus() == Status.ONLINE).collect(Collectors.toSet());
+  }
+
+  @RequiredArgsConstructor
+  private enum ZigbeeCoordinator {
+    CC2531Handler(entityContext -> new CC2531Handler(entityContext));
+
+    private final Function<EntityContext, ZigBeeCoordinatorHandler> coordinatorSupplier;
   }
 }

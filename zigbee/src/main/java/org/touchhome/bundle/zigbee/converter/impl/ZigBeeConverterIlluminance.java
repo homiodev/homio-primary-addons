@@ -20,7 +20,7 @@ public class ZigBeeConverterIlluminance extends ZigBeeInputBaseConverter {
   private static BigDecimal CHANGE_MAX = new BigDecimal(20000);
 
   public ZigBeeConverterIlluminance() {
-    super(ILLUMINANCE_MEASUREMENT, ZclIlluminanceMeasurementCluster.ATTR_MEASUREDVALUE, POLLING_PERIOD_DEFAULT);
+    super(ILLUMINANCE_MEASUREMENT, ZclIlluminanceMeasurementCluster.ATTR_MEASUREDVALUE);
   }
 
   @Override

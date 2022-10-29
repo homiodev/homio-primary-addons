@@ -1,5 +1,7 @@
 package org.touchhome.bundle.camera.workspace;
 
+import static org.touchhome.bundle.camera.workspace.Scratch3CameraBlocks.VIDEO_STREAM;
+
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -11,9 +13,7 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
-import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.camera.CameraEntryPoint;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
@@ -22,80 +22,88 @@ import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 @Log4j2
 @Getter
 @Component
-public class Scratch3OnvifPTZBlocks extends Scratch3ExtensionBlocks implements Scratch3BaseOnvif {
+public class Scratch3OnvifPTZBlocks extends Scratch3ExtensionBlocks {
 
-  @Getter
-  private final MenuBlock.ServerMenuBlock onvifCameraMenu;
-
-  private final MenuBlock.StaticMenuBlock<PanActionType> panActionTypeMenu;
-  private final MenuBlock.StaticMenuBlock<TiltActionType> tiltActionTypeMenu;
-  private final MenuBlock.StaticMenuBlock<ZoomActionType> zoomActionTypeMenu;
-  private final MenuBlock.StaticMenuBlock<String> presetMenu;
-
-  private final Scratch3Block valueReporter;
-
-  private final Scratch3Block panCommand;
-  private final Scratch3Block panActionCommand;
-  private final Scratch3Block tiltCommand;
-  private final Scratch3Block tiltActionCommand;
-  private final Scratch3Block zoomCommand;
-  private final Scratch3Block zoomActionCommand;
-  private final Scratch3Block goToPresetCommand;
-  private final MenuBlock.StaticMenuBlock<GetPTZValueType> ptzValueTypeMenu;
+  private final MenuBlock.ServerMenuBlock menuOnvifCamera;
+  private final MenuBlock.StaticMenuBlock<PanActionType> menuPanActionType;
+  private final MenuBlock.StaticMenuBlock<TiltActionType> menuTiltActionType;
+  private final MenuBlock.StaticMenuBlock<ZoomActionType> menuZoomActionType;
+  private final MenuBlock.StaticMenuBlock<String> menuPreset;
+  private final MenuBlock.StaticMenuBlock<GetPTZValueType> menuPtzValueType;
 
   public Scratch3OnvifPTZBlocks(EntityContext entityContext, CameraEntryPoint cameraEntryPoint) {
     super("#4f4ba6", entityContext, cameraEntryPoint, "onvifptz");
     setParent("media");
 
     // Menu
-    this.onvifCameraMenu = MenuBlock.ofServerItems("onvifCameraMenu", OnvifCameraEntity.class, "Onvif camera");
-    this.panActionTypeMenu = MenuBlock.ofStatic("panActionTypeMenu", PanActionType.class, PanActionType.Left);
-    this.tiltActionTypeMenu = MenuBlock.ofStatic("tiltActionTypeMenu", TiltActionType.class, TiltActionType.Up);
-    this.zoomActionTypeMenu = MenuBlock.ofStatic("zoomActionTypeMenu", ZoomActionType.class, ZoomActionType.In);
-    this.ptzValueTypeMenu = MenuBlock.ofStatic("ptzValueTypeMenu", GetPTZValueType.class, GetPTZValueType.Pan);
-    Map<String, String> presets =
-        IntStream.range(1, 25).boxed().collect(Collectors.toMap(String::valueOf, num -> "Preset " + num));
-    this.presetMenu = MenuBlock.ofStaticList("presetMenu", presets, "1");
+    this.menuOnvifCamera = menuServerItems("onvifCameraMenu", OnvifCameraEntity.class, "Onvif camera");
+    this.menuPanActionType = menuStatic("panActionTypeMenu", PanActionType.class, PanActionType.Left);
+    this.menuTiltActionType = menuStatic("tiltActionTypeMenu", TiltActionType.class, TiltActionType.Up);
+    this.menuZoomActionType = menuStatic("zoomActionTypeMenu", ZoomActionType.class, ZoomActionType.In);
+    this.menuPtzValueType = menuStatic("ptzValueTypeMenu", GetPTZValueType.class, GetPTZValueType.Pan);
+    Map<String, String> presets = IntStream.range(1, 25).boxed().collect(Collectors.toMap(String::valueOf, num -> "Preset " + num));
+    this.menuPreset = menuStaticList("presetMenu", presets, "1");
 
-    this.valueReporter = withServerOnvif(Scratch3Block.ofReporter(50, "value_info",
-        "Get [VALUE] of [VIDEO_STREAM]", this::getPTZValue));
-    this.valueReporter.addArgument(VALUE, ptzValueTypeMenu);
+    blockReporter(50, "value_info", "Get [VALUE] of [VIDEO_STREAM]", this::getPTZValue,
+        block -> {
+          block.addArgument(VIDEO_STREAM, menuOnvifCamera);
+          block.addArgument(VALUE, menuPtzValueType);
+        });
 
-    this.panCommand = withServerOnvifAndValue(Scratch3Block.ofHandler(200, "pan",
-        BlockType.command, "Pan [VALUE] of [VIDEO_STREAM]", this::firePanCommand), 0);
-    this.panActionCommand = withServerOnvif(Scratch3Block.ofHandler(210, "pan_cmd",
-        BlockType.command, "Pan [VALUE] of [VIDEO_STREAM]", this::firePanActionCommand));
-    this.panActionCommand.addArgument(VALUE, this.panActionTypeMenu);
+    blockCommand(200, "pan", "Pan [VALUE] of [VIDEO_STREAM]", this::firePanCommand,
+        block -> {
+          block.addArgument(VALUE, 0);
+          block.addArgument(VIDEO_STREAM, menuOnvifCamera);
+        });
 
-    this.tiltCommand = withServerOnvifAndValue(Scratch3Block.ofHandler(220, "tilt",
-        BlockType.command, "Tilt [VALUE] of [VIDEO_STREAM]", this::fireTiltCommand), 0);
-    this.tiltActionCommand = withServerOnvif(Scratch3Block.ofHandler(230, "tilt_cmd",
-        BlockType.command, "Tilt [VALUE] of [VIDEO_STREAM]", this::fireTiltActionCommand));
-    this.tiltActionCommand.addArgument(VALUE, this.tiltActionTypeMenu);
+    blockCommand(210, "pan_cmd", "Pan [VALUE] of [VIDEO_STREAM]", this::firePanActionCommand,
+        block -> {
+          block.addArgument(VIDEO_STREAM, menuOnvifCamera);
+          block.addArgument(VALUE, this.menuPanActionType);
+        });
 
-    this.zoomCommand = withServerOnvifAndValue(Scratch3Block.ofHandler(240, "zoom",
-        BlockType.command, "Zoom [VALUE] of [VIDEO_STREAM]", this::fireZoomCommand), 0);
-    this.zoomActionCommand = withServerOnvif(Scratch3Block.ofHandler(250, "zoom_cmd",
-        BlockType.command, "Zoom [VALUE] of [VIDEO_STREAM]", this::fireZoomActionCommand));
-    this.zoomActionCommand.addArgument(VALUE, this.zoomActionTypeMenu);
+    blockCommand(220, "tilt", "Tilt [VALUE] of [VIDEO_STREAM]", this::fireTiltCommand, block -> {
+      block.addArgument(VALUE, 0);
+      block.addArgument(VIDEO_STREAM, menuOnvifCamera);
+    });
 
-    this.goToPresetCommand = withServerOnvif(Scratch3Block.ofHandler(260, "to_preset",
-        BlockType.command, "Go to preset [PRESET] of [VIDEO_STREAM]", this::fireGoToPresetCommand));
-    this.goToPresetCommand.addArgument("PRESET", this.presetMenu);
+    blockCommand(230, "tilt_cmd", "Tilt [VALUE] of [VIDEO_STREAM]", this::fireTiltActionCommand,
+        block -> {
+          block.addArgument(VIDEO_STREAM, menuOnvifCamera);
+          block.addArgument(VALUE, this.menuTiltActionType);
+        });
+
+    blockCommand(240, "zoom", "Zoom [VALUE] of [VIDEO_STREAM]", this::fireZoomCommand,
+        block -> {
+          block.addArgument(VALUE, 0);
+          block.addArgument(VIDEO_STREAM, menuOnvifCamera);
+        });
+
+    blockCommand(250, "zoom_cmd", "Zoom [VALUE] of [VIDEO_STREAM]", this::fireZoomActionCommand,
+        block -> {
+          block.addArgument(VIDEO_STREAM, menuOnvifCamera);
+          block.addArgument(VALUE, this.menuZoomActionType);
+        });
+
+    blockCommand(260, "to_preset", "Go to preset [PRESET] of [VIDEO_STREAM]", this::fireGoToPresetCommand,
+        block -> {
+          block.addArgument(VIDEO_STREAM, menuOnvifCamera);
+          block.addArgument("PRESET", this.menuPreset);
+        });
   }
 
   private State getPTZValue(WorkspaceBlock workspaceBlock) {
-    GetPTZValueType menu = workspaceBlock.getMenuValue(VALUE, this.ptzValueTypeMenu);
+    GetPTZValueType menu = workspaceBlock.getMenuValue(VALUE, this.menuPtzValueType);
     return menu.handler.apply(getOnvifHandler(workspaceBlock));
   }
 
   private void fireGoToPresetCommand(WorkspaceBlock workspaceBlock) {
-    int preset = Integer.parseInt(workspaceBlock.getMenuValue("PRESET", this.presetMenu));
+    int preset = Integer.parseInt(workspaceBlock.getMenuValue("PRESET", this.menuPreset));
     getOnvifHandler(workspaceBlock).gotoPreset(preset);
   }
 
   private void fireZoomActionCommand(WorkspaceBlock workspaceBlock) {
-    String command = workspaceBlock.getMenuValue(VALUE, this.zoomActionTypeMenu).name().toUpperCase();
+    String command = workspaceBlock.getMenuValue(VALUE, this.menuZoomActionType).name().toUpperCase();
     getOnvifHandler(workspaceBlock).setZoom(command);
   }
 
@@ -104,7 +112,7 @@ public class Scratch3OnvifPTZBlocks extends Scratch3ExtensionBlocks implements S
   }
 
   private void fireTiltActionCommand(WorkspaceBlock workspaceBlock) {
-    String command = workspaceBlock.getMenuValue(VALUE, this.tiltActionTypeMenu).name().toUpperCase();
+    String command = workspaceBlock.getMenuValue(VALUE, this.menuTiltActionType).name().toUpperCase();
     getOnvifHandler(workspaceBlock).setTilt(command);
   }
 
@@ -113,12 +121,20 @@ public class Scratch3OnvifPTZBlocks extends Scratch3ExtensionBlocks implements S
   }
 
   private void firePanActionCommand(WorkspaceBlock workspaceBlock) {
-    String command = workspaceBlock.getMenuValue(VALUE, this.panActionTypeMenu).name().toUpperCase();
+    String command = workspaceBlock.getMenuValue(VALUE, this.menuPanActionType).name().toUpperCase();
     getOnvifHandler(workspaceBlock).setPan(command);
   }
 
   private void firePanCommand(WorkspaceBlock workspaceBlock) {
     getOnvifHandler(workspaceBlock).setPan(String.valueOf(workspaceBlock.getInputFloat(VALUE)));
+  }
+
+  private OnvifCameraHandler getOnvifHandler(WorkspaceBlock workspaceBlock) {
+    return getOnvifEntity(workspaceBlock).getVideoHandler();
+  }
+
+  private OnvifCameraEntity getOnvifEntity(WorkspaceBlock workspaceBlock) {
+    return workspaceBlock.getMenuValueEntityRequired(VIDEO_STREAM, menuOnvifCamera);
   }
 
   private enum PanActionType {

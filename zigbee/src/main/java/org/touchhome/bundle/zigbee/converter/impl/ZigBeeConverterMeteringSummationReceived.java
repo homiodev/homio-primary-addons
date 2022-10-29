@@ -8,7 +8,7 @@ import lombok.extern.log4j.Log4j2;
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:metering_sumreceived", clientClusters = {ZclMeteringCluster.CLUSTER_ID})
-public class ZigBeeConverterMeteringSummationReceived extends ZigBeeConverterMeteringInstantaneousDemand {
+public class ZigBeeConverterMeteringSummationReceived extends ZigBeeConverterMeteringBaseConverter {
 
   public ZigBeeConverterMeteringSummationReceived() {
     super(ZclMeteringCluster.ATTR_CURRENTSUMMATIONRECEIVED);

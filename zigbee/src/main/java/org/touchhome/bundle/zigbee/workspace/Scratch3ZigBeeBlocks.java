@@ -12,10 +12,8 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
-import org.touchhome.bundle.api.workspace.BroadcastLockManager;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.ArgumentType;
-import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
@@ -34,28 +32,22 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
   public static final String ZIGBEE_MODEL_URL = ZIGBEE__BASE_URL + "model/";
   public static final String ZIGBEE_ALARM_URL = ZIGBEE__BASE_URL + "alarm";
 
-  private final Scratch3Block timeSinceLastEvent;
-
-  private final Scratch3Block whenEventReceived;
-  private final BroadcastLockManager broadcastLockManager;
   private final ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener;
 
-  public Scratch3ZigBeeBlocks(EntityContext entityContext, BroadcastLockManager broadcastLockManager,
-      ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
+  public Scratch3ZigBeeBlocks(EntityContext entityContext, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
       ZigBeeBundleEntryPoint zigBeeBundleEntryPoint) {
     super("#6d4747", entityContext, zigBeeBundleEntryPoint, null);
-    this.broadcastLockManager = broadcastLockManager;
     this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
 
     // Items
-    this.whenEventReceived = Scratch3Block.ofHandler(10, "when_event_received", BlockType.hat,
-        "when got [EVENT] event", this::whenEventReceivedHandler);
-    this.whenEventReceived.addArgument(EVENT, ArgumentType.reference);
+    blockHat(10, "when_event_received", "when got [EVENT] event", this::whenEventReceivedHandler, block -> {
+      block.addArgument(EVENT, ArgumentType.reference);
+    });
 
-    this.timeSinceLastEvent = Scratch3Block.ofReporter(20, "time_since_last_event",
-        "time since last event [EVENT]", this::timeSinceLastEventEvaluate);
-    this.timeSinceLastEvent.addArgument(EVENT, ArgumentType.reference);
-    this.timeSinceLastEvent.appendSpace();
+    blockReporter(20, "time_since_last_event", "time since last event [EVENT]", this::timeSinceLastEventEvaluate, block -> {
+      block.addArgument(EVENT, ArgumentType.reference);
+      block.appendSpace();
+    });
   }
 
   static void linkVariable(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
@@ -161,7 +153,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
       throw new IllegalStateException("Unable to find ZigBee device entity <" + ieeeAddress + ">");
     }
 
-    BroadcastLock lock = broadcastLockManager.getOrCreateLock(workspaceBlock);
+    BroadcastLock lock = workspaceBlock.getBroadcastLockManager().getOrCreateLock(workspaceBlock);
     boolean availableReceiveEvents = false;
 
     if (scratch3Block instanceof Scratch3ZigBeeBlock) {

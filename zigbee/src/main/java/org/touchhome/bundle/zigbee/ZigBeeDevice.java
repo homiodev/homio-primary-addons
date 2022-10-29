@@ -105,7 +105,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         return;
       }
 
-      // Check if discovery is complete and we know all the services the node supports
+      // Check if discovery is complete, and we know all the services the node supports
       if (!node.isDiscovered()) {
         log.debug("{}: Node has not finished discovery", nodeIeeeAddress);
         updateStatus(Status.OFFLINE, "zigbee.error.OFFLINE_DISCOVERY_INCOMPLETE");
@@ -172,7 +172,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
       }
 
       // Update the binding table.
-      // We're not doing anything with the information here, but we want it up to date so it's ready for use later.
+      // We're not doing anything with the information here, but we want it up to date, so it's ready for use later.
       try {
         ZigBeeStatus zigBeeStatus = node.updateBindingTable().get();
         if (zigBeeStatus != ZigBeeStatus.SUCCESS) {
@@ -212,9 +212,9 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
     this.discoveryService.getEntityContext().event().addEntityUpdateListener(this.zigBeeDeviceEntity.getEntityID(),
         "zigbee-change-listener", (ZigBeeDeviceEntity zb, ZigBeeDeviceEntity old) -> {
           this.zigBeeDeviceEntity = zb;
-          if (!zb.getPoolingPeriod().equals(old.getPoolingPeriod())
-              || !zb.getReportingTimeMin().equals(old.getReportingTimeMin())
-              || !zb.getReportingTimeMax().equals(old.getReportingTimeMax())) {
+          if (zb.getPoolingPeriod() != old.getPoolingPeriod()
+              || zb.getReportingTimeMin() != old.getReportingTimeMin()
+              || zb.getReportingTimeMax() != old.getReportingTimeMax()) {
             getZigBeeConverterEndpoints().values().forEach(ZigBeeBaseChannelConverter::updateConfiguration);
           }
         });
@@ -378,7 +378,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
     if (!nodeIeeeAddress.equals(ieeeAddress)) {
       return;
     }
-    // Use this to update channel information - eg bulb state will likely change when the device was powered off/on.
+    // Use this to update channel information - e.g. bulb state will likely change when the device was powered off/on.
     startPolling();
   }
 
@@ -449,9 +449,5 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
 
   private boolean isInitializeFinished() {
     return zigBeeNodeDescription.getNodeInitializationStatus() == null || zigBeeNodeDescription.getNodeInitializationStatus().finished();
-  }
-
-  public ZigBeeConverterEndpoint getEndpointByClusterName(String clusterName) {
-    return zigBeeConverterEndpoints.keySet().stream().filter(f -> f.getClusterName().equals(clusterName)).findAny().orElse(null);
   }
 }
