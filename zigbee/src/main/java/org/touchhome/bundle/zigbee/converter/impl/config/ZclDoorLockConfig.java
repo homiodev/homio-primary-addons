@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
  * Configuration handler for the {@link ZclDoorLockCluster}
  */
 @Log4j2
+// TODO: remove
 public class ZclDoorLockConfig implements ZclClusterConfigHandler {
 
   private static final String CONFIG_ID = "zigbee_doorlock_";
@@ -76,7 +77,7 @@ public class ZclDoorLockConfig implements ZclClusterConfigHandler {
                 continue;
             }
 
-            log.debug("{}/{}: Update DoorLock configuration property {}->{} ({})", doorLockCluster.getZigBeeAddress(),
+            log.debug("{}: Update DoorLock configuration property {}->{} ({})", doorLockCluster.getZigBeeAddress(),
                     configurationParameter.getKey(), configurationParameter.getValue(),
                     configurationParameter.getValue().getClass().getSimpleName());
             Object response = null;
@@ -100,7 +101,7 @@ public class ZclDoorLockConfig implements ZclClusterConfigHandler {
                     response = BigInteger.valueOf(doorLockCluster.getAutoRelockTime(0));
                     break;
                 default:
-                    log.warn("{}/{}: Unhandled configuration property {}", doorLockCluster.getZigBeeAddress(),
+                    log.warn("{}: Unhandled configuration property {}", doorLockCluster.getZigBeeAddress(),
                             configurationParameter.getKey());
                     break;
             }

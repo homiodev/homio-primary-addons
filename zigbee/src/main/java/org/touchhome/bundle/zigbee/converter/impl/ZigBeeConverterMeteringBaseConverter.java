@@ -43,7 +43,7 @@ public class ZigBeeConverterMeteringBaseConverter extends ZigBeeInputBaseConvert
         }
       }
     } catch (InterruptedException | ExecutionException e) {
-      log.warn("{}/{}: Exception discovering attributes in metering cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId(), e);
+      log.warn("{}: Exception discovering attributes in metering cluster {}", getEndpointEntity(), e);
       return false;
     }
     return true;

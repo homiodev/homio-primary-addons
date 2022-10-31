@@ -1,8 +1,6 @@
 package org.touchhome.bundle.zigbee.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -22,6 +20,7 @@ import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.entity.types.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.ui.UISidebarChildren;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldSlider;
@@ -35,11 +34,10 @@ import org.touchhome.bundle.zigbee.handler.CC2531Handler;
 @Log4j2
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#D46A06")
-public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoordinatorEntity> {
+public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoordinatorEntity>
+    implements EntityService<ZigBeeCoordinatorHandler, ZigbeeCoordinatorEntity> {
 
   public static final String PREFIX = "zbc_";
-
-  private static Map<String, ZigBeeCoordinatorHandler> zigBeeCoordinatorHandlerMap = new HashMap<>();
 
   @Getter
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "coordinatorEntity", cascade = CascadeType.REMOVE)
@@ -276,13 +274,13 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
 
   @UIContextMenuAction(value = "START_SCAN", icon = "fas fa-search-location")
   public ActionResponseModel scan() {
-    getZigBeeCoordinatorHandler().getDiscoveryService().startScan();
+    getService().getDiscoveryService().startScan();
     return ActionResponseModel.showSuccess("SUCCESS");
   }
 
   public void initialize() {
     log.info("Starting Zigbee: <{}>", getTitle());
-    ZigBeeCoordinatorHandler coordinatorHandler = getZigBeeCoordinatorHandler();
+    ZigBeeCoordinatorHandler coordinatorHandler = getService();
     coordinatorHandler.dispose("");
 
     if (StringUtils.isEmpty(getPort())) {
@@ -302,8 +300,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
 
   @Override
   public void afterUpdate(EntityContext entityContext) {
-    ZigBeeCoordinatorHandler coordinatorHandler = getZigBeeCoordinatorHandler();
-
+    ZigBeeCoordinatorHandler coordinatorHandler = getService();
     if (isStart()) {
       if (!coordinatorHandler.isInitialized()) {
         initialize();
@@ -311,18 +308,33 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
         coordinatorHandler.restartIfRequire(this);
       }
     } else if (coordinatorHandler.isInitialized()) {
-      getZigBeeCoordinatorHandler().dispose("stopped");
+      coordinatorHandler.dispose("stopped");
     }
-  }
-
-  public @NotNull ZigBeeCoordinatorHandler getZigBeeCoordinatorHandler() {
-    return zigBeeCoordinatorHandlerMap.computeIfAbsent(getEntityID(), s ->
-        getHandler().coordinatorSupplier.apply(getEntityContext()));
   }
 
   @JsonIgnore
   public Set<ZigBeeDeviceEntity> getOnlineDevices() {
     return getDevices().stream().filter(d -> d.getStatus() == Status.ONLINE).collect(Collectors.toSet());
+  }
+
+  @Override
+  public Class<ZigBeeCoordinatorHandler> getEntityServiceItemClass() {
+    return ZigBeeCoordinatorHandler.class;
+  }
+
+  @Override
+  public ZigBeeCoordinatorHandler createService(EntityContext entityContext) {
+    return getHandler().coordinatorSupplier.apply(entityContext);
+  }
+
+  @Override
+  public void testService(ZigBeeCoordinatorHandler service) {
+
+  }
+
+  @Override
+  public Object[] getServiceParams() {
+    return new Object[]{getHandler().name()};
   }
 
   @RequiredArgsConstructor

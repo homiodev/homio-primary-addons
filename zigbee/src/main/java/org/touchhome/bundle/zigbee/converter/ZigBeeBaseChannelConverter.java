@@ -1,7 +1,6 @@
 package org.touchhome.bundle.zigbee.converter;
 
 import com.zsmartsystems.zigbee.CommandResult;
-import com.zsmartsystems.zigbee.IeeeAddress;
 import com.zsmartsystems.zigbee.ZigBeeCommand;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.ZigBeeProfileType;
@@ -11,14 +10,15 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.QuantityType;
 import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
 import org.touchhome.bundle.zigbee.ZigBeeDevice;
-import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
-import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
+import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
+import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEndpoint;
+import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
 import tec.uom.se.unit.Units;
 
 @Log4j2
@@ -34,46 +34,35 @@ public abstract class ZigBeeBaseChannelConverter {
   public static final int POLLING_PERIOD_HIGH = 300;
 
   @Getter
-  protected int pollingPeriod = Integer.MAX_VALUE;
+  protected int pollingPeriod = POLLING_PERIOD_DEFAULT;
 
   @Getter
   protected int minimalReportingPeriod = Integer.MAX_VALUE;
 
-  /**
-   * The {@link ZigBeeDevice} to which this channel belongs.
-   */
-  protected ZigBeeDevice zigBeeDevice = null;
-  /**
-   * The channel
-   */
-  protected ZigBeeConverterEndpoint zigBeeConverterEndpoint;
-  /**
-   * The {@link ZigBeeEndpoint} this channel is linked to
-   */
-  protected ZigBeeEndpoint endpoint = null;
-  /**
-   * The {@link ZigBeeCoordinatorHandler} that controls the network
-   */
-  private ZigBeeCoordinatorHandler coordinator = null;
   private boolean pooling = false;
 
-  /**
-   * Creates the converter handler.
-   *
-   * @param zigBeeDevice the {@link ZigBeeDevice} the channel is part of
-   * @param coordinator  the {@link ZigBeeCoordinatorHandler} this endpoint is part of
-   * @param address      the {@link IeeeAddress} of the node
-   * @param endpointId   the endpoint this channel is linked to
-   */
-  public void initialize(ZigBeeDevice zigBeeDevice, ZigBeeConverterEndpoint zigBeeConverterEndpoint, ZigBeeCoordinatorHandler coordinator,
-      IeeeAddress address, int endpointId) {
-    this.endpoint = coordinator.getEndpoint(address, endpointId);
-    if (this.endpoint == null) {
-      throw new IllegalArgumentException("Device was not found");
-    }
-    this.zigBeeDevice = zigBeeDevice;
-    this.zigBeeConverterEndpoint = zigBeeConverterEndpoint;
-    this.coordinator = coordinator;
+  @Getter
+  @Setter
+  private ZigBeeConverter annotation;
+
+  @Setter
+  @Getter
+  private ZigbeeEndpointService endpointService;
+
+  protected ZigBeeDeviceEndpoint getEndpointEntity() {
+    return endpointService.getZigBeeDeviceEndpoint();
+  }
+
+  protected ZigBeeEndpoint getEndpoint() {
+    return endpointService.getZigBeeEndpoint();
+  }
+
+  protected <T> T getInputCluster(int clusterId) {
+    return (T) endpointService.getZigBeeEndpoint().getInputCluster(clusterId);
+  }
+
+  protected <T> T getOutputCluster(int clusterId) {
+    return (T) endpointService.getZigBeeEndpoint().getOutputCluster(clusterId);
   }
 
   /**
@@ -81,9 +70,8 @@ public abstract class ZigBeeBaseChannelConverter {
    * <p>
    * The binding should initialize reporting using one of the {@link ZclCluster#setReporting} commands.
    * <p>
-   * Note that this method should be self contained, and may not make any assumptions about the initialization of any internal fields of the converter other than those
-   * initialized
-   * in the {@link #initialize} method.
+   * Note that this method should be self contained, and may not make any assumptions about the initialization of any internal fields of the converter other than those initialized
+   * in the #initialize method.
    *
    * @return true if the device was configured correctly
    */
@@ -188,8 +176,7 @@ public abstract class ZigBeeBaseChannelConverter {
   }
 
   /**
-   * Converts an integer value into a {@link QuantityType}. The temperature as an integer is assumed to be multiplied
-   * by 100 as per the ZigBee standard format.
+   * Converts an integer value into a {@link QuantityType}. The temperature as an integer is assumed to be multiplied by 100 as per the ZigBee standard format.
    *
    * @param value the integer value to convert
    * @return the {@link QuantityType}
@@ -215,13 +202,12 @@ public abstract class ZigBeeBaseChannelConverter {
    * @return the future {@link CommandResult}
    */
   protected Future<CommandResult> bind(ZclCluster cluster) {
-    return cluster.bind(coordinator.getLocalIeeeAddress(),
-        coordinator.getLocalEndpointId(ZigBeeProfileType.ZIGBEE_HOME_AUTOMATION));
+    return cluster.bind(endpointService.getLocalIpAddress(), endpointService.getLocalEndpointId());
   }
 
   protected void updateChannelState(State state) {
-    log.debug("{}/{}: Channel <{}> updated to <{}>", endpoint.getIeeeAddress(), endpoint.getEndpointId(), getClass().getSimpleName(), state);
-    zigBeeDevice.updateValue(zigBeeConverterEndpoint, state, this.pooling);
+    log.info("{}: Channel <{}> updated to <{}>", endpointService.getZigBeeEndpoint(), getClass().getSimpleName(), state);
+    endpointService.getZigBeeDevice().updateValue(endpointService.getZigBeeDeviceEndpoint(), state, this.pooling);
     this.pooling = false;
   }
 
@@ -234,30 +220,19 @@ public abstract class ZigBeeBaseChannelConverter {
       return false;
     }
     ZigBeeBaseChannelConverter that = (ZigBeeBaseChannelConverter) o;
-    return Objects.equals(zigBeeConverterEndpoint, that.zigBeeConverterEndpoint);
+    return Objects.equals(endpointService.getZigBeeDeviceEndpoint().getEndpointUUID(),
+        that.endpointService.getZigBeeDeviceEndpoint().getEndpointUUID());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(zigBeeConverterEndpoint);
-  }
-
-  public String getDescription() {
-    return null;
-  }
-
-  protected Object readAttribute(ZclCluster zclCluster, int attributeID, long refreshPeriod) {
-    return zclCluster.getAttribute(attributeID).readValue(refreshPeriod);
-  }
-
-  protected Object readAttribute(ZclCluster zclCluster, int attributeID) {
-    return zclCluster.getAttribute(attributeID).readValue(Long.MAX_VALUE);
+    return endpointService.getZigBeeDeviceEndpoint().getEndpointUUID().hashCode();
   }
 
   // Configure reporting
   protected void updateServerPoolingPeriod(ZclCluster serverCluster, int attributeId, boolean isUpdate) {
+    ZigBeeDeviceEndpoint zbe = endpointService.getZigBeeDeviceEndpoint();
     try {
-      ZigBeeDeviceEntity zbe = zigBeeDevice.getZigBeeDeviceEntity();
       CommandResult reportingResponse = serverCluster.setReporting(attributeId, zbe.getReportingTimeMin(),
           zbe.getReportingTimeMax(), zbe.getReportingChange()).get();
       if (isUpdate) {
@@ -266,7 +241,7 @@ public abstract class ZigBeeBaseChannelConverter {
         handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, zbe.getPoolingPeriod());
       }
     } catch (InterruptedException | ExecutionException e) {
-      log.debug("{}/{}: Exception setting reporting", endpoint.getIeeeAddress(), endpoint.getEndpointId(), e);
+      log.debug("{}: Exception setting reporting", zbe, e);
     }
   }
 

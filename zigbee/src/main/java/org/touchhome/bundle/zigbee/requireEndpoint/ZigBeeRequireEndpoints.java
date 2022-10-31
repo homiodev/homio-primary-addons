@@ -1,53 +1,89 @@
 package org.touchhome.bundle.zigbee.requireEndpoint;
 
+import static java.util.Optional.ofNullable;
+import static org.touchhome.common.util.CommonUtils.OBJECT_MAPPER;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import lombok.Getter;
-import lombok.Setter;
-import org.touchhome.bundle.zigbee.ZigBeeNodeDescription;
+import org.jetbrains.annotations.NotNull;
+import org.touchhome.bundle.zigbee.requireEndpoint.DeviceDefinition.EndpointDefinition;
 import org.touchhome.common.util.CommonUtils;
 
 public final class ZigBeeRequireEndpoints {
 
-  private static final ZigBeeRequireEndpoints INSTANCE;
+  @Getter
+  private static final List<DeviceDefinition> defineEndpoints = new ArrayList<>();
 
   static {
-    INSTANCE = new ZigBeeRequireEndpoints();
-    for (ZigBeeRequireEndpoints file : CommonUtils.readJSON("zigBee/device-properties.json", ZigBeeRequireEndpoints.class)) {
-      INSTANCE.getZigBeeRequireEndpoints().addAll(file.getZigBeeRequireEndpoints());
+    var objectNode = CommonUtils.readAndMergeJSON("zigBee/device-properties.json", OBJECT_MAPPER.createObjectNode());
+    for (JsonNode vendorNode : objectNode) {
+      for (JsonNode deviceNode : vendorNode.get("devices")) {
+        var deviceDefinition = new DeviceDefinition();
+        deviceDefinition.setVendor(deviceNode.has("vendor") ? deviceNode.get("vendor").asText() : vendorNode.asText());
+        deviceDefinition.setId(ofNullable(deviceNode.get("id")).map(JsonNode::textValue).orElse(null));
+        deviceDefinition.setImage(ofNullable(deviceNode.get("image")).map(JsonNode::textValue).orElse(null));
+        deviceDefinition.setCategory(ofNullable(deviceNode.get("category")).map(JsonNode::textValue).orElse(null));
+        deviceDefinition.setModelId(ofNullable(deviceNode.get("model_id")).map(JsonNode::textValue).orElse(null));
+        deviceDefinition.setLabel(getDefinitionMap(deviceNode, "label"));
+        deviceDefinition.setDescription(getDefinitionMap(deviceNode, "description"));
+
+        for (JsonNode endpoint : deviceNode.get("endpoints")) {
+          var endpointDefinition = new EndpointDefinition();
+          endpointDefinition.setId(ofNullable(endpoint.get("id")).map(JsonNode::textValue).orElse(null));
+          endpointDefinition.setInputCluster(ofNullable(endpoint.get("input_cluster")).map(JsonNode::asInt).orElse(null));
+          endpointDefinition.setLabel(getDefinitionMap(endpoint, "label"));
+          endpointDefinition.setDescription(getDefinitionMap(endpoint, "description"));
+          endpointDefinition.setTypeId(endpoint.get("type_id").textValue());
+          endpointDefinition.setEndpoint(endpoint.get("endpoint").asInt());
+          if (endpoint.has("meta")) {
+            Map<String, Object> map = new HashMap<>();
+            for (JsonNode langNode : deviceNode.get("meta")) {
+              map.put(langNode.asText(), langNode.asText());
+            }
+            endpointDefinition.setMetadata(map);
+          }
+          deviceDefinition.getEndpoints().add(endpointDefinition);
+        }
+
+        defineEndpoints.add(deviceDefinition);
+      }
     }
   }
 
-  @Getter
-  @Setter
-  private List<ZigBeeRequireEndpoint> zigBeeRequireEndpoints = new ArrayList<>();
-
-  public static ZigBeeRequireEndpoints get() {
-    return INSTANCE;
+  private static Map<String, String> getDefinitionMap(JsonNode deviceNode, String key) {
+    if (deviceNode.has(key)) {
+      Map<String, String> map = new HashMap<>();
+      for (JsonNode langNode : deviceNode.get(key)) {
+        map.put(langNode.asText(), langNode.textValue());
+      }
+      return map;
+    }
+    return null;
   }
 
-  public String getImage(String modelId) {
-    return zigBeeRequireEndpoints.stream().filter(c -> c.getModelId().equals(modelId)).map(ZigBeeRequireEndpoint::getImage).findAny().orElse(null);
+  public static String getDeviceDefinitionImage(@NotNull String modelId) {
+    return defineEndpoints.stream().filter(c -> Objects.equals(c.getModelId(), modelId))
+        .map(DeviceDefinition::getImage).findAny().orElse(null);
   }
 
-  public ZigBeeRequireEndpoint findByNode(ZigBeeNodeDescription zigBeeNodeDescription) {
-    return this.zigBeeRequireEndpoints.stream().filter(c -> c.matchAllTypes(zigBeeNodeDescription.getChannels())).findAny().orElse(null);
+  /*public static DeviceDefinition findByNode(ZigBeeNodeDescription zigBeeNodeDescription) {
+    return defineEndpoints.stream().filter(c -> c.matchAllTypes(zigBeeNodeDescription.getChannels()))
+        .findAny().orElse(null);
+  }*/
+
+  public static List<EndpointDefinition> getEndpointDefinitions(@NotNull String modelIdentifier) {
+    return defineEndpoints.stream().filter(c -> Objects.equals(c.getModelId(), modelIdentifier))
+        .map(DeviceDefinition::getEndpoints).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
   }
 
-  public Stream<RequireEndpoint> getRequireEndpoints(String modelIdentifier) {
-    return zigBeeRequireEndpoints.stream().filter(c -> c.getModelId().equals(modelIdentifier))
-        .map(ZigBeeRequireEndpoint::getRequireEndpoints).filter(Objects::nonNull).flatMap(Collection::stream);
-  }
-
-  public Optional<ZigBeeRequireEndpoint> getZigBeeRequireEndpoint(String modelIdentifier) {
-    return zigBeeRequireEndpoints.stream().filter(c -> c.getModelId().equals(modelIdentifier)).findAny();
-  }
-
-  public boolean isDisablePooling(String modelIdentifier) {
-    return getZigBeeRequireEndpoint(modelIdentifier).map(ZigBeeRequireEndpoint::isDisablePooling).orElse(false);
+  public static List<DeviceDefinition> getDeviceDefinitionsByModel(@NotNull String modelIdentifier) {
+    return defineEndpoints.stream().filter(c -> Objects.equals(c.getModelId(), modelIdentifier)).collect(Collectors.toList());
   }
 }

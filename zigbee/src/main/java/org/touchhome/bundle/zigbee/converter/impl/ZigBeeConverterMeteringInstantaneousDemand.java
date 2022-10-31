@@ -12,10 +12,11 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.DecimalType;
 
 /**
+ * The instantaneous demand from the metering system
  * ZigBee channel converter for instantaneous demand measurement
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:metering_instantaneous", clientClusters = {ZclMeteringCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:metering_instantdemand", clientCluster = ZclMeteringCluster.CLUSTER_ID, category = "Number")
 public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeConverterMeteringBaseConverter {
 
   private double divisor = 1.0;
@@ -44,7 +45,7 @@ public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeConverterM
         }
       }
     } catch (InterruptedException | ExecutionException e) {
-      log.warn("{}/{}: Exception discovering attributes in metering cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId(), e);
+      log.warn("{}: Exception discovering attributes in metering cluster {}", getEndpointEntity(), e);
       return false;
     }
     return true;

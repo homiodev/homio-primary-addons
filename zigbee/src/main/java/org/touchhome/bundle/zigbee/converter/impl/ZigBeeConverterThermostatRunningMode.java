@@ -5,6 +5,7 @@ import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
 
 /**
+ * The running mode of the thermostat
  * Converter for the thermostat running mode channel. This is a read-only channel the presents the current state of the thermostat.
  * <p>
  * ThermostatRunningMode represents the running mode of the thermostat. The thermostat running mode can only be Off, Cool or Heat. This attribute is intended to provide additional
@@ -12,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:thermostat_runningmode",
-    clientClusters = {ZclThermostatCluster.CLUSTER_ID})
+    clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatRunningMode extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterThermostatRunningMode() {

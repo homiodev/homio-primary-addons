@@ -11,10 +11,12 @@ import org.touchhome.bundle.api.state.QuantityType;
 import tec.uom.se.unit.Units;
 
 /**
- * Converter for the battery voltage channel.
+ * Battery Voltage
+ * The current battery voltage
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:battery_voltage", clientClusters = {ZclPowerConfigurationCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:battery_voltage", clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID,
+    category = "Energy")
 public class ZigBeeConverterBatteryVoltage extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterBatteryVoltage() {

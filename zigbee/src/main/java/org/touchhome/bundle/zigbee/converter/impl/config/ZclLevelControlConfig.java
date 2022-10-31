@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
  * Configuration handler for the {@link ZclLevelControlCluster}
  */
 @Log4j2
+// TODO: remove
 public class ZclLevelControlConfig implements ZclClusterConfigHandler {
 
   private static final String CONFIG_ID = "zigbee_levelcontrol_";
@@ -29,11 +30,11 @@ public class ZclLevelControlConfig implements ZclClusterConfigHandler {
     try {
       Boolean result = booleanFuture.get();
       if (!result) {
-        log.debug("{}/{}: Unable to get supported attributes for {}.", zigBeeAddress,
+        log.debug("{}: Unable to get supported attributes for {}.", zigBeeAddress,
             clusterName);
       }
     } catch (InterruptedException | ExecutionException e) {
-      log.error("{}/{}: Error getting supported attributes for {}. ", zigBeeAddress,
+      log.error("{}: Error getting supported attributes for {}. ", zigBeeAddress,
           clusterName, e);
     }
   }
@@ -114,7 +115,7 @@ public class ZclLevelControlConfig implements ZclClusterConfigHandler {
                 continue;
             }
 
-            log.debug("{}/{}: Update LevelControl configuration property {}->{} ({})",
+            log.debug("{}: Update LevelControl configuration property {}->{} ({})",
                     levelControlCluster.getZigBeeAddress(), configurationParameter.getKey(),
                     configurationParameter.getValue(), configurationParameter.getValue().getClass().getSimpleName());
             Integer response = null;
@@ -147,7 +148,7 @@ public class ZclLevelControlConfig implements ZclClusterConfigHandler {
                     defaultTransitionTime = ((BigDecimal) (configurationParameter.getValue())).intValue();
                     break;
                 default:
-                    log.warn("{}/{}: Unhandled configuration property {}", levelControlCluster.getZigBeeAddress(),
+                    log.warn("{}: Unhandled configuration property {}", levelControlCluster.getZigBeeAddress(),
                             configurationParameter.getKey());
                     break;
             }

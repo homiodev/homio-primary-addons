@@ -5,9 +5,10 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
 
 /**
+ * Motion presence sensor
  * Converter for the IAS presence sensor.
  */
-@ZigBeeConverter(name = "zigbee:ias_motionpresence", description = "Motion presence alarm", clientClusters = {ZclIasZoneCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:ias_motionpresence", clientCluster = ZclIasZoneCluster.CLUSTER_ID, category = "Motion")
 public class ZigBeeConverterIasMotionPresence extends ZigBeeConverterIas {
 
   @Override

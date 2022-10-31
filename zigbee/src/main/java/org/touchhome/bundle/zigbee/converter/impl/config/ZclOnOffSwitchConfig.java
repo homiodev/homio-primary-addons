@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
  * Configuration handler for the
  */
 @Log4j2
+// TODO: remove
 public class ZclOnOffSwitchConfig implements ZclClusterConfigHandler {
 
   private static final String CONFIG_ID = "zigbee_onoff_";
@@ -76,7 +77,7 @@ public class ZclOnOffSwitchConfig implements ZclClusterConfigHandler {
                 continue;
             }
 
-            log.debug("{}/{}: Update LevelControl configuration property {}->{} ({})", onoffCluster.getZigBeeAddress(),
+            log.debug("{}: Update LevelControl configuration property {}->{} ({})", onoffCluster.getZigBeeAddress(),
                     configurationParameter.getKey(), configurationParameter.getValue(),
                     configurationParameter.getValue().getClass().getSimpleName());
             Integer response = null;
@@ -91,7 +92,7 @@ public class ZclOnOffSwitchConfig implements ZclClusterConfigHandler {
                     response = configureAttribute(ZclOnOffCluster.ATTR_STARTUPONOFF, configurationParameter.getValue());
                     break;
                 default:
-                    log.warn("{}/{}: Unhandled configuration property {}", onoffCluster.getZigBeeAddress(),
+                    log.warn("{}: Unhandled configuration property {}", onoffCluster.getZigBeeAddress(),
                             configurationParameter.getKey());
                     break;
             }

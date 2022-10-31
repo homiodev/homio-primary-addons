@@ -6,10 +6,11 @@ import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
 
 /**
+ * Set the cooling temperature when the room is unoccupied
  * Converter for the thermostat unoccupied cooling setpoint channel
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:thermostat_unoccupiedcooling", clientClusters = {ZclThermostatCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:thermostat_unoccupiedcooling", clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatUnoccupiedCooling extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterThermostatUnoccupiedCooling() {
@@ -22,8 +23,8 @@ public class ZigBeeConverterThermostatUnoccupiedCooling extends ZigBeeInputBaseC
         Integer value = temperatureToValue(command);
 
         if (value == null) {
-            log.warn("{}/{}: Thermostat unoccupied cooling setpoint {} [{}] was not processed",
-                    endpoint.getIeeeAddress(), command, command.getClass().getSimpleName());
+            log.warn("{}: Thermostat unoccupied cooling setpoint {} [{}] was not processed",
+                    getEndpointEntity(), command, command.getClass().getSimpleName());
             return;
         }
 

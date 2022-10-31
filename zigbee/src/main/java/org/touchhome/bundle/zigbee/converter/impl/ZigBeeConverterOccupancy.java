@@ -8,11 +8,12 @@ import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 
 /**
+ * Indicates if an occupancy sensor is triggered
  * Converter for the occupancy sensor.
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:sensor_occupancy", description = "Occupancy level", linkType = DeviceChannelLinkType.Boolean, clientClusters = {
-    ZclOccupancySensingCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:sensor_occupancy", linkType = DeviceChannelLinkType.Boolean, clientCluster =
+    ZclOccupancySensingCluster.CLUSTER_ID, category = "Motion")
 public class ZigBeeConverterOccupancy extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterOccupancy() {

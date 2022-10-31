@@ -1,21 +1,28 @@
 package org.touchhome.bundle.zigbee.model;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zsmartsystems.zigbee.IeeeAddress;
+import com.zsmartsystems.zigbee.ZigBeeNode;
+import com.zsmartsystems.zigbee.ZigBeeProfileType;
+import com.zsmartsystems.zigbee.zdo.field.NodeDescriptor;
+import com.zsmartsystems.zigbee.zdo.field.NodeDescriptor.LogicalType;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,14 +34,17 @@ import org.touchhome.bundle.api.converter.JSONObjectConverter;
 import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.HasJsonData;
 import org.touchhome.bundle.api.entity.HasStatusAndMsg;
+import org.touchhome.bundle.api.entity.validation.MaxItems;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.api.service.EntityService;
+import org.touchhome.bundle.api.service.EntityService.ServiceIdentifier;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldCodeEditor;
 import org.touchhome.bundle.api.ui.field.UIFieldExpand;
-import org.touchhome.bundle.api.ui.field.UIFieldNumber;
+import org.touchhome.bundle.api.ui.field.UIFieldInlineEntity;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
@@ -47,10 +57,11 @@ import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.ZigBeeNodeDescription;
 import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
-import org.touchhome.bundle.zigbee.requireEndpoint.ZigBeeRequireEndpoint;
+import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
+import org.touchhome.bundle.zigbee.requireEndpoint.DeviceDefinition;
 import org.touchhome.bundle.zigbee.requireEndpoint.ZigBeeRequireEndpoints;
 import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
+import org.touchhome.common.exception.NotFoundException;
 import org.touchhome.common.util.Lang;
 
 @Getter
@@ -64,48 +75,32 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
 
   public static final String PREFIX = "zb_";
 
-  @UIField(readOnly = true, order = 5, hideOnEmpty = true)
+  @UIField(readOnly = true, order = 5)
   private String ieeeAddress;
 
-  // The minimum time period in seconds between device state updates
-  @UIField(onlyEdit = true, order = 100)
-  @UIFieldNumber(min = 1, max = 86400)
-  private int reportingTimeMin = 1;
+  @UIField(order = 11, readOnly = true, hideOnEmpty = true)
+  private String description;
 
-  // The maximum time period in seconds between device state updates
-  @UIField(onlyEdit = true, order = 101)
-  @UIFieldNumber(min = 1, max = 86400)
-  private int reportingTimeMax = 900;
+  @UIField(order = 12, readOnly = true)
+  @Enumerated(EnumType.STRING)
+  private LogicalType logicalType;
 
-  @UIField(onlyEdit = true, order = 102)
-  @UIFieldNumber(min = 1, max = 86400)
-  private int reportingChange = 10;
+  @MaxItems(30) // max 30 variables in one group
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "zigBeeDeviceEntity")
+  @UIField(order = 30)
+  @UIFieldInlineEntity(bg = "#1E5E611F", addRow = "bla-bla-bla")
+  private Set<ZigBeeDeviceEndpoint> endpoints;
 
-  // The time period in seconds between subsequent polls
-  @UIField(onlyEdit = true, order = 103)
-  @UIFieldNumber(min = 15, max = 86400)
-  private int poolingPeriod = 900;
-
-  @JsonIgnore
+  @UIField(order = 33, readOnly = true)
   private int networkAddress = 0;
 
   @Lob
-  @Column(length = 10000) // 10kb
+  @Column(length = 10_000) // 10kb
   @Convert(converter = JSONObjectConverter.class)
   private JSONObject jsonData = new JSONObject();
 
-  @Transient
-  @UIField(readOnly = true, order = 100)
-  @UIFieldCodeEditor(editorType = UIFieldCodeEditor.CodeEditorType.json, autoFormat = true)
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-  private ZigBeeNodeDescription zigBeeNodeDescription;
-
   @ManyToOne
   private ZigbeeCoordinatorEntity coordinatorEntity;
-
-  @Transient
-  @JsonIgnore
-  private ZigBeeDevice zigBeeDevice;
 
   @Transient
   @UIField(order = 1000, type = UIFieldType.SelectBox, readOnly = true, color = "#7FBBCC")
@@ -117,26 +112,38 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   @UIField(order = 50)
   @UIFieldSelection(value = SelectModelIdentifierDynamicLoader.class, allowInputRawText = true)
   @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier", color = "#A7D21E")
-  private String modelIdentifier;
+  private String model;
 
-  private String imageIdentifier;
+  private String image;
 
+  @Transient
+  @UIField(readOnly = true, order = 100)
+  @UIFieldCodeEditor(editorType = UIFieldCodeEditor.CodeEditorType.json, autoFormat = true)
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  private ZigBeeNodeDescription zigBeeNodeDescription;
 
-  public ZigBeeDeviceEntity setModelIdentifier(String modelIdentifier) {
-    this.modelIdentifier = modelIdentifier;
+  @Transient
+  @JsonIgnore
+  private ZigBeeDevice zigBeeDevice;
+
+  public ZigBeeDeviceEntity setModel(String modelIdentifier) {
+    this.model = modelIdentifier;
     tryEvaluateImageIdentifier();
+    updateNameAndDescription(ZigBeeRequireEndpoints.getDeviceDefinitionsByModel(modelIdentifier).stream().findAny());
+    return this;
+  }
 
-    if (this.getTitle().equals(this.getIeeeAddress())) {
-      Optional<ZigBeeRequireEndpoint> zigbeeRequireEndpoint =
-          ZigBeeRequireEndpoints.get().getZigBeeRequireEndpoint(modelIdentifier);
-      if (zigbeeRequireEndpoint.isPresent()) {
-        String describeName = Lang.findPathText(zigbeeRequireEndpoint.get().getName());
-        if (describeName != null) {
-          setName(describeName + "(" + getIeeeAddress() + ")");
-        }
+  private void updateNameAndDescription(Optional<DeviceDefinition> zigbeeRequireEndpoint) {
+    if (zigbeeRequireEndpoint.isPresent()) {
+      String label = zigbeeRequireEndpoint.get().getLabel(Lang.CURRENT_LANG);
+      if (label != null) {
+        setName(label);
+      }
+      String description = zigbeeRequireEndpoint.get().getDescription(Lang.CURRENT_LANG);
+      if (description != null) {
+        setDescription(description);
       }
     }
-    return this;
   }
 
   @UIContextMenuAction("ACTION.INITIALIZE_ZIGBEE_NODE")
@@ -157,7 +164,7 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
     if (zigBeeDevice == null) {
       throw new IllegalStateException("Unable to find zigbee node with ieeeAddress: " + getIeeeAddress());
     }
-    zigBeeDevice.discoveryNodeDescription(this.getModelIdentifier());
+    zigBeeDevice.discoveryNodeDescription(this.getModel());
     return ActionResponseModel.showSuccess("ACTION.RESPONSE.REDISCOVERY_STARTED");
   }
 
@@ -166,7 +173,7 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
     if (zigBeeDevice == null) {
       throw new IllegalStateException("Unable to find zigbee node with ieeeAddress: " + getIeeeAddress());
     }
-    new Thread(zigBeeDevice.getPoolingThread()).start();
+    new Thread(zigBeeDevice.createPoolingThread()).start();
     return ActionResponseModel.showSuccess("ACTION.RESPONSE.ZIGBEE_PULL_CHANNELS_STARTED");
   }
 
@@ -178,7 +185,7 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
     if (zigBeeDevice == null) {
       throw new IllegalStateException("Unable to find zigbee node with ieeeAddress: " + getIeeeAddress());
     }
-    ZigBeeCoordinatorHandler zigBeeCoordinatorHandler = coordinatorEntity.getZigBeeCoordinatorHandler();
+    ZigBeeCoordinatorHandler zigBeeCoordinatorHandler = coordinatorEntity.getService();
     boolean join = zigBeeCoordinatorHandler.permitJoin(zigBeeDevice.getNodeIeeeAddress(),
         coordinatorEntity.getDiscoveryDuration());
     return join ? ActionResponseModel.showSuccess("ACTION.RESPONSE.STARTED") :
@@ -187,7 +194,7 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
 
   @Override
   public String toString() {
-    return "ZigBee [modelIdentifier='" + getModelIdentifier() + "]. IeeeAddress-" + getIeeeAddress() + ". Name";
+    return "ZigBee [modelIdentifier='" + getModel() + "]. IeeeAddress-" + getIeeeAddress() + ". Name";
   }
 
   void setZigBeeNodeDescription(ZigBeeNodeDescription zigBeeNodeDescription) {
@@ -197,39 +204,41 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
     tryEvaluateImageIdentifier();
   }
 
+  // TODO:?????????????????
   private void tryEvaluateModelDescription(ZigBeeNodeDescription zigBeeNodeDescription) {
-    if (zigBeeNodeDescription != null && zigBeeNodeDescription.getChannels() != null && this.getModelIdentifier() == null) {
-      ZigBeeRequireEndpoint property = ZigBeeRequireEndpoints.get().findByNode(zigBeeNodeDescription);
-      this.modelIdentifier = property == null ? null : property.getModelId();
-    }
+   /* if (zigBeeNodeDescription != null && zigBeeNodeDescription.getChannels() != null && this.getModel() == null) {
+      DeviceDefinition property = ZigBeeRequireEndpoints.findByNode(zigBeeNodeDescription);
+      this.model = property == null ? null : property.getModelId();
+    }*/
   }
 
   private void tryEvaluateImageIdentifier() {
-    String modelIdentifier = getModelIdentifier();
-    if (this.getImageIdentifier() == null && modelIdentifier != null) {
-      this.setImageIdentifier(ZigBeeRequireEndpoints.get().getImage(modelIdentifier));
+    String modelIdentifier = getModel();
+    if (this.getImage() == null && modelIdentifier != null) {
+      this.setImage(ZigBeeRequireEndpoints.getDeviceDefinitionImage(modelIdentifier));
     }
   }
 
   @Override
   public void afterDelete(EntityContext entityContext) {
-    coordinatorEntity.getZigBeeCoordinatorHandler().removeNode(new IeeeAddress(getIeeeAddress()));
-    coordinatorEntity.getZigBeeCoordinatorHandler().leave(new IeeeAddress(getIeeeAddress()), true);
+    ZigBeeCoordinatorHandler service = coordinatorEntity.getService();
+    service.removeNode(new IeeeAddress(getIeeeAddress()));
+    service.leave(new IeeeAddress(getIeeeAddress()), true);
   }
 
   @Override
   public void afterFetch(EntityContext entityContext) {
     super.afterFetch(entityContext);
 
-    ZigBeeDevice device = coordinatorEntity.getZigBeeCoordinatorHandler().getZigBeeDevices().get(getIeeeAddress());
+    ZigBeeDevice device = coordinatorEntity.getService().getZigBeeDevices().get(getIeeeAddress());
     this.zigBeeDevice = device;
 
     if (device != null) {
       ZigBeeNodeDescription zigBeeNodeDescription = device.getZigBeeNodeDescription();
-      if (getModelIdentifier() == null && zigBeeNodeDescription.getModelIdentifier() != null) {
-        entityContext.save(setModelIdentifier(zigBeeNodeDescription.getModelIdentifier()));
-      } else if (getModelIdentifier() != null && zigBeeNodeDescription.getModelIdentifier() == null) {
-        zigBeeNodeDescription.setModelIdentifier(getModelIdentifier());
+      if (getModel() == null && zigBeeNodeDescription.getModelIdentifier() != null) {
+        entityContext.save(setModel(zigBeeNodeDescription.getModelIdentifier()));
+      } else if (getModel() != null && zigBeeNodeDescription.getModelIdentifier() == null) {
+        zigBeeNodeDescription.setModelIdentifier(getModel());
       }
 
       setZigBeeNodeDescription(zigBeeNodeDescription);
@@ -248,11 +257,10 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
     ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener =
         entityContext.getBean(ZigBeeDeviceUpdateValueListener.class);
 
-    for (Map.Entry<ZigBeeConverterEndpoint, ZigBeeBaseChannelConverter> availableLinkEntry : gatherAvailableLinks()) {
-      ZigBeeConverterEndpoint converterEndpoint = availableLinkEntry.getKey();
-      ZigBeeDeviceStateUUID uuid = converterEndpoint.toUUID();
+    for (ZigBeeDeviceEndpoint endpoint : gatherAvailableLinks()) {
+      ZigBeeDeviceStateUUID uuid = endpoint.getEndpointUUID();
 
-      DeviceChannelLinkType deviceChannelLinkType = availableLinkEntry.getKey().getZigBeeConverter().linkType();
+      DeviceChannelLinkType deviceChannelLinkType = endpoint.getService().getLinkType();
 
       ZigBeeDeviceUpdateValueListener.LinkDescription linkDescription =
           zigBeeDeviceUpdateValueListener.getLinkListeners().get(uuid);
@@ -264,24 +272,71 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
           link = new AvailableLink(OptionModel.key(linkDescription.getDescription()), title);
         }
       } else {
-        String name =
-            defaultIfEmpty(availableLinkEntry.getValue().getDescription(), converterEndpoint.getClusterDescription());
-        link = new AvailableLink(OptionModel.of(uuid.asKey(), name), "");
+        link = new AvailableLink(OptionModel.of(uuid.asKey(), endpoint.getName()), "");
       }
       links.add(link);
     }
+
     entity.setAvailableLinks(links);
   }
 
-  public List<Map.Entry<ZigBeeConverterEndpoint, ZigBeeBaseChannelConverter>> gatherAvailableLinks() {
-    return zigBeeDevice == null ? Collections.emptyList() : zigBeeDevice.getZigBeeConverterEndpoints().entrySet()
-        .stream().filter(c -> c.getKey().getZigBeeConverter().linkType() != DeviceChannelLinkType.None)
+  @JsonIgnore
+  public List<ZigBeeDeviceEndpoint> gatherAvailableLinks() {
+    return getEndpoints().stream()
+        .filter(endpoint -> endpoint.getService().getLinkType() != DeviceChannelLinkType.None)
         .collect(Collectors.toList());
+  }
+
+  public ZigBeeDeviceEndpoint getEndpointRequired(String ieeeAddress, Integer clusterId, Integer endpointId, String clusterName) {
+    ZigBeeDeviceEndpoint endpoint = findEndpoint(ieeeAddress, clusterId, endpointId, clusterName);
+    if (endpoint == null) {
+      throw new NotFoundException("Unable to find endpoint: IeeeAddress: " + ieeeAddress + ". ClusterId: " + clusterId
+          + ". EndpointId: " + endpointId + ". ClusterName: " + clusterName);
+    }
+    return endpoint;
+  }
+
+  public void createEndpoints(EntityContext entityContext, String ieeeAddress, int endpointId, Collection<ZigBeeBaseChannelConverter> clusters) {
+    ZigBeeCoordinatorHandler coordinatorHandler = zigBeeDevice.getDiscoveryService().getCoordinatorHandler();
+    int localEndpointId = coordinatorHandler.getLocalEndpointId(ZigBeeProfileType.ZIGBEE_HOME_AUTOMATION);
+    IeeeAddress localIeeeAddress = coordinatorHandler.getLocalIeeeAddress();
+
+    for (ZigBeeBaseChannelConverter cluster : clusters) {
+      ZigBeeDeviceEndpoint zigBeeDeviceEndpoint = findEndpoint(ieeeAddress,
+          cluster.getAnnotation().clientCluster(), endpointId, cluster.getAnnotation().name());
+
+      if (zigBeeDeviceEndpoint == null) {
+        zigBeeDeviceEndpoint = new ZigBeeDeviceEndpoint()
+            .setIeeeAddress(ieeeAddress)
+            .setClusterId(cluster.getAnnotation().clientCluster())
+            .setEndpointId(endpointId)
+            .setZigBeeDeviceEntity(this);
+        zigBeeDeviceEndpoint = entityContext.save(zigBeeDeviceEndpoint);
+      }
+
+      ZigbeeEndpointService endpointService = new ZigbeeEndpointService(cluster, zigBeeDevice, localEndpointId, localIeeeAddress);
+      cluster.setEndpointService(endpointService);
+      EntityService.entityToService.put(zigBeeDeviceEndpoint.getEntityID(), new ServiceIdentifier(0, endpointService));
+    }
+  }
+
+  public ZigBeeDeviceEndpoint findEndpoint(String ieeeAddress, Integer clusterId, Integer endpointId, String clusterName) {
+    for (ZigBeeDeviceEndpoint endpoint : endpoints) {
+      if (endpoint.getEndpointId() == endpointId && (ieeeAddress == null || endpoint.getIeeeAddress().equals(ieeeAddress))
+          && endpoint.getClusterId() == clusterId && endpoint.getName().equals(clusterName)) {
+        return endpoint;
+      }
+    }
+    return null;
+  }
+
+  public List<ZigBeeDeviceEndpoint> getEndpoints(int clusterId) {
+    return endpoints.stream().filter(e -> e.getClusterId() == clusterId).collect(Collectors.toList());
   }
 
   @Getter
   @AllArgsConstructor
-  public final class AvailableLink {
+  public class AvailableLink {
 
     private OptionModel key;
     private String value;

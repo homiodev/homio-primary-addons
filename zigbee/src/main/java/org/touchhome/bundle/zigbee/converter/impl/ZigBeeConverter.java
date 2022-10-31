@@ -15,7 +15,9 @@ public @interface ZigBeeConverter {
    *
    * @return Set of cluster IDs supported by the converter
    */
-  int[] clientClusters() default 0;
+  int clientCluster();
+
+  int[] additionalClientClusters() default 0;
 
   /**
    * Gets the cluster IDs that are implemented within the converter on the server side.
@@ -26,7 +28,7 @@ public @interface ZigBeeConverter {
 
   String name();
 
-  String description() default "";
-
   DeviceChannelLinkType linkType() default DeviceChannelLinkType.None;
+
+  String category();
 }

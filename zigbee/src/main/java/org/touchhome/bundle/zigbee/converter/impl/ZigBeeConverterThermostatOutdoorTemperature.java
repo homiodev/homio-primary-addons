@@ -6,11 +6,12 @@ import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
 
 /**
+ * Indicates the outdoor temperature provided by the thermostat
  * Converter for the thermostat outdoor temperature channel
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:thermostat_outdoortemp",
-    clientClusters = {ZclThermostatCluster.CLUSTER_ID})
+    clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatOutdoorTemperature extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterThermostatOutdoorTemperature() {

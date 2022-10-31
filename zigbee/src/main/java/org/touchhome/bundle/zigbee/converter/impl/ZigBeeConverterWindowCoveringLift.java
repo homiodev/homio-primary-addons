@@ -10,9 +10,14 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 
 // TODO: not working
+
+/**
+ * Sets the window covering level - supporting open/close and up/down type commands
+ * Window Covering Lift Sets the window covering level - supporting open/close and up/down type commands
+ */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:sensor_occupancy", description = "Occupancy level",
-    linkType = DeviceChannelLinkType.Boolean, clientClusters = {ZclWindowCoveringCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:windowcovering_lift", category = "Blinds",
+    linkType= DeviceChannelLinkType.Boolean, clientCluster = ZclWindowCoveringCluster.CLUSTER_ID)
 public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterWindowCoveringLift() {
@@ -21,10 +26,9 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter 
 
   @Override
   public boolean initializeDevice() {
-    ZclWindowCoveringCluster serverCluster = (ZclWindowCoveringCluster) endpoint
-        .getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
+    ZclWindowCoveringCluster serverCluster = getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
     if (serverCluster == null) {
-      log.error("{}: Error opening device window covering controls", endpoint.getIeeeAddress());
+      log.error("{}: Error opening device window covering controls", getEndpointEntity());
       return false;
     }
 
@@ -40,12 +44,12 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter 
                         reporting.getReportingTimeMax(), reporting.getReportingChange()).get();
                 handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, reporting.getPollingPeriod());
             } else {
-                log.debug("{}: Error 0x{} setting server binding", endpoint.getIeeeAddress(),
+                log.debug("{}: Error 0x{} setting server binding", getEndpointEntity(),
                         Integer.toHexString(bindResponse.getStatusCode()));
                 pollingPeriod = POLLING_PERIOD_HIGH;
             }
         } catch (InterruptedException | ExecutionException e) {
-            log.error("{}: Exception setting reporting ", endpoint.getIeeeAddress(), e);
+            log.error("{}: Exception setting reporting ", getEndpointEntity(), e);
         }*/
 
     return true;
@@ -85,7 +89,7 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter 
         }
 
         if (command == null) {
-            log.debug("{}: Command was not converted - {}", endpoint.getIeeeAddress(), command);
+            log.debug("{}: Command was not converted - {}", getEndpointEntity(), command);
             return;
         }
 
@@ -98,7 +102,7 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter 
         ZclWindowCoveringCluster serverCluster = (ZclWindowCoveringCluster) endpoint
                 .getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
         if (serverCluster == null) {
-            log.trace("{}/{}: Window covering cluster not found", endpoint.getIeeeAddress());
+            log.trace("{}: Window covering cluster not found", getEndpointEntity());
             return null;
         }
 
@@ -106,14 +110,14 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter 
             if (serverCluster.discoverCommandsReceived(false).get()) {
                 if (!(serverCluster.getSupportedCommandsReceived().contains(WindowCoveringDownClose.COMMAND_ID)
                         && serverCluster.getSupportedCommandsReceived().contains(WindowCoveringUpOpen.COMMAND_ID))) {
-                    log.trace("{}/{}: Window covering cluster up/down commands not supported",
-                            endpoint.getIeeeAddress());
+                    log.trace("{}: Window covering cluster up/down commands not supported",
+                            getEndpointEntity());
                     return null;
                 }
             }
         } catch (InterruptedException | ExecutionException e) {
-            log.warn("{}/{}: Exception discovering received commands in window covering cluster",
-                    endpoint.getIeeeAddress(), e);
+            log.warn("{}: Exception discovering received commands in window covering cluster",
+                    getEndpointEntity(), e);
         }
 
         return ChannelBuilder

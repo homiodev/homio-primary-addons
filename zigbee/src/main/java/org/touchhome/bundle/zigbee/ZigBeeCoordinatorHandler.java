@@ -328,9 +328,9 @@ public abstract class ZigBeeCoordinatorHandler
 
     // Add all the clusters that we are supporting.
     // If we don't do this, the framework will reject any packets for clusters we have not stated support for.
-    channelFactory.getImplementedClientClusters()
+    channelFactory.getAllClientClusterIds()
         .forEach(clusterId -> networkManager.addSupportedClientCluster(clusterId));
-    channelFactory.getImplementedServerClusters()
+    channelFactory.getAllServerClusterIds()
         .forEach(clusterId -> networkManager.addSupportedServerCluster(clusterId));
 
     networkManager.addSupportedClientCluster(ZclBasicCluster.CLUSTER_ID);

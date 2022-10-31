@@ -8,10 +8,11 @@ import org.touchhome.bundle.zigbee.converter.warningdevice.SquawkType;
 import org.touchhome.bundle.zigbee.converter.warningdevice.WarningType;
 
 /**
+ * Triggers warnings on a warning device
  * Channel converter for warning devices, based on the IAS WD cluster.
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:warning_device", clientClusters = {ZclIasWdCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:warning_device", clientCluster = ZclIasWdCluster.CLUSTER_ID, category = "Siren")
 public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
 
   private static final String CONFIG_PREFIX = "zigbee_iaswd_";
@@ -26,9 +27,9 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
 
   @Override
   public boolean initializeConverter() {
-    iasWdCluster = (ZclIasWdCluster) endpoint.getInputCluster(ZclIasWdCluster.CLUSTER_ID);
+    iasWdCluster =  getInputCluster(ZclIasWdCluster.CLUSTER_ID);
     if (iasWdCluster == null) {
-      log.error("{}/{}: Error opening warning device controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+      log.error("{}: Error opening warning device controls", getEndpointEntity());
       return false;
     }
 
@@ -37,8 +38,8 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
 
   @Override
   public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-    if (endpoint.getInputCluster(ZclIasWdCluster.CLUSTER_ID) == null) {
-      log.trace("{}/{}: IAS WD cluster not found", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+    if (getInputCluster(ZclIasWdCluster.CLUSTER_ID) == null) {
+      log.trace("{}: IAS WD cluster not found", getEndpointEntity());
       return false;
     }
 
@@ -60,7 +61,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
     }*/
 
     /*private void updateConfigParameter(Configuration currentConfiguration, Entry<String, Object> updatedParameter) {
-        log.debug("{}/{}: Update IAS WD configuration property {}->{} ({})", iasWdCluster.getZigBeeAddress(),
+        log.debug("{}: Update IAS WD configuration property {}->{} ({})", iasWdCluster.getZigBeeAddress(),
                 updatedParameter.getKey(), updatedParameter.getValue(),
                 updatedParameter.getValue().getClass().getSimpleName());
 
@@ -72,7 +73,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
                 currentConfiguration.put(updatedParameter.getKey(), BigInteger.valueOf(response));
             }
         } else {
-            log.warn("{}/{}: Unhandled configuration property {}", iasWdCluster.getZigBeeAddress(),
+            log.warn("{}: Unhandled configuration property {}", iasWdCluster.getZigBeeAddress(),
                     updatedParameter.getKey());
         }
     }*/
@@ -80,13 +81,13 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
     /*@Override
     public void handleCommand(final ZigBeeCommand command) {
         if (iasWdCluster == null) {
-            log.warn("{}/{}: Warning device converter is not linked to a server and cannot accept commands",
-                    endpoint.getIeeeAddress());
+            log.warn("{}: Warning device converter is not linked to a server and cannot accept commands",
+                    getEndpointEntity());
             return;
         }
 
         if (!(command instanceof StringType)) {
-            log.warn("{}/{}: This converter only supports string-type commands", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+            log.warn("{}: This converter only supports string-type commands", getEndpointEntity());
             return;
         }
 
@@ -100,8 +101,8 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
             if (squawkType != null) {
                 squawk(squawkType);
             } else {
-                log.warn("{}/{}: Ignoring command that is neither warning nor squawk command: {}",
-                        endpoint.getIeeeAddress(), commandString);
+                log.warn("{}: Ignoring command that is neither warning nor squawk command: {}",
+                        getEndpointEntity(), commandString);
             }
         }
     }*/

@@ -9,7 +9,7 @@ import lombok.extern.log4j.Log4j2;
  * The level of cooling currently demanded by the thermostat
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:thermostat_coolingdemand", clientClusters = {ZclThermostatCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:thermostat_coolingdemand", clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatPiCoolingDemand extends ZigBeeInputBaseConverter {
 
   /*private static BigDecimal CHANGE_DEFAULT = new BigDecimal(1);

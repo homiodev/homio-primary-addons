@@ -10,7 +10,7 @@ import org.touchhome.bundle.api.workspace.scratch.BlockType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.zigbee.ZigBeeDevice;
-import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
+import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEndpoint;
 
 public class Scratch3ZigBeeBlock extends Scratch3Block {
 
@@ -61,10 +61,10 @@ public class Scratch3ZigBeeBlock extends Scratch3Block {
     this.eventConsumers.add(zigBeeEventHandler);
   }
 
-  public boolean matchLink(ZigBeeConverterEndpoint zigBeeConverterEndpoint, ZigBeeDevice zigBeeDevice) {
-    return this.zigBeeLinkGenerator != null && zigBeeConverterEndpoint.getClusterId() == this.linkClusterID &&
+  public boolean matchLink(ZigBeeDeviceEndpoint endpoint, ZigBeeDevice zigBeeDevice) {
+    return this.zigBeeLinkGenerator != null && endpoint.getClusterId() == this.linkClusterID &&
         (this.linkClusterCount == null || this.linkClusterCount == zigBeeDevice.getChannelCount(this.linkClusterID)) &&
-        (this.linkClusterName == null || this.linkClusterName.equals(zigBeeConverterEndpoint.getClusterName()));
+        (this.linkClusterName == null || this.linkClusterName.equals(endpoint.getName()));
   }
 
   void setDefaultLinkBooleanHandler(EntityContext entityContext, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener, String sensorDescription, String sensorName,
@@ -97,6 +97,6 @@ public class Scratch3ZigBeeBlock extends Scratch3Block {
 
   public interface LinkGeneratorHandler {
 
-    void handle(ZigBeeConverterEndpoint endpoint, ZigBeeDevice zigBeeDevice, String varGroup, String varName);
+    void handle(ZigBeeDeviceEndpoint endpoint, ZigBeeDevice zigBeeDevice, String varGroup, String varName);
   }
 }

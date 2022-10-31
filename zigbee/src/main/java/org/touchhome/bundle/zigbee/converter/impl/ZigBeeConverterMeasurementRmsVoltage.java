@@ -12,10 +12,12 @@ import org.touchhome.bundle.api.state.QuantityType;
 import tec.uom.se.unit.Units;
 
 /**
+ * The current RMS voltage measurement
  * ZigBee channel converter for RMS voltage measurement
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:electrical_rmsvoltage", clientClusters = {ZclElectricalMeasurementCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:electrical_rmsvoltage", clientCluster = ZclElectricalMeasurementCluster.CLUSTER_ID,
+    category = "Energy")
 public class ZigBeeConverterMeasurementRmsVoltage extends ZigBeeInputBaseConverter {
 
   private Integer divisor;

@@ -6,10 +6,11 @@ import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
 import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 
 /**
+ * Fire Indication Alarm
  * Converter for the IAS fire indicator.
  */
-@ZigBeeConverter(name = ZigBeeConverterIasFireIndicator.CLUSTER_NAME, description = "Fire alarm", clientClusters = {
-    ZclIasZoneCluster.CLUSTER_ID}, linkType = DeviceChannelLinkType.Boolean)
+@ZigBeeConverter(name = ZigBeeConverterIasFireIndicator.CLUSTER_NAME, clientCluster =
+    ZclIasZoneCluster.CLUSTER_ID, linkType = DeviceChannelLinkType.Boolean, category = "SmokeDetector")
 public class ZigBeeConverterIasFireIndicator extends ZigBeeConverterIas {
 
   public static final String CLUSTER_NAME = "zigbee:ias_fire";

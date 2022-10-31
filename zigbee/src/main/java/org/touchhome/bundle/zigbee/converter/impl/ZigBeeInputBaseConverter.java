@@ -5,7 +5,6 @@ import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
-import com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import java.util.concurrent.ExecutionException;
 import lombok.Getter;
@@ -14,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
+import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEndpoint;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -43,7 +42,8 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
 
   @Override
   public boolean initializeDevice() {
-    log.debug("{}/{}: Initialising {} device cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId(), getClass().getSimpleName());
+    ZigBeeDeviceEndpoint endpointEntity = getEndpointEntity();
+    log.debug("{}: Initialising {} device cluster", endpointEntity, getClass().getSimpleName());
 
     ZclCluster zclCluster = getZclClusterInternal();
     boolean success = false;
@@ -52,27 +52,25 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
         CommandResult bindResponse = bind(zclCluster).get();
         if (bindResponse.isSuccess()) {
           ZclAttribute attribute = zclCluster.getAttribute(this.attributeId);
-          ZigBeeDeviceEntity entity = zigBeeDevice.getZigBeeDeviceEntity();
 
           if (reportMinInterval == null || reportMaxInterval == null) {
             CommandResult reportingResponse = attribute.setReporting(
-                entity.getReportingTimeMin(),
-                entity.getReportingTimeMax(),
-                entity.getReportingChange()).get();
-            handleReportingResponse(reportingResponse, reportingFailedPollingInterval,
-                entity.getPoolingPeriod());
+                endpointEntity.getReportingTimeMin(),
+                endpointEntity.getReportingTimeMax(),
+                endpointEntity.getReportingChange()).get();
+            handleReportingResponse(reportingResponse, reportingFailedPollingInterval, endpointEntity.getPoolingPeriod());
           } else {
             CommandResult reportingResponse = attribute.setReporting(reportMinInterval, reportMaxInterval, reportableChange).get();
             handleReportingResponseDuringInitializeDevice(reportingResponse);
           }
           success = true;
         } else {
-          log.error("{}/{}: Error 0x{} setting server binding for cluster {}", endpoint.getIeeeAddress(),
-              endpoint.getEndpointId(), Integer.toHexString(bindResponse.getStatusCode()), zclClusterType);
+          log.error("{}: Error 0x{} setting server binding for cluster {}", endpointEntity,
+              Integer.toHexString(bindResponse.getStatusCode()), zclClusterType);
           success = initializeDeviceFailed();
         }
       } catch (InterruptedException | ExecutionException e) {
-        log.error("{}/{}: Exception setting reporting ", endpoint.getIeeeAddress(), endpoint.getEndpointId(), e);
+        log.error("{}: Exception setting reporting ", endpointEntity, e);
         return false;
       }
     }
@@ -99,15 +97,14 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
     zclCluster = getZclClusterInternal();
 
     if (zclCluster == null) {
-      log.error("{}/{}: Error opening cluster {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
+      log.error("{}: Error opening cluster {}", getEndpointEntity(),
           zclClusterType);
       return false;
     }
 
     attribute = zclCluster.getAttribute(attributeId);
     if (attribute == null) {
-      log.error("{}/{}: Error opening device {} attribute", endpoint.getIeeeAddress(),
-          endpoint.getEndpointId(), zclClusterType);
+      log.error("{}: Error opening device {} attribute", getEndpointEntity(), zclClusterType);
       return false;
     }
 
@@ -122,7 +119,7 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
 
   @Override
   public void disposeConverter() {
-    log.debug("{}/{}: Closing device input cluster {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
+    log.debug("{}: Closing device input cluster {}", getEndpointEntity(),
         zclClusterType);
 
     zclCluster.removeAttributeListener(this);
@@ -138,20 +135,19 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
     ZclCluster cluster = getZclClusterInternal();
 
     if (cluster == null) {
-      log.trace("{}/{}: Cluster '{}' not found", endpoint.getIeeeAddress(), endpoint.getEndpointId(), zclClusterType.getId());
+      log.trace("{}: Cluster '{}' not found", getEndpointEntity(), zclClusterType.getId());
       return false;
     }
 
     ZclAttribute zclAttribute = cluster.getAttribute(attributeId);
     if (zclAttribute == null) {
-      log.error("{}/{}: Error opening device {} attribute {}", endpoint.getIeeeAddress(),
-          endpoint.getEndpointId(), zclClusterType, attributeId);
+      log.error("{}: Error opening device {} attribute {}", getEndpointEntity(), zclClusterType, attributeId);
       return false;
     }
 
     Object value = zclAttribute.readValue(Long.MAX_VALUE);
     if (value == null) {
-      log.warn("{}/{}: Exception reading attribute {} in cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attributeId);
+      log.warn("{}: Exception reading attribute {} in cluster", getEndpointEntity(), attributeId);
       return false;
     }
 
@@ -164,7 +160,7 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
 
   @Override
   public void attributeUpdated(ZclAttribute attribute, Object val) {
-    log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
+    log.debug("{}: ZigBee attribute reports {}", getEndpointEntity(), attribute);
     if (attribute.getClusterType() == zclClusterType && attribute.getId() == attributeId) {
       updateValue(val, attribute);
     }
@@ -187,10 +183,9 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
   }
 
   protected ZclCluster getZclClusterInternal() {
-    ZclCluster zclCluster = endpoint.getInputCluster(zclClusterType.getId());
+    ZclCluster zclCluster = getInputCluster(zclClusterType.getId());
     if (zclCluster == null) {
-      log.error("{}/{}: Error opening cluster {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
-          zclClusterType);
+      log.error("{}: Error opening server cluster {}", getEndpointEntity(), zclClusterType);
       return null;
     }
     return zclCluster;

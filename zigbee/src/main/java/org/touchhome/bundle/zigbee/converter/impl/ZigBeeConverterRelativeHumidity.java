@@ -10,11 +10,12 @@ import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 
 /**
+ * Indicates the current relative humidity
  * Converter for the relative humidity channel
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:measurement_relativehumidity", description = "Relative humidity", clientClusters = {
-    ZclRelativeHumidityMeasurementCluster.CLUSTER_ID}, linkType = DeviceChannelLinkType.Float)
+@ZigBeeConverter(name = "zigbee:measurement_relativehumidity", clientCluster =
+    ZclRelativeHumidityMeasurementCluster.CLUSTER_ID, linkType = DeviceChannelLinkType.Float, category = "Humidity")
 public class ZigBeeConverterRelativeHumidity extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterRelativeHumidity() {

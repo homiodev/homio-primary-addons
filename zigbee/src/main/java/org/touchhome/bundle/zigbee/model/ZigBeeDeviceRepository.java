@@ -1,7 +1,6 @@
 package org.touchhome.bundle.zigbee.model;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 import org.touchhome.bundle.api.EntityContext;
@@ -9,8 +8,6 @@ import org.touchhome.bundle.api.repository.AbstractRepository;
 import org.touchhome.bundle.api.workspace.HasWorkspaceVariableLinkAbility;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.zigbee.ZigBeeDevice;
-import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
 import org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlock;
 import org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeExtensionBlocks;
 
@@ -31,23 +28,19 @@ public class ZigBeeDeviceRepository extends AbstractRepository<ZigBeeDeviceEntit
   @Override
   public void createVariable(String entityID, String varGroup, String varName, String key) {
     ZigBeeDeviceEntity zigBeeDeviceEntity = entityContext.getEntity(entityID);
-    List<Map.Entry<ZigBeeConverterEndpoint, ZigBeeBaseChannelConverter>> availableLinks =
-        zigBeeDeviceEntity.gatherAvailableLinks();
-    for (Map.Entry<ZigBeeConverterEndpoint, ZigBeeBaseChannelConverter> availableLink : availableLinks) {
-      ZigBeeConverterEndpoint converterEndpoint = availableLink.getKey();
-      if (converterEndpoint.toUUID().asKey().equals(key)) {
-        this.createVariableLink(converterEndpoint, zigBeeDeviceEntity.getZigBeeDevice(), varGroup, varName);
+    for (ZigBeeDeviceEndpoint availableLink : zigBeeDeviceEntity.gatherAvailableLinks()) {
+      if (availableLink.getEndpointUUID().asKey().equals(key)) {
+        this.createVariableLink(availableLink, zigBeeDeviceEntity.getZigBeeDevice(), varGroup, varName);
       }
     }
   }
 
-  private void createVariableLink(ZigBeeConverterEndpoint zigBeeConverterEndpoint, ZigBeeDevice zigBeeDevice, String varGroup,
-      String varName) {
+  private void createVariableLink(ZigBeeDeviceEndpoint endpoint, ZigBeeDevice zigBeeDevice, String varGroup, String varName) {
     for (Scratch3Block scratch3Block : this.zigbeeBlocks) {
       if (scratch3Block instanceof Scratch3ZigBeeBlock) {
         Scratch3ZigBeeBlock scratch3ZigBeeBlock = (Scratch3ZigBeeBlock) scratch3Block;
-        if (scratch3ZigBeeBlock.matchLink(zigBeeConverterEndpoint, zigBeeDevice)) {
-          scratch3ZigBeeBlock.getZigBeeLinkGenerator().handle(zigBeeConverterEndpoint, zigBeeDevice, varGroup, varName);
+        if (scratch3ZigBeeBlock.matchLink(endpoint, zigBeeDevice)) {
+          scratch3ZigBeeBlock.getZigBeeLinkGenerator().handle(endpoint, zigBeeDevice, varGroup, varName);
           return;
         }
       }

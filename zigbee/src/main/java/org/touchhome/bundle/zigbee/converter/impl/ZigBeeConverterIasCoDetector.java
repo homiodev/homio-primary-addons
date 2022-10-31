@@ -7,7 +7,7 @@ import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
 /**
  * Converter for the IAS CO sensor.
  */
-@ZigBeeConverter(name = "zigbee:ias_cosensor", description = "CO alarm", clientClusters = {ZclIasZoneCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:ias_cosensor", clientCluster = ZclIasZoneCluster.CLUSTER_ID, category = "ias")
 public class ZigBeeConverterIasCoDetector extends ZigBeeConverterIas {
 
   @Override

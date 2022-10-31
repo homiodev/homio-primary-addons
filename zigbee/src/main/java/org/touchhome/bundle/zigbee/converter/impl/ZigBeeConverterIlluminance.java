@@ -8,11 +8,12 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 
 /**
+ * Indicates the current illuminance in lux
  * Converter for the illuminance channel
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:measurement_illuminance", description = "Illuminance level", linkType = DeviceChannelLinkType.Float,
-    clientClusters = {ZclIlluminanceMeasurementCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:measurement_illuminance", linkType = DeviceChannelLinkType.Float,
+    clientCluster = ZclIlluminanceMeasurementCluster.CLUSTER_ID, category = "Illuminance")
 public class ZigBeeConverterIlluminance extends ZigBeeInputBaseConverter {
 
   private static BigDecimal CHANGE_DEFAULT = new BigDecimal(5000);

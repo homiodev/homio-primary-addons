@@ -5,9 +5,10 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
 
 /**
+ * IAS System Alarm Channel
  * Converter for the IAS Standard CIE System sensor.
  */
-@ZigBeeConverter(name = "zigbee:ias_standard_system", clientClusters = {ZclIasZoneCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:ias_standard_system", clientCluster = ZclIasZoneCluster.CLUSTER_ID, category = "")
 public class ZigBeeConverterIasCieSystem extends ZigBeeConverterIas {
 
   @Override

@@ -8,10 +8,11 @@ import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j2;
 
 /**
+ * Set the fan mode
  * This channel supports fan control
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:fancontrol", clientClusters = {ZclFanControlCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:fancontrol", clientCluster = ZclFanControlCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
 
   private static final int MODE_OFF = 0;
@@ -34,10 +35,9 @@ public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
 
   @Override
   public boolean initializeDevice() {
-    ZclFanControlCluster serverCluster = (ZclFanControlCluster) endpoint
-        .getInputCluster(ZclFanControlCluster.CLUSTER_ID);
+    ZclFanControlCluster serverCluster =  getInputCluster(ZclFanControlCluster.CLUSTER_ID);
     if (serverCluster == null) {
-      log.error("{}/{}: Error opening device fan controls", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+      log.error("{}: Error opening device fan controls", getEndpointEntity());
       return false;
     }
 
@@ -52,7 +52,7 @@ public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
         pollingPeriod = POLLING_PERIOD_HIGH;
       }
     } catch (InterruptedException | ExecutionException e) {
-      log.error("{}/{}: Exception setting reporting ", endpoint.getIeeeAddress(), e);
+      log.error("{}: Exception setting reporting {}", getEndpointEntity(), e);
       return false;
     }
     return true;
@@ -71,7 +71,7 @@ public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
         } else if (command instanceof DecimalType) {
             value = ((DecimalType) command).intValue();
         } else {
-            log.debug("{}/{}: Unabled to convert fan mode {}", endpoint.getIeeeAddress(),endpoint.getEndpointId(), command);
+            log.debug("{}: Unabled to convert fan mode {}", getEndpointEntity(),endpoint.getEndpointId(), command);
             return;
         }
 
@@ -107,7 +107,7 @@ public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
                     options.add(new StateOption("5", "Auto"));
                     break;
                 default:
-                    log.error("{}/{}: Unknown fan mode sequence {}", endpoint.getIeeeAddress(),endpoint.getEndpointId(), sequence);
+                    log.error("{}: Unknown fan mode sequence {}", getEndpointEntity(),endpoint.getEndpointId(), sequence);
                     break;
             }
 

@@ -12,7 +12,7 @@ import org.touchhome.bundle.api.state.DecimalType;
  * Converter for the battery percent channel.
  */
 @Log4j2
-@ZigBeeConverter(name = "system:battery-level", clientClusters = {ZclPowerConfigurationCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:battery-level", clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Battery")
 public class ZigBeeConverterBatteryPercent extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterBatteryPercent() {

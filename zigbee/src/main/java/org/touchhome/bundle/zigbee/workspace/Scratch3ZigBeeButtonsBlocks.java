@@ -12,10 +12,12 @@ import com.zsmartsystems.zigbee.zcl.clusters.onoff.ZclOnOffCommand;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
@@ -26,7 +28,7 @@ import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
 import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
 import org.touchhome.bundle.zigbee.ZigBeeNodeDescription;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
+import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEndpoint;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.common.model.UpdatableValue;
 import org.touchhome.common.util.CommonUtils;
@@ -110,10 +112,12 @@ final class Scratch3ZigBeeButtonsBlocks extends Scratch3ZigBeeExtensionBlocks {
                 buttonEndpointGetter.value, buttonEndpointGetter.name());
           });
           block.setZigBeeLinkGenerator(
-              (endpoint, zigBeeDevice, varGroup, varName) -> block.codeGenerator("zigbee")
-                  .setMenu(this.buttonEndpointGetterValueMenu, ButtonEndpoint.of(endpoint.getEndpointId()))
-                  .setMenu(this.doubleButtonSensorMenu, zigBeeDevice.getNodeIeeeAddress())
-                  .generateBooleanLink(varGroup, varName, entityContext), ZclOnOffCluster.CLUSTER_ID, 2);
+              (endpoint, zigBeeDevice, varGroup, varName) -> {
+                block.codeGenerator("zigbee")
+                    .setMenu(this.buttonEndpointGetterValueMenu, ButtonEndpoint.of(endpoint.getEndpointId()))
+                    .setMenu(this.doubleButtonSensorMenu, zigBeeDevice.getNodeIeeeAddress())
+                    .generateBooleanLink(varGroup, varName, entityContext);
+              }, ZclOnOffCluster.CLUSTER_ID, 2);
         });
 
     blockCommand(110, "double_turn_on_off", "turn [BUTTON_SIGNAL] [BUTTON_ENDPOINT] button [DOUBLE_BUTTON_SENSOR]",
@@ -162,31 +166,24 @@ final class Scratch3ZigBeeButtonsBlocks extends Scratch3ZigBeeExtensionBlocks {
     if (zigBeeNodeDescription == null) {
       workspaceBlock.logErrorAndThrow("Unable to switch button. Node not discovered");
       return;
-    } else if (zigBeeNodeDescription.getChannels() == null) {
-      workspaceBlock.logErrorAndThrow("Unable to switch button. Node has no zigbeeRequireEndpoints at all");
-      return;
     }
 
-    List<ZigBeeNodeDescription.ChannelDescription> onOffChannels = zigBeeNodeDescription.getChannels().stream()
-        .filter(s -> s.getChannelUUID().getClusterId() == ZclOnOffCluster.CLUSTER_ID).collect(Collectors.toList());
+    List<ZigBeeDeviceEndpoint> onOffEndpoints = zigBeeDeviceEntity.getEndpoints(ZclOnOffCluster.CLUSTER_ID);
 
-    if (onOffChannels.isEmpty()) {
-      workspaceBlock.logErrorAndThrow("Unable to find channel with On/Off ability for device: " + zigBeeDeviceEntity);
+    if (onOffEndpoints.isEmpty()) {
+      workspaceBlock.logErrorAndThrow("Unable to find endpoints with On/Off ability for device: " + zigBeeDeviceEntity);
     } else if (buttonEndpointValue != null) {
-      onOffChannels = onOffChannels.stream().filter(c -> c.getChannelUUID().getEndpointId().equals(buttonEndpointValue))
-          .collect(Collectors.toList());
+      onOffEndpoints = onOffEndpoints.stream().filter(c -> c.getEndpointId() == buttonEndpointValue).collect(Collectors.toList());
     }
 
-    if (onOffChannels.isEmpty()) {
+    if (onOffEndpoints.isEmpty()) {
       workspaceBlock.logErrorAndThrow("Unable to find channel with On/Off ability for device: " + zigBeeDeviceEntity);
     }
 
-    for (ZigBeeNodeDescription.ChannelDescription onOffChannel : onOffChannels) {
-      ZigBeeDeviceStateUUID uuid = onOffChannel.getChannelUUID();
+    for (ZigBeeDeviceEndpoint onOffChannel : onOffEndpoints) {
       ZigBeeBaseChannelConverter beeBaseChannelConverter =
-          zigBeeDeviceEntity.getZigBeeDevice().getZigBeeConverterEndpoints()
-              .get(new ZigBeeConverterEndpoint(uuid.getIeeeAddress(), uuid.getClusterId(), uuid.getEndpointId(),
-                  uuid.getClusterName()));
+          zigBeeDeviceEntity.getEndpointRequired(onOffChannel.getIeeeAddress(), onOffChannel.getClusterId(), onOffChannel.getEndpointId(),
+              onOffChannel.getName()).getService().getChannel();
       handleCommand(workspaceBlock, zigBeeDeviceEntity, beeBaseChannelConverter, zclOnOffCommand);
     }
   }
@@ -196,24 +193,24 @@ final class Scratch3ZigBeeButtonsBlocks extends Scratch3ZigBeeExtensionBlocks {
     if (statelessButtonStates.containsKey(zigBeeDeviceEntity.getIeeeAddress())) {
       return new DecimalType(statelessButtonStates.get(zigBeeDeviceEntity.getIeeeAddress()).getValue() == Boolean.TRUE ? 1 : 0);
     }
-
-    for (ZigBeeNodeDescription.ChannelDescription channel : zigBeeDeviceEntity.getZigBeeNodeDescription().getChannels()) {
-      ScratchDeviceState scratchDeviceState = this.zigBeeDeviceUpdateValueListener.getDeviceState(channel.getChannelUUID());
-      if (scratchDeviceState != null) {
-        return new DecimalType(scratchDeviceState.getState().intValue());
-      }
-    }
-    return new DecimalType(0);
+    return getEndpointState(zigBeeDeviceEntity.getEndpoints());
   }
 
   private State doubleButtonStatusEvaluate(WorkspaceBlock workspaceBlock) {
     ZigBeeDeviceEntity zigBeeDeviceEntity = getZigBeeDevice(workspaceBlock, DOUBLE_BUTTON_SENSOR, doubleButtonSensorMenu);
-    for (ZigBeeNodeDescription.ChannelDescription channel : zigBeeDeviceEntity.getZigBeeNodeDescription().getChannels()) {
-      ScratchDeviceState scratchDeviceState = this.zigBeeDeviceUpdateValueListener.getDeviceState(channel.getChannelUUID());
+    return getEndpointState(zigBeeDeviceEntity.getEndpoints());
+  }
+
+  private DecimalType getEndpointState(Set<ZigBeeDeviceEndpoint> onOffEndpoints) {
+    for (ZigBeeDeviceEndpoint endpoint : onOffEndpoints) {
+      ScratchDeviceState scratchDeviceState = this.zigBeeDeviceUpdateValueListener.getDeviceState(
+          new ZigBeeDeviceStateUUID(endpoint.getIeeeAddress(), endpoint.getClusterId(), endpoint.getEndpointId(), endpoint.getName())
+      );
       if (scratchDeviceState != null) {
         return new DecimalType(scratchDeviceState.getState().intValue());
       }
     }
+
     return new DecimalType(0);
   }
 

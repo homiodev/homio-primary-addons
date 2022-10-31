@@ -10,7 +10,9 @@ public class SelectModelIdentifierDynamicLoader implements DynamicOptionLoader {
 
   @Override
   public List<OptionModel> loadOptions(DynamicOptionLoaderParameters parameters) {
-    return ZigBeeRequireEndpoints.get().getZigBeeRequireEndpoints().stream().map(c ->
-        OptionModel.of(c.getModelId(), c.getName()).setIcon(c.getImage())).collect(Collectors.toList());
+    return ZigBeeRequireEndpoints.getDefineEndpoints().stream()
+        .filter(c -> c.getModelId() != null)
+        .map(c -> OptionModel.of(c.getModelId(), c.getModelId()).setIcon(c.getImage()))
+        .collect(Collectors.toList());
   }
 }

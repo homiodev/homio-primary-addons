@@ -21,20 +21,16 @@ import com.zsmartsystems.zigbee.zdo.field.RoutingTable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterEndpoint;
 
 @Log4j2
 @Getter
@@ -78,7 +74,6 @@ public class ZigBeeNodeDescription {
   private Status deviceStatus = Status.UNKNOWN;
 
   private FetchInfoStatus fetchInfoStatus = FetchInfoStatus.UNKNOWN;
-  private Collection<ChannelDescription> channels;
 
   @Setter
   private boolean nodeInitialized;
@@ -90,7 +85,8 @@ public class ZigBeeNodeDescription {
     this.ieeeAddress = ieeeAddress.toString();
   }
 
-  public String getMaxTimeoutBeforeOfflineNode() {
+  public String
+  getMaxTimeoutBeforeOfflineNode() {
     return expectedUpdateInterval == null ? "Not set" : TimeUnit.SECONDS.toMinutes(expectedUpdateInterval) + "min";
   }
 
@@ -173,10 +169,6 @@ public class ZigBeeNodeDescription {
     }
   }
 
-  void setChannels(Map<ZigBeeConverterEndpoint, ZigBeeBaseChannelConverter> zigBeeConverterEndpoints) {
-    this.channels = zigBeeConverterEndpoints.entrySet().stream().map(e -> new ChannelDescription(e.getKey(), e.getValue())).collect(Collectors.toList());
-  }
-
   public enum NodeInitializationStatus {
     WaitForStart, Started, Finished;
 
@@ -187,21 +179,5 @@ public class ZigBeeNodeDescription {
 
   public enum FetchInfoStatus {
     UNKNOWN, STARTED, FINISHED, NOT_COMPLETED
-  }
-
-  @Getter
-  public static class ChannelDescription {
-
-    private final String name;
-    private final int pollingPeriod;
-    private final int minimalReportingPeriod;
-    private final ZigBeeDeviceStateUUID channelUUID;
-
-    ChannelDescription(ZigBeeConverterEndpoint zigBeeConverterEndpoint, ZigBeeBaseChannelConverter channel) {
-      this.name = channel.getClass().getSimpleName();
-      this.pollingPeriod = channel.getPollingPeriod();
-      this.minimalReportingPeriod = channel.getMinimalReportingPeriod();
-      this.channelUUID = zigBeeConverterEndpoint.toUUID();
-    }
   }
 }

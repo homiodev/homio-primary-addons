@@ -6,11 +6,12 @@ import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
 
 /**
+ * Set the heating temperature when the room is occupied
  * Converter for the thermostat occupied heating setpoint channel
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:thermostat_occupiedheating",
-    clientClusters = {ZclThermostatCluster.CLUSTER_ID})
+    clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatOccupiedHeating extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterThermostatOccupiedHeating() {
@@ -23,7 +24,7 @@ public class ZigBeeConverterThermostatOccupiedHeating extends ZigBeeInputBaseCon
         Integer value = temperatureToValue(command);
 
         if (value == null) {
-            log.warn("{}/{}: Thermostat occupied heating setpoint {} [{}] was not processed", endpoint.getIeeeAddress(), endpoint.getEndpointId(),
+            log.warn("{}: Thermostat occupied heating setpoint {} [{}] was not processed", getEndpointEntity(),
                     command, command.getClass().getSimpleName());
             return;
         }

@@ -8,8 +8,8 @@ import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 /**
  * Converter for the IAS water sensor.
  */
-@ZigBeeConverter(name = ZigBeeConverterIasWaterSensor.CLUSTER_NAME, description = "Liquid alarm", clientClusters = {
-    ZclIasZoneCluster.CLUSTER_ID}, linkType = DeviceChannelLinkType.Boolean)
+@ZigBeeConverter(name = ZigBeeConverterIasWaterSensor.CLUSTER_NAME, clientCluster =
+    ZclIasZoneCluster.CLUSTER_ID, linkType = DeviceChannelLinkType.Boolean, category = "Sensor")
 public class ZigBeeConverterIasWaterSensor extends ZigBeeConverterIas {
 
   public static final String CLUSTER_NAME = "zigbee:ias_water";

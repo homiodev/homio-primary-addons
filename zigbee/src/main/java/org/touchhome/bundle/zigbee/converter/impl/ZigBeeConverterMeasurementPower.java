@@ -11,8 +11,12 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.QuantityType;
 import tec.uom.se.unit.Units;
 
+/**
+ * The total power consumed by the device
+ */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:electrical_activepower", clientClusters = {ZclElectricalMeasurementCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:electrical_activepower", clientCluster = ZclElectricalMeasurementCluster.CLUSTER_ID,
+    category = "Energy")
 public class ZigBeeConverterMeasurementPower extends ZigBeeInputBaseConverter {
 
   private Integer divisor;

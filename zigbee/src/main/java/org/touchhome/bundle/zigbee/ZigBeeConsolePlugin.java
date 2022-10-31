@@ -53,18 +53,16 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
   public Collection<ZigBeeConsoleDescription> getValue() {
     List<ZigBeeConsoleDescription> res = new ArrayList<>();
     for (ZigBeeDeviceEntity device : coordinator.getDevices()) {
-      // ZigBeeNodeDescription desc = zigBeeDevice.getZigBeeNodeDescription();
       ZigBeeNodeDescription desc = device.getZigBeeDevice().getZigBeeNodeDescription();
       res.add(new ZigBeeConsoleDescription(
           device.getName(),
           device.getIeeeAddress(),
           device.getStatus(),
           device.getStatusMessage(),
-          device.getModelIdentifier(),
+          device.getModel(),
           desc.getFetchInfoStatus(),
-          !device.getZigBeeDevice().getZigBeeConverterEndpoints().isEmpty(),
-          device.getZigBeeDevice().getZigBeeNodeDescription().isNodeInitialized() &&
-              !device.getZigBeeDevice().getZigBeeConverterEndpoints().isEmpty(),
+          !device.getEndpoints().isEmpty(),
+          device.getZigBeeDevice().getZigBeeNodeDescription().isNodeInitialized(),
           desc.getLastUpdateTime(),
           device.getEntityID()
       ));

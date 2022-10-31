@@ -8,10 +8,11 @@ import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j2;
 
 /**
+ * Set the system mode of the thermostat
  * Converter for the thermostat system mode channel. The SystemMode attribute specifies the current operating mode of the thermostat,
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:thermostat_systemmode", clientClusters = {ZclThermostatCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:thermostat_systemmode", clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverter {
 
    /* private final static int STATE_MIN = 0;
@@ -26,10 +27,9 @@ public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverte
 
   @Override
   public boolean initializeDevice() {
-    ZclThermostatCluster serverCluster = (ZclThermostatCluster) endpoint
-        .getInputCluster(ZclThermostatCluster.CLUSTER_ID);
+    ZclThermostatCluster serverCluster =  getInputCluster(ZclThermostatCluster.CLUSTER_ID);
     if (serverCluster == null) {
-      log.error("{}/{}: Error opening device thermostat cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+      log.error("{}: Error opening device thermostat cluster", getEndpointEntity());
       return false;
     }
 
@@ -42,10 +42,10 @@ public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverte
             .setReporting(1, REPORTING_PERIOD_DEFAULT_MAX).get();
         handleReportingResponse(reportingResponse);
       } else {
-        log.debug("{}/{}: Failed to bind thermostat cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+        log.debug("{}: Failed to bind thermostat cluster", getEndpointEntity());
       }
     } catch (InterruptedException | ExecutionException e) {
-      log.error("{}/{}: Exception setting reporting ", endpoint.getIeeeAddress(), e);
+      log.error("{}: Exception setting reporting ", getEndpointEntity(), e);
     }
 
     return true;
@@ -85,13 +85,13 @@ public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverte
         }
 
         if (value == null) {
-            log.warn("{}/{}: System mode command {} [{}] was not processed", endpoint.getIeeeAddress(), command,
+            log.warn("{}: System mode command {} [{}] was not processed", getEndpointEntity(), command,
                     command.getClass().getSimpleName());
             return;
         }
 
         if (value < STATE_MIN || value > STATE_MAX) {
-            log.warn("{}/{}: System mode command {} [{}], value {}, was out of limits", endpoint.getIeeeAddress(),
+            log.warn("{}: System mode command {} [{}], value {}, was out of limits", getEndpointEntity(),
                     command, command.getClass().getSimpleName(), value);
             return;
         }

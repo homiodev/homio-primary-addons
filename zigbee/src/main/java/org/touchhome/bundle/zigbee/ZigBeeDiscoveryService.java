@@ -6,9 +6,7 @@ import com.zsmartsystems.zigbee.IeeeAddress;
 import com.zsmartsystems.zigbee.ZigBeeNetworkNodeListener;
 import com.zsmartsystems.zigbee.ZigBeeNode;
 import com.zsmartsystems.zigbee.zdo.field.NodeDescriptor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -25,7 +23,6 @@ class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
 
   private final EntityContext entityContext;
   private final ZigBeeChannelConverterFactory zigBeeChannelConverterFactory;
-  private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
   private final ZigBeeDeviceUpdateValueListener deviceUpdateListener;
   private final ZigBeeIsAliveTracker zigBeeIsAliveTracker = new ZigBeeIsAliveTracker();
 
@@ -58,7 +55,7 @@ class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
   }
 
   public ZigBeeCoordinatorHandler getCoordinatorHandler() {
-    return coordinator.getZigBeeCoordinatorHandler();
+    return coordinator.getService();
   }
 
   public void startScan() {
@@ -79,13 +76,15 @@ class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
     int duration = coordinator.getDiscoveryDuration();
     getCoordinatorHandler().scanStart(duration);
 
-    this.entityContext.ui().addHeaderButton("zigbee-scan", PRIMARY_COLOR, duration, null);
+    entityContext.ui().addHeaderButton("zigbee-scan", PRIMARY_COLOR, duration, null);
 
-    scheduler.schedule(() -> {
-      log.info("Scanning stopped");
-      scanStarted = false;
-      this.entityContext.ui().removeHeaderButton("zigbee-scan");
-    }, duration, TimeUnit.SECONDS);
+    entityContext.bgp().builder("zigbee-scan-killer")
+        .delay(Duration.ofSeconds(coordinator.getDiscoveryDuration()))
+        .execute(() -> {
+          log.info("Scanning stopped");
+          scanStarted = false;
+          entityContext.ui().removeHeaderButton("zigbee-scan");
+        });
   }
 
   private void nodeDiscovered(ZigBeeNode node) {
@@ -97,37 +96,45 @@ class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
       return;
     }
 
-    Runnable pollingRunnable = () -> {
-      log.info("{}: Starting ZigBee device discovery", node.getIeeeAddress());
+    entityContext.bgp().builder("zigbee-pooling-" + coordinator.getEntityID())
+        .delay(Duration.ofMillis(10))
+        .execute(() -> {
+          log.info("{}: Starting ZigBee device discovery", node.getIeeeAddress());
+          addZigBeeDevice(node);
 
-      ZigBeeDeviceEntity entity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + node.getIeeeAddress().toString());
-      if (entity == null) {
-        entity = new ZigBeeDeviceEntity().computeEntityID(() -> node.getIeeeAddress().toString())
-            .setIeeeAddress(node.getIeeeAddress().toString()).setNetworkAddress(node.getNetworkAddress());
-        entityContext.save(entity);
-      }
+          if (!node.isDiscovered()) {
+            log.warn("{}: Node discovery not complete", node.getIeeeAddress());
+            return;
+          } else {
+            log.debug("{}: Node discovery complete", node.getIeeeAddress());
+          }
 
-      addZigBeeDevice(node.getIeeeAddress());
-
-      if (!node.isDiscovered()) {
-        log.warn("{}: Node discovery not complete", node.getIeeeAddress());
-        return;
-      } else {
-        log.debug("{}: Node discovery complete", node.getIeeeAddress());
-      }
-
-      coordinatorHandler.serializeNetwork(node.getIeeeAddress());
-    };
-
-    scheduler.schedule(pollingRunnable, 10, TimeUnit.MILLISECONDS);
+          coordinatorHandler.serializeNetwork(node.getIeeeAddress());
+        });
   }
 
-  synchronized void addZigBeeDevice(IeeeAddress ieeeAddress) {
+  /**
+   * Add discovered not to DB and in memory
+   */
+  synchronized void addZigBeeDevice(ZigBeeNode node) {
+    IeeeAddress ieeeAddress = node.getIeeeAddress();
+
+    ZigBeeDeviceEntity entity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + ieeeAddress.toString());
+    if (entity == null) {
+      entity = new ZigBeeDeviceEntity()
+          .computeEntityID(ieeeAddress::toString)
+          .setIeeeAddress(ieeeAddress.toString())
+          .setLogicalType(node.getLogicalType())
+          .setNetworkAddress(node.getNetworkAddress());
+
+      entityContext.save(entity);
+    }
+
     ZigBeeCoordinatorHandler coordinatorHandler = getCoordinatorHandler();
     boolean deviceAdded = coordinatorHandler.getZigBeeDevices().keySet().stream()
         .anyMatch(d -> d.equals(ieeeAddress.toString()));
     if (!deviceAdded) {
-      ZigBeeDevice zigBeeDevice = new ZigBeeDevice(this, ieeeAddress);
+      ZigBeeDevice zigBeeDevice = new ZigBeeDevice(this, ieeeAddress, node, entityContext);
       coordinatorHandler.addZigBeeDevice(zigBeeDevice);
     }
   }

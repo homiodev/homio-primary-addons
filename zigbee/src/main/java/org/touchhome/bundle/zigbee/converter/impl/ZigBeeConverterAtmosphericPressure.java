@@ -21,12 +21,13 @@ import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import tec.uom.se.unit.Units;
 
 /**
+ * Indicates the current pressure
  * Converter for the atmospheric pressure channel. This channel will attempt to detect if the device is supporting the enhanced (scaled) value reports and use them if they are
  * available.
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:measurement_pressure", description = "Pressure", linkType = DeviceChannelLinkType.Float,
-    clientClusters = {ZclPressureMeasurementCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:measurement_pressure", linkType = DeviceChannelLinkType.Float,
+    clientCluster = ZclPressureMeasurementCluster.CLUSTER_ID, category = "Pressure")
 public class ZigBeeConverterAtmosphericPressure extends ZigBeeBaseChannelConverter implements ZclAttributeListener {
 
   private ZclPressureMeasurementCluster cluster;
@@ -39,9 +40,9 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeBaseChannelConvert
   @Override
   public boolean initializeDevice() {
     pollingPeriod = REPORTING_PERIOD_DEFAULT_MAX;
-    ZclCluster serverCluster = endpoint.getInputCluster(ZclPressureMeasurementCluster.CLUSTER_ID);
+    ZclCluster serverCluster = getInputCluster(ZclPressureMeasurementCluster.CLUSTER_ID);
     if (serverCluster == null) {
-      log.error("{}/{}: Error opening device pressure measurement cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+      log.error("{}: Error opening device pressure measurement cluster", getEndpointEntity());
       return false;
     }
 
@@ -61,12 +62,12 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeBaseChannelConvert
           handleReportingResponse(reportingResponse);
         }
       } else {
-        log.error("{}/{}: Error 0x{} setting server binding", endpoint.getIeeeAddress(), endpoint.getEndpointId(), Integer.toHexString(bindResponse.getStatusCode()));
+        log.error("{}: Error 0x{} setting server binding", getEndpointEntity(), Integer.toHexString(bindResponse.getStatusCode()));
         pollingPeriod = POLLING_PERIOD_HIGH;
         return false;
       }
     } catch (InterruptedException | ExecutionException e) {
-      log.error("{}/{}: Exception setting reporting ", endpoint.getIeeeAddress(), endpoint.getEndpointId(), e);
+      log.error("{}: Exception setting reporting {}", getEndpointEntity(), e);
       pollingPeriod = POLLING_PERIOD_HIGH;
       return false;
     }
@@ -75,9 +76,9 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeBaseChannelConvert
 
   @Override
   public boolean initializeConverter() {
-    cluster = (ZclPressureMeasurementCluster) endpoint.getInputCluster(ZclPressureMeasurementCluster.CLUSTER_ID);
+    cluster = getInputCluster(ZclPressureMeasurementCluster.CLUSTER_ID);
     if (cluster == null) {
-      log.error("{}/{}: Error opening device pressure measurement cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+      log.error("{}: Error opening device pressure measurement cluster", getEndpointEntity());
       return false;
     }
 
@@ -105,8 +106,8 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeBaseChannelConvert
 
   @Override
   public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-    if (endpoint.getInputCluster(ZclPressureMeasurementCluster.CLUSTER_ID) == null) {
-      log.trace("{}/{}: Pressure measurement cluster not found", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+    if (getInputCluster(ZclPressureMeasurementCluster.CLUSTER_ID) == null) {
+      log.trace("{}: Pressure measurement cluster not found", getEndpointEntity());
       return false;
     }
     return true;
@@ -114,7 +115,7 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeBaseChannelConvert
 
   @Override
   public synchronized void attributeUpdated(ZclAttribute attribute, Object value) {
-    log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
+    log.debug("{}: ZigBee attribute reports {}", getEndpointEntity(), attribute);
     if (attribute.getClusterType() != ZclClusterType.PRESSURE_MEASUREMENT) {
       return;
     }
@@ -156,6 +157,10 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeBaseChannelConvert
   }
 
   private Integer getScale(ZclCluster zclCluster) {
-    return (Integer) readAttribute(zclCluster, ATTR_SCALE);
+    return (Integer) zclCluster.getAttribute(ATTR_SCALE).readValue(Long.MAX_VALUE);
+  }
+
+  private Object readAttribute(ZclCluster zclCluster, int attributeID, long refreshPeriod) {
+    return zclCluster.getAttribute(attributeID).readValue(refreshPeriod);
   }
 }

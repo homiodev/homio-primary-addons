@@ -29,7 +29,7 @@ import org.touchhome.bundle.api.state.StringType;
  * </ul>
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:battery_alarm", clientClusters = {ZclPowerConfigurationCluster.CLUSTER_ID})
+@ZigBeeConverter(name = "zigbee:battery_alarm", clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
 public class ZigBeeConverterBatteryAlarm extends ZigBeeInputBaseConverter {
 
   public static final String STATE_OPTION_BATTERY_THRESHOLD_1 = "threshold1";
@@ -55,8 +55,8 @@ public class ZigBeeConverterBatteryAlarm extends ZigBeeInputBaseConverter {
   @Override
   protected boolean initializeDeviceFailed() {
     pollingPeriod = BATTERY_ALARM_POLLING_PERIOD;
-    log.debug("{}/{}: Could not bind to the power configuration cluster; polling battery alarm state every {} seconds",
-        endpoint.getIeeeAddress(), endpoint.getEndpointId(), BATTERY_ALARM_POLLING_PERIOD);
+    log.debug("{}: Could not bind to the power configuration cluster; polling battery alarm state every {} seconds",
+        getEndpointEntity(), BATTERY_ALARM_POLLING_PERIOD);
     return false;
   }
 
@@ -64,11 +64,11 @@ public class ZigBeeConverterBatteryAlarm extends ZigBeeInputBaseConverter {
   protected boolean acceptEndpointExtra(ZclCluster cluster) {
     try {
       if (!cluster.discoverAttributes(false).get() && !cluster.isAttributeSupported(ATTR_BATTERYALARMSTATE)) {
-        log.trace("{}/{}: Power configuration cluster battery alarm state not supported", endpoint.getIeeeAddress(), endpoint.getEndpointId());
+        log.trace("{}: Power configuration cluster battery alarm state not supported", getEndpointEntity());
         return false;
       }
     } catch (InterruptedException | ExecutionException e) {
-      log.warn("{}/{}: Exception discovering attributes in power configuration cluster", endpoint.getIeeeAddress(), endpoint.getEndpointId(), e);
+      log.warn("{}: Exception discovering attributes in power configuration cluster {}", getEndpointEntity(), e);
       return false;
     }
     return true;
@@ -76,7 +76,7 @@ public class ZigBeeConverterBatteryAlarm extends ZigBeeInputBaseConverter {
 
   @Override
   protected void updateValue(Object val, ZclAttribute attribute) {
-    log.debug("{}/{}: ZigBee attribute reports {}", endpoint.getIeeeAddress(), endpoint.getEndpointId(), attribute);
+    log.debug("{}: ZigBee attribute reports {}", getEndpointEntity(), attribute);
 
     // The value is a 32-bit bitmap, represented by an Integer
     Integer value = (Integer) val;
