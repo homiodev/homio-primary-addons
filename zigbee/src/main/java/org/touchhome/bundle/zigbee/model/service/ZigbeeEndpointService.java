@@ -11,19 +11,19 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
+import org.touchhome.bundle.api.service.EntityService.ServiceInstance;
 import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.zigbee.ZigBeeDevice;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 
 @Log4j2
 @Getter
-public class ZigbeeEndpointService {
+public class ZigbeeEndpointService implements ServiceInstance<ZigBeeEndpointEntity> {
 
   private final EntityContext entityContext;
   private final ZigBeeBaseChannelConverter channel;
-  private final ZigBeeDevice zigBeeDevice;
+  private final ZigBeeDeviceService zigBeeDeviceService;
   private final ZigbeeCoordinatorEntity coordinator;
   // node local endpoint id
   private final int localEndpointId;
@@ -36,8 +36,7 @@ public class ZigbeeEndpointService {
   @Setter
   private ZigBeeEndpoint zigBeeEndpoint;
 
-  @Setter
-  private ZigBeeEndpointEntity zigBeeEndpointEntity;
+  private ZigBeeEndpointEntity entity;
 
   // TODO: NEED HANDLE into properties!
   @Setter
@@ -45,18 +44,20 @@ public class ZigbeeEndpointService {
   private List<Object> configOptions;
 
   private State lastState;
+  private long lastStateTimestamp;
 
   public void updateValue(State state) {
     this.lastState = state;
+    this.lastStateTimestamp = System.currentTimeMillis();
     if (coordinator.isLogEvents()) {
-      log.info("ZigBee <{}>, event: {}", zigBeeEndpointEntity.getEndpointUUID(), state);
+      log.info("ZigBee <{}>, event: {}", entity.getEndpointUUID(), state);
     }
     if (variableId != null) {
       entityContext.var().set(variableId, state);
     }
 
-    entityContext.event().fireEvent(zigBeeEndpointEntity.getIeeeAddress(), state);
-    entityContext.event().fireEvent(zigBeeEndpointEntity.getEndpointUUID().asKey(), state);
+    entityContext.event().fireEvent(entity.getIeeeAddress(), state);
+    entityContext.event().fireEvent(entity.getEndpointUUID().asKey(), state);
 
     for (Consumer<State> listener : valueUpdateListeners.values()) {
       listener.accept(state);
@@ -64,21 +65,27 @@ public class ZigbeeEndpointService {
   }
 
   public ZigbeeEndpointService(EntityContext entityContext, ZigBeeBaseChannelConverter channel,
-      ZigBeeDevice zigBeeDevice, ZigBeeEndpointEntity zigBeeEndpointEntity,
+      ZigBeeDeviceService zigBeeDeviceService, ZigBeeEndpointEntity entity,
       ZigbeeCoordinatorEntity coordinator,
       int localEndpointId, IeeeAddress localIpAddress) {
     this.entityContext = entityContext;
     this.channel = channel;
-    this.zigBeeDevice = zigBeeDevice;
+    this.zigBeeDeviceService = zigBeeDeviceService;
     this.coordinator = coordinator;
     this.localEndpointId = localEndpointId;
     this.localIpAddress = localIpAddress;
 
     if (channel.getAnnotation().linkType() != VariableType.Any) {
-      String varId = zigBeeEndpointEntity.getEndpointUUID().asKey();
+      String varId = entity.getEndpointUUID().asKey();
       this.variableId = entityContext.var().createVariable("zigbee", varId, varId, channel.getAnnotation().linkType());
     } else {
       this.variableId = null;
     }
+  }
+
+  @Override
+  public void entityUpdated(ZigBeeEndpointEntity entity) {
+    this.entity = entity;
+    this.channel.updateConfiguration();
   }
 }

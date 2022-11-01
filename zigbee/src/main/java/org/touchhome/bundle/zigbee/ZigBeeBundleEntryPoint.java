@@ -16,12 +16,13 @@ public class ZigBeeBundleEntryPoint implements BundleEntryPoint {
 
   @Override
   public void init() {
-    entityContext.var().createGroup("zigbee", "ZigBee");
+    entityContext.ui().registerConsolePluginName("ZIGBEE");
+    entityContext.var().createGroup("zigbee", "ZigBee", true);
 
     // lister start/stop status and any changes that require restart camera handler
     entityContext.bgp().builder("zigbee-init").execute(() -> {
       for (ZigbeeCoordinatorEntity coordinator : entityContext.findAll(ZigbeeCoordinatorEntity.class)) {
-        coordinator.initialize();
+        coordinator.getService().entityUpdated(coordinator);
       }
     });
 

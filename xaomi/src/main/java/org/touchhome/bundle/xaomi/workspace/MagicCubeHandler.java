@@ -6,7 +6,6 @@ import java.util.function.BiPredicate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.zigbee.workspace.ScratchDeviceState;
 
 final class MagicCubeHandler {
 
@@ -24,7 +23,7 @@ final class MagicCubeHandler {
 
     private final BiPredicate<Integer, State> matcher;
 
-    static MagicCubeEvent getValue(ScratchDeviceState state) {
+    /*static MagicCubeEvent getValue(ScratchDeviceState state) {
       int clusterID = state.getUuid().getClusterId();
       for (MagicCubeEvent magicCubeEvent : MagicCubeEvent.values()) {
         if (magicCubeEvent.matcher.test(clusterID, state.getState())) {
@@ -32,7 +31,7 @@ final class MagicCubeHandler {
         }
       }
       return null;
-    }
+    }*/
 
     public static MagicCubeEvent getEvent(String name) {
       for (MagicCubeEvent magicCubeEvent : MagicCubeEvent.values()) {
@@ -103,7 +102,7 @@ final class MagicCubeHandler {
     }
   }
 
-  public static class CubeValueDescriptor {
+  /*public static class CubeValueDescriptor {
 
     private final MagicCubeEvent magicCubeEvent;
     private final TapSide tapSide;
@@ -143,5 +142,5 @@ final class MagicCubeHandler {
       }
       return magicCubeEvent.name();
     }
-  }
+  }*/
 }

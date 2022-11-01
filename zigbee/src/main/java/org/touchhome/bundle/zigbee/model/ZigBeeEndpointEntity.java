@@ -57,7 +57,7 @@ public class ZigBeeEndpointEntity extends BaseEntity<ZigBeeEndpointEntity>
 
   @Lob
   @Getter
-  @Column(length = 10_000)
+  @Column(length = 1000)
   @Convert(converter = JSONObjectConverter.class)
   private JSONObject jsonData = new JSONObject();
 
@@ -102,17 +102,6 @@ public class ZigBeeEndpointEntity extends BaseEntity<ZigBeeEndpointEntity>
   @JsonIgnore
   public Date getUpdateTime() {
     return super.getUpdateTime();
-  }
-
-  @Override
-  public void afterUpdate(EntityContext entityContext) {
-    try {
-      ZigbeeEndpointService zigbeeEndpointService = getService();
-      zigbeeEndpointService.setZigBeeEndpointEntity(this);
-      zigbeeEndpointService.getChannel().updateConfiguration();
-    } catch (Exception ignore) { // in case if getService return null, etc...
-
-    }
   }
 
   @Override

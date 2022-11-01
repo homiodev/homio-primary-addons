@@ -13,31 +13,39 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
 import org.touchhome.bundle.api.entity.types.MicroControllerBaseEntity;
+import org.touchhome.bundle.api.exception.ProhibitedExecution;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.ui.UISidebarChildren;
 import org.touchhome.bundle.api.ui.field.UIField;
+import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
 import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldDevicePortSelection;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldStaticSelection;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldTreeNodeSelection;
-import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
-import org.touchhome.bundle.zigbee.handler.CC2531Handler;
+import org.touchhome.bundle.zigbee.handler.CC2531Service;
+import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
 
 @Log4j2
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#D46A06")
 public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoordinatorEntity>
-    implements EntityService<ZigBeeCoordinatorHandler, ZigbeeCoordinatorEntity> {
+    implements EntityService<ZigBeeCoordinatorService, ZigbeeCoordinatorEntity> {
 
   public static final String PREFIX = "zbc_";
+
+  @Override
+  @UIFieldIgnore
+  @JsonIgnore
+  public String getPlace() {
+    throw new ProhibitedExecution();
+  }
 
   @Getter
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "coordinatorEntity", cascade = CascadeType.REMOVE)
@@ -46,16 +54,6 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
   @Override
   public String getDefaultName() {
     return "ZigBee";
-  }
-
-  @Override
-  public void afterFetch(EntityContext entityContext) {
-    super.afterFetch(entityContext);
-  }
-
-  @Override
-  protected void beforeDelete() {
-    super.beforeDelete();
   }
 
   @Override
@@ -117,11 +115,11 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
 
   @UIField(order = 70)
   @RestartHandlerOnChange
-  public ZigbeeCoordinator getHandler() {
+  public ZigbeeCoordinator getCoordinatorHandler() {
     return getJsonDataEnum("ch", ZigbeeCoordinator.CC2531Handler);
   }
 
-  public ZigbeeCoordinatorEntity setHandler(ZigbeeCoordinator zigbeeCoordinator) {
+  public ZigbeeCoordinatorEntity setCoordinatorHandler(ZigbeeCoordinator zigbeeCoordinator) {
     setJsonDataEnum("ch", zigbeeCoordinator);
     return this;
   }
@@ -278,38 +276,20 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     return ActionResponseModel.showSuccess("SUCCESS");
   }
 
-  public void initialize() {
-    log.info("Starting Zigbee: <{}>", getTitle());
-    ZigBeeCoordinatorHandler coordinatorHandler = getService();
-    coordinatorHandler.dispose("");
-
-    if (StringUtils.isEmpty(getPort())) {
-      setStatusError("No zigbee coordinator port selected");
-      return;
+  @Override
+  public void logChangeStatus(Status status, String message) {
+    Level level = status == Status.ERROR ? Level.ERROR : Level.INFO;
+    if (StringUtils.isEmpty(message)) {
+      log.log(level, "Set ZigBee coordinator status: {}", status);
+    } else {
+      log.log(level, "Set ZigBee coordinator status: {}. Msg: {}", status, message);
     }
-
-    coordinatorHandler.setCoordinator(this);
-    log.info("Done init Zigbee: <{}>", getTitle());
   }
 
+  // do not change Status on create service
   @Override
-  public ZigbeeCoordinatorEntity setStatus(@NotNull Status status, @Nullable String msg) {
-    log.log(status == Status.ERROR ? Level.ERROR : Level.INFO, "Zigbee status: {}. Msg: {}", status, msg);
-    return super.setStatus(status, msg);
-  }
-
-  @Override
-  public void afterUpdate(EntityContext entityContext) {
-    ZigBeeCoordinatorHandler coordinatorHandler = getService();
-    if (isStart()) {
-      if (!coordinatorHandler.isInitialized()) {
-        initialize();
-      } else {
-        coordinatorHandler.restartIfRequire(this);
-      }
-    } else if (coordinatorHandler.isInitialized()) {
-      coordinatorHandler.dispose("stopped");
-    }
+  public @Nullable Status getSuccessServiceStatus() {
+    return null;
   }
 
   @JsonIgnore
@@ -318,29 +298,29 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
   }
 
   @Override
-  public Class<ZigBeeCoordinatorHandler> getEntityServiceItemClass() {
-    return ZigBeeCoordinatorHandler.class;
+  public Class<ZigBeeCoordinatorService> getEntityServiceItemClass() {
+    return ZigBeeCoordinatorService.class;
   }
 
   @Override
-  public ZigBeeCoordinatorHandler createService(EntityContext entityContext) {
-    return getHandler().coordinatorSupplier.apply(entityContext);
+  public ZigBeeCoordinatorService createService(EntityContext entityContext) {
+    return getCoordinatorHandler().coordinatorSupplier.apply(entityContext);
   }
 
   @Override
-  public void testService(ZigBeeCoordinatorHandler service) {
+  public void testService(ZigBeeCoordinatorService service) {
 
   }
 
   @Override
   public Object[] getServiceParams() {
-    return new Object[]{getHandler().name()};
+    return new Object[]{getCoordinatorHandler().name()};
   }
 
   @RequiredArgsConstructor
   private enum ZigbeeCoordinator {
-    CC2531Handler(entityContext -> new CC2531Handler(entityContext));
+    CC2531Handler(entityContext -> new CC2531Service(entityContext));
 
-    private final Function<EntityContext, ZigBeeCoordinatorHandler> coordinatorSupplier;
+    private final Function<EntityContext, ZigBeeCoordinatorService> coordinatorSupplier;
   }
 }

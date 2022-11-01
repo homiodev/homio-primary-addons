@@ -12,13 +12,13 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.port.PortFlowControl;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
-import org.touchhome.bundle.zigbee.ZigBeeCoordinatorHandler;
+import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
 import org.touchhome.bundle.zigbee.internal.ZigBeeSerialPort;
 
 @Log4j2
-public class CC2531Handler extends ZigBeeCoordinatorHandler {
+public class CC2531Service extends ZigBeeCoordinatorService {
 
-  public CC2531Handler(EntityContext entityContext) {
+  public CC2531Service(EntityContext entityContext) {
     super(entityContext);
   }
 
@@ -41,14 +41,14 @@ public class CC2531Handler extends ZigBeeCoordinatorHandler {
     ZigBeeSerialPort serialPort = new ZigBeeSerialPort(
         "cc2531",
         entityContext,
-        TouchHomeUtils.getSerialPort(getCoordinator().getPort()),
-        getCoordinator().getPortBaud(),
+        TouchHomeUtils.getSerialPort(getEntity().getPort()),
+        getEntity().getPortBaud(),
         PortFlowControl.FLOWCONTROL_OUT_RTSCTS,
-        () -> getCoordinator().setStatus(Status.ERROR, "PORT_COMMUNICATION_ERROR"),
+        () -> getEntity().setStatus(Status.ERROR, "PORT_COMMUNICATION_ERROR"),
         (port -> {
-          if (!getCoordinator().getPort().equals(port.getSystemPortName())) {
-            getCoordinator().setPort(port.getSystemPortName());
-            entityContext.save(getCoordinator(), false);
+          if (!getEntity().getPort().equals(port.getSystemPortName())) {
+            getEntity().setPort(port.getSystemPortName());
+            entityContext.save(getEntity(), false);
           }
         }));
     return new ZigBeeDongleTiCc2531(serialPort);

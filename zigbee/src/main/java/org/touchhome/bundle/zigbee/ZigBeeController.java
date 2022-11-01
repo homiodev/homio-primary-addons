@@ -86,7 +86,7 @@ public class ZigBeeController {
     List<OptionModel> list = new ArrayList<>();
     for (ZigbeeCoordinatorEntity coordinator : entityContext.findAll(ZigbeeCoordinatorEntity.class)) {
       for (ZigBeeDeviceEntity zigBeeDevice : coordinator.getOnlineDevices()) {
-        String deviceMI = zigBeeDevice.getModel();
+        String deviceMI = zigBeeDevice.getModelIdentifier();
         if (deviceMI != null && deviceMI.startsWith(modelIdentifier)) {
           list.add(OptionModel.of(coordinator.getEntityID() + ":" + zigBeeDevice.getIeeeAddress(),
               zigBeeDevice.getTitle()));

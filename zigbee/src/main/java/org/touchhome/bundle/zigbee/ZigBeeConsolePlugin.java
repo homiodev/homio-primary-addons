@@ -49,21 +49,29 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
   }
 
   @Override
+  public String getParentTab() {
+    return "ZIGBEE";
+  }
+
+  @Override
+  public boolean hasRefreshIntervalSetting() {
+    return true;
+  }
+
+  @Override
   public Collection<ZigBeeConsoleDescription> getValue() {
     List<ZigBeeConsoleDescription> res = new ArrayList<>();
-    for (ZigBeeDeviceEntity device : coordinator.getDevices()) {
-      ZigBeeNodeDescription desc = device.getZigBeeDevice().getZigBeeNodeDescription();
+    for (ZigBeeDeviceEntity entity : coordinator.getDevices()) {
       res.add(new ZigBeeConsoleDescription(
-          device.getName(),
-          device.getIeeeAddress(),
-          device.getStatus(),
-          device.getStatusMessage(),
-          device.getModel(),
-          desc.getFetchInfoStatus(),
-          !device.getEndpoints().isEmpty(),
-          device.getZigBeeDevice().getZigBeeNodeDescription().isNodeInitialized(),
-          desc.getLastUpdateTime(),
-          device.getEntityID()
+          entity.getName(),
+          entity.getIeeeAddress(),
+          entity.getStatus(),
+          entity.getStatusMessage(),
+          entity.getModelIdentifier(),
+          entity.getFetchInfoStatus(),
+          !entity.getEndpoints().isEmpty(),
+          entity.getNodeLastUpdateTime(),
+          entity.getEntityID()
       ));
     }
     return res;
@@ -103,15 +111,11 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
     private String model;
 
     @UIField(order = 5)
-    private ZigBeeNodeDescription.FetchInfoStatus fetchInfoStatus;
+    private Status fetchInfoStatus;
 
     @UIField(order = 6)
     @UIFieldColorBooleanMatch
     private boolean channelsInitialized;
-
-    @UIField(order = 7)
-    @UIFieldColorBooleanMatch
-    private boolean initialized;
 
     @UIField(order = 8)
     private Date lastUpdate;
@@ -123,24 +127,19 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
       return zigBeeDeviceEntity.initializeZigBeeNode();
     }
 
-    @UIContextMenuAction("ACTION.SHOW_NODE_DESCRIPTION")
-    public ActionResponseModel showNodeDescription(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-      return ActionResponseModel.showJson("Zigbee node description", zigBeeDeviceEntity.getZigBeeNodeDescription());
-    }
-
     @UIContextMenuAction("ACTION.REDISCOVERY")
     public ActionResponseModel rediscoveryNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
       return zigBeeDeviceEntity.rediscoveryNode();
     }
 
     @UIContextMenuAction("ACTION.PERMIT_JOIN")
-    public ActionResponseModel permitJoin(ZigBeeDeviceEntity zigBeeDeviceEntity, EntityContext entityContext) {
+    public ActionResponseModel permitJoin(ZigBeeDeviceEntity zigBeeDeviceEntity) {
       return zigBeeDeviceEntity.permitJoin();
     }
 
     @UIContextMenuAction("ACTION.ZIGBEE_PULL_CHANNELS")
-    public ActionResponseModel pullChannels(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-      return zigBeeDeviceEntity.pullChannels();
+    public ActionResponseModel pullChannels(ZigBeeDeviceEntity zigBeeDeviceEntity, EntityContext entityContext) {
+      return zigBeeDeviceEntity.pullChannels(entityContext);
     }
   }
 }

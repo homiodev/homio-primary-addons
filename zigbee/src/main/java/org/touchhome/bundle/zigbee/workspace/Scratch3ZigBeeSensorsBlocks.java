@@ -20,6 +20,7 @@ import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
+import org.touchhome.bundle.api.workspace.scratch.MenuBlock.ServerMenuBlock;
 import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
 import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasFireIndicator;
@@ -137,48 +138,46 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
   }
 
   private State waterSensorValueEval(WorkspaceBlock workspaceBlock) {
-    return fetchState(Scratch3ZigBeeBlocks.fetchValueFromDevice(workspaceBlock,
-        ZclIasZoneCluster.CLUSTER_ID, ZigBeeConverterIasWaterSensor.CLUSTER_NAME, WATER_SENSOR, waterSensorMenu));
+    return getEndpointState(workspaceBlock, WATER_SENSOR, waterSensorMenu, ZclIasZoneCluster.CLUSTER_ID, ZigBeeConverterIasWaterSensor.CLUSTER_NAME);
   }
 
   private State smokeSensorValueEval(WorkspaceBlock workspaceBlock) {
-    return fetchState(Scratch3ZigBeeBlocks.fetchValueFromDevice(workspaceBlock,
-        ZclIasZoneCluster.CLUSTER_ID, ZigBeeConverterIasFireIndicator.CLUSTER_NAME, SMOKE_SENSOR, smokeSensorMenu));
+    return getEndpointState(workspaceBlock, SMOKE_SENSOR, smokeSensorMenu, ZclIasZoneCluster.CLUSTER_ID, ZigBeeConverterIasFireIndicator.CLUSTER_NAME);
   }
 
-  private ScratchDeviceState fetchValueFromDevice(WorkspaceBlock workspaceBlock, int clustersId, String sensor,
+  private State getEndpointState(WorkspaceBlock workspaceBlock, String key, ServerMenuBlock menuBlock, int clusterId, String clusterName) {
+    return fetchState(getZigBeeDevice(workspaceBlock, key, menuBlock).filterEndpoints(clusterId));
+  }
+
+  /*private ScratchDeviceState fetchValueFromDevice(WorkspaceBlock workspaceBlock, int clustersId, String sensor,
       MenuBlock.ServerMenuBlock menuBlock) {
     return Scratch3ZigBeeBlocks.fetchValueFromDevice(workspaceBlock, new Integer[]{clustersId}, sensor, menuBlock);
-  }
+  }*/
 
   private State motionDetectedEvaluate(WorkspaceBlock workspaceBlock) {
-    ScratchDeviceState scratchDeviceState =
+    /*ScratchDeviceState scratchDeviceState =
         fetchValueFromDevice(workspaceBlock, ZclOccupancySensingCluster.CLUSTER_ID, OCCUPANCY_SENSOR,
             occupancySensorMenu);
     if (scratchDeviceState != null && !scratchDeviceState.isHandled()) {
       scratchDeviceState.setHandled(true);
       return OnOffType.of(true);
-    }
+    }*/
     return OnOffType.of(false);
   }
 
   private State humidityValueEvaluate(WorkspaceBlock workspaceBlock) {
-    return fetchState(fetchValueFromDevice(workspaceBlock, ZclRelativeHumidityMeasurementCluster.CLUSTER_ID, HUMIDITY_SENSOR,
-        humiditySensorMenu));
+    return getEndpointState(workspaceBlock, HUMIDITY_SENSOR, humiditySensorMenu, ZclRelativeHumidityMeasurementCluster.CLUSTER_ID, null);
   }
 
   private State pressureValueEvaluate(WorkspaceBlock workspaceBlock) {
-    return fetchState(fetchValueFromDevice(workspaceBlock, ZclPressureMeasurementCluster.CLUSTER_ID, PRESSURE_SENSOR,
-        pressureSensorMenu));
+    return getEndpointState(workspaceBlock, PRESSURE_SENSOR, pressureSensorMenu, ZclPressureMeasurementCluster.CLUSTER_ID, null);
   }
 
   private State temperatureValueEvaluate(WorkspaceBlock workspaceBlock) {
-    return fetchState(fetchValueFromDevice(workspaceBlock, ZclTemperatureMeasurementCluster.CLUSTER_ID, TEMPERATURE_SENSOR,
-        temperatureSensorMenu));
+    return getEndpointState(workspaceBlock, TEMPERATURE_SENSOR, temperatureSensorMenu, ZclTemperatureMeasurementCluster.CLUSTER_ID, null);
   }
 
   private State illuminanceValueEvaluate(WorkspaceBlock workspaceBlock) {
-    return fetchState(fetchValueFromDevice(workspaceBlock, ZclIlluminanceMeasurementCluster.CLUSTER_ID, ILLUMINANCE_SENSOR,
-        illuminanceSensorMenu));
+    return getEndpointState(workspaceBlock, ILLUMINANCE_SENSOR, illuminanceSensorMenu, ZclIlluminanceMeasurementCluster.CLUSTER_ID, null);
   }
 }

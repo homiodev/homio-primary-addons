@@ -22,11 +22,9 @@ import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
-import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
-import org.touchhome.bundle.zigbee.ZigBeeNodeDescription;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
+import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.common.util.CommonUtils;
 
 @Getter
@@ -122,14 +120,8 @@ final class Scratch3ZigBeeButtonsBlocks extends Scratch3ZigBeeExtensionBlocks {
       ZigBeeDeviceEntity zigBeeDeviceEntity, Integer buttonEndpointValue) {
     ZclOnOffCommand zclOnOffCommand = CommonUtils.newInstance(buttonFireSignal.zclOnOffCommand);
     workspaceBlock.logInfo("Switch button {}", zclOnOffCommand.getClass().getSimpleName());
-    ZigBeeNodeDescription zigBeeNodeDescription = zigBeeDeviceEntity.getZigBeeNodeDescription();
 
-    if (zigBeeNodeDescription == null) {
-      workspaceBlock.logErrorAndThrow("Unable to switch button. Node not discovered");
-      return;
-    }
-
-    List<ZigBeeEndpointEntity> onOffEndpoints = zigBeeDeviceEntity.getEndpoints(ZclOnOffCluster.CLUSTER_ID);
+    List<ZigBeeEndpointEntity> onOffEndpoints = zigBeeDeviceEntity.filterEndpoints(ZclOnOffCluster.CLUSTER_ID);
 
     if (onOffEndpoints.isEmpty()) {
       workspaceBlock.logErrorAndThrow("Unable to find endpoints with On/Off ability for device: " + zigBeeDeviceEntity);

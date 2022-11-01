@@ -13,10 +13,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.requireEndpoint.DeviceDefinition.EndpointDefinition;
 import org.touchhome.common.util.CommonUtils;
 
-public final class ZigBeeRequireEndpoints {
+public final class ZigBeeDefineEndpoints {
 
   @Getter
   private static final List<DeviceDefinition> defineEndpoints = new ArrayList<>();
@@ -68,22 +69,16 @@ public final class ZigBeeRequireEndpoints {
     return null;
   }
 
-  public static String getDeviceDefinitionImage(@NotNull String modelId) {
-    return defineEndpoints.stream().filter(c -> Objects.equals(c.getModelId(), modelId))
-        .map(DeviceDefinition::getImage).findAny().orElse(null);
-  }
-
-  /*public static DeviceDefinition findByNode(ZigBeeNodeDescription zigBeeNodeDescription) {
-    return defineEndpoints.stream().filter(c -> c.matchAllTypes(zigBeeNodeDescription.getChannels()))
-        .findAny().orElse(null);
-  }*/
-
   public static List<EndpointDefinition> getEndpointDefinitions(@NotNull String modelIdentifier) {
     return defineEndpoints.stream().filter(c -> Objects.equals(c.getModelId(), modelIdentifier))
         .map(DeviceDefinition::getEndpoints).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toList());
   }
 
-  public static List<DeviceDefinition> getDeviceDefinitionsByModel(@NotNull String modelIdentifier) {
-    return defineEndpoints.stream().filter(c -> Objects.equals(c.getModelId(), modelIdentifier)).collect(Collectors.toList());
+  public static DeviceDefinition findDeviceDefinition(ZigBeeDeviceEntity entity) {
+    if (entity.getModelIdentifier() != null) {
+      return defineEndpoints.stream().filter(c -> Objects.equals(c.getModelId(), entity.getModelIdentifier()))
+          .findAny().orElse(null);
+    }
+    return null;
   }
 }

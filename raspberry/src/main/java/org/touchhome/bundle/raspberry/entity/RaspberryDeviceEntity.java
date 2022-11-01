@@ -59,7 +59,6 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
 
   @Override
   public void afterFetch(EntityContext entityContext) {
-    super.afterFetch(entityContext);
     gatherAvailableLinks(entityContext);
   }
 

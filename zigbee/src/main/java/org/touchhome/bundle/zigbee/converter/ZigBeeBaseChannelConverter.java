@@ -15,7 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.QuantityType;
 import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.zigbee.ZigBeeDevice;
+import org.touchhome.bundle.zigbee.model.service.ZigBeeDeviceService;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
@@ -50,7 +50,7 @@ public abstract class ZigBeeBaseChannelConverter {
   private ZigbeeEndpointService endpointService;
 
   protected ZigBeeEndpointEntity getEndpointEntity() {
-    return endpointService.getZigBeeEndpointEntity();
+    return endpointService.getEntity();
   }
 
   protected ZigBeeEndpoint getEndpoint() {
@@ -80,7 +80,7 @@ public abstract class ZigBeeBaseChannelConverter {
   }
 
   /**
-   * Initialise the converter. This is called by the {@link ZigBeeDevice} when the channel is created. The converter should initialise any internal states, open any clusters, add
+   * Initialise the converter. This is called by the {@link ZigBeeDeviceService} when the channel is created. The converter should initialise any internal states, open any clusters, add
    * reporting and binding that it needs to operate.
    * <p>
    *
@@ -220,18 +220,18 @@ public abstract class ZigBeeBaseChannelConverter {
       return false;
     }
     ZigBeeBaseChannelConverter that = (ZigBeeBaseChannelConverter) o;
-    return Objects.equals(endpointService.getZigBeeEndpointEntity().getEndpointUUID(),
-        that.endpointService.getZigBeeEndpointEntity().getEndpointUUID());
+    return Objects.equals(endpointService.getEntity().getEndpointUUID(),
+        that.endpointService.getEntity().getEndpointUUID());
   }
 
   @Override
   public int hashCode() {
-    return endpointService.getZigBeeEndpointEntity().getEndpointUUID().hashCode();
+    return endpointService.getEntity().getEndpointUUID().hashCode();
   }
 
   // Configure reporting
   protected void updateServerPoolingPeriod(ZclCluster serverCluster, int attributeId, boolean isUpdate) {
-    ZigBeeEndpointEntity zbe = endpointService.getZigBeeEndpointEntity();
+    ZigBeeEndpointEntity zbe = endpointService.getEntity();
     try {
       CommandResult reportingResponse = serverCluster.setReporting(attributeId, zbe.getReportingTimeMin(),
           zbe.getReportingTimeMax(), zbe.getReportingChange()).get();
