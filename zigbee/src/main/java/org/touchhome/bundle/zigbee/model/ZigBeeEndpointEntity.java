@@ -23,7 +23,7 @@ import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
 import org.touchhome.bundle.api.ui.field.UIFieldNumber;
-import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
+import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
 import org.touchhome.common.util.Lang;
 
@@ -31,8 +31,8 @@ import org.touchhome.common.util.Lang;
 @Setter
 @Getter
 @Accessors(chain = true)
-public class ZigBeeDeviceEndpoint extends BaseEntity<ZigBeeDeviceEndpoint>
-    implements HasJsonData, HasStatusAndMsg<ZigBeeDeviceEndpoint>, EntityService<ZigbeeEndpointService, ZigBeeDeviceEndpoint> {
+public class ZigBeeEndpointEntity extends BaseEntity<ZigBeeEndpointEntity>
+    implements HasJsonData, HasStatusAndMsg<ZigBeeEndpointEntity>, EntityService<ZigbeeEndpointService, ZigBeeEndpointEntity> {
 
   public static final String PREFIX = "zbe_";
 
@@ -40,6 +40,11 @@ public class ZigBeeDeviceEndpoint extends BaseEntity<ZigBeeDeviceEndpoint>
   private String ieeeAddress;
   private int clusterId;
   private int endpointId;
+
+  @Override
+  public ZigBeeEndpointEntity setName(String name) {
+    return super.setName(name);
+  }
 
   @ManyToOne(fetch = FetchType.LAZY)
   private ZigBeeDeviceEntity zigBeeDeviceEntity;
@@ -103,7 +108,7 @@ public class ZigBeeDeviceEndpoint extends BaseEntity<ZigBeeDeviceEndpoint>
   public void afterUpdate(EntityContext entityContext) {
     try {
       ZigbeeEndpointService zigbeeEndpointService = getService();
-      zigbeeEndpointService.setZigBeeDeviceEndpoint(this);
+      zigbeeEndpointService.setZigBeeEndpointEntity(this);
       zigbeeEndpointService.getChannel().updateConfiguration();
     } catch (Exception ignore) { // in case if getService return null, etc...
 
@@ -140,8 +145,8 @@ public class ZigBeeDeviceEndpoint extends BaseEntity<ZigBeeDeviceEndpoint>
         '}';
   }
 
-  public ZigBeeDeviceStateUUID getEndpointUUID() {
-    return new ZigBeeDeviceStateUUID(ieeeAddress, clusterId, endpointId, getName());
+  public ZigBeeEndpointUUID getEndpointUUID() {
+    return new ZigBeeEndpointUUID(ieeeAddress, clusterId, endpointId, getName());
   }
 
   public String getDescription() {

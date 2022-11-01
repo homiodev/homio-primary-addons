@@ -79,7 +79,6 @@
     "SHOW_NODE_DESCRIPTION": "Show node description",
     "INITIALIZE_ZIGBEE_NODE": "Initialize ZigBee node",
     "ZIGBEE_PULL_CHANNELS": "Pull channels",
-    "SHOW_LAST_VALUES": "Show last values",
     "RESPONSE": {
       "NODE_INITIALIZATION_STARTED": "Node initialization started",
       "ZIGBEE_PULL_CHANNELS_STARTED": "ZigBee pull channels started"

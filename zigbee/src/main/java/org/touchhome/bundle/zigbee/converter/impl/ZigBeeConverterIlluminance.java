@@ -5,14 +5,15 @@ import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.ILLUMINANCE_M
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIlluminanceMeasurementCluster;
 import java.math.BigDecimal;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
+
 
 /**
  * Indicates the current illuminance in lux
  * Converter for the illuminance channel
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:measurement_illuminance", linkType = DeviceChannelLinkType.Float,
+@ZigBeeConverter(name = "zigbee:measurement_illuminance", linkType = VariableType.Float,
     clientCluster = ZclIlluminanceMeasurementCluster.CLUSTER_ID, category = "Illuminance")
 public class ZigBeeConverterIlluminance extends ZigBeeInputBaseConverter {
 

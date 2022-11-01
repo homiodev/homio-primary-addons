@@ -34,7 +34,7 @@ import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.config.ZclLevelControlConfig;
-import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEndpoint;
+import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 /**
  * Sets the level of the light Level control converter uses both the {@link ZclLevelControlCluster} and the {@link ZclOnOffCluster}.
@@ -88,7 +88,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
 
   private boolean initializeDeviceServer() {
     ZclLevelControlCluster serverClusterLevelControl = getInputCluster(ZclLevelControlCluster.CLUSTER_ID);
-    ZigBeeDeviceEndpoint endpointEntity = getEndpointEntity();
+    ZigBeeEndpointEntity endpointEntity = getEndpointEntity();
     if (serverClusterLevelControl == null) {
       log.trace("{}: Error opening device level controls", endpointEntity);
       return false;

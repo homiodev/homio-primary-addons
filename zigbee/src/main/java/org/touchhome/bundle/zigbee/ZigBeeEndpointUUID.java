@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
-public class ZigBeeDeviceStateUUID {
+public class ZigBeeEndpointUUID {
 
   private final String ieeeAddress;
   private final Integer clusterId;
@@ -17,15 +17,15 @@ public class ZigBeeDeviceStateUUID {
   @JsonIgnore
   private boolean leftSide;
 
-  public ZigBeeDeviceStateUUID(@NotNull String ieeeAddress, @NotNull Integer clusterId, Integer endpointId, String clusterName) {
+  public ZigBeeEndpointUUID(@NotNull String ieeeAddress, @NotNull Integer clusterId, Integer endpointId, String clusterName) {
     this.ieeeAddress = ieeeAddress;
     this.clusterId = clusterId;
     this.endpointId = endpointId;
     this.clusterName = clusterName;
   }
 
-  public static ZigBeeDeviceStateUUID require(String ieeeAddress, int clusterId, Integer endpoint, String clusterName) {
-    ZigBeeDeviceStateUUID uuid = new ZigBeeDeviceStateUUID(ieeeAddress, clusterId, endpoint, clusterName);
+  public static ZigBeeEndpointUUID require(String ieeeAddress, int clusterId, Integer endpoint, String clusterName) {
+    ZigBeeEndpointUUID uuid = new ZigBeeEndpointUUID(ieeeAddress, clusterId, endpoint, clusterName);
     uuid.leftSide = true;
     return uuid;
   }
@@ -38,13 +38,13 @@ public class ZigBeeDeviceStateUUID {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ZigBeeDeviceStateUUID that = (ZigBeeDeviceStateUUID) o;
+    ZigBeeEndpointUUID that = (ZigBeeEndpointUUID) o;
     if (!Objects.equals(ieeeAddress, that.ieeeAddress) || !Objects.equals(clusterId, that.clusterId)) {
       return false;
     }
 
-    ZigBeeDeviceStateUUID left = this.leftSide ? this : that;
-    ZigBeeDeviceStateUUID right = this.leftSide ? that : that;
+    ZigBeeEndpointUUID left = this.leftSide ? this : that;
+    ZigBeeEndpointUUID right = this.leftSide ? that : that;
 
     if (left.endpointId != null && !left.endpointId.equals(right.endpointId)) {
       return false;

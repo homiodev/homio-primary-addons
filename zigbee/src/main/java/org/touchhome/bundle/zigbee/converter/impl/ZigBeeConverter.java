@@ -4,7 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -28,7 +28,7 @@ public @interface ZigBeeConverter {
 
   String name();
 
-  DeviceChannelLinkType linkType() default DeviceChannelLinkType.None;
+  VariableType linkType() default VariableType.Any; // Any mean NONE!
 
   String category();
 }

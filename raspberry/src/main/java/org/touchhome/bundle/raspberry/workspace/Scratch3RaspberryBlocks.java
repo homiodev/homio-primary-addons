@@ -51,9 +51,8 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
 
     this.ds18b20Menu = menuServer("ds18b20Menu", "rest/raspberry/DS18B20", "DS18B20");
 
-    of(blockCommand(0, "set_gpio", "Set [ONOFF] to pin [PIN] of [RPI]", this::writePin, block -> {
-      block.addArgument("ONOFF", this.onOffMenu);
-    }), this.allPinMenu);
+    of(blockCommand(0, "set_gpio", "Set [ONOFF] to pin [PIN] of [RPI]", this::writePin, block ->
+        block.addArgument("ONOFF", this.onOffMenu)), this.allPinMenu);
 
     of(blockCommand(0, "set_pwm_gpio", "Set  pwm [VALUE] to pin [PIN] of [RPI]",
         this::writePwmPin, block -> {
@@ -62,7 +61,7 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
         }), this.pwmPinMenu);
 
     this.isGpioInState = of(blockReporter(2, "get_gpio", "[PIN] of [RPI]", this::isGpioInStateHandler, block -> {
-      block.allowLinkBoolean((varId, workspaceBlock) -> {
+      /*block.allowLinkBoolean((varId, workspaceBlock) -> {
         RaspberryGpioPin raspberryGpioPin = getPin(workspaceBlock);
         // listen from device and write to variable
         raspberryGPIOService.addGpioListener(varId, raspberryGpioPin, state -> {
@@ -77,21 +76,19 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
 
               }
             });
-      });
-      block.setLinkGenerator((varGroup, varName, parameter) ->
+      });*/
+      /* block.setLinkGenerator((varGroup, varName, parameter) ->
           block.codeGenerator("raspberry")
               .setMenu(this.allPinMenu, ((RaspberryGpioPin) parameter.get("pin")).name())
               .setMenu(this.rpiIdMenu, parameter.get("entityID"))
-              .generateBooleanLink(varGroup, varName, entityContext));
+              .generateBooleanLink(varGroup, varName, entityContext));*/
     }), this.allPinMenu);
 
-    of(blockHat(3, "when_gpio", "when [PIN] of [RPI] is [ONOFF]", this::whenGpioInState, block -> {
-      block.addArgument("ONOFF", this.onOffMenu);
-    }), this.allPinMenu);
+    of(blockHat(3, "when_gpio", "when [PIN] of [RPI] is [ONOFF]", this::whenGpioInState, block ->
+        block.addArgument("ONOFF", this.onOffMenu)), this.allPinMenu);
 
-    of(blockCommand(4, "set_pull", "set [PULL] to [PIN] of [RPI]", this::setPullStateHandler, block -> {
-      block.addArgument("PULL", this.pullMenu);
-    }), this.allPinMenu);
+    of(blockCommand(4, "set_pull", "set [PULL] to [PIN] of [RPI]", this::setPullStateHandler, block ->
+        block.addArgument("PULL", this.pullMenu)), this.allPinMenu);
 
     blockReporter(4, "DS18B20_status", "DS18B20 [DS18B20] of [RPI]", this::getDS18B20ValueHandler, block -> {
       block.addArgument("DS18B20", this.ds18b20Menu);

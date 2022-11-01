@@ -28,7 +28,6 @@ import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 import org.touchhome.bundle.zigbee.setting.header.ConsoleHeaderZigBeeDiscoveryButtonSetting;
-import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 @RequiredArgsConstructor
 public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlugin.ZigBeeConsoleDescription> {
@@ -127,12 +126,6 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
     @UIContextMenuAction("ACTION.SHOW_NODE_DESCRIPTION")
     public ActionResponseModel showNodeDescription(ZigBeeDeviceEntity zigBeeDeviceEntity) {
       return ActionResponseModel.showJson("Zigbee node description", zigBeeDeviceEntity.getZigBeeNodeDescription());
-    }
-
-    @UIContextMenuAction("ACTION.SHOW_LAST_VALUES")
-    public ActionResponseModel showLastValues(ZigBeeDeviceEntity zigBeeDeviceEntity,
-        ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener) {
-      return zigBeeDeviceEntity.showLastValues(zigBeeDeviceEntity, zigBeeDeviceUpdateValueListener);
     }
 
     @UIContextMenuAction("ACTION.REDISCOVERY")

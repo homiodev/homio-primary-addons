@@ -6,8 +6,9 @@ import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclRelativeHumidityMeasurementCluster;
 import java.math.BigDecimal;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.DecimalType;
-import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
+
 
 /**
  * Indicates the current relative humidity
@@ -15,7 +16,7 @@ import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:measurement_relativehumidity", clientCluster =
-    ZclRelativeHumidityMeasurementCluster.CLUSTER_ID, linkType = DeviceChannelLinkType.Float, category = "Humidity")
+    ZclRelativeHumidityMeasurementCluster.CLUSTER_ID, linkType = VariableType.Float, category = "Humidity")
 public class ZigBeeConverterRelativeHumidity extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterRelativeHumidity() {

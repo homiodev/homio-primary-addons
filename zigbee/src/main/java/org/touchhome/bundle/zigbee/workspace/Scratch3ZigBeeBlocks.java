@@ -17,7 +17,7 @@ import org.touchhome.bundle.api.workspace.scratch.ArgumentType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
-import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
+import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 
@@ -32,12 +32,8 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
   public static final String ZIGBEE_MODEL_URL = ZIGBEE__BASE_URL + "model/";
   public static final String ZIGBEE_ALARM_URL = ZIGBEE__BASE_URL + "alarm";
 
-  private final ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener;
-
-  public Scratch3ZigBeeBlocks(EntityContext entityContext, ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-      ZigBeeBundleEntryPoint zigBeeBundleEntryPoint) {
+  public Scratch3ZigBeeBlocks(EntityContext entityContext, ZigBeeBundleEntryPoint zigBeeBundleEntryPoint) {
     super("#6d4747", entityContext, zigBeeBundleEntryPoint, null);
-    this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
 
     // Items
     blockHat(10, "when_event_received", "when got [EVENT] event", this::whenEventReceivedHandler, block -> {
@@ -50,48 +46,26 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
     });
   }
 
-  static void linkVariable(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-      String varId, String description, WorkspaceBlock workspaceBlock, String key,
-      MenuBlock.ServerMenuBlock menuBlock) {
-    linkVariable(zigBeeDeviceUpdateValueListener, varId, description, workspaceBlock, key, menuBlock,
-        menuBlock.getClusters()[0], null);
-  }
-
-  static void linkVariable(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-      String varId, String description, WorkspaceBlock workspaceBlock, String key,
-      MenuBlock.ServerMenuBlock menuBlock, Integer clusterID, String clusterName) {
-    String ieeeAddress = workspaceBlock.getMenuValue(key, menuBlock);
-    ZigBeeDeviceStateUUID zigBeeDeviceStateUUID = ZigBeeDeviceStateUUID.require(ieeeAddress, clusterID, null, clusterName);
-    // listen from device and write to variable
-    zigBeeDeviceUpdateValueListener.addLinkListener(zigBeeDeviceStateUUID, varId, description, state -> {
-      EntityContext context = workspaceBlock.getEntityContext();
-      context.var().setIfNotMatch(varId, state.getState().floatValue());
-    });
-  }
-
-  static ScratchDeviceState fetchValueFromDevice(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-      WorkspaceBlock workspaceBlock, Integer clusterID, String clusterName,
+  static ScratchDeviceState fetchValueFromDevice(WorkspaceBlock workspaceBlock, Integer clusterID, String clusterName,
       String sensor, MenuBlock.ServerMenuBlock menuBlock) {
-    return fetchValueFromDevice(zigBeeDeviceUpdateValueListener, workspaceBlock, new Integer[]{clusterID}, clusterName,
+    return fetchValueFromDevice(workspaceBlock, new Integer[]{clusterID}, clusterName,
         sensor, menuBlock);
   }
 
-  static ScratchDeviceState fetchValueFromDevice(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-      WorkspaceBlock workspaceBlock, Integer[] clusters, String sensor,
+  static ScratchDeviceState fetchValueFromDevice(WorkspaceBlock workspaceBlock, Integer[] clusters, String sensor,
       MenuBlock.ServerMenuBlock menuBlock) {
-    return fetchValueFromDevice(zigBeeDeviceUpdateValueListener, workspaceBlock, clusters, null, sensor, menuBlock);
+    return fetchValueFromDevice(workspaceBlock, clusters, null, sensor, menuBlock);
   }
 
-  static ScratchDeviceState fetchValueFromDevice(ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-      WorkspaceBlock workspaceBlock, Integer[] clusters, String clusterName,
+  static ScratchDeviceState fetchValueFromDevice(WorkspaceBlock workspaceBlock, Integer[] clusters, String clusterName,
       String sensor, MenuBlock.ServerMenuBlock menuBlock) {
     ZigBeeDeviceEntity zigBeeDeviceEntity = getZigBeeDevice(workspaceBlock, sensor, menuBlock);
     for (Integer clusterId : clusters) {
-      ScratchDeviceState deviceState = zigBeeDeviceUpdateValueListener.getDeviceState(
-          ZigBeeDeviceStateUUID.require(zigBeeDeviceEntity.getIeeeAddress(), clusterId, null, clusterName));
+      /*TODO: ScratchDeviceState deviceState = zigBeeDeviceUpdateValueListener.getDeviceState(
+          ZigBeeEndpointUUID.require(zigBeeDeviceEntity.getIeeeAddress(), clusterId, null, clusterName));
       if (deviceState != null) {
         return deviceState;
-      }
+      }*/
     }
 
     return null;
@@ -157,11 +131,10 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
     boolean availableReceiveEvents = false;
 
     if (scratch3Block instanceof Scratch3ZigBeeBlock) {
-      for (Scratch3ZigBeeBlock.ZigBeeEventHandler eventConsumer :
-          ((Scratch3ZigBeeBlock) scratch3Block).getEventConsumers()) {
+      /*TODO: for (Scratch3ZigBeeBlock.ZigBeeEventHandler eventConsumer : ((Scratch3ZigBeeBlock) scratch3Block).getEventConsumers()) {
         availableReceiveEvents = true;
         eventConsumer.handle(ieeeAddress, endpointRef, state -> lock.signalAll());
-      }
+      }*/
     }
 
     Integer[] clusters = ((MenuBlock.ServerMenuBlock) sensorMenuBlock.getValue()).getClusters();
@@ -194,20 +167,18 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
 
     Integer[] clusters = ((MenuBlock.ServerMenuBlock) menuBlock.getValue()).getClusters();
 
-    ScratchDeviceState scratchDeviceState = fetchValueFromDevice(zigBeeDeviceUpdateValueListener,
-        workspaceEventBlock, clusters, menuBlock.getKey(), (MenuBlock.ServerMenuBlock) menuBlock.getValue());
+    ScratchDeviceState scratchDeviceState = fetchValueFromDevice(workspaceEventBlock, clusters,
+        menuBlock.getKey(), (MenuBlock.ServerMenuBlock) menuBlock.getValue());
     if (scratchDeviceState != null) {
       return new DecimalType((System.currentTimeMillis() - scratchDeviceState.getDate()) / 1000);
     }
     return new DecimalType(Long.MAX_VALUE);
   }
 
-  private void addZigBeeEventListener(String nodeIEEEAddress, Integer[] clusters, Integer endpoint,
-      Consumer<ScratchDeviceState> consumer) {
+  private void addZigBeeEventListener(String nodeIEEEAddress, Integer[] clusters, Integer endpoint, Consumer<Object> consumer) {
     for (Integer clusterId : clusters) {
-      ZigBeeDeviceStateUUID zigBeeDeviceStateUUID =
-          ZigBeeDeviceStateUUID.require(nodeIEEEAddress, clusterId, endpoint, null);
-      this.zigBeeDeviceUpdateValueListener.addListener(zigBeeDeviceStateUUID, consumer);
+      ZigBeeEndpointUUID zigBeeEndpointUUID = ZigBeeEndpointUUID.require(nodeIEEEAddress, clusterId, endpoint, null);
+      entityContext.event().addEventListener(zigBeeEndpointUUID.asKey(), consumer);
     }
   }
 

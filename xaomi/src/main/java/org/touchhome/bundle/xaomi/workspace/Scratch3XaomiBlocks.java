@@ -1,6 +1,5 @@
 package org.touchhome.bundle.xaomi.workspace;
 
-import static org.touchhome.bundle.xaomi.workspace.MagicCubeHandler.CubeValueDescriptor;
 import static org.touchhome.bundle.xaomi.workspace.MagicCubeHandler.MagicCubeEvent;
 import static org.touchhome.bundle.xaomi.workspace.MagicCubeHandler.MoveSide;
 import static org.touchhome.bundle.xaomi.workspace.MagicCubeHandler.TapSide;
@@ -18,10 +17,8 @@ import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.xaomi.XaomiEntryPoint;
-import org.touchhome.bundle.zigbee.ZigBeeDeviceStateUUID;
+import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.workspace.ScratchDeviceState;
-import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 @Getter
 @Component
@@ -33,14 +30,10 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
 
   private final MenuBlock.StaticMenuBlock cubeEventMenu;
   private final MenuBlock.ServerMenuBlock cubeSensorMenu;
-  private final ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener;
 
-  public Scratch3XaomiBlocks(EntityContext entityContext,
-      ZigBeeDeviceUpdateValueListener zigBeeDeviceUpdateValueListener,
-      XaomiEntryPoint xaomiEntryPoint) {
+  public Scratch3XaomiBlocks(EntityContext entityContext,      XaomiEntryPoint xaomiEntryPoint) {
     super("#856d21", entityContext, xaomiEntryPoint);
     setParent("zigbee");
-    this.zigBeeDeviceUpdateValueListener = zigBeeDeviceUpdateValueListener;
 
     this.cubeEventMenu = menuStatic("cubeEventMenu", MagicCubeEvent.class, MagicCubeEvent.ANY_EVENT);
     this.cubeEventMenu.subMenu(MagicCubeEvent.MOVE, MoveSide.class);
@@ -58,19 +51,16 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
       block.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
       block.addArgument(EVENT, this.cubeEventMenu);
     });
-
-    zigBeeDeviceUpdateValueListener.addDescribeHandlerByModel(CUBE_MODE_IDENTIFIER,
-        (state) -> "Magic cube <" + new CubeValueDescriptor(state) + ">", false);
   }
 
   private State cubeLastValueEvaluate(WorkspaceBlock workspaceBlock) {
     String ieeeAddress = fetchIEEEAddress(workspaceBlock);
-    ScratchDeviceState deviceState = this.zigBeeDeviceUpdateValueListener.getDeviceState(
-        ZigBeeDeviceStateUUID.require(ieeeAddress, ZclMultistateInputBasicCluster.CLUSTER_ID, null, null),
-        ZigBeeDeviceStateUUID.require(ieeeAddress, ZclAnalogInputBasicCluster.CLUSTER_ID, null, null));
+   /* TODO: ScratchDeviceState deviceState = this.zigBeeDeviceUpdateValueListener.getDeviceState(
+        ZigBeeEndpointUUID.require(ieeeAddress, ZclMultistateInputBasicCluster.CLUSTER_ID, null, null),
+        ZigBeeEndpointUUID.require(ieeeAddress, ZclAnalogInputBasicCluster.CLUSTER_ID, null, null));
     if (deviceState != null) {
       return deviceState.getState();
-    }
+    }*/
     return null;
   }
 
@@ -87,11 +77,11 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
       }
 
       BroadcastLock lock = workspaceBlock.getBroadcastLockManager().getOrCreateLock(workspaceBlock);
-      Consumer<ScratchDeviceState> consumer = sds -> {
-        CubeValueDescriptor cubeValueDescriptor = new CubeValueDescriptor(sds);
+      Consumer<Object> consumer = sds -> {
+        /* TODO: CubeValueDescriptor cubeValueDescriptor = new CubeValueDescriptor(sds);
         if (cubeValueDescriptor.match(expectedMenuValue, tapSide, moveSide)) {
           lock.signalAll();
-        }
+        }*/
       };
 
       addZigBeeEventListener(ieeeAddress, ZclMultistateInputBasicCluster.CLUSTER_ID, consumer);
@@ -110,8 +100,8 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
     return ieeeAddress;
   }
 
-  private void addZigBeeEventListener(String nodeIEEEAddress, int clusterId, Consumer<ScratchDeviceState> consumer) {
-    ZigBeeDeviceStateUUID zigBeeDeviceStateUUID = ZigBeeDeviceStateUUID.require(nodeIEEEAddress, clusterId, null, null);
-    this.zigBeeDeviceUpdateValueListener.addListener(zigBeeDeviceStateUUID, consumer);
+  private void addZigBeeEventListener(String nodeIEEEAddress, int clusterId, Consumer<Object> consumer) {
+    ZigBeeEndpointUUID zigBeeEndpointUUID = ZigBeeEndpointUUID.require(nodeIEEEAddress, clusterId, null, null);
+    entityContext.event().addEventListener(zigBeeEndpointUUID.asKey(), consumer);
   }
 }

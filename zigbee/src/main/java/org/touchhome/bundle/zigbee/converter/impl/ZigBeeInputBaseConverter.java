@@ -13,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEndpoint;
+import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -42,7 +42,7 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
 
   @Override
   public boolean initializeDevice() {
-    ZigBeeDeviceEndpoint endpointEntity = getEndpointEntity();
+    ZigBeeEndpointEntity endpointEntity = getEndpointEntity();
     log.debug("{}: Initialising {} device cluster", endpointEntity, getClass().getSimpleName());
 
     ZclCluster zclCluster = getZclClusterInternal();

@@ -24,8 +24,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.OnOffType;
-import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
+
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.config.ZclOnOffSwitchConfig;
 
@@ -34,7 +35,7 @@ import org.touchhome.bundle.zigbee.converter.impl.config.ZclOnOffSwitchConfig;
  * that is connected to a load to send status (or both!).
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:switch_onoff", linkType = DeviceChannelLinkType.Boolean,
+@ZigBeeConverter(name = "zigbee:switch_onoff", linkType = VariableType.Boolean,
     serverClusters = {ZclOnOffCluster.CLUSTER_ID}, clientCluster = ZclOnOffCluster.CLUSTER_ID, category = "Light")
 public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
     implements ZclAttributeListener, ZclCommandListener {

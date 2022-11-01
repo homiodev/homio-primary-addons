@@ -7,17 +7,17 @@ import com.zsmartsystems.zigbee.ZigBeeCommand;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclWindowCoveringCluster;
 import java.util.concurrent.Future;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 // TODO: not working
 
 /**
- * Sets the window covering level - supporting open/close and up/down type commands
- * Window Covering Lift Sets the window covering level - supporting open/close and up/down type commands
+ * Sets the window covering level - supporting open/close and up/down type commands Window Covering Lift Sets the window covering level - supporting open/close and up/down type
+ * commands
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:windowcovering_lift", category = "Blinds",
-    linkType= DeviceChannelLinkType.Boolean, clientCluster = ZclWindowCoveringCluster.CLUSTER_ID)
+    linkType = VariableType.Boolean, clientCluster = ZclWindowCoveringCluster.CLUSTER_ID)
 public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterWindowCoveringLift() {

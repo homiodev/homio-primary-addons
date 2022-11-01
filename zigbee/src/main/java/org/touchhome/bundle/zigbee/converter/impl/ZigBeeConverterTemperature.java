@@ -8,7 +8,8 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclTemperatureMeasurementCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j2;
-import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
+
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 
 /**
@@ -16,7 +17,7 @@ import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
  * Converter for the temperature channel
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:measurement_temperature", linkType = DeviceChannelLinkType.Float,
+@ZigBeeConverter(name = "zigbee:measurement_temperature", linkType = VariableType.Float,
     serverClusters = {ZclTemperatureMeasurementCluster.CLUSTER_ID},
     clientCluster = ZclTemperatureMeasurementCluster.CLUSTER_ID, category = "Temperature")
 public class ZigBeeConverterTemperature extends ZigBeeBaseChannelConverter implements ZclAttributeListener {

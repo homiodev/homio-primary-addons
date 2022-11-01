@@ -19,10 +19,9 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextBGP.ThreadContext;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
-import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEndpoint;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
+import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.requireEndpoint.DeviceDefinition.EndpointDefinition;
 import org.touchhome.bundle.zigbee.requireEndpoint.ZigBeeRequireEndpoints;
 
@@ -62,8 +61,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
     tryInitializeDevice(discoveryService.getCoordinator().getStatus());
 
     // register listener for reset timer if any updates from any endpoint
-    this.discoveryService.getDeviceUpdateListener().addIeeeAddressListener(this.nodeIeeeAddress.toString(), state ->
-    {
+    entityContext.event().addEventListener(this.nodeIeeeAddress.toString(), state -> {
       discoveryService.getZigBeeIsAliveTracker().resetTimer(this);
       updateStatus(Status.ONLINE, "");
     });
@@ -111,7 +109,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
 
       log.debug("{}: Start initialising ZigBee channels", nodeIeeeAddress);
 
-      for (ZigBeeDeviceEndpoint endpoint : entity.getEndpoints()) {
+      for (ZigBeeEndpointEntity endpoint : entity.getEndpoints()) {
         endpoint.setStatus(Status.OFFLINE, "Uninitialised");
       }
 
@@ -129,13 +127,13 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
       }
 
       // Create missing endpoints in zsmartsystem.node
-      for (ZigBeeDeviceEndpoint zigBeeDeviceEndpoint : entity.getEndpoints()) {
-        ZigBeeEndpoint endpoint = node.getEndpoint(zigBeeDeviceEndpoint.getEndpointId());
+      for (ZigBeeEndpointEntity zigBeeEndpointEntity : entity.getEndpoints()) {
+        ZigBeeEndpoint endpoint = node.getEndpoint(zigBeeEndpointEntity.getEndpointId());
         if (endpoint == null) {
           int profileId = ZigBeeProfileType.ZIGBEE_HOME_AUTOMATION.getKey();
           log.debug("{}: Creating statically defined device endpoint {} with profile {}", nodeIeeeAddress,
-              zigBeeDeviceEndpoint.getEndpointId(), ZigBeeProfileType.getByValue(profileId));
-          endpoint = new ZigBeeEndpoint(node, zigBeeDeviceEndpoint.getEndpointId());
+              zigBeeEndpointEntity.getEndpointId(), ZigBeeProfileType.getByValue(profileId));
+          endpoint = new ZigBeeEndpoint(node, zigBeeEndpointEntity.getEndpointId());
           endpoint.setProfileId(profileId);
           node.addEndpoint(endpoint);
         }
@@ -211,7 +209,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
 
   private void createMissingRequireEndpointClusters() {
     for (EndpointDefinition endpointDefinition : ZigBeeRequireEndpoints.getEndpointDefinitions(zigBeeNodeDescription.getModelIdentifier())) {
-      ZigBeeDeviceEndpoint foundEndpoint = entity.findEndpoint(null, endpointDefinition.getInputCluster(),
+      ZigBeeEndpointEntity foundEndpoint = entity.findEndpoint(null, endpointDefinition.getInputCluster(),
           endpointDefinition.getEndpoint(), endpointDefinition.getTypeId());
       if (foundEndpoint == null) {
         log.info("Add zigbee node <{}> missed require endpoint: <{}>", nodeIeeeAddress, endpointDefinition);
@@ -228,7 +226,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
       ZigBeeCoordinatorHandler coordinatorHandler = this.discoveryService.getCoordinatorHandler();
       ZigBeeNode node = coordinatorHandler.getNode(nodeIeeeAddress);
 
-      for (ZigBeeDeviceEndpoint endpoint : entity.getEndpoints()) {
+      for (ZigBeeEndpointEntity endpoint : entity.getEndpoints()) {
         ZigBeeBaseChannelConverter channelConverter = endpoint.getService().getChannel();
 
         // set endpoint service target <ZigBeeEndpoint>
@@ -280,7 +278,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
 
   private int getExpectedUpdatePeriod() {
     int minInterval = Integer.MAX_VALUE;
-    for (ZigBeeDeviceEndpoint endpoint : this.entity.getEndpoints()) {
+    for (ZigBeeEndpointEntity endpoint : this.entity.getEndpoints()) {
       minInterval = Math.min(minInterval, endpoint.getService().getChannel().getMinPoolingInterval());
     }
     return minInterval;
@@ -302,7 +300,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
       }
     }
 
-    for (ZigBeeDeviceEndpoint endpoint : entity.getEndpoints()) {
+    for (ZigBeeEndpointEntity endpoint : entity.getEndpoints()) {
       endpoint.getService().getChannel().disposeConverter();
       endpoint.setStatus(Status.OFFLINE, "Dispose");
     }
@@ -349,7 +347,7 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
       try {
         log.info("{}: Polling started", nodeIeeeAddress);
 
-        for (ZigBeeDeviceEndpoint endpoint : entity.getEndpoints()) {
+        for (ZigBeeEndpointEntity endpoint : entity.getEndpoints()) {
           if (endpoint.getStatus() == Status.ONLINE) {
             log.debug("{}: Polling {}", nodeIeeeAddress, endpoint);
             ZigBeeBaseChannelConverter converter = endpoint.getService().getChannel();
@@ -410,11 +408,6 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
         '}';
   }
 
-  public void updateValue(ZigBeeDeviceEndpoint zigBeeDeviceEndpoint, State state, boolean pooling) {
-    this.discoveryService.getDeviceUpdateListener()
-        .updateValue(this, zigBeeDeviceEndpoint.getEndpointUUID(), state, pooling);
-  }
-
   public void discoveryNodeDescription(String savedModelIdentifier) {
     ZigBeeNode node = this.discoveryService.getCoordinatorHandler().getNode(nodeIeeeAddress);
     if (node == null) {
@@ -438,10 +431,6 @@ public class ZigBeeDevice implements ZigBeeNetworkNodeListener, ZigBeeAnnounceLi
     if (waitResponse) {
       nodeDiscoveryThread.join();
     }
-  }
-
-  public long getChannelCount(int clusterId) {
-    return entity.getEndpoints(clusterId).size();
   }
 
   private boolean isInitializeFinished() {

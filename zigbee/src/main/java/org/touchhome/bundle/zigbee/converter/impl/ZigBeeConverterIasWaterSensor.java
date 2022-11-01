@@ -3,13 +3,14 @@ package org.touchhome.bundle.zigbee.converter.impl;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
-import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
+
 
 /**
  * Converter for the IAS water sensor.
  */
 @ZigBeeConverter(name = ZigBeeConverterIasWaterSensor.CLUSTER_NAME, clientCluster =
-    ZclIasZoneCluster.CLUSTER_ID, linkType = DeviceChannelLinkType.Boolean, category = "Sensor")
+    ZclIasZoneCluster.CLUSTER_ID, linkType = VariableType.Boolean, category = "Sensor")
 public class ZigBeeConverterIasWaterSensor extends ZigBeeConverterIas {
 
   public static final String CLUSTER_NAME = "zigbee:ias_water";

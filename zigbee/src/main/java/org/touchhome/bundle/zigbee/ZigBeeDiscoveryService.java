@@ -14,7 +14,6 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
-import org.touchhome.bundle.zigbee.workspace.ZigBeeDeviceUpdateValueListener;
 
 @Log4j2
 @Getter
@@ -23,7 +22,6 @@ class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
 
   private final EntityContext entityContext;
   private final ZigBeeChannelConverterFactory zigBeeChannelConverterFactory;
-  private final ZigBeeDeviceUpdateValueListener deviceUpdateListener;
   private final ZigBeeIsAliveTracker zigBeeIsAliveTracker = new ZigBeeIsAliveTracker();
 
   private volatile boolean scanStarted = false;
@@ -34,7 +32,6 @@ class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
   public ZigBeeDiscoveryService(EntityContext entityContext) {
     this.entityContext = entityContext;
     this.zigBeeChannelConverterFactory = entityContext.getBean(ZigBeeChannelConverterFactory.class);
-    this.deviceUpdateListener = entityContext.getBean(ZigBeeDeviceUpdateValueListener.class);
   }
 
   @Override

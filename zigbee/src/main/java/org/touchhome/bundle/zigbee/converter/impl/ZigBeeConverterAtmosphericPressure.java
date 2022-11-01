@@ -15,18 +15,17 @@ import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import java.math.BigDecimal;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.QuantityType;
-import org.touchhome.bundle.zigbee.converter.DeviceChannelLinkType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import tec.uom.se.unit.Units;
 
 /**
- * Indicates the current pressure
- * Converter for the atmospheric pressure channel. This channel will attempt to detect if the device is supporting the enhanced (scaled) value reports and use them if they are
- * available.
+ * Indicates the current pressure Converter for the atmospheric pressure channel. This channel will attempt to detect if the device is supporting the enhanced (scaled) value
+ * reports and use them if they are available.
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:measurement_pressure", linkType = DeviceChannelLinkType.Float,
+@ZigBeeConverter(name = "zigbee:measurement_pressure", linkType = VariableType.Float,
     clientCluster = ZclPressureMeasurementCluster.CLUSTER_ID, category = "Pressure")
 public class ZigBeeConverterAtmosphericPressure extends ZigBeeBaseChannelConverter implements ZclAttributeListener {
 

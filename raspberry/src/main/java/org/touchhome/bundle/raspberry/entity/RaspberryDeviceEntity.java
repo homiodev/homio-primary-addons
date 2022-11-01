@@ -17,7 +17,6 @@ import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldExpand;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
-import org.touchhome.bundle.api.ui.method.UIFieldCreateWorkspaceVariableOnEmpty;
 import org.touchhome.bundle.api.util.RaspberryGpioPin;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
@@ -36,7 +35,6 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
   @Transient
   @UIField(order = 1000, type = UIFieldType.SelectBox, readOnly = true, color = "#7FBBCC")
   @UIFieldExpand
-  @UIFieldCreateWorkspaceVariableOnEmpty
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private List<AvailableLink> availableLinks;
 
