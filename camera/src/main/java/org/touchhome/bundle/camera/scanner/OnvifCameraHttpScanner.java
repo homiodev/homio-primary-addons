@@ -1,5 +1,6 @@
 package org.touchhome.bundle.camera.scanner;
 
+import de.onvif.soap.BadCredentialException;
 import de.onvif.soap.OnvifDeviceState;
 import java.time.Duration;
 import java.util.HashMap;
@@ -13,7 +14,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
@@ -109,7 +109,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
     try {
       onvifDeviceState.checkForErrors();
       foundDeviceServices(onvifDeviceState, false, rediscoverIpAddresses, existsCameraByIpPort);
-    } catch (BadCredentialsException bex) {
+    } catch (BadCredentialException bex) {
       if (!tryFindCameraFromDb(allSavedCameraEntities, ipAddress, port, existsCameraByIpPort)) {
         log.warn("Onvif camera <{}> got fault auth response: <{}>", host, bex.getMessage());
         foundDeviceServices(onvifDeviceState, true, rediscoverIpAddresses, existsCameraByIpPort);
@@ -195,7 +195,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
   private String fetchCameraName(OnvifDeviceState onvifDeviceState) {
     try {
       return onvifDeviceState.getInitialDevices().getName();
-    } catch (BadCredentialsException ex) {
+    } catch (BadCredentialException ex) {
       return "Require auth to fetch name";
     } catch (Exception ex) {
       return "Unknown name: " + CommonUtils.getErrorMessage(ex);
@@ -205,7 +205,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
   private String fetchCameraModel(OnvifDeviceState onvifDeviceState) {
     try {
       return onvifDeviceState.getInitialDevices().getDeviceInformation().getModel();
-    } catch (BadCredentialsException ex) {
+    } catch (BadCredentialException ex) {
       return "Require auth to fetch model";
     } catch (Exception ex) {
       return "Unknown model: " + CommonUtils.getErrorMessage(ex);

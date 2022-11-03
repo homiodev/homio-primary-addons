@@ -60,6 +60,12 @@
       <groupId>net.sf.kxml</groupId>
       <version>2.3.0</version>
     </dependency>
+    <dependency>
+      <artifactId>onvif</artifactId>
+      <groupId>org.touchhome</groupId>
+      <scope>provided</scope>
+      <version>1.0</version>
+    </dependency>
   </dependencies>
 
   <description>Camera bundle</description>
