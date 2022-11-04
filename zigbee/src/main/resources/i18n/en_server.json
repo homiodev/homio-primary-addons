@@ -1,0 +1,7 @@
+{
+  "zigbee": {
+    "error": {
+      "port_not_found": "No {{NAME}} port found"
+    }
+  }
+}

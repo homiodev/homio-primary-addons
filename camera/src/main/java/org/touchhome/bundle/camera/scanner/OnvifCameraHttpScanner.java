@@ -77,7 +77,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
               ipAddress, port)));
     }
 
-    entityContext.bgp().runOnceOnInternetUp("scan-onvif-camera", () -> {
+    entityContext.event().runOnceOnInternetUp("scan-onvif-camera", () -> {
       List<Integer> availableOnvifCameras = entityContext.bgp().runInBatchAndGet("scan-onvif-http-batch-result",
           Duration.ofSeconds(2L * pingTimeout * tasks.size()), THREAD_COUNT, tasks,
           completedTaskCount -> {

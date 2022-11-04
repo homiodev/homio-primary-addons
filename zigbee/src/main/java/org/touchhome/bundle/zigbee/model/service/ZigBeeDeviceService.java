@@ -32,7 +32,9 @@ import org.touchhome.bundle.zigbee.requireEndpoint.ZigBeeDefineEndpoints;
 @Log4j2
 public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnnounceListener, ServiceInstance<ZigBeeDeviceEntity> {
 
+  private final Object entityUpdateSync = new Object();
   private final Object pollingSync = new Object();
+
   private final IeeeAddress nodeIeeeAddress;
   private final ZigBeeCoordinatorService coordinatorService;
   private final EntityContext entityContext;
@@ -101,14 +103,14 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
       ZigBeeNode node = this.coordinatorService.getNode(nodeIeeeAddress);
       if (node == null) {
         log.debug("{}: Node not found", nodeIeeeAddress);
-        entity.setStatus(Status.OFFLINE, "zigbee.error.OFFLINE_NODE_NOT_FOUND");
+        entity.setStatus(Status.OFFLINE, "zigbee.error.offline_node_not_found");
         return;
       }
 
       // Check if discovery is complete, and we know all the services the node supports
       if (!node.isDiscovered()) {
         log.debug("{}: Node has not finished discovery", nodeIeeeAddress);
-        entity.setStatus(Status.OFFLINE, "zigbee.error.OFFLINE_DISCOVERY_INCOMPLETE");
+        entity.setStatus(Status.OFFLINE, "zigbee.error.offline_discovery_incomplete");
         return;
       }
 
@@ -118,8 +120,7 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
         endpoint.setStatus(Status.OFFLINE, "Uninitialised");
       }
 
-      // update node description in thread or not
-      this.updateNodeDescription(node);
+      updateNodeDescription(node);
 
       // for remove old one if exists
       entityContext.event().removeEntityUpdateListener(this.entity.getEntityID(), "zigbee-change-listener");
@@ -151,7 +152,7 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
       boolean foundAnyCluster = this.entity.getEndpoints().stream().noneMatch(e -> e.getStatus() == Status.ONLINE);
       if (!foundAnyCluster) {
         log.warn("{}: No supported clusters found", nodeIeeeAddress);
-        entity.setStatus(Status.OFFLINE, "zigbee.error.NO_CLUSTER_FOUND");
+        entity.setStatus(Status.OFFLINE, "zigbee.error.no_cluster_found");
         return;
       }
 
@@ -197,12 +198,6 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
       entity.createEndpoints(entityContext, endpoint.getIeeeAddress().toString(), endpoint.getEndpointId(), cluster);
     }
     log.debug("{}: Dynamically created {} zigBeeConverterEndpoints", nodeIeeeAddress, entity.getEndpoints().size());
-  }
-
-  private void updateNodeDescription(ZigBeeNode node) {
-    this.entity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + node.getIeeeAddress());
-    boolean waitResponse = entity == null || entity.getModelIdentifier() == null;
-    startDiscoveryNodeDescription(node, waitResponse);
   }
 
   private void createMissingRequireEndpointClusters() {
@@ -256,7 +251,7 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
       }
     } catch (Exception e) {
       log.error("{}: Exception creating zigBeeConverterEndpoints ", nodeIeeeAddress, e);
-      entity.setStatus(Status.OFFLINE, "zigbee.error.HANDLER_INITIALIZING_ERROR");
+      entity.setStatus(Status.OFFLINE, "zigbee.error.handler_initializing_error");
       return false;
     }
     log.debug("{}: Channel initialisation complete", nodeIeeeAddress);
@@ -272,7 +267,7 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
   }
 
   public void aliveTimeoutReached() {
-    entity.setStatus(Status.OFFLINE, "zigbee.error.ALIVE_TIMEOUT_REACHED");
+    entity.setStatus(Status.OFFLINE, "zigbee.error.alive_timeout_reached");
   }
 
   public void dispose() {
@@ -379,28 +374,24 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
     if (!node.getIeeeAddress().equals(nodeIeeeAddress)) {
       return;
     }
-    entity.setStatus(Status.OFFLINE, "zigbee.error.REMOVED_BY_DONGLE");
+    entity.setStatus(Status.OFFLINE, "zigbee.error.removed_by_dongle");
   }
 
-  public void discoveryNodeDescription() {
+  public void updateNodeDescription() {
     ZigBeeNode node = this.coordinatorService.getNode(nodeIeeeAddress);
     if (node == null) {
       throw new IllegalStateException("Unable to find node: <" + nodeIeeeAddress + ">");
     }
-    startDiscoveryNodeDescription(node, false);
+    updateNodeDescription(node);
   }
 
   @SneakyThrows
-  private void startDiscoveryNodeDescription(ZigBeeNode node, boolean waitResponse) {
+  private void updateNodeDescription(ZigBeeNode node) {
     if (nodeDiscoveryThreadContext != null && !nodeDiscoveryThreadContext.isStopped()) {
       throw new IllegalStateException("ACTION.ALREADY_STARTED");
     }
-    if (waitResponse) {
-      entity.updateFromNode(node, entityContext);
-    } else {
-      this.nodeDiscoveryThreadContext = entityContext.bgp().builder("discover-node-" + node.getIeeeAddress())
-          .execute(() -> entity.updateFromNode(node, entityContext));
-    }
+    this.nodeDiscoveryThreadContext = entityContext.bgp().builder("discover-node-" + node.getIeeeAddress())
+        .execute(() -> entity.updateFromNode(node, entityContext));
   }
 
   private boolean isInitializeFinished() {
@@ -410,5 +401,15 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
   @Override
   public void entityUpdated(ZigBeeDeviceEntity entity) {
     this.entity = entity;
+  }
+
+  @Override
+  public void destroy() {
+    this.dispose();
+  }
+
+  @Override
+  public void testService() {
+
   }
 }

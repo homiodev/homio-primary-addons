@@ -11,6 +11,7 @@ public class ZigBeeEndpointUUID {
   private final String ieeeAddress;
   private final Integer clusterId;
   private final Integer endpointId;
+
   @JsonIgnore
   private final String clusterName;
 
@@ -44,7 +45,7 @@ public class ZigBeeEndpointUUID {
     }
 
     ZigBeeEndpointUUID left = this.leftSide ? this : that;
-    ZigBeeEndpointUUID right = this.leftSide ? that : that;
+    ZigBeeEndpointUUID right = this.leftSide ? that : this;
 
     if (left.endpointId != null && !left.endpointId.equals(right.endpointId)) {
       return false;

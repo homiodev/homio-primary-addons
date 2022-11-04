@@ -80,8 +80,9 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
 
   private void nodeDiscovered(ZigBeeNode node) {
     ZigBeeCoordinatorService coordinatorService = coordinator.getService();
+
+    // If this is the coordinator (NWK address 0), ignore this device
     if (node.getLogicalType() == NodeDescriptor.LogicalType.COORDINATOR || node.getNetworkAddress() == 0) {
-      coordinatorService.setNodeIeeeAddress(node.getIeeeAddress());
       return;
     }
 
@@ -110,11 +111,11 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
 
     ZigBeeDeviceEntity entity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + ieeeAddress.toString());
     if (entity == null) {
-      entity = new ZigBeeDeviceEntity()
-          .computeEntityID(ieeeAddress::toString)
-          .setIeeeAddress(ieeeAddress.toString())
-          .setLogicalType(node.getLogicalType())
-          .setNetworkAddress(node.getNetworkAddress());
+      entity = new ZigBeeDeviceEntity();
+      entity.computeEntityID(ieeeAddress::toString);
+      entity.setIeeeAddress(ieeeAddress.toString());
+      entity.setLogicalType(node.getLogicalType());
+      entity.setNetworkAddress(node.getNetworkAddress());
 
       entity = entityContext.save(entity);
     }

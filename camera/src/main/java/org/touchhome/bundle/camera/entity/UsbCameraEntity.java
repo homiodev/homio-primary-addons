@@ -44,7 +44,7 @@ public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity
 
   @UIField(order = 25, type = UIFieldType.TextSelectBoxDynamic)
   @UIFieldSelection(SelectAudioSource.class)
-  @UIFieldSelectValueOnEmpty(label = "selection.audioSource", color = "#A7D21E")
+  @UIFieldSelectValueOnEmpty(label = "selection.audioSource")
   @RestartHandlerOnChange
   public String getAudioSource() {
     return getJsonData("asource");

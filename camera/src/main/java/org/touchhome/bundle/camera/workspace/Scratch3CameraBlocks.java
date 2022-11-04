@@ -370,7 +370,7 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
                 log.error("Unable to download playback file: <{}>. <{}>. Msg: <{}>",
                     entity.getTitle(),
                     playbackFile.id,
-                    CommonUtils.getErrorMessage(event.getFailure()));
+                    CommonUtils.getErrorMessage(event.getException()));
               })
               .get(context -> {
                 log.info("Reply <{}>. Download playback video file <{}>. <{}>", context.getAttemptCount(),

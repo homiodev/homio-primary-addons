@@ -15,15 +15,8 @@ import com.zsmartsystems.zigbee.ZigBeeProfileType;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclBasicCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclOtaUpgradeCluster;
-import com.zsmartsystems.zigbee.zdo.field.NodeDescriptor;
-import com.zsmartsystems.zigbee.zdo.field.NodeDescriptor.LogicalType;
-import com.zsmartsystems.zigbee.zdo.field.PowerDescriptor;
-import com.zsmartsystems.zigbee.zdo.field.PowerDescriptor.CurrentPowerModeType;
-import com.zsmartsystems.zigbee.zdo.field.PowerDescriptor.PowerLevelType;
-import com.zsmartsystems.zigbee.zdo.field.PowerDescriptor.PowerSourceType;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -34,15 +27,12 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
@@ -52,7 +42,6 @@ import org.json.JSONObject;
 import org.springframework.data.util.Pair;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.converter.JSONObjectConverter;
-import org.touchhome.bundle.api.converter.StringSetConverter;
 import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.HasJsonData;
 import org.touchhome.bundle.api.entity.HasStatusAndMsg;
@@ -62,9 +51,9 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.field.UIField;
+import org.touchhome.bundle.api.ui.field.UIFieldGroup;
 import org.touchhome.bundle.api.ui.field.UIFieldIgnoreGetDefault;
 import org.touchhome.bundle.api.ui.field.UIFieldInlineEntity;
-import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
@@ -84,23 +73,13 @@ import org.touchhome.common.util.Lang;
 @Getter
 @Setter
 @Entity
-@Accessors(chain = true)
 @UISidebarMenu(icon = "fas fa-bezier-curve", parent = UISidebarMenu.TopSidebarMenu.HARDWARE, bg = "#de9ed7",
     order = 5, overridePath = "zigbee")
 public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> implements
-    HasJsonData, HasStatusAndMsg<ZigBeeDeviceEntity>, EntityService<ZigBeeDeviceService, ZigBeeDeviceEntity> {
+    HasJsonData, HasNodeDescriptor,
+    HasStatusAndMsg<ZigBeeDeviceEntity>, EntityService<ZigBeeDeviceService, ZigBeeDeviceEntity> {
 
   public static final String PREFIX = "zb_";
-
-  @UIField(readOnly = true, order = 5)
-  private String ieeeAddress;
-
-  @UIField(order = 11)
-  private String description;
-
-  @UIField(order = 12, readOnly = true)
-  @Enumerated(EnumType.STRING)
-  private LogicalType logicalType;
 
   @MaxItems(30) // max 30 variables in one group
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "zigBeeDeviceEntity")
@@ -108,85 +87,40 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   @UIFieldInlineEntity(bg = "#1E5E611F", addRow = "bla-bla-bla")
   private Set<ZigBeeEndpointEntity> endpoints;
 
-  @UIField(order = 33, readOnly = true)
-  private int networkAddress = 0;
-
-  @UIField(order = 35, readOnly = true)
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-  public Status getNodeInitializationStatus() {
-    return TouchHomeUtils.STATUS_MAP.getOrDefault(getEntityID() + "_NS", DEFAULT_STATUS).getFirst();
-  }
-
-  public void setNodeInitializationStatus(Status status) {
-    TouchHomeUtils.STATUS_MAP.put(getEntityID() + "_NS", Pair.of(status, ""));
-  }
-
   @Lob
-  @Column(length = 10_000)
+  @Column(length = 1000)
   @Convert(converter = JSONObjectConverter.class)
   private JSONObject jsonData = new JSONObject();
 
   @ManyToOne
   private ZigbeeCoordinatorEntity coordinatorEntity;
 
-  @UIField(order = 50)
-  @UIFieldSelection(value = SelectModelIdentifierDynamicLoader.class, allowInputRawText = true)
-  @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier", color = "#A7D21E")
-  private String modelIdentifier;
+  @UIField(readOnly = true, order = 1)
+  @UIFieldGroup(value = "General", order = 1, borderColor = "#317175")
+  private String ieeeAddress;
 
-  @UIField(order = 51, readOnly = true)
-  private String imageIdentifier;
+  @UIField(order = 2, hideOnEmpty = true)
+  @UIFieldGroup("General")
+  private String description;
 
-  @UIField(readOnly = true, order = 1001, hideOnEmpty = true)
-  @Enumerated(EnumType.STRING)
-  private PowerLevelType powerLevel;
-
-  @UIField(readOnly = true, order = 1002, hideOnEmpty = true)
-  @Enumerated(EnumType.STRING)
-  private CurrentPowerModeType powerMode;
-
-  @UIField(readOnly = true, order = 1003, hideOnEmpty = true)
-  @Enumerated(EnumType.STRING)
-  private PowerSourceType powerSource;
-
-  @UIField(readOnly = true, type = UIFieldType.Chips, order = 1004, hideOnEmpty = true)
-  @Convert(converter = StringSetConverter.class)
-  private Set<String> availablePowerSources;
-
-  @UIField(readOnly = true, order = 1005, hideOnEmpty = true)
-  private int manufacturerCode;
-
-  @UIField(readOnly = true, order = 1006, hideOnEmpty = true)
-  private Date nodeLastUpdateTime;
-
-  @UIField(readOnly = true, order = 1007, hideOnEmpty = true)
-  private String firmwareVersion;
-  private String manufacturer;
-  private Integer hwVersion;
-  private Integer appVersion;
-  private Integer stackVersion;
-  private Integer zclVersion;
-  private String dateCode;
-
-  @Override
-  public void logChangeStatus(Status status, String message) {
-    Level level = status == Status.ERROR ? Level.ERROR : Level.INFO;
-    if (StringUtils.isEmpty(message)) {
-      log.log(level, "Set ZigBee device status: {}", status);
-    } else {
-      log.log(level, "Set ZigBee device status: {}. Msg: {}", status, message);
-    }
+  @UIField(order = 3, readOnly = true)
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  @UIFieldGroup("General")
+  public Status getNodeInitializationStatus() {
+    return TouchHomeUtils.STATUS_MAP.getOrDefault(getEntityID() + "_NS", DEFAULT_STATUS).getFirst();
   }
 
-  @UIField(readOnly = true, order = 1200, hideOnEmpty = true)
+  @UIField(readOnly = true, order = 4, hideOnEmpty = true)
   @UIFieldIgnoreGetDefault
+  @UIFieldGroup("General")
   public String getMaxTimeoutBeforeOfflineNode() {
     Integer interval = getService().getExpectedUpdateInterval();
     return interval == null ? "Not set" : TimeUnit.SECONDS.toMinutes(interval) + "min";
   }
 
-  @UIField(readOnly = true, order = 1201)
+  @UIField(order = 5, readOnly = true)
   @UIFieldIgnoreGetDefault
+  @UIFieldGroup("General")
   public String getTimeoutBeforeOfflineNode() {
     ZigBeeDeviceService service = getService();
     Integer interval = service.getExpectedUpdateInterval();
@@ -198,6 +132,54 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
     return "Expired in: " + min + "min";
   }
 
+  @UIField(order = 6, readOnly = true, hideOnEmpty = true)
+  @UIFieldColorStatusMatch
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  @UIFieldGroup("General")
+  public Status getFetchInfoStatus() {
+    return TouchHomeUtils.STATUS_MAP.getOrDefault(getEntityID() + "_FI", DEFAULT_STATUS).getFirst();
+  }
+
+  @UIField(order = 7, readOnly = true, hideOnEmpty = true)
+  @UIFieldGroup("General")
+  public String getFetchInfoStatusMessage() {
+    return TouchHomeUtils.STATUS_MAP.getOrDefault(getEntityID() + "_FI", DEFAULT_STATUS).getSecond();
+  }
+
+  @UIField(readOnly = true, order = 2, hideOnEmpty = true)
+  @UIFieldGroup("Node")
+  private String manufacturer;
+
+  @UIField(order = 3)
+  @UIFieldSelection(value = SelectModelIdentifierDynamicLoader.class, allowInputRawText = true)
+  @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier")
+  @UIFieldGroup("Node")
+  private String modelIdentifier;
+
+  @UIField(order = 4, readOnly = true)
+  @UIFieldGroup("Node")
+  private String imageIdentifier;
+
+  @UIField(readOnly = true, order = 1, hideOnEmpty = true)
+  @UIFieldGroup(value = "Version", order = 100, borderColor = "#86AD2A")
+  private Integer hwVersion;
+
+  @UIField(readOnly = true, order = 2, hideOnEmpty = true)
+  @UIFieldGroup("Version")
+  private Integer appVersion;
+
+  @UIField(readOnly = true, order = 3, hideOnEmpty = true)
+  @UIFieldGroup("Version")
+  private Integer stackVersion;
+
+  @UIField(readOnly = true, order = 4, hideOnEmpty = true)
+  @UIFieldGroup("Version")
+  private Integer zclVersion;
+
+  @UIField(readOnly = true, order = 5, hideOnEmpty = true)
+  @UIFieldGroup("Version")
+  private String dateCode;
+
   @UIContextMenuAction("ACTION.INITIALIZE_ZIGBEE_NODE")
   public ActionResponseModel initializeZigBeeNode() {
     getService().initialiseZigBeeNode();
@@ -206,7 +188,7 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
 
   @UIContextMenuAction("ACTION.REDISCOVERY")
   public ActionResponseModel rediscoveryNode() {
-    getService().discoveryNodeDescription();
+    getService().updateNodeDescription();
     return ActionResponseModel.showSuccess("ACTION.RESPONSE.REDISCOVERY_STARTED");
   }
 
@@ -276,7 +258,7 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
       ZigbeeEndpointService endpointService = new ZigbeeEndpointService(entityContext, cluster, zigBeeDeviceService,
           zigBeeEndpointEntity, coordinatorEntity, localEndpointId, localIeeeAddress);
       cluster.setEndpointService(endpointService);
-      EntityService.entityToService.put(zigBeeEndpointEntity.getEntityID(), new ServiceIdentifier(0, endpointService));
+      EntityService.entityToService.put(zigBeeEndpointEntity.getEntityID(), endpointService);
     }
   }
 
@@ -292,22 +274,6 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
 
   public List<ZigBeeEndpointEntity> filterEndpoints(int clusterId) {
     return endpoints.stream().filter(e -> e.getClusterId() == clusterId).collect(Collectors.toList());
-  }
-
-  @UIField(order = 120, readOnly = true, hideOnEmpty = true)
-  @UIFieldColorStatusMatch
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-  public Status getFetchInfoStatus() {
-    return TouchHomeUtils.STATUS_MAP.getOrDefault(getEntityID() + "_FI", DEFAULT_STATUS).getFirst();
-  }
-
-  public void setFetchInfoStatus(Status status, @NotNull String msg) {
-    TouchHomeUtils.STATUS_MAP.put(getEntityID() + "_FI", Pair.of(status, msg));
-  }
-
-  @UIField(order = 121, readOnly = true, hideOnEmpty = true)
-  public String getFetchInfoStatusMessage() {
-    return TouchHomeUtils.STATUS_MAP.getOrDefault(getEntityID() + "_FI", DEFAULT_STATUS).getSecond();
   }
 
   public void updateFromNode(ZigBeeNode node, EntityContext entityContext) {
@@ -334,6 +300,10 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
     if (updated) {
       entityContext.save(this);
     }
+  }
+
+  public void setFetchInfoStatus(Status status, @NotNull String msg) {
+    TouchHomeUtils.STATUS_MAP.put(getEntityID() + "_FI", Pair.of(status, msg));
   }
 
   private boolean updateFromBasicCluster(ZigBeeNode node) {
@@ -423,8 +393,8 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
       Object fileVersion = attribute.readValue(Long.MAX_VALUE);
       if (fileVersion != null) {
         String firmwareVersion = String.format("0x%08X", fileVersion);
-        if (!Objects.equals(this.firmwareVersion, firmwareVersion)) {
-          this.firmwareVersion = firmwareVersion;
+        if (!Objects.equals(getFirmwareVersion(), firmwareVersion)) {
+          this.setFirmwareVersion(firmwareVersion);
           return true;
         }
       } else {
@@ -434,51 +404,6 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
       log.debug("{}: Node doesn't support OTA cluster", node.getIeeeAddress());
     }
     return false;
-  }
-
-  private boolean updateFromNodeDescriptor(ZigBeeNode node) {
-    boolean updated = false;
-
-    if (!Objects.equals(this.networkAddress, node.getNetworkAddress())) {
-      this.networkAddress = node.getNetworkAddress();
-      updated = true;
-    }
-    PowerDescriptor pd = node.getPowerDescriptor();
-    if (pd != null) {
-      if (!Objects.equals(this.powerLevel, pd.getPowerLevel())) {
-        this.powerLevel = pd.getPowerLevel();
-        updated = true;
-      }
-      if (!Objects.equals(this.powerMode, pd.getCurrentPowerMode())) {
-        this.powerMode = pd.getCurrentPowerMode();
-        updated = true;
-      }
-      if (!Objects.equals(this.powerSource, pd.getCurrentPowerSource())) {
-        this.powerSource = pd.getCurrentPowerSource();
-        updated = true;
-      }
-      Set<String> availablePowerSources = pd.getAvailablePowerSources().stream().map(Enum::name).collect(Collectors.toSet());
-      if (!Objects.equals(this.availablePowerSources, availablePowerSources)) {
-        this.availablePowerSources = availablePowerSources;
-        updated = true;
-      }
-    }
-    NodeDescriptor nd = node.getNodeDescriptor();
-    if (nd != null) {
-      if (!Objects.equals(this.manufacturerCode, nd.getManufacturerCode())) {
-        this.manufacturerCode = nd.getManufacturerCode();
-        updated = true;
-      }
-      if (!Objects.equals(this.logicalType, nd.getLogicalType())) {
-        this.logicalType = nd.getLogicalType();
-        updated = true;
-      }
-    }
-    if (!Objects.equals(this.nodeLastUpdateTime, node.getLastUpdateTime())) {
-      this.nodeLastUpdateTime = node.getLastUpdateTime();
-      updated = true;
-    }
-    return updated;
   }
 
   private IeeeAddress toIeeeAddress() {
@@ -495,24 +420,23 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
     return new ZigBeeDeviceService(coordinatorEntity.getService(), toIeeeAddress(), entityContext);
   }
 
-  @Override
-  public void testService(ZigBeeDeviceService service) {
-
-  }
-
-  @Override
-  public void destroyService(ZigBeeDeviceService service) {
-    service.dispose();
-  }
-
-  @Override
-  public Object[] getServiceParams() {
-    return new Object[0];
-  }
-
   // do not change Status on create service
   @Override
   public @Nullable Status getSuccessServiceStatus() {
     return null;
+  }
+
+  public void setNodeInitializationStatus(Status status) {
+    TouchHomeUtils.STATUS_MAP.put(getEntityID() + "_NS", Pair.of(status, ""));
+  }
+
+  @Override
+  public void logChangeStatus(Status status, String message) {
+    Level level = status == Status.ERROR ? Level.ERROR : Level.INFO;
+    if (StringUtils.isEmpty(message)) {
+      log.log(level, "Set ZigBee device status: {}", status);
+    } else {
+      log.log(level, "Set ZigBee device status: {}. Msg: {}", status, message);
+    }
   }
 }

@@ -5,7 +5,6 @@ import static org.touchhome.bundle.api.util.Constants.DANGER_COLOR;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -107,7 +106,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
     @UIField(order = 4)
     @UIFieldSelection(SelectModelIdentifierDynamicLoader.class)
-    @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier", color = "#A7D21E")
+    @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier")
     private String model;
 
     @UIField(order = 5)
@@ -118,7 +117,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
     private boolean channelsInitialized;
 
     @UIField(order = 8)
-    private Date lastUpdate;
+    private long lastUpdate;
 
     private String entityID;
 

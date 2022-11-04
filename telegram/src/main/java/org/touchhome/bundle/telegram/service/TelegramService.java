@@ -101,7 +101,7 @@ public class TelegramService {
     }
   }
 
-  public void setTelegramEntity(TelegramEntity telegramEntity) {
+  public void entityUpdated(TelegramEntity telegramEntity) {
     if (telegramBots.containsKey(telegramEntity.getEntityID())) {
       getTelegramBot(telegramEntity).telegramEntity = telegramEntity;
     }

@@ -21,6 +21,7 @@ import org.touchhome.bundle.api.entity.HasStatusAndMsg;
 import org.touchhome.bundle.api.exception.ProhibitedExecution;
 import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.ui.field.UIField;
+import org.touchhome.bundle.api.ui.field.UIFieldGroup;
 import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
 import org.touchhome.bundle.api.ui.field.UIFieldNumber;
 import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
@@ -36,24 +37,8 @@ public class ZigBeeEndpointEntity extends BaseEntity<ZigBeeEndpointEntity>
 
   public static final String PREFIX = "zbe_";
 
-  private String uuid;
-  private String ieeeAddress;
-  private int clusterId;
-  private int endpointId;
-
-  @Override
-  public ZigBeeEndpointEntity setName(String name) {
-    return super.setName(name);
-  }
-
   @ManyToOne(fetch = FetchType.LAZY)
   private ZigBeeDeviceEntity zigBeeDeviceEntity;
-
-  @Override
-  @UIField(order = 10, readOnly = true)
-  public String getName() {
-    return super.getName();
-  }
 
   @Lob
   @Getter
@@ -61,23 +46,52 @@ public class ZigBeeEndpointEntity extends BaseEntity<ZigBeeEndpointEntity>
   @Convert(converter = JSONObjectConverter.class)
   private JSONObject jsonData = new JSONObject();
 
+  @UIField(order = 1, readOnly = true)
+  @UIFieldGroup(value = "General", order = 1, borderColor = "#317175")
+  private String ieeeAddress;
+
+  @UIField(order = 2, readOnly = true)
+  @UIFieldGroup("General")
+  private int clusterId;
+
+  @UIField(order = 3, readOnly = true)
+  @UIFieldGroup("General")
+  private int endpointId;
+
+  @Override
+  @UIField(order = 4, readOnly = true)
+  @UIFieldGroup("General")
+  public String getName() {
+    return super.getName();
+  }
+
+  @UIField(order = 5, readOnly = true)
+  @UIFieldGroup("General")
+  public String getDescription() {
+    return Lang.getServerMessage("zigbee_description." + getName());
+  }
+
   // The minimum time period in seconds between device state updates
   @UIField(onlyEdit = true, order = 100)
   @UIFieldNumber(min = 1, max = 86400)
+  @UIFieldGroup(value = "Reporting", order = 2, borderColor = "#517531")
   private int reportingTimeMin = 1;
 
   // The maximum time period in seconds between device state updates
   @UIField(onlyEdit = true, order = 101)
   @UIFieldNumber(min = 1, max = 86400)
+  @UIFieldGroup("Reporting")
   private int reportingTimeMax = 900;
 
   @UIField(onlyEdit = true, order = 102)
   @UIFieldNumber(min = 1, max = 86400)
+  @UIFieldGroup("Reporting")
   private int reportingChange = 10;
 
   // The time period in seconds between subsequent polls
   @UIField(onlyEdit = true, order = 103)
   @UIFieldNumber(min = 15, max = 86400)
+  @UIFieldGroup("Reporting")
   private int poolingPeriod = 900;
 
   @Override
@@ -115,16 +129,6 @@ public class ZigBeeEndpointEntity extends BaseEntity<ZigBeeEndpointEntity>
   }
 
   @Override
-  public void testService(ZigbeeEndpointService service) {
-
-  }
-
-  @Override
-  public Object[] getServiceParams() {
-    return new Object[0];
-  }
-
-  @Override
   public String toString() {
     return "ZigBeeDeviceEndpoint{" +
         "ieeeAddress='" + ieeeAddress + '\'' +
@@ -134,11 +138,13 @@ public class ZigBeeEndpointEntity extends BaseEntity<ZigBeeEndpointEntity>
         '}';
   }
 
+  @JsonIgnore
   public ZigBeeEndpointUUID getEndpointUUID() {
     return new ZigBeeEndpointUUID(ieeeAddress, clusterId, endpointId, getName());
   }
 
-  public String getDescription() {
-    return Lang.getServerMessage("zigbee_description." + getName());
+  @Override
+  public ZigBeeEndpointEntity setName(String name) {
+    return super.setName(name);
   }
 }

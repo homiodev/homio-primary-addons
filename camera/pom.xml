@@ -63,7 +63,6 @@
     <dependency>
       <artifactId>onvif</artifactId>
       <groupId>org.touchhome</groupId>
-      <scope>provided</scope>
       <version>1.0</version>
     </dependency>
   </dependencies>

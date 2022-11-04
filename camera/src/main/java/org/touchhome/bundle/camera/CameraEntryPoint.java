@@ -89,7 +89,7 @@ public class CameraEntryPoint implements BundleEntryPoint {
           }
         });
 
-    entityContext.bgp().runOnceOnInternetUp("scan-cameras", () -> {
+    entityContext.event().runOnceOnInternetUp("scan-cameras", () -> {
       // fire rescan whole possible items to see if ip address has been changed
       entityContext.getBean(OnvifCameraHttpScanner.class).executeScan(entityContext, null, null, true);
     });

@@ -63,11 +63,11 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
   }
 
   @Override
-  protected void beforeDelete() {
+  public void beforeDelete(EntityContext entityContext) {
     if (getEntityID().equals(DEFAULT_DEVICE_ENTITY_ID)) {
       throw new IllegalStateException("Unable to remove primary Raspberry entity");
     }
-    super.beforeDelete();
+    super.beforeDelete(entityContext);
   }
 
   @Override

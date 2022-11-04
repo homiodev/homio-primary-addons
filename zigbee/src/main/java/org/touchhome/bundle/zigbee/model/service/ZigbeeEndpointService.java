@@ -88,4 +88,14 @@ public class ZigbeeEndpointService implements ServiceInstance<ZigBeeEndpointEnti
     this.entity = entity;
     this.channel.updateConfiguration();
   }
+
+  @Override
+  public void destroy() throws Exception {
+
+  }
+
+  @Override
+  public void testService() throws Exception {
+
+  }
 }

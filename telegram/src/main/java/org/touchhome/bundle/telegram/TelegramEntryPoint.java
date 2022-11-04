@@ -18,7 +18,7 @@ public class TelegramEntryPoint implements BundleEntryPoint {
   private final TelegramService telegramService;
 
   public void init() {
-    entityContext.bgp().runOnceOnInternetUp("telegram-start", () -> {
+    entityContext.event().runOnceOnInternetUp("telegram-start", () -> {
       for (TelegramEntity telegramEntity : entityContext.findAll(TelegramEntity.class)) {
         telegramService.restart(telegramEntity);
       }

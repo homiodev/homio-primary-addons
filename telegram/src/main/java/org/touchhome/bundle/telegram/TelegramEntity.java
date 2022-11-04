@@ -104,8 +104,8 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
   }
 
   @Override
-  public void afterUpdate(EntityContext entityContext) {
-    entityContext.getBean(TelegramService.class).setTelegramEntity(this);
+  public void afterUpdate(EntityContext entityContext, boolean persist) {
+    entityContext.getBean(TelegramService.class).entityUpdated(this);
   }
 
   public TelegramUser getUser(long id) {

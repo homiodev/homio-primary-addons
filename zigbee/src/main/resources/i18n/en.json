@@ -27,6 +27,7 @@
   },
   "zigBee:ias_fire": "Fire",
   "field": {
+    "flowControl": "Flow control",
     "reportingTimeMin": "Reporting min time",
     "reportingTimeMax": "Reporting max time",
     "poolingPeriod": "Pooling period",
@@ -34,7 +35,7 @@
     "zigBeeNodeDescription": "Node Descriptor",
     "channelsInitialized": "Channel fetched",
     "txPower": "TX power",
-    "trustCentreJoinMode": "Trust centre JoinMode",
+    "trustCentreJoinMode": "Trust Center join mode",
     "powerMode": "Power mode",
     "portBaud": "Port baud",
     "panId": "Pan Id",
@@ -47,27 +48,33 @@
     "channelId": "Channel Id",
     "coordinatorHandler": "Coordinator handler",
     "discoveryDuration": "Discovery duration",
-    "networkId": "Network Id"
+    "networkId": "Network Id",
+
+    "networkAddress": "Network address",
+    "logicalType": "Network address",
+    "currentPowerLevel": "Power level",
+    "currentPowerMode": "Power mode",
+    "currentPowerSource": "Power source"
   },
   "help": {
     "field": {
       "poolingPeriod": "Pooling period",
       "reportingTimeMin": "Reporting min time",
       "reportingTimeMax": "Reporting max time",
-      "txPower": "TX power",
-      "trustCentreJoinMode": "Sets the Trust Centre join/rejoin mode. TC_JOIN_DENY: Deny all joins.<br/>TC_JOIN_SECURE: Allow only secure joining. Devices should join with the TC Link Key or a Device Specific Link Key via an install code.<br/>TC_JOIN_INSECURE: Allow all joins.<br/>TC_JOIN_INSTALLCODE: Only join with install code. Devices attempting to join with the TC Link Key will be rejected.",
-      "powerMode": "Enabling boost mode improves the receive sensitivity by 2dB and increase the transmit power by 3dB.",
+      "txPower": "Sets the device radio power. Power level is defined in dBm.",
+      "trustCentreJoinMode": "Sets the Trust Centre join/rejoin mode. TC_JOIN_DENY: Deny all joins.<br/>TC_JOIN_SECURE: Allow only secure joining. Devices should join with the TC Link Key or a Device Specific Link Key via an install code.<br/>TC_JOIN_INSECURE: Allow all joins.<br/>TC_JOIN_INSTALLCODE: Only join with install code. Devices attempting to join with the TC Link Key will be rejected",
+      "powerMode": "Enabling boost mode improves the receive sensitivity by 2dB and increase the transmit power by 3dB",
       "portBaud": "BaudRate as bits per second",
       "panId": "Personal Area Network Identifier. This parameter is unique in a certain ZigBee network. This means that it will be the same in all the related devices, including the Coordinator (Meshlium or Gateway) and the Routers or End Devices (Waspmotes)",
-      "networkKey": "The key is defined as 16 hexadecimal values. If not defined, a random key will be created",
-      "meshUpdatePeriod": "Mesh update period",
-      "linkKey": "Link key",
+      "networkKey": "The key is defined as 16 hexadecimal unique id. If not defined, a random key will be created. Set the current network key in use by the system.",
+      "meshUpdatePeriod": "Sets the update period for the mesh update service. This is the number of seconds between subsequent mesh updates. Setting the period to 0 will disable mesh updates",
+      "linkKey": "Sets the Trust Center link security key to the specified value",
       "joinDeviceDuringScanOnly": "Join during scan only",
-      "installCode": "Install code",
-      "extendedPanId": "Extended Pan Id",
-      "channelId": "Channel Id",
+      "installCode": "Sets an installation key for the specified address. Using a blank key (ie all zeros) may be used to remove the install key. This is dongle specific if the key can be removed or if it will time out.",
+      "extendedPanId": "Sets the ZigBee Extended PAN ID to the specified value",
+      "channelId": "Sets the ZigBee RF channel. The allowable channel range is 11 to 26 for 2.4GHz, however the transport implementation may allow any value it supports",
       "coordinatorHandler": "Coordinator handler",
-      "discoveryDuration": "Discovery duration in sec.",
+      "discoveryDuration": "Discovery duration in seconds",
       "networkId": "Network Id",
       "logEvents": "Log device events"
     },
@@ -79,20 +86,21 @@
   "zigbee": {
     "name": "ZigBee",
     "device_reinitialise": "Node rediscovery started",
-    "start_scan": "ZigBee discovery started",
-    "OFFLINE_COMMS_FAIL": "Communication failed",
-    "OFFLINE_BAD_RESPONSE": "Bad response",
-    "OFFLINE_INITIALIZE_FAIL": "Initialize failed",
+    "start_scan": "Start ZigBee discovery",
     "setting": {
       "label": "ZigBee settings"
     },
     "error": {
-      "OFFLINE_DISCOVERY_INCOMPLETE": "Discovery incomplete",
-      "OFFLINE_NODE_NOT_FOUND": "Node not found",
-      "REMOVED_BY_DONGLE": "Node removed by dongle",
-      "ALIVE_TIMEOUT_REACHED": "Node alive timeout reached",
-      "HANDLER_INITIALIZING_ERROR": "Handler initialization error",
-      "NO_CLUSTER_FOUND": "No supported clusters found"
+      "no_port": "No zigbee coordinator port selected",
+      "offline_comms_fail": "Communication failed",
+      "offline_bad_response": "Bad response",
+      "offline_initialize_fail": "Initialize failed",
+      "offline_discovery_incomplete": "Discovery incomplete",
+      "offline_node_not_found": "Node not found",
+      "removed_by_dongle": "Node removed by dongle",
+      "alive_timeout_reached": "Node alive timeout reached",
+      "handler_initializing_error": "Handler initialization error",
+      "no_cluster_found": "No supported clusters found"
     },
     "action": {
       "selectModelIdentifier": "Select Model Identifier"
