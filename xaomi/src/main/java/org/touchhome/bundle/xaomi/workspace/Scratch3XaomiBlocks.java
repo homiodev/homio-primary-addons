@@ -16,7 +16,7 @@ import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
-import org.touchhome.bundle.xaomi.XaomiEntryPoint;
+import org.touchhome.bundle.xaomi.XaomiEntrypoint;
 import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 
@@ -31,8 +31,8 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
   private final MenuBlock.StaticMenuBlock cubeEventMenu;
   private final MenuBlock.ServerMenuBlock cubeSensorMenu;
 
-  public Scratch3XaomiBlocks(EntityContext entityContext,      XaomiEntryPoint xaomiEntryPoint) {
-    super("#856d21", entityContext, xaomiEntryPoint);
+  public Scratch3XaomiBlocks(EntityContext entityContext, XaomiEntrypoint xaomiEntrypoint) {
+    super("#856d21", entityContext, xaomiEntrypoint);
     setParent("zigbee");
 
     this.cubeEventMenu = menuStatic("cubeEventMenu", MagicCubeEvent.class, MagicCubeEvent.ANY_EVENT);

@@ -6,8 +6,7 @@ import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * Set the heating temperature when the room is occupied
- * Converter for the thermostat occupied heating setpoint channel
+ * Set the heating temperature when the room is occupied Converter for the thermostat occupied heating setpoint channel
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:thermostat_occupiedheating",

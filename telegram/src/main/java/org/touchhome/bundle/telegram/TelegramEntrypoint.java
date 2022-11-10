@@ -5,14 +5,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import org.touchhome.bundle.api.BundleEntryPoint;
+import org.touchhome.bundle.api.BundleEntrypoint;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.telegram.service.TelegramService;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class TelegramEntryPoint implements BundleEntryPoint {
+public class TelegramEntrypoint implements BundleEntrypoint {
 
   private final EntityContext entityContext;
   private final TelegramService telegramService;

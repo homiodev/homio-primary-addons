@@ -57,6 +57,25 @@ public class ZigBeeEndpointEntity extends BaseEntity<ZigBeeEndpointEntity>
   @UIField(order = 3, readOnly = true)
   @UIFieldGroup("General")
   private int endpointId;
+  // The minimum time period in seconds between device state updates
+  @UIField(onlyEdit = true, order = 100)
+  @UIFieldNumber(min = 1, max = 86400)
+  @UIFieldGroup(value = "Reporting", order = 2, borderColor = "#517531")
+  private int reportingTimeMin = 1;
+  // The maximum time period in seconds between device state updates
+  @UIField(onlyEdit = true, order = 101)
+  @UIFieldNumber(min = 1, max = 86400)
+  @UIFieldGroup("Reporting")
+  private int reportingTimeMax = 900;
+  @UIField(onlyEdit = true, order = 102)
+  @UIFieldNumber(min = 1, max = 86400)
+  @UIFieldGroup("Reporting")
+  private int reportingChange = 10;
+  // The time period in seconds between subsequent polls
+  @UIField(onlyEdit = true, order = 103)
+  @UIFieldNumber(min = 15, max = 86400)
+  @UIFieldGroup("Reporting")
+  private int poolingPeriod = 900;
 
   @Override
   @UIField(order = 4, readOnly = true)
@@ -65,34 +84,16 @@ public class ZigBeeEndpointEntity extends BaseEntity<ZigBeeEndpointEntity>
     return super.getName();
   }
 
+  @Override
+  public ZigBeeEndpointEntity setName(String name) {
+    return super.setName(name);
+  }
+
   @UIField(order = 5, readOnly = true)
   @UIFieldGroup("General")
   public String getDescription() {
     return Lang.getServerMessage("zigbee_description." + getName());
   }
-
-  // The minimum time period in seconds between device state updates
-  @UIField(onlyEdit = true, order = 100)
-  @UIFieldNumber(min = 1, max = 86400)
-  @UIFieldGroup(value = "Reporting", order = 2, borderColor = "#517531")
-  private int reportingTimeMin = 1;
-
-  // The maximum time period in seconds between device state updates
-  @UIField(onlyEdit = true, order = 101)
-  @UIFieldNumber(min = 1, max = 86400)
-  @UIFieldGroup("Reporting")
-  private int reportingTimeMax = 900;
-
-  @UIField(onlyEdit = true, order = 102)
-  @UIFieldNumber(min = 1, max = 86400)
-  @UIFieldGroup("Reporting")
-  private int reportingChange = 10;
-
-  // The time period in seconds between subsequent polls
-  @UIField(onlyEdit = true, order = 103)
-  @UIFieldNumber(min = 15, max = 86400)
-  @UIFieldGroup("Reporting")
-  private int poolingPeriod = 900;
 
   @Override
   public void getAllRelatedEntities(Set<BaseEntity> set) {
@@ -141,10 +142,5 @@ public class ZigBeeEndpointEntity extends BaseEntity<ZigBeeEndpointEntity>
   @JsonIgnore
   public ZigBeeEndpointUUID getEndpointUUID() {
     return new ZigBeeEndpointUUID(ieeeAddress, clusterId, endpointId, getName());
-  }
-
-  @Override
-  public ZigBeeEndpointEntity setName(String name) {
-    return super.setName(name);
   }
 }

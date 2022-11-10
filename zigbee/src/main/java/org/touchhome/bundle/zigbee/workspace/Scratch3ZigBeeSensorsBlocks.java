@@ -21,7 +21,7 @@ import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock.ServerMenuBlock;
-import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
+import org.touchhome.bundle.zigbee.ZigBeeBundleEntrypoint;
 import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasFireIndicator;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasWaterSensor;
@@ -49,8 +49,8 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
   private final MenuBlock.ServerMenuBlock humiditySensorMenu;
   private final MenuBlock.ServerMenuBlock waterSensorMenu;
 
-  public Scratch3ZigBeeSensorsBlocks(EntityContext entityContext, ZigBeeBundleEntryPoint zigBeeBundleEntryPoint) {
-    super("#8a6854", entityContext, zigBeeBundleEntryPoint, "sensor");
+  public Scratch3ZigBeeSensorsBlocks(EntityContext entityContext, ZigBeeBundleEntrypoint zigBeeBundleEntrypoint) {
+    super("#8a6854", entityContext, zigBeeBundleEntrypoint, "sensor");
 
     // Menu
     this.alarmSensorMenu = menuServer("alarmSensorMenu", ZIGBEE_ALARM_URL, "Alarm Sensor");

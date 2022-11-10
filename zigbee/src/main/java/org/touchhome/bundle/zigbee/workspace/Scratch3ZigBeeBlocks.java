@@ -18,7 +18,7 @@ import org.touchhome.bundle.api.workspace.scratch.ArgumentType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock.ServerMenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
-import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
+import org.touchhome.bundle.zigbee.ZigBeeBundleEntrypoint;
 import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
@@ -35,8 +35,8 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
   public static final String ZIGBEE_MODEL_URL = ZIGBEE__BASE_URL + "model/";
   public static final String ZIGBEE_ALARM_URL = ZIGBEE__BASE_URL + "alarm";
 
-  public Scratch3ZigBeeBlocks(EntityContext entityContext, ZigBeeBundleEntryPoint zigBeeBundleEntryPoint) {
-    super("#6d4747", entityContext, zigBeeBundleEntryPoint, null);
+  public Scratch3ZigBeeBlocks(EntityContext entityContext, ZigBeeBundleEntrypoint zigBeeBundleEntrypoint) {
+    super("#6d4747", entityContext, zigBeeBundleEntrypoint, null);
 
     // Items
     blockHat(10, "when_event_received", "when got [EVENT] event", this::whenEventReceivedHandler, block -> {

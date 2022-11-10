@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zsmartsystems.zigbee.IeeeAddress;
 import com.zsmartsystems.zigbee.ZigBeeNode;
 import com.zsmartsystems.zigbee.ZigBeeProfileType;
+import com.zsmartsystems.zigbee.app.discovery.ZigBeeNodeServiceDiscoverer;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclBasicCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclOtaUpgradeCluster;
@@ -49,6 +50,7 @@ import org.touchhome.bundle.api.entity.validation.MaxItems;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService;
+import org.touchhome.bundle.api.ui.UIEntityLog;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
@@ -75,6 +77,9 @@ import org.touchhome.common.util.Lang;
 @Entity
 @UISidebarMenu(icon = "fas fa-bezier-curve", parent = UISidebarMenu.TopSidebarMenu.HARDWARE, bg = "#de9ed7",
     order = 5, overridePath = "zigbee")
+@UIEntityLog(topic = ZigBeeDeviceService.class, filterByField = "ieeeAddress")
+@UIEntityLog(topic = ZigBeeDeviceEntity.class)
+@UIEntityLog(topic = ZigBeeNodeServiceDiscoverer.class, filterByField = "ieeeAddress")
 public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> implements
     HasJsonData, HasNodeDescriptor,
     HasStatusAndMsg<ZigBeeDeviceEntity>, EntityService<ZigBeeDeviceService, ZigBeeDeviceEntity> {
@@ -102,12 +107,42 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   @UIField(order = 2, hideOnEmpty = true)
   @UIFieldGroup("General")
   private String description;
+  @UIField(readOnly = true, order = 2, hideOnEmpty = true)
+  @UIFieldGroup("Node")
+  private String manufacturer;
+  @UIField(order = 3)
+  @UIFieldSelection(value = SelectModelIdentifierDynamicLoader.class, allowInputRawText = true)
+  @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier")
+  @UIFieldGroup("Node")
+  private String modelIdentifier;
+  @UIField(order = 4, readOnly = true)
+  @UIFieldGroup("Node")
+  private String imageIdentifier;
+  @UIField(readOnly = true, order = 1, hideOnEmpty = true)
+  @UIFieldGroup(value = "Version", order = 100, borderColor = "#86AD2A")
+  private Integer hwVersion;
+  @UIField(readOnly = true, order = 2, hideOnEmpty = true)
+  @UIFieldGroup("Version")
+  private Integer appVersion;
+  @UIField(readOnly = true, order = 3, hideOnEmpty = true)
+  @UIFieldGroup("Version")
+  private Integer stackVersion;
+  @UIField(readOnly = true, order = 4, hideOnEmpty = true)
+  @UIFieldGroup("Version")
+  private Integer zclVersion;
+  @UIField(readOnly = true, order = 5, hideOnEmpty = true)
+  @UIFieldGroup("Version")
+  private String dateCode;
 
   @UIField(order = 3, readOnly = true)
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   @UIFieldGroup("General")
   public Status getNodeInitializationStatus() {
     return TouchHomeUtils.STATUS_MAP.getOrDefault(getEntityID() + "_NS", DEFAULT_STATUS).getFirst();
+  }
+
+  public void setNodeInitializationStatus(Status status) {
+    TouchHomeUtils.STATUS_MAP.put(getEntityID() + "_NS", Pair.of(status, ""));
   }
 
   @UIField(readOnly = true, order = 4, hideOnEmpty = true)
@@ -145,40 +180,6 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   public String getFetchInfoStatusMessage() {
     return TouchHomeUtils.STATUS_MAP.getOrDefault(getEntityID() + "_FI", DEFAULT_STATUS).getSecond();
   }
-
-  @UIField(readOnly = true, order = 2, hideOnEmpty = true)
-  @UIFieldGroup("Node")
-  private String manufacturer;
-
-  @UIField(order = 3)
-  @UIFieldSelection(value = SelectModelIdentifierDynamicLoader.class, allowInputRawText = true)
-  @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier")
-  @UIFieldGroup("Node")
-  private String modelIdentifier;
-
-  @UIField(order = 4, readOnly = true)
-  @UIFieldGroup("Node")
-  private String imageIdentifier;
-
-  @UIField(readOnly = true, order = 1, hideOnEmpty = true)
-  @UIFieldGroup(value = "Version", order = 100, borderColor = "#86AD2A")
-  private Integer hwVersion;
-
-  @UIField(readOnly = true, order = 2, hideOnEmpty = true)
-  @UIFieldGroup("Version")
-  private Integer appVersion;
-
-  @UIField(readOnly = true, order = 3, hideOnEmpty = true)
-  @UIFieldGroup("Version")
-  private Integer stackVersion;
-
-  @UIField(readOnly = true, order = 4, hideOnEmpty = true)
-  @UIFieldGroup("Version")
-  private Integer zclVersion;
-
-  @UIField(readOnly = true, order = 5, hideOnEmpty = true)
-  @UIFieldGroup("Version")
-  private String dateCode;
 
   @UIContextMenuAction("ACTION.INITIALIZE_ZIGBEE_NODE")
   public ActionResponseModel initializeZigBeeNode() {
@@ -424,10 +425,6 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   @Override
   public @Nullable Status getSuccessServiceStatus() {
     return null;
-  }
-
-  public void setNodeInitializationStatus(Status status) {
-    TouchHomeUtils.STATUS_MAP.put(getEntityID() + "_NS", Pair.of(status, ""));
   }
 
   @Override

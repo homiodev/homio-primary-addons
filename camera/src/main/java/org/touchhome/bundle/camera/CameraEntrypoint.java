@@ -7,7 +7,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import org.touchhome.bundle.api.BundleEntryPoint;
+import org.touchhome.bundle.api.BundleEntrypoint;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextBGP;
 import org.touchhome.bundle.api.model.Status;
@@ -26,7 +26,7 @@ import org.touchhome.bundle.camera.setting.CameraStatusSetting;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class CameraEntryPoint implements BundleEntryPoint {
+public class CameraEntrypoint implements BundleEntrypoint {
 
   private final EntityContext entityContext;
   private EntityContextBGP.ThreadContext<Void> cameraRunPerMinuteSchedule;

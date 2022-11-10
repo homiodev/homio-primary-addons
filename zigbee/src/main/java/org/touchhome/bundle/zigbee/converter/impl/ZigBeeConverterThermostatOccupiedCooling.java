@@ -6,9 +6,8 @@ import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * Set the cooling temperature when the room is occupied
- * Converter for the thermostat occupied cooling setpoint channel. This specifies the cooling mode setpoint when the room is occupied. It shall be set to a value in the range
- * defined by the MinCoolSetpointLimit and MaxCoolSetpointLimit attributes.
+ * Set the cooling temperature when the room is occupied Converter for the thermostat occupied cooling setpoint channel. This specifies the cooling mode setpoint when the room is
+ * occupied. It shall be set to a value in the range defined by the MinCoolSetpointLimit and MaxCoolSetpointLimit attributes.
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:thermostat_occupiedcooling",

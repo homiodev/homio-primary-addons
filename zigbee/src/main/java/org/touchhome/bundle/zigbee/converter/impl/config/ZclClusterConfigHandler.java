@@ -12,8 +12,7 @@ import com.zsmartsystems.zigbee.zcl.ZclCluster;
 public interface ZclClusterConfigHandler {
 
   /**
-   * Creates the list of {@link }. This method shall check the available attributes on the remote device and create configuration parameters for each supported attribute that
-   * needs
+   * Creates the list of {@link }. This method shall check the available attributes on the remote device and create configuration parameters for each supported attribute that needs
    * to be configurable.
    *
    * @param cluster the {@link ZclCluster} to get the configuration

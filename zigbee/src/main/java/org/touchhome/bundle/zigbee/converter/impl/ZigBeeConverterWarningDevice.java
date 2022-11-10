@@ -8,8 +8,7 @@ import org.touchhome.bundle.zigbee.converter.warningdevice.SquawkType;
 import org.touchhome.bundle.zigbee.converter.warningdevice.WarningType;
 
 /**
- * Triggers warnings on a warning device
- * Channel converter for warning devices, based on the IAS WD cluster.
+ * Triggers warnings on a warning device Channel converter for warning devices, based on the IAS WD cluster.
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:warning_device", clientCluster = ZclIasWdCluster.CLUSTER_ID, category = "Siren")
@@ -27,7 +26,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
 
   @Override
   public boolean initializeConverter() {
-    iasWdCluster =  getInputCluster(ZclIasWdCluster.CLUSTER_ID);
+    iasWdCluster = getInputCluster(ZclIasWdCluster.CLUSTER_ID);
     if (iasWdCluster == null) {
       log.error("{}: Error opening warning device controls", getEndpointEntity());
       return false;

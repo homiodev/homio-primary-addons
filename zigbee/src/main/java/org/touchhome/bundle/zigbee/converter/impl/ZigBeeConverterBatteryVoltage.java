@@ -11,8 +11,7 @@ import org.touchhome.bundle.api.state.QuantityType;
 import tec.uom.se.unit.Units;
 
 /**
- * Battery Voltage
- * The current battery voltage
+ * Battery Voltage The current battery voltage
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:battery_voltage", clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID,

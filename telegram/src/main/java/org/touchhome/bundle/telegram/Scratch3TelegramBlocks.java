@@ -48,8 +48,8 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
   private final MenuBlock.StaticMenuBlock<QuestionButtons> buttonsMenu;
 
   public Scratch3TelegramBlocks(TelegramService telegramService, EntityContext entityContext,
-      TelegramEntryPoint telegramEntryPoint) {
-    super("#73868c", entityContext, telegramEntryPoint);
+      TelegramEntrypoint telegramEntrypoint) {
+    super("#73868c", entityContext, telegramEntrypoint);
     setParent("communication");
     this.telegramService = telegramService;
 

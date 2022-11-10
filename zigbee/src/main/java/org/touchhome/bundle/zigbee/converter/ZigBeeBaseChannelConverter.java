@@ -15,9 +15,9 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.QuantityType;
 import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.zigbee.model.service.ZigBeeDeviceService;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
+import org.touchhome.bundle.zigbee.model.service.ZigBeeDeviceService;
 import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
 import tec.uom.se.unit.Units;
 
@@ -80,8 +80,8 @@ public abstract class ZigBeeBaseChannelConverter {
   }
 
   /**
-   * Initialise the converter. This is called by the {@link ZigBeeDeviceService} when the channel is created. The converter should initialise any internal states, open any clusters, add
-   * reporting and binding that it needs to operate.
+   * Initialise the converter. This is called by the {@link ZigBeeDeviceService} when the channel is created. The converter should initialise any internal states, open any
+   * clusters, add reporting and binding that it needs to operate.
    * <p>
    *
    * @return true if the converter was initialised successfully

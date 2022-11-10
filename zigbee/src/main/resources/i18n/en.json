@@ -49,7 +49,6 @@
     "coordinatorHandler": "Coordinator handler",
     "discoveryDuration": "Discovery duration",
     "networkId": "Network Id",
-
     "networkAddress": "Network address",
     "logicalType": "Network address",
     "currentPowerLevel": "Power level",

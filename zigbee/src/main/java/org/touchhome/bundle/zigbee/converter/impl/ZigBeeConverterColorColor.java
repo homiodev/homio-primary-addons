@@ -44,9 +44,8 @@ import org.touchhome.bundle.zigbee.converter.impl.config.ZclLevelControlConfig;
 import org.touchhome.bundle.zigbee.converter.impl.config.ZclOnOffSwitchConfig;
 
 /**
- * The color channel allows to control the color of a light.
- * It is also possible to dim values and switch the light on and off.
- * Converter for color control. Uses the {@link ZclColorControlCluster}, and may also use the {@link ZclLevelControlCluster} and {@link ZclOnOffCluster} if available.
+ * The color channel allows to control the color of a light. It is also possible to dim values and switch the light on and off. Converter for color control. Uses the
+ * {@link ZclColorControlCluster}, and may also use the {@link ZclLevelControlCluster} and {@link ZclOnOffCluster} if available.
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:color_color",

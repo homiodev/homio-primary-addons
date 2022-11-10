@@ -16,7 +16,7 @@ import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
 import org.touchhome.bundle.api.video.ffmpeg.FFMPEG;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
-import org.touchhome.bundle.camera.CameraEntryPoint;
+import org.touchhome.bundle.camera.CameraEntrypoint;
 
 @Log4j2
 @Getter
@@ -25,8 +25,8 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
 
   private static final int FFMPEG_WAIT_TO_START_TIMEOUT = 1000;
 
-  public Scratch3FFmpegBlocks(EntityContext entityContext, CameraEntryPoint cameraEntryPoint) {
-    super("#87B023", entityContext, cameraEntryPoint, "ffmpeg");
+  public Scratch3FFmpegBlocks(EntityContext entityContext, CameraEntrypoint cameraEntrypoint) {
+    super("#87B023", entityContext, cameraEntrypoint, "ffmpeg");
     setParent("media");
 
     blockCommand(10, FFmpegApplyHandler.argsInput.name(), "Input arg [VALUE]", this::skipHandler, block -> {

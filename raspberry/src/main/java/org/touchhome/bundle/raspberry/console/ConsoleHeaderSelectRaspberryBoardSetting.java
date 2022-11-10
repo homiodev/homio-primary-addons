@@ -14,7 +14,7 @@ public class ConsoleHeaderSelectRaspberryBoardSetting implements ConsoleHeaderSe
 
   @Override
   public Collection<OptionModel> getOptions(EntityContext entityContext, JSONObject params) {
-    return OptionModel.list(entityContext.findAll(RaspberryDeviceEntity.class));
+    return OptionModel.entityList(entityContext.findAll(RaspberryDeviceEntity.class));
   }
 
   @Override

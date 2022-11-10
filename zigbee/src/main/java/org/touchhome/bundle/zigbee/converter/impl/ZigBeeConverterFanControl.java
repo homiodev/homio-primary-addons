@@ -8,8 +8,7 @@ import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * Set the fan mode
- * This channel supports fan control
+ * Set the fan mode This channel supports fan control
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:fancontrol", clientCluster = ZclFanControlCluster.CLUSTER_ID, category = "HVAC")
@@ -35,7 +34,7 @@ public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
 
   @Override
   public boolean initializeDevice() {
-    ZclFanControlCluster serverCluster =  getInputCluster(ZclFanControlCluster.CLUSTER_ID);
+    ZclFanControlCluster serverCluster = getInputCluster(ZclFanControlCluster.CLUSTER_ID);
     if (serverCluster == null) {
       log.error("{}: Error opening device fan controls", getEndpointEntity());
       return false;

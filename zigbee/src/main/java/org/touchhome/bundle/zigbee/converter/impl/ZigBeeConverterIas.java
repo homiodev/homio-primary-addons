@@ -45,7 +45,7 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
   public boolean initializeDevice() {
     log.debug("{}: Initialising device IAS Zone cluster", getEndpointEntity());
 
-    ZclIasZoneCluster serverClusterIasZone =  getInputCluster(ZclIasZoneCluster.CLUSTER_ID);
+    ZclIasZoneCluster serverClusterIasZone = getInputCluster(ZclIasZoneCluster.CLUSTER_ID);
     if (serverClusterIasZone == null) {
       log.error("{}: Error opening IAS zone cluster", getEndpointEntity());
       return false;
@@ -101,7 +101,7 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
       return false;
     }
 
-    ZclIasZoneCluster cluster =  getInputCluster(ZclIasZoneCluster.CLUSTER_ID);
+    ZclIasZoneCluster cluster = getInputCluster(ZclIasZoneCluster.CLUSTER_ID);
     Integer zoneTypeId = null;
     ZclAttribute zclAttribute = cluster.getAttribute(ATTR_ZONETYPE);
     for (int retry = 0; retry < 3; retry++) {

@@ -2,7 +2,6 @@ package org.touchhome.bundle.zigbee.converter.impl.config;
 
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclColorControlCluster;
-import java.util.ArrayList;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -13,23 +12,7 @@ public class ZclColorControlConfig implements ZclClusterConfigHandler {
   private static final String CONFIG_CONTROLMETHOD = CONFIG_ID + "controlmethod";
 
   private ZclColorControlCluster colorControlCluster;
-
-  public enum ControlMethod {
-    AUTO,
-    HUE,
-    XY
-  }
-
   private ControlMethod controlMethod = ControlMethod.AUTO;
-
-//  private final List<ConfigDescriptionParameter> parameters = new ArrayList<>();
-
- /* public ZclColorControlConfig(Channel channel) {
-    Configuration configuration = channel.getConfiguration();
-    if (configuration.containsKey(CONFIG_CONTROLMETHOD)) {
-      controlMethod = ControlMethod.valueOf((String) configuration.get(CONFIG_CONTROLMETHOD));
-    }
-  }*/
 
   @Override
   public boolean initialize(ZclCluster cluster) {
@@ -52,9 +35,22 @@ public class ZclColorControlConfig implements ZclClusterConfigHandler {
     return true;
   }
 
+//  private final List<ConfigDescriptionParameter> parameters = new ArrayList<>();
+
+ /* public ZclColorControlConfig(Channel channel) {
+    Configuration configuration = channel.getConfiguration();
+    if (configuration.containsKey(CONFIG_CONTROLMETHOD)) {
+      controlMethod = ControlMethod.valueOf((String) configuration.get(CONFIG_CONTROLMETHOD));
+    }
+  }*/
+
   @Override
   public boolean updateConfiguration() {
     return false;
+  }
+
+  public ControlMethod getControlMethod() {
+    return controlMethod;
   }
 
 /*
@@ -97,7 +93,9 @@ public class ZclColorControlConfig implements ZclClusterConfigHandler {
     return updated;
   }*/
 
-  public ControlMethod getControlMethod() {
-    return controlMethod;
+  public enum ControlMethod {
+    AUTO,
+    HUE,
+    XY
   }
 }

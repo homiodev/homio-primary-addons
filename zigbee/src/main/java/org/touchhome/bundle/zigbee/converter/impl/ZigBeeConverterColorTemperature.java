@@ -33,7 +33,7 @@ public class ZigBeeConverterColorTemperature extends ZigBeeBaseChannelConverter 
 
   @Override
   public boolean initializeDevice() {
-    ZclColorControlCluster serverClusterColorControl =  getInputCluster(ZclColorControlCluster.CLUSTER_ID);
+    ZclColorControlCluster serverClusterColorControl = getInputCluster(ZclColorControlCluster.CLUSTER_ID);
     if (serverClusterColorControl == null) {
       log.error("{}: Error opening color control input cluster on endpoint", getEndpointEntity());
       return false;
@@ -60,7 +60,7 @@ public class ZigBeeConverterColorTemperature extends ZigBeeBaseChannelConverter 
 
   @Override
   public boolean initializeConverter() {
-    clusterColorControl =  getInputCluster(ZclColorControlCluster.CLUSTER_ID);
+    clusterColorControl = getInputCluster(ZclColorControlCluster.CLUSTER_ID);
     if (clusterColorControl == null) {
       log.error("{}: Error opening color control input cluster on endpoint", getEndpointEntity());
       return false;
@@ -97,7 +97,7 @@ public class ZigBeeConverterColorTemperature extends ZigBeeBaseChannelConverter 
 
   @Override
   public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-    ZclColorControlCluster clusterColorControl =  getInputCluster(ZclColorControlCluster.CLUSTER_ID);
+    ZclColorControlCluster clusterColorControl = getInputCluster(ZclColorControlCluster.CLUSTER_ID);
     if (clusterColorControl == null) {
       log.trace("{}: Color control cluster not found on endpoint {}", getEndpointEntity());
       return false;

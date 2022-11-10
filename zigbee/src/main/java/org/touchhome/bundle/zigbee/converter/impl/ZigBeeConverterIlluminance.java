@@ -9,8 +9,7 @@ import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 
 /**
- * Indicates the current illuminance in lux
- * Converter for the illuminance channel
+ * Indicates the current illuminance in lux Converter for the illuminance channel
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:measurement_illuminance", linkType = VariableType.Float,

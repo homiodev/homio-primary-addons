@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
-import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
+import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 
 @Log4j2

@@ -4,14 +4,14 @@ import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.storage.Scratch3BaseFileSystemExtensionBlocks;
-import org.touchhome.bundle.raspberry.RaspberryEntryPoint;
+import org.touchhome.bundle.raspberry.RaspberryEntrypoint;
 import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
 
 @Getter
 @Component
-public class Scratch3RaspberryFSBlocks extends Scratch3BaseFileSystemExtensionBlocks<RaspberryEntryPoint, RaspberryDeviceEntity> {
+public class Scratch3RaspberryFSBlocks extends Scratch3BaseFileSystemExtensionBlocks<RaspberryEntrypoint, RaspberryDeviceEntity> {
 
-  public Scratch3RaspberryFSBlocks(EntityContext entityContext, RaspberryEntryPoint raspberryEntryPoint) {
-    super("#B04828", entityContext, raspberryEntryPoint, RaspberryDeviceEntity.class);
+  public Scratch3RaspberryFSBlocks(EntityContext entityContext, RaspberryEntrypoint raspberryEntrypoint) {
+    super("#B04828", entityContext, raspberryEntrypoint, RaspberryDeviceEntity.class);
   }
 }

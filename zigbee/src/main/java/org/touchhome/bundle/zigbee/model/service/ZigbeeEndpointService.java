@@ -46,24 +46,6 @@ public class ZigbeeEndpointService implements ServiceInstance<ZigBeeEndpointEnti
   private State lastState;
   private long lastStateTimestamp;
 
-  public void updateValue(State state) {
-    this.lastState = state;
-    this.lastStateTimestamp = System.currentTimeMillis();
-    if (coordinator.isLogEvents()) {
-      log.info("ZigBee <{}>, event: {}", entity.getEndpointUUID(), state);
-    }
-    if (variableId != null) {
-      entityContext.var().set(variableId, state);
-    }
-
-    entityContext.event().fireEvent(entity.getIeeeAddress(), state);
-    entityContext.event().fireEvent(entity.getEndpointUUID().asKey(), state);
-
-    for (Consumer<State> listener : valueUpdateListeners.values()) {
-      listener.accept(state);
-    }
-  }
-
   public ZigbeeEndpointService(EntityContext entityContext, ZigBeeBaseChannelConverter channel,
       ZigBeeDeviceService zigBeeDeviceService, ZigBeeEndpointEntity entity,
       ZigbeeCoordinatorEntity coordinator,
@@ -80,6 +62,24 @@ public class ZigbeeEndpointService implements ServiceInstance<ZigBeeEndpointEnti
       this.variableId = entityContext.var().createVariable("zigbee", varId, varId, channel.getAnnotation().linkType());
     } else {
       this.variableId = null;
+    }
+  }
+
+  public void updateValue(State state) {
+    this.lastState = state;
+    this.lastStateTimestamp = System.currentTimeMillis();
+    if (coordinator.isLogEvents()) {
+      log.info("ZigBee <{}>, event: {}", entity.getEndpointUUID(), state);
+    }
+    if (variableId != null) {
+      entityContext.var().set(variableId, state);
+    }
+
+    entityContext.event().fireEvent(entity.getIeeeAddress(), state);
+    entityContext.event().fireEvent(entity.getEndpointUUID().asKey(), state);
+
+    for (Consumer<State> listener : valueUpdateListeners.values()) {
+      listener.accept(state);
     }
   }
 

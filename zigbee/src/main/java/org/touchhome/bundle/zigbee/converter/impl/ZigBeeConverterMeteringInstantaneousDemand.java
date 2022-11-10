@@ -12,8 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.DecimalType;
 
 /**
- * The instantaneous demand from the metering system
- * ZigBee channel converter for instantaneous demand measurement
+ * The instantaneous demand from the metering system ZigBee channel converter for instantaneous demand measurement
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:metering_instantdemand", clientCluster = ZclMeteringCluster.CLUSTER_ID, category = "Number")

@@ -15,7 +15,7 @@ import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
-import org.touchhome.bundle.raspberry.RaspberryEntryPoint;
+import org.touchhome.bundle.raspberry.RaspberryEntrypoint;
 import org.touchhome.bundle.raspberry.RaspberryGPIOService;
 import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
 
@@ -35,8 +35,8 @@ public class Scratch3RaspberryBlocks extends Scratch3ExtensionBlocks {
   private final Scratch3Block isGpioInState;
 
   public Scratch3RaspberryBlocks(RaspberryGPIOService raspberryGPIOService,
-      EntityContext entityContext, RaspberryEntryPoint raspberryEntryPoint) {
-    super("#83be41", entityContext, raspberryEntryPoint);
+      EntityContext entityContext, RaspberryEntrypoint raspberryEntrypoint) {
+    super("#83be41", entityContext, raspberryEntrypoint);
     this.raspberryGPIOService = raspberryGPIOService;
 
     this.allPinMenu = menuStatic("allPinMenu", RaspberryGpioPin.class, RaspberryGpioPin.PIN3, p ->

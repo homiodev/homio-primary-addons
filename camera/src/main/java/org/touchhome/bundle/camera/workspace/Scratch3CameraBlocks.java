@@ -41,7 +41,7 @@ import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.ArgumentType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
-import org.touchhome.bundle.camera.CameraEntryPoint;
+import org.touchhome.bundle.camera.CameraEntrypoint;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.common.util.CommonUtils;
 
@@ -77,8 +77,8 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
   private final MenuBlock.ServerMenuBlock menuCameraRecord;
   private final MenuBlock.ServerMenuBlock menuOnvifCamera;
 
-  public Scratch3CameraBlocks(EntityContext entityContext, CameraEntryPoint cameraEntryPoint) {
-    super("#8F4D77", entityContext, cameraEntryPoint, null);
+  public Scratch3CameraBlocks(EntityContext entityContext, CameraEntrypoint cameraEntrypoint) {
+    super("#8F4D77", entityContext, cameraEntrypoint, null);
     setParent("media");
 
     // Menu

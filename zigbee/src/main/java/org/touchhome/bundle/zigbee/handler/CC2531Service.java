@@ -7,15 +7,13 @@ import com.zsmartsystems.zigbee.transport.ZigBeeTransportTransmit;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.port.PortFlowControl;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
-import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
 import org.touchhome.bundle.zigbee.internal.ZigBeeSerialPort;
+import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
 
-@Log4j2
 public class CC2531Service extends ZigBeeCoordinatorService {
 
   public CC2531Service(EntityContext entityContext) {
@@ -29,8 +27,6 @@ public class CC2531Service extends ZigBeeCoordinatorService {
 
   @Override
   protected void initializeDongle() {
-    log.debug("Initializing ZigBee CC2531 serial bridge handler.");
-
     ZigBeeTransportTransmit dongle = createDongle();
     TransportConfig transportConfig = createTransportConfig();
 

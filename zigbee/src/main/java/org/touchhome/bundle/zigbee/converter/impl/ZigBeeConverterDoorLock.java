@@ -7,8 +7,7 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclDoorLockCluster;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * Locks and unlocks the door and maintains the lock state
- * This channel supports changes through attribute updates to the door lock state. ON=Locked, OFF=Unlocked.
+ * Locks and unlocks the door and maintains the lock state This channel supports changes through attribute updates to the door lock state. ON=Locked, OFF=Unlocked.
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:door_state", clientCluster = ZclDoorLockCluster.CLUSTER_ID, category = "Door")

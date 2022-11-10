@@ -8,8 +8,7 @@ import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * Set the system mode of the thermostat
- * Converter for the thermostat system mode channel. The SystemMode attribute specifies the current operating mode of the thermostat,
+ * Set the system mode of the thermostat Converter for the thermostat system mode channel. The SystemMode attribute specifies the current operating mode of the thermostat,
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:thermostat_systemmode", clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
@@ -27,7 +26,7 @@ public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverte
 
   @Override
   public boolean initializeDevice() {
-    ZclThermostatCluster serverCluster =  getInputCluster(ZclThermostatCluster.CLUSTER_ID);
+    ZclThermostatCluster serverCluster = getInputCluster(ZclThermostatCluster.CLUSTER_ID);
     if (serverCluster == null) {
       log.error("{}: Error opening device thermostat cluster", getEndpointEntity());
       return false;

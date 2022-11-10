@@ -3,7 +3,7 @@ package org.touchhome.bundle.bluetooth;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
-import org.touchhome.bundle.api.BundleEntryPoint;
+import org.touchhome.bundle.api.BundleEntrypoint;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
 import org.touchhome.bundle.api.hardware.other.MachineHardwareRepository;
@@ -14,11 +14,11 @@ import org.touchhome.bundle.cloud.setting.ConsoleCloudProviderSetting;
 
 @Log4j2
 @Controller
-public class BluetoothBundleEntryPoint extends BaseBluetoothCharacteristicService implements BundleEntryPoint {
+public class BluetoothBundleEntrypoint extends BaseBluetoothCharacteristicService implements BundleEntrypoint {
 
   private final EntityContext entityContext;
 
-  public BluetoothBundleEntryPoint(EntityContext entityContext, MachineHardwareRepository machineHardwareRepository, NetworkHardwareRepository networkHardwareRepository) {
+  public BluetoothBundleEntrypoint(EntityContext entityContext, MachineHardwareRepository machineHardwareRepository, NetworkHardwareRepository networkHardwareRepository) {
     super(machineHardwareRepository, networkHardwareRepository);
     this.entityContext = entityContext;
   }

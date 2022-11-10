@@ -21,7 +21,7 @@ import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
-import org.touchhome.bundle.zigbee.ZigBeeBundleEntryPoint;
+import org.touchhome.bundle.zigbee.ZigBeeBundleEntrypoint;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
@@ -45,8 +45,8 @@ final class Scratch3ZigBeeButtonsBlocks extends Scratch3ZigBeeExtensionBlocks {
 
   private final EntityContext entityContext;
 
-  Scratch3ZigBeeButtonsBlocks(EntityContext entityContext, ZigBeeBundleEntryPoint zigBeeBundleEntryPoint) {
-    super("#A3623C", entityContext, zigBeeBundleEntryPoint, "btn");
+  Scratch3ZigBeeButtonsBlocks(EntityContext entityContext, ZigBeeBundleEntrypoint zigBeeBundleEntrypoint) {
+    super("#A3623C", entityContext, zigBeeBundleEntrypoint, "btn");
     this.entityContext = entityContext;
 
     this.buttonSensorMenu = menuServer("buttonSensorMenu", ZIGBEE__BASE_URL + "buttons", "Button Sensor", "-",

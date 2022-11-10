@@ -1,6 +1,6 @@
 package org.ble;
 
-import static org.touchhome.bundle.bluetooth.BluetoothBundleEntryPoint.MIN_WRITE_TIMEOUT;
+import static org.touchhome.bundle.bluetooth.BluetoothBundleEntrypoint.MIN_WRITE_TIMEOUT;
 
 import java.util.ArrayList;
 import java.util.Arrays;

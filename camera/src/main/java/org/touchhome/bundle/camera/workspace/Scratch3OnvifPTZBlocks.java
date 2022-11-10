@@ -15,7 +15,7 @@ import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
-import org.touchhome.bundle.camera.CameraEntryPoint;
+import org.touchhome.bundle.camera.CameraEntrypoint;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 
@@ -31,8 +31,8 @@ public class Scratch3OnvifPTZBlocks extends Scratch3ExtensionBlocks {
   private final MenuBlock.StaticMenuBlock<String> menuPreset;
   private final MenuBlock.StaticMenuBlock<GetPTZValueType> menuPtzValueType;
 
-  public Scratch3OnvifPTZBlocks(EntityContext entityContext, CameraEntryPoint cameraEntryPoint) {
-    super("#4f4ba6", entityContext, cameraEntryPoint, "onvifptz");
+  public Scratch3OnvifPTZBlocks(EntityContext entityContext, CameraEntrypoint cameraEntrypoint) {
+    super("#4f4ba6", entityContext, cameraEntrypoint, "onvifptz");
     setParent("media");
 
     // Menu

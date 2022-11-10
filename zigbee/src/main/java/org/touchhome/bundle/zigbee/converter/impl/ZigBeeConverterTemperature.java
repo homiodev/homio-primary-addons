@@ -9,12 +9,10 @@ import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
-
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 
 /**
- * Indicates the current temperature
- * Converter for the temperature channel
+ * Indicates the current temperature Converter for the temperature channel
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:measurement_temperature", linkType = VariableType.Float,

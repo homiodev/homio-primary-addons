@@ -7,8 +7,7 @@ import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 
 /**
- * Fire Indication Alarm
- * Converter for the IAS fire indicator.
+ * Fire Indication Alarm Converter for the IAS fire indicator.
  */
 @ZigBeeConverter(name = ZigBeeConverterIasFireIndicator.CLUSTER_NAME, clientCluster =
     ZclIasZoneCluster.CLUSTER_ID, linkType = VariableType.Boolean, category = "SmokeDetector")

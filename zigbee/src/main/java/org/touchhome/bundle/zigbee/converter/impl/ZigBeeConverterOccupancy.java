@@ -9,8 +9,7 @@ import org.touchhome.bundle.api.state.OnOffType;
 
 
 /**
- * Indicates if an occupancy sensor is triggered
- * Converter for the occupancy sensor.
+ * Indicates if an occupancy sensor is triggered Converter for the occupancy sensor.
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:sensor_occupancy", linkType = VariableType.Boolean, clientCluster =

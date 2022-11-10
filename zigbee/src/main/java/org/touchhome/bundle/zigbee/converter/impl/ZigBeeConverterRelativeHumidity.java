@@ -11,8 +11,7 @@ import org.touchhome.bundle.api.state.DecimalType;
 
 
 /**
- * Indicates the current relative humidity
- * Converter for the relative humidity channel
+ * Indicates the current relative humidity Converter for the relative humidity channel
  */
 @Log4j2
 @ZigBeeConverter(name = "zigbee:measurement_relativehumidity", clientCluster =
