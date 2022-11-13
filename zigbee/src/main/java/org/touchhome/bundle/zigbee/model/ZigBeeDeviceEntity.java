@@ -48,9 +48,9 @@ import org.touchhome.bundle.api.entity.HasJsonData;
 import org.touchhome.bundle.api.entity.HasStatusAndMsg;
 import org.touchhome.bundle.api.entity.validation.MaxItems;
 import org.touchhome.bundle.api.model.ActionResponseModel;
+import org.touchhome.bundle.api.model.HasEntityLog;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService;
-import org.touchhome.bundle.api.ui.UIEntityLog;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
@@ -77,11 +77,8 @@ import org.touchhome.common.util.Lang;
 @Entity
 @UISidebarMenu(icon = "fas fa-bezier-curve", parent = UISidebarMenu.TopSidebarMenu.HARDWARE, bg = "#de9ed7",
     order = 5, overridePath = "zigbee")
-@UIEntityLog(topic = ZigBeeDeviceService.class, filterByField = "ieeeAddress")
-@UIEntityLog(topic = ZigBeeDeviceEntity.class)
-@UIEntityLog(topic = ZigBeeNodeServiceDiscoverer.class, filterByField = "ieeeAddress")
 public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> implements
-    HasJsonData, HasNodeDescriptor,
+    HasJsonData, HasNodeDescriptor, HasEntityLog,
     HasStatusAndMsg<ZigBeeDeviceEntity>, EntityService<ZigBeeDeviceService, ZigBeeDeviceEntity> {
 
   public static final String PREFIX = "zb_";
@@ -435,5 +432,12 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
     } else {
       log.log(level, "Set ZigBee device status: {}. Msg: {}", status, message);
     }
+  }
+
+  @Override
+  public void logBuilder(EntityLogBuilder entityLogBuilder) {
+    entityLogBuilder.addTopic(ZigBeeDeviceService.class, "ieeeAddress");
+    entityLogBuilder.addTopic(ZigBeeNodeServiceDiscoverer.class, "ieeeAddress");
+    entityLogBuilder.addTopic(ZigBeeDeviceEntity.class);
   }
 }

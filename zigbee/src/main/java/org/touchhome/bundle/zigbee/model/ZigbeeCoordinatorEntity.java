@@ -25,9 +25,9 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.types.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.exception.ProhibitedExecution;
 import org.touchhome.bundle.api.model.ActionResponseModel;
+import org.touchhome.bundle.api.model.HasEntityLog;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService;
-import org.touchhome.bundle.api.ui.UIEntityLog;
 import org.touchhome.bundle.api.ui.UISidebarChildren;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
@@ -46,13 +46,8 @@ import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
 @Log4j2
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#D46A06")
-@UIEntityLog(topic = ZigbeeCoordinatorEntity.class, filterByField = "entityID")
-@UIEntityLog(topic = ZigBeeCoordinatorService.class, filterByField = "entityID")
-@UIEntityLog(topic = ZigBeeNetworkManager.class)
-@UIEntityLog(topic = ZigBeeDiscoveryExtension.class)
-@UIEntityLog(topic = ZigBeeNetworkDiscoverer.class)
 public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoordinatorEntity>
-    implements HasNodeDescriptor, EntityService<ZigBeeCoordinatorService, ZigbeeCoordinatorEntity> {
+    implements HasEntityLog, HasNodeDescriptor, EntityService<ZigBeeCoordinatorService, ZigbeeCoordinatorEntity> {
 
   /**
    * Default ZigBeeAlliance09 link key
@@ -398,6 +393,15 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
       setLinkKey(KEY_ZIGBEE_ALLIANCE_O9.toString());
       log.debug("{}: Link Key String has invalid format. Revert to default key", getEntityID());
     }
+  }
+
+  @Override
+  public void logBuilder(EntityLogBuilder entityLogBuilder) {
+    entityLogBuilder.addTopic(ZigbeeCoordinatorEntity.class, "entityID");
+    entityLogBuilder.addTopic(ZigBeeCoordinatorService.class, "entityID");
+    entityLogBuilder.addTopic(ZigBeeNetworkManager.class);
+    entityLogBuilder.addTopic(ZigBeeDiscoveryExtension.class);
+    entityLogBuilder.addTopic(ZigBeeNetworkDiscoverer.class);
   }
 
   @RequiredArgsConstructor

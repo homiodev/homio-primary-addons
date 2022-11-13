@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.storage.BaseFileSystemEntity;
 import org.touchhome.bundle.api.entity.types.MicroControllerBaseEntity;
+import org.touchhome.bundle.api.model.HasEntityLog;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldExpand;
@@ -25,7 +26,7 @@ import org.touchhome.common.util.CommonUtils;
 
 @Entity
 public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<RaspberryDeviceEntity>
-    implements BaseFileSystemEntity<RaspberryDeviceEntity, RaspberryFileSystem> {
+    implements HasEntityLog, BaseFileSystemEntity<RaspberryDeviceEntity, RaspberryFileSystem> {
 
   public static final String PREFIX = "raspb_";
   public static final String DEFAULT_DEVICE_ENTITY_ID = PREFIX + TouchHomeUtils.APP_UUID;
@@ -144,6 +145,11 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
   @Override
   public void assembleActions(UIInputBuilder uiInputBuilder) {
 
+  }
+
+  @Override
+  public void logBuilder(EntityLogBuilder entityLogBuilder) {
+    entityLogBuilder.addTopic("org.touchhome.bundle.raspberry");
   }
 
   @Getter

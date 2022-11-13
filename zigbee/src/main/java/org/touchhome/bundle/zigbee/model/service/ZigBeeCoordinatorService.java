@@ -660,8 +660,9 @@ public abstract class ZigBeeCoordinatorService
     if (entity == null) {
       this.entity = newEntity;
     }
-    entityContext.bgp().builder("test").interval(Duration.ofSeconds(10)).execute(() -> {
-      log.info("{}: bla-bla-bla", entity.getEntityID());
+    entityContext.bgp().builder("test" + entity.getEntityID()).interval(Duration.ofSeconds(10)).execute(() -> {
+      Exception ex = new IllegalStateException("asdasd");
+      log.debug("{}: bla-bla-bla", entity.getEntityID(), ex);
     });
     this.discoveryService.setCoordinator(newEntity);
     this.zigBeeConsolePlugin.setCoordinator(newEntity);
