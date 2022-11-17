@@ -4,8 +4,8 @@ import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.storage.Scratch3BaseFileSystemExtensionBlocks;
+import org.touchhome.bundle.raspberry.RaspberryDeviceEntity;
 import org.touchhome.bundle.raspberry.RaspberryEntrypoint;
-import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
 
 @Getter
 @Component

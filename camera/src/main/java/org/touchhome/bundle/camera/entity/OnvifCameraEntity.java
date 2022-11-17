@@ -131,7 +131,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
   }
 
   @UIFieldPort
-  @UIField(order = 36, advanced = true, onlyEdit = true)
+  @UIField(order = 36, onlyEdit = true)
   @RestartHandlerOnChange
   public int getRestPort() {
     return getJsonData("restPort", 80);
@@ -262,6 +262,11 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
   @Override
   public OnvifCameraHandler createVideoHandler(EntityContext entityContext) {
     return new OnvifCameraHandler(this, entityContext);
+  }
+
+  @Override
+  public String getDefaultName() {
+    return "Onvif camera";
   }
 
   @Override

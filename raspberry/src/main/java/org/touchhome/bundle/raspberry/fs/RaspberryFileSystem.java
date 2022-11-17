@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
-import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
+import org.touchhome.bundle.raspberry.RaspberryDeviceEntity;
 import org.touchhome.common.fs.FileSystemProvider;
 import org.touchhome.common.fs.TreeNode;
 import org.touchhome.common.util.ArchiveUtil;

@@ -9,7 +9,7 @@ import com.zsmartsystems.zigbee.app.discovery.ZigBeeNetworkDiscoverer;
 import com.zsmartsystems.zigbee.security.ZigBeeKey;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -32,9 +32,9 @@ import org.touchhome.bundle.api.ui.UISidebarChildren;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
 import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
-import org.touchhome.bundle.api.ui.field.UIFieldShowOnCondition;
 import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
+import org.touchhome.bundle.api.ui.field.condition.UIFieldShowOnCondition;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldDevicePortSelection;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectNoValue;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
@@ -121,7 +121,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("port", value);
   }
 
-  @UIField(order = 180, advanced = true)
+  @UIField(order = 180)
   @UIFieldStaticSelection(value = {"38400", "57600", "115200"})
   @UIFieldGroup("Port")
   public int getPortBaud() {
@@ -132,7 +132,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("pb", value);
   }
 
-  @UIField(order = 220, advanced = true)
+  @UIField(order = 220)
   @UIFieldStaticSelection({"0:None", "1:Hardware (CTS/RTS)", "2:Software (XOn/XOff)"})
   @UIFieldGroup("Port")
   @UIFieldShowOnCondition("return context.get('coordinatorHandler') == 'EmberHandler'")
@@ -155,7 +155,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("nid", value);
   }
 
-  @UIField(order = 2, advanced = true, hideOnEmpty = true)
+  @UIField(order = 2, hideOnEmpty = true)
   @UIFieldGroup("Network")
   public String getExtendedPanId() {
     return getJsonData("epid", "0000000000000000");
@@ -165,7 +165,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("epid", value);
   }
 
-  @UIField(order = 3, advanced = true)
+  @UIField(order = 3)
   @UIFieldGroup(value = "Network", order = 10, borderColor = "#4f8a4e")
   public String getNetworkKey() {
     return getJsonData("nk", "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
@@ -175,7 +175,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("nk", value);
   }
 
-  @UIField(order = 4, advanced = true)
+  @UIField(order = 4)
   @UIFieldSlider(min = 0, max = 65535)
   @UIFieldGroup("Network")
   public int getPanId() {
@@ -186,7 +186,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("pid", value);
   }
 
-  @UIField(order = 5, advanced = true)
+  @UIField(order = 5)
   @UIFieldGroup("Network")
   @UIFieldStaticSelection({"11..25;Channel %s"})
   public int getChannelId() {
@@ -197,7 +197,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("cid", value);
   }
 
-  @UIField(order = 6, hideOnEmpty = true, advanced = true)
+  @UIField(order = 6, hideOnEmpty = true)
   @UIFieldGroup("Network")
   public String getLinkKey() {
     return getJsonData("lk", "");
@@ -228,7 +228,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("jddso", value);
   }
 
-  @UIField(order = 3, advanced = true)
+  @UIField(order = 3)
   @UIFieldStaticSelection({"0:Never", "300:5 Minutes", "1800:30 Minutes", "3600:1 Hour", "21600:6 Minutes",
       "86400:1 Day", "604800:1 Week"})
   @UIFieldGroup("Discovery")
@@ -240,7 +240,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("mup", value);
   }
 
-  @UIField(order = 1, advanced = true)
+  @UIField(order = 1)
   @UIFieldStaticSelection({"-1:None", "0:Deny", "1:Insecure", "2:Secure", "3:InstallCode"})
   @UIFieldGroup(value = "Dongle", order = 20, borderColor = "#3E7792")
   public int getTrustCentreJoinMode() {
@@ -251,7 +251,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("tc", value);
   }
 
-  @UIField(order = 2, advanced = true)
+  @UIField(order = 2)
   @UIFieldSlider(min = 0, max = 8)
   @UIFieldGroup("Dongle")
   public int getTxPower() {
@@ -262,7 +262,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("txp", value);
   }
 
-  @UIField(order = 3, hideOnEmpty = true, advanced = true)
+  @UIField(order = 3, hideOnEmpty = true)
   @UIFieldGroup("Dongle")
   public String getInstallCode() {
     return getJsonData("ic", "");
@@ -272,7 +272,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("ic", value);
   }
 
-  @UIField(order = 4, advanced = true)
+  @UIField(order = 4)
   @UIFieldStaticSelection(value = {"0:Normal", "1:Boost"})
   @UIFieldGroup("Dongle")
   @UIFieldShowOnCondition("return context.get('coordinatorHandler') == 'EmberHandler'")
@@ -338,7 +338,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
 
   @Override
   public ZigBeeCoordinatorService createService(EntityContext entityContext) {
-    return getCoordinatorHandler().coordinatorSupplier.apply(entityContext);
+    return getCoordinatorHandler().coordinatorSupplier.apply(entityContext, this);
   }
 
   public ZigbeeCoordinatorEntity nodeUpdated(ZigBeeNode node, EntityContext entityContext) {
@@ -406,8 +406,8 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
 
   @RequiredArgsConstructor
   private enum ZigbeeCoordinator {
-    CC2531Handler(entityContext -> new CC2531Service(entityContext));
+    CC2531Handler((entityContext, entity) -> new CC2531Service(entityContext, entity));
 
-    private final Function<EntityContext, ZigBeeCoordinatorService> coordinatorSupplier;
+    private final BiFunction<EntityContext, ZigbeeCoordinatorEntity, ZigBeeCoordinatorService> coordinatorSupplier;
   }
 }

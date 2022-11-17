@@ -33,4 +33,9 @@ public class IpCameraSDCardStorageService extends VideoBaseStorageService<IpCame
   public void stopRecord(String id, String output, DeviceBaseEntity cameraEntity) {
     throw new NotImplementedException();
   }
+
+  @Override
+  public String getDefaultName() {
+    return "IpCamera SD storage";
+  }
 }

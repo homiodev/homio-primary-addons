@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntrypoint;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.raspberry.console.GpioConsolePlugin;
 
 @Component
 @RequiredArgsConstructor
@@ -13,8 +12,7 @@ public class RaspberryEntrypoint implements BundleEntrypoint {
   private final EntityContext entityContext;
 
   public void init() {
-    entityContext.getBean(RaspberryGPIOService.class).init();
-    entityContext.getBean(GpioConsolePlugin.class).init();
+    entityContext.var().createGroup("rpi", "Raspberry", true, "fab fa-raspberry-pi", "#C70039");
   }
 
   @Override

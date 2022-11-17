@@ -1,81 +1,54 @@
-package org.touchhome.bundle.raspberry.console;
+package org.touchhome.bundle.raspberry.gpio.service;
 
-import com.pi4j.io.gpio.GpioPin;
-import com.pi4j.io.gpio.GpioPinDigital;
-import com.pi4j.io.gpio.PinMode;
-import com.pi4j.io.gpio.PinPullResistance;
-import com.pi4j.io.gpio.PinState;
+import com.pi4j.io.gpio.digital.PullResistance;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
+import org.jetbrains.annotations.NotNull;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePluginTable;
-import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
-import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
+import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.ui.field.UIField;
-import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorMatch;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorRef;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorSource;
-import org.touchhome.bundle.api.util.RaspberryGpioPin;
-import org.touchhome.bundle.raspberry.RaspberryGPIOService;
-import org.touchhome.bundle.raspberry.entity.RaspberryDeviceEntity;
+import org.touchhome.bundle.raspberry.gpio.GpioPin;
+import org.touchhome.bundle.raspberry.gpio.GpioState;
+import org.touchhome.bundle.raspberry.gpio.mode.PinMode;
 
-@Component
 @RequiredArgsConstructor
 public class GpioConsolePlugin implements ConsolePluginTable<GpioConsolePlugin.GpioPluginEntity> {
 
   @Getter
   private final EntityContext entityContext;
-  private final RaspberryGPIOService raspberryGPIOService;
-  private String selectedRaspberry;
+  private final org.touchhome.bundle.raspberry.gpio.GPIOService GPIOService;
 
   @Override
-  public Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> getHeaderActions() {
-    Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> headerActions = new LinkedHashMap<>();
-    headerActions.put("gpio.select_raspberry", ConsoleHeaderSelectRaspberryBoardSetting.class);
-    return headerActions;
-  }
-
-  public void init() {
-    entityContext.setting().listenValueAndGet(ConsoleHeaderSelectRaspberryBoardSetting.class, "rasp-board",
-        entityId -> this.selectedRaspberry = entityId);
+  public String getParentTab() {
+    return "GPIO";
   }
 
   @Override
   public Collection<GpioPluginEntity> getValue() {
     List<GpioPluginEntity> list = new ArrayList<>();
 
-    entityContext.findAll(RaspberryDeviceEntity.class);
-
-    for (RaspberryGpioPin gpioPin : RaspberryGpioPin.values()) {
-      GpioPin pin = raspberryGPIOService.getGpioPin(gpioPin);
+    for (GpioState gpioState : GPIOService.getState().values()) {
+      GpioPin gpioPin = gpioState.getGpioPin();
       GpioPluginEntity gpioPluginEntity = new GpioPluginEntity();
       gpioPluginEntity.setAddress(gpioPin.getAddress());
-      gpioPluginEntity.setName(gpioPin.name());
-      gpioPluginEntity.setDescription(gpioPin.getName());
-      gpioPluginEntity.setRaspiPin(gpioPin.getPin().getName());
-      gpioPluginEntity.setBcmPin(gpioPin.getBcmPin() == null ? null : gpioPin.getBcmPin().getName());
-      gpioPluginEntity.setSupportedModes(gpioPin.getPin().getSupportedPinModes().stream().map(p -> p.getName().toUpperCase()).collect(Collectors.toSet()));
-      gpioPluginEntity.setOccupied(gpioPin.getOccupied());
+      gpioPluginEntity.setName(gpioPin.getName());
+      gpioPluginEntity.setDescription(gpioPin.getDescription());
+      gpioPluginEntity.setSupportedModes(gpioPin.getSupportModes());
+      gpioPluginEntity.setMode(gpioState.getPinMode());
       gpioPluginEntity.setColor(gpioPin.getColor());
-      gpioPluginEntity.setSupportedPullResistance(gpioPin.getPin().getSupportedPinPullResistance().stream().map(p -> p.getName().toUpperCase()).collect(Collectors.toSet()));
-      if (pin != null) {
-        gpioPluginEntity.setValue(pin instanceof GpioPinDigital ? ((GpioPinDigital) pin).getState() : null);
-        gpioPluginEntity.setMode(pin.getMode());
-        gpioPluginEntity.setPullResistance(pin.getPullResistance());
-      }
+      gpioPluginEntity.setValue(gpioState.getLastState());
+      gpioPluginEntity.setPullResistance(gpioState.getPull());
       list.add(gpioPluginEntity);
     }
 
@@ -90,7 +63,7 @@ public class GpioConsolePlugin implements ConsolePluginTable<GpioConsolePlugin.G
 
   @Override
   public boolean isEnabled() {
-    return entityContext.isFeatureEnabled("GPIO");
+    return GPIOService.isGPIOAvailable();
   }
 
   @Override
@@ -109,29 +82,31 @@ public class GpioConsolePlugin implements ConsolePluginTable<GpioConsolePlugin.G
 
     @UIField(order = 1, label = "№")
     private int address;
+
     @UIField(order = 2)
     @UIFieldColorRef("color")
     private String name;
+
     @UIField(order = 3)
     private String description;
-    @UIField(order = 4, label = "Raspi Pin")
-    private String raspiPin;
-    @UIField(order = 5, label = "BCM Pin")
-    private String bcmPin;
+
     @UIField(order = 6, label = "Mode")
     private PinMode mode;
+
     @UIField(order = 7, label = "Occupied")
     private String occupied;
+
     @UIField(order = 8, label = "Supported modes")
-    private Set<String> supportedModes;
+    private Set<PinMode> supportedModes;
+
     @UIField(order = 9, label = "Pull Resistance")
-    private PinPullResistance pullResistance;
-    @UIField(order = 10, label = "Supported Pull Resistance")
-    private Set<String> supportedPullResistance;
+    private PullResistance pullResistance;
+
     @UIField(order = 11)
     @UIFieldColorMatch(value = "HIGH", color = "#1F8D2D")
     @UIFieldColorMatch(value = "LOW", color = "#B22020")
-    private Object value;
+    private State value;
+
     @UIFieldColorSource
     private String color;
 
@@ -139,14 +114,14 @@ public class GpioConsolePlugin implements ConsolePluginTable<GpioConsolePlugin.G
       return name;
     }
 
-    @UIContextMenuAction("ACTION.PULL_DOWN_RESISTOR")
+    /* @UIContextMenuAction("ACTION.PULL_DOWN_RESISTOR")
     public ActionResponseModel pullDownResistor(EntityContext entityContext, GpioPluginEntity gpioPluginEntity) {
-      return setPinPullResistance(gpioPluginEntity, entityContext, PinPullResistance.PULL_DOWN);
+      return setPullResistance(gpioPluginEntity, entityContext, PullResistance.PULL_DOWN);
     }
 
     @UIContextMenuAction("ACTION.PULL_UP_RESISTOR")
     public ActionResponseModel pullUpResistor(EntityContext entityContext, GpioPluginEntity gpioPluginEntity) {
-      return setPinPullResistance(gpioPluginEntity, entityContext, PinPullResistance.PULL_UP);
+      return setPullResistance(gpioPluginEntity, entityContext, PullResistance.PULL_UP);
     }
 
     @UIContextMenuAction("ACTION.SET_HIGH")
@@ -159,15 +134,10 @@ public class GpioConsolePlugin implements ConsolePluginTable<GpioConsolePlugin.G
       return setPinState(gpioPluginEntity, entityContext, PinState.LOW);
     }
 
-    @Override
-    public int compareTo(@NotNull GpioPluginEntity o) {
-      return this.name.compareTo(o.name);
-    }
-
-    private ActionResponseModel setPinPullResistance(GpioPluginEntity gpioPluginEntity, EntityContext entityContext,
-        PinPullResistance pinPullResistance) {
+    private ActionResponseModel setPullResistance(GpioPluginEntity gpioPluginEntity, EntityContext entityContext,
+        PullResistance PullResistance) {
       RaspberryGpioPin gpioPin = RaspberryGpioPin.fromValue(gpioPluginEntity.getRaspiPin());
-      entityContext.getBean(RaspberryGPIOService.class).setPullResistance(gpioPin, pinPullResistance);
+      entityContext.getBean(RaspberryGPIOService.class).setPullResistance(gpioPin, PullResistance);
       return ActionResponseModel.showSuccess("success");
     }
 
@@ -176,6 +146,11 @@ public class GpioConsolePlugin implements ConsolePluginTable<GpioConsolePlugin.G
       RaspberryGpioPin gpioPin = RaspberryGpioPin.fromValue(gpioPluginEntity.getRaspiPin());
       entityContext.getBean(RaspberryGPIOService.class).setValue(gpioPin, pinState);
       return ActionResponseModel.showSuccess("success");
+    }*/
+
+    @Override
+    public int compareTo(@NotNull GpioPluginEntity o) {
+      return this.name.compareTo(o.name);
     }
   }
 }

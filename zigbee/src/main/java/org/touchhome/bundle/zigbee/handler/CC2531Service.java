@@ -12,12 +12,13 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.port.PortFlowControl;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.zigbee.internal.ZigBeeSerialPort;
+import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
 
 public class CC2531Service extends ZigBeeCoordinatorService {
 
-  public CC2531Service(EntityContext entityContext) {
-    super(entityContext);
+  public CC2531Service(EntityContext entityContext, ZigbeeCoordinatorEntity entity) {
+    super(entityContext, entity);
   }
 
   @Override

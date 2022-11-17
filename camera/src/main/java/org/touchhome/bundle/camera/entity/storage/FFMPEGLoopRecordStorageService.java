@@ -70,7 +70,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
   /**
    * Advanced settings
    */
-  @UIField(order = 400, onlyEdit = true, advanced = true)
+  @UIField(order = 400, onlyEdit = true)
   @RestartHandlerOnChange
   public String getVideoCodec() {
     return getJsonData("vc", "copy");
@@ -81,7 +81,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
     return this;
   }
 
-  @UIField(order = 401, onlyEdit = true, advanced = true)
+  @UIField(order = 401, onlyEdit = true)
   @RestartHandlerOnChange
   public String getAudioCodec() {
     return getJsonData("ac", "copy");
@@ -92,7 +92,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
     return this;
   }
 
-  @UIField(order = 402, onlyEdit = true, advanced = true)
+  @UIField(order = 402, onlyEdit = true)
   @RestartHandlerOnChange
   public String getSelectStream() {
     return getJsonData("map", "0");
@@ -103,7 +103,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
     return this;
   }
 
-  @UIField(order = 1000, onlyEdit = true, advanced = true, type = UIFieldType.Chips)
+  @UIField(order = 1000, onlyEdit = true, type = UIFieldType.Chips)
   @RestartHandlerOnChange
   public List<String> getExtraOptions() {
     return getJsonDataList("eo");
@@ -113,7 +113,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
     setJsonData("eo", value);
   }
 
-  @UIField(order = 402, onlyEdit = true, advanced = true)
+  @UIField(order = 402, onlyEdit = true)
   @RestartHandlerOnChange
   public boolean getVerbose() {
     return getJsonData("vb", false);

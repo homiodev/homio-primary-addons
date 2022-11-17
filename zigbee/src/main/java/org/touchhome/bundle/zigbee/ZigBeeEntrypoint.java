@@ -12,15 +12,14 @@ import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class ZigBeeBundleEntrypoint implements BundleEntrypoint {
+public class ZigBeeEntrypoint implements BundleEntrypoint {
 
   private final EntityContext entityContext;
 
   @Override
   public void init() {
     entityContext.ui().registerConsolePluginName("ZIGBEE");
-    entityContext.var().createGroup("zigbee", "ZigBee", true, "fab fa-laravel", "#ED3A3A",
-        null);
+    entityContext.var().createGroup("zigbee", "ZigBee", true, "fab fa-laravel", "#ED3A3A");
 
     // listen for port changes and reinitialise coordinator if port became available
     entityContext.event().addPortChangeStatusListener("zigbee-ports", o -> {

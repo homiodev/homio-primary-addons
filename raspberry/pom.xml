@@ -2,20 +2,36 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <artifactId>touchhome-bundle-raspberry</artifactId>
+  <properties>
+    <pi4j.version>2.2.1</pi4j.version>
+  </properties>
+
   <dependencies>
+    <dependency>
+      <groupId>com.pi4j</groupId>
+      <artifactId>pi4j-core</artifactId>
+      <version>${pi4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.pi4j</groupId>
+      <artifactId>pi4j-plugin-raspberrypi</artifactId>
+      <version>${pi4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.pi4j</groupId>
+      <artifactId>pi4j-plugin-pigpio</artifactId>
+      <version>${pi4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.pi4j</groupId>
+      <artifactId>pi4j-plugin-mock</artifactId>
+      <scope>compile</scope>
+      <version>2.2.1</version>
+    </dependency>
     <dependency>
       <artifactId>tika-core</artifactId>
       <groupId>org.apache.tika</groupId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <artifactId>pi4j-device</artifactId>
-      <groupId>com.pi4j</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>pi4j-gpio-extension</artifactId>
-      <groupId>com.pi4j</groupId>
     </dependency>
   </dependencies>
 

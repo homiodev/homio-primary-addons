@@ -77,7 +77,6 @@ public abstract class ZigBeeCoordinatorService
   @Getter
   private final ZigBeeDiscoveryService discoveryService;
 
-  private final ZigBeeConsolePlugin zigBeeConsolePlugin;
   private final Object reconnectLock = new Object();
   @Getter
   private ZigBeeTransportTransmit zigBeeTransport;
@@ -102,13 +101,15 @@ public abstract class ZigBeeCoordinatorService
   @Getter
   private boolean initialized;
 
-  public ZigBeeCoordinatorService(EntityContext entityContext) {
+  public ZigBeeCoordinatorService(EntityContext entityContext, ZigbeeCoordinatorEntity entity) {
+    this.entity = entity;
     this.channelFactory = entityContext.getBean(ZigBeeChannelConverterFactory.class);
     this.entityContext = entityContext;
     this.discoveryService = new ZigBeeDiscoveryService(entityContext, channelFactory);
     this.addNetworkNodeListener(this.discoveryService);
 
-    this.zigBeeConsolePlugin = new ZigBeeConsolePlugin(entityContext);
+    this.entityContext.ui().registerConsolePlugin("zigbee-console-" + entity.getEntityID(),
+        new ZigBeeConsolePlugin(entityContext, this));
   }
 
   public void initialize() {
@@ -665,7 +666,6 @@ public abstract class ZigBeeCoordinatorService
       log.debug("{}: bla-bla-bla", entity.getEntityID(), ex);
     });
     this.discoveryService.setCoordinator(newEntity);
-    this.zigBeeConsolePlugin.setCoordinator(newEntity);
 
     if (newEntity.isStart()) {
       restartIfRequire(newEntity);
@@ -673,7 +673,6 @@ public abstract class ZigBeeCoordinatorService
       dispose("finish");
     }
     this.entity = newEntity; // final set entity in case if restartIfRequire(newEntity) didn't fired
-    entityContext.ui().registerConsolePlugin("zigbee-console-" + entity.getEntityID(), this.zigBeeConsolePlugin);
   }
 
   private void restartIfRequire(ZigbeeCoordinatorEntity newEntity) {

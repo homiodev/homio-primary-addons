@@ -89,6 +89,11 @@ public class ZigBeeEndpointEntity extends BaseEntity<ZigBeeEndpointEntity>
     return super.setName(name);
   }
 
+  @Override
+  public String getDefaultName() {
+    return "Zigbee endpoint";
+  }
+
   @UIField(order = 5, readOnly = true)
   @UIFieldGroup("General")
   public String getDescription() {

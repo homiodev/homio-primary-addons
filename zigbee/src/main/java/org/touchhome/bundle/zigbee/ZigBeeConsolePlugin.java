@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.console.ConsolePluginTable;
 import org.touchhome.bundle.api.model.ActionResponseModel;
@@ -25,7 +24,7 @@ import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
-import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
+import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
 import org.touchhome.bundle.zigbee.setting.header.ConsoleHeaderZigBeeDiscoveryButtonSetting;
 
 @RequiredArgsConstructor
@@ -33,9 +32,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
   @Getter
   private final EntityContext entityContext;
-
-  @Setter
-  private ZigbeeCoordinatorEntity coordinator;
+  private final ZigBeeCoordinatorService coordinatorService;
 
   @Override
   public int order() {
@@ -44,7 +41,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
   @Override
   public boolean isEnabled() {
-    return coordinator.getStatus() == Status.ONLINE;
+    return coordinatorService.getEntity().getStatus() == Status.ONLINE;
   }
 
   @Override
@@ -60,7 +57,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
   @Override
   public Collection<ZigBeeConsoleDescription> getValue() {
     List<ZigBeeConsoleDescription> res = new ArrayList<>();
-    for (ZigBeeDeviceEntity entity : coordinator.getDevices()) {
+    for (ZigBeeDeviceEntity entity : coordinatorService.getEntity().getDevices()) {
       res.add(new ZigBeeConsoleDescription(
           entity.getName(),
           entity.getIeeeAddress(),

@@ -70,11 +70,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <artifactId>pi4j-core</artifactId>
-      <groupId>com.pi4j</groupId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <artifactId>httpclient</artifactId>
       <groupId>org.apache.httpcomponents</groupId>
       <scope>provided</scope>

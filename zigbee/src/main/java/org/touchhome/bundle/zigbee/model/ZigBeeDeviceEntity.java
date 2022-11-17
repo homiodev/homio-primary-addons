@@ -209,6 +209,11 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   }
 
   @Override
+  public String getDefaultName() {
+    return "Zigbee device";
+  }
+
+  @Override
   public String toString() {
     return "ZigBee [modelIdentifier='" + getModelIdentifier() + "]. IeeeAddress-" + ieeeAddress + ". Name";
   }
