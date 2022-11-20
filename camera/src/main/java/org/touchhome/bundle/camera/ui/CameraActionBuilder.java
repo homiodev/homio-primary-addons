@@ -139,7 +139,7 @@ public class CameraActionBuilder {
               ((UISelectBoxItemBuilder) uiEntityItemBuilder)
                   .setOptions(dynamicOptionLoader.loadOptions(
                       new DynamicOptionLoader.DynamicOptionLoaderParameters(
-                          instance.getVideoStreamEntity(),
+                          instance.getEntity(),
                           instance.getEntityContext(),
                           attributeValues.staticParameters(), null)
                   ));

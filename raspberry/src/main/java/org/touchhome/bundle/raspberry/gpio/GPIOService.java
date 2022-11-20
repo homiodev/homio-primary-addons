@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.EntityContextSetting;
 import org.touchhome.bundle.api.service.EntityService.ServiceInstance;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.util.BoardInfo;
@@ -111,7 +113,7 @@ public class GPIOService implements ServiceInstance<GpioEntity<?>> {
 
   public boolean isGPIOAvailable() {
     if (available == null) {
-      if (EntityContext.isDevEnvironment()) {
+      if (EntityContextSetting.isDevEnvironment()) {
         available = false;
       } else {
         try {
@@ -133,7 +135,10 @@ public class GPIOService implements ServiceInstance<GpioEntity<?>> {
 
   public void setValue(int address, State state) {
     GpioState gpioState = getState().get(address);
-    gpioState.getPinMode().getGpioModeFactory().setState(gpioState.getInstance(), state);
+    if (!Objects.equals(gpioState.getLastState(), state)) {
+      entityContext.var().set("rpi_" + entity.getEntityID() + "_" + address, state);
+      gpioState.getPinMode().getGpioModeFactory().setState(gpioState.getInstance(), state);
+    }
   }
 
   public void addGpioListener(String name, int address, Consumer<State> listener) {
@@ -240,7 +245,7 @@ public class GPIOService implements ServiceInstance<GpioEntity<?>> {
   }
 
   private List<String> getRawDataAsLines(String sensorID) {
-    if (EntityContext.isDevEnvironment()) {
+    if (EntityContextSetting.isDevEnvironment()) {
       Random r = new Random(System.currentTimeMillis());
       return Arrays.asList("", "sd sd sd sd ff zz cc vv aa t=" + (10000 + r.nextInt(40000)));
     }
@@ -256,7 +261,7 @@ public class GPIOService implements ServiceInstance<GpioEntity<?>> {
 
   @SneakyThrows
   public List<String> getDS18B20() {
-    if (EntityContext.isDevEnvironment()) {
+    if (EntityContextSetting.isDevEnvironment()) {
       return Collections.singletonList("28-test000011");
     }
     if (SystemUtils.IS_OS_LINUX && Files.exists(w1BaseDir.resolve("w1_master_slaves"))) {
@@ -299,9 +304,9 @@ public class GPIOService implements ServiceInstance<GpioEntity<?>> {
 
   private synchronized void createOrUpdateState(@NotNull GpioPin gpioPin, @NotNull PinMode mode, @Nullable PullResistance pull) {
     GpioState gpioState = state.get(gpioPin.getAddress());
-    boolean chaned = gpioState != null && (gpioState.getPinMode() != mode || gpioState.getPull() != pull);
-    if (gpioState == null || chaned) {
-      if (chaned) {
+    boolean changed = gpioState != null && (gpioState.getPinMode() != mode || gpioState.getPull() != pull);
+    if (gpioState == null || changed) {
+      if (changed) {
         log.debug("Shutdown pin: <{}>" + gpioState.getGpioPin().getName());
         gpioState.getInstance().shutdown(pi4j);
         DefaultContext defaultContext = (DefaultContext) pi4j;
@@ -311,6 +316,10 @@ public class GPIOService implements ServiceInstance<GpioEntity<?>> {
       mode.getGpioModeFactory().createGpioState(pi4j, gpioState, entity.getGpioProvider());
       log.info("Created gpio interface: {}", gpioState);
       state.put(gpioPin.getAddress(), gpioState);
+      // add global listener to link to variable
+      gpioState.getListeners().put("rpi_global", state -> {
+        entityContext.var().set("rpi_" + entity.getEntityID() + "_" + gpioPin.getAddress(), state);
+      });
     }
   }
 }

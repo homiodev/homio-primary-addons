@@ -15,7 +15,6 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.storage.BaseFileSystemEntity;
 import org.touchhome.bundle.api.entity.types.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.ui.field.UIField;
-import org.touchhome.bundle.api.ui.field.UIFieldColorPicker;
 import org.touchhome.bundle.api.ui.field.UIFieldInlineEntity;
 import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
@@ -67,7 +66,7 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
   @Getter
   @Setter
   @UIField(order = 1000)
-  @UIFieldInlineEntity(bg = "#1E5E611F")
+  @UIFieldInlineEntity(bg = "#1E5E611F", addRow = "", addRowCondition = "return false", removeRowCondition = "return false")
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "owner")
   @OrderBy("position asc")
   private Set<GpioPinEntity> gpioPinEntities;

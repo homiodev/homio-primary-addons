@@ -2,8 +2,8 @@ package org.touchhome.bundle.camera.onvif.impl;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
-import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 /**
  * responsible for handling commands for generic onvif thing types.
@@ -11,8 +11,8 @@ import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 @CameraBrandHandler(name = "Onvif")
 public class OnvifBrandHandler extends BaseOnvifCameraBrandHandler {
 
-  public OnvifBrandHandler(OnvifCameraEntity cameraEntity) {
-    super(cameraEntity);
+  public OnvifBrandHandler(OnvifCameraService service) {
+    super(service);
   }
 
   @Override

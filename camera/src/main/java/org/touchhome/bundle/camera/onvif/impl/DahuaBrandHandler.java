@@ -39,12 +39,11 @@ import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.video.ui.UIVideoAction;
 import org.touchhome.bundle.api.video.ui.UIVideoActionGetter;
-import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasAudioAlarm;
 import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.onvif.util.Helper;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 /**
  * responsible for handling commands, which are sent to one of the channels.
@@ -55,13 +54,14 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
 
   private int audioThreshold;
 
-  public DahuaBrandHandler(OnvifCameraEntity cameraEntity) {
-    super(cameraEntity);
+  public DahuaBrandHandler(OnvifCameraService service) {
+    super(service);
   }
 
   private void processEvent(String content) {
     int startIndex = content.indexOf("Code=", 12) + 5;// skip --myboundary
     int endIndex = content.indexOf(";", startIndex + 1);
+    OnvifCameraService service = getService();
     try {
       String code = content.substring(startIndex, endIndex);
       startIndex = endIndex + 8;// skip ;action=
@@ -70,58 +70,58 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
       switch (code) {
         case "VideoMotion":
           if (action.equals("Start")) {
-            onvifCameraHandler.motionDetected(true, CHANNEL_MOTION_ALARM);
+            service.motionDetected(true, CHANNEL_MOTION_ALARM);
           } else if (action.equals("Stop")) {
-            onvifCameraHandler.motionDetected(false, CHANNEL_MOTION_ALARM);
+            service.motionDetected(false, CHANNEL_MOTION_ALARM);
           }
           break;
         case "TakenAwayDetection":
           if (action.equals("Start")) {
-            onvifCameraHandler.motionDetected(true, CHANNEL_ITEM_TAKEN);
+            service.motionDetected(true, CHANNEL_ITEM_TAKEN);
           } else if (action.equals("Stop")) {
-            onvifCameraHandler.motionDetected(false, CHANNEL_ITEM_TAKEN);
+            service.motionDetected(false, CHANNEL_ITEM_TAKEN);
           }
           break;
         case "LeftDetection":
           if (action.equals("Start")) {
-            onvifCameraHandler.motionDetected(true, CHANNEL_ITEM_LEFT);
+            service.motionDetected(true, CHANNEL_ITEM_LEFT);
           } else if (action.equals("Stop")) {
-            onvifCameraHandler.motionDetected(false, CHANNEL_ITEM_LEFT);
+            service.motionDetected(false, CHANNEL_ITEM_LEFT);
           }
           break;
         case "SmartMotionVehicle":
           if (action.equals("Start")) {
-            onvifCameraHandler.motionDetected(true, CHANNEL_CAR_ALARM);
+            service.motionDetected(true, CHANNEL_CAR_ALARM);
           } else if (action.equals("Stop")) {
-            onvifCameraHandler.motionDetected(false, CHANNEL_CAR_ALARM);
+            service.motionDetected(false, CHANNEL_CAR_ALARM);
           }
           break;
         case "SmartMotionHuman":
           if (action.equals("Start")) {
-            onvifCameraHandler.motionDetected(true, CHANNEL_HUMAN_ALARM);
+            service.motionDetected(true, CHANNEL_HUMAN_ALARM);
           } else if (action.equals("Stop")) {
-            onvifCameraHandler.motionDetected(false, CHANNEL_HUMAN_ALARM);
+            service.motionDetected(false, CHANNEL_HUMAN_ALARM);
           }
           break;
         case "CrossLineDetection":
           if (action.equals("Start")) {
-            onvifCameraHandler.motionDetected(true, CHANNEL_LINE_CROSSING_ALARM);
+            service.motionDetected(true, CHANNEL_LINE_CROSSING_ALARM);
           } else if (action.equals("Stop")) {
-            onvifCameraHandler.motionDetected(false, CHANNEL_LINE_CROSSING_ALARM);
+            service.motionDetected(false, CHANNEL_LINE_CROSSING_ALARM);
           }
           break;
         case "AudioMutation":
           if (action.equals("Start")) {
-            onvifCameraHandler.audioDetected(true);
+            service.audioDetected(true);
           } else if (action.equals("Stop")) {
-            onvifCameraHandler.audioDetected(false);
+            service.audioDetected(false);
           }
           break;
         case "FaceDetection":
           if (action.equals("Start")) {
-            onvifCameraHandler.motionDetected(true, CHANNEL_FACE_DETECTED);
+            service.motionDetected(true, CHANNEL_FACE_DETECTED);
           } else if (action.equals("Stop")) {
-            onvifCameraHandler.motionDetected(false, CHANNEL_FACE_DETECTED);
+            service.motionDetected(false, CHANNEL_FACE_DETECTED);
           }
           break;
         case "ParkingDetection":
@@ -133,9 +133,9 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
           break;
         case "CrossRegionDetection":
           if (action.equals("Start")) {
-            onvifCameraHandler.motionDetected(true, CHANNEL_FIELD_DETECTION_ALARM);
+            service.motionDetected(true, CHANNEL_FIELD_DETECTION_ALARM);
           } else if (action.equals("Stop")) {
-            onvifCameraHandler.motionDetected(false, CHANNEL_FIELD_DETECTION_ALARM);
+            service.motionDetected(false, CHANNEL_FIELD_DETECTION_ALARM);
           }
           break;
         case "VideoLoss":
@@ -192,10 +192,10 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
         case "RecordDelete":
           break;
         default:
-          log.debug("Unrecognised Dahua event, Code={}, action={}", code, action);
+          log.debug("[{}]: Unrecognised Dahua event, Code={}, action={}", entityID, code, action);
       }
     } catch (IndexOutOfBoundsException e) {
-      log.debug("IndexOutOfBoundsException on Dahua event. Content was:{}", content);
+      log.debug("[{}]: IndexOutOfBoundsException on Dahua event. Content was:{}", entityID, content);
     }
   }
 
@@ -211,7 +211,7 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
         processEvent(content);
         return;
       }
-      log.trace("HTTP Result back from camera is \t:{}:", content);
+      log.debug("[{}]: HTTP Result back from camera is \t:{}:", entityID, content);
       // determine if the motion detection is turned on or off.
       if (content.contains("table.MotionDetect[0].Enable=true")) {
         setAttribute(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
@@ -228,7 +228,7 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
 
       // Handle AudioMutationThreshold alarm
       if (content.contains("table.AudioDetect[0].MutationThreold=")) {
-        String value = onvifCameraHandler.returnValueFromString(content, "table.AudioDetect[0].MutationThreold=");
+        String value = getService().returnValueFromString(content, "table.AudioDetect[0].MutationThreold=");
         setAttribute(CHANNEL_AUDIO_THRESHOLD, new DecimalType(value));
       }
 
@@ -256,17 +256,17 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
 
   @UIVideoAction(name = CHANNEL_ENABLE_PRIVACY_MODE, order = 70, icon = "fas fa-user-secret")
   public void setEnablePrivacyMode(boolean on) {
-    onvifCameraHandler.sendHttpGET(CM + "setConfig&LeLensMask[0].Enable=" + on);
+    getService().sendHttpGET(CM + "setConfig&LeLensMask[0].Enable=" + on);
   }
 
   @UIVideoAction(name = CHANNEL_ACTIVATE_ALARM_OUTPUT2, order = 47, icon = "fas fa-bell")
   public void activateAlarmOutput2(boolean on) {
-    onvifCameraHandler.sendHttpGET(CM + "setConfig&AlarmOut[1].Mode=" + boolToInt(on));
+    getService().sendHttpGET(CM + "setConfig&AlarmOut[1].Mode=" + boolToInt(on));
   }
 
   @UIVideoAction(name = CHANNEL_ACTIVATE_ALARM_OUTPUT, order = 45, icon = "fas fa-bell")
   public void activateAlarmOutput(boolean on) {
-    onvifCameraHandler.sendHttpGET(CM + "setConfig&AlarmOut[1].Mode=" + boolToInt(on));
+    getService().sendHttpGET(CM + "setConfig&AlarmOut[1].Mode=" + boolToInt(on));
   }
 
   @UIVideoActionGetter(CHANNEL_ENABLE_MOTION_ALARM)
@@ -277,9 +277,9 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
   @UIVideoAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")
   public void setEnableMotionAlarm(boolean on) {
     if (on) {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&MotionDetect[0].Enable=true&MotionDetect[0].EventHandler.Dejitter=1");
+      getService().sendHttpGET(CM + "setConfig&MotionDetect[0].Enable=true&MotionDetect[0].EventHandler.Dejitter=1");
     } else {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&MotionDetect[0].Enable=false");
+      getService().sendHttpGET(CM + "setConfig&MotionDetect[0].Enable=false");
     }
   }
 
@@ -290,15 +290,15 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
 
   @UIVideoAction(name = CHANNEL_ENABLE_LINE_CROSSING_ALARM, order = 150, icon = "fas fa-grip-lines-vertical")
   public void setEnableLineCrossingAlarm(boolean on) {
-    onvifCameraHandler.sendHttpGET(CM + "setConfig&VideoAnalyseRule[0][1].Enable=" + on);
+    getService().sendHttpGET(CM + "setConfig&VideoAnalyseRule[0][1].Enable=" + on);
   }
 
   @Override
   public void setMotionAlarmThreshold(int threshold) {
     if (threshold > 0) {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationDetect=true&AudioDetect[0].EventHandler.Dejitter=1");
+      getService().sendHttpGET(CM + "setConfig&AudioDetect[0].MutationDetect=true&AudioDetect[0].EventHandler.Dejitter=1");
     } else {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationDetect=false");
+      getService().sendHttpGET(CM + "setConfig&AudioDetect[0].MutationDetect=false");
     }
   }
 
@@ -307,9 +307,9 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
     if (audioThreshold != this.audioThreshold) {
       this.audioThreshold = audioThreshold;
       if (this.audioThreshold > 0) {
-        onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationThreold=" + audioThreshold);
+        getService().sendHttpGET(CM + "setConfig&AudioDetect[0].MutationThreold=" + audioThreshold);
       } else {
-        onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationThreold=1");
+        getService().sendHttpGET(CM + "setConfig&AudioDetect[0].MutationThreold=1");
       }
     }
   }
@@ -318,7 +318,7 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
   public void autoLED(boolean on) {
     if (on) {
       setAttribute(CHANNEL_ENABLE_LED, null/*UnDefType.UNDEF*/);
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Auto");
+      getService().sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Auto");
     }
   }
 
@@ -332,10 +332,9 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
     return on -> {
       setAttribute(CHANNEL_AUTO_LED, OnOffType.OFF);
       if (!on) {
-        onvifCameraHandler.sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Off");
+        getService().sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Off");
       } else {
-        onvifCameraHandler
-            .sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Manual");
+        getService().sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Manual");
       } /*else {
                         ipCameraHandler.sendHttpGET(
                                 CM + "setConfig&Lighting[0][0].Mode=Manual&Lighting[0][0].MiddleLight[0].Light="
@@ -353,37 +352,39 @@ public class DahuaBrandHandler extends BaseOnvifCameraBrandHandler implements Br
   public void textOverlay(String value) {
     String text = Helper.encodeSpecialChars(value);
     if (text.isEmpty()) {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=false");
+      getService().sendHttpGET(CM + "setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=false");
     } else {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=true&VideoWidget[0].CustomTitle[1].Text="
+      getService().sendHttpGET(CM + "setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=true&VideoWidget[0].CustomTitle[1].Text="
           + text);
     }
   }
 
   @Override
   public void runOncePerMinute(EntityContext entityContext) {
-    onvifCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=AudioDetect[0]");
-    onvifCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=CrossLineDetection[0]");
-    onvifCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=MotionDetect[0]");
+    OnvifCameraService service = getService();
+    service.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=AudioDetect[0]");
+    service.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=CrossLineDetection[0]");
+    service.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=MotionDetect[0]");
   }
 
   @Override
-  public void pollCameraRunnable(OnvifCameraHandler onvifCameraHandler) {
+  public void pollCameraRunnable() {
     // Check for alarms, channel for NVRs appears not to work at filtering.
-    if (onvifCameraHandler.streamIsStopped("/cgi-bin/eventManager.cgi?action=attach&codes=[All]")) {
-      log.info("The alarm stream was not running for camera {}, re-starting it now",
-          onvifCameraHandler.getVideoStreamEntity().getIp());
-      onvifCameraHandler.sendHttpGET("/cgi-bin/eventManager.cgi?action=attach&codes=[All]");
+    OnvifCameraService service = getService();
+    if (service.streamIsStopped("/cgi-bin/eventManager.cgi?action=attach&codes=[All]")) {
+      log.info("[{}]: The alarm stream was not running for camera {}, re-starting it now", entityID, getEntity().getIp());
+      service.sendHttpGET("/cgi-bin/eventManager.cgi?action=attach&codes=[All]");
     }
   }
 
   @Override
   public void initialize(EntityContext entityContext) {
-    if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
-      onvifCameraHandler.setMjpegUri("/cgi-bin/mjpg/video.cgi?channel=" + onvifCameraHandler.getVideoStreamEntity().getNvrChannel() + "&subtype=1");
+    OnvifCameraService service = getService();
+    if (StringUtils.isEmpty(service.getMjpegUri())) {
+      service.setMjpegUri("/cgi-bin/mjpg/video.cgi?channel=" + getEntity().getNvrChannel() + "&subtype=1");
     }
-    if (StringUtils.isEmpty(onvifCameraHandler.getSnapshotUri())) {
-      onvifCameraHandler.setSnapshotUri("/cgi-bin/snapshot.cgi?channel=" + onvifCameraHandler.getVideoStreamEntity().getNvrChannel());
+    if (StringUtils.isEmpty(service.getSnapshotUri())) {
+      service.setSnapshotUri("/cgi-bin/snapshot.cgi?channel=" + getEntity().getNvrChannel());
     }
   }
 

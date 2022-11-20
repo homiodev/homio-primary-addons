@@ -31,12 +31,11 @@ import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.state.StringType;
 import org.touchhome.bundle.api.video.ui.UIVideoAction;
 import org.touchhome.bundle.api.video.ui.UIVideoActionGetter;
-import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.onvif.util.ChannelTracking;
 import org.touchhome.bundle.camera.onvif.util.Helper;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 /**
  * responsible for handling commands, which are sent to one of the channels.
@@ -48,8 +47,8 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
   private int lineCount, vmdCount, leftCount, takenCount, faceCount, pirCount, fieldCount;
   private boolean checkAlarmInput;
 
-  public HikvisionBrandHandler(OnvifCameraEntity cameraEntity) {
-    super(cameraEntity);
+  public HikvisionBrandHandler(OnvifCameraService service) {
+    super(service);
   }
 
   // This handles the incoming http replies back from the camera.
@@ -58,23 +57,24 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
     if (msg == null || ctx == null) {
       return;
     }
+    OnvifCameraService service = getService();
     try {
       int debounce = 3;
       String content = msg.toString();
-      onvifCameraHandler.getLog().trace("HTTP Result back from camera is \t:{}:", content);
+      log.debug("[{}]: HTTP Result back from camera is \t:{}:", entityID, content);
       if (content.contains("--boundary")) {// Alarm checking goes in here//
         if (content.contains("<EventNotificationAlert version=\"")) {
           if (content.contains("hannelID>" + nvrChannel + "</")) {// some camera use c or <dynChannelID>
             if (content.contains("<eventType>linedetection</eventType>")) {
-              onvifCameraHandler.motionDetected(true, CHANNEL_LINE_CROSSING_ALARM);
+              service.motionDetected(true, CHANNEL_LINE_CROSSING_ALARM);
               lineCount = debounce;
             }
             if (content.contains("<eventType>fielddetection</eventType>")) {
-              onvifCameraHandler.motionDetected(true, CHANNEL_FIELD_DETECTION_ALARM);
+              service.motionDetected(true, CHANNEL_FIELD_DETECTION_ALARM);
               fieldCount = debounce;
             }
             if (content.contains("<eventType>VMD</eventType>")) {
-              onvifCameraHandler.motionDetected(true, CHANNEL_MOTION_ALARM);
+              service.motionDetected(true, CHANNEL_MOTION_ALARM);
               vmdCount = debounce;
             }
             if (content.contains("<eventType>facedetection</eventType>")) {
@@ -90,7 +90,7 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
               takenCount = debounce;
             }
             if (content.contains("<eventType>PIR</eventType>")) {
-              onvifCameraHandler.motionDetected(true, CHANNEL_PIR_ALARM);
+              service.motionDetected(true, CHANNEL_PIR_ALARM);
               pirCount = debounce;
             }
             if (content.contains("<eventType>videoloss</eventType>\r\n<eventState>inactive</eventState>")) {
@@ -116,7 +116,7 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
         String replyElement = Helper.fetchXML(content, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<");
         switch (replyElement) {
           case "MotionDetection version=":
-            onvifCameraHandler.storeHttpReply(
+            service.storeHttpReply(
                 "/ISAPI/System/Video/inputs/channels/" + nvrChannel + "01/motionDetection", content);
             if (content.contains("<enabled>true</enabled>")) {
               setAttribute(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
@@ -125,7 +125,7 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
             }
             break;
           case "IOInputPort version=":
-            onvifCameraHandler.storeHttpReply("/ISAPI/System/IO/inputs/" + nvrChannel, content);
+            service.storeHttpReply("/ISAPI/System/IO/inputs/" + nvrChannel, content);
             if (content.contains("<enabled>true</enabled>")) {
               setAttribute(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.ON);
             } else if (content.contains("<enabled>false</enabled>")) {
@@ -138,7 +138,7 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
             }
             break;
           case "LineDetection":
-            onvifCameraHandler.storeHttpReply("/ISAPI/Smart/LineDetection/" + nvrChannel + "01", content);
+            service.storeHttpReply("/ISAPI/Smart/LineDetection/" + nvrChannel + "01", content);
             if (content.contains("<enabled>true</enabled>")) {
               setAttribute(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.ON);
             } else if (content.contains("<enabled>false</enabled>")) {
@@ -146,13 +146,13 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
             }
             break;
           case "TextOverlay version=":
-            onvifCameraHandler.storeHttpReply(
+            service.storeHttpReply(
                 "/ISAPI/System/Video/inputs/channels/" + nvrChannel + "/overlays/text/1", content);
             String text = Helper.fetchXML(content, "<enabled>true</enabled>", "<displayText>");
             setAttribute(CHANNEL_TEXT_OVERLAY, new StringType(text));
             break;
           case "AudioDetection version=":
-            onvifCameraHandler.storeHttpReply("/ISAPI/Smart/AudioDetection/channels/" + nvrChannel + "01",
+            service.storeHttpReply("/ISAPI/Smart/AudioDetection/channels/" + nvrChannel + "01",
                 content);
             if (content.contains("<enabled>true</enabled>")) {
               setAttribute(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
@@ -168,7 +168,7 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
             }
             break;
           case "FieldDetection version=":
-            onvifCameraHandler.storeHttpReply("/ISAPI/Smart/FieldDetection/" + nvrChannel + "01", content);
+            service.storeHttpReply("/ISAPI/Smart/FieldDetection/" + nvrChannel + "01", content);
             if (content.contains("<enabled>true</enabled>")) {
               setAttribute(CHANNEL_ENABLE_FIELD_DETECTION_ALARM, OnOffType.ON);
             } else if (content.contains("<enabled>false</enabled>")) {
@@ -181,7 +181,7 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
               // Stops checking the external alarm if camera does not have feature.
               if (content.contains("<statusString>Invalid Operation</statusString>")) {
                 checkAlarmInput = false;
-                onvifCameraHandler.getLog().debug("Stopping checks for alarm inputs as camera appears to be missing this feature.");
+                log.debug("[{}]: Stopping checks for alarm inputs as camera appears to be missing this feature.", entityID);
               }
             }
             break;
@@ -201,7 +201,7 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
                 countDown();
               }
             } else {
-              onvifCameraHandler.getLog().debug("Unhandled reply-{}.", content);
+              log.debug("[{}]: Unhandled reply-{}.", entityID, content);
             }
             break;
         }
@@ -257,31 +257,31 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
     }
     if (fieldCount == 0 && pirCount == 0 && faceCount == 0 && takenCount == 0 && leftCount == 0 && vmdCount == 0
         && lineCount == 0) {
-      onvifCameraHandler.motionDetected(false, CHANNEL_MOTION_ALARM);
+      getService().motionDetected(false, CHANNEL_MOTION_ALARM);
     }
   }
 
   public void hikSendXml(String httpPutURL, String xml) {
-    onvifCameraHandler.getLog().trace("Body for PUT:{} is going to be:{}", httpPutURL, xml);
+    log.debug("[{}]: Body for PUT:{} is going to be:{}", entityID, httpPutURL, xml);
     FullHttpRequest fullHttpRequest = buildFullHttpRequest(httpPutURL, xml, HttpMethod.PUT, MediaType.APPLICATION_XML);
-    onvifCameraHandler.sendHttpPUT(httpPutURL, fullHttpRequest);
+    getService().sendHttpPUT(httpPutURL, fullHttpRequest);
   }
 
   public void hikChangeSetting(String httpGetPutURL, String removeElement, String replaceRemovedElementWith) {
-    ChannelTracking localTracker = onvifCameraHandler.channelTrackingMap.get(httpGetPutURL);
+    OnvifCameraService service = getService();
+
+    ChannelTracking localTracker = service.channelTrackingMap.get(httpGetPutURL);
     if (localTracker == null) {
-      onvifCameraHandler.sendHttpGET(httpGetPutURL);
-      onvifCameraHandler.getLog().debug(
-          "Did not have a reply stored before hikChangeSetting was run, try again shortly as a reply has just been requested.");
+      service.sendHttpGET(httpGetPutURL);
+      log.debug("[{}]: Did not have a reply stored before hikChangeSetting was run, try again shortly as a reply has just been requested.", entityID);
       return;
     }
     String body = localTracker.getReply();
     if (body.isEmpty()) {
-      onvifCameraHandler.getLog().debug(
-          "Did not have a reply stored before hikChangeSetting was run, try again shortly as a reply has just been requested.");
-      onvifCameraHandler.sendHttpGET(httpGetPutURL);
+      log.debug("[{}]: Did not have a reply stored before hikChangeSetting was run, try again shortly as a reply has just been requested.", entityID);
+      service.sendHttpGET(httpGetPutURL);
     } else {
-      onvifCameraHandler.getLog().trace("An OLD reply from the camera was:{}", body);
+      log.debug("[{}]: An OLD reply from the camera was:{}", entityID, body);
       if (body.contains("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
         body = body.substring("<?xml version=\"1.0\" encoding=\"UTF-8\"?>".length());
       }
@@ -289,10 +289,10 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
       int elementIndexEnd = body.indexOf("</" + removeElement + ">");
       body = body.substring(0, elementIndexStart) + replaceRemovedElementWith
           + body.substring(elementIndexEnd + removeElement.length() + 3, body.length());
-      onvifCameraHandler.getLog().trace("Body for this PUT is going to be:{}", body);
+      log.debug("[{}]: Body for this PUT is going to be:{}", entityID, body);
       localTracker.setReply(body);
       FullHttpRequest fullHttpRequest = buildFullHttpRequest(httpGetPutURL, body, HttpMethod.PUT, MediaType.APPLICATION_XML);
-      onvifCameraHandler.sendHttpPUT(httpGetPutURL, fullHttpRequest);
+      service.sendHttpPUT(httpGetPutURL, fullHttpRequest);
     }
   }
 
@@ -303,7 +303,7 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
 
   @UIVideoAction(name = CHANNEL_TEXT_OVERLAY, order = 100, icon = "fas fa-paragraph")
   public void setTextOverlay(String command) {
-    onvifCameraHandler.getLog().debug("Changing text overlay to {}", command);
+    log.debug("[{}]: Changing text overlay to {}", entityID, command);
     if (command.isEmpty()) {
       hikChangeSetting("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "/overlays/text/1",
           "enabled", "<enabled>false</enabled>");
@@ -322,7 +322,7 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
 
   @UIVideoAction(name = CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, order = 250, icon = "fas fa-external-link-square-alt")
   public void setEnableExternalAlarmInput(boolean on) {
-    onvifCameraHandler.getLog().debug("Changing enabled state of the external input 1 to {}", on);
+    log.debug("[{}]: Changing enabled state of the external input 1 to {}", entityID, on);
     hikChangeSetting("/ISAPI/System/IO/inputs/" + nvrChannel, "enabled", "<enabled>" + on + "</enabled>");
   }
 
@@ -333,7 +333,7 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
 
   @UIVideoAction(name = CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT, order = 300, icon = "fas fa-external-link-alt")
   public void setTriggerExternalAlarmInput(boolean on) {
-    onvifCameraHandler.getLog().debug("Changing triggering state of the external input 1 to {}", on);
+    log.debug("[{}]: Changing triggering state of the external input 1 to {}", entityID, on);
     hikChangeSetting("/ISAPI/System/IO/inputs/" + nvrChannel, "triggering",
         "<triggering>" + (on ? "high" : "low") + "</triggering>");
   }
@@ -385,34 +385,36 @@ public class HikvisionBrandHandler extends BaseOnvifCameraBrandHandler implement
 
   @Override
   public void runOncePerMinute(EntityContext entityContext) {
+    OnvifCameraService service = getService();
     if (checkAlarmInput) {
-      onvifCameraHandler.sendHttpGET("/ISAPI/System/IO/inputs/" + nvrChannel + "/status"); // must stay in element 0.
+      service.sendHttpGET("/ISAPI/System/IO/inputs/" + nvrChannel + "/status"); // must stay in element 0.
     }
-    onvifCameraHandler.sendHttpGET("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "01/motionDetection");
-    onvifCameraHandler.sendHttpGET("/ISAPI/Smart/LineDetection/" + nvrChannel + "01");
-    onvifCameraHandler.sendHttpGET("/ISAPI/Smart/AudioDetection/channels/" + nvrChannel + "01");
-    onvifCameraHandler.sendHttpGET("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "/overlays/text/1");
-    onvifCameraHandler.sendHttpGET("/ISAPI/System/IO/inputs/" + nvrChannel);
+    service.sendHttpGET("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "01/motionDetection");
+    service.sendHttpGET("/ISAPI/Smart/LineDetection/" + nvrChannel + "01");
+    service.sendHttpGET("/ISAPI/Smart/AudioDetection/channels/" + nvrChannel + "01");
+    service.sendHttpGET("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "/overlays/text/1");
+    service.sendHttpGET("/ISAPI/System/IO/inputs/" + nvrChannel);
   }
 
   @Override
-  public void pollCameraRunnable(OnvifCameraHandler onvifCameraHandler) {
-    if (onvifCameraHandler.streamIsStopped("/ISAPI/Event/notification/alertStream")) {
-      log.info("The alarm stream was not running for camera {}, re-starting it now",
-          onvifCameraHandler.getVideoStreamEntity().getIp());
-      onvifCameraHandler.sendHttpGET("/ISAPI/Event/notification/alertStream");
+  public void pollCameraRunnable() {
+    OnvifCameraService service = getService();
+    if (service.streamIsStopped("/ISAPI/Event/notification/alertStream")) {
+      log.info("[{}]: The alarm stream was not running for camera {}, re-starting it now",
+          entityID, getEntity().getIp());
+      service.sendHttpGET("/ISAPI/Event/notification/alertStream");
     }
   }
 
   @Override
   public void initialize(EntityContext entityContext) {
-    if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
-      onvifCameraHandler.setMjpegUri("/ISAPI/Streaming/channels/" + onvifCameraHandler.getVideoStreamEntity().getNvrChannel() + "02" +
-          "/httppreview");
+    OnvifCameraService service = getService();
+
+    if (StringUtils.isEmpty(service.getMjpegUri())) {
+      service.setMjpegUri("/ISAPI/Streaming/channels/" + getEntity().getNvrChannel() + "02" + "/httppreview");
     }
-    if (StringUtils.isEmpty(onvifCameraHandler.getSnapshotUri())) {
-      onvifCameraHandler.setSnapshotUri("/ISAPI/Streaming/channels/" + onvifCameraHandler.getVideoStreamEntity().getNvrChannel() + "01" +
-          "/picture");
+    if (StringUtils.isEmpty(service.getSnapshotUri())) {
+      service.setSnapshotUri("/ISAPI/Streaming/channels/" + getEntity().getNvrChannel() + "01" + "/picture");
     }
   }
 

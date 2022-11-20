@@ -1,5 +1,12 @@
 {
   "zigbee": {
+    "new_coordinator": {
+      "coordinator": "ZigBee coordinator {{NAME}}",
+      "port": "Port: {{NAME}}",
+      "port_descr": "Port description: {{NAME}}",
+      "name": "Coordinator name: {{NAME}}",
+      "question": "Do you want create new zigbee coordinator?"
+    },
     "error": {
       "port_not_found": "No {{NAME}} port found"
     }

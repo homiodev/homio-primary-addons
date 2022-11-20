@@ -35,9 +35,10 @@ import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.IOUtils;
-import org.touchhome.bundle.camera.CameraCoordinator;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.camera.onvif.brand.CameraBrandHandlerDescription;
 import org.touchhome.bundle.camera.onvif.util.Helper;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 /**
  * responsible for finding cameras that are ONVIF using UDP multicast.
@@ -46,10 +47,11 @@ import org.touchhome.bundle.camera.onvif.util.Helper;
 @RequiredArgsConstructor
 public class OnvifDiscovery {
 
-  private ArrayList<DatagramPacket> listOfReplays = new ArrayList<>(2);
+  private final ArrayList<DatagramPacket> listOfReplays = new ArrayList<>(2);
+  private final EntityContext entityContext;
 
-  private static CameraBrandHandlerDescription checkForBrand(String response) {
-    for (CameraBrandHandlerDescription brandHandler : CameraCoordinator.cameraBrands.values()) {
+  private static CameraBrandHandlerDescription checkForBrand(String response, EntityContext entityContext) {
+    for (CameraBrandHandlerDescription brandHandler : OnvifCameraService.getCameraBrands(entityContext).values()) {
       if (response.contains(brandHandler.getName())) {
         return brandHandler;
       }
@@ -57,7 +59,7 @@ public class OnvifDiscovery {
     return CameraBrandHandlerDescription.DEFAULT_BRAND;
   }
 
-  public static CameraBrandHandlerDescription getBrandFromLoginPage(String hostname) {
+  public static CameraBrandHandlerDescription getBrandFromLoginPage(String hostname, EntityContext entityContext) {
     try {
       URL url = new URL("http://" + hostname);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -68,7 +70,7 @@ public class OnvifDiscovery {
       try {
         connection.connect();
         String response = IOUtils.toString(connection.getInputStream(), Charset.defaultCharset());
-        return checkForBrand(response);
+        return checkForBrand(response, entityContext);
       } catch (MalformedURLException ignored) {
       } finally {
         connection.disconnect();
@@ -163,9 +165,9 @@ public class OnvifDiscovery {
     } else {// // http://192.168.0.1/onvif/device_service
       ipAddress = temp.substring(beginIndex, endIndex);
     }
-    CameraBrandHandlerDescription brand = checkForBrand(xml);
+    CameraBrandHandlerDescription brand = checkForBrand(xml, entityContext);
     if (brand.getID().equals(CameraBrandHandlerDescription.DEFAULT_BRAND.getID())) {
-      brand = getBrandFromLoginPage(ipAddress);
+      brand = getBrandFromLoginPage(ipAddress, entityContext);
     }
     cameraFoundHandler.handle(brand, ipAddress, onvifPort.intValue());
   }

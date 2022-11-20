@@ -17,7 +17,7 @@ import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.camera.CameraEntrypoint;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 @Log4j2
 @Getter
@@ -94,43 +94,43 @@ public class Scratch3OnvifPTZBlocks extends Scratch3ExtensionBlocks {
 
   private State getPTZValue(WorkspaceBlock workspaceBlock) {
     GetPTZValueType menu = workspaceBlock.getMenuValue(VALUE, this.menuPtzValueType);
-    return menu.handler.apply(getOnvifHandler(workspaceBlock));
+    return menu.handler.apply(getOnvifService(workspaceBlock));
   }
 
   private void fireGoToPresetCommand(WorkspaceBlock workspaceBlock) {
     int preset = Integer.parseInt(workspaceBlock.getMenuValue("PRESET", this.menuPreset));
-    getOnvifHandler(workspaceBlock).gotoPreset(preset);
+    getOnvifService(workspaceBlock).gotoPreset(preset);
   }
 
   private void fireZoomActionCommand(WorkspaceBlock workspaceBlock) {
     String command = workspaceBlock.getMenuValue(VALUE, this.menuZoomActionType).name().toUpperCase();
-    getOnvifHandler(workspaceBlock).setZoom(command);
+    getOnvifService(workspaceBlock).setZoom(command);
   }
 
   private void fireZoomCommand(WorkspaceBlock workspaceBlock) {
-    getOnvifHandler(workspaceBlock).setZoom(String.valueOf(workspaceBlock.getInputFloat(VALUE)));
+    getOnvifService(workspaceBlock).setZoom(String.valueOf(workspaceBlock.getInputFloat(VALUE)));
   }
 
   private void fireTiltActionCommand(WorkspaceBlock workspaceBlock) {
     String command = workspaceBlock.getMenuValue(VALUE, this.menuTiltActionType).name().toUpperCase();
-    getOnvifHandler(workspaceBlock).setTilt(command);
+    getOnvifService(workspaceBlock).setTilt(command);
   }
 
   private void fireTiltCommand(WorkspaceBlock workspaceBlock) {
-    getOnvifHandler(workspaceBlock).setTilt(String.valueOf(workspaceBlock.getInputFloat(VALUE)));
+    getOnvifService(workspaceBlock).setTilt(String.valueOf(workspaceBlock.getInputFloat(VALUE)));
   }
 
   private void firePanActionCommand(WorkspaceBlock workspaceBlock) {
     String command = workspaceBlock.getMenuValue(VALUE, this.menuPanActionType).name().toUpperCase();
-    getOnvifHandler(workspaceBlock).setPan(command);
+    getOnvifService(workspaceBlock).setPan(command);
   }
 
   private void firePanCommand(WorkspaceBlock workspaceBlock) {
-    getOnvifHandler(workspaceBlock).setPan(String.valueOf(workspaceBlock.getInputFloat(VALUE)));
+    getOnvifService(workspaceBlock).setPan(String.valueOf(workspaceBlock.getInputFloat(VALUE)));
   }
 
-  private OnvifCameraHandler getOnvifHandler(WorkspaceBlock workspaceBlock) {
-    return getOnvifEntity(workspaceBlock).getVideoHandler();
+  private OnvifCameraService getOnvifService(WorkspaceBlock workspaceBlock) {
+    return getOnvifEntity(workspaceBlock).getService();
   }
 
   private OnvifCameraEntity getOnvifEntity(WorkspaceBlock workspaceBlock) {
@@ -156,6 +156,6 @@ public class Scratch3OnvifPTZBlocks extends Scratch3ExtensionBlocks {
     Tilt(camera -> camera.getTilt()),
     Pan(camera -> camera.getPan());
 
-    private final Function<OnvifCameraHandler, State> handler;
+    private final Function<OnvifCameraService, State> handler;
   }
 }

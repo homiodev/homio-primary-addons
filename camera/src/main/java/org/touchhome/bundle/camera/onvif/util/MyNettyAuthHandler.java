@@ -6,23 +6,27 @@ import io.netty.handler.codec.http.HttpResponse;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 /**
  * responsible for handling the basic and digest auths
  */
+@Log4j2
 public class MyNettyAuthHandler extends ChannelDuplexHandler {
 
-  private OnvifCameraHandler onvifCameraHandler;
-  private String username, password;
+  private final String username;
+  private final String password;
+  private final OnvifCameraService service;
+
   private String httpMethod = "", httpUrl = "";
   private byte ncCounter = 0;
   private String nonce = "", opaque = "", qop = "";
   private String realm = "";
 
-  public MyNettyAuthHandler(String user, String pass, OnvifCameraHandler handle) {
-    onvifCameraHandler = handle;
+  public MyNettyAuthHandler(String user, String pass, OnvifCameraService service) {
+    this.service = service;
     username = user;
     password = pass;
   }
@@ -42,7 +46,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
       }
       return stringBuffer.toString();
     } catch (NoSuchAlgorithmException e) {
-      onvifCameraHandler.getLog().warn("NoSuchAlgorithmException error when calculating MD5 hash");
+      log.warn("NoSuchAlgorithmException error when calculating MD5 hash");
     }
     return "";
   }
@@ -53,13 +57,13 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
   // nonce is reused if authenticate is null so the NC needs to increment to allow this//
   public void processAuth(String authenticate, String httpMethod, String requestURI, boolean reSend) {
     if (authenticate.contains("Basic realm=\"")) {
-      if (onvifCameraHandler.useDigestAuth) {
+      if (service.useDigestAuth) {
         // Possible downgrade authenticate attack avoided.
         return;
       }
-      onvifCameraHandler.getLog().debug("Setting up the camera to use Basic Auth and resending last request with correct auth.");
-      if (onvifCameraHandler.setBasicAuth(true)) {
-        onvifCameraHandler.sendHttpRequest(httpMethod, requestURI, null);
+      log.debug("Setting up the camera to use Basic Auth and resending last request with correct auth.");
+      if (service.setBasicAuth(true)) {
+        service.sendHttpRequest(httpMethod, requestURI, null);
       }
       return;
     }
@@ -67,7 +71,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
     /////// Fresh Digest Authenticate method follows as Basic is already handled and returned ////////
     realm = Helper.searchString(authenticate, "realm=\"");
     if (realm.isEmpty()) {
-      onvifCameraHandler.getLog().warn("Could not find a valid WWW-Authenticate response in :{}", authenticate);
+      log.warn("Could not find a valid WWW-Authenticate response in :{}", authenticate);
       return;
     }
     nonce = Helper.searchString(authenticate, "nonce=\"");
@@ -75,20 +79,20 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
     qop = Helper.searchString(authenticate, "qop=\"");
 
     if (!qop.isEmpty() && !realm.isEmpty()) {
-      onvifCameraHandler.useDigestAuth = true;
+      service.useDigestAuth = true;
     } else {
-      onvifCameraHandler.getLog().warn(
+      log.warn(
           "!!!! Something is wrong with the reply back from the camera. WWW-Authenticate header: qop:{}, realm:{}",
           qop, realm);
     }
 
     String stale = Helper.searchString(authenticate, "stale=\"");
     if (stale.equalsIgnoreCase("true")) {
-      onvifCameraHandler.getLog().debug("Camera reported stale=true which normally means the NONCE has expired.");
+      log.debug("Camera reported stale=true which normally means the NONCE has expired.");
     }
 
     if (password.isEmpty()) {
-      onvifCameraHandler.disposeAndSetStatus(Status.ERROR, "Camera gave a 401 reply: You need to provide a password.");
+      service.disposeAndSetStatus(Status.ERROR, "Camera gave a 401 reply: You need to provide a password.");
       return;
     }
     // create the MD5 hashes
@@ -112,7 +116,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
     }
 
     if (reSend) {
-      onvifCameraHandler.sendHttpRequest(httpMethod, requestURI, digestString);
+      service.sendHttpRequest(httpMethod, requestURI, digestString);
     }
   }
 
@@ -143,7 +147,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
           if (!authenticate.isEmpty()) {
             processAuth(authenticate, httpMethod, httpUrl, true);
           } else {
-            onvifCameraHandler.disposeAndSetStatus(Status.ERROR,
+            service.disposeAndSetStatus(Status.ERROR,
                 "Camera gave no WWW-Authenticate: Your login details must be wrong.");
           }
           if (closeConnection) {
@@ -151,8 +155,8 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
           }
         }
       } else if (response.status().code() != 200) {
-        onvifCameraHandler.getLog().debug("Camera at IP:{} gave a reply with a response code of :{}",
-            onvifCameraHandler.getVideoStreamEntity().getIp(), response.status().code());
+        log.debug("Camera at IP:{} gave a reply with a response code of :{}",
+            service.getEntity().getIp(), response.status().code());
       }
     }
     // Pass the Message back to the pipeline for the next handler to process//

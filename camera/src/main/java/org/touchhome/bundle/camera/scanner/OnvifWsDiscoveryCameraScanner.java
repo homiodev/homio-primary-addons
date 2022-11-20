@@ -25,7 +25,7 @@ public class OnvifWsDiscoveryCameraScanner implements VideoStreamScanner {
 
   @Override
   public BaseItemsDiscovery.DeviceScannerResult scan(EntityContext entityContext, ProgressBar progressBar, String headerConfirmButtonKey) {
-    OnvifDiscovery onvifDiscovery = new OnvifDiscovery();
+    OnvifDiscovery onvifDiscovery = new OnvifDiscovery(entityContext);
     BaseItemsDiscovery.DeviceScannerResult result = new BaseItemsDiscovery.DeviceScannerResult();
     try {
       Map<String, OnvifCameraEntity> existsCamera = entityContext.findAll(OnvifCameraEntity.class)

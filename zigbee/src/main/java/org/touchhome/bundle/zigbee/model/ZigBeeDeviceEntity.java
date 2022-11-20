@@ -36,12 +36,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
-import org.springframework.data.util.Pair;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.EntityContextSetting;
 import org.touchhome.bundle.api.converter.JSONObjectConverter;
 import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.HasJsonData;
@@ -54,13 +52,11 @@ import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
-import org.touchhome.bundle.api.ui.field.UIFieldIgnoreGetDefault;
 import org.touchhome.bundle.api.ui.field.UIFieldInlineEntity;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
-import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.zigbee.SelectModelIdentifierDynamicLoader;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
@@ -83,10 +79,23 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
 
   public static final String PREFIX = "zb_";
 
+  @UIField(order = 11, readOnly = true)
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  public Status getNodeInitializationStatus() {
+    return EntityContextSetting.getStatus(this, "node_init", Status.UNKNOWN);
+  }
+
+  @UIField(order = 12, readOnly = true)
+  @UIFieldColorStatusMatch
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  public Status getFetchInfoStatus() {
+    return EntityContextSetting.getStatus(this, "fetch_info", Status.UNKNOWN);
+  }
+
   @MaxItems(30) // max 30 variables in one group
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "zigBeeDeviceEntity")
   @UIField(order = 30)
-  @UIFieldInlineEntity(bg = "#1E5E611F", addRow = "bla-bla-bla")
+  @UIFieldInlineEntity(bg = "#1E5E611F", addRow = "", addRowCondition = "return false", removeRowCondition = "return false")
   private Set<ZigBeeEndpointEntity> endpoints;
 
   @Lob
@@ -131,19 +140,11 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   @UIFieldGroup("Version")
   private String dateCode;
 
-  @UIField(order = 3, readOnly = true)
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-  @UIFieldGroup("General")
-  public Status getNodeInitializationStatus() {
-    return TouchHomeUtils.STATUS_MAP.getOrDefault(getEntityID() + "_NS", DEFAULT_STATUS).getFirst();
-  }
-
   public void setNodeInitializationStatus(Status status) {
-    TouchHomeUtils.STATUS_MAP.put(getEntityID() + "_NS", Pair.of(status, ""));
+    EntityContextSetting.setStatus(this, "node_init", status);
   }
 
   @UIField(readOnly = true, order = 4, hideOnEmpty = true)
-  @UIFieldIgnoreGetDefault
   @UIFieldGroup("General")
   public String getMaxTimeoutBeforeOfflineNode() {
     Integer interval = getService().getExpectedUpdateInterval();
@@ -151,7 +152,6 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   }
 
   @UIField(order = 5, readOnly = true)
-  @UIFieldIgnoreGetDefault
   @UIFieldGroup("General")
   public String getTimeoutBeforeOfflineNode() {
     ZigBeeDeviceService service = getService();
@@ -164,18 +164,10 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
     return "Expired in: " + min + "min";
   }
 
-  @UIField(order = 6, readOnly = true, hideOnEmpty = true)
-  @UIFieldColorStatusMatch
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-  @UIFieldGroup("General")
-  public Status getFetchInfoStatus() {
-    return TouchHomeUtils.STATUS_MAP.getOrDefault(getEntityID() + "_FI", DEFAULT_STATUS).getFirst();
-  }
-
   @UIField(order = 7, readOnly = true, hideOnEmpty = true)
   @UIFieldGroup("General")
   public String getFetchInfoStatusMessage() {
-    return TouchHomeUtils.STATUS_MAP.getOrDefault(getEntityID() + "_FI", DEFAULT_STATUS).getSecond();
+    return EntityContextSetting.getMessage(this, "fetch_info");
   }
 
   @UIContextMenuAction("ACTION.INITIALIZE_ZIGBEE_NODE")
@@ -281,7 +273,7 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
 
   public void updateFromNode(ZigBeeNode node, EntityContext entityContext) {
     log.info("Starting fetch info from ZigBeeNode: <{}>", node.getIeeeAddress().toString());
-    setFetchInfoStatus(Status.RUNNING, "");
+    setFetchInfoStatus(Status.RUNNING, null);
 
     boolean updated = updateFromNodeDescriptor(node);
     updated |= updateFromOtaCluster(node);
@@ -298,15 +290,15 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
     }
 
     log.info("Finished fetch info from ZigBeeNode: <{}>", node.getIeeeAddress().toString());
-    setFetchInfoStatus(Status.OFFLINE, "");
+    setFetchInfoStatus(Status.OFFLINE, null);
 
     if (updated) {
       entityContext.save(this);
     }
   }
 
-  public void setFetchInfoStatus(Status status, @NotNull String msg) {
-    TouchHomeUtils.STATUS_MAP.put(getEntityID() + "_FI", Pair.of(status, msg));
+  public void setFetchInfoStatus(Status status, @Nullable String msg) {
+    EntityContextSetting.setStatus(this, "fetch_info", status, msg);
   }
 
   private boolean updateFromBasicCluster(ZigBeeNode node) {
@@ -427,16 +419,6 @@ public final class ZigBeeDeviceEntity extends BaseEntity<ZigBeeDeviceEntity> imp
   @Override
   public @Nullable Status getSuccessServiceStatus() {
     return null;
-  }
-
-  @Override
-  public void logChangeStatus(Status status, String message) {
-    Level level = status == Status.ERROR ? Level.ERROR : Level.INFO;
-    if (StringUtils.isEmpty(message)) {
-      log.log(level, "Set ZigBee device status: {}", status);
-    } else {
-      log.log(level, "Set ZigBee device status: {}. Msg: {}", status, message);
-    }
   }
 
   @Override

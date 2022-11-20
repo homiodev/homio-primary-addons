@@ -1,12 +1,12 @@
 package org.touchhome.bundle.camera.entity;
 
+import static org.touchhome.bundle.api.util.TouchHomeUtils.FFMPEG_LOCATION;
+
 import java.util.List;
 import javax.persistence.Entity;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.RestartHandlerOnChange;
+import org.touchhome.bundle.api.model.HasEntityLog;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.ui.action.DynamicOptionLoader;
 import org.touchhome.bundle.api.ui.field.UIField;
@@ -16,16 +16,12 @@ import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.api.video.AbilityToStreamHLSOverFFMPEG;
 import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
-import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
 import org.touchhome.bundle.api.video.ffmpeg.FfmpegInputDeviceHardwareRepository;
-import org.touchhome.bundle.camera.handler.impl.UsbCameraHandler;
+import org.touchhome.bundle.camera.service.UsbCameraService;
 
-@Setter
-@Getter
 @Entity
-@Accessors(chain = true)
-public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity, UsbCameraHandler>
-    implements AbilityToStreamHLSOverFFMPEG<UsbCameraEntity> {
+public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity, UsbCameraService>
+    implements AbilityToStreamHLSOverFFMPEG<UsbCameraEntity>, HasEntityLog {
 
   public static final String PREFIX = "usbcam_";
 
@@ -80,11 +76,6 @@ public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity
   }
 
   @Override
-  public UsbCameraHandler createVideoHandler(EntityContext entityContext) {
-    return new UsbCameraHandler(this, entityContext);
-  }
-
-  @Override
   public String toString() {
     return "usb" + getTitle();
   }
@@ -109,13 +100,28 @@ public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity
             "2.5M");
   }
 
+  @Override
+  public Class<UsbCameraService> getEntityServiceItemClass() {
+    return UsbCameraService.class;
+  }
+
+  @Override
+  public UsbCameraService createService(EntityContext entityContext) {
+    return new UsbCameraService(this, entityContext);
+  }
+
+  @Override
+  public void logBuilder(EntityLogBuilder entityLogBuilder) {
+    entityLogBuilder.addTopic("org.touchhome.bundle.camera", "entityID");
+    entityLogBuilder.addTopic("org.touchhome.bundle.api.video", "entityID");
+  }
+
   public static class SelectAudioSource implements DynamicOptionLoader {
 
     @Override
     public List<OptionModel> loadOptions(DynamicOptionLoaderParameters parameters) {
-      String ffmpegLocation = BaseFFMPEGVideoStreamHandler.getFfmpegLocation();
       return OptionModel.list(parameters.getEntityContext().getBean(FfmpegInputDeviceHardwareRepository.class)
-          .getAudioDevices(ffmpegLocation));
+          .getAudioDevices(FFMPEG_LOCATION));
     }
   }
 }

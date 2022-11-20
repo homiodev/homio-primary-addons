@@ -26,9 +26,9 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.util.GroupTracker;
 import org.touchhome.bundle.camera.onvif.util.StreamServerGroupHandler;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 /**
  * Not used yet or at all responsible for finding cameras that are part of this group and displaying a group picture.
@@ -38,7 +38,7 @@ import org.touchhome.bundle.camera.onvif.util.StreamServerGroupHandler;
 public class IpCameraGroupHandler {
 
   private final ScheduledExecutorService pollCameraGroup = Executors.newSingleThreadScheduledExecutor();
-  public ArrayList<OnvifCameraHandler> cameraOrder = new ArrayList<>(2);
+  public ArrayList<OnvifCameraService> cameraOrder = new ArrayList<>(2);
   //    private WidgetLiveStreamEntity widgetLiveStreamEntity;
   public String hostIp;
   public int serverPort = 0;
@@ -68,18 +68,18 @@ public class IpCameraGroupHandler {
   }
 
   public String getOutputFolder(int index) {
-    OnvifCameraHandler handle = cameraOrder.get(index);
+    OnvifCameraService handle = cameraOrder.get(index);
     return handle.getFfmpegMP4OutputPath().toString();
   }
 
   private String readCamerasPlaylist(int cameraIndex) {
     String camerasm3u8 = "";
-    OnvifCameraHandler handle = cameraOrder.get(cameraIndex);
+    OnvifCameraService handle = cameraOrder.get(cameraIndex);
     try {
       Path file = handle.getFfmpegHLSOutputPath().resolve("ipvideo.m3u8");
       camerasm3u8 = new String(Files.readAllBytes(file));
     } catch (IOException e) {
-      log.warn("Error occured fetching a groupDisplay cameras m3u8 file :{}", e.getMessage());
+      log.warn("[{}]: Error occurred fetching a groupDisplay cameras m3u8 file :{}", handle.getEntityID(), e.getMessage());
     }
     return camerasm3u8;
   }
@@ -196,7 +196,7 @@ public class IpCameraGroupHandler {
 
   void addCamera(BaseFFMPEGVideoStreamEntity cameraEntity) {
     if (groupTracker.onlineCameraMap.containsKey(cameraEntity.getEntityID()) && cameraEntity.getStatus() == Status.ONLINE) {
-      OnvifCameraHandler onvifCameraHandler = groupTracker.onlineCameraMap.get(cameraEntity.getEntityID());
+      OnvifCameraService onvifCameraHandler = groupTracker.onlineCameraMap.get(cameraEntity.getEntityID());
       if (!cameraOrder.contains(onvifCameraHandler)) {
         log.info("Adding {} to a camera group.", cameraEntity.getTitle());
         if (hlsTurnedOn) {
@@ -218,9 +218,9 @@ public class IpCameraGroupHandler {
   }
 
   // Event based. This is called as each camera comes online after the group handler is registered.
-  public void cameraOffline(OnvifCameraHandler handle) {
+  public void cameraOffline(OnvifCameraService handle) {
     if (cameraOrder.remove(handle)) {
-      log.info("Camera {} went offline and was removed from a group.", handle.getVideoStreamEntity().getTitle());
+      log.info("[{}]: Camera {} went offline and was removed from a group.", handle.getEntityID(), handle.getEntity());
     }
   }
 
@@ -277,7 +277,7 @@ public class IpCameraGroupHandler {
   public void start(OnOffType command) {
     if (OnOffType.ON.equals(command)) {
       hlsTurnedOn = true;
-      for (OnvifCameraHandler handler : cameraOrder) {
+      for (OnvifCameraService handler : cameraOrder) {
         handler.startStream(true);
       }
     } else {

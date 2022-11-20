@@ -12,7 +12,6 @@ import org.touchhome.bundle.api.entity.PinBaseEntity;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldColorPicker;
 import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
-import org.touchhome.bundle.api.ui.field.UIFieldIgnoreGetDefault;
 import org.touchhome.bundle.api.ui.field.UIFieldInlineEntityWidth;
 import org.touchhome.bundle.api.ui.field.condition.UIFieldDisableEditOnCondition;
 import org.touchhome.bundle.raspberry.RaspberryDeviceEntity;
@@ -57,7 +56,6 @@ public class GpioPinEntity extends PinBaseEntity<RaspberryDeviceEntity> {
   }
 
   @UIField(order = 50, readOnly = true)
-  @UIFieldIgnoreGetDefault
   @UIFieldInlineEntityWidth(editWidth = 0, viewWidth = 20)
   public String getValue() {
     Object owner = getOwner();
@@ -71,7 +69,7 @@ public class GpioPinEntity extends PinBaseEntity<RaspberryDeviceEntity> {
       entity = (RaspberryDeviceEntity) owner;
     }
     if (getMode() == PinMode.DIGITAL_INPUT) {
-      return entity.getService().getState(getAddress()).stringValue();
+      return entity.optService().map(service -> service.getState(getAddress()).stringValue()).orElse(null);
     }
     return null;
   }

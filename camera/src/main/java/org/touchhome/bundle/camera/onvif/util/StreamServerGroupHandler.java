@@ -24,12 +24,13 @@ import java.nio.charset.StandardCharsets;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.camera.handler.IpCameraGroupHandler;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 /**
  * responsible for handling streams and sending any requested files to Openhabs features for a group of cameras instead of individual cameras.
  */
 @Log4j2
+@Deprecated
 public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
 
   private IpCameraGroupHandler ipCameraGroupHandler;
@@ -107,7 +108,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
       log.debug("WARN: Openhab may still be starting, or all cameras in the group are OFFLINE.");
       return;
     }
-    OnvifCameraHandler handler = ipCameraGroupHandler.cameraOrder.get(ipCameraGroupHandler.cameraIndex);
+    OnvifCameraService handler = ipCameraGroupHandler.cameraOrder.get(ipCameraGroupHandler.cameraIndex);
     handler.lockCurrentSnapshot.lock();
     try {
       ByteBuf snapshotData = Unpooled.copiedBuffer(handler.getLatestSnapshot());

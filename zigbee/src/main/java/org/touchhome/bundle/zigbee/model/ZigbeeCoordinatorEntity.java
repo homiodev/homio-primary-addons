@@ -104,8 +104,9 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     return getJsonDataEnum("ch", ZigbeeCoordinator.CC2531Handler);
   }
 
-  public void setCoordinatorHandler(ZigbeeCoordinator zigbeeCoordinator) {
+  public ZigbeeCoordinatorEntity setCoordinatorHandler(ZigbeeCoordinator zigbeeCoordinator) {
     setJsonDataEnum("ch", zigbeeCoordinator);
+    return this;
   }
 
   @UIField(order = 3, required = true)
@@ -117,8 +118,9 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     return getJsonData("port", "");
   }
 
-  public void setPort(String value) {
+  public ZigbeeCoordinatorEntity setPort(String value) {
     setJsonData("port", value);
+    return this;
   }
 
   @UIField(order = 180)
@@ -301,16 +303,6 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
   }
 
   @Override
-  public void logChangeStatus(Status status, String message) {
-    Level level = status == Status.ERROR ? Level.ERROR : Level.INFO;
-    if (StringUtils.isEmpty(message)) {
-      log.log(level, "{}: Set ZigBee coordinator status: {}", getEntityID(), status);
-    } else {
-      log.log(level, "{}: Set ZigBee coordinator status: {}. Msg: {}", getEntityID(), status, message);
-    }
-  }
-
-  @Override
   protected void beforePersist() {
     fixEntity();
   }
@@ -405,9 +397,11 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
   }
 
   @RequiredArgsConstructor
-  private enum ZigbeeCoordinator {
-    CC2531Handler((entityContext, entity) -> new CC2531Service(entityContext, entity));
+  public enum ZigbeeCoordinator {
+    CC2531Handler("CC2531", (entityContext, entity) -> new CC2531Service(entityContext, entity));
 
+    @Getter
+    private final String name;
     private final BiFunction<EntityContext, ZigbeeCoordinatorEntity, ZigBeeCoordinatorService> coordinatorSupplier;
   }
 }

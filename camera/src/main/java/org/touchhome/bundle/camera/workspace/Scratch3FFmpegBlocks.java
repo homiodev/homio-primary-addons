@@ -12,7 +12,6 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
 import org.touchhome.bundle.api.video.ffmpeg.FFMPEG;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
@@ -52,9 +51,8 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
     FfmpegBuilder ffmpegBuilder = new FfmpegBuilder();
     applyParentBlocks(ffmpegBuilder, workspaceBlock.getParent());
 
-    String ffmpegLocation = BaseFFMPEGVideoStreamHandler.getFfmpegLocation();
-    FFMPEG ffmpeg = new FFMPEG("FFMPEG_" + workspaceBlock.getId(),
-        "FFMpeg workspace general FFMPEG", new FFMPEG.FFMPEGHandler() {
+    FFMPEG ffmpeg = new FFMPEG(workspaceBlock.getId(),
+        "FFMPEG workspace", new FFMPEG.FFMPEGHandler() {
       @Override
       public String getEntityID() {
         return null;
@@ -75,7 +73,7 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
         log.error("FFmpeg error: <{}>", error);
 
       }
-    }, log, RTSP_ALARMS, ffmpegLocation, String.join(" ", ffmpegBuilder.inputArgs), input,
+    }, log, RTSP_ALARMS, String.join(" ", ffmpegBuilder.inputArgs), input,
         String.join(" ", ffmpegBuilder.outputArgs),
         output, "", "", null);
     try {
@@ -124,7 +122,7 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
 
   private static class FfmpegBuilder {
 
-    private List<String> inputArgs = new ArrayList<>();
-    private List<String> outputArgs = new ArrayList<>();
+    private final List<String> inputArgs = new ArrayList<>();
+    private final List<String> outputArgs = new ArrayList<>();
   }
 }

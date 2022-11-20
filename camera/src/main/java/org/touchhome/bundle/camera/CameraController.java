@@ -13,7 +13,7 @@ import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 @Log4j2
 @RestController
@@ -29,11 +29,10 @@ public class CameraController {
     for (BaseFFMPEGVideoStreamEntity videoStreamEntity : entityContext.findAll(BaseFFMPEGVideoStreamEntity.class)) {
       if (videoStreamEntity.getStatus() == Status.ONLINE && videoStreamEntity.isStart()) {
         if (videoStreamEntity instanceof OnvifCameraEntity) {
-          for (Profile profile : ((OnvifCameraHandler) videoStreamEntity.getVideoHandler()).getOnvifDeviceState()
-              .getProfiles()) {
+          OnvifCameraService service = (OnvifCameraService) videoStreamEntity.getService();
+          for (Profile profile : service.getOnvifDeviceState().getProfiles()) {
             list.add(OptionModel.of(videoStreamEntity.getEntityID() + "/" + profile.getToken(),
-                videoStreamEntity.getTitle() + " (" +
-                    profile.getVideoEncoderConfiguration().getResolution().toString() + ")"));
+                videoStreamEntity.getTitle() + " (" + profile.getVideoEncoderConfiguration().getResolution().toString() + ")"));
           }
         } else {
           list.add(OptionModel.of(videoStreamEntity.getEntityID(), videoStreamEntity.getTitle()));

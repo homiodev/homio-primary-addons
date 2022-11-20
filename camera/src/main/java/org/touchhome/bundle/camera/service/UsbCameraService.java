@@ -1,5 +1,6 @@
-package org.touchhome.bundle.camera.handler.impl;
+package org.touchhome.bundle.camera.service;
 
+import static org.touchhome.bundle.api.util.TouchHomeUtils.FFMPEG_LOCATION;
 import static org.touchhome.bundle.api.video.ffmpeg.FFMPEGFormat.GENERAL;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -14,42 +15,52 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
-import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
+import org.touchhome.bundle.api.video.BaseVideoService;
 import org.touchhome.bundle.api.video.BaseVideoStreamServerHandler;
 import org.touchhome.bundle.api.video.ffmpeg.FFMPEG;
 import org.touchhome.bundle.api.video.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.entity.UsbCameraEntity;
 
 @Log4j2
-public class UsbCameraHandler extends BaseFFMPEGVideoStreamHandler<UsbCameraEntity, UsbCameraHandler> {
+public class UsbCameraService extends BaseVideoService<UsbCameraEntity> {
 
-  private List<String> outputs = new ArrayList<>();
+  private final List<String> outputs = new ArrayList<>();
   private FFMPEG ffmpegUsbStream;
 
-  public UsbCameraHandler(UsbCameraEntity cameraEntity, EntityContext entityContext) {
-    super(cameraEntity, entityContext);
+  public UsbCameraService(UsbCameraEntity entity, EntityContext entityContext) {
+    super(entity, entityContext);
   }
 
   @Override
-  protected void initialize0() {
-    String url = "video=\"" + videoStreamEntity.getIeeeAddress() + "\"";
-    if (StringUtils.isNotEmpty(videoStreamEntity.getAudioSource())) {
-      url += ":audio=\"" + videoStreamEntity.getAudioSource() + "\"";
+  public void destroy() {
+
+  }
+
+  @Override
+  public void testService() {
+
+  }
+
+  @Override
+  protected void initialize0() throws Exception {
+    UsbCameraEntity entity = getEntity();
+    String url = "video=\"" + entity.getIeeeAddress() + "\"";
+    if (StringUtils.isNotEmpty(entity.getAudioSource())) {
+      url += ":audio=\"" + entity.getAudioSource() + "\"";
     }
-    Set<String> outputParams = new LinkedHashSet<>(videoStreamEntity.getStreamOptions());
+    Set<String> outputParams = new LinkedHashSet<>(entity.getStreamOptions());
     outputParams.add("-f tee");
     outputParams.add("-map 0:v");
-    if (StringUtils.isNotEmpty(videoStreamEntity.getAudioSource())) {
-      url += ":audio=\"" + videoStreamEntity.getAudioSource() + "\"";
+    if (StringUtils.isNotEmpty(entity.getAudioSource())) {
+      url += ":audio=\"" + entity.getAudioSource() + "\"";
       outputParams.add("-map 0:a");
     }
 
-    outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + videoStreamEntity.getStreamStartPort());
-    outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + (videoStreamEntity.getStreamStartPort() + 1));
+    outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + entity.getStreamStartPort());
+    outputs.add(TouchHomeUtils.MACHINE_IP_ADDRESS + ":" + (entity.getStreamStartPort() + 1));
 
-    ffmpegUsbStream = new FFMPEG("FFmpegUSB_UDP", "FFmpeg usb udp re streamer", this, log,
-        GENERAL, BaseFFMPEGVideoStreamHandler.getFfmpegLocation(),
-        "-loglevel warning " + (SystemUtils.IS_OS_LINUX ? "-f v4l2" : "-f dshow"), url,
+    ffmpegUsbStream = new FFMPEG(getEntityID(), "FFmpeg usb udp re streamer", this, log,
+        GENERAL, "-loglevel warning " + (SystemUtils.IS_OS_LINUX ? "-f v4l2" : "-f dshow"), url,
         String.join(" ", outputParams),
         outputs.stream().map(o -> "[f=mpegts]udp://" + o + "?pkt_size=1316").collect(Collectors.joining("|")),
         "", "", null);
@@ -66,11 +77,10 @@ public class UsbCameraHandler extends BaseFFMPEGVideoStreamHandler<UsbCameraEnti
   }
 
   @Override
-  public void testOnline() {
-    String ffmpegPath = BaseFFMPEGVideoStreamHandler.getFfmpegLocation();
+  protected void testVideoOnline() {
     FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
-    Set<String> aliveVideoDevices = repository.getVideoDevices(ffmpegPath);
-    if (!aliveVideoDevices.contains(getVideoStreamEntity().getIeeeAddress())) {
+    Set<String> aliveVideoDevices = repository.getVideoDevices(FFMPEG_LOCATION);
+    if (!aliveVideoDevices.contains(getEntity().getIeeeAddress())) {
       throw new RuntimeException("Camera not available");
     }
   }
@@ -102,13 +112,13 @@ public class UsbCameraHandler extends BaseFFMPEGVideoStreamHandler<UsbCameraEnti
 
   @Override
   protected boolean hasAudioStream() {
-    return super.hasAudioStream() || StringUtils.isNotEmpty(videoStreamEntity.getAudioSource());
+    return super.hasAudioStream() || StringUtils.isNotEmpty(getEntity().getAudioSource());
   }
 
-  private class UsbCameraStreamHandler extends BaseVideoStreamServerHandler<UsbCameraHandler> {
+  private class UsbCameraStreamHandler extends BaseVideoStreamServerHandler<UsbCameraService> {
 
-    public UsbCameraStreamHandler(UsbCameraHandler usbCameraHandler) {
-      super(usbCameraHandler);
+    public UsbCameraStreamHandler(UsbCameraService usbCameraService) {
+      super(usbCameraService);
     }
 
     @Override

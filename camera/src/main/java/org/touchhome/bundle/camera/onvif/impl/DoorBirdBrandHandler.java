@@ -13,9 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.video.ui.UIVideoAction;
-import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 /**
  * responsible for handling commands, which are sent to one of the channels.
@@ -24,8 +23,8 @@ import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 @CameraBrandHandler(name = "DoorBird")
 public class DoorBirdBrandHandler extends BaseOnvifCameraBrandHandler {
 
-  public DoorBirdBrandHandler(OnvifCameraEntity cameraEntity) {
-    super(cameraEntity);
+  public DoorBirdBrandHandler(OnvifCameraService service) {
+    super(service);
   }
 
   // This handles the incoming http replies back from the camera.
@@ -34,9 +33,10 @@ public class DoorBirdBrandHandler extends BaseOnvifCameraBrandHandler {
     if (msg == null || ctx == null) {
       return;
     }
+    OnvifCameraService service = getService();
     try {
       String content = msg.toString();
-      onvifCameraHandler.getLog().trace("HTTP Result back from camera is \t:{}:", content);
+      log.debug("[{}]: HTTP Result back from camera is \t:{}:", entityID, content);
       if (content.contains("doorbell:H")) {
         setAttribute(CHANNEL_DOORBELL, OnOffType.ON);
       }
@@ -44,10 +44,10 @@ public class DoorBirdBrandHandler extends BaseOnvifCameraBrandHandler {
         setAttribute(CHANNEL_DOORBELL, OnOffType.OFF);
       }
       if (content.contains("motionsensor:L")) {
-        onvifCameraHandler.motionDetected(false, CHANNEL_MOTION_ALARM);
+        service.motionDetected(false, CHANNEL_MOTION_ALARM);
       }
       if (content.contains("motionsensor:H")) {
-        onvifCameraHandler.motionDetected(true, CHANNEL_MOTION_ALARM);
+        service.motionDetected(true, CHANNEL_MOTION_ALARM);
       }
     } finally {
       ReferenceCountUtil.release(msg);
@@ -55,16 +55,18 @@ public class DoorBirdBrandHandler extends BaseOnvifCameraBrandHandler {
   }
 
   @Override
-  public void pollCameraRunnable(OnvifCameraHandler onvifCameraHandler) {
-    if (onvifCameraHandler.streamIsStopped("/bha-api/monitor.cgi?ring=doorbell,motionsensor")) {
-      log.info("The alarm stream was not running for camera {}, re-starting it now",
-          onvifCameraHandler.getVideoStreamEntity().getIp());
-      onvifCameraHandler.sendHttpGET("/bha-api/monitor.cgi?ring=doorbell,motionsensor");
+  public void pollCameraRunnable() {
+    OnvifCameraService service = getService();
+    if (service.streamIsStopped("/bha-api/monitor.cgi?ring=doorbell,motionsensor")) {
+      log.info("[{}]: The alarm stream was not running for camera {}, re-starting it now",
+          entityID, getEntity().getIp());
+      service.sendHttpGET("/bha-api/monitor.cgi?ring=doorbell,motionsensor");
     }
   }
 
   @Override
   public void initialize(EntityContext entityContext) {
+    OnvifCameraService onvifCameraHandler = getService();
     if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
       onvifCameraHandler.setMjpegUri("/bha-api/video.cgi");
     }
@@ -81,21 +83,21 @@ public class DoorBirdBrandHandler extends BaseOnvifCameraBrandHandler {
   @UIVideoAction(name = CHANNEL_EXTERNAL_LIGHT, order = 200, icon = "fas fa-sun")
   public void externalLight(boolean on) {
     if (on) {
-      onvifCameraHandler.sendHttpGET("/bha-api/light-on.cgi");
+      getService().sendHttpGET("/bha-api/light-on.cgi");
     }
   }
 
   @UIVideoAction(name = CHANNEL_ACTIVATE_ALARM_OUTPUT2, order = 47, icon = "fas fa-bell")
   public void activateAlarmOutput2(boolean on) {
     if (on) {
-      onvifCameraHandler.sendHttpGET("/bha-api/open-door.cgi?r=2");
+      getService().sendHttpGET("/bha-api/open-door.cgi?r=2");
     }
   }
 
   @UIVideoAction(name = CHANNEL_ACTIVATE_ALARM_OUTPUT, order = 45, icon = "fas fa-bell")
   public void activateAlarmOutput(boolean on) {
     if (on) {
-      onvifCameraHandler.sendHttpGET("/bha-api/open-door.cgi");
+      getService().sendHttpGET("/bha-api/open-door.cgi");
     }
   }
 }

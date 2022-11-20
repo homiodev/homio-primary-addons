@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.touchhome.bundle.camera.handler.IpCameraGroupHandler;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 /**
  * used so a 'group' thing can get a handle to each cameras handler, and the group and cameras can talk to each other.
  */
 public class GroupTracker {
 
-  public Map<String, OnvifCameraHandler> onlineCameraMap = new HashMap<>();
+  public Map<String, OnvifCameraService> onlineCameraMap = new HashMap<>();
 
   // public ArrayList<IpCameraHandler> listOfOnlineCameraHandlers = new ArrayList<>(1);
   public ArrayList<IpCameraGroupHandler> listOfGroupHandlers = new ArrayList<>(0);

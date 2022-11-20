@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.Entity;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.entity.DeviceBaseEntity;
@@ -21,13 +19,11 @@ import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
-import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
+import org.touchhome.bundle.api.video.BaseVideoService;
 import org.touchhome.bundle.api.video.ffmpeg.FFMPEG;
 import org.touchhome.common.util.CommonUtils;
 
 @Log4j2
-@Setter
-@Getter
 @Entity
 @UISidebarChildren(icon = "rest/bundle/image/camera/rpi-loop-record.png", color = "#0088CC")
 public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMPEGLoopRecordStorageService> {
@@ -147,7 +143,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
     }
 
     BaseFFMPEGVideoStreamEntity videoStreamEntity = (BaseFFMPEGVideoStreamEntity) deviceEntity;
-    BaseFFMPEGVideoStreamHandler videoStreamHandler = videoStreamEntity.getVideoHandler();
+    BaseVideoService service = videoStreamEntity.getService();
 
     FFMPEG.FFMPEGHandler ffmpegHandler = new FFMPEG.FFMPEGHandler() {
       @Override
@@ -167,7 +163,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
 
       @Override
       public void ffmpegError(String error) {
-        log.error("Record error: <{}>", error);
+        log.error("[{}]: Record error: <{}>", getEntityID(), error);
       }
     };
     String target = buildOutput(output);
@@ -179,11 +175,10 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
     Path folder = path.getParent();
     CommonUtils.createDirectoriesIfNotExists(folder);
 
-    String source = videoStreamHandler.getRtspUri(profile);
-    log.info("Start ffmpeg video recording from source: <{}> to: <{}>", source, path);
-    FFMPEG ffmpeg = new FFMPEG("FFMPEGLoopRecord_" + getEntityID(), "FFMPEG loop record", ffmpegHandler, log,
-        RECORD, BaseFFMPEGVideoStreamHandler.getFfmpegLocation(),
-        getVerbose() ? "" : "-hide_banner -loglevel warning", source,
+    String source = service.getRtspUri(profile);
+    log.info("[{}]: Start ffmpeg video recording from source: <{}> to: <{}>", getEntityID(), source, path);
+    FFMPEG ffmpeg = new FFMPEG(getEntityID(), "FFMPEG loop record", ffmpegHandler, log,
+        RECORD, getVerbose() ? "" : "-hide_banner -loglevel warning", source,
         buildFFMPEGRecordCommand(folder), path.toString(),
         videoStreamEntity.getUser(), videoStreamEntity.getPassword().asString(), null);
     ffmpegServices.put(id, ffmpeg);

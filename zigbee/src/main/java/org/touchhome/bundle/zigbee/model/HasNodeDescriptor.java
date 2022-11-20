@@ -11,7 +11,10 @@ import com.zsmartsystems.zigbee.zdo.field.PowerDescriptor.PowerSourceType;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.touchhome.bundle.api.EntityContextSetting;
 import org.touchhome.bundle.api.entity.HasJsonData;
+import org.touchhome.bundle.api.model.HasEntityIdentifier;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
@@ -21,7 +24,19 @@ import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 /**
  * Interface hold fields that common for coordinator and end devices
  */
-public interface HasNodeDescriptor extends HasJsonData {
+public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
+
+  @UIField(order = 11, readOnly = true)
+  @UIFieldColorStatusMatch
+  default Status getNodeState() {
+    return EntityContextSetting.getStatus(this, "node", Status.UNKNOWN);
+  }
+
+  default void setNodeState(ZigBeeNodeState value) {
+    Status status = value == null || value == ZigBeeNodeState.UNKNOWN ?
+        Status.UNKNOWN : value == ZigBeeNodeState.ONLINE ? Status.ONLINE : Status.OFFLINE;
+    EntityContextSetting.setStatus(this, "node", status);
+  }
 
   @UIField(order = 1, readOnly = true)
   @UIFieldGroup(value = "Node", order = 25, borderColor = "#44B377")
@@ -73,17 +88,6 @@ public interface HasNodeDescriptor extends HasJsonData {
     setJsonData("fw", value);
   }
 
-  @UIField(order = 5, readOnly = true)
-  @UIFieldGroup("Node")
-  @UIFieldColorStatusMatch
-  default ZigBeeNodeState getNodeState() {
-    return getJsonDataEnum("ns", ZigBeeNodeState.UNKNOWN);
-  }
-
-  default void setNodeState(ZigBeeNodeState value) {
-    setJsonDataEnum("ns", value);
-  }
-
   @UIField(readOnly = true, order = 1, hideOnEmpty = true)
   @UIFieldGroup(value = "Power", order = 30, borderColor = "#5F5CA1")
   @UIFieldColorMatch(value = "CRITICAL", color = "#DB4318")
@@ -132,10 +136,7 @@ public interface HasNodeDescriptor extends HasJsonData {
   default boolean updateFromNodeDescriptor(ZigBeeNode node) {
     boolean updated = false;
 
-    if (!Objects.equals(getNodeState(), node.getNodeState())) {
-      setNodeState(node.getNodeState());
-      updated = true;
-    }
+    setNodeState(node.getNodeState());
     if (!Objects.equals(getNetworkAddress(), node.getNetworkAddress())) {
       setNetworkAddress(node.getNetworkAddress());
       updated = true;

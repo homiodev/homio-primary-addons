@@ -58,6 +58,8 @@
     "name": "Camera",
     "setting": {
       "label": "Camera settings",
+      "st_CameraAutorunIntervalSetting": "AutoRun interval",
+      "st_CameraAutorunIntervalSetting_description": "Interval to check if camera is offline and 'AutoRun' is on and try rerun camera",
       "st_CameraScanPortRangeSetting": "Scan port range",
       "st_ScanRtspUrlsSetting": "RTSP urls to scan",
       "st_ScanRtspIpAddressMaxPingTimeoutSetting": "Rtsp max ping timeout",
@@ -152,6 +154,8 @@
     }
   },
   "field": {
+    "sourceStatus": "Source status",
+    "sourceStatusMessage": "Source status msg.",
     "eventSubscription": "Event subscription",
     "snapshotPollInterval": "Snapshot poll interval(sec)",
     "cameraHandler": "Last answer from camera",

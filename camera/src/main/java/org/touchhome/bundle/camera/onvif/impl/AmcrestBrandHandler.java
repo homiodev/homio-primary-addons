@@ -19,6 +19,7 @@ import io.netty.util.ReferenceCountUtil;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
@@ -26,16 +27,16 @@ import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.video.ui.UIVideoAction;
 import org.touchhome.bundle.api.video.ui.UIVideoActionGetter;
-import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasAudioAlarm;
 import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasMotionAlarm;
 import org.touchhome.bundle.camera.onvif.util.Helper;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 /**
  * responsible for handling commands, which are sent to one of the channels.
  */
+@Log4j2
 @CameraBrandHandler(name = "Amcrest", handlerName = "amcrestHandler")
 public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements BrandCameraHasAudioAlarm,
     BrandCameraHasMotionAlarm {
@@ -43,17 +44,17 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
   private String requestUrl = "Empty";
   private int audioThreshold;
 
-  public AmcrestBrandHandler(OnvifCameraEntity cameraEntity) {
-    super(cameraEntity);
+  public AmcrestBrandHandler(OnvifCameraService service) {
+    super(service);
   }
 
   @UIVideoAction(name = CHANNEL_TEXT_OVERLAY, order = 100, icon = "fas fa-paragraph")
   public void textOverlay(String value) {
     String text = Helper.encodeSpecialChars(value);
     if (text.isEmpty()) {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=false");
+      getService().sendHttpGET(CM + "setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=false");
     } else {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=true&VideoWidget[0].CustomTitle[1].Text="
+      getService().sendHttpGET(CM + "setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=true&VideoWidget[0].CustomTitle[1].Text="
           + text);
     }
   }
@@ -62,9 +63,9 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
   public void enableLed(boolean on) {
     setAttribute(CHANNEL_AUTO_LED, OnOffType.OFF);
     if (on) {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Manual");
+      getService().sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Manual");
     } else {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Off");
+      getService().sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Off");
     }
   }
 
@@ -72,7 +73,7 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
   public void autoLed(boolean on) {
     if (on) {
       setAttribute(CHANNEL_ENABLE_LED, null);
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Auto");
+      getService().sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Auto");
     }
   }
 
@@ -81,9 +82,9 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
     return on -> {
       setAttribute(CHANNEL_AUTO_LED, OnOffType.OFF);
       if (on) {
-        onvifCameraHandler.sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Manual");
+        getService().sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Manual");
       } else {
-        onvifCameraHandler.sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Off");
+        getService().sendHttpGET(CM + "setConfig&Lighting[0][0].Mode=Off");
       }
     };
   }
@@ -98,9 +99,9 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
     if (audioThreshold != this.audioThreshold) {
       this.audioThreshold = audioThreshold;
       if (this.audioThreshold > 0) {
-        onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationThreold=" + audioThreshold);
+        getService().sendHttpGET(CM + "setConfig&AudioDetect[0].MutationThreold=" + audioThreshold);
       } else {
-        onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationThreold=1");
+        getService().sendHttpGET(CM + "setConfig&AudioDetect[0].MutationThreold=1");
       }
     }
   }
@@ -108,9 +109,9 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
   @Override
   public void setMotionAlarmThreshold(int threshold) {
     if (threshold > 0) {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationDetect=true&AudioDetect[0].EventHandler.Dejitter=1");
+      getService().sendHttpGET(CM + "setConfig&AudioDetect[0].MutationDetect=true&AudioDetect[0].EventHandler.Dejitter=1");
     } else {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&AudioDetect[0].MutationDetect=false");
+      getService().sendHttpGET(CM + "setConfig&AudioDetect[0].MutationDetect=false");
     }
   }
 
@@ -122,9 +123,9 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
   @UIVideoAction(name = CHANNEL_ENABLE_LINE_CROSSING_ALARM, order = 150, icon = "fas fa-grip-lines-vertical")
   public void setEnableLineCrossingAlarm(boolean on) {
     if (on) {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&VideoAnalyseRule[0][1].Enable=true");
+      getService().sendHttpGET(CM + "setConfig&VideoAnalyseRule[0][1].Enable=true");
     } else {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&VideoAnalyseRule[0][1].Enable=false");
+      getService().sendHttpGET(CM + "setConfig&VideoAnalyseRule[0][1].Enable=false");
     }
   }
 
@@ -136,27 +137,27 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
   @UIVideoAction(name = CHANNEL_ENABLE_MOTION_ALARM, order = 14, icon = "fas fa-running")
   public void setEnableMotionAlarm(boolean on) {
     if (on) {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&MotionDetect[0].Enable=true&MotionDetect[0].EventHandler.Dejitter=1");
+      getService().sendHttpGET(CM + "setConfig&MotionDetect[0].Enable=true&MotionDetect[0].EventHandler.Dejitter=1");
     } else {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&MotionDetect[0].Enable=false");
+      getService().sendHttpGET(CM + "setConfig&MotionDetect[0].Enable=false");
     }
   }
 
   @UIVideoAction(name = CHANNEL_ACTIVATE_ALARM_OUTPUT, order = 45, icon = "fas fa-bell")
   public void activateAlarmOutput(boolean on) {
     if (on) {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&AlarmOut[0].Mode=1");
+      getService().sendHttpGET(CM + "setConfig&AlarmOut[0].Mode=1");
     } else {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&AlarmOut[0].Mode=0");
+      getService().sendHttpGET(CM + "setConfig&AlarmOut[0].Mode=0");
     }
   }
 
   @UIVideoAction(name = CHANNEL_ACTIVATE_ALARM_OUTPUT2, order = 47, icon = "fas fa-bell")
   public void activateAlarmOutput2(boolean on) {
     if (on) {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&AlarmOut[1].Mode=1");
+      getService().sendHttpGET(CM + "setConfig&AlarmOut[1].Mode=1");
     } else {
-      onvifCameraHandler.sendHttpGET(CM + "setConfig&AlarmOut[1].Mode=0");
+      getService().sendHttpGET(CM + "setConfig&AlarmOut[1].Mode=0");
     }
   }
 
@@ -167,7 +168,7 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
 
   @UIVideoAction(name = CHANNEL_ENABLE_PRIVACY_MODE, order = 70, icon = "fas fa-user-secret")
   public void setEnablePrivacyMode(boolean on) {
-    onvifCameraHandler.sendHttpGET(CM + "setConfig&LeLensMask[0].Enable=" + on);
+    getService().sendHttpGET(CM + "setConfig&LeLensMask[0].Enable=" + on);
   }
 
   public void setURL(String url) {
@@ -180,20 +181,21 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
     if (msg == null || ctx == null) {
       return;
     }
+    OnvifCameraService service = getService();
     try {
       String content = msg.toString();
-      onvifCameraHandler.getLog().trace("HTTP Result back from camera is \t:{}:", content);
+      log.debug("[{}]: HTTP Result back from camera is \t:{}:", entityID, content);
       if (content.contains("Error: No Events")) {
         if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion".equals(requestUrl)) {
-          onvifCameraHandler.motionDetected(false, CHANNEL_MOTION_ALARM);
+          service.motionDetected(false, CHANNEL_MOTION_ALARM);
         } else if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation".equals(requestUrl)) {
-          onvifCameraHandler.audioDetected(false);
+          service.audioDetected(false);
         }
       } else if (content.contains("channels[0]=0")) {
         if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion".equals(requestUrl)) {
-          onvifCameraHandler.motionDetected(true, CHANNEL_MOTION_ALARM);
+          service.motionDetected(true, CHANNEL_MOTION_ALARM);
         } else if ("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation".equals(requestUrl)) {
-          onvifCameraHandler.audioDetected(true);
+          service.audioDetected(true);
         }
       }
 
@@ -210,7 +212,7 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
       }
       // Handle AudioMutationThreshold alarm
       if (content.contains("table.AudioDetect[0].MutationThreold=")) {
-        String value = onvifCameraHandler.returnValueFromString(content, "table.AudioDetect[0].MutationThreold=");
+        String value = service.returnValueFromString(content, "table.AudioDetect[0].MutationThreold=");
         setAttribute(CHANNEL_AUDIO_THRESHOLD, new DecimalType(value));
       }
       // Privacy Mode on/off
@@ -228,25 +230,28 @@ public class AmcrestBrandHandler extends BaseOnvifCameraBrandHandler implements 
 
   @Override
   public void runOncePerMinute(EntityContext entityContext) {
-    onvifCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=AudioDetect[0]");
-    onvifCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=LeLensMask[0]");
-    onvifCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=MotionDetect[0]");
-    onvifCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=CrossLineDetection[0]");
+    OnvifCameraService service = getService();
+    service.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=AudioDetect[0]");
+    service.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=LeLensMask[0]");
+    service.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=MotionDetect[0]");
+    service.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=CrossLineDetection[0]");
   }
 
   @Override
-  public void pollCameraRunnable(OnvifCameraHandler onvifCameraHandler) {
-    onvifCameraHandler.sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion");
-    onvifCameraHandler.sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation");
+  public void pollCameraRunnable() {
+    OnvifCameraService service = getService();
+    service.sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion");
+    service.sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation");
   }
 
   @Override
   public void initialize(EntityContext entityContext) {
-    if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
-      onvifCameraHandler.setMjpegUri("/cgi-bin/mjpg/video.cgi?channel=" + onvifCameraHandler.getVideoStreamEntity().getNvrChannel() + "&subtype=1");
+    OnvifCameraService service = getService();
+    if (StringUtils.isEmpty(service.getMjpegUri())) {
+      service.setMjpegUri("/cgi-bin/mjpg/video.cgi?channel=" + getEntity().getNvrChannel() + "&subtype=1");
     }
-    if (StringUtils.isEmpty(onvifCameraHandler.getSnapshotUri())) {
-      onvifCameraHandler.setSnapshotUri("/cgi-bin/snapshot.cgi?channel=" + onvifCameraHandler.getVideoStreamEntity().getNvrChannel());
+    if (StringUtils.isEmpty(service.getSnapshotUri())) {
+      service.setSnapshotUri("/cgi-bin/snapshot.cgi?channel=" + getEntity().getNvrChannel());
     }
   }
 

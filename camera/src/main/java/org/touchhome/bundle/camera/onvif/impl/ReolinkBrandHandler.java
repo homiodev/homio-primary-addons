@@ -52,7 +52,6 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.ToString;
-import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 import org.springframework.core.io.UrlResource;
@@ -77,11 +76,11 @@ import org.touchhome.bundle.api.video.ui.UIVideoActionGetter;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
 import org.touchhome.bundle.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 import org.touchhome.bundle.camera.onvif.brand.BrandCameraHasMotionAlarm;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 import org.touchhome.bundle.camera.ui.UICameraSelectionAttributeValues;
 import org.touchhome.common.exception.LoginFailedException;
 import org.touchhome.common.util.CommonUtils;
 
-@Log4j2
 @CameraBrandHandler(name = "Reolink")
 public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements
     BrandCameraHasMotionAlarm, VideoPlaybackStorage {
@@ -90,19 +89,19 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements
   private long tokenExpiration;
   private String token;
 
-  public ReolinkBrandHandler(OnvifCameraEntity cameraEntity) {
-    super(cameraEntity);
+  public ReolinkBrandHandler(OnvifCameraService service) {
+    super(service);
   }
 
   @Override
   public String getTitle() {
-    return videoStreamEntity.getTitle();
+    return getEntity().getTitle();
   }
 
   @Override
   public LinkedHashMap<Long, Boolean> getAvailableDaysPlaybacks(EntityContext entityContext, String profile, Date fromDate,
       Date toDate) {
-    ReolinkBrandHandler reolinkBrandHandler = (ReolinkBrandHandler) videoStreamEntity.getBaseBrandCameraHandler();
+    ReolinkBrandHandler reolinkBrandHandler = (ReolinkBrandHandler) getEntity().getService().getBrandHandler();
     Root[] root = reolinkBrandHandler.firePost("cmd=Search", true, new ReolinkBrandHandler.ReolinkCmd(1, "Search",
         new SearchRequest(new SearchRequest.Search(1, profile, Time.of(fromDate), Time.of(toDate)))));
     if (root[0].error != null) {
@@ -126,8 +125,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements
 
   @Override
   public List<PlaybackFile> getPlaybackFiles(EntityContext entityContext, String profile, Date from, Date to) {
-    ReolinkBrandHandler reolinkBrandHandler = (ReolinkBrandHandler) videoStreamEntity.getBaseBrandCameraHandler();
-    Root[] root = reolinkBrandHandler.firePost("cmd=Search", true, new ReolinkBrandHandler.ReolinkCmd(1, "Search",
+    Root[] root = firePost("cmd=Search", true, new ReolinkBrandHandler.ReolinkCmd(1, "Search",
         new SearchRequest(new SearchRequest.Search(0, profile, Time.of(from), Time.of(to)))));
     if (root[0].error != null) {
       throw new RuntimeException("RspCode: " + root[0].error.rspCode + ". Details: " + root[0].error.detail);
@@ -145,8 +143,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements
     if (Files.exists(path)) {
       return path.toUri();
     } else {
-      ReolinkBrandHandler reolinkBrandHandler = (ReolinkBrandHandler) videoStreamEntity.getBaseBrandCameraHandler();
-      String fullUrl = reolinkBrandHandler.getAuthUrl("cmd=Download&source=" + fileId + "&output=" + fileId, true);
+      String fullUrl = getAuthUrl("cmd=Download&source=" + fileId + "&output=" + fileId, true);
       return new URI(fullUrl);
     }
   }
@@ -161,8 +158,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements
   @Override
   public DownloadFile downloadPlaybackFile(EntityContext entityContext, String profile, String fileId, Path path)
       throws Exception {
-    ReolinkBrandHandler reolinkBrandHandler = (ReolinkBrandHandler) videoStreamEntity.getBaseBrandCameraHandler();
-    String fullUrl = reolinkBrandHandler.getAuthUrl("cmd=Download&source=" + fileId + "&output=" + fileId, true);
+    String fullUrl = getAuthUrl("cmd=Download&source=" + fileId + "&output=" + fileId, true);
     restTemplate.execute(fullUrl, HttpMethod.GET, null, clientHttpResponse -> {
       StreamUtils.copy(clientHttpResponse.getBody(),
           Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE));
@@ -185,7 +181,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements
       if (firePostGetCode(ReolinkCommand.SetIrLights, true,
           new ReolinkCmd(0, "SetIrLights", request))) {
         setAttribute(CHANNEL_AUTO_LED, OnOffType.of(on));
-        entityContext.ui().sendSuccessMessage("Reolink set IR light applied successfully");
+        getEntityContext().ui().sendSuccessMessage("Reolink set IR light applied successfully");
       }
     };
   }
@@ -519,8 +515,8 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements
 
   private void loginIfRequire() {
     if (this.tokenExpiration - System.currentTimeMillis() < 60000) {
-      LoginRequest loginRequest = new LoginRequest(
-          new LoginRequest.User(videoStreamEntity.getUser(), videoStreamEntity.getPassword().asString()));
+      OnvifCameraEntity entity = getEntity();
+      LoginRequest loginRequest = new LoginRequest(new LoginRequest.User(entity.getUser(), entity.getPassword().asString()));
       Root root = firePost("cmd=Login", false, new ReolinkCmd(0, "Login", loginRequest))[0];
       if (root.getError() != null) {
         throw new LoginFailedException(root.getError().toString());
@@ -552,7 +548,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements
     if (requireAuth) {
       url = updateURL(url);
     }
-    return "http://" + this.ip + ":" + this.videoStreamEntity.getRestPort() + "/cgi-bin/api.cgi?" + url;
+    return "http://" + this.ip + ":" + getEntity().getRestPort() + "/cgi-bin/api.cgi?" + url;
   }
 
   @SneakyThrows
@@ -564,7 +560,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements
     if (root.getError() == null) {
       return true;
     }
-    entityContext.ui().sendErrorMessage("Error while updating reolink settings. " + root.getError().getDetail());
+    getEntityContext().ui().sendErrorMessage("Error while updating reolink settings. " + root.getError().getDetail());
     return false;
   }
 
@@ -578,7 +574,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements
     loginIfRequire();
     if (firePostGetCode(command, true,
         new ReolinkCmd(0, command.name(), new JSONObject().put(key, setting.toString())))) {
-      entityContext.ui().sendSuccessMessage("Reolink " + command + " applied successfully");
+      getEntityContext().ui().sendSuccessMessage("Reolink " + command + " applied successfully");
     }
   }
 

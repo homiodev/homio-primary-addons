@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
 
 public interface BaseBrandCameraHandler {
 
@@ -20,7 +19,7 @@ public interface BaseBrandCameraHandler {
     throw new RuntimeException("Unsupported bootstrap handler");
   }
 
-  void pollCameraRunnable(OnvifCameraHandler onvifCameraHandler);
+  void pollCameraRunnable();
 
   void initialize(EntityContext entityContext);
 

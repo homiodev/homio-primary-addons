@@ -661,10 +661,6 @@ public abstract class ZigBeeCoordinatorService
     if (entity == null) {
       this.entity = newEntity;
     }
-    entityContext.bgp().builder("test" + entity.getEntityID()).interval(Duration.ofSeconds(10)).execute(() -> {
-      Exception ex = new IllegalStateException("asdasd");
-      log.debug("{}: bla-bla-bla", entity.getEntityID(), ex);
-    });
     this.discoveryService.setCoordinator(newEntity);
 
     if (newEntity.isStart()) {
@@ -701,7 +697,6 @@ public abstract class ZigBeeCoordinatorService
       }
       if (!Objects.equals(newEntity.getLinkKey(), entity.getLinkKey()) ||
           !Objects.equals(newEntity.getNetworkKey(), entity.getNetworkKey()) ||
-          newEntity.getCurrentPowerMode() != entity.getCurrentPowerMode() ||
           newEntity.getPortBaud() != entity.getPortBaud() ||
           newEntity.getFlowControl() != entity.getFlowControl() ||
           newEntity.getTxPower() != entity.getTxPower() ||

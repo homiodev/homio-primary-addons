@@ -1,5 +1,7 @@
 package org.touchhome.bundle.camera.scanner;
 
+import static org.touchhome.bundle.api.util.TouchHomeUtils.FFMPEG_LOCATION;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.service.scan.BaseItemsDiscovery;
 import org.touchhome.bundle.api.service.scan.VideoStreamScanner;
-import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamHandler;
 import org.touchhome.bundle.api.video.ffmpeg.FFMPEGVideoDevice;
 import org.touchhome.bundle.api.video.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.touchhome.bundle.camera.entity.UsbCameraEntity;
@@ -33,11 +34,10 @@ public class UsbCameraScanner implements VideoStreamScanner {
       String headerConfirmButtonKey) {
     BaseItemsDiscovery.DeviceScannerResult result = new BaseItemsDiscovery.DeviceScannerResult();
     FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
-    String ffmpegPath = BaseFFMPEGVideoStreamHandler.getFfmpegLocation();
     List<FFMPEGVideoDevice> foundUsbVideoCameraDevices = new ArrayList<>();
 
-    for (String deviceName : repository.getVideoDevices(ffmpegPath)) {
-      foundUsbVideoCameraDevices.add(repository.createVideoInputDevice(ffmpegPath, deviceName).setName(deviceName));
+    for (String deviceName : repository.getVideoDevices(FFMPEG_LOCATION)) {
+      foundUsbVideoCameraDevices.add(repository.createVideoInputDevice(FFMPEG_LOCATION, deviceName).setName(deviceName));
     }
     Map<String, UsbCameraEntity> existsUsbCamera = entityContext.findAll(UsbCameraEntity.class).stream()
         .collect(Collectors.toMap(UsbCameraEntity::getIeeeAddress, Function.identity()));

@@ -11,7 +11,7 @@ import org.touchhome.bundle.api.audio.SelfContainedAudioSourceContainer;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.video.BaseFFMPEGVideoStreamEntity;
 import org.touchhome.bundle.camera.entity.OnvifCameraEntity;
-import org.touchhome.bundle.camera.handler.impl.OnvifCameraHandler;
+import org.touchhome.bundle.camera.service.OnvifCameraService;
 
 @Log4j2
 @Component
@@ -26,8 +26,8 @@ public class CameraSelfContainedAudioSources implements SelfContainedAudioSource
     for (BaseFFMPEGVideoStreamEntity cameraEntity : entityContext.findAll(BaseFFMPEGVideoStreamEntity.class)) {
       // get sources from onvif audio streams
       if (cameraEntity.isStart() && cameraEntity instanceof OnvifCameraEntity) {
-        OnvifCameraHandler cameraHandler = (OnvifCameraHandler) cameraEntity.getVideoHandler();
-        for (AudioSource audioSource : cameraHandler.getOnvifDeviceState().getMediaDevices().getAudioSources()) {
+        OnvifCameraService service = (OnvifCameraService) cameraEntity.getService();
+        for (AudioSource audioSource : service.getOnvifDeviceState().getMediaDevices().getAudioSources()) {
           models.add(OptionModel.of(audioSource.getToken()));
         }
       }
