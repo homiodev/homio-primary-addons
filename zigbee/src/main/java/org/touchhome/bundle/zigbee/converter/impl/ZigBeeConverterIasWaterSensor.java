@@ -22,7 +22,7 @@ public class ZigBeeConverterIasWaterSensor extends ZigBeeConverterIas {
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-    return supportsIasChannel(endpoint, ZoneTypeEnum.WATER_SENSOR);
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    return supportsIasChannel(endpoint, entityID, ZoneTypeEnum.WATER_SENSOR);
   }
 }

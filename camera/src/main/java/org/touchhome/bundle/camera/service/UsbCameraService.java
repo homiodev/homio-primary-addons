@@ -37,8 +37,8 @@ public class UsbCameraService extends BaseVideoService<UsbCameraEntity> {
   }
 
   @Override
-  public void testService() {
-
+  public boolean testService() {
+    return false;
   }
 
   @Override
@@ -115,7 +115,7 @@ public class UsbCameraService extends BaseVideoService<UsbCameraEntity> {
     return super.hasAudioStream() || StringUtils.isNotEmpty(getEntity().getAudioSource());
   }
 
-  private class UsbCameraStreamHandler extends BaseVideoStreamServerHandler<UsbCameraService> {
+  private static class UsbCameraStreamHandler extends BaseVideoStreamServerHandler<UsbCameraService> {
 
     public UsbCameraStreamHandler(UsbCameraService usbCameraService) {
       super(usbCameraService);

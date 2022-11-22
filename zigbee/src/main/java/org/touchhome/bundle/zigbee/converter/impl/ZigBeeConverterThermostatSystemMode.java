@@ -1,17 +1,19 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
 import com.zsmartsystems.zigbee.CommandResult;
+import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclThermostatCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 /**
  * Set the system mode of the thermostat Converter for the thermostat system mode channel. The SystemMode attribute specifies the current operating mode of the thermostat,
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:thermostat_systemmode", clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
+@ZigBeeConverter(name = "zigbee:thermostat_systemmode", linkType = VariableType.Float,
+    clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverter {
 
    /* private final static int STATE_MIN = 0;
@@ -25,10 +27,15 @@ public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverte
   }
 
   @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    return acceptEndpoint(endpoint, entityID, false, true);
+  }
+
+  @Override
   public boolean initializeDevice() {
     ZclThermostatCluster serverCluster = getInputCluster(ZclThermostatCluster.CLUSTER_ID);
     if (serverCluster == null) {
-      log.error("{}: Error opening device thermostat cluster", getEndpointEntity());
+      log.error("[{}]: Error opening device thermostat cluster {}", entityID, endpoint);
       return false;
     }
 
@@ -41,10 +48,10 @@ public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverte
             .setReporting(1, REPORTING_PERIOD_DEFAULT_MAX).get();
         handleReportingResponse(reportingResponse);
       } else {
-        log.debug("{}: Failed to bind thermostat cluster", getEndpointEntity());
+        log.debug("[{}]: Failed to bind thermostat cluster {}", entityID, endpoint);
       }
-    } catch (InterruptedException | ExecutionException e) {
-      log.error("{}: Exception setting reporting ", getEndpointEntity(), e);
+    } catch (Exception e) {
+      log.error("[{}]: Exception setting reporting {}", entityID, endpoint, e);
     }
 
     return true;
@@ -84,13 +91,13 @@ public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverte
         }
 
         if (value == null) {
-            log.warn("{}: System mode command {} [{}] was not processed", getEndpointEntity(), command,
+            log.warn("[{}]: System mode command {} [{}] was not processed", endpoint, command,
                     command.getClass().getSimpleName());
             return;
         }
 
         if (value < STATE_MIN || value > STATE_MAX) {
-            log.warn("{}: System mode command {} [{}], value {}, was out of limits", getEndpointEntity(),
+            log.warn("[{}]: System mode command {} [{}], value {}, was out of limits", endpoint,
                     command, command.getClass().getSimpleName(), value);
             return;
         }

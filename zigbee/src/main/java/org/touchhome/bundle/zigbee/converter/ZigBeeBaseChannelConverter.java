@@ -4,18 +4,25 @@ import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeCommand;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.ZigBeeProfileType;
+import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.QuantityType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
+import org.touchhome.bundle.zigbee.converter.impl.config.ZclDoorLockConfig;
+import org.touchhome.bundle.zigbee.converter.impl.config.ZclFanControlConfig;
+import org.touchhome.bundle.zigbee.converter.impl.config.ZclLevelControlConfig;
+import org.touchhome.bundle.zigbee.converter.impl.config.ZclOnOffSwitchConfig;
+import org.touchhome.bundle.zigbee.converter.impl.config.ZclReportingConfig;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.service.ZigBeeDeviceService;
 import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
@@ -33,36 +40,56 @@ public abstract class ZigBeeBaseChannelConverter {
 
   public static final int POLLING_PERIOD_HIGH = 300;
 
-  @Getter
   protected int pollingPeriod = POLLING_PERIOD_DEFAULT;
-
   @Getter
   protected int minimalReportingPeriod = Integer.MAX_VALUE;
-
+  protected ZigBeeEndpoint endpoint;
+  // device entityID
+  protected String entityID;
+  @Getter
+  @Nullable
+  protected ZclReportingConfig configReporting;
+  @Getter
+  @Nullable
+  protected ZclLevelControlConfig configLevelControl;
+  @Getter
+  @Nullable
+  protected ZclOnOffSwitchConfig configOnOff;
+  @Getter
+  @Nullable
+  protected ZclFanControlConfig configFanControl;
+  @Getter
+  @Nullable
+  protected ZclDoorLockConfig configDoorLock;
+  @Getter
+  protected boolean supportConfigColorControl;
   private boolean pooling = false;
-
   @Getter
   @Setter
   private ZigBeeConverter annotation;
-
-  @Setter
   @Getter
   private ZigbeeEndpointService endpointService;
 
-  protected ZigBeeEndpointEntity getEndpointEntity() {
+  public int getPollingPeriod() {
+    return configReporting == null ? pollingPeriod : configReporting.getPollingPeriod();
+  }
+
+  public void initialize(ZigbeeEndpointService endpointService, ZigBeeEndpoint endpoint) {
+    this.endpointService = endpointService;
+    this.endpoint = endpoint;
+    this.entityID = endpointService.getZigBeeDeviceService().getEntityID();
+  }
+
+  public ZigBeeEndpointEntity getEntity() {
     return endpointService.getEntity();
   }
 
-  protected ZigBeeEndpoint getEndpoint() {
-    return endpointService.getZigBeeEndpoint();
-  }
-
   protected <T> T getInputCluster(int clusterId) {
-    return (T) endpointService.getZigBeeEndpoint().getInputCluster(clusterId);
+    return (T) endpoint.getInputCluster(clusterId);
   }
 
   protected <T> T getOutputCluster(int clusterId) {
-    return (T) endpointService.getZigBeeEndpoint().getOutputCluster(clusterId);
+    return (T) endpoint.getOutputCluster(clusterId);
   }
 
   /**
@@ -80,11 +107,11 @@ public abstract class ZigBeeBaseChannelConverter {
   }
 
   /**
-   * Initialise the converter. This is called by the {@link ZigBeeDeviceService} when the channel is created. The converter should initialise any internal states, open any
+   * Initialize the converter. This is called by the {@link ZigBeeDeviceService} when the channel is created. The converter should initialize any internal states, open any
    * clusters, add reporting and binding that it needs to operate.
    * <p>
    *
-   * @return true if the converter was initialised successfully
+   * @return true if the converter was initialized successfully
    */
   public abstract boolean initializeConverter();
 
@@ -127,7 +154,38 @@ public abstract class ZigBeeBaseChannelConverter {
    * @param endpoint The {@link ZigBeeEndpoint} to search for zigbeeRequireEndpoints
    * @return a  if the converter supports features from the {@link ZigBeeEndpoint}, otherwise null.
    */
-  public abstract boolean acceptEndpoint(ZigBeeEndpoint endpoint);
+  public abstract boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID);
+
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, int clusterID, int attributeId, boolean discoverAttribute, boolean readAttribute) {
+    ZclCluster cluster = endpoint.getInputCluster(clusterID);
+    if (cluster == null) {
+      log.debug("[{}]: Cluster '{}' not found {}", entityID, clusterID, endpoint);
+      return false;
+    }
+
+    if (discoverAttribute) {
+      try {
+        if (!cluster.discoverAttributes(false).get(60, TimeUnit.SECONDS) && !cluster
+            .isAttributeSupported(attributeId)) {
+          log.debug("[{}]: Error discover attribute {}. {}", entityID, attributeId, endpoint);
+          return false;
+        }
+      } catch (Exception e) {
+        log.debug("[{}]: Exception discovering attributes in {}", entityID, endpoint, e);
+        return false;
+      }
+    }
+
+    if (readAttribute) {
+      ZclAttribute zclAttribute = cluster.getAttribute(attributeId);
+      Object value = zclAttribute.readValue(Long.MAX_VALUE);
+      if (value == null) {
+        log.debug("[{}]: Exception reading attribute {} in cluster, {}", entityID, attributeId, endpoint);
+        return false;
+      }
+    }
+    return true;
+  }
 
   protected void handleReportingResponse(CommandResult reportResponse) {
     handleReportingResponse(reportResponse, REPORTING_PERIOD_DEFAULT_MAX, REPORTING_PERIOD_DEFAULT_MAX);
@@ -206,7 +264,7 @@ public abstract class ZigBeeBaseChannelConverter {
   }
 
   protected void updateChannelState(State state) {
-    log.debug("{}: Channel <{}> updated to <{}>", endpointService.getZigBeeEndpoint(), getClass().getSimpleName(), state);
+    log.debug("[{}]: Channel <{}> updated to <{}> for {}", entityID, getClass().getSimpleName(), state, endpoint);
     endpointService.updateValue(state);
     this.pooling = false;
   }
@@ -230,18 +288,34 @@ public abstract class ZigBeeBaseChannelConverter {
   }
 
   // Configure reporting
-  protected void updateServerPoolingPeriod(ZclCluster serverCluster, int attributeId, boolean isUpdate) {
-    ZigBeeEndpointEntity zbe = endpointService.getEntity();
+  protected void updateServerPollingPeriod(ZclCluster serverCluster, int attributeId) {
     try {
-      CommandResult reportingResponse = serverCluster.setReporting(attributeId, zbe.getReportingTimeMin(),
-          zbe.getReportingTimeMax(), zbe.getReportingChange()).get();
-      if (isUpdate) {
-        handleReportingResponse(reportingResponse, zbe.getPoolingPeriod(), zbe.getReportingTimeMax());
-      } else {
-        handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, zbe.getPoolingPeriod());
-      }
-    } catch (InterruptedException | ExecutionException e) {
-      log.debug("{}: Exception setting reporting", zbe, e);
+      CommandResult reportingResponse = serverCluster.setReporting(
+          attributeId,
+          configReporting.getReportingTimeMin(),
+          configReporting.getReportingTimeMax(),
+          configReporting.getReportingChange()).get();
+      handleReportingResponse(
+          reportingResponse,
+          configReporting.getPollingPeriod(),
+          configReporting.getReportingTimeMax());
+    } catch (Exception e) {
+      log.debug("[{}]: Exception setting reporting", entityID, e);
+    }
+  }
+
+  protected void updateServerPollingPeriodNoChange(ZclCluster serverCluster, int attributeId) {
+    try {
+      CommandResult reportingResponse = serverCluster.setReporting(
+          attributeId,
+          configReporting.getReportingTimeMin(),
+          configReporting.getReportingTimeMax()).get();
+      handleReportingResponse(
+          reportingResponse,
+          configReporting.getPollingPeriod(),
+          configReporting.getReportingTimeMax());
+    } catch (Exception e) {
+      log.debug("[{}]: Exception setting reporting", entityID, e);
     }
   }
 
@@ -251,5 +325,9 @@ public abstract class ZigBeeBaseChannelConverter {
 
   public Integer getMinPoolingInterval() {
     return Math.min(this.pollingPeriod, this.minimalReportingPeriod);
+  }
+
+  public final boolean isSupportAnalogue() {
+    return configReporting != null && configReporting.getChangeMax() != null; // check only max is enough
   }
 }

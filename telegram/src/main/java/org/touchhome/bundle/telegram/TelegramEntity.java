@@ -35,7 +35,7 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
 
   public static final String PREFIX = "telegram_";
 
-  @UIField(order = 1, readOnly = true, hideOnEmpty = true, fullWidth = true, bg = "#334842", type = UIFieldType.HTML)
+  @UIField(order = 1, hideInEdit = true, hideOnEmpty = true, fullWidth = true, bg = "#334842", type = UIFieldType.HTML)
   public String getDescription() {
     if (StringUtils.isEmpty(getBotName()) || StringUtils.isEmpty(getBotToken())) {
       return Lang.getServerMessage("telegram.description");
@@ -61,7 +61,7 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
     setJsonData("botToken", value);
   }
 
-  @UIField(order = 50, readOnly = true, type = UIFieldType.Chips, label = "users")
+  @UIField(order = 50, hideInEdit = true, type = UIFieldType.Chips, label = "users")
   public List<String> getRegisteredUsers() {
     return getUsers().stream().map(TelegramUser::getName).collect(Collectors.toList());
   }

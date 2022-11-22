@@ -39,6 +39,7 @@ public class CC2531Service extends ZigBeeCoordinatorService {
         "cc2531",
         entityContext,
         TouchHomeUtils.getSerialPort(getEntity().getPort()),
+        getEntityID(),
         getEntity().getPortBaud(),
         PortFlowControl.FLOWCONTROL_OUT_RTSCTS,
         () -> getEntity().setStatus(Status.ERROR, "PORT_COMMUNICATION_ERROR"),

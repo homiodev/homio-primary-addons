@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 
 @Getter
 public class ZigBeeEndpointUUID {
@@ -18,7 +19,7 @@ public class ZigBeeEndpointUUID {
   @JsonIgnore
   private boolean leftSide;
 
-  public ZigBeeEndpointUUID(@NotNull String ieeeAddress, @NotNull Integer clusterId, Integer endpointId, String clusterName) {
+  public ZigBeeEndpointUUID(@NotNull String ieeeAddress, @NotNull Integer clusterId, @NotNull Integer endpointId, @Nullable String clusterName) {
     this.ieeeAddress = ieeeAddress;
     this.clusterId = clusterId;
     this.endpointId = endpointId;

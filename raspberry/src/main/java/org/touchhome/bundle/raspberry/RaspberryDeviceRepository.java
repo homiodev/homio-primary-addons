@@ -33,7 +33,7 @@ public class RaspberryDeviceRepository extends AbstractRepository<RaspberryDevic
       raspberryDevice.setGpioPinEntities(new HashSet<>());
       for (GpioPin gpioPin : RaspberryGpioPin.getGpioPins()) {
         GpioPinEntity pin = new GpioPinEntity();
-        pin.computeEntityID(() -> gpioPin.getAddress() + "_" + raspberryDevice.getEntityID());
+        pin.setEntityID(gpioPin.getAddress() + "_" + raspberryDevice.getEntityID());
         pin.setPull(PullResistance.PULL_DOWN);
         pin.setColor(gpioPin.getColor());
         pin.setName(gpioPin.getName());
@@ -53,7 +53,7 @@ public class RaspberryDeviceRepository extends AbstractRepository<RaspberryDevic
   public void ensureDeviceExists() {
     if (getByEntityID(DEFAULT_DEVICE_ENTITY_ID) == null) {
       log.info("Save default pi device");
-      save(new RaspberryDeviceEntity().computeEntityID(() -> DEFAULT_DEVICE_ENTITY_ID));
+      save(new RaspberryDeviceEntity().setEntityID(DEFAULT_DEVICE_ENTITY_ID));
     }
   }
 }

@@ -3,19 +3,20 @@ package org.touchhome.bundle.zigbee.converter.impl;
 import static org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterMeasurementRmsVoltage.determineDivisor;
 import static org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterMeasurementRmsVoltage.determineMultiplier;
 
+import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
-import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclMeteringCluster;
 import java.math.BigDecimal;
-import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.DecimalType;
 
 /**
  * The instantaneous demand from the metering system ZigBee channel converter for instantaneous demand measurement
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:metering_instantdemand", clientCluster = ZclMeteringCluster.CLUSTER_ID, category = "Number")
+@ZigBeeConverter(name = "zigbee:metering_instantdemand", linkType = VariableType.Float,
+    clientCluster = ZclMeteringCluster.CLUSTER_ID, category = "Number")
 public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeConverterMeteringBaseConverter {
 
   private double divisor = 1.0;
@@ -32,22 +33,8 @@ public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeConverterM
   }
 
   @Override
-  protected boolean acceptEndpointExtra(ZclCluster cluster) {
-    try {
-      if (!cluster.discoverAttributes(false).get()
-          && !cluster.isAttributeSupported(getAttributeId())) {
-        return false;
-      } else {
-        ZclAttribute attribute = cluster.getAttribute(getAttributeId());
-        if (attribute.readValue(Long.MAX_VALUE) == null) {
-          return false;
-        }
-      }
-    } catch (InterruptedException | ExecutionException e) {
-      log.warn("{}: Exception discovering attributes in metering cluster {}", getEndpointEntity(), e);
-      return false;
-    }
-    return true;
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    return acceptEndpoint(endpoint, entityID, true, true);
   }
 
   @Override

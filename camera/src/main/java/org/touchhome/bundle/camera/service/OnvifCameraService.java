@@ -223,13 +223,14 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
   }
 
   @Override
-  public void entityUpdated(EntityService entityService) {
+  public boolean entityUpdated(@NotNull EntityService entityService) {
     super.entityUpdated(entityService);
 
     onvifDeviceState.updateParameters(getEntity().getIp(), getEntity().getOnvifPort(),
         getEntity().getServerPort(), getEntity().getUser(), getEntity().getPassword().asString());
     // change camera name if possible
     tryChangeCameraName();
+    return false;
   }
 
   @Override
@@ -238,8 +239,8 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
   }
 
   @Override
-  public void testService() {
-
+  public boolean testService() {
+    return false;
   }
 
   public VideoPlaybackStorage getVideoPlaybackStorage() {

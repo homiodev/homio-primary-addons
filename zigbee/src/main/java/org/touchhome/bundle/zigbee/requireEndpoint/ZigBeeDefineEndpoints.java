@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -23,7 +25,7 @@ public final class ZigBeeDefineEndpoints {
   private static final List<DeviceDefinition> defineEndpoints = new ArrayList<>();
 
   static {
-    var objectNode = CommonUtils.readAndMergeJSON("zigBee/device-properties.json", OBJECT_MAPPER.createObjectNode());
+    var objectNode = CommonUtils.readAndMergeJSON("device-definitions.json", OBJECT_MAPPER.createObjectNode());
     for (JsonNode vendorNode : objectNode) {
       for (JsonNode deviceNode : vendorNode.get("devices")) {
         var deviceDefinition = new DeviceDefinition();
@@ -35,7 +37,7 @@ public final class ZigBeeDefineEndpoints {
         deviceDefinition.setLabel(getDefinitionMap(deviceNode, "label"));
         deviceDefinition.setDescription(getDefinitionMap(deviceNode, "description"));
 
-        for (JsonNode endpoint : deviceNode.get("endpoints")) {
+        for (JsonNode endpoint : deviceNode.path("endpoints")) {
           var endpointDefinition = new EndpointDefinition();
           endpointDefinition.setId(ofNullable(endpoint.get("id")).map(JsonNode::textValue).orElse(null));
           endpointDefinition.setInputCluster(ofNullable(endpoint.get("input_cluster")).map(JsonNode::asInt).orElse(null));
@@ -43,13 +45,7 @@ public final class ZigBeeDefineEndpoints {
           endpointDefinition.setDescription(getDefinitionMap(endpoint, "description"));
           endpointDefinition.setTypeId(endpoint.get("type_id").textValue());
           endpointDefinition.setEndpoint(endpoint.get("endpoint").asInt());
-          if (endpoint.has("meta")) {
-            Map<String, Object> map = new HashMap<>();
-            for (JsonNode langNode : deviceNode.get("meta")) {
-              map.put(langNode.asText(), langNode.asText());
-            }
-            endpointDefinition.setMetadata(map);
-          }
+          endpointDefinition.setMetadata(endpoint.get("meta"));
           deviceDefinition.getEndpoints().add(endpointDefinition);
         }
 
@@ -61,8 +57,9 @@ public final class ZigBeeDefineEndpoints {
   private static Map<String, String> getDefinitionMap(JsonNode deviceNode, String key) {
     if (deviceNode.has(key)) {
       Map<String, String> map = new HashMap<>();
-      for (JsonNode langNode : deviceNode.get(key)) {
-        map.put(langNode.asText(), langNode.textValue());
+      for (Iterator<Entry<String, JsonNode>> iterator = deviceNode.get(key).fields(); iterator.hasNext(); ) {
+        Entry<String, JsonNode> entry = iterator.next();
+        map.put(entry.getKey(), entry.getValue().textValue());
       }
       return map;
     }

@@ -28,7 +28,7 @@ public class GpioController {
     List<BaseEntity> list = new ArrayList<>();
     List<RaspberryDeviceEntity> entities = entityContext.findAll(RaspberryDeviceEntity.class);
     for (RaspberryDeviceEntity entity : entities) {
-      list.addAll(entity.getOrCreateService(entityContext, false, false).getDS18B20()
+      list.addAll(entity.getService().getDS18B20()
           .stream().map(s -> BaseEntity.fakeEntity(s).setName(s)).collect(Collectors.toList()));
     }
     return list;

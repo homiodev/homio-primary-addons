@@ -1,15 +1,15 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
+import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclThermostatCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 /**
  * Set the heating temperature when the room is occupied Converter for the thermostat occupied heating setpoint channel
  */
-@Log4j2
-@ZigBeeConverter(name = "zigbee:thermostat_occupiedheating",
+@ZigBeeConverter(name = "zigbee:thermostat_occupiedheating", linkType = VariableType.Float,
     clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatOccupiedHeating extends ZigBeeInputBaseConverter {
 
@@ -18,12 +18,17 @@ public class ZigBeeConverterThermostatOccupiedHeating extends ZigBeeInputBaseCon
         1, REPORTING_PERIOD_DEFAULT_MAX, 10);
   }
 
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    return acceptEndpoint(endpoint, entityID, false, true);
+  }
+
     /*@Override
     public void handleCommand(final ZigBeeCommand command) {
         Integer value = temperatureToValue(command);
 
         if (value == null) {
-            log.warn("{}: Thermostat occupied heating setpoint {} [{}] was not processed", getEndpointEntity(),
+            log.warn("[{}]: Thermostat occupied heating setpoint {} [{}] was not processed", getEndpointEntity(),
                     command, command.getClass().getSimpleName());
             return;
         }

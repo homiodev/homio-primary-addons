@@ -3,112 +3,82 @@ package org.touchhome.bundle.zigbee.converter.impl.config;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclOnOffCluster;
-import java.math.BigDecimal;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 /**
  * Configuration handler for the
  */
 @Log4j2
-// TODO: remove
-public class ZclOnOffSwitchConfig implements ZclClusterConfigHandler {
+@Getter
+public class ZclOnOffSwitchConfig {
 
-  private static final String CONFIG_ID = "zigbee_onoff_";
-  private static final String CONFIG_OFFWAITTIME = CONFIG_ID + "offwaittime";
-  private static final String CONFIG_ONTIME = CONFIG_ID + "ontime";
-  private static final String CONFIG_STARTUPONOFF = CONFIG_ID + "startuponoff";
+  private final ZclOnOffCluster onoffCluster;
 
-  private ZclOnOffCluster onoffCluster;
+  private final boolean supportOffWaitTime;
+  private final boolean supportOnTime;
+  private final boolean supportStartupOnOff;
 
-  @Override
-  public boolean initialize(ZclCluster cluster) {
+  private int offWaitTime;
+  private int onTime;
+  private int startupOnOff;
+
+  public ZclOnOffSwitchConfig(ZigBeeEndpointEntity entity, ZclCluster cluster) {
+    this.offWaitTime = entity.getOffWaitTime();
+    this.onTime = entity.getOnTime();
+    this.startupOnOff = entity.getStartupOnOff() ? 1 : 0;
+
     onoffCluster = (ZclOnOffCluster) cluster;
     ZclLevelControlConfig.initCluster(onoffCluster.discoverAttributes(false), log, onoffCluster.getZigBeeAddress(), onoffCluster.getClusterName());
 
-    // Build a list of configuration supported by this channel based on the attributes the cluster supports
-
-        /*List<ParameterOption> options = new ArrayList<>();
-
-        if (onoffCluster.isAttributeSupported(ZclOnOffCluster.ATTR_OFFWAITTIME)) {
-            parameters.add(ConfigDescriptionParameterBuilder.create(CONFIG_OFFWAITTIME, Type.INTEGER)
-                    .withLabel("Off Wait Time")
-                    .withDescription("Time in 100ms steps to ignore ON commands after an OFF command").withDefault("0")
-                    .withMinimum(new BigDecimal(0)).withMaximum(new BigDecimal(60000)).build());
-        }
-        if (onoffCluster.isAttributeSupported(ZclOnOffCluster.ATTR_ONTIME)) {
-            parameters.add(ConfigDescriptionParameterBuilder.create(CONFIG_ONTIME, Type.INTEGER)
-                    .withLabel("Auto OFF Time")
-                    .withDescription("Time in 100ms steps to automatically turn off when sent with timed command")
-                    .withDefault("65535").withMinimum(new BigDecimal(0)).withMaximum(new BigDecimal(60000)).build());
-        }
-        if (onoffCluster.isAttributeSupported(ZclOnOffCluster.ATTR_STARTUPONOFF)) {
-            options = new ArrayList<ParameterOption>();
-            options.add(new ParameterOption("0", "OFF"));
-            options.add(new ParameterOption("1", "ON"));
-            parameters.add(ConfigDescriptionParameterBuilder.create(CONFIG_STARTUPONOFF, Type.INTEGER)
-                    .withLabel("Power on state").withDescription("The state to set after powering on").withDefault("0")
-                    .withMinimum(new BigDecimal(0)).withMaximum(new BigDecimal(1)).withOptions(options)
-                    .withLimitToOptions(true).build());
-        }
-
-        return !parameters.isEmpty();*/
-
-    return true;
+    this.supportOffWaitTime = onoffCluster.isAttributeSupported(ZclOnOffCluster.ATTR_OFFWAITTIME);
+    this.supportOnTime = onoffCluster.isAttributeSupported(ZclOnOffCluster.ATTR_ONTIME);
+    this.supportStartupOnOff = onoffCluster.isAttributeSupported(ZclOnOffCluster.ATTR_STARTUPONOFF);
   }
 
-  @Override
-  public boolean updateConfiguration() {
-    return false;
-  }
-
-    /*@Override
-    public boolean updateConfiguration( Configuration currentConfiguration,
-            Map<String, Object> configurationParameters) {
-
-        boolean updated = false;
-        for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
-            if (!configurationParameter.getKey().startsWith(CONFIG_ID)) {
-                continue;
-            }
-            // Ignore any configuration parameters that have not changed
-            if (Objects.equals(configurationParameter.getValue(),
-                    currentConfiguration.get(configurationParameter.getKey()))) {
-                log.debug("Configuration update: Ignored {} as no change", configurationParameter.getKey());
-                continue;
-            }
-
-            log.debug("{}: Update LevelControl configuration property {}->{} ({})", onoffCluster.getZigBeeAddress(),
-                    configurationParameter.getKey(), configurationParameter.getValue(),
-                    configurationParameter.getValue().getClass().getSimpleName());
-            Integer response = null;
-            switch (configurationParameter.getKey()) {
-                case CONFIG_OFFWAITTIME:
-                    response = configureAttribute(ZclOnOffCluster.ATTR_OFFWAITTIME, configurationParameter.getValue());
-                    break;
-                case CONFIG_ONTIME:
-                    response = configureAttribute(ZclOnOffCluster.ATTR_ONTIME, configurationParameter.getValue());
-                    break;
-                case CONFIG_STARTUPONOFF:
-                    response = configureAttribute(ZclOnOffCluster.ATTR_STARTUPONOFF, configurationParameter.getValue());
-                    break;
-                default:
-                    log.warn("{}: Unhandled configuration property {}", onoffCluster.getZigBeeAddress(),
-                            configurationParameter.getKey());
-                    break;
-            }
-
-            if (response != null) {
-                currentConfiguration.put(configurationParameter.getKey(), BigInteger.valueOf(response));
-                updated = true;
-            }
-        }
-
-        return updated;
-    }*/
-
-  private Integer configureAttribute(int attributeId, Object value) {
-    ZclAttribute attribute = onoffCluster.getAttribute(attributeId);
-    attribute.writeValue(((BigDecimal) (value)).intValue());
+  public static Integer configureAttribute(ZclCluster zclCluster, int attributeId, int value) {
+    ZclAttribute attribute = zclCluster.getAttribute(attributeId);
+    attribute.writeValue(value);
     return (Integer) attribute.readValue(0);
+  }
+
+  public static Boolean configureAttribute(ZclCluster zclCluster, int attributeId, boolean value) {
+    ZclAttribute attribute = zclCluster.getAttribute(attributeId);
+    attribute.writeValue(value);
+    return (Boolean) attribute.readValue(0);
+  }
+
+  public void updateConfiguration(ZigBeeEndpointEntity entity) {
+    if (offWaitTime != entity.getOffWaitTime()) {
+      offWaitTime = entity.getOffWaitTime();
+      Integer response = configureAttribute(onoffCluster, ZclOnOffCluster.ATTR_OFFWAITTIME, offWaitTime);
+      if (response != null && response != offWaitTime) {
+        offWaitTime = response;
+        entity.setOffWaitTime(response);
+        entity.setOutdated(true);
+      }
+    }
+
+    if (onTime != entity.getOnTime()) {
+      onTime = entity.getOnTime();
+      Integer response = configureAttribute(onoffCluster, ZclOnOffCluster.ATTR_ONTIME, onTime);
+      if (response != null && response != onTime) {
+        onTime = response;
+        entity.setOnTime(response);
+        entity.setOutdated(true);
+      }
+    }
+
+    int entityStartupOnOff = entity.getStartupOnOff() ? 1 : 0;
+    if (startupOnOff != entityStartupOnOff) {
+      startupOnOff = entityStartupOnOff;
+      Integer response = configureAttribute(onoffCluster, ZclOnOffCluster.ATTR_STARTUPONOFF, startupOnOff);
+      if (response != null && response != startupOnOff) {
+        startupOnOff = response;
+        entity.setStartupOnOff(response == 1);
+        entity.setOutdated(true);
+      }
+    }
   }
 }

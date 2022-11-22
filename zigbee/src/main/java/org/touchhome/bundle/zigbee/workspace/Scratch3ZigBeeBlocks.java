@@ -18,8 +18,8 @@ import org.touchhome.bundle.api.workspace.scratch.ArgumentType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock.ServerMenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
-import org.touchhome.bundle.zigbee.ZigBeeEntrypoint;
 import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
+import org.touchhome.bundle.zigbee.ZigBeeEntrypoint;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
@@ -66,7 +66,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
   }
 
   static State fetchState(List<ZigBeeEndpointEntity> endpoints) {
-    return endpoints.isEmpty() ? new DecimalType(0F) : endpoints.get(0).getService().getLastState();
+    return endpoints.isEmpty() ? new DecimalType(0F) : endpoints.get(0).getLastStateInternal();
   }
 
   static List<ZigBeeEndpointEntity> getZigBeeEndpoints(WorkspaceBlock workspaceBlock, String key, ServerMenuBlock menuBlock, Integer[] clusterIds) {
@@ -149,7 +149,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
 
     List<ZigBeeEndpointEntity> endpoints = getZigBeeEndpoints(workspaceEventBlock, menuBlock.getKey(), (ServerMenuBlock) menuBlock.getValue(), clusters);
     if (!endpoints.isEmpty()) {
-      long timestamp = endpoints.get(0).getService().getLastStateTimestamp();
+      long timestamp = endpoints.get(0).getLastAnswerFromEndpoint();
       return new DecimalType((System.currentTimeMillis() - timestamp) / 1000);
     }
     return new DecimalType(Long.MAX_VALUE);

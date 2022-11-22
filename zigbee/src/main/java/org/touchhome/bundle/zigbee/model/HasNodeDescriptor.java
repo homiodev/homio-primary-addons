@@ -1,5 +1,6 @@
 package org.touchhome.bundle.zigbee.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zsmartsystems.zigbee.ZigBeeNode;
 import com.zsmartsystems.zigbee.ZigBeeNode.ZigBeeNodeState;
 import com.zsmartsystems.zigbee.zdo.field.NodeDescriptor;
@@ -11,6 +12,7 @@ import com.zsmartsystems.zigbee.zdo.field.PowerDescriptor.PowerSourceType;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContextSetting;
 import org.touchhome.bundle.api.entity.HasJsonData;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
@@ -26,8 +28,9 @@ import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
  */
 public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
 
-  @UIField(order = 11, readOnly = true)
+  @UIField(order = 11, hideInEdit = true)
   @UIFieldColorStatusMatch
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   default Status getNodeState() {
     return EntityContextSetting.getStatus(this, "node", Status.UNKNOWN);
   }
@@ -35,10 +38,23 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
   default void setNodeState(ZigBeeNodeState value) {
     Status status = value == null || value == ZigBeeNodeState.UNKNOWN ?
         Status.UNKNOWN : value == ZigBeeNodeState.ONLINE ? Status.ONLINE : Status.OFFLINE;
-    EntityContextSetting.setStatus(this, "node", status);
+    if (getFetchInfoStatus() != status) {
+      EntityContextSetting.setStatus(this, "node", "NodeState", status);
+    }
   }
 
-  @UIField(order = 1, readOnly = true)
+  @UIField(order = 12, hideInEdit = true)
+  @UIFieldColorStatusMatch
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  default Status getFetchInfoStatus() {
+    return EntityContextSetting.getStatus(this, "fetch_info", Status.UNKNOWN);
+  }
+
+  default void setFetchInfoStatus(Status status, @Nullable String msg) {
+    EntityContextSetting.setStatus(this, "fetch_info", "FetchInfoStatus", status, msg);
+  }
+
+  @UIField(order = 1, hideInEdit = true)
   @UIFieldGroup(value = "Node", order = 25, borderColor = "#44B377")
   default int getNetworkAddress() {
     return getJsonData("na", 0);
@@ -48,7 +64,7 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     setJsonData("na", value);
   }
 
-  @UIField(order = 5, readOnly = true)
+  @UIField(order = 5, hideInEdit = true)
   @UIFieldGroup("Node")
   default LogicalType getLogicalType() {
     return getJsonDataEnum("lt", LogicalType.UNKNOWN);
@@ -58,7 +74,7 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     setJsonDataEnum("lt", value);
   }
 
-  @UIField(readOnly = true, order = 6, hideOnEmpty = true)
+  @UIField(hideInEdit = true, order = 6, hideOnEmpty = true)
   @UIFieldGroup("Node")
   default int getManufacturerCode() {
     return getJsonData("mc", 0);
@@ -68,7 +84,7 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     setJsonData("mc", value);
   }
 
-  @UIField(readOnly = true, order = 7, hideOnEmpty = true)
+  @UIField(hideInEdit = true, order = 7, hideOnEmpty = true)
   @UIFieldGroup("Node")
   default long getNodeLastUpdateTime() {
     return getJsonData("lu", 0L);
@@ -78,7 +94,7 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     setJsonData("lu", value);
   }
 
-  @UIField(readOnly = true, order = 8, hideOnEmpty = true)
+  @UIField(hideInEdit = true, order = 8, hideOnEmpty = true)
   @UIFieldGroup("Node")
   default String getFirmwareVersion() {
     return getJsonData("fw");
@@ -88,7 +104,7 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     setJsonData("fw", value);
   }
 
-  @UIField(readOnly = true, order = 1, hideOnEmpty = true)
+  @UIField(hideInEdit = true, order = 1, hideOnEmpty = true)
   @UIFieldGroup(value = "Power", order = 30, borderColor = "#5F5CA1")
   @UIFieldColorMatch(value = "CRITICAL", color = "#DB4318")
   @UIFieldColorMatch(value = "LOW", color = "#D0DB18")
@@ -103,7 +119,7 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     setJsonDataEnum("pw", powerLevel);
   }
 
-  @UIField(readOnly = true, order = 2)
+  @UIField(hideInEdit = true, order = 2)
   @UIFieldGroup("Power")
   default CurrentPowerModeType getCurrentPowerMode() {
     return getJsonDataEnum("pm", CurrentPowerModeType.UNKNOWN);
@@ -113,7 +129,7 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     setJsonDataEnum("pm", value);
   }
 
-  @UIField(readOnly = true, order = 3, hideOnEmpty = true)
+  @UIField(hideInEdit = true, order = 3, hideOnEmpty = true)
   @UIFieldGroup("Power")
   default PowerSourceType getCurrentPowerSource() {
     return getJsonDataEnum("ps", PowerSourceType.UNKNOWN);
@@ -123,7 +139,7 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     setJsonDataEnum("ps", value);
   }
 
-  @UIField(readOnly = true, type = UIFieldType.Chips, order = 4, hideOnEmpty = true)
+  @UIField(hideInEdit = true, type = UIFieldType.Chips, order = 4, hideOnEmpty = true)
   @UIFieldGroup("Power")
   default Set<String> getAvailablePowerSources() {
     return getJsonDataSet("aps");

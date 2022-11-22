@@ -1,23 +1,31 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
+import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclThermostatCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
+import org.touchhome.bundle.zigbee.converter.impl.config.ZclReportingConfig;
 
 /**
  * The level of cooling currently demanded by the thermostat
  */
-@Log4j2
-@ZigBeeConverter(name = "zigbee:thermostat_coolingdemand", clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
+@ZigBeeConverter(name = "zigbee:thermostat_coolingdemand", linkType = VariableType.Float,
+    clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatPiCoolingDemand extends ZigBeeInputBaseConverter {
-
-  /*private static BigDecimal CHANGE_DEFAULT = new BigDecimal(1);
-  private static BigDecimal CHANGE_MIN = new BigDecimal(1);
-  private static BigDecimal CHANGE_MAX = new BigDecimal(100);*/
 
   public ZigBeeConverterThermostatPiCoolingDemand() {
     super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_PICOOLINGDEMAND);
+  }
+
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    return acceptEndpoint(endpoint, entityID, false, true);
+  }
+
+  @Override
+  protected void afterInitializeConverter() {
+    configReporting = new ZclReportingConfig(getEntity(), 1, 1, 100);
   }
 
   @Override

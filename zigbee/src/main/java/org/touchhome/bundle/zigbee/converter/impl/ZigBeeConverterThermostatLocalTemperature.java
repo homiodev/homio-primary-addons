@@ -1,15 +1,17 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
+import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclThermostatCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 /**
  * Indicates the local temperature provided by the thermostat Converter for the thermostat local temperature channel
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:thermostat_localtemp",
+@ZigBeeConverter(name = "zigbee:thermostat_localtemp", linkType = VariableType.Float,
     clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatLocalTemperature extends ZigBeeInputBaseConverter {
 
@@ -22,7 +24,7 @@ public class ZigBeeConverterThermostatLocalTemperature extends ZigBeeInputBaseCo
 
   @Override
   public void attributeUpdated(ZclAttribute attribute, Object val) {
-    log.debug("{}: ZigBee attribute reports {}", getEndpointEntity(), attribute);
+    log.debug("[{}]: ZigBee attribute reports {}. {}", entityID, attribute, endpoint);
     if (attribute.getClusterType() == ZclClusterType.THERMOSTAT
         && attribute.getId() == ZclThermostatCluster.ATTR_LOCALTEMPERATURE) {
       Integer value = (Integer) val;
@@ -30,5 +32,10 @@ public class ZigBeeConverterThermostatLocalTemperature extends ZigBeeInputBaseCo
         updateChannelState(valueToTemperature(value));
       }
     }
+  }
+
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    return acceptEndpoint(endpoint, entityID, false, true);
   }
 }

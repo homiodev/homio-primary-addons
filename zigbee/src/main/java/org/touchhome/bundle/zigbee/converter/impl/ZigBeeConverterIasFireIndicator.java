@@ -9,8 +9,8 @@ import org.touchhome.bundle.api.EntityContextVar.VariableType;
 /**
  * Fire Indication Alarm Converter for the IAS fire indicator.
  */
-@ZigBeeConverter(name = ZigBeeConverterIasFireIndicator.CLUSTER_NAME, clientCluster =
-    ZclIasZoneCluster.CLUSTER_ID, linkType = VariableType.Boolean, category = "SmokeDetector")
+@ZigBeeConverter(name = ZigBeeConverterIasFireIndicator.CLUSTER_NAME, linkType = VariableType.Float,
+    clientCluster = ZclIasZoneCluster.CLUSTER_ID, category = "SmokeDetector")
 public class ZigBeeConverterIasFireIndicator extends ZigBeeConverterIas {
 
   public static final String CLUSTER_NAME = "zigbee:ias_fire";
@@ -22,7 +22,7 @@ public class ZigBeeConverterIasFireIndicator extends ZigBeeConverterIas {
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-    return supportsIasChannel(endpoint, ZoneTypeEnum.FIRE_SENSOR);
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    return supportsIasChannel(endpoint, entityID, ZoneTypeEnum.FIRE_SENSOR);
   }
 }

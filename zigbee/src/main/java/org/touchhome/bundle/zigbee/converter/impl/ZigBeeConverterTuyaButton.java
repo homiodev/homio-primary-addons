@@ -1,5 +1,6 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
+import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.ZclCommand;
@@ -11,13 +12,14 @@ import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import java.util.HashMap;
 import java.util.Objects;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.zigbee.converter.impl.command.TuyaButtonPressCommand;
 
 /**
  * Kind - trigger Button Pressed Event Emits events when button is pressed
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:tuya_button", category = "Light",
+@ZigBeeConverter(name = "zigbee:tuya_button", category = "Light", linkType = VariableType.Boolean,
     clientCluster = ZclOnOffCluster.CLUSTER_ID, serverClusters = {ZclOnOffCluster.CLUSTER_ID})
 public class ZigBeeConverterTuyaButton extends ZigBeeInputBaseConverter implements ZclCommandListener {
 
@@ -35,7 +37,7 @@ public class ZigBeeConverterTuyaButton extends ZigBeeInputBaseConverter implemen
 
   @Override
   public void attributeUpdated(ZclAttribute attribute, Object val) {
-    log.debug("{}: ZigBee attribute reports {}", getEndpointEntity(), attribute);
+    log.debug("[{}]: ZigBee attribute reports {}. {}", entityID, attribute, endpoint);
     if (attribute.getClusterType() == ZclClusterType.THERMOSTAT
         && attribute.getId() == ZclThermostatCluster.ATTR_LOCALTEMPERATURE) {
       Integer value = (Integer) val;
@@ -57,18 +59,18 @@ public class ZigBeeConverterTuyaButton extends ZigBeeInputBaseConverter implemen
     // ZclCluster clientCluster = endpoint.getOutputCluster(ZclOnOffCluster.CLUSTER_ID);
 
     if (clientCluster == null) {
-      log.error("{}: Error opening client cluster {} on endpoint", getEndpointEntity(), ZclOnOffCluster.CLUSTER_ID);
+      log.error("[{}]: Error opening client cluster {} on {}", entityID, ZclOnOffCluster.CLUSTER_ID, endpoint);
       return false;
     }
 
     /* TODO: try {
       CommandResult bindResponse = bind(clientCluster).get();
       if (!bindResponse.isSuccess()) {
-        log.error("{}: Error 0x{} setting client binding for cluster {}", getEndpointEntity(),
+        log.error("[{}]: Error 0x{} setting client binding for cluster {}", endpoint,
             toHexString(bindResponse.getStatusCode()), ZclOnOffCluster.CLUSTER_ID);
       }
-    } catch (InterruptedException | ExecutionException e) {
-      log.error("{}: Exception setting client binding to cluster {}: {}", getEndpointEntity(),
+    } catch (Exception e) {
+      log.error("[{}]: Exception setting client binding to cluster {}", endpoint,
           ZclOnOffCluster.CLUSTER_ID, e);
     }*/
 
@@ -82,7 +84,7 @@ public class ZigBeeConverterTuyaButton extends ZigBeeInputBaseConverter implemen
     clientCluster = getOutputCluster(ZclOnOffCluster.CLUSTER_ID);
 
     if (clientCluster == null) {
-      log.error("{}: Error opening device client controls", getEndpointEntity());
+      log.error("[{}]: Error opening device client controls {}", entityID, endpoint);
       return false;
     }
 
@@ -106,6 +108,13 @@ public class ZigBeeConverterTuyaButton extends ZigBeeInputBaseConverter implemen
   }
 
   @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    // This converter is used only for channels specified in static thing types, and cannot be used to construct
+    // channels based on an endpoint alone.
+    return false;
+  }
+
+  @Override
   public void handleRefresh() {
     // nothing to do, as we only listen to commands
   }
@@ -119,16 +128,16 @@ public class ZigBeeConverterTuyaButton extends ZigBeeInputBaseConverter implemen
 
   @Override
   public boolean commandReceived(ZclCommand command) {
-    log.debug("{}: received command {}", getEndpointEntity(), command);
+    log.debug("[{}]: received command {}. {}", entityID, command, endpoint);
     Integer thisTxId = command.getTransactionId();
     if (Objects.equals(lastTxId, thisTxId)) {
-      log.debug("{}: ignoring duplicate command {}", getEndpointEntity(), thisTxId);
+      log.debug("[{}]: ignoring duplicate command {}. {}", entityID, thisTxId, endpoint);
     } else if (command instanceof TuyaButtonPressCommand) {
       TuyaButtonPressCommand tuyaButtonPressCommand = (TuyaButtonPressCommand) command;
       // TODO:   thing.triggerChannel(channel.getUID(), getEventType(tuyaButtonPressCommand.getPressType()));
       clientCluster.sendDefaultResponse(command, ZclStatus.SUCCESS);
     } else {
-      log.warn("{}: received unknown command {}", getEndpointEntity(), command);
+      log.warn("[{}]: received unknown command {}. {}", entityID, command, endpoint);
     }
 
     lastTxId = thisTxId;
@@ -144,7 +153,7 @@ public class ZigBeeConverterTuyaButton extends ZigBeeInputBaseConverter implemen
       case 2:
         return CommonTriggerEvents.LONG_PRESSED;
       default:
-        log.warn("{}: received unknown pressType {}", getEndpointEntity(), pressType);
+        log.warn("[{}]: received unknown pressType {}", endpoint, pressType);
         return CommonTriggerEvents.SHORT_PRESSED;
     }
   }*/

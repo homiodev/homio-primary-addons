@@ -11,13 +11,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.storage.BaseFileSystemEntity;
 import org.touchhome.bundle.api.entity.types.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.ui.field.UIField;
-import org.touchhome.bundle.api.ui.field.UIFieldInlineEntity;
 import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
+import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEditEntities;
+import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntities;
 import org.touchhome.bundle.api.util.BoardInfo;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.raspberry.fs.RaspberryFileSystem;
@@ -66,7 +68,8 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
   @Getter
   @Setter
   @UIField(order = 1000)
-  @UIFieldInlineEntity(bg = "#1E5E611F", addRow = "", addRowCondition = "return false", removeRowCondition = "return false")
+  @UIFieldInlineEntities(bg = "#1E5E611F")
+  @UIFieldInlineEditEntities(bg = "#1E5E611F", addRowCondition = "return false", removeRowCondition = "return false")
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "owner")
   @OrderBy("position asc")
   private Set<GpioPinEntity> gpioPinEntities;
@@ -164,7 +167,7 @@ public final class RaspberryDeviceEntity extends MicroControllerBaseEntity<Raspb
   }
 
   @Override
-  public GPIOService createService(EntityContext entityContext) {
+  public @NotNull GPIOService createService(@NotNull EntityContext entityContext) {
     return new GPIOService(entityContext, RaspberryGpioPin.getGpioPins(), this);
   }
 

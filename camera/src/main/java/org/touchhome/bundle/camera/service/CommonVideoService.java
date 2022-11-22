@@ -25,8 +25,9 @@ public class CommonVideoService extends BaseVideoService<CommonVideoStreamEntity
   }
 
   @Override
-  public void testService() {
-
+  public boolean testService() {
+    testVideoOnline();
+    return true;
   }
 
   @Override

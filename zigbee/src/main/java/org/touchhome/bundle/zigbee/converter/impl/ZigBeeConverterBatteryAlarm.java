@@ -5,11 +5,11 @@ import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.POWER_CONFIGU
 import static java.time.Duration.ofHours;
 import static java.time.Duration.ofMinutes;
 
+import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
-import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster;
-import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.StringType;
 
 /**
@@ -29,7 +29,8 @@ import org.touchhome.bundle.api.state.StringType;
  * </ul>
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:battery_alarm", clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
+@ZigBeeConverter(name = "zigbee:battery_alarm", linkType = VariableType.Float,
+    clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
 public class ZigBeeConverterBatteryAlarm extends ZigBeeInputBaseConverter {
 
   public static final String STATE_OPTION_BATTERY_THRESHOLD_1 = "threshold1";
@@ -53,30 +54,21 @@ public class ZigBeeConverterBatteryAlarm extends ZigBeeInputBaseConverter {
   }
 
   @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    return super.acceptEndpoint(endpoint, entityID, true, false);
+  }
+
+  @Override
   protected boolean initializeDeviceFailed() {
     pollingPeriod = BATTERY_ALARM_POLLING_PERIOD;
-    log.debug("{}: Could not bind to the power configuration cluster; polling battery alarm state every {} seconds",
-        getEndpointEntity(), BATTERY_ALARM_POLLING_PERIOD);
+    log.debug("[{}]: Could not bind to the power configuration cluster; polling battery alarm state every {} seconds for {}", entityID, entityID,
+        BATTERY_ALARM_POLLING_PERIOD);
     return false;
   }
 
   @Override
-  protected boolean acceptEndpointExtra(ZclCluster cluster) {
-    try {
-      if (!cluster.discoverAttributes(false).get() && !cluster.isAttributeSupported(ATTR_BATTERYALARMSTATE)) {
-        log.trace("{}: Power configuration cluster battery alarm state not supported", getEndpointEntity());
-        return false;
-      }
-    } catch (InterruptedException | ExecutionException e) {
-      log.warn("{}: Exception discovering attributes in power configuration cluster {}", getEndpointEntity(), e);
-      return false;
-    }
-    return true;
-  }
-
-  @Override
   protected void updateValue(Object val, ZclAttribute attribute) {
-    log.debug("{}: ZigBee attribute reports {}", getEndpointEntity(), attribute);
+    log.debug("[{}]:ZigBee attribute reports {} for {}", entityID, attribute, endpoint);
 
     // The value is a 32-bit bitmap, represented by an Integer
     Integer value = (Integer) val;

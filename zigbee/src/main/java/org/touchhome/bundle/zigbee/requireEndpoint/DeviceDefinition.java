@@ -1,5 +1,6 @@
 package org.touchhome.bundle.zigbee.requireEndpoint;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.touchhome.common.util.Lang;
 
 @Getter
 @Setter
@@ -19,29 +21,23 @@ public class DeviceDefinition {
   private @NotNull String vendor;
   private @Nullable String image;
 
-  private Map<String, String> label;
-  private Map<String, String> description;
+  private @Nullable Map<String, String> label;
+  private @Nullable Map<String, String> description;
 
   private List<EndpointDefinition> endpoints = new ArrayList<>();
 
-  public String getLabel(@Nullable String lang) {
+  public String getLabel() {
     if (label == null) {
       return id;
     }
-    if (lang == null) {
-      return label.getOrDefault("en", id);
-    }
-    return label.getOrDefault(lang, label.getOrDefault("en", id));
+    return label.getOrDefault(Lang.CURRENT_LANG, label.getOrDefault("en", id));
   }
 
-  public String getDescription(@Nullable String lang) {
+  public String getDescription() {
     if (description == null) {
       return id;
     }
-    if (lang == null) {
-      return description.getOrDefault("en", id);
-    }
-    return description.getOrDefault(lang, label.getOrDefault("en", id));
+    return description.getOrDefault(Lang.CURRENT_LANG, label.getOrDefault("en", id));
   }
 
   @Getter
@@ -57,7 +53,7 @@ public class DeviceDefinition {
     private Map<String, String> label;
     private Map<String, String> description;
 
-    private Map<String, Object> metadata;
+    private JsonNode metadata;
 
     public String getId() {
       return id == null ? typeId : id;

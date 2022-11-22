@@ -16,7 +16,6 @@ import com.zsmartsystems.zigbee.zcl.clusters.onoff.OnWithTimedOffCommand;
 import com.zsmartsystems.zigbee.zcl.clusters.onoff.ToggleCommand;
 import com.zsmartsystems.zigbee.zcl.clusters.onoff.ZclOnOffCommand;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,6 +27,7 @@ import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.config.ZclOnOffSwitchConfig;
+import org.touchhome.bundle.zigbee.converter.impl.config.ZclReportingConfig;
 
 /**
  * This channel supports changes through attribute updates, and also through received commands. This allows a switch that is not connected to a load to send commands, or a switch
@@ -43,7 +43,6 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
   private ZclOnOffCluster clusterOnOffClient;
   private ZclOnOffCluster clusterOnOffServer;
   private ZclAttribute attributeServer;
-  private ZclOnOffSwitchConfig configOnOff;
   private ScheduledExecutorService updateScheduler;
   private ScheduledFuture<?> updateTimer = null;
 
@@ -53,7 +52,7 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
     ZclOnOffCluster clientCluster = getOutputCluster(ZclOnOffCluster.CLUSTER_ID);
     ZclOnOffCluster serverCluster = getInputCluster(ZclOnOffCluster.CLUSTER_ID);
     if (clientCluster == null && serverCluster == null) {
-      log.error("{}: Error opening device on/off controls", getEndpointEntity());
+      log.error("[{}]: Error opening device on/off controls {}", entityID, endpoint);
       return false;
     }
 
@@ -61,13 +60,16 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
       try {
         CommandResult bindResponse = bind(serverCluster).get();
         if (bindResponse.isSuccess()) {
-          updateServerPoolingPeriod(serverCluster, ZclOnOffCluster.ATTR_ONOFF, false);
+          ZclAttribute attribute = serverCluster.getAttribute(ZclOnOffCluster.ATTR_ONOFF);
+          CommandResult reportingResponse = attribute
+              .setReporting(getEntity().getReportingTimeMin(), getEntity().getReportingTimeMax()).get();
+          handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, getEntity().getPollingPeriod());
         } else {
-          log.debug("{}: Error 0x{} setting server binding", getEndpointEntity(), Integer.toHexString(bindResponse.getStatusCode()));
+          log.debug("[{}]: Error 0x{} setting server binding {}", entityID, Integer.toHexString(bindResponse.getStatusCode()), endpoint);
           pollingPeriod = POLLING_PERIOD_HIGH;
         }
-      } catch (InterruptedException | ExecutionException e) {
-        log.error("{}: Exception setting reporting {}", getEndpointEntity(), e);
+      } catch (Exception e) {
+        log.error("[{}]: Exception setting reporting {}", entityID, endpoint, e);
       }
     }
 
@@ -75,10 +77,10 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
       try {
         CommandResult bindResponse = bind(clientCluster).get();
         if (!bindResponse.isSuccess()) {
-          log.error("{}: Error 0x{} setting client binding", getEndpointEntity(), Integer.toHexString(bindResponse.getStatusCode()));
+          log.error("[{}]: Error 0x{} setting client binding {}", entityID, Integer.toHexString(bindResponse.getStatusCode()), endpoint);
         }
-      } catch (InterruptedException | ExecutionException e) {
-        log.error("{}: Exception setting binding {}", getEndpointEntity(), e);
+      } catch (Exception e) {
+        log.error("[{}]: Exception setting binding {}", entityID, endpoint, e);
       }
     }
 
@@ -92,15 +94,13 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
     clusterOnOffClient = getOutputCluster(ZclOnOffCluster.CLUSTER_ID);
     clusterOnOffServer = getInputCluster(ZclOnOffCluster.CLUSTER_ID);
     if (clusterOnOffClient == null && clusterOnOffServer == null) {
-      log.error("{}: Error opening device on/off controls", getEndpointEntity());
+      log.error("[{}]: Error opening device on/off controls {}", entityID, endpoint);
       return false;
     }
 
     if (clusterOnOffServer != null) {
-      // Add the listener
-      clusterOnOffServer.addAttributeListener(this);
-      configOnOff = new ZclOnOffSwitchConfig();
-      configOnOff.initialize(clusterOnOffServer);
+      configOnOff = new ZclOnOffSwitchConfig(getEntity(), clusterOnOffServer);
+      configReporting = new ZclReportingConfig(getEntity());
     }
 
     if (clusterOnOffClient != null) {
@@ -119,7 +119,7 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
 
   @Override
   public void disposeConverter() {
-    log.debug("{}: Closing device on/off cluster", getEndpointEntity());
+    log.debug("[{}]: Closing device on/off cluster {}", entityID, endpoint);
 
     if (clusterOnOffClient != null) {
       clusterOnOffClient.removeCommandListener(this);
@@ -134,8 +134,8 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
 
   @Override
   public int getPollingPeriod() {
-    if (clusterOnOffServer != null) {
-      return getEndpointEntity().getPoolingPeriod();
+    if (configReporting != null) {
+      return configReporting.getPollingPeriod();
     }
     return Integer.MAX_VALUE;
   }
@@ -150,7 +150,7 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
   @Override
   public Future<CommandResult> handleCommand(final ZigBeeCommand command) {
     if (clusterOnOffServer == null) {
-      log.warn("{}: OnOff converter is not linked to a server and cannot accept commands", getEndpointEntity());
+      log.warn("[{}]: OnOff converter is not linked to a server and cannot accept commands {}", entityID, endpoint);
       return null;
     }
 
@@ -161,10 +161,10 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-    if (getInputCluster(ZclOnOffCluster.CLUSTER_ID) == null
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    if (endpoint.getInputCluster(ZclOnOffCluster.CLUSTER_ID) == null
         && endpoint.getOutputCluster(ZclOnOffCluster.CLUSTER_ID) == null) {
-      log.trace("{}: OnOff cluster not found", getEndpointEntity());
+      log.trace("[{}]: OnOff cluster not found {}", entityID, endpoint);
       return false;
     }
 
@@ -176,14 +176,15 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
     if (clusterOnOffServer == null) {
       return;
     }
-    updateServerPoolingPeriod(clusterOnOffServer, ZclOnOffCluster.ATTR_ONOFF, true);
-
-    configOnOff.updateConfiguration();
+    if (configReporting.updateConfiguration(getEntity())) {
+      updateServerPollingPeriodNoChange(clusterOnOffServer, ZclOnOffCluster.ATTR_ONOFF);
+    }
+    configOnOff.updateConfiguration(getEntity());
   }
 
   @Override
   public void attributeUpdated(ZclAttribute attribute, Object val) {
-    log.debug("{}: ZigBee attribute reports {}", getEndpointEntity(), attribute);
+    log.debug("[{}]: ZigBee attribute reports {}. {}", entityID, attribute, endpoint);
     if (attribute.getClusterType() == ZclClusterType.ON_OFF && attribute.getId() == ZclOnOffCluster.ATTR_ONOFF) {
       Boolean value = (Boolean) val;
       if (value != null && value) {
@@ -196,7 +197,7 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
 
   @Override
   public boolean commandReceived(ZclCommand command) {
-    log.debug("{}: ZigBee command received {}", getEndpointEntity(), command);
+    log.debug("[{}]: ZigBee command received {}. {}", entityID, command, endpoint);
     if (command instanceof OnCommand) {
       currentOnOffState.set(true);
       updateChannelState(OnOffType.ON);
@@ -238,7 +239,7 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
     stopOffTimer();
 
     updateTimer = updateScheduler.schedule(() -> {
-      log.debug("{}: OnOff auto OFF timer expired", getEndpointEntity());
+      log.debug("[{}]: OnOff auto OFF timer expired {}", entityID, endpoint);
       updateChannelState(OnOffType.OFF);
       updateTimer = null;
     }, delay, TimeUnit.MILLISECONDS);

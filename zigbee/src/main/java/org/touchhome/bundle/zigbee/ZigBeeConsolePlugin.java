@@ -46,7 +46,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
   @Override
   public String getParentTab() {
-    return "ZIGBEE";
+    return "zigbee";
   }
 
   @Override
@@ -103,7 +103,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
     @UIField(order = 4)
     @UIFieldSelection(SelectModelIdentifierDynamicLoader.class)
-    @UIFieldSelectValueOnEmpty(label = "zigbee.action.selectModelIdentifier")
+    @UIFieldSelectValueOnEmpty(label = "zigbee.action.select_model_identifier")
     private String model;
 
     @UIField(order = 5)
@@ -118,22 +118,17 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
 
     private String entityID;
 
-    @UIContextMenuAction("ACTION.INITIALIZE_ZIGBEE_NODE")
+    @UIContextMenuAction("zigbee.action.re_initialize_node")
     public ActionResponseModel initializeZigBeeNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
       return zigBeeDeviceEntity.initializeZigBeeNode();
     }
 
-    @UIContextMenuAction("ACTION.REDISCOVERY")
-    public ActionResponseModel rediscoveryNode(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-      return zigBeeDeviceEntity.rediscoveryNode();
-    }
-
-    @UIContextMenuAction("ACTION.PERMIT_JOIN")
+    @UIContextMenuAction("zigbee.action.permit_join")
     public ActionResponseModel permitJoin(ZigBeeDeviceEntity zigBeeDeviceEntity) {
       return zigBeeDeviceEntity.permitJoin();
     }
 
-    @UIContextMenuAction("ACTION.ZIGBEE_PULL_CHANNELS")
+    @UIContextMenuAction("zigbee.action.pull_endpoints")
     public ActionResponseModel pullChannels(ZigBeeDeviceEntity zigBeeDeviceEntity, EntityContext entityContext) {
       return zigBeeDeviceEntity.pullChannels(entityContext);
     }

@@ -4,19 +4,19 @@ import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.ELECTRICAL_ME
 import static org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterMeasurementRmsVoltage.determineDivisor;
 import static org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterMeasurementRmsVoltage.determineMultiplier;
 
+import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclElectricalMeasurementCluster;
 import java.math.BigDecimal;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.QuantityType;
 import tec.uom.se.unit.Units;
 
 /**
  * The current RMS current measurement ZigBee channel converter for RMS current measurement
  */
-@Log4j2
-@ZigBeeConverter(name = "zigbee:electrical_rmscurrent", clientCluster = ZclElectricalMeasurementCluster.CLUSTER_ID,
-    category = "Energy")
+@ZigBeeConverter(name = "zigbee:electrical_rmscurrent", linkType = VariableType.Float,
+    clientCluster = ZclElectricalMeasurementCluster.CLUSTER_ID, category = "Energy")
 public class ZigBeeConverterMeasurementRmsCurrent extends ZigBeeInputBaseConverter {
 
   private Integer divisor;
@@ -25,6 +25,11 @@ public class ZigBeeConverterMeasurementRmsCurrent extends ZigBeeInputBaseConvert
   public ZigBeeConverterMeasurementRmsCurrent() {
     super(ELECTRICAL_MEASUREMENT, ZclElectricalMeasurementCluster.ATTR_RMSCURRENT, 3,
         REPORTING_PERIOD_DEFAULT_MAX, 1);
+  }
+
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    return super.acceptEndpoint(endpoint, entityID, true, true);
   }
 
   @Override

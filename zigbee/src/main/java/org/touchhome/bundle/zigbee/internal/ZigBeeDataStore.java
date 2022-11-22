@@ -39,15 +39,16 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
 
   private final Path networkStateFilePath;
   private final EntityContext entityContext;
+  private final String entityID;
 
-  public ZigBeeDataStore(String networkId, EntityContext entityContext) {
-    networkStateFilePath = resolvePath("zigbee", networkId);
+  public ZigBeeDataStore(String networkId, EntityContext entityContext, String entityID) {
+    this.networkStateFilePath = resolvePath("zigbee", networkId);
     this.entityContext = entityContext;
+    this.entityID = entityID;
   }
 
   private XStream openStream() {
     XStream stream = new XStream(new StaxDriver());
-    XStream.setupDefaultSecurity(stream);
     stream.allowTypesByWildcard(new String[]{ZigBeeNode.class.getPackage().getName() + ".**"});
     stream.setClassLoader(this.getClass().getClassLoader());
 
@@ -87,7 +88,7 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
         IeeeAddress address = new IeeeAddress(file.getName().substring(0, 16));
         nodes.add(address);
       } catch (IllegalArgumentException e) {
-        log.error("Error parsing database filename: {}", file.getName());
+        log.error("[{}]: Error parsing database filename: {}", entityID, file.getName());
       }
     }
 
@@ -102,15 +103,15 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
     try {
       node = readZigBeeNodeDao(getIeeeAddressPath(address), stream);
     } catch (Exception ex) {
-      log.error("{}: Error reading network state: . Try reading from backup file...", address, ex);
+      log.error("[{}]: Error reading network state: {}. Try reading from backup file...", entityID, address, ex);
       try {
         node = readZigBeeNodeDao(networkStateFilePath.resolve(address + "_backup.xml"), stream);
       } catch (IOException e) {
-        log.error("{}: Error reading network state from backup file", address);
+        log.error("[{}]: Error reading network state {} from backup file", entityID, address);
         // try restore minimal node from db
         ZigBeeDeviceEntity zigBeeDeviceEntity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + address.toString());
         if (zigBeeDeviceEntity != null && zigBeeDeviceEntity.getNetworkAddress() != 0) {
-          log.warn("{}: Restore minimal information", address);
+          log.warn("[{}]: Restore minimal information {}", entityID, address);
           node = new ZigBeeNodeDao();
           node.setIeeeAddress(address);
           node.setNetworkAddress(zigBeeDeviceEntity.getNetworkAddress());
@@ -132,12 +133,12 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
     try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(path), StandardCharsets.UTF_8))) {
       stream.marshal(node, new PrettyPrintWriter(writer));
       if (isLog) {
-        log.debug("{}: ZigBee saving network state complete.", node.getIeeeAddress());
+        log.debug("[{}]: ZigBee saving network state complete. {}", entityID, node.getIeeeAddress());
       }
       // ensure writer is closed. somehow try with resources not closes writer
       writer.close(); // do not delete this!!!!!!!
     } catch (Exception e) {
-      log.error("{}: Error writing network state: ", node.getIeeeAddress(), e);
+      log.error("[{}]: Error writing network state: {}", entityID, node.getIeeeAddress(), e);
     }
   }
 
@@ -153,7 +154,7 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
   @SneakyThrows
   public void removeNode(IeeeAddress address) {
     if (!Files.deleteIfExists(getIeeeAddressPath(address))) {
-      log.error("{}: Error removing network state", address);
+      log.error("[{}]: Error removing network state {}", entityID, address);
     }
     Files.deleteIfExists(networkStateFilePath.resolve(address + "_backup.xml"));
   }
@@ -163,11 +164,11 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
    */
   public synchronized void delete() {
     try {
-      log.debug("Deleting ZigBee network state");
+      log.debug("[{}]: Deleting ZigBee network state", entityID);
       Files.walk(networkStateFilePath).sorted(Comparator.reverseOrder()).map(Path::toFile)
           .forEach(File::delete);
     } catch (IOException e) {
-      log.error("Error deleting ZigBee network state {} ", networkStateFilePath, e);
+      log.error("[{}]: Error deleting ZigBee network state {} ", entityID, networkStateFilePath, e);
     }
   }
 }

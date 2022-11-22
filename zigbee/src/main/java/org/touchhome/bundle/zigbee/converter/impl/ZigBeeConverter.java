@@ -28,7 +28,7 @@ public @interface ZigBeeConverter {
 
   String name();
 
-  VariableType linkType() default VariableType.Any; // Any mean NONE!
+  VariableType linkType(); // Any mean NONE!
 
   String category();
 }

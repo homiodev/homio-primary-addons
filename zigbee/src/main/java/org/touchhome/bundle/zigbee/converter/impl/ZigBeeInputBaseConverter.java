@@ -6,7 +6,6 @@ import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import java.util.concurrent.ExecutionException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -40,10 +39,13 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
     this.reportingFailedPollingInterval = POLLING_PERIOD_DEFAULT;
   }
 
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, boolean discoverAttribute, boolean readAttribute) {
+    return acceptEndpoint(endpoint, entityID, zclClusterType.getId(), attributeId, discoverAttribute, readAttribute);
+  }
+
   @Override
   public boolean initializeDevice() {
-    ZigBeeEndpointEntity endpointEntity = getEndpointEntity();
-    log.debug("{}: Initialising {} device cluster", endpointEntity, getClass().getSimpleName());
+    log.debug("[{}]: Initialising {} device cluster {}", entityID, getClass().getSimpleName(), endpoint);
 
     ZclCluster zclCluster = getZclClusterInternal();
     boolean success = false;
@@ -54,23 +56,24 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
           ZclAttribute attribute = zclCluster.getAttribute(this.attributeId);
 
           if (reportMinInterval == null || reportMaxInterval == null) {
+            ZigBeeEndpointEntity endpointEntity = getEndpointService().getEntity();
             CommandResult reportingResponse = attribute.setReporting(
                 endpointEntity.getReportingTimeMin(),
                 endpointEntity.getReportingTimeMax(),
                 endpointEntity.getReportingChange()).get();
-            handleReportingResponse(reportingResponse, reportingFailedPollingInterval, endpointEntity.getPoolingPeriod());
+            handleReportingResponse(reportingResponse, reportingFailedPollingInterval, endpointEntity.getPollingPeriod());
           } else {
             CommandResult reportingResponse = attribute.setReporting(reportMinInterval, reportMaxInterval, reportableChange).get();
             handleReportingResponseDuringInitializeDevice(reportingResponse);
           }
           success = true;
         } else {
-          log.error("{}: Error 0x{} setting server binding for cluster {}", endpointEntity,
+          log.error("[{}]: Error 0x{} setting server binding for cluster {}. {}", entityID, endpoint,
               Integer.toHexString(bindResponse.getStatusCode()), zclClusterType);
           success = initializeDeviceFailed();
         }
-      } catch (InterruptedException | ExecutionException e) {
-        log.error("{}: Exception setting reporting ", endpointEntity, e);
+      } catch (Exception e) {
+        log.error("[{}]: Exception setting reporting {}", endpoint, e);
         return false;
       }
     }
@@ -97,14 +100,13 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
     zclCluster = getZclClusterInternal();
 
     if (zclCluster == null) {
-      log.error("{}: Error opening cluster {}", getEndpointEntity(),
-          zclClusterType);
+      log.error("[{}]: Error opening cluster {}. {}", entityID, zclClusterType, endpoint);
       return false;
     }
 
     attribute = zclCluster.getAttribute(attributeId);
     if (attribute == null) {
-      log.error("{}: Error opening device {} attribute", getEndpointEntity(), zclClusterType);
+      log.error("[{}]: Error opening device {} attribute {}", entityID, zclClusterType, endpoint);
       return false;
     }
 
@@ -119,8 +121,7 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
 
   @Override
   public void disposeConverter() {
-    log.debug("{}: Closing device input cluster {}", getEndpointEntity(),
-        zclClusterType);
+    log.debug("[{}]: Closing device input cluster {}. {}", entityID, zclClusterType, endpoint);
 
     zclCluster.removeAttributeListener(this);
   }
@@ -131,36 +132,8 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-    ZclCluster cluster = getZclClusterInternal();
-
-    if (cluster == null) {
-      log.trace("{}: Cluster '{}' not found", getEndpointEntity(), zclClusterType.getId());
-      return false;
-    }
-
-    ZclAttribute zclAttribute = cluster.getAttribute(attributeId);
-    if (zclAttribute == null) {
-      log.error("{}: Error opening device {} attribute {}", getEndpointEntity(), zclClusterType, attributeId);
-      return false;
-    }
-
-    Object value = zclAttribute.readValue(Long.MAX_VALUE);
-    if (value == null) {
-      log.warn("{}: Exception reading attribute {} in cluster", getEndpointEntity(), attributeId);
-      return false;
-    }
-
-    return acceptEndpointExtra(cluster);
-  }
-
-  protected boolean acceptEndpointExtra(ZclCluster cluster) {
-    return true;
-  }
-
-  @Override
   public void attributeUpdated(ZclAttribute attribute, Object val) {
-    log.debug("{}: ZigBee attribute reports {}", getEndpointEntity(), attribute);
+    log.debug("[{}]: ZigBee attribute reports {}. {}", entityID, attribute, endpoint);
     if (attribute.getClusterType() == zclClusterType && attribute.getId() == attributeId) {
       updateValue(val, attribute);
     }
@@ -178,14 +151,17 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
     }
   }
 
-  public void updateServerPoolingPeriod() {
-    updateServerPoolingPeriod(zclCluster, attributeId, true);
+  @Override
+  public void updateConfiguration() {
+    if (configReporting != null && configReporting.updateConfiguration(getEntity())) {
+      updateServerPollingPeriod(zclCluster, attributeId);
+    }
   }
 
   protected ZclCluster getZclClusterInternal() {
     ZclCluster zclCluster = getInputCluster(zclClusterType.getId());
     if (zclCluster == null) {
-      log.error("{}: Error opening server cluster {}", getEndpointEntity(), zclClusterType);
+      log.error("[{}]: Error opening server cluster {}. {}", entityID, zclClusterType, endpoint);
       return null;
     }
     return zclCluster;

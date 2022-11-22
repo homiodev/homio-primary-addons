@@ -3,6 +3,7 @@ package org.touchhome.bundle.zigbee.converter.impl;
 import static java.lang.Integer.parseInt;
 import static java.lang.Integer.toHexString;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
@@ -20,12 +21,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.ButtonType;
+import org.touchhome.bundle.api.state.ButtonType.ButtonPressType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 
 /**
@@ -37,7 +39,7 @@ import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
  * As the configuration is done via channel properties, this converter is usable via static thing types only.
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:button", clientCluster = 0, serverClusters = {ZclScenesCluster.CLUSTER_ID}, category = "Button")
+@ZigBeeConverter(name = "zigbee:button", linkType = VariableType.Boolean, clientCluster = 0, serverClusters = {ZclScenesCluster.CLUSTER_ID}, category = "Button")
 public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
     implements ZclCommandListener, ZclAttributeListener {
 
@@ -66,16 +68,15 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
 
   @Override
   public boolean initializeConverter() {
-    for (ButtonType.ButtonPressType buttonPressType : ButtonType.ButtonPressType.values()) {
-            /* TODO: HOW it works ;) EventSpec eventSpec = parseEventSpec(channel.getProperties(), buttonPressType);
-            if (eventSpec != null) {
-                handledEvents.put(buttonPressType, eventSpec);
-            }*/
+    for (ButtonPressType buttonPressType : ButtonPressType.values()) {
+      EventSpec eventSpec = parseEventSpec(getEndpointService().getMetadata(), buttonPressType);
+      if (eventSpec != null) {
+        handledEvents.put(buttonPressType, eventSpec);
+      }
     }
 
     if (handledEvents.isEmpty()) {
-      log.error("{}: No command is specified for any of the possible button press types in channel {}",
-          getEndpointEntity());
+      log.error("[{}]: No command is specified for any of the possible button press types {}", entityID, endpoint);
       return false;
     }
 
@@ -91,18 +92,18 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
   @Override
   public void disposeConverter() {
     for (ZclCluster clientCluster : clientClusters) {
-      log.debug("{}: Closing client cluster {}", getEndpointEntity(), clientCluster.getClusterId());
+      log.debug("[{}]: Closing client cluster {} for {}", entityID, clientCluster.getClusterId(), endpoint);
       clientCluster.removeCommandListener(this);
     }
 
     for (ZclCluster serverCluster : serverClusters) {
-      log.debug("{}: Closing server cluster {}", getEndpointEntity(), serverCluster.getClusterId());
+      log.debug("[{}]: Closing server cluster {} for {}", entityID, serverCluster.getClusterId(), endpoint);
       serverCluster.removeAttributeListener(this);
     }
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
     // This converter is used only for zigbeeRequireEndpoints specified in static thing types, and cannot be used to construct
     // zigbeeRequireEndpoints based on an endpoint alone.
     return false;
@@ -112,8 +113,8 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
   public boolean commandReceived(ZclCommand command) {
     ButtonType.ButtonPressType buttonPressType = getButtonPressType(command);
     if (buttonPressType != null) {
-      log.debug("{}: Matching ZigBee command for press type {} received: {}", getEndpointEntity(),
-          buttonPressType, command);
+      log.debug("[{}]: Matching ZigBee command for press type {} received: {} for {}", entityID,
+          buttonPressType, command, endpoint);
       updateChannelState(new ButtonType(buttonPressType));
       return true;
     }
@@ -124,8 +125,8 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
   public void attributeUpdated(ZclAttribute attribute, Object value) {
     ButtonType.ButtonPressType buttonPressType = getButtonPressType(attribute, value);
     if (buttonPressType != null) {
-      log.debug("{}: Matching ZigBee attribute for press type {} received: {}", getEndpointEntity(),
-          buttonPressType, attribute);
+      log.debug("[{}]: Matching ZigBee attribute for press type {} received: {} for {}", entityID,
+          buttonPressType, attribute, endpoint);
       updateChannelState(new ButtonType(buttonPressType));
     }
   }
@@ -147,8 +148,8 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
     return null;
   }
 
-  private EventSpec parseEventSpec(Map<String, String> properties, ButtonType.ButtonPressType pressType) {
-    String clusterProperty = properties.get(getParameterName(CLUSTER, pressType));
+  private EventSpec parseEventSpec(JsonNode metadata, ButtonType.ButtonPressType pressType) {
+    String clusterProperty = metadata.get(getParameterName(CLUSTER, pressType)).asText();
 
     if (clusterProperty == null) {
       return null;
@@ -159,75 +160,54 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
     try {
       clusterId = parseId(clusterProperty);
     } catch (NumberFormatException e) {
-      log.warn("{}: Could not parse cluster property {}", getEndpointEntity(), clusterProperty);
+      log.warn("[{}]: Could not parse cluster property {} for {}", entityID, clusterProperty, endpoint);
       return null;
     }
 
-    boolean hasCommand = properties.containsKey(getParameterName(COMMAND, pressType));
-    boolean hasAttribute = properties.containsKey(getParameterName(ATTRIBUTE_ID, pressType));
+    boolean hasCommand = metadata.has(getParameterName(COMMAND, pressType));
+    boolean hasAttribute = metadata.has(getParameterName(ATTRIBUTE_ID, pressType));
 
     if (hasCommand && hasAttribute) {
-      log.warn("{}: Only one of command or attribute can be used", getEndpointEntity());
+      log.warn("[{}]: Only one of command or attribute can be used {}", entityID, endpoint);
       return null;
     }
 
     if (hasCommand) {
-      return parseCommandSpec(clusterId, properties, pressType);
+      return parseCommandSpec(clusterId, metadata, pressType);
     } else {
-      return parseAttributeReportSpec(clusterId, properties, pressType);
+      return parseAttributeReportSpec(clusterId, metadata, pressType);
     }
   }
 
-  private AttributeReportSpec parseAttributeReportSpec(int clusterId, Map<String, String> properties,
-      ButtonType.ButtonPressType pressType) {
-    String attributeIdProperty = properties.get(getParameterName(ATTRIBUTE_ID, pressType));
-    String attributeValue = properties.get(getParameterName(ATTRIBUTE_VALUE, pressType));
-
-    if (attributeIdProperty == null) {
-      log.warn("{}: Missing attribute id", getEndpointEntity());
+  private AttributeReportSpec parseAttributeReportSpec(int clusterId, JsonNode metadata, ButtonType.ButtonPressType pressType) {
+    int attributeId = metadata.path(getParameterName(COMMAND, pressType)).asInt(-1);
+    if (attributeId == -1) {
+      log.warn("[{}]: Missing attribute id {}", entityID, endpoint);
       return null;
     }
 
-    Integer attributeId;
-
-    try {
-      attributeId = parseId(attributeIdProperty);
-    } catch (NumberFormatException e) {
-      log.warn("{}: Could not parse attribute property {}", getEndpointEntity(), attributeIdProperty);
-      return null;
-    }
-
+    String attributeValue = metadata.path(getParameterName(ATTRIBUTE_VALUE, pressType)).asText();
     if (attributeValue == null) {
-      log.warn("{}: No attribute value for attribute {} specified", getEndpointEntity(), attributeId);
+      log.warn("[{}]: No attribute value for attribute {} specified {}", entityID, attributeId, endpoint);
       return null;
     }
 
     return new AttributeReportSpec(clusterId, attributeId, attributeValue);
   }
 
-  private CommandSpec parseCommandSpec(int clusterId, Map<String, String> properties, ButtonType.ButtonPressType pressType) {
-    String commandProperty = properties.get(getParameterName(COMMAND, pressType));
-    String commandParameterName = properties.get(getParameterName(PARAM_NAME, pressType));
-    String commandParameterValue = properties.get(getParameterName(PARAM_VALUE, pressType));
-
-    if (commandProperty == null) {
-      log.warn("{}: Missing command", getEndpointEntity());
+  private CommandSpec parseCommandSpec(int clusterId, JsonNode metadata, ButtonType.ButtonPressType pressType) {
+    int commandId = metadata.path(getParameterName(COMMAND, pressType)).asInt(-1);
+    if (commandId == -1) {
+      log.warn("[{}]: Missing command {}", entityID, endpoint);
       return null;
     }
 
-    Integer commandId;
-
-    try {
-      commandId = parseId(commandProperty);
-    } catch (NumberFormatException e) {
-      log.warn("{}: Could not parse command property {}", getEndpointEntity(), commandProperty);
-      return null;
-    }
+    String commandParameterName = metadata.path(getParameterName(PARAM_NAME, pressType)).asText();
+    String commandParameterValue = metadata.path(getParameterName(PARAM_VALUE, pressType)).asText();
 
     if ((commandParameterName != null && commandParameterValue == null)
         || (commandParameterName == null && commandParameterValue != null)) {
-      log.warn("{}: When specifiying a command parameter, both name and value must be specified",
-          getEndpointEntity());
+      log.warn("[{}]: When specifying a command parameter, both name and value must be specified {}", entityID, endpoint);
       return null;
     }
 
@@ -261,20 +241,20 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
 
       ZclCluster cluster = getClusterById.apply(clusterId);
       if (cluster == null) {
-        log.error("{}: Error opening {} cluster {} on endpoint", getEndpointEntity(), clusterType,
-            clusterId);
+        log.error("[{}]: Error opening {} cluster {} on {}", entityID, clusterType,
+            clusterId, endpoint);
         return false;
       }
 
       try {
         CommandResult bindResponse = bind(cluster).get();
         if (!bindResponse.isSuccess()) {
-          log.error("{}: Error 0x{} setting {} binding for cluster {}", getEndpointEntity(),
-              toHexString(bindResponse.getStatusCode()), clusterType, clusterId);
+          log.error("[{}]: Error 0x{} setting {} binding for cluster {}. {}", entityID,
+              toHexString(bindResponse.getStatusCode()), clusterType, clusterId, entityID);
         }
-      } catch (InterruptedException | ExecutionException e) {
-        log.error("{}/{}: Exception setting {} binding to cluster {}", getEndpointEntity(), clusterType,
-            clusterId, e);
+      } catch (Exception e) {
+        log.error("[{}]: Exception setting {}/{} binding to cluster {}. {}", entityID, clusterType,
+            clusterId, endpoint, e);
       }
 
       registrationFunction.accept(cluster);
@@ -311,7 +291,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
 
     @Override
     boolean bindCluster() {
-      return bindCluster("server", serverClusters, getClusterId(), getEndpoint()::getInputCluster,
+      return bindCluster("server", serverClusters, getClusterId(), endpoint::getInputCluster,
           cluster -> cluster.addAttributeListener(ZigBeeConverterGenericButton.this));
     }
   }
@@ -339,8 +319,8 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
         return Objects.equals(result.toString(), commandParameterValue);
       } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                | InvocationTargetException e) {
-        log.warn("{}/{}: Could not read parameter {} for command {}", getEndpointEntity(),
-            commandParameterName, command, e);
+        log.warn("[{}]: Could not read parameter {} for command {}. {}", entityID,
+            commandParameterName, command, entityID, e);
         return false;
       }
     }
@@ -362,7 +342,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
 
     @Override
     boolean bindCluster() {
-      return bindCluster("client", clientClusters, getClusterId(), getEndpoint()::getOutputCluster,
+      return bindCluster("client", clientClusters, getClusterId(), endpoint::getOutputCluster,
           cluster -> cluster.addCommandListener(ZigBeeConverterGenericButton.this));
     }
   }

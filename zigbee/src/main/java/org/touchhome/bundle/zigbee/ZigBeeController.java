@@ -103,7 +103,7 @@ public class ZigBeeController {
     for (ZigbeeCoordinatorEntity coordinator : entityContext.findAll(ZigbeeCoordinatorEntity.class)) {
       for (ZigBeeDeviceEntity device : coordinator.getOnlineDevices()) {
         List<ZigBeeEndpointEntity> endpoints = device.getEndpoints().stream().filter(e ->
-            containsAny(e.getService().getChannel().getAnnotation(), clusterId)).collect(Collectors.toList());
+            containsAny(e.getService().getCluster().getAnnotation(), clusterId)).collect(Collectors.toList());
 
         if (!endpoints.isEmpty()) {
           if (endpointCount == null || endpointCount == endpoints.size()) {

@@ -2,7 +2,6 @@ package org.touchhome.bundle.raspberry.gpio;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pi4j.io.gpio.digital.PullResistance;
-import java.util.Date;
 import java.util.Set;
 import javax.persistence.Entity;
 import lombok.Getter;
@@ -12,8 +11,9 @@ import org.touchhome.bundle.api.entity.PinBaseEntity;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldColorPicker;
 import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
-import org.touchhome.bundle.api.ui.field.UIFieldInlineEntityWidth;
 import org.touchhome.bundle.api.ui.field.condition.UIFieldDisableEditOnCondition;
+import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntityEditWidth;
+import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.touchhome.bundle.raspberry.RaspberryDeviceEntity;
 import org.touchhome.bundle.raspberry.RaspberryGpioPin;
 import org.touchhome.bundle.raspberry.gpio.mode.PinMode;
@@ -21,42 +21,41 @@ import org.touchhome.bundle.raspberry.gpio.mode.PinMode;
 @Getter
 @Setter
 @Entity
-public class GpioPinEntity extends PinBaseEntity<RaspberryDeviceEntity> {
+public class GpioPinEntity extends PinBaseEntity<GpioPinEntity, RaspberryDeviceEntity> {
 
   @Override
   @UIField(order = 10, label = "pin", disableEdit = true)
-  @UIFieldInlineEntityWidth(editWidth = 15, viewWidth = 15)
+  @UIFieldInlineEntityWidth(15)
+  @UIFieldInlineEntityEditWidth(15)
   public int getAddress() {
     return super.getAddress();
   }
 
   @Override
-  public String getDefaultName() {
-    return null;
-  }
-
-  @Override
   @UIField(order = 20, disableEdit = true)
-  @UIFieldInlineEntityWidth(editWidth = 15, viewWidth = 25)
+  @UIFieldInlineEntityWidth(25)
+  @UIFieldInlineEntityEditWidth(15)
   public String getName() {
     return super.getName();
   }
 
   @UIField(order = 30)
-  @UIFieldInlineEntityWidth(editWidth = 25, viewWidth = 20)
+  @UIFieldInlineEntityWidth(20)
+  @UIFieldInlineEntityEditWidth(25)
   public PinMode getMode() {
     return getJsonDataEnum("mode", PinMode.DIGITAL_INPUT);
   }
 
   @UIField(order = 40)
-  @UIFieldInlineEntityWidth(editWidth = 25, viewWidth = 20)
+  @UIFieldInlineEntityWidth(20)
+  @UIFieldInlineEntityEditWidth(25)
   @UIFieldDisableEditOnCondition("return context.get('mode') != 'DIGITAL_INPUT'")
   public PullResistance getPull() {
     return getJsonDataEnum("pull", PullResistance.OFF);
   }
 
-  @UIField(order = 50, readOnly = true)
-  @UIFieldInlineEntityWidth(editWidth = 0, viewWidth = 20)
+  @UIField(order = 50, hideInEdit = true)
+  @UIFieldInlineEntityWidth(20)
   public String getValue() {
     Object owner = getOwner();
     RaspberryDeviceEntity entity;
@@ -74,9 +73,9 @@ public class GpioPinEntity extends PinBaseEntity<RaspberryDeviceEntity> {
     return null;
   }
 
-  @UIField(order = 60, onlyEdit = true)
+  @UIField(order = 60, hideInView = true)
   @UIFieldColorPicker
-  @UIFieldInlineEntityWidth(editWidth = 25, viewWidth = 0)
+  @UIFieldInlineEntityEditWidth(25)
   public String getColor() {
     return getJsonData("clr", "");
   }
@@ -90,20 +89,6 @@ public class GpioPinEntity extends PinBaseEntity<RaspberryDeviceEntity> {
   @JsonIgnore
   public GpioPin getGpioPin() {
     return RaspberryGpioPin.getPin(getAddress()).getGpioPin();
-  }
-
-  @Override
-  @JsonIgnore
-  @UIFieldIgnore
-  public Date getCreationTime() {
-    return super.getCreationTime();
-  }
-
-  @Override
-  @JsonIgnore
-  @UIFieldIgnore
-  public Date getUpdateTime() {
-    return super.getUpdateTime();
   }
 
   public void setMode(PinMode value) {

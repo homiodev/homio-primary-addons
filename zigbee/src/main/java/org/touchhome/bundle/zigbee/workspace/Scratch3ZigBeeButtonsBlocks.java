@@ -126,7 +126,7 @@ final class Scratch3ZigBeeButtonsBlocks extends Scratch3ZigBeeExtensionBlocks {
     if (onOffEndpoints.isEmpty()) {
       workspaceBlock.logErrorAndThrow("Unable to find endpoints with On/Off ability for device: " + zigBeeDeviceEntity);
     } else if (buttonEndpointValue != null) {
-      onOffEndpoints = onOffEndpoints.stream().filter(c -> c.getEndpointId() == buttonEndpointValue).collect(Collectors.toList());
+      onOffEndpoints = onOffEndpoints.stream().filter(c -> c.getAddress() == buttonEndpointValue).collect(Collectors.toList());
     }
 
     if (onOffEndpoints.isEmpty()) {
@@ -135,8 +135,8 @@ final class Scratch3ZigBeeButtonsBlocks extends Scratch3ZigBeeExtensionBlocks {
 
     for (ZigBeeEndpointEntity onOffChannel : onOffEndpoints) {
       ZigBeeBaseChannelConverter beeBaseChannelConverter =
-          zigBeeDeviceEntity.getEndpointRequired(onOffChannel.getIeeeAddress(), onOffChannel.getClusterId(), onOffChannel.getEndpointId(),
-              onOffChannel.getName()).getService().getChannel();
+          zigBeeDeviceEntity.getEndpointRequired(onOffChannel.getAddress(), onOffChannel.getClusterId())
+              .getService().getCluster();
       handleCommand(workspaceBlock, zigBeeDeviceEntity, beeBaseChannelConverter, zclOnOffCommand);
     }
   }

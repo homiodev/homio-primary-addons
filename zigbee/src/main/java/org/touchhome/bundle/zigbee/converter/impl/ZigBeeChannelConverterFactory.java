@@ -12,7 +12,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
@@ -21,7 +20,6 @@ import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.requireEndpoint.DeviceDefinition.EndpointDefinition;
 import org.touchhome.common.util.CommonUtils;
 
-@Log4j2
 @Component
 public final class ZigBeeChannelConverterFactory {
 
@@ -39,7 +37,7 @@ public final class ZigBeeChannelConverterFactory {
     List<Class<? extends ZigBeeBaseChannelConverter>> converters = entityContext.getClassesWithAnnotation(ZigBeeConverter.class);
 
     channelMap = converters.stream().collect(Collectors
-        .toMap((Function<Class, ZigBeeConverter>) aClass -> AnnotationUtils.getAnnotation(aClass, ZigBeeConverter.class), c -> c));
+        .toMap((Function<Class<?>, ZigBeeConverter>) aClass -> AnnotationUtils.getAnnotation(aClass, ZigBeeConverter.class), c -> c));
     this.allServerClusterIds = channelMap.keySet().stream().flatMapToInt(c -> IntStream.of(c.serverClusters()))
         .boxed().collect(Collectors.toSet());
     for (ZigBeeConverter converter : channelMap.keySet()) {
@@ -58,8 +56,9 @@ public final class ZigBeeChannelConverterFactory {
     return fitEndpoints.values();
   }
 
-  public Collection<ZigBeeBaseChannelConverter> getZigBeeConverterEndpoints(ZigBeeEndpoint endpoint) {
-    Map<String, ZigBeeBaseChannelConverter> fitEndpoints = createZigBeeChannels(name -> true, converter -> converter.acceptEndpoint(endpoint));
+  public Collection<ZigBeeBaseChannelConverter> getZigBeeConverterEndpoints(ZigBeeEndpoint endpoint, String entityID) {
+    Map<String, ZigBeeBaseChannelConverter> fitEndpoints = createZigBeeChannels(name -> true,
+        converter -> converter.acceptEndpoint(endpoint, entityID));
 
     // Remove ON/OFF if we support LEVEL
     if (fitEndpoints.containsKey("zigbee:switch_level")) {

@@ -64,7 +64,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     return super.getTitle();
   }
 
-  @UIField(order = 1, readOnly = true, hideOnEmpty = true, fullWidth = true, bg = "#334842", type = UIFieldType.HTML)
+  @UIField(order = 1, hideInEdit = true, hideOnEmpty = true, fullWidth = true, bg = "#334842", type = UIFieldType.HTML)
   public String getDescription() {
     if (getIeeeAddress() == null) {
       return Lang.getServerMessage("ONVIF.REQ_AUTH_DESCRIPTION");
@@ -72,7 +72,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     return null;
   }
 
-  @UIField(order = 12, readOnly = true, hideOnEmpty = true)
+  @UIField(order = 12, hideInEdit = true, hideOnEmpty = true)
   @UIFieldColorStatusMatch(handlePrefixes = true)
   public String getEventSubscription() {
     return optService().filter(BaseVideoService::isHandlerInitialized).map(s -> {
@@ -108,7 +108,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
   }
 
   @UIFieldPort
-  @UIField(order = 36, onlyEdit = true)
+  @UIField(order = 36, hideInView = true)
   @RestartHandlerOnChange
   public int getRestPort() {
     return getJsonData("restPort", 80);
@@ -118,7 +118,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     setJsonData("restPort", value);
   }
 
-  @UIField(order = 55, onlyEdit = true)
+  @UIField(order = 55, hideInView = true)
   @RestartHandlerOnChange
   public int getOnvifMediaProfile() {
     return getJsonData("onvifMediaProfile", 0);
@@ -128,25 +128,25 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     setJsonData("onvifMediaProfile", value);
   }
 
-  @UIField(order = 45, onlyEdit = true, label = "cameraUsername")
+  @UIField(order = 45, hideInView = true, label = "cameraUsername")
   @RestartHandlerOnChange
   public String getUser() {
     return super.getUser();
   }
 
-  @UIField(order = 50, onlyEdit = true, label = "cameraPassword")
+  @UIField(order = 50, hideInView = true, label = "cameraPassword")
   @RestartHandlerOnChange
   public SecureString getPassword() {
     return super.getPassword();
   }
 
-  @UIField(order = 80, onlyEdit = true)
+  @UIField(order = 80, hideInView = true)
   @RestartHandlerOnChange
   public String getAlarmInputUrl() {
     return super.getAlarmInputUrl();
   }
 
-  @UIField(order = 70, onlyEdit = true)
+  @UIField(order = 70, hideInView = true)
   @RestartHandlerOnChange
   public int getNvrChannel() {
     return getJsonData("nvrChannel", 0);
@@ -156,7 +156,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     setJsonData("nvrChannel", value);
   }
 
-  @UIField(order = 75, onlyEdit = true)
+  @UIField(order = 75, hideInView = true)
   @RestartHandlerOnChange
   @UIFieldIgnoreGetDefault
   public String getSnapshotUrl() {
@@ -173,7 +173,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     setJsonData("snapshotUrl", value);
   }
 
-  @UIField(order = 85, onlyEdit = true)
+  @UIField(order = 85, hideInView = true)
   @RestartHandlerOnChange
   public String getCustomMotionAlarmUrl() {
     return getJsonData("customMotionAlarmUrl", "");
@@ -183,7 +183,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     setJsonData("customMotionAlarmUrl", value);
   }
 
-  @UIField(order = 90, onlyEdit = true)
+  @UIField(order = 90, hideInView = true)
   @RestartHandlerOnChange
   public String getCustomAudioAlarmUrl() {
     return getJsonData("customAudioAlarmUrl", "");
@@ -193,7 +193,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     setJsonData("customAudioAlarmUrl", value);
   }
 
-  @UIField(order = 95, onlyEdit = true)
+  @UIField(order = 95, hideInView = true)
   @RestartHandlerOnChange
   public String getMjpegUrl() {
     return getJsonData("mjpegUrl", "ffmpeg");
@@ -203,7 +203,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     setJsonData("mjpegUrl", value);
   }
 
-  @UIField(order = 100, onlyEdit = true)
+  @UIField(order = 100, hideInView = true)
   @RestartHandlerOnChange
   public String getFfmpegInput() {
     return getJsonData("ffmpegInput", "");
@@ -213,7 +213,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     setJsonData("ffmpegInput", value);
   }
 
-  @UIField(order = 105, onlyEdit = true)
+  @UIField(order = 105, hideInView = true)
   @RestartHandlerOnChange
   public String getFfmpegInputOptions() {
     return getJsonData("ffmpegInputOptions", "");
@@ -223,7 +223,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     setJsonData("ffmpegInputOptions", value);
   }
 
-  @UIField(order = 155, onlyEdit = true)
+  @UIField(order = 155, hideInView = true)
   public boolean isPtzContinuous() {
     return getJsonData("ptzContinuous", false);
   }

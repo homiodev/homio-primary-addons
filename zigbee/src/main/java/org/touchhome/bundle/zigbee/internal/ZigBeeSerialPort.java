@@ -45,11 +45,14 @@ public class ZigBeeSerialPort extends BaseSerialPort implements ZigBeePort {
 
   public ZigBeeSerialPort(String coordinator,
       EntityContext entityContext,
-      SerialPort serialPort, int baudRate,
+      SerialPort serialPort,
+      String entityID,
+      int baudRate,
       PortFlowControl flowControl,
       Runnable portUnavailableListener,
       Consumer<SerialPort> portOpenSuccessListener) {
-    super(coordinator, entityContext, serialPort, baudRate, flowControl, portUnavailableListener, portOpenSuccessListener);
+    super(coordinator, entityID, entityContext, baudRate, flowControl, portUnavailableListener, portOpenSuccessListener, log);
+    this.serialPort = serialPort;
   }
 
   @Override
@@ -101,7 +104,7 @@ public class ZigBeeSerialPort extends BaseSerialPort implements ZigBeePort {
         end = 0;
       }
       if (end == start) {
-        log.warn("Processing DATA_AVAILABLE event: Serial buffer overrun");
+        log.warn("[{}]: Processing DATA_AVAILABLE event: Serial buffer overrun", entityID);
         if (++start == RX_BUFFER_LEN) {
           start = 0;
         }

@@ -7,6 +7,7 @@ import com.zsmartsystems.zigbee.ZigBeeNode;
 import com.zsmartsystems.zigbee.app.discovery.ZigBeeDiscoveryExtension;
 import com.zsmartsystems.zigbee.app.discovery.ZigBeeNetworkDiscoverer;
 import com.zsmartsystems.zigbee.security.ZigBeeKey;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiFunction;
@@ -16,12 +17,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.types.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.exception.ProhibitedExecution;
 import org.touchhome.bundle.api.model.ActionResponseModel;
@@ -35,6 +37,8 @@ import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
 import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.ui.field.condition.UIFieldShowOnCondition;
+import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntities;
+import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldDevicePortSelection;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectNoValue;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
@@ -46,7 +50,7 @@ import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
 @Log4j2
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#D46A06")
-public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoordinatorEntity>
+public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoordinatorEntity>
     implements HasEntityLog, HasNodeDescriptor, EntityService<ZigBeeCoordinatorService, ZigbeeCoordinatorEntity> {
 
   /**
@@ -56,9 +60,16 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
       0x65, 0x41, 0x6C, 0x6C, 0x69, 0x61, 0x6E, 0x63, 0x65, 0x30, 0x39});
 
   public static final String PREFIX = "zbc_";
+
   @Getter
-  @OneToMany(fetch = FetchType.EAGER, mappedBy = "coordinatorEntity", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
   private Set<ZigBeeDeviceEntity> devices;
+
+  @UIField(order = 9999, disableEdit = true)
+  @UIFieldInlineEntities(bg = "#27FF000D")
+  public List<ZigBeeCoordinatorDeviceEntity> getCoordinatorDevices() {
+    return devices.stream().map(ZigBeeCoordinatorDeviceEntity::new).collect(Collectors.toList());
+  }
 
   @Override
   @UIFieldIgnore
@@ -286,7 +297,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("pm", value);
   }
 
-  @UIField(readOnly = true, order = 100, hideOnEmpty = true)
+  @UIField(hideInEdit = true, order = 100, hideOnEmpty = true)
   @UIFieldGroup("Node")
   public String getLocalIeeeAddress() {
     return getJsonData("lia");
@@ -296,7 +307,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     setJsonData("lia", value);
   }
 
-  @UIContextMenuAction(value = "zigbee.start_scan", icon = "fas fa-search-location")
+  @UIContextMenuAction(value = "zigbee.action.start_scan", icon = "fas fa-search-location", iconColor = "#899343")
   public ActionResponseModel scan() {
     getService().getDiscoveryService().startScan();
     return ActionResponseModel.showSuccess("SUCCESS");
@@ -312,12 +323,6 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     fixEntity();
   }
 
-  // do not change Status on create service
-  @Override
-  public @Nullable Status getSuccessServiceStatus() {
-    return null;
-  }
-
   @JsonIgnore
   public Set<ZigBeeDeviceEntity> getOnlineDevices() {
     return getDevices().stream().filter(d -> d.getStatus() == Status.ONLINE).collect(Collectors.toSet());
@@ -329,12 +334,15 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
   }
 
   @Override
-  public ZigBeeCoordinatorService createService(EntityContext entityContext) {
+  public @NotNull ZigBeeCoordinatorService createService(@NotNull EntityContext entityContext) {
     return getCoordinatorHandler().coordinatorSupplier.apply(entityContext, this);
   }
 
   public ZigbeeCoordinatorEntity nodeUpdated(ZigBeeNode node, EntityContext entityContext) {
-    if (this.updateFromNodeDescriptor(node)) {
+    setFetchInfoStatus(Status.RUNNING, null);
+    boolean requireSave = this.updateFromNodeDescriptor(node);
+    setFetchInfoStatus(Status.ONLINE, null);
+    if (requireSave) {
       return entityContext.save(this);
     }
     return this;
@@ -350,18 +358,18 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
       zigBeeKey = new ZigBeeKey(getNetworkKey());
     } catch (IllegalArgumentException e) {
       zigBeeKey = new ZigBeeKey();
-      log.debug("{}: Network Key String has invalid format. Revert to default key [{}]", getEntityID(), getNetworkKey());
+      log.debug("[{}]: Network Key String has invalid format. Revert to default key [{}]", getEntityID(), getNetworkKey());
     }
     if (!zigBeeKey.isValid()) {
       zigBeeKey = ZigBeeKey.createRandom();
-      log.debug("{}: Network key initialised {}", getEntityID(), zigBeeKey);
+      log.debug("[{}]: Network key initialized {}", getEntityID(), zigBeeKey);
     }
     setNetworkKey(zigBeeKey.toString());
 
     // fix pan id
     if (getPanId() == 0) {
       setPanId((int) Math.floor((Math.random() * 65534)));
-      log.debug("{}: Create random ZigBee PAN ID [{}]", getEntityID(), String.format("%04X", getPanId()));
+      log.debug("[{}]: Create random ZigBee PAN ID [{}]", getEntityID(), String.format("%04X", getPanId()));
     }
 
     // fix extended pan id
@@ -373,7 +381,7 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
           pan[cnt] = (int) Math.floor((Math.random() * 255));
         }
         extendedPanId = new ExtendedPanId(pan);
-        log.debug("{}: Created random ZigBee extended PAN ID [{}]", getEntityID(), extendedPanId);
+        log.debug("[{}]: Created random ZigBee extended PAN ID [{}]", getEntityID(), extendedPanId);
         setExtendedPanId(extendedPanId.toString());
       }
     }
@@ -383,17 +391,30 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
       new ZigBeeKey(getLinkKey());
     } catch (IllegalArgumentException e) {
       setLinkKey(KEY_ZIGBEE_ALLIANCE_O9.toString());
-      log.debug("{}: Link Key String has invalid format. Revert to default key", getEntityID());
+      log.debug("[{}]: Link Key String has invalid format. Revert to default key", getEntityID());
     }
   }
 
   @Override
+  public String toString() {
+    return "ZigBee coordinator '" + getTitle() + "' [" + getCoordinatorHandler().getName() + "]";
+  }
+
+  @Override
   public void logBuilder(EntityLogBuilder entityLogBuilder) {
-    entityLogBuilder.addTopic(ZigbeeCoordinatorEntity.class, "entityID");
-    entityLogBuilder.addTopic(ZigBeeCoordinatorService.class, "entityID");
+    entityLogBuilder.addTopic("org.touchhome.bundle.zigbee", "entityID");
     entityLogBuilder.addTopic(ZigBeeNetworkManager.class);
     entityLogBuilder.addTopic(ZigBeeDiscoveryExtension.class);
     entityLogBuilder.addTopic(ZigBeeNetworkDiscoverer.class);
+  }
+
+  @Override
+  public void getAllRelatedEntities(Set<BaseEntity> relations) {
+    super.getAllRelatedEntities(relations);
+    relations.addAll(devices);
+    for (ZigBeeDeviceEntity device : devices) {
+      device.getAllRelatedEntities(relations);
+    }
   }
 
   @RequiredArgsConstructor
@@ -403,5 +424,32 @@ public final class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<Zig
     @Getter
     private final String name;
     private final BiFunction<EntityContext, ZigbeeCoordinatorEntity, ZigBeeCoordinatorService> coordinatorSupplier;
+  }
+
+  @Getter
+  @NoArgsConstructor
+  private static class ZigBeeCoordinatorDeviceEntity {
+
+    @UIField(order = 1)
+    @UIFieldInlineEntityWidth(40)
+    private String ieeeAddress;
+
+    @UIField(order = 2)
+    private String model;
+
+    @UIField(order = 3)
+    @UIFieldInlineEntityWidth(20)
+    private Status status;
+
+    @UIField(order = 4)
+    @UIFieldInlineEntityWidth(10)
+    private int endpointsCount;
+
+    public ZigBeeCoordinatorDeviceEntity(ZigBeeDeviceEntity device) {
+      this.ieeeAddress = device.getIeeeAddress();
+      this.model = device.getModelIdentifier();
+      this.status = device.getStatus();
+      this.endpointsCount = device.getEndpoints().size();
+    }
   }
 }

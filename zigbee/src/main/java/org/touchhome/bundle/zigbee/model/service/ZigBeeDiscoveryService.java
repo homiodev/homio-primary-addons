@@ -26,6 +26,7 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
 
   private final EntityContext entityContext;
   private final ZigBeeChannelConverterFactory channelFactory;
+  private final String entityID;
 
   private volatile boolean scanStarted = false;
 
@@ -41,19 +42,19 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
 
   @Override
   public void nodeRemoved(ZigBeeNode node) {
-    log.debug("Node removed: <{}>", node);
+    log.debug("[{}]: Node removed: <{}>", entityID, node);
   }
 
   @Override
   public void nodeUpdated(ZigBeeNode node) {
-    log.debug("Node updated: <{}>", node);
+    log.debug("[{}]: Node updated: <{}>", entityID, node);
   }
 
   public void startScan() {
     if (scanStarted) {
       return;
     }
-    log.info("Start scanning...");
+    log.info("[{}]: Start scanning...", entityID);
     scanStarted = true;
 
     for (ZigBeeNode node : coordinator.getService().getNodes()) {
@@ -67,12 +68,14 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
     int duration = coordinator.getDiscoveryDuration();
     coordinator.getService().scanStart(duration);
 
-    entityContext.ui().addHeaderButton("zigbee-scan", PRIMARY_COLOR, duration, null);
+    entityContext.ui().headerButtonBuilder("zigbee-scan").title("zigbee.action.scan")
+        .border(1, "#899343")
+        .duration(duration).icon("fas fa-search-location", "#899343", false).build();
 
     entityContext.bgp().builder("zigbee-scan-killer")
         .delay(Duration.ofSeconds(coordinator.getDiscoveryDuration()))
         .execute(() -> {
-          log.info("Scanning stopped");
+          log.info("[{}]: Scanning stopped", entityID);
           scanStarted = false;
           entityContext.ui().removeHeaderButton("zigbee-scan");
         });
@@ -89,14 +92,14 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
     entityContext.bgp().builder("zigbee-pooling-" + coordinator.getEntityID())
         .delay(Duration.ofMillis(10))
         .execute(() -> {
-          log.info("{}: Starting ZigBee device discovery", node.getIeeeAddress());
+          log.info("[{}]: Starting ZigBee device discovery {}", entityID, node.getIeeeAddress());
           addZigBeeDevice(node);
 
           if (!node.isDiscovered()) {
-            log.warn("{}: Node discovery not complete", node.getIeeeAddress());
+            log.warn("[{}]: Node discovery not complete {}", entityID, node.getIeeeAddress());
             return;
           } else {
-            log.debug("{}: Node discovery complete", node.getIeeeAddress());
+            log.debug("[{}]: Node discovery complete {}", entityID, node.getIeeeAddress());
           }
 
           coordinatorService.serializeNetwork(node.getIeeeAddress());
@@ -109,13 +112,13 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
   private synchronized void addZigBeeDevice(ZigBeeNode node) {
     IeeeAddress ieeeAddress = node.getIeeeAddress();
 
-    ZigBeeDeviceEntity entity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + ieeeAddress.toString());
+    ZigBeeDeviceEntity entity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + ieeeAddress);
     if (entity == null) {
       entity = new ZigBeeDeviceEntity();
-      entity.computeEntityID(ieeeAddress::toString);
+      entity.setEntityID(ZigBeeDeviceEntity.PREFIX + ieeeAddress);
       entity.setIeeeAddress(ieeeAddress.toString());
-      entity.setLogicalType(node.getLogicalType());
-      entity.setNetworkAddress(node.getNetworkAddress());
+      entity.setParent(coordinator);
+      entity.updateFromNodeDescriptor(node);
 
       entity = entityContext.save(entity);
     }

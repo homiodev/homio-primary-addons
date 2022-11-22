@@ -3,19 +3,19 @@ package org.touchhome.bundle.zigbee.converter.impl;
 import static com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster.ATTR_BATTERYVOLTAGE;
 import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.POWER_CONFIGURATION;
 
+import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster;
 import java.math.BigDecimal;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.QuantityType;
 import tec.uom.se.unit.Units;
 
 /**
  * Battery Voltage The current battery voltage
  */
-@Log4j2
-@ZigBeeConverter(name = "zigbee:battery_voltage", clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID,
-    category = "Energy")
+@ZigBeeConverter(name = "zigbee:battery_voltage", linkType = VariableType.Float,
+    clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
 public class ZigBeeConverterBatteryVoltage extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterBatteryVoltage() {
@@ -31,5 +31,10 @@ public class ZigBeeConverterBatteryVoltage extends ZigBeeInputBaseConverter {
     }
     BigDecimal valueInVolt = BigDecimal.valueOf(value, 1);
     updateChannelState(new QuantityType<>(valueInVolt, Units.VOLT));
+  }
+
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    return super.acceptEndpoint(endpoint, entityID, false, true);
   }
 }

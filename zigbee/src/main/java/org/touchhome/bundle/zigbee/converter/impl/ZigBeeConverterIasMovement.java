@@ -3,11 +3,13 @@ package org.touchhome.bundle.zigbee.converter.impl;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 /**
  * Movement Sensor Alarm Converter for the IAS movement sensor.
  */
-@ZigBeeConverter(name = "zigbee:ias_movement", clientCluster = ZclIasZoneCluster.CLUSTER_ID, category = "Sensor")
+@ZigBeeConverter(name = "zigbee:ias_movement", linkType = VariableType.Boolean,
+    clientCluster = ZclIasZoneCluster.CLUSTER_ID, category = "Sensor")
 public class ZigBeeConverterIasMovement extends ZigBeeConverterIas {
 
   @Override
@@ -17,7 +19,7 @@ public class ZigBeeConverterIasMovement extends ZigBeeConverterIas {
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-    return supportsIasChannel(endpoint, ZoneTypeEnum.VIBRATION_MOVEMENT_SENSOR);
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    return supportsIasChannel(endpoint, entityID, ZoneTypeEnum.VIBRATION_MOVEMENT_SENSOR);
   }
 }

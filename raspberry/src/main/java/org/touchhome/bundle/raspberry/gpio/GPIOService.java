@@ -280,9 +280,10 @@ public class GPIOService implements ServiceInstance<GpioEntity<?>> {
 */
 
   @Override
-  public void entityUpdated(GpioEntity entity) {
+  public boolean entityUpdated(GpioEntity entity) {
     this.entity = entity;
     createOrUpdateGpioPins(entity);
+    return true;
   }
 
   @Override
@@ -291,8 +292,8 @@ public class GPIOService implements ServiceInstance<GpioEntity<?>> {
   }
 
   @Override
-  public void testService() {
-
+  public boolean testService() {
+    return true;
   }
 
   private void createOrUpdateGpioPins(GpioEntity entity) {

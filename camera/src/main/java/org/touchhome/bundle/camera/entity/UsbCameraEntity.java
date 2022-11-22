@@ -50,7 +50,7 @@ public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity
     setJsonData("asource", value);
   }
 
-  @UIField(order = 100, onlyEdit = true, type = UIFieldType.Chips)
+  @UIField(order = 100, hideInView = true, type = UIFieldType.Chips)
   @RestartHandlerOnChange
   public List<String> getStreamOptions() {
     return getJsonDataList("stream");
@@ -60,7 +60,7 @@ public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity
     setJsonData("stream", value);
   }
 
-  @UIField(order = 90, onlyEdit = true)
+  @UIField(order = 90, hideInView = true)
   @RestartHandlerOnChange
   public int getStreamStartPort() {
     return getJsonData("streamPort", 35001);

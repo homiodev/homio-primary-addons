@@ -1,109 +1,5 @@
 {
-  "selection": {
-    "ZigbeeCoordinatorEntity": "Zigbee coordinator"
-  },
-  "workspace": {
-    "zigbee": "ZigBee",
-    "zigbee-btn": "ZigBee buttons",
-    "zigbee-sensor": "ZigBee sensors",
-    "zigbee_when_event_received": "Event when event received",
-    "zigbee_time_since_last_event": "Return time since last event",
-    "zigbee-btn_value": "Get button state",
-    "zigbee-btn_turn_on_off": "Turn on/off button",
-    "zigbee-btn_double_value": "Get 2 button state",
-    "zigbee-btn_double_turn_on_off": "Turn on/off 2 button",
-    "zigbee-sensor_illuminance_value": "Get illuminance value",
-    "zigbee-sensor_motion_value": "Get motion value",
-    "zigbee-sensor_temperature_value": "Get temperature value",
-    "zigbee-sensor_pressure_value": "Get pressure value",
-    "zigbee-sensor_humidity_value": "Get humidity value",
-    "zigbee-sensor_smoke_sensor_value": "Get smoke sensor value",
-    "zigbee-sensor_water_sensor_value": "Get water sensor value",
-    "zigbee-sensor_when_alarm_event_detected": "Event when alarm event detected"
-  },
-  "placeholder": {
-    "st_ZigBeePortSetting": "Select ZigBee port",
-    "st_ZigBeeCoordinatorHandlerSetting": "ZigBee Coordinator"
-  },
-  "zigBee:ias_fire": "Fire",
-  "field": {
-    "flowControl": "Flow control",
-    "reportingTimeMin": "Reporting min time",
-    "reportingTimeMax": "Reporting max time",
-    "poolingPeriod": "Pooling period",
-    "logEvents": "Log events",
-    "zigBeeNodeDescription": "Node Descriptor",
-    "channelsInitialized": "Channel fetched",
-    "txPower": "TX power",
-    "trustCentreJoinMode": "Trust Center join mode",
-    "powerMode": "Power mode",
-    "portBaud": "Port baud",
-    "panId": "Pan Id",
-    "networkKey": "Network key",
-    "meshUpdatePeriod": "Mesh update period",
-    "linkKey": "Link key",
-    "joinDeviceDuringScanOnly": "Join during scan only",
-    "installCode": "Install code",
-    "extendedPanId": "Extended Pan Id",
-    "channelId": "Channel Id",
-    "coordinatorHandler": "Coordinator handler",
-    "discoveryDuration": "Discovery duration",
-    "networkId": "Network Id",
-    "networkAddress": "Network address",
-    "logicalType": "Network address",
-    "currentPowerLevel": "Power level",
-    "currentPowerMode": "Power mode",
-    "currentPowerSource": "Power source"
-  },
-  "help": {
-    "field": {
-      "poolingPeriod": "Pooling period",
-      "reportingTimeMin": "Reporting min time",
-      "reportingTimeMax": "Reporting max time",
-      "txPower": "Sets the device radio power. Power level is defined in dBm.",
-      "trustCentreJoinMode": "Sets the Trust Centre join/rejoin mode. TC_JOIN_DENY: Deny all joins.<br/>TC_JOIN_SECURE: Allow only secure joining. Devices should join with the TC Link Key or a Device Specific Link Key via an install code.<br/>TC_JOIN_INSECURE: Allow all joins.<br/>TC_JOIN_INSTALLCODE: Only join with install code. Devices attempting to join with the TC Link Key will be rejected",
-      "powerMode": "Enabling boost mode improves the receive sensitivity by 2dB and increase the transmit power by 3dB",
-      "portBaud": "BaudRate as bits per second",
-      "panId": "Personal Area Network Identifier. This parameter is unique in a certain ZigBee network. This means that it will be the same in all the related devices, including the Coordinator (Meshlium or Gateway) and the Routers or End Devices (Waspmotes)",
-      "networkKey": "The key is defined as 16 hexadecimal unique id. If not defined, a random key will be created. Set the current network key in use by the system.",
-      "meshUpdatePeriod": "Sets the update period for the mesh update service. This is the number of seconds between subsequent mesh updates. Setting the period to 0 will disable mesh updates",
-      "linkKey": "Sets the Trust Center link security key to the specified value",
-      "joinDeviceDuringScanOnly": "Join during scan only",
-      "installCode": "Sets an installation key for the specified address. Using a blank key (ie all zeros) may be used to remove the install key. This is dongle specific if the key can be removed or if it will time out.",
-      "extendedPanId": "Sets the ZigBee Extended PAN ID to the specified value",
-      "channelId": "Sets the ZigBee RF channel. The allowable channel range is 11 to 26 for 2.4GHz, however the transport implementation may allow any value it supports",
-      "coordinatorHandler": "Coordinator handler",
-      "discoveryDuration": "Discovery duration in seconds",
-      "networkId": "Network Id",
-      "logEvents": "Log device events"
-    },
-    "zigBeeNodeDescription": "ZigBee Node Descriptor"
-  },
-  "SIDEBAR": {
-    "ZigBeeDeviceEntity": "ZigBee"
-  },
   "zigbee": {
-    "name": "ZigBee",
-    "device_reinitialise": "Node rediscovery started",
-    "start_scan": "Start ZigBee discovery",
-    "setting": {
-      "label": "ZigBee settings"
-    },
-    "error": {
-      "no_port": "No zigbee coordinator port selected",
-      "offline_comms_fail": "Communication failed",
-      "offline_bad_response": "Bad response",
-      "offline_initialize_fail": "Initialize failed",
-      "offline_discovery_incomplete": "Discovery incomplete",
-      "offline_node_not_found": "Node not found",
-      "removed_by_dongle": "Node removed by dongle",
-      "alive_timeout_reached": "Node alive timeout reached",
-      "handler_initializing_error": "Handler initialization error",
-      "no_cluster_found": "No supported clusters found"
-    },
-    "action": {
-      "selectModelIdentifier": "Select Model Identifier"
-    },
     "mi": {
       "motion": "Lumi Motion Sensor",
       "weather": "Weather sensor",
@@ -114,19 +10,6 @@
       "leak": "Water Leak Sensor",
       "ht": "Temperature and Humidity Sensor",
       "doubleRemote": "Wireless 2-Button Switch"
-    }
-  },
-  "CONSOLE": {
-    "logs_zigBeeLog": "ZigBee",
-    "ZIGBEE": "ZigBee"
-  },
-  "ACTION": {
-    "PERMIT_JOIN": "Permit join",
-    "INITIALIZE_ZIGBEE_NODE": "Initialize ZigBee node",
-    "ZIGBEE_PULL_CHANNELS": "Pull channels",
-    "RESPONSE": {
-      "NODE_INITIALIZATION_STARTED": "Node initialization started",
-      "ZIGBEE_PULL_CHANNELS_STARTED": "ZigBee pull channels started"
     }
   }
 }

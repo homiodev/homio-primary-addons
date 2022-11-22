@@ -16,49 +16,49 @@ public class ZigBeeIsAliveTracker {
   private final Map<ZigBeeDeviceService, Integer> handlerIntervalMapping = new ConcurrentHashMap<>();
   private final Map<ZigBeeDeviceService, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
 
-  public void addHandler(ZigBeeDeviceService zigBeeDeviceService, int expectedUpdateInterval) {
-    zigBeeDeviceService.setExpectedUpdateInterval(expectedUpdateInterval);
-    log.debug("{}: Add IsAlive Tracker", zigBeeDeviceService.getNodeIeeeAddress());
-    handlerIntervalMapping.put(zigBeeDeviceService, expectedUpdateInterval);
-    resetTimer(zigBeeDeviceService);
+  public void addHandler(ZigBeeDeviceService service, int expectedUpdateInterval) {
+    service.setExpectedUpdateInterval(expectedUpdateInterval);
+    log.debug("[{}]: Add IsAlive Tracker {}", service.getEntityID(), service.getNodeIeeeAddress());
+    handlerIntervalMapping.put(service, expectedUpdateInterval);
+    resetTimer(service);
   }
 
-  public void removeHandler(ZigBeeDeviceService zigBeeDeviceService) {
-    log.debug("{}: Remove IsAlive Tracker", zigBeeDeviceService.getNodeIeeeAddress());
-    cancelTask(zigBeeDeviceService);
-    handlerIntervalMapping.remove(zigBeeDeviceService);
+  public void removeHandler(ZigBeeDeviceService service) {
+    log.debug("[{}]: Remove IsAlive Tracker {}", service.getEntityID(), service.getNodeIeeeAddress());
+    cancelTask(service);
+    handlerIntervalMapping.remove(service);
   }
 
-  public synchronized void resetTimer(ZigBeeDeviceService zigBeeDeviceService) {
-    if (handlerIntervalMapping.containsKey(zigBeeDeviceService)) {
-      zigBeeDeviceService.setExpectedUpdateIntervalTimer(System.currentTimeMillis());
-      log.debug("{}: Reset timeout for handler with zigBeeDevice", zigBeeDeviceService.getNodeIeeeAddress());
-      cancelTask(zigBeeDeviceService);
-      scheduleTask(zigBeeDeviceService);
+  public synchronized void resetTimer(ZigBeeDeviceService service) {
+    if (handlerIntervalMapping.containsKey(service)) {
+      service.setExpectedUpdateIntervalTimer(System.currentTimeMillis());
+      log.debug("[{}]: Reset timeout for handler with zigBeeDevice {}", service.getEntityID(), service.getNodeIeeeAddress());
+      cancelTask(service);
+      scheduleTask(service);
     }
   }
 
-  private void scheduleTask(ZigBeeDeviceService zigBeeDeviceService) {
-    ScheduledFuture<?> existingTask = scheduledTasks.get(zigBeeDeviceService);
-    if (existingTask == null && handlerIntervalMapping.containsKey(zigBeeDeviceService)) {
-      int interval = handlerIntervalMapping.get(zigBeeDeviceService);
-      log.debug("{}: Scheduling timeout task for zigBeeDevice in {} seconds", zigBeeDeviceService.getNodeIeeeAddress(), interval);
+  private void scheduleTask(ZigBeeDeviceService service) {
+    ScheduledFuture<?> existingTask = scheduledTasks.get(service);
+    if (existingTask == null && handlerIntervalMapping.containsKey(service)) {
+      int interval = handlerIntervalMapping.get(service);
+      log.debug("[{}]: Scheduling timeout task {} for zigBeeDevice in {} seconds", service.getEntityID(), service.getNodeIeeeAddress(), interval);
       ScheduledFuture<?> task = scheduler.schedule(() -> {
-        log.debug("{}: Timeout has been reached for zigBeeDevice", zigBeeDeviceService.getNodeIeeeAddress());
-        zigBeeDeviceService.aliveTimeoutReached();
-        scheduledTasks.remove(zigBeeDeviceService);
+        log.info("[{}]: Timeout has been reached for zigBeeDevice {}", service.getEntityID(), service.getNodeIeeeAddress());
+        service.aliveTimeoutReached();
+        scheduledTasks.remove(service);
       }, interval, TimeUnit.SECONDS);
 
-      scheduledTasks.put(zigBeeDeviceService, task);
+      scheduledTasks.put(service, task);
     }
   }
 
-  private void cancelTask(ZigBeeDeviceService zigBeeDeviceService) {
-    ScheduledFuture<?> task = scheduledTasks.get(zigBeeDeviceService);
+  private void cancelTask(ZigBeeDeviceService service) {
+    ScheduledFuture<?> task = scheduledTasks.get(service);
     if (task != null) {
-      log.debug("{}: Canceling timeout task for zigBeeDevice", zigBeeDeviceService.getNodeIeeeAddress());
+      log.debug("[{}]: Canceling timeout task for zigBeeDevice {}", service.getEntityID(), service.getNodeIeeeAddress());
       task.cancel(true);
-      scheduledTasks.remove(zigBeeDeviceService);
+      scheduledTasks.remove(service);
     }
   }
 }

@@ -3,6 +3,7 @@ package org.touchhome.bundle.zigbee.converter.impl;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIasWdCluster;
 import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.warningdevice.SquawkType;
 import org.touchhome.bundle.zigbee.converter.warningdevice.WarningType;
@@ -11,7 +12,8 @@ import org.touchhome.bundle.zigbee.converter.warningdevice.WarningType;
  * Triggers warnings on a warning device Channel converter for warning devices, based on the IAS WD cluster.
  */
 @Log4j2
-@ZigBeeConverter(name = "zigbee:warning_device", clientCluster = ZclIasWdCluster.CLUSTER_ID, category = "Siren")
+@ZigBeeConverter(name = "zigbee:warning_device", linkType = VariableType.Float,
+    clientCluster = ZclIasWdCluster.CLUSTER_ID, category = "Siren")
 public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
 
   private static final String CONFIG_PREFIX = "zigbee_iaswd_";
@@ -28,7 +30,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
   public boolean initializeConverter() {
     iasWdCluster = getInputCluster(ZclIasWdCluster.CLUSTER_ID);
     if (iasWdCluster == null) {
-      log.error("{}: Error opening warning device controls", getEndpointEntity());
+      log.error("[{}]: Error opening warning device controls {}", entityID, endpoint);
       return false;
     }
 
@@ -36,13 +38,8 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint) {
-    if (getInputCluster(ZclIasWdCluster.CLUSTER_ID) == null) {
-      log.trace("{}: IAS WD cluster not found", getEndpointEntity());
-      return false;
-    }
-
-    return true;
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+    return acceptEndpoint(endpoint, entityID, ZclIasWdCluster.CLUSTER_ID, 0, false, false);
   }
 
     /*@Override
@@ -51,7 +48,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
         for (Entry<String, Object> updatedParameter : updatedParameters.entrySet()) {
             if (updatedParameter.getKey().startsWith(CONFIG_PREFIX)) {
                 if (Objects.equals(updatedParameter.getValue(), currentConfiguration.get(updatedParameter.getKey()))) {
-                    log.debug("Configuration update: Ignored {} as no change", updatedParameter.getKey());
+                    log.debug("[{}]: Configuration update: Ignored {} as no change", updatedParameter.getKey());
                 } else {
                     updateConfigParameter(currentConfiguration, updatedParameter);
                 }
@@ -60,7 +57,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
     }*/
 
     /*private void updateConfigParameter(Configuration currentConfiguration, Entry<String, Object> updatedParameter) {
-        log.debug("{}: Update IAS WD configuration property {}->{} ({})", iasWdCluster.getZigBeeAddress(),
+        log.debug("[{}]: Update IAS WD configuration property {}->{} ({})", iasWdCluster.getZigBeeAddress(),
                 updatedParameter.getKey(), updatedParameter.getValue(),
                 updatedParameter.getValue().getClass().getSimpleName());
 
@@ -72,7 +69,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
                 currentConfiguration.put(updatedParameter.getKey(), BigInteger.valueOf(response));
             }
         } else {
-            log.warn("{}: Unhandled configuration property {}", iasWdCluster.getZigBeeAddress(),
+            log.warn("[{}]: Unhandled configuration property {}", iasWdCluster.getZigBeeAddress(),
                     updatedParameter.getKey());
         }
     }*/
@@ -80,13 +77,13 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
     /*@Override
     public void handleCommand(final ZigBeeCommand command) {
         if (iasWdCluster == null) {
-            log.warn("{}: Warning device converter is not linked to a server and cannot accept commands",
+            log.warn("[{}]: Warning device converter is not linked to a server and cannot accept commands",
                     getEndpointEntity());
             return;
         }
 
         if (!(command instanceof StringType)) {
-            log.warn("{}: This converter only supports string-type commands", getEndpointEntity());
+            log.warn("[{}]: This converter only supports string-type commands", getEndpointEntity());
             return;
         }
 
@@ -100,7 +97,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
             if (squawkType != null) {
                 squawk(squawkType);
             } else {
-                log.warn("{}: Ignoring command that is neither warning nor squawk command: {}",
+                log.warn("[{}]: Ignoring command that is neither warning nor squawk command: {}",
                         getEndpointEntity(), commandString);
             }
         }
