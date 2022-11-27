@@ -6,15 +6,19 @@ import com.zsmartsystems.zigbee.ZigBeeAnnounceListener;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.ZigBeeNetworkNodeListener;
 import com.zsmartsystems.zigbee.ZigBeeNode;
+import com.zsmartsystems.zigbee.ZigBeeNode.ZigBeeNodeState;
 import com.zsmartsystems.zigbee.ZigBeeNodeStatus;
 import com.zsmartsystems.zigbee.ZigBeeProfileType;
 import com.zsmartsystems.zigbee.ZigBeeStatus;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.touchhome.bundle.api.EntityContext;
@@ -22,9 +26,9 @@ import org.touchhome.bundle.api.EntityContextBGP.ThreadContext;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.service.EntityService.ServiceInstance;
-import org.touchhome.bundle.zigbee.ZigBeeIsAliveTracker;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
+import org.touchhome.bundle.zigbee.converter.impl.config.ReportingChangeModel;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.requireEndpoint.DeviceDefinition.EndpointDefinition;
@@ -35,23 +39,24 @@ import org.touchhome.common.util.Lang;
 @Log4j2
 public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnnounceListener, ServiceInstance<ZigBeeDeviceEntity> {
 
+  private final Set<String> DEVICE_INITIALIZED = new HashSet<>();
+
   private final Object entityUpdateSync = new Object();
   private final Object pollingSync = new Object();
 
   private final IeeeAddress nodeIeeeAddress;
   private final ZigBeeCoordinatorService coordinatorService;
   private final EntityContext entityContext;
-  private final ZigBeeIsAliveTracker zigBeeIsAliveTracker;
   private final ZigBeeChannelConverterFactory zigBeeChannelConverterFactory;
   private final String entityID;
+  @Getter
   private ThreadContext<Void> pollingJob = null;
-  private int pollingPeriod = 86400;
-  private ThreadContext<Void> nodeDiscoveryThreadContext;
+  private int pollingPeriod = 1800;
   private ZigBeeDeviceEntity entity;
-  @Setter
   private Integer expectedUpdateInterval;
-  @Setter
-  private Long expectedUpdateIntervalTimer;
+  private int initializeZigBeeNodeRequests = 0;
+  @Getter
+  private double progress = -1;
 
   public ZigBeeDeviceService(ZigBeeCoordinatorService coordinatorService, IeeeAddress nodeIeeeAddress,
       EntityContext entityContext, ZigBeeDeviceEntity entity) {
@@ -61,32 +66,31 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
     this.entityContext = entityContext;
 
     this.coordinatorService = coordinatorService;
-    this.zigBeeIsAliveTracker = coordinatorService.getDiscoveryService().getZigBeeIsAliveTracker();
+    // this.zigBeeIsAliveTracker = coordinatorService.getDiscoveryService().getZigBeeIsAliveTracker();
     this.zigBeeChannelConverterFactory = coordinatorService.getDiscoveryService().getChannelFactory();
 
     this.nodeIeeeAddress = nodeIeeeAddress;
 
-    tryInitializeDevice();
+    tryInitializeZigBeeNode();
 
     // register listener for reset timer if any updates from any endpoint
     entityContext.event().addEventListener(this.nodeIeeeAddress.toString(), state -> {
-      zigBeeIsAliveTracker.resetTimer(this);
       entity.setLastAnswerFromEndpoints(System.currentTimeMillis());
     });
   }
 
-  public void tryInitializeDevice() {
-    if (coordinatorService.getEntity().getStatus() != Status.ONLINE) {
-      entity.setNodeInitializationStatus(Status.UNKNOWN);
-      stopPolling();
-    } else if (entity.getNodeInitializationStatus() == Status.UNKNOWN) {
-      log.debug("[{}]: Coordinator is ONLINE. Starting device initialisation. {}", entityID, nodeIeeeAddress);
+  public void tryInitializeZigBeeNode() {
+    if (coordinatorService.getEntity().getStatus() == Status.ONLINE) {
+      log.info("[{}]: Coordinator is ONLINE. Starting device initialisation. {}", entityID, nodeIeeeAddress);
 
       this.coordinatorService.addNetworkNodeListener(this);
       this.coordinatorService.addAnnounceListener(this);
       this.coordinatorService.rediscoverNode(nodeIeeeAddress);
 
       initializeZigBeeNode();
+    } else {
+      log.warn("[{}]: Unable to initialize device. Coordinator in '{}' state",
+          entityID, coordinatorService.getEntity().getStatus());
     }
   }
 
@@ -95,16 +99,52 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
    */
   public synchronized void initializeZigBeeNode() {
     if (entity.getNodeInitializationStatus() == Status.UNKNOWN || entity.getNodeInitializationStatus() == Status.DONE) {
+      this.initializeZigBeeNodeRequests = 0;
+      log.debug("[{}]: Request initialize zigbee node {}", entityID, nodeIeeeAddress);
       entity.setStatus(Status.WAITING, null);
       entity.setNodeInitializationStatus(Status.WAITING);
       entityContext.bgp().builder("zigbee-node-init-" + this.nodeIeeeAddress)
-          .delay(Duration.ofMillis(10)).execute(this::doNodeInitialisation);
+          .delay(Duration.ofMillis(10)).execute(() -> {
+            try {
+              doNodeInitialisation();
+            } finally {
+              if (this.initializeZigBeeNodeRequests > 0) {
+                this.initializeZigBeeNodeRequests = 0;
+                reInitializeZigBeeNode();
+              }
+            }
+          });
     } else {
-      log.warn("[{}]: Node {} initialization already started: {}", entityID, nodeIeeeAddress, entity.getNodeInitializationStatus());
+      log.info("[{}]: Node {} initialization already started: {}", entityID, nodeIeeeAddress, entity.getNodeInitializationStatus());
+      this.initializeZigBeeNodeRequests++;
+    }
+  }
+
+  /**
+   * Maybe fired after initializeZigBeeNode() in case if some nodes had been updated during main node initialization process
+   */
+  private void reInitializeZigBeeNode() {
+    if (!entity.getStatus().isOnline()) { // if previous initialization was failed
+      log.warn("Request re-initialize zigbee node entity due status: {}", entity.getStatus());
+      initializeZigBeeNode();
+    } else {
+      // just updated part of entity
+      ZigBeeNode node = this.coordinatorService.getNode(nodeIeeeAddress);
+      String modelIdentifier = entity.getModelIdentifier();
+      entity.updateFromNode(node, entityContext);
+      // create missing endpoints if model identifier fetched only in N-th nodeUpdated(...)
+      if (entity.getModelIdentifier() != null && !entity.getModelIdentifier().equals(modelIdentifier)) {
+        List<ZigBeeEndpointEntity> createdMissingEndpoint = createMissingRequireEndpointClusters();
+        tryInitializeDeviceEndpoints(createdMissingEndpoint, () -> {
+        });
+        initializeZigBeeChannelConverters(createdMissingEndpoint, () -> {
+        });
+      }
     }
   }
 
   private void doNodeInitialisation() {
+    progress = 0;
     log.info("[{}]: Initialization zigBee device {}", entityID, nodeIeeeAddress);
     if (this.entity.getStatus() != Status.WAITING) {
       log.error("[{}]: Something went wrong for node initialization workflow {}", entityID, nodeIeeeAddress);
@@ -112,6 +152,7 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
     this.entity.setStatus(Status.INITIALIZE, null);
     this.entity.setNodeInitializationStatus(Status.INITIALIZE);
     try {
+      pollingPeriod = 86400;
       ZigBeeNode node = this.coordinatorService.getNode(nodeIeeeAddress);
       if (node == null) {
         log.debug("[{}]: Node not found {}", entityID, nodeIeeeAddress);
@@ -124,10 +165,15 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
         throw new RuntimeException("zigbee.error.offline_discovery_incomplete");
       }
 
-      log.debug("[{}]: Start initialising ZigBee channels {}", entityID, nodeIeeeAddress);
+      log.info("[{}]: Start initialising ZigBee channels {}", entityID, nodeIeeeAddress);
+      log.info("[{}]: Initial endpoints: {}", entityID, node.getEndpoints().stream().map(ZigBeeEndpoint::toString)
+          .collect(Collectors.joining("\n")));
 
-      updateNodeDescription(node);
+      entity.updateFromNode(node, entityContext);
+      addToProgress(5);
+
       createDynamicEndpoints();
+      // Progress = 50
 
       if (entity.getModelIdentifier() != null) {
         createMissingRequireEndpointClusters();
@@ -146,18 +192,26 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
         }
       }
 
+      tryInitializeDevice(entity.getEndpoints());
+      // Progress = 70
+
       entity.setStatus(Status.WAITING, null);
-      initializeZigBeeChannelConverters();
+      final double initChannelDelta = 30D / entity.getEndpoints().size();
+      initializeZigBeeChannelConverters(entity.getEndpoints(), () -> {
+        addToProgress(initChannelDelta);
+      });
 
       // If this is an RFD then we reduce polling to the max to avoid wasting battery
       if (node.isReducedFunctionDevice()) {
         pollingPeriod = 1800;
+        log.debug("[{}]: {}: Thing is RFD, using long poll period of {}sec", entityID, nodeIeeeAddress, pollingPeriod);
       }
 
       int expectedUpdatePeriod = getExpectedUpdatePeriod();
-      expectedUpdatePeriod = (expectedUpdatePeriod * 2) + 30;
-      log.debug("[{}]: Setting ONLINE/OFFLINE {} timeout interval to: {}sec.", entityID, nodeIeeeAddress, expectedUpdatePeriod);
-      zigBeeIsAliveTracker.addHandler(this, expectedUpdatePeriod);
+      this.expectedUpdateInterval = (expectedUpdatePeriod * 2) + 30;
+      log.debug("[{}]: Setting ONLINE/OFFLINE {} timeout interval to: {}sec.", entityID, nodeIeeeAddress, expectedUpdateInterval);
+      entity.setLastAnswerFromEndpoints(System.currentTimeMillis());
+      coordinatorService.getRegisteredDevices().add(this);
 
       // Update the binding table.
       // We're not doing anything with the information here, but we want it up to date, so it's ready for use later.
@@ -180,32 +234,48 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
     } catch (Exception ex) {
       entity.setStatusError(ex);
       this.entity.setNodeInitializationStatus(Status.UNKNOWN);
+    } finally {
+      addToProgress(100); // reset progress
     }
+  }
+
+  private void addToProgress(double value) {
+    progress += value;
+    if (progress > 100) {
+      progress = -1;
+    }
+    entityContext.ui().updateItem(getEntity(), "initProgress", entity.getInitProgress());
   }
 
   private void createDynamicEndpoints() {
     // Dynamically create the zigBeeConverterEndpoints from the device
     // Process all the endpoints for this device and add all zigBeeConverterEndpoints as derived from the supported clusters
     log.info("[{}]: Try out to find zigbee endpoints {}", entityID, nodeIeeeAddress);
-    for (ZigBeeEndpoint endpoint : this.coordinatorService.getNodeEndpoints(nodeIeeeAddress)) {
-      Collection<ZigBeeBaseChannelConverter> cluster = zigBeeChannelConverterFactory.getZigBeeConverterEndpoints(endpoint, entityID);
+    Collection<ZigBeeEndpoint> nodeEndpoints = this.coordinatorService.getNodeEndpoints(nodeIeeeAddress);
+    double delta = 45D / (nodeEndpoints.size() * zigBeeChannelConverterFactory.getConverterCount());
+    for (ZigBeeEndpoint endpoint : nodeEndpoints) {
+      Collection<ZigBeeBaseChannelConverter> cluster = zigBeeChannelConverterFactory.
+          getZigBeeConverterEndpoints(endpoint, entityID, entityContext, () -> addToProgress(delta));
       createEndpoints(endpoint.getEndpointId(), cluster, null);
     }
     log.info("[{}]: Dynamically created {} zigBeeConverterEndpoints {}", entityID, entity.getEndpoints().size(), nodeIeeeAddress);
   }
 
-  private void createMissingRequireEndpointClusters() {
+  private List<ZigBeeEndpointEntity> createMissingRequireEndpointClusters() {
+    List<ZigBeeEndpointEntity> createdEndpoint = new ArrayList<>();
     for (EndpointDefinition ed : ZigBeeDefineEndpoints.getEndpointDefinitions(entity.getModelIdentifier())) {
       ZigBeeEndpointEntity foundEndpoint = entity.findEndpoint(ed.getInputCluster(), ed.getEndpoint());
       if (foundEndpoint == null) {
         log.info("[{}]: Add zigbee node <{}> missed require endpoint: <{}>", entityID, nodeIeeeAddress, ed);
         Collection<ZigBeeBaseChannelConverter> endpoints = zigBeeChannelConverterFactory.createConverterEndpoint(ed);
-        createEndpoints(ed.getEndpoint(), endpoints, ed.getMetadata());
+        createdEndpoint.addAll(createEndpoints(ed.getEndpoint(), endpoints, ed.getMetadata()));
       }
     }
+    return createdEndpoint;
   }
 
-  public void createEndpoints(int endpointId, Collection<ZigBeeBaseChannelConverter> clusters, JsonNode metadata) {
+  public List<ZigBeeEndpointEntity> createEndpoints(int endpointId, Collection<ZigBeeBaseChannelConverter> clusters, JsonNode metadata) {
+    List<ZigBeeEndpointEntity> createdEndpoint = new ArrayList<>();
     ZigBeeDeviceService zigBeeDeviceService = entity.getService();
 
     String ieeeAddressStr = nodeIeeeAddress.toString();
@@ -224,52 +294,84 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
         endpointEntity.setAddress(endpointId);
         endpointEntity.setOwner(entity);
 
+        ReportingChangeModel reportingChangeModel = cluster.getReportingChangeModel();
+        if (reportingChangeModel != null) {
+          endpointEntity.setReportingChangeMin(reportingChangeModel.getChangeMin());
+          endpointEntity.setReportingChangeMax(reportingChangeModel.getChangeMax());
+          endpointEntity.setReportingChange(reportingChangeModel.getChangeDefault());
+        }
+
         endpointEntity.setPollingPeriod(cluster.getPollingPeriod());
         endpointEntity = entityContext.save(endpointEntity);
       }
 
-      endpointEntity.setStatus(Status.WAITING, null);
-      var endpointService = new ZigbeeEndpointService(entityContext, cluster, zigBeeDeviceService, endpointEntity, ieeeAddressStr, metadata);
-      EntityService.entityToService.put(endpointEntity.getEntityID(), endpointService);
+      if (!EntityService.entityToService.containsKey(endpointEntity.getEntityID())) {
+        endpointEntity.setStatus(Status.WAITING, null);
+        var endpointService = new ZigbeeEndpointService(entityContext, cluster, zigBeeDeviceService, endpointEntity, ieeeAddressStr, metadata);
+        EntityService.entityToService.put(endpointEntity.getEntityID(), endpointService);
+        createdEndpoint.add(endpointEntity);
+      }
     }
+    return createdEndpoint;
   }
 
-  private void initializeZigBeeChannelConverters() {
-    for (ZigBeeEndpointEntity endpoint : entity.getEndpoints()) {
+  private void initializeZigBeeChannelConverters(Collection<ZigBeeEndpointEntity> endpoints, Runnable runUnit) {
+    for (ZigBeeEndpointEntity endpoint : endpoints) {
       try {
-        if (endpoint.optService().isEmpty()) {
-          log.info("[{}]: Endpoint not found in zigbee network {}", entityID, endpoint);
-          throw new RuntimeException("Endpoint not found");
-        }
         endpoint.setStatus(Status.INITIALIZE);
         ZigBeeBaseChannelConverter cluster = endpoint.getService().getCluster();
 
-        if (!cluster.initializeDevice()) {
-          log.info("[{}]: failed to initialize converter <{}>", entityID, endpoint);
-          throw new RuntimeException("Failed to configure device");
-        }
-
-        if (!cluster.initializeConverter()) {
+        try {
+          cluster.initializeConverter();
+        } catch (Exception ex) {
           log.info("[{}]: Failed to initialize converter {}", entityID, endpoint);
-          throw new RuntimeException("Failed to initialize converter");
-        }
-
-        cluster.updateConfiguration();
-
-        if (cluster.getEntity().isOutdated()) {
-          log.info("Endpoint had been updated during cluster configuration");
-          entityContext.save(cluster.getEntity());
+          continue;
         }
 
         if (cluster.getPollingPeriod() < pollingPeriod) {
           pollingPeriod = cluster.getPollingPeriod();
         }
+
+        cluster.fireHandleRefresh();
+
         endpoint.setStatusOnline();
       } catch (Exception ex) {
         endpoint.setStatusError(ex);
+      } finally {
+        runUnit.run();
       }
     }
     log.debug("[{}]: Channel initialisation complete {}", entityID, nodeIeeeAddress);
+  }
+
+  private void tryInitializeDevice(Collection<ZigBeeEndpointEntity> endpoints) {
+    if (DEVICE_INITIALIZED.add(entity.getIeeeAddress())) {
+      double initDeviceDelta = 20D / entity.getEndpoints().size();
+      if (!tryInitializeDeviceEndpoints(endpoints, () -> addToProgress(initDeviceDelta))) {
+        DEVICE_INITIALIZED.remove(entity.getIeeeAddress());
+      }
+    } else {
+      addToProgress(20D);
+      log.debug("[{}]: Device {} initialization will be skipped as the device is already initialized",
+          entityID, nodeIeeeAddress);
+    }
+  }
+
+  private boolean tryInitializeDeviceEndpoints(Collection<ZigBeeEndpointEntity> endpoints, Runnable runUnit) {
+    for (ZigBeeEndpointEntity endpoint : endpoints) {
+      ZigBeeBaseChannelConverter cluster = endpoint.getService().getCluster();
+      endpoint.setDeviceInitializeStatus(Status.RUNNING);
+      try {
+        cluster.initializeDevice();
+        endpoint.setDeviceInitializeStatus(Status.DONE);
+        runUnit.run();
+      } catch (Exception ex) {
+        endpoint.setDeviceInitializeStatus(Status.ERROR);
+        log.error("[{}]: failed to initialize device <{}>", entityID, endpoint);
+        return false;
+      }
+    }
+    return true;
   }
 
   private int getExpectedUpdatePeriod() {
@@ -280,10 +382,6 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
     return minInterval;
   }
 
-  public void aliveTimeoutReached() {
-    entity.setStatus(Status.OFFLINE, "zigbee.error.alive_timeout_reached");
-  }
-
   public void dispose() {
     log.debug("[{}]: Handler dispose {}", entityID, nodeIeeeAddress);
 
@@ -291,8 +389,7 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
 
     if (nodeIeeeAddress != null) {
       if (this.coordinatorService != null) {
-        this.coordinatorService.removeNetworkNodeListener(this);
-        this.coordinatorService.removeAnnounceListener(this);
+        this.coordinatorService.dispose(this);
       }
     }
 
@@ -302,7 +399,6 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
     }
 
     entity.setStatus(Status.OFFLINE, null);
-    zigBeeIsAliveTracker.removeHandler(this);
   }
 
   private void stopPolling() {
@@ -340,20 +436,17 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
       log.info("[{}]: Polling started for node {}", entityID, nodeIeeeAddress);
 
       for (ZigBeeEndpointEntity endpoint : entity.getEndpoints()) {
-        if (endpoint.getStatus() == Status.ONLINE) {
-          log.debug("[{}]: Polling {}", entityID, endpoint);
-          ZigBeeBaseChannelConverter converter = endpoint.getService().getCluster();
-          if (converter == null) {
-            log.debug("[{}]: Polling aborted as no converter found for {}", entityID, endpoint);
-          } else {
-            converter.fireHandleRefresh();
-          }
+        log.debug("[{}]: Polling {}", entityID, endpoint);
+        try {
+          endpoint.getService().getCluster().fireHandleRefresh();
+        } catch (Exception ex) {
+          log.error("[{}]: Error handleRefresh endpont {}", entityID, endpoint);
         }
       }
 
       log.info("[{}]: Polling done for node {}", entityID, nodeIeeeAddress);
     } catch (Exception e) {
-      log.warn("[{}]: Polling aborted due to exception for node {}", entityID, nodeIeeeAddress, e);
+      log.error("[{}]: Polling aborted due to exception for node {}", entityID, nodeIeeeAddress, e);
     }
   }
 
@@ -390,23 +483,6 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
     entity.setStatus(Status.OFFLINE, "zigbee.error.removed_by_dongle");
   }
 
-  public void updateNodeDescription() {
-    ZigBeeNode node = this.coordinatorService.getNode(nodeIeeeAddress);
-    if (node == null) {
-      throw new IllegalStateException("Unable to find node: <" + nodeIeeeAddress + ">");
-    }
-    updateNodeDescription(node);
-  }
-
-  @SneakyThrows
-  private void updateNodeDescription(ZigBeeNode node) {
-    if (nodeDiscoveryThreadContext != null && !nodeDiscoveryThreadContext.isStopped()) {
-      return;
-    }
-    this.nodeDiscoveryThreadContext = entityContext.bgp().builder("discover-node-" + node.getIeeeAddress())
-        .execute(() -> entity.updateFromNode(node, entityContext));
-  }
-
   @Override
   public boolean entityUpdated(@NotNull ZigBeeDeviceEntity entity) {
     this.entity = entity;
@@ -421,5 +497,33 @@ public class ZigBeeDeviceService implements ZigBeeNetworkNodeListener, ZigBeeAnn
   @Override
   public boolean testService() {
     return false;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    ZigBeeDeviceService service = (ZigBeeDeviceService) o;
+
+    return entityID.equals(service.entityID);
+  }
+
+  @Override
+  public int hashCode() {
+    return entityID.hashCode();
+  }
+
+  public void checkOffline() {
+    if ((System.currentTimeMillis() - entity.getLastAnswerFromEndpoints()) / 1000 > expectedUpdateInterval) {
+      log.warn("[{}]: Timeout has been reached for zigBeeDevice {}. No answer from endpoints during {}sec.",
+          entityID, nodeIeeeAddress, expectedUpdateInterval);
+      entity.setNodeStatus(ZigBeeNodeState.UNKNOWN);
+      entity.setStatus(Status.OFFLINE, "zigbee.error.alive_timeout_reached");
+    }
   }
 }

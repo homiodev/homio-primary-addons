@@ -12,12 +12,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.QuantityType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
+import org.touchhome.bundle.zigbee.converter.impl.config.ReportingChangeModel;
 import org.touchhome.bundle.zigbee.converter.impl.config.ZclDoorLockConfig;
 import org.touchhome.bundle.zigbee.converter.impl.config.ZclFanControlConfig;
 import org.touchhome.bundle.zigbee.converter.impl.config.ZclLevelControlConfig;
@@ -26,20 +30,18 @@ import org.touchhome.bundle.zigbee.converter.impl.config.ZclReportingConfig;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.service.ZigBeeDeviceService;
 import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
+import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryClusterTimeoutSetting;
 import tec.uom.se.unit.Units;
 
-@Log4j2
 public abstract class ZigBeeBaseChannelConverter {
 
   /**
    * Default polling period (in seconds).
    */
   public static final int POLLING_PERIOD_DEFAULT = 7200;
-
   public static final int REPORTING_PERIOD_DEFAULT_MAX = 7200;
-
   public static final int POLLING_PERIOD_HIGH = 300;
-
+  protected final Logger log = LogManager.getLogger(getClass());
   protected int pollingPeriod = POLLING_PERIOD_DEFAULT;
   @Getter
   protected int minimalReportingPeriod = Integer.MAX_VALUE;
@@ -63,7 +65,6 @@ public abstract class ZigBeeBaseChannelConverter {
   protected ZclDoorLockConfig configDoorLock;
   @Getter
   protected boolean supportConfigColorControl;
-  private boolean pooling = false;
   @Getter
   @Setter
   private ZigBeeConverter annotation;
@@ -78,6 +79,10 @@ public abstract class ZigBeeBaseChannelConverter {
     this.endpointService = endpointService;
     this.endpoint = endpoint;
     this.entityID = endpointService.getZigBeeDeviceService().getEntityID();
+  }
+
+  public int getDiscoveryTimeout(EntityContext entityContext) {
+    return entityContext.setting().getValue(ZigBeeDiscoveryClusterTimeoutSetting.class);
   }
 
   public ZigBeeEndpointEntity getEntity() {
@@ -102,18 +107,15 @@ public abstract class ZigBeeBaseChannelConverter {
    *
    * @return true if the device was configured correctly
    */
-  public boolean initializeDevice() {
-    return true;
+  public void initializeDevice() throws Exception {
   }
 
   /**
    * Initialize the converter. This is called by the {@link ZigBeeDeviceService} when the channel is created. The converter should initialize any internal states, open any
    * clusters, add reporting and binding that it needs to operate.
    * <p>
-   *
-   * @return true if the converter was initialized successfully
    */
-  public abstract boolean initializeConverter();
+  public abstract void initializeConverter() throws Exception;
 
   /**
    * Closes the converter and releases any resources.
@@ -136,8 +138,7 @@ public abstract class ZigBeeBaseChannelConverter {
     // Overridable if a channel can be refreshed
   }
 
-  public void fireHandleRefresh() {
-    this.pooling = true;
+  public final void fireHandleRefresh() {
     this.handleRefresh();
   }
 
@@ -151,21 +152,23 @@ public abstract class ZigBeeBaseChannelConverter {
    * </ul>
    * Only if the device supports the features required by the channel should the channel be implemented.
    *
-   * @param endpoint The {@link ZigBeeEndpoint} to search for zigbeeRequireEndpoints
+   * @param endpoint      The {@link ZigBeeEndpoint} to search for zigbeeRequireEndpoints
+   * @param entityContext
    * @return a  if the converter supports features from the {@link ZigBeeEndpoint}, otherwise null.
    */
-  public abstract boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID);
+  public abstract boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext);
 
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, int clusterID, int attributeId, boolean discoverAttribute, boolean readAttribute) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, int clusterID, int attributeId, boolean discoverAttribute,
+      boolean readAttribute) {
     ZclCluster cluster = endpoint.getInputCluster(clusterID);
     if (cluster == null) {
-      log.debug("[{}]: Cluster '{}' not found {}", entityID, clusterID, endpoint);
+      log.trace("[{}]: Cluster '{}' not found {}", entityID, clusterID, endpoint);
       return false;
     }
 
     if (discoverAttribute) {
       try {
-        if (!cluster.discoverAttributes(false).get(60, TimeUnit.SECONDS) && !cluster
+        if (!cluster.discoverAttributes(false).get(getDiscoveryTimeout(entityContext), TimeUnit.SECONDS) && !cluster
             .isAttributeSupported(attributeId)) {
           log.debug("[{}]: Error discover attribute {}. {}", entityID, attributeId, endpoint);
           return false;
@@ -266,7 +269,6 @@ public abstract class ZigBeeBaseChannelConverter {
   protected void updateChannelState(State state) {
     log.debug("[{}]: Channel <{}> updated to <{}> for {}", entityID, getClass().getSimpleName(), state, endpoint);
     endpointService.updateValue(state);
-    this.pooling = false;
   }
 
   @Override
@@ -288,7 +290,7 @@ public abstract class ZigBeeBaseChannelConverter {
   }
 
   // Configure reporting
-  protected void updateServerPollingPeriod(ZclCluster serverCluster, int attributeId) {
+  protected void updateDeviceReporting(@NotNull ZclCluster serverCluster, int attributeId, @NotNull ZclReportingConfig configReporting) {
     try {
       CommandResult reportingResponse = serverCluster.setReporting(
           attributeId,
@@ -327,7 +329,8 @@ public abstract class ZigBeeBaseChannelConverter {
     return Math.min(this.pollingPeriod, this.minimalReportingPeriod);
   }
 
-  public final boolean isSupportAnalogue() {
-    return configReporting != null && configReporting.getChangeMax() != null; // check only max is enough
+  // return value if analogue cluster
+  public ReportingChangeModel getReportingChangeModel() {
+    return null;
   }
 }

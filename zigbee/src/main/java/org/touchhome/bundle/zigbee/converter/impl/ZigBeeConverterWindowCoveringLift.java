@@ -9,27 +9,33 @@ import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclWindowCoveringCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.windowcovering.WindowCoveringDownClose;
 import com.zsmartsystems.zigbee.zcl.clusters.windowcovering.WindowCoveringUpOpen;
+import java.util.Objects;
 import java.util.concurrent.Future;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.zigbee.converter.impl.config.ZclReportingConfig;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
+import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
 
 /**
  * Sets the window covering level - supporting open/close and up/down type commands Window Covering Lift Sets the window covering level - supporting open/close and up/down type
  * commands
  */
-@Log4j2
 @ZigBeeConverter(name = "zigbee:windowcovering_lift", linkType = VariableType.Boolean,
     category = "Blinds", clientCluster = ZclWindowCoveringCluster.CLUSTER_ID)
 public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterWindowCoveringLift() {
-    super(WINDOW_COVERING, ZclWindowCoveringCluster.ATTR_CURRENTPOSITIONLIFTPERCENTAGE);
+    super(WINDOW_COVERING, ZclWindowCoveringCluster.ATTR_CURRENTPOSITIONLIFTPERCENTAGE, POLLING_PERIOD_HIGH);
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+  protected void handleReportingResponseOnBind(CommandResult reportingResponse) {
+    handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, Objects.requireNonNull(configReporting).getPollingPeriod());
+  }
+
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
     ZclWindowCoveringCluster serverCluster = (ZclWindowCoveringCluster) endpoint
         .getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
     if (serverCluster == null) {
@@ -54,16 +60,17 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter 
   }
 
   @Override
-  protected void afterInitializeConverter() {
+  public void initialize(ZigbeeEndpointService endpointService, ZigBeeEndpoint endpoint) {
+    super.initialize(endpointService, endpoint);
     configReporting = new ZclReportingConfig(getEntity());
   }
 
   @Override
-  public boolean initializeDevice() {
+  public void initializeDevice() {
     ZclWindowCoveringCluster serverCluster = getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
     if (serverCluster == null) {
       log.error("[{}]: Error opening device window covering controls {}", entityID, endpoint);
-      return false;
+      throw new RuntimeException("Error opening device window covering controls");
     }
 
     try {
@@ -85,14 +92,6 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter 
     } catch (Exception e) {
       log.error("[{}]: Exception setting reporting ", entityID, e);
     }
-
-    return true;
-  }
-
-  @Override
-  protected boolean initializeDeviceFailed() {
-    pollingPeriod = POLLING_PERIOD_HIGH;
-    return true;
   }
 
   @Override

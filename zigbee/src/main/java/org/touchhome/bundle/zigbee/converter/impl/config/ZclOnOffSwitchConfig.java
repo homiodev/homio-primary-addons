@@ -4,13 +4,12 @@ import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclOnOffCluster;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Logger;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 /**
  * Configuration handler for the
  */
-@Log4j2
 @Getter
 public class ZclOnOffSwitchConfig {
 
@@ -24,7 +23,7 @@ public class ZclOnOffSwitchConfig {
   private int onTime;
   private int startupOnOff;
 
-  public ZclOnOffSwitchConfig(ZigBeeEndpointEntity entity, ZclCluster cluster) {
+  public ZclOnOffSwitchConfig(ZigBeeEndpointEntity entity, ZclCluster cluster, Logger log) {
     this.offWaitTime = entity.getOffWaitTime();
     this.onTime = entity.getOnTime();
     this.startupOnOff = entity.getStartupOnOff() ? 1 : 0;

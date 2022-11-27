@@ -127,10 +127,5 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
     public ActionResponseModel permitJoin(ZigBeeDeviceEntity zigBeeDeviceEntity) {
       return zigBeeDeviceEntity.permitJoin();
     }
-
-    @UIContextMenuAction("zigbee.action.pull_endpoints")
-    public ActionResponseModel pullChannels(ZigBeeDeviceEntity zigBeeDeviceEntity, EntityContext entityContext) {
-      return zigBeeDeviceEntity.pullChannels(entityContext);
-    }
   }
 }

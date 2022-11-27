@@ -13,8 +13,8 @@
   },
   "endpoint": {
     "name": {
-      "analoginput": "Analog Input (Basic)",
-      "multistateinput": "Multistate Input (Basic)",
+      "analoginput": "Analog Input",
+      "multistateinput": "Multistate Input",
       "switch_onoff": "Switch",
       "switch_level": "Level Control",
       "warning_device": "Warning Device",

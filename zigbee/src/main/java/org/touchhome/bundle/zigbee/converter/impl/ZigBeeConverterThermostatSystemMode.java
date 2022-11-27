@@ -5,13 +5,12 @@ import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclThermostatCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 /**
  * Set the system mode of the thermostat Converter for the thermostat system mode channel. The SystemMode attribute specifies the current operating mode of the thermostat,
  */
-@Log4j2
 @ZigBeeConverter(name = "zigbee:thermostat_systemmode", linkType = VariableType.Float,
     clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverter {
@@ -23,20 +22,25 @@ public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverte
 
   public ZigBeeConverterThermostatSystemMode() {
     super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_SYSTEMMODE,
-        1, REPORTING_PERIOD_DEFAULT_MAX, null);
+        1, REPORTING_PERIOD_DEFAULT_MAX, null, null);
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
-    return acceptEndpoint(endpoint, entityID, false, true);
+  protected void handleReportingResponseOnBind(CommandResult reportingResponse) {
+    handleReportingResponse(reportingResponse, POLLING_PERIOD_DEFAULT, REPORTING_PERIOD_DEFAULT_MAX);
   }
 
   @Override
-  public boolean initializeDevice() {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+    return acceptEndpoint(endpoint, entityID, false, true, entityContext);
+  }
+
+  @Override
+  public void initializeDevice() {
     ZclThermostatCluster serverCluster = getInputCluster(ZclThermostatCluster.CLUSTER_ID);
     if (serverCluster == null) {
       log.error("[{}]: Error opening device thermostat cluster {}", entityID, endpoint);
-      return false;
+      throw new RuntimeException("Error opening device thermostat cluster");
     }
 
     try {
@@ -53,8 +57,6 @@ public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverte
     } catch (Exception e) {
       log.error("[{}]: Exception setting reporting {}", entityID, endpoint, e);
     }
-
-    return true;
   }
 
   /**

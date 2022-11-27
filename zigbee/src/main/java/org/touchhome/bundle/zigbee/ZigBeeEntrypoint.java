@@ -27,13 +27,18 @@ public class ZigBeeEntrypoint implements BundleEntrypoint {
     entityContext.ui().registerConsolePluginName("zigbee");
     entityContext.var().createGroup("zigbee", "ZigBee", true, "fab fa-laravel", "#ED3A3A");
     // check if new stick coordinator available
+    List<ZigbeeCoordinatorEntity> coordinators = entityContext.findAll(ZigbeeCoordinatorEntity.class);
+
+    /*for (ZigbeeCoordinatorEntity coordinator : coordinators) {
+      coordinator.getService().getDiscoveryService().startScan();
+    }*/
+
     this.checkNewCoordinator(entityContext.findAll(ZigbeeCoordinatorEntity.class), getPorts());
 
     // listen for port changes and reinitialize coordinator if port became available
     entityContext.event().addPortChangeStatusListener("zigbee-ports", port -> {
       Map<String, SerialPort> ports = getPorts();
-      List<ZigbeeCoordinatorEntity> coordinators = entityContext.findAll(ZigbeeCoordinatorEntity.class);
-      for (ZigbeeCoordinatorEntity coordinator : coordinators) {
+      for (ZigbeeCoordinatorEntity coordinator : entityContext.findAll(ZigbeeCoordinatorEntity.class)) {
         if (StringUtils.isNotEmpty(coordinator.getPort()) &&
             coordinator.isStart() &&
             coordinator.getStatus().isOffline() && ports.containsKey(coordinator.getPort())) {

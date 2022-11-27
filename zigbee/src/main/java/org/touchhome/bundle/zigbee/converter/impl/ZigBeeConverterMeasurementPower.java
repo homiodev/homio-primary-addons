@@ -4,10 +4,12 @@ import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.ELECTRICAL_ME
 import static org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterMeasurementRmsVoltage.determineDivisor;
 import static org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterMeasurementRmsVoltage.determineMultiplier;
 
+import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclElectricalMeasurementCluster;
 import java.math.BigDecimal;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.QuantityType;
 import tec.uom.se.unit.Units;
@@ -24,16 +26,22 @@ public class ZigBeeConverterMeasurementPower extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterMeasurementPower() {
     super(ELECTRICAL_MEASUREMENT, ZclElectricalMeasurementCluster.ATTR_ACTIVEPOWER, 3,
-        REPORTING_PERIOD_DEFAULT_MAX, 1);
+        REPORTING_PERIOD_DEFAULT_MAX, 1, POLLING_PERIOD_HIGH);
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
-    return super.acceptEndpoint(endpoint, entityID, false, true);
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+    return super.acceptEndpoint(endpoint, entityID, false, true, entityContext);
   }
 
   @Override
-  protected void afterInitializeConverter() {
+  protected void handleReportingResponseOnBind(CommandResult reportingResponse) {
+    handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, REPORTING_PERIOD_DEFAULT_MAX);
+  }
+
+  @Override
+  public void initializeConverter() {
+    super.initializeConverter();
     this.divisor = determineDivisor(getZclCluster());
     this.multiplier = determineMultiplier(getZclCluster());
   }

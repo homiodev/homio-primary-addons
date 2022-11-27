@@ -2,7 +2,7 @@ package org.touchhome.bundle.zigbee.converter.impl;
 
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIasWdCluster;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.warningdevice.SquawkType;
@@ -11,7 +11,6 @@ import org.touchhome.bundle.zigbee.converter.warningdevice.WarningType;
 /**
  * Triggers warnings on a warning device Channel converter for warning devices, based on the IAS WD cluster.
  */
-@Log4j2
 @ZigBeeConverter(name = "zigbee:warning_device", linkType = VariableType.Float,
     clientCluster = ZclIasWdCluster.CLUSTER_ID, category = "Siren")
 public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
@@ -22,24 +21,21 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
   private ZclIasWdCluster iasWdCluster;
 
   @Override
-  public boolean initializeDevice() {
-    return true;
+  public void initializeDevice() {
   }
 
   @Override
-  public boolean initializeConverter() {
+  public void initializeConverter() {
     iasWdCluster = getInputCluster(ZclIasWdCluster.CLUSTER_ID);
     if (iasWdCluster == null) {
       log.error("[{}]: Error opening warning device controls {}", entityID, endpoint);
-      return false;
+      throw new RuntimeException("Error opening warning device controls");
     }
-
-    return true;
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
-    return acceptEndpoint(endpoint, entityID, ZclIasWdCluster.CLUSTER_ID, 0, false, false);
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+    return acceptEndpoint(endpoint, entityID, entityContext, ZclIasWdCluster.CLUSTER_ID, 0, false, false);
   }
 
     /*@Override
@@ -87,7 +83,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
             return;
         }
 
-        String commandString = ((StringType) command).toFullString();
+        String commandString = ((StringType) command).stringValue();
 
         WarningType warningType = WarningType.parse(commandString);
         if (warningType != null) {

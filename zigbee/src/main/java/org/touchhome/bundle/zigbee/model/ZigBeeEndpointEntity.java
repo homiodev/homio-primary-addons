@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextSetting;
 import org.touchhome.bundle.api.entity.HasJsonData;
@@ -22,7 +23,6 @@ import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.condition.UIFieldShowOnCondition;
-import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldStaticSelection;
 import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.converter.impl.config.ZclDoorLockConfig;
@@ -45,9 +45,15 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
   private transient boolean outdated;
 
   @Override
+  public ZigBeeEndpointEntity setStatus(@Nullable Status status, @Nullable String msg) {
+    EntityContextSetting.setStatus(this, "", "Status", status, msg);
+    getEntityContext().ui().updateInnerSetItem(getOwner(), "endpointClusters", this, "status", status);
+    return this;
+  }
+
+  @Override
   @UIField(order = 10, disableEdit = true)
   @UIFieldColorStatusMatch
-  @UIFieldInlineEntityWidth(20)
   public Status getStatus() {
     return EntityContextSetting.getStatus(this, "", Status.UNKNOWN);
   }
@@ -58,9 +64,18 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return EntityContextSetting.getMessage(this, "");
   }
 
+  @UIField(order = 12, disableEdit = true)
+  @UIFieldColorStatusMatch
+  public Status getDeviceInitializeStatus(Status status) {
+    return EntityContextSetting.getStatus(this, "DeviceInitializeStatus", Status.UNKNOWN);
+  }
+
+  public void setDeviceInitializeStatus(Status status) {
+    EntityContextSetting.setStatus(this, "DeviceInitializeStatus", "DeviceInitializeStatus", status);
+  }
+
   @UIField(order = 2, disableEdit = true)
   @UIFieldGroup(value = "General", order = 1, borderColor = "#317175")
-  @UIFieldInlineEntityWidth(10)
   public int getClusterId() {
     return getJsonData().getInt("c_id");
   }
@@ -71,9 +86,8 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
   }
 
   @Override
-  @UIField(order = 3, disableEdit = true, label = "endpoint")
+  @UIField(order = 3, disableEdit = true, label = "endpointId")
   @UIFieldGroup("General")
-  @UIFieldInlineEntityWidth(10)
   public int getAddress() {
     return super.getAddress();
   }
@@ -87,28 +101,28 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   @UIField(order = 5, disableEdit = true, type = UIFieldType.Duration)
   @UIFieldGroup("General")
-  @UIFieldInlineEntityWidth(20)
   public long getLastAnswerFromEndpoint() {
     return EntityContextSetting.getMemValue(this, "lafe", 0L);
   }
 
   public void setLastAnswerFromEndpoint(long currentTimeMillis) {
-    EntityContextSetting.setMemValue(this, "lafe", "LastAnswerFromEndpoint", currentTimeMillis, true);
+    EntityContextSetting.setMemValue(this, "lafe", "LastAnswerFromEndpoint", currentTimeMillis);
+    getEntityContext().ui().updateInnerSetItem(getOwner(), "endpointClusters", this, "updated", currentTimeMillis);
   }
 
   @UIField(order = 6, disableEdit = true)
   @UIFieldGroup("General")
-  @UIFieldInlineEntityWidth(15)
-  public String getLastState() {
-    return Optional.ofNullable(getLastStateInternal()).map(State::stringValue).orElse(null);
+  public String getValue() {
+    return Optional.ofNullable(getLastState()).map(State::toString).orElse("");
   }
 
-  public void setLastState(State state) {
-    EntityContextSetting.setMemValue(this, "last", "LastValue", state, true);
+  public void setValue(State state) {
+    EntityContextSetting.setMemValue(this, "last", "Value", state);
+    getEntityContext().ui().updateInnerSetItem(getOwner(), "endpointClusters", this, "value", state);
   }
 
   @JsonIgnore
-  public State getLastStateInternal() {
+  public State getLastState() {
     return EntityContextSetting.getMemValue(this, "last", null);
   }
 
@@ -157,11 +171,11 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
   @UIFieldShowOnCondition("return context.get('supportAnalogue') == 'true'") // is analogue is true, then 'supportReporting' also true
   @UIFieldNumber(minRef = "reportingChangeMin", maxRef = "reportingChangeMax")
   @UIFieldGroup("Reporting")
-  public int getReportingChange() {
-    return getJsonData("rt_ch", 10);
+  public double getReportingChange() {
+    return getJsonData("rt_ch", 1);
   }
 
-  public void setReportingChange(int value) {
+  public void setReportingChange(double value) {
     if (value != getReportingChange()) {
       setJsonData("rt_ch", value);
     }
@@ -478,7 +492,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
   }
 
   public boolean isSupportAnalogue() {
-    return optService().map(s -> s.getCluster().isSupportAnalogue()).orElse(false);
+    return optService().map(s -> s.getCluster().getReportingChangeModel() != null).orElse(false);
   }
 
   public boolean isSupportLevelControl() {

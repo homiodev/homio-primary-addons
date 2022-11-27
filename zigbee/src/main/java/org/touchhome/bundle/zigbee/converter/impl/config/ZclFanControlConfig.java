@@ -5,10 +5,9 @@ import static org.touchhome.bundle.zigbee.converter.impl.config.ZclOnOffSwitchCo
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclFanControlCluster;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Logger;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
-@Log4j2
 @Getter
 public class ZclFanControlConfig {
 
@@ -17,7 +16,7 @@ public class ZclFanControlConfig {
 
   private int fanModeSequence;
 
-  public ZclFanControlConfig(ZigBeeEndpointEntity entity, ZclCluster cluster) {
+  public ZclFanControlConfig(ZigBeeEndpointEntity entity, ZclCluster cluster, Logger log) {
     this.fanModeSequence = entity.getFanModeSequence();
 
     fanControlCluster = (ZclFanControlCluster) cluster;

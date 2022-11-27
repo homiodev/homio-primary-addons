@@ -22,7 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
@@ -33,7 +33,6 @@ import org.touchhome.bundle.zigbee.converter.impl.config.ZclReportingConfig;
  * This channel supports changes through attribute updates, and also through received commands. This allows a switch that is not connected to a load to send commands, or a switch
  * that is connected to a load to send status (or both!).
  */
-@Log4j2
 @ZigBeeConverter(name = "zigbee:switch_onoff", linkType = VariableType.Boolean,
     serverClusters = {ZclOnOffCluster.CLUSTER_ID}, clientCluster = ZclOnOffCluster.CLUSTER_ID, category = "Light")
 public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
@@ -47,13 +46,12 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
   private ScheduledFuture<?> updateTimer = null;
 
   @Override
-  public boolean initializeDevice() {
-    pollingPeriod = REPORTING_PERIOD_DEFAULT_MAX;
+  public void initializeDevice() {
     ZclOnOffCluster clientCluster = getOutputCluster(ZclOnOffCluster.CLUSTER_ID);
     ZclOnOffCluster serverCluster = getInputCluster(ZclOnOffCluster.CLUSTER_ID);
     if (clientCluster == null && serverCluster == null) {
       log.error("[{}]: Error opening device on/off controls {}", entityID, endpoint);
-      return false;
+      throw new RuntimeException("Error opening device on/off controls");
     }
 
     if (serverCluster != null) {
@@ -83,23 +81,21 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
         log.error("[{}]: Exception setting binding {}", entityID, endpoint, e);
       }
     }
-
-    return true;
   }
 
   @Override
-  public boolean initializeConverter() {
+  public void initializeConverter() {
     updateScheduler = Executors.newSingleThreadScheduledExecutor();
 
     clusterOnOffClient = getOutputCluster(ZclOnOffCluster.CLUSTER_ID);
     clusterOnOffServer = getInputCluster(ZclOnOffCluster.CLUSTER_ID);
     if (clusterOnOffClient == null && clusterOnOffServer == null) {
       log.error("[{}]: Error opening device on/off controls {}", entityID, endpoint);
-      return false;
+      throw new RuntimeException("Error opening device on/off controls");
     }
 
     if (clusterOnOffServer != null) {
-      configOnOff = new ZclOnOffSwitchConfig(getEntity(), clusterOnOffServer);
+      configOnOff = new ZclOnOffSwitchConfig(getEntity(), clusterOnOffServer, log);
       configReporting = new ZclReportingConfig(getEntity());
     }
 
@@ -113,8 +109,6 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
       clusterOnOffServer.addAttributeListener(this);
       attributeServer = clusterOnOffServer.getAttribute(ZclOnOffCluster.ATTR_ONOFF);
     }
-
-    return true;
   }
 
   @Override
@@ -161,7 +155,7 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeBaseChannelConverter
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
     if (endpoint.getInputCluster(ZclOnOffCluster.CLUSTER_ID) == null
         && endpoint.getOutputCluster(ZclOnOffCluster.CLUSTER_ID) == null) {
       log.trace("[{}]: OnOff cluster not found {}", entityID, endpoint);

@@ -66,7 +66,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
   }
 
   static State fetchState(List<ZigBeeEndpointEntity> endpoints) {
-    return endpoints.isEmpty() ? new DecimalType(0F) : endpoints.get(0).getLastStateInternal();
+    return endpoints.isEmpty() ? new DecimalType(0F) : endpoints.get(0).getLastState();
   }
 
   static List<ZigBeeEndpointEntity> getZigBeeEndpoints(WorkspaceBlock workspaceBlock, String key, ServerMenuBlock menuBlock, Integer[] clusterIds) {

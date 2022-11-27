@@ -10,15 +10,15 @@ import static com.zsmartsystems.zigbee.zcl.clusters.ZclBasicCluster.ATTR_ZCLVERS
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zsmartsystems.zigbee.IeeeAddress;
 import com.zsmartsystems.zigbee.ZigBeeNode;
-import com.zsmartsystems.zigbee.app.discovery.ZigBeeNodeServiceDiscoverer;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclBasicCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclOtaUpgradeCluster;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -31,11 +31,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.EntityContextBGP.ThreadContext;
 import org.touchhome.bundle.api.EntityContextSetting;
 import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.DeviceBaseEntity;
@@ -48,10 +50,13 @@ import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
+import org.touchhome.bundle.api.ui.field.UIFieldProgress;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
+import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.condition.UIFieldDisableCreateTab;
 import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntities;
+import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.zigbee.SelectModelIdentifierDynamicLoader;
@@ -59,6 +64,7 @@ import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
 import org.touchhome.bundle.zigbee.model.service.ZigBeeDeviceService;
 import org.touchhome.bundle.zigbee.requireEndpoint.DeviceDefinition;
 import org.touchhome.bundle.zigbee.requireEndpoint.ZigBeeDefineEndpoints;
+import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryClusterTimeoutSetting;
 import org.touchhome.common.exception.NotFoundException;
 
 @Log4j2
@@ -74,9 +80,8 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
   public static final String PREFIX = "zb_";
 
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "owner", orphanRemoval = true)
-  @UIField(order = 9999)
+  @UIField(order = 1000, hideInView = true)
   @UIFieldDisableCreateTab
-  @UIFieldInlineEntities(bg = "#9B9B2E21")
   private Set<ZigBeeEndpointEntity> endpoints;
 
   @ManyToOne
@@ -84,8 +89,26 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
   @JoinColumn(name = "parent_id")
   private ZigbeeCoordinatorEntity parent;
 
+  @UIField(order = 9999, hideInEdit = true)
+  @UIFieldInlineEntities(bg = "#27FF000D")
+  public List<ZigBeeEndpointClusterEntity> getEndpointClusters() {
+    if (endpoints == null) {
+      return Collections.emptyList();
+    }
+    return endpoints.stream().sorted(Comparator.comparingInt(o -> o.getAddress() * 1000 + o.getClusterId()))
+        .map(ZigBeeEndpointClusterEntity::new).collect(Collectors.toList());
+  }
+
+  @UIField(order = 1, hideInEdit = true, hideOnEmpty = true)
+  public UIFieldProgress.Progress getInitProgress() {
+    return optService().map(service -> {
+      double progress = service.getProgress();
+      return progress == -1 ? null : new UIFieldProgress.Progress((int) progress, 100, "");
+    }).orElse(null);
+  }
+
   @UIField(order = 11, hideInEdit = true)
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  @UIFieldColorStatusMatch
   public Status getNodeInitializationStatus() {
     return EntityContextSetting.getStatus(this, "node_init", Status.UNKNOWN);
   }
@@ -118,7 +141,8 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
   }
 
   public void setLastAnswerFromEndpoints(long currentTimeMillis) {
-    EntityContextSetting.setMemValue(this, "lafe", "", currentTimeMillis, true);
+    EntityContextSetting.setMemValue(this, "lafe", "", currentTimeMillis);
+    getEntityContext().ui().updateItem(this, "lastAnswerFromEndpoints", getLastAnswerFromEndpoints());
   }
 
   @UIField(hideInEdit = true, order = 2, hideOnEmpty = true)
@@ -212,17 +236,21 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
     }).orElse(null);
   }
 
-  @UIField(order = 5, hideInEdit = true)
+  @UIField(order = 5, hideInEdit = true, hideOnEmpty = true)
   @UIFieldGroup("General")
   public String getTimeoutBeforeOfflineNode() {
     return optService().map(service -> {
       Integer interval = service.getExpectedUpdateInterval();
-      Long intervalTimer = service.getExpectedUpdateIntervalTimer();
-      if (intervalTimer == null || interval == null) {
+      if (interval == null) {
         return "Not set";
       }
-      String min = String.valueOf(TimeUnit.SECONDS.toMinutes(interval - (System.currentTimeMillis() - intervalTimer) / 1000));
-      return "Expired in: " + min + "min";
+      long lastAnswerFromEndpoints = getLastAnswerFromEndpoints();
+      long diff = TimeUnit.SECONDS.toMinutes(interval - (System.currentTimeMillis() - lastAnswerFromEndpoints) / 1000);
+      if (diff < 0) { // already timed out
+        return null;
+      }
+      String min = String.valueOf(diff);
+      return "Expire in: " + min + "min";
     }).orElse(null);
   }
 
@@ -232,16 +260,21 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
     return EntityContextSetting.getMessage(this, "fetch_info");
   }
 
+  @UIField(hideInEdit = true, order = 100, hideOnEmpty = true)
+  @UIFieldGroup("General")
+  public String getTimeToNextSchedule() {
+    return optService().map(service -> {
+      ThreadContext<Void> pollingJob = service.getPollingJob();
+      if (pollingJob != null) {
+        return pollingJob.getTimeToNextSchedule();
+      }
+      return null;
+    }).orElse(null);
+  }
+
   @UIContextMenuAction(value = "zigbee.action.re_initialize_node", icon = "fas fa-arrow-rotate-forward", iconColor = "#A939B7")
   public ActionResponseModel initializeZigBeeNode() {
     getService().initializeZigBeeNode();
-    return ActionResponseModel.success();
-  }
-
-  @UIContextMenuAction(value = "zigbee.action.pull_endpoints", icon = "fas fa-exchange-alt", iconColor = "#B3981D")
-  public ActionResponseModel pullChannels(EntityContext entityContext) {
-    entityContext.bgp().builder("pull-channels-" + getIeeeAddress())
-        .execute(() -> getService().pullChannels());
     return ActionResponseModel.success();
   }
 
@@ -315,54 +348,57 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
 
     boolean updated = updateFromNodeDescriptor(node);
     updated |= updateFromOtaCluster(node);
-    updated |= updateFromBasicCluster(node);
+    updated |= updateFromBasicCluster(node, entityContext);
 
-      // try to find image for device
-      if (isEmpty(this.getName()) || isEmpty(this.getImageIdentifier()) || isEmpty(this.getDescription())) {
-        DeviceDefinition deviceDefinition = ZigBeeDefineEndpoints.findDeviceDefinition(this);
-        if (deviceDefinition != null) {
-          if (isEmpty(this.getImageIdentifier()) && !isEmpty(deviceDefinition.getImage())) {
-            setImageIdentifier(deviceDefinition.getImage());
+    // try to find image for device
+    if (isEmpty(this.getName()) || isEmpty(this.getImageIdentifier()) || isEmpty(this.getDescription())) {
+      DeviceDefinition deviceDefinition = ZigBeeDefineEndpoints.findDeviceDefinition(this);
+      if (deviceDefinition != null) {
+        if (isEmpty(this.getImageIdentifier()) && !isEmpty(deviceDefinition.getImage())) {
+          setImageIdentifier(deviceDefinition.getImage());
           updated = true;
-          }
-          String description = deviceDefinition.getDescription();
-          if (isEmpty(this.getDescription()) && !isEmpty(description)) {
-            setDescription(description);
+        }
+        String description = deviceDefinition.getDescription();
+        if (isEmpty(this.getDescription()) && !isEmpty(description)) {
+          setDescription(description);
           updated = true;
-          }
-          String label = deviceDefinition.getLabel();
-          if (isEmpty(this.getName()) && !isEmpty(label)) {
-            setName(label);
+        }
+        String label = deviceDefinition.getLabel();
+        if (isEmpty(this.getName()) && !isEmpty(label)) {
+          setName(label);
           updated = true;
-          }
         }
       }
+    }
 
-      log.info("[{}]: Finished fetch info from ZigBeeNode: <{}>", getEntityID(), node.getIeeeAddress());
-      setFetchInfoStatus(Status.ONLINE, null);
+    log.info("[{}]: Finished fetch info from ZigBeeNode: <{}>", getEntityID(), node.getIeeeAddress());
+    setFetchInfoStatus(Status.DONE, null);
 
     if (updated) {
       entityContext.save(this);
     }
   }
 
-  private boolean updateFromBasicCluster(ZigBeeNode node) {
+  private boolean updateFromBasicCluster(ZigBeeNode node, EntityContext entityContext) {
     boolean updated = false;
     ZclBasicCluster basicCluster = (ZclBasicCluster) node.getEndpoints().stream()
         .map(ep -> ep.getInputCluster(ZclBasicCluster.CLUSTER_ID)).filter(Objects::nonNull).findFirst()
         .orElse(null);
 
     if (basicCluster == null) {
-      setFetchInfoStatus(Status.ERROR, "Unable to find basic cluster");
-      log.warn("[{}]: Fetch info from ZigBeeNode: <{}> not completed", getEntityID(), node.getIeeeAddress());
+      log.warn("[{}]: Node {} doesn't support basic cluster", getEntityID(), node.getIeeeAddress());
       return false;
     }
+
+    log.debug("[{}]: ZigBee node {} property discovery using basic cluster on endpoint {}", getEntityID(),
+        node.getIeeeAddress(), basicCluster.getZigBeeAddress());
 
     // Attempt to read all properties with a single command.
     // If successful, this updates the cache with the property values.
     try {
       // Try to get the supported attributes, so we can reduce the number of attribute read requests
-      basicCluster.discoverAttributes(false).get(60, TimeUnit.SECONDS);
+      int timeout = entityContext.setting().getValue(ZigBeeDiscoveryClusterTimeoutSetting.class);
+      basicCluster.discoverAttributes(false).get(timeout, TimeUnit.SECONDS);
       List<Integer> attributes = new ArrayList<>(Arrays.asList(ATTR_MANUFACTURERNAME, ATTR_MODELIDENTIFIER, ATTR_HWVERSION,
           ATTR_APPLICATIONVERSION, ATTR_STACKVERSION, ATTR_ZCLVERSION, ATTR_DATECODE));
 
@@ -370,41 +406,53 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
       attributes.removeIf(attributeId -> basicCluster.getAttribute(attributeId).isLastValueCurrent(Long.MAX_VALUE));
 
       if (!attributes.isEmpty()) {
-        basicCluster.readAttributes(attributes).get(60, TimeUnit.SECONDS);
+        basicCluster.readAttributes(attributes).get(timeout, TimeUnit.SECONDS);
       }
-    } catch (Exception e) {
-      log.info("[{}]: There was an error when trying to read all properties with a single command. {}",
-          getEntityID(), node.getIeeeAddress(), e);
+    } catch (Exception ex) {
+      log.warn("[{}]: There was an error when trying to read all properties. {}",
+          getEntityID(), node.getIeeeAddress(), ex);
+    }
+
+    String manufacturerName = (String) basicCluster.getAttribute(ATTR_MANUFACTURERNAME).readValue(Long.MAX_VALUE);
+    if (!Objects.equals(this.getManufacturer(), manufacturerName)) {
+      this.setManufacturer(manufacturerName);
+      updated = true;
+    }
+
+    String modelIdentifier = (String) basicCluster.getAttribute(ATTR_MODELIDENTIFIER).readValue(Long.MAX_VALUE);
+    if (!Objects.equals(this.getModelIdentifier(), modelIdentifier)) {
+      this.setModelIdentifier(modelIdentifier);
+      updated = true;
     }
 
     Integer hwVersion = (Integer) basicCluster.getAttribute(ATTR_HWVERSION).readValue(Long.MAX_VALUE);
     if (!Objects.equals(this.getHwVersion(), hwVersion)) {
       this.setHwVersion(hwVersion);
-      return true;
+      updated = true;
     }
 
     Integer appVersion = (Integer) basicCluster.getAttribute(ATTR_APPLICATIONVERSION).readValue(Long.MAX_VALUE);
     if (!Objects.equals(this.getAppVersion(), appVersion)) {
       this.setAppVersion(appVersion);
-      return true;
+      updated = true;
     }
 
     Integer stackVersion = (Integer) basicCluster.getAttribute(ATTR_STACKVERSION).readValue(Long.MAX_VALUE);
     if (!Objects.equals(this.getStackVersion(), stackVersion)) {
       this.setStackVersion(stackVersion);
-      return true;
+      updated = true;
     }
 
     Integer zclVersion = (Integer) basicCluster.getAttribute(ATTR_ZCLVERSION).readValue(Long.MAX_VALUE);
     if (!Objects.equals(this.getZclVersion(), zclVersion)) {
       this.setZclVersion(zclVersion);
-      return true;
+      updated = true;
     }
 
     String dateCode = (String) basicCluster.getAttribute(ATTR_DATECODE).readValue(Long.MAX_VALUE);
     if (!Objects.equals(this.getDateCode(), dateCode)) {
       this.setDateCode(dateCode);
-      return true;
+      updated = true;
     }
 
     return updated;
@@ -424,7 +472,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
       if (fileVersion != null) {
         String firmwareVersion = String.format("0x%08X", fileVersion);
         if (!Objects.equals(getFirmwareVersion(), firmwareVersion)) {
-        this.setFirmwareVersion(firmwareVersion);
+          this.setFirmwareVersion(firmwareVersion);
           return true;
         }
       } else {
@@ -455,11 +503,51 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
   @Override
   public void logBuilder(EntityLogBuilder entityLogBuilder) {
     entityLogBuilder.addTopic("org.touchhome.bundle.zigbee", "entityID");
-    entityLogBuilder.addTopic(ZigBeeNodeServiceDiscoverer.class, "ieeeAddress");
+    entityLogBuilder.addTopic("com.zsmartsystems.zigbee", "ieeeAddress");
   }
 
   @Override
   public void getAllRelatedEntities(Set<BaseEntity> set) {
     set.addAll(getEndpoints());
+  }
+
+  @Getter
+  @NoArgsConstructor
+  public static class ZigBeeEndpointClusterEntity {
+
+    private String entityID;
+
+    @UIField(order = 1)
+    @UIFieldInlineEntityWidth(10)
+    private String cls;
+
+    @UIField(order = 2)
+    private String name;
+
+    @UIField(order = 3, type = UIFieldType.Duration)
+    @UIFieldInlineEntityWidth(25)
+    private long updated;
+
+    @UIField(order = 4)
+    @UIFieldInlineEntityWidth(15)
+    private Object value;
+
+    @UIField(order = 5)
+    @UIFieldColorStatusMatch
+    @UIFieldInlineEntityWidth(20)
+    private Status status;
+
+    @JsonIgnore
+    private int order;
+
+    public ZigBeeEndpointClusterEntity(ZigBeeEndpointEntity endpoint) {
+      this.entityID = endpoint.getEntityID();
+      this.cls = endpoint.getClusterId() + "/" + endpoint.getAddress();
+      this.name = endpoint.getTitle();
+      this.status = endpoint.getStatus();
+      this.updated = endpoint.getLastAnswerFromEndpoint();
+      this.value = endpoint.getValue();
+      this.order = endpoint.getAddress();
+    }
   }
 }

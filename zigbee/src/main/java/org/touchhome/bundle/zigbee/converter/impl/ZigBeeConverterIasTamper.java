@@ -2,6 +2,7 @@ package org.touchhome.bundle.zigbee.converter.impl;
 
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 /**
@@ -12,13 +13,13 @@ import org.touchhome.bundle.api.EntityContextVar.VariableType;
 public class ZigBeeConverterIasTamper extends ZigBeeConverterIas {
 
   @Override
-  public boolean initializeConverter() {
+  public void initializeConverter() {
     bitTest = CIE_TAMPER;
-    return super.initializeConverter();
+    super.initializeConverter();
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
     return hasIasZoneInputCluster(endpoint, entityID);
   }
 }

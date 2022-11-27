@@ -1,7 +1,5 @@
 package org.touchhome.bundle.zigbee.model.service;
 
-import static org.touchhome.bundle.api.util.Constants.PRIMARY_COLOR;
-
 import com.zsmartsystems.zigbee.IeeeAddress;
 import com.zsmartsystems.zigbee.ZigBeeNetworkNodeListener;
 import com.zsmartsystems.zigbee.ZigBeeNode;
@@ -12,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.zigbee.ZigBeeIsAliveTracker;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
@@ -22,16 +20,17 @@ import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 @RequiredArgsConstructor
 public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
 
-  private final ZigBeeIsAliveTracker zigBeeIsAliveTracker = new ZigBeeIsAliveTracker();
-
   private final EntityContext entityContext;
   private final ZigBeeChannelConverterFactory channelFactory;
   private final String entityID;
 
   private volatile boolean scanStarted = false;
 
-  @Setter
   private ZigbeeCoordinatorEntity coordinator;
+
+  public void setCoordinator(ZigbeeCoordinatorEntity coordinator) {
+    this.coordinator = coordinator;
+  }
 
   @Override
   public void nodeAdded(ZigBeeNode node) {
@@ -93,23 +92,23 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
         .delay(Duration.ofMillis(10))
         .execute(() -> {
           log.info("[{}]: Starting ZigBee device discovery {}", entityID, node.getIeeeAddress());
-          addZigBeeDevice(node);
+          ZigBeeDeviceEntity zigBeeDeviceEntity = addZigBeeDevice(node);
 
           if (!node.isDiscovered()) {
             log.warn("[{}]: Node discovery not complete {}", entityID, node.getIeeeAddress());
-            return;
+            zigBeeDeviceEntity.setStatus(Status.ERROR, "Node discovery not complete");
           } else {
             log.debug("[{}]: Node discovery complete {}", entityID, node.getIeeeAddress());
+            zigBeeDeviceEntity.getService().tryInitializeZigBeeNode();
+            coordinatorService.serializeNetwork(node.getIeeeAddress());
           }
-
-          coordinatorService.serializeNetwork(node.getIeeeAddress());
         });
   }
 
   /**
    * Add discovered not to DB and in memory
    */
-  private synchronized void addZigBeeDevice(ZigBeeNode node) {
+  private synchronized ZigBeeDeviceEntity addZigBeeDevice(ZigBeeNode node) {
     IeeeAddress ieeeAddress = node.getIeeeAddress();
 
     ZigBeeDeviceEntity entity = entityContext.getEntity(ZigBeeDeviceEntity.PREFIX + ieeeAddress);
@@ -122,6 +121,6 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
 
       entity = entityContext.save(entity);
     }
-    entity.getService().tryInitializeDevice();
+    return entity;
   }
 }

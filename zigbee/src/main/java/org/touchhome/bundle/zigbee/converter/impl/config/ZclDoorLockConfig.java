@@ -5,13 +5,12 @@ import static org.touchhome.bundle.zigbee.converter.impl.config.ZclOnOffSwitchCo
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclDoorLockCluster;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.Logger;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 /**
  * Configuration handler for the {@link ZclDoorLockCluster}
  */
-@Log4j2
 @Getter
 public class ZclDoorLockConfig {
 
@@ -26,7 +25,7 @@ public class ZclDoorLockConfig {
   private boolean enableLocalProgramming;
   private boolean enableOneTouchLocking;
 
-  public ZclDoorLockConfig(ZigBeeEndpointEntity entity, ZclCluster cluster) {
+  public ZclDoorLockConfig(ZigBeeEndpointEntity entity, ZclCluster cluster, Logger log) {
     doorLockCluster = (ZclDoorLockCluster) cluster;
     ZclLevelControlConfig.initCluster(doorLockCluster.discoverAttributes(false), log,
         doorLockCluster.getZigBeeAddress(), doorLockCluster.getClusterName());

@@ -30,6 +30,7 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclOtaUpgradeCluster;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -48,6 +49,7 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.internal.ZigBeeDataStore;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
+import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryOnStartupSetting;
 import org.touchhome.common.util.Lang;
 
 /**
@@ -81,6 +83,8 @@ public abstract class ZigBeeCoordinatorService
   private final Object reconnectLock = new Object();
   private final String entityID;
   @Getter
+  private final Set<ZigBeeDeviceService> registeredDevices = new HashSet<>();
+  @Getter
   private ZigBeeTransportTransmit zigBeeTransport;
   private ZigBeeKey linkKey;
   private ZigBeeKey networkKey;
@@ -96,10 +100,8 @@ public abstract class ZigBeeCoordinatorService
   private ThreadContext<Void> restartJob;
   private ThreadContext<Void> reconnectPollingTimer;
   private boolean currentReconnectAttemptFinished = false;
-
   @Getter
   private ZigbeeCoordinatorEntity entity;
-
   @Getter
   private boolean initialized;
 
@@ -108,11 +110,21 @@ public abstract class ZigBeeCoordinatorService
     this.entityID = entity.getEntityID();
     this.channelFactory = entityContext.getBean(ZigBeeChannelConverterFactory.class);
     this.entityContext = entityContext;
+
     this.discoveryService = new ZigBeeDiscoveryService(entityContext, channelFactory, entityID);
+    this.discoveryService.setCoordinator(entity);
+
     this.addNetworkNodeListener(this.discoveryService);
 
     this.entityContext.ui().registerConsolePlugin("zigbee-console-" + entityID,
         new ZigBeeConsolePlugin(entityContext, this));
+
+    this.entityContext.bgp().builder("zigbee-node-alive-" + entityID)
+        .delay(Duration.ofMinutes(1)).interval(Duration.ofMinutes(1)).cancelOnError(false).execute(() -> {
+          for (ZigBeeDeviceService device : registeredDevices) {
+            device.checkOffline();
+          }
+        });
   }
 
   public void initialize() {
@@ -368,19 +380,6 @@ public abstract class ZigBeeCoordinatorService
   }
 
   /**
-   * Removes a {@link ZigBeeNetworkNodeListener} to receive updates on node status
-   *
-   * @param listener the {@link ZigBeeNetworkNodeListener} to remove
-   */
-  public void removeNetworkNodeListener(ZigBeeNetworkNodeListener listener) {
-    nodeListeners.remove(listener);
-
-    if (networkManager != null) {
-      networkManager.removeNetworkNodeListener(listener);
-    }
-  }
-
-  /**
    * Adds a {@link ZigBeeAnnounceListener} to receive node announce messages
    *
    * @param listener the {@link ZigBeeAnnounceListener} to add
@@ -392,22 +391,6 @@ public abstract class ZigBeeCoordinatorService
     if (networkManager != null) {
       networkManager.addAnnounceListener(listener);
     }
-  }
-
-  /**
-   * Removes a {@link ZigBeeAnnounceListener}
-   *
-   * @param listener the {@link ZigBeeAnnounceListener} to remove
-   */
-  public void removeAnnounceListener(ZigBeeAnnounceListener listener) {
-    synchronized (announceListeners) {
-      announceListeners.remove(listener);
-    }
-
-    if (networkManager == null) {
-      return;
-    }
-    networkManager.removeAnnounceListener(listener);
   }
 
   @Override
@@ -470,11 +453,14 @@ public abstract class ZigBeeCoordinatorService
       case ONLINE:
         entity.setStatusOnline();
         for (ZigBeeDeviceEntity device : entity.getDevices()) {
-          device.getService().tryInitializeDevice();
+          device.getService().tryInitializeZigBeeNode();
         }
         if (reconnectPollingTimer != null) {
           reconnectPollingTimer.cancel();
           reconnectPollingTimer = null;
+        }
+        if (entityContext.setting().getValue(ZigBeeDiscoveryOnStartupSetting.class)) {
+          this.scanStart(getEntity().getDiscoveryDuration());
         }
         break;
       case OFFLINE:
@@ -646,7 +632,6 @@ public abstract class ZigBeeCoordinatorService
 
   public void scanStart(int duration) {
     if (entity.getStatus() != Status.ONLINE) {
-      entityContext.ui().sendWarningMessage("DEVICE.OFFLINE", "Unable to ");
       log.debug("[{}]: ZigBee coordinator is offline - aborted scan", entityID);
     } else {
       networkManager.permitJoin(duration);
@@ -749,5 +734,26 @@ public abstract class ZigBeeCoordinatorService
       return Lang.getServerMessage("zigbee.error.port_not_found", "NAME", entity.getPort());
     }
     return null;
+  }
+
+  public void dispose(ZigBeeDeviceService service) {
+    // unregister service from alive tracking
+    this.registeredDevices.remove(service);
+
+    // removeNetworkNodeListener
+    nodeListeners.remove(service);
+    if (networkManager != null) {
+      networkManager.removeNetworkNodeListener(service);
+    }
+
+    // removeAnnounceListener
+    synchronized (announceListeners) {
+      announceListeners.remove(service);
+    }
+
+    if (networkManager == null) {
+      return;
+    }
+    networkManager.removeAnnounceListener(service);
   }
 }

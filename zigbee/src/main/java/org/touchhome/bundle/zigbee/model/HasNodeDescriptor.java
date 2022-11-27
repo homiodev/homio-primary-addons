@@ -1,6 +1,5 @@
 package org.touchhome.bundle.zigbee.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zsmartsystems.zigbee.ZigBeeNode;
 import com.zsmartsystems.zigbee.ZigBeeNode.ZigBeeNodeState;
 import com.zsmartsystems.zigbee.zdo.field.NodeDescriptor;
@@ -30,22 +29,20 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
 
   @UIField(order = 11, hideInEdit = true)
   @UIFieldColorStatusMatch
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-  default Status getNodeState() {
+  default Status getNodeStatus() {
     return EntityContextSetting.getStatus(this, "node", Status.UNKNOWN);
   }
 
-  default void setNodeState(ZigBeeNodeState value) {
+  default void setNodeStatus(ZigBeeNodeState value) {
     Status status = value == null || value == ZigBeeNodeState.UNKNOWN ?
         Status.UNKNOWN : value == ZigBeeNodeState.ONLINE ? Status.ONLINE : Status.OFFLINE;
-    if (getFetchInfoStatus() != status) {
+    if (getNodeStatus() != status) {
       EntityContextSetting.setStatus(this, "node", "NodeState", status);
     }
   }
 
   @UIField(order = 12, hideInEdit = true)
   @UIFieldColorStatusMatch
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   default Status getFetchInfoStatus() {
     return EntityContextSetting.getStatus(this, "fetch_info", Status.UNKNOWN);
   }
@@ -152,7 +149,7 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
   default boolean updateFromNodeDescriptor(ZigBeeNode node) {
     boolean updated = false;
 
-    setNodeState(node.getNodeState());
+    setNodeStatus(node.getNodeState());
     if (!Objects.equals(getNetworkAddress(), node.getNetworkAddress())) {
       setNetworkAddress(node.getNetworkAddress());
       updated = true;

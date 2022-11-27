@@ -13,14 +13,12 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneStatusChangeNotificationCommand;
 import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 
 /**
  * Converter for the IAS zone sensors. This is an abstract class used as a base for different IAS sensors.
  */
-@Log4j2
 public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
     implements ZclCommandListener, ZclAttributeListener {
 
@@ -41,13 +39,13 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
   private ZclIasZoneCluster clusterIasZone;
 
   @Override
-  public boolean initializeDevice() {
+  public void initializeDevice() {
     log.debug("[{}]: Initialising device IAS Zone cluster {}", entityID, endpoint);
 
     ZclIasZoneCluster serverClusterIasZone = getInputCluster(ZclIasZoneCluster.CLUSTER_ID);
     if (serverClusterIasZone == null) {
       log.error("[{}]: Error opening IAS zone cluster {}", entityID, endpoint);
-      return false;
+      throw new RuntimeException("Error opening IAS zone cluster");
     }
 
     try {
@@ -61,25 +59,22 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
       }
     } catch (Exception e) {
       log.debug("[{}]: Exception configuring ias zone status reporting {}", entityID, endpoint, e);
-      return false;
+      throw new RuntimeException("Exception configuring ias zone status reporting");
     }
-    return true;
   }
 
   @Override
-  public boolean initializeConverter() {
+  public void initializeConverter() {
     log.debug("[{}]: Initialising device IAS Zone cluster {}", entityID, endpoint);
 
     clusterIasZone = getInputCluster(ZclIasZoneCluster.CLUSTER_ID);
     if (clusterIasZone == null) {
       log.error("[{}]: Error opening IAS zone cluster {}", entityID, endpoint);
-      return false;
+      throw new RuntimeException("Error opening IAS zone cluster");
     }
     // Add a listener, then request the status
     clusterIasZone.addCommandListener(this);
     clusterIasZone.addAttributeListener(this);
-
-    return true;
   }
 
   @Override

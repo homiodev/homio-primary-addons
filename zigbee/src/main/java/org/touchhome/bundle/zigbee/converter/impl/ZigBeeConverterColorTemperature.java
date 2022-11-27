@@ -10,7 +10,7 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclColorControlCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.colorcontrol.ColorCapabilitiesEnum;
 import com.zsmartsystems.zigbee.zcl.clusters.colorcontrol.ColorModeEnum;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
@@ -18,7 +18,6 @@ import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 /**
  * Channel converter for color temperature, converting between the color control cluster and a percent-typed channel.
  */
-@Log4j2
 @ZigBeeConverter(name = "zigbee:color_temperature", linkType = VariableType.Float,
     clientCluster = ZclColorControlCluster.CLUSTER_ID, category = "Color")
 public class ZigBeeConverterColorTemperature extends ZigBeeBaseChannelConverter implements ZclAttributeListener {
@@ -33,11 +32,11 @@ public class ZigBeeConverterColorTemperature extends ZigBeeBaseChannelConverter 
   private ColorModeEnum lastColorMode;
 
   @Override
-  public boolean initializeDevice() {
+  public void initializeDevice() {
     ZclColorControlCluster serverClusterColorControl = getInputCluster(ZclColorControlCluster.CLUSTER_ID);
     if (serverClusterColorControl == null) {
       log.error("[{}]: Error opening color control input cluster on {}", entityID, entityID);
-      return false;
+      throw new RuntimeException("Error opening color control input cluster");
     }
 
     try {
@@ -53,23 +52,21 @@ public class ZigBeeConverterColorTemperature extends ZigBeeBaseChannelConverter 
       }
     } catch (Exception e) {
       log.debug("[{}]: Exception configuring color temperature or color mode reporting {}", entityID, e, e);
-      return false;
+      throw new RuntimeException("Exception configuring color temperature or color mode reporting");
     }
-    return true;
   }
 
   @Override
-  public boolean initializeConverter() {
+  public void initializeConverter() {
     clusterColorControl = getInputCluster(ZclColorControlCluster.CLUSTER_ID);
     if (clusterColorControl == null) {
       log.error("[{}]: Error opening color control input cluster on {}", entityID, entityID);
-      return false;
+      throw new RuntimeException("Error opening color control input cluster");
     }
 
     determineMinMaxTemperature(clusterColorControl);
 
     clusterColorControl.addAttributeListener(this);
-    return true;
   }
 
   @Override
@@ -96,7 +93,7 @@ public class ZigBeeConverterColorTemperature extends ZigBeeBaseChannelConverter 
     }*/
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
     ZclColorControlCluster clusterColorControl = (ZclColorControlCluster) endpoint.getInputCluster(ZclColorControlCluster.CLUSTER_ID);
     if (clusterColorControl == null) {
       log.trace("[{}]: Color control cluster not found for {}", entityID, endpoint);

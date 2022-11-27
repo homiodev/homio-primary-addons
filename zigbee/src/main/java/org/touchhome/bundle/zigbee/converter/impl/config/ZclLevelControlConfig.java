@@ -12,11 +12,9 @@ import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclLevelControlCluster;
 import java.util.concurrent.Future;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Logger;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
-@Log4j2
 @Getter
 public class ZclLevelControlConfig {
 
@@ -34,7 +32,7 @@ public class ZclLevelControlConfig {
   private int onLevel;
   private int defaultMoveRate;
 
-  public ZclLevelControlConfig(ZigBeeEndpointEntity entity, ZclCluster cluster) {
+  public ZclLevelControlConfig(ZigBeeEndpointEntity entity, ZclCluster cluster, Logger log) {
     this.onOffTransitionTime = entity.getOffWaitTime();
     this.onTransitionTime = entity.getOnTransitionTime();
     this.offTransitionTime = entity.getOffTransitionTime();

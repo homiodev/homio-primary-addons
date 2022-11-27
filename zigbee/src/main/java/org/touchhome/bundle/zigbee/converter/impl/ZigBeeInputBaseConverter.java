@@ -1,20 +1,24 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
+import static com.zsmartsystems.zigbee.zcl.clusters.ZclAnalogInputBasicCluster.ATTR_DESCRIPTION;
+
 import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.Nullable;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
-@Log4j2
 @RequiredArgsConstructor
 public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverter implements ZclAttributeListener {
 
@@ -24,99 +28,83 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
   private final Integer reportMinInterval;
   private final Integer reportMaxInterval;
   private final Object reportableChange;
-  private int reportingFailedPollingInterval;
+  private final @Nullable Integer bindFailedReportPeriod;
+
   @Getter
   private ZclCluster zclCluster;
   @Getter
   private ZclAttribute attribute;
 
-  public ZigBeeInputBaseConverter(ZclClusterType zclClusterType, int attributeId) {
+  public ZigBeeInputBaseConverter(ZclClusterType zclClusterType, int attributeId, @Nullable Integer bindFailedReportPeriod) {
     this.zclClusterType = zclClusterType;
     this.attributeId = attributeId;
     this.reportMinInterval = null;
     this.reportMaxInterval = null;
     this.reportableChange = null;
-    this.reportingFailedPollingInterval = POLLING_PERIOD_DEFAULT;
+    this.bindFailedReportPeriod = bindFailedReportPeriod;
   }
 
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, boolean discoverAttribute, boolean readAttribute) {
-    return acceptEndpoint(endpoint, entityID, zclClusterType.getId(), attributeId, discoverAttribute, readAttribute);
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, boolean discoverAttribute, boolean readAttribute, EntityContext entityContext) {
+    return acceptEndpoint(endpoint, entityID, entityContext, zclClusterType.getId(), attributeId, discoverAttribute, readAttribute);
   }
 
   @Override
-  public boolean initializeDevice() {
+  public void initializeDevice() throws Exception {
     log.debug("[{}]: Initialising {} device cluster {}", entityID, getClass().getSimpleName(), endpoint);
 
-    ZclCluster zclCluster = getZclClusterInternal();
-    boolean success = false;
-    if (zclCluster != null) {
-      try {
-        CommandResult bindResponse = bind(zclCluster).get();
-        if (bindResponse.isSuccess()) {
-          ZclAttribute attribute = zclCluster.getAttribute(this.attributeId);
+    ZclCluster zclCluster = getInputCluster(zclClusterType.getId());
+    if (zclCluster == null) {
+      log.error("[{}]: Error opening server cluster {}. {}", entityID, zclClusterType, endpoint);
+      throw new RuntimeException("Error opening server cluster");
+    }
+    try {
+      CommandResult bindResponse = bind(zclCluster).get();
+      if (bindResponse.isSuccess()) {
+        ZclAttribute attribute = zclCluster.getAttribute(this.attributeId);
 
-          if (reportMinInterval == null || reportMaxInterval == null) {
-            ZigBeeEndpointEntity endpointEntity = getEndpointService().getEntity();
-            CommandResult reportingResponse = attribute.setReporting(
-                endpointEntity.getReportingTimeMin(),
-                endpointEntity.getReportingTimeMax(),
-                endpointEntity.getReportingChange()).get();
-            handleReportingResponse(reportingResponse, reportingFailedPollingInterval, endpointEntity.getPollingPeriod());
-          } else {
-            CommandResult reportingResponse = attribute.setReporting(reportMinInterval, reportMaxInterval, reportableChange).get();
-            handleReportingResponseDuringInitializeDevice(reportingResponse);
-          }
-          success = true;
+        if (reportMinInterval == null || reportMaxInterval == null) {
+          ZigBeeEndpointEntity endpointEntity = getEndpointService().getEntity();
+          CommandResult reportingResponse = attribute.setReporting(
+              endpointEntity.getReportingTimeMin(),
+              endpointEntity.getReportingTimeMax(),
+              endpointEntity.getReportingChange()).get();
+          handleReportingResponseOnBind(reportingResponse);
         } else {
-          log.error("[{}]: Error 0x{} setting server binding for cluster {}. {}", entityID, endpoint,
-              Integer.toHexString(bindResponse.getStatusCode()), zclClusterType);
-          success = initializeDeviceFailed();
+          CommandResult reportingResponse = attribute.setReporting(reportMinInterval, reportMaxInterval, reportableChange).get();
+          handleReportingResponseOnBind(reportingResponse);
         }
-      } catch (Exception e) {
-        log.error("[{}]: Exception setting reporting {}", endpoint, e);
-        return false;
+      } else {
+        if (bindFailedReportPeriod != null) {
+          pollingPeriod = bindFailedReportPeriod;
+        }
+        log.warn("[{}]: Could not bind to the '{}' configuration cluster; Response code: {}",
+            entityID, zclClusterType.name(), bindResponse.getStatusCode());
       }
+    } catch (Exception e) {
+      log.error("[{}]: Exception setting reporting {}", endpoint, e);
+      pollingPeriod = POLLING_PERIOD_HIGH;
+      throw new RuntimeException("Exception setting reporting");
     }
-    if (success) {
-      return afterInitializeDevice();
-    }
-    return success;
   }
 
-  protected void handleReportingResponseDuringInitializeDevice(CommandResult reportingResponse) {
-    handleReportingResponse(reportingResponse);
-  }
-
-  protected boolean afterInitializeDevice() {
-    return true;
-  }
-
-  protected boolean initializeDeviceFailed() {
-    return true;
-  }
+  protected abstract void handleReportingResponseOnBind(CommandResult reportingResponse);
 
   @Override
-  public boolean initializeConverter() {
+  public void initializeConverter() {
     zclCluster = getZclClusterInternal();
 
     if (zclCluster == null) {
       log.error("[{}]: Error opening cluster {}. {}", entityID, zclClusterType, endpoint);
-      return false;
+      throw new RuntimeException("Error opening cluster");
     }
 
     attribute = zclCluster.getAttribute(attributeId);
     if (attribute == null) {
       log.error("[{}]: Error opening device {} attribute {}", entityID, zclClusterType, endpoint);
-      return false;
+      throw new RuntimeException("Error opening device attribute");
     }
 
     zclCluster.addAttributeListener(this);
-    afterInitializeConverter();
-    return true;
-  }
-
-  protected void afterInitializeConverter() {
-
   }
 
   @Override
@@ -145,7 +133,7 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
     } else if (val instanceof Integer) {
       updateChannelState(new DecimalType((Integer) val));
     } else if (val instanceof Boolean) {
-      updateChannelState(OnOffType.of((Boolean) val));
+      updateChannelState(OnOffType.of(val));
     } else {
       throw new IllegalStateException("Unable to find value handler for type: " + val);
     }
@@ -154,7 +142,7 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
   @Override
   public void updateConfiguration() {
     if (configReporting != null && configReporting.updateConfiguration(getEntity())) {
-      updateServerPollingPeriod(zclCluster, attributeId);
+      updateDeviceReporting(zclCluster, attributeId, configReporting);
     }
   }
 

@@ -28,7 +28,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
@@ -44,7 +44,6 @@ import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
  * For the server side, if the {@link ZclOnOffCluster} has reported the device is OFF, then reports from {@link ZclLevelControlCluster} are ignored. This is required as devices can
  * report via the {@link ZclLevelControlCluster} that they have a specified level, but still be OFF.
  */
-@Log4j2
 @ZigBeeConverter(name = "zigbee:switch_level",
     linkType = VariableType.Boolean,
     serverClusters = {ZclOnOffCluster.CLUSTER_ID, ZclLevelControlCluster.CLUSTER_ID},
@@ -73,19 +72,19 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
   private ScheduledFuture<?> updateTimer = null;
 
   @Override
-  public boolean initializeDevice() {
+  public void initializeDevice() {
     if (initializeDeviceServer()) {
       log.debug("[{}]: Level control device initialized as server {}", entityID, endpoint);
-      return true;
+      return;
     }
 
     if (initializeDeviceClient()) {
       log.debug("[{}]: Level control device initialized as client {}", entityID, endpoint);
-      return true;
+      return;
     }
 
     log.error("[{}]: Error opening device level controls {}", entityID, endpoint);
-    return false;
+    throw new RuntimeException("Error opening device level controls");
   }
 
   private boolean initializeDeviceServer() {
@@ -188,21 +187,21 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
   }
 
   @Override
-  public synchronized boolean initializeConverter() {
+  public synchronized void initializeConverter() {
     updateScheduler = Executors.newSingleThreadScheduledExecutor();
 
     if (initializeConverterServer()) {
       log.debug("[{}]: Level control initialized as server {}", entityID, endpoint);
-      return true;
+      return;
     }
 
     if (initializeConverterClient()) {
       log.debug("[{}]: Level control initialized as client {}", entityID, endpoint);
-      return true;
+      return;
     }
 
     log.error("[{}]: Error opening device level controls {}", entityID, endpoint);
-    return false;
+    throw new RuntimeException("Error opening device level controls");
   }
 
   private boolean initializeConverterServer() {
@@ -231,8 +230,8 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
 
     // Create a configuration handler and get the available options
     configReporting = new ZclReportingConfig(getEntity());
-    configLevelControl = new ZclLevelControlConfig(getEntity(), clusterLevelControlServer);
-    configOnOff = new ZclOnOffSwitchConfig(getEntity(), clusterOnOffServer);
+    configLevelControl = new ZclLevelControlConfig(getEntity(), clusterLevelControlServer, log);
+    configOnOff = new ZclOnOffSwitchConfig(getEntity(), clusterOnOffServer, log);
 
     return true;
   }
@@ -371,7 +370,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
         startStopTimer(INCREASEDECREASE_TIMEOUT);
     }*/
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
     if (endpoint.getInputCluster(ZclLevelControlCluster.CLUSTER_ID) == null
         && endpoint.getOutputCluster(ZclLevelControlCluster.CLUSTER_ID) == null) {
       log.trace("[{}]: Level control cluster not found {}", entityID, endpoint);
@@ -385,7 +384,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
   public void updateConfiguration() {
     if (configReporting != null) {
       if (configReporting.updateConfiguration(getEntity())) {
-        updateServerPollingPeriod(clusterLevelControlServer, ZclOnOffCluster.ATTR_ONOFF);
+        updateDeviceReporting(clusterLevelControlServer, ZclOnOffCluster.ATTR_ONOFF, configReporting);
         updateServerPollingPeriodNoChange(clusterLevelControlServer, ZclLevelControlCluster.ATTR_CURRENTLEVEL);
       }
     }

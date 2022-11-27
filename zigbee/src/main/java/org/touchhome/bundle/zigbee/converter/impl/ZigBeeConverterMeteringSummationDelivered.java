@@ -2,6 +2,7 @@ package org.touchhome.bundle.zigbee.converter.impl;
 
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclMeteringCluster;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 /**
@@ -16,7 +17,7 @@ public class ZigBeeConverterMeteringSummationDelivered extends ZigBeeConverterMe
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
-    return acceptEndpoint(endpoint, entityID, true, true);
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+    return acceptEndpoint(endpoint, entityID, true, true, entityContext);
   }
 }

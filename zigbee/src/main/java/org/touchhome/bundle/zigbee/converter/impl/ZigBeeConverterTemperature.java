@@ -6,14 +6,13 @@ import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclTemperatureMeasurementCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 
 /**
  * Indicates the current temperature Converter for the temperature channel
  */
-@Log4j2
 @ZigBeeConverter(name = "zigbee:measurement_temperature", linkType = VariableType.Float,
     serverClusters = {ZclTemperatureMeasurementCluster.CLUSTER_ID},
     clientCluster = ZclTemperatureMeasurementCluster.CLUSTER_ID, category = "Temperature")
@@ -25,18 +24,17 @@ public class ZigBeeConverterTemperature extends ZigBeeBaseChannelConverter imple
   private ZclAttribute attributeClient;
 
   @Override
-  public boolean initializeDevice() {
-    pollingPeriod = REPORTING_PERIOD_DEFAULT_MAX;
+  public void initializeDevice() {
     ZclTemperatureMeasurementCluster clientCluster = getInputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID);
     if (clientCluster == null) {
       // Nothing to do, but we still return success
-      return true;
+      return;
     }
 
     ZclTemperatureMeasurementCluster serverCluster = getInputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID);
     if (serverCluster == null) {
       log.error("[{}]: Error opening device temperature measurement cluster {}", entityID, endpoint);
-      return false;
+      throw new RuntimeException("Error opening device temperature measurement cluster");
     }
 
     try {
@@ -51,14 +49,12 @@ public class ZigBeeConverterTemperature extends ZigBeeBaseChannelConverter imple
       }
     } catch (Exception e) {
       log.error("[{}]: Exception setting reporting", endpoint, e);
-      return false;
+      throw new RuntimeException("Exception setting reporting");
     }
-
-    return true;
   }
 
   @Override
-  public boolean initializeConverter() {
+  public void initializeConverter() {
     cluster = getInputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID);
     if (cluster != null) {
       attribute = cluster.getAttribute(ZclTemperatureMeasurementCluster.ATTR_MEASUREDVALUE);
@@ -72,10 +68,8 @@ public class ZigBeeConverterTemperature extends ZigBeeBaseChannelConverter imple
 
     if (cluster == null && clusterClient == null) {
       log.error("[{}]: Error opening device temperature measurement cluster {}", entityID, endpoint);
-      return false;
+      throw new RuntimeException("Error opening device temperature measurement cluster");
     }
-
-    return true;
   }
 
   @Override
@@ -113,7 +107,7 @@ public class ZigBeeConverterTemperature extends ZigBeeBaseChannelConverter imple
     }*/
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
     if (endpoint.getOutputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID) == null
         && endpoint.getInputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID) == null) {
       log.trace("[{}]: Temperature measurement cluster not found {}", entityID, endpoint);

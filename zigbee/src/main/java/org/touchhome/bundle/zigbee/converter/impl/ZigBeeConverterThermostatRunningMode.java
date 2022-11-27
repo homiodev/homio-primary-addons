@@ -1,8 +1,10 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
+import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclThermostatCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 /**
@@ -17,11 +19,16 @@ public class ZigBeeConverterThermostatRunningMode extends ZigBeeInputBaseConvert
 
   public ZigBeeConverterThermostatRunningMode() {
     super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_THERMOSTATRUNNINGMODE,
-        1, REPORTING_PERIOD_DEFAULT_MAX, 10);
+        1, REPORTING_PERIOD_DEFAULT_MAX, 10, null);
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
-    return acceptEndpoint(endpoint, entityID, false, true);
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+    return acceptEndpoint(endpoint, entityID, false, true, entityContext);
+  }
+
+  @Override
+  protected void handleReportingResponseOnBind(CommandResult reportingResponse) {
+    handleReportingResponse(reportingResponse, POLLING_PERIOD_DEFAULT, REPORTING_PERIOD_DEFAULT_MAX);
   }
 }

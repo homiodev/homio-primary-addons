@@ -34,7 +34,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.HSBType;
@@ -48,7 +48,6 @@ import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity.ControlMethod;
  * The color channel allows to control the color of a light. It is also possible to dim values and switch the light on and off. Converter for color control. Uses the
  * {@link ZclColorControlCluster}, and may also use the {@link ZclLevelControlCluster} and {@link ZclOnOffCluster} if available.
  */
-@Log4j2
 @ZigBeeConverter(name = "zigbee:color_color",
     clientCluster = ZclOnOffCluster.CLUSTER_ID, linkType = VariableType.Float,
     additionalClientClusters = {ZclLevelControlCluster.CLUSTER_ID, ZclColorControlCluster.CLUSTER_ID}, category = "ColorLight")
@@ -87,16 +86,14 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
   }
 
   @Override
-  public boolean initializeDevice() {
+  public void initializeDevice() {
     ZclColorControlCluster serverClusterColorControl = getInputCluster(ZclColorControlCluster.CLUSTER_ID);
     if (serverClusterColorControl == null) {
       log.error("[{}]: Error opening device color controls {}", entityID, endpoint);
-      return false;
+      throw new RuntimeException("Error opening device color controls");
     }
 
-    if (!discoverSupportedColorCommands(serverClusterColorControl)) {
-      return false;
-    }
+    discoverSupportedColorCommands(serverClusterColorControl);
 
     // Bind to attribute reports, add listeners, then request the status
     // Configure reporting - no faster than once per second - no slower than 10 minutes.
@@ -121,7 +118,7 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
         log.error("[{}]: Error 0x{} setting server binding {}", entityID,
             Integer.toHexString(bindResponse.getStatusCode()), endpoint);
         pollingPeriod = POLLING_PERIOD_HIGH;
-        return false;
+        throw new RuntimeException("Error setting server binding");
       }
     } catch (ExecutionException | InterruptedException e) {
       log.debug("[{}]: Exception configuring color reporting {}", endpoint, e);
@@ -160,21 +157,19 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
         handleReportingResponseHigh(reportingResponse);
       } catch (ExecutionException | InterruptedException e) {
         log.debug("[{}]: Exception configuring on/off reporting {}", endpoint, e);
-        return false;
+        throw new RuntimeException("Exception configuring on/off reporting");
       }
     }
-
-    return true;
   }
 
   @Override
-  public boolean initializeConverter() {
+  public void initializeConverter() {
     colorUpdateScheduler = Executors.newSingleThreadScheduledExecutor();
 
     clusterColorControl = getInputCluster(ZclColorControlCluster.CLUSTER_ID);
     if (clusterColorControl == null) {
       log.error("[{}]: Error opening device color controls {}", entityID, endpoint);
-      return false;
+      throw new RuntimeException("Error opening device color controls");
     }
 
     List<Object> configOptions = new ArrayList<>();
@@ -183,28 +178,25 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
     if (clusterLevelControl == null) {
       log.warn("[{}]: Device does not support level control {}", entityID, endpoint);
     } else {
-      configLevelControl = new ZclLevelControlConfig(getEntity(), clusterLevelControl);
+      configLevelControl = new ZclLevelControlConfig(getEntity(), clusterLevelControl, log);
     }
 
     clusterOnOff = getInputCluster(ZclOnOffCluster.CLUSTER_ID);
     if (clusterOnOff == null) {
       log.debug("[{}]: Device does not support on/off control {}", entityID, endpoint);
     } else {
-      configOnOff = new ZclOnOffSwitchConfig(getEntity(), clusterOnOff);
+      configOnOff = new ZclOnOffSwitchConfig(getEntity(), clusterOnOff, log);
     }
 
     this.supportConfigColorControl = true;
 
-    if (!discoverSupportedColorCommands(clusterColorControl)) {
-      return false;
-    }
+    discoverSupportedColorCommands(clusterColorControl);
 
     clusterColorControl.addAttributeListener(this);
     clusterLevelControl.addAttributeListener(this);
     clusterOnOff.addAttributeListener(this);
 
     getEndpointService().setConfigOptions(configOptions);
-    return true;
   }
 
   @Override
@@ -348,7 +340,7 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
     }*/
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
     ZclColorControlCluster clusterColorControl = (ZclColorControlCluster) endpoint.getInputCluster(ZclColorControlCluster.CLUSTER_ID);
     if (clusterColorControl == null) {
       log.trace("[{}]: Color control cluster not found for {}", entityID, endpoint);
@@ -519,16 +511,17 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
     }
   }
 
-  private boolean discoverSupportedColorCommands(ZclColorControlCluster serverClusterColorControl) {
+  private void discoverSupportedColorCommands(ZclColorControlCluster serverClusterColorControl) {
     // If the configuration is not set to AUTO, then we can override the control method
     if (isSupportConfigColorControl() && getEntity().getColorControlMethod() != ControlMethod.AUTO) {
       supportsHue = getEntity().getColorControlMethod() == ControlMethod.HUE;
-      return true;
+      return;
     }
 
     // Discover whether the device supports HUE/SAT or XY color set of commands
     try {
-      if (!serverClusterColorControl.discoverAttributes(false).get(60, TimeUnit.SECONDS)) {
+      int discoveryTimeout = getDiscoveryTimeout(getEndpointService().getEntityContext());
+      if (!serverClusterColorControl.discoverAttributes(false).get(discoveryTimeout, TimeUnit.SECONDS)) {
         log.warn("[{}]: Cannot determine whether device supports RGB color. Assuming it supports HUE/SAT {}", entityID, endpoint);
         supportsHue = true;
       } else if (serverClusterColorControl.getSupportedAttributes().contains(ATTR_CURRENTHUE)) {
@@ -542,12 +535,11 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
       } else {
         log.warn("[{}]: Device supports neither RGB color nor XY color {}", entityID, endpoint);
         pollingPeriod = POLLING_PERIOD_HIGH;
-        return false;
+        throw new RuntimeException("Device supports neither RGB color nor XY color");
       }
     } catch (Exception e) {
       log.warn("[{}]: Exception checking whether device endpoint supports RGB color. Assuming it supports HUE/SAT {}", entityID, endpoint, e);
       supportsHue = true;
     }
-    return true;
   }
 }

@@ -5,10 +5,11 @@ import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.POWER_CONFIGU
 import static java.time.Duration.ofHours;
 import static java.time.Duration.ofMinutes;
 
+import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.StringType;
 
@@ -28,7 +29,6 @@ import org.touchhome.bundle.api.state.StringType;
  * such configuration is currently not supported.
  * </ul>
  */
-@Log4j2
 @ZigBeeConverter(name = "zigbee:battery_alarm", linkType = VariableType.Float,
     clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
 public class ZigBeeConverterBatteryAlarm extends ZigBeeInputBaseConverter {
@@ -50,20 +50,17 @@ public class ZigBeeConverterBatteryAlarm extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterBatteryAlarm() {
     super(POWER_CONFIGURATION, ATTR_BATTERYALARMSTATE, ALARMSTATE_MIN_REPORTING_INTERVAL,
-        ALARMSTATE_MAX_REPORTING_INTERVAL, null);
+        ALARMSTATE_MAX_REPORTING_INTERVAL, null, BATTERY_ALARM_POLLING_PERIOD);
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
-    return super.acceptEndpoint(endpoint, entityID, true, false);
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+    return super.acceptEndpoint(endpoint, entityID, true, false, entityContext);
   }
 
   @Override
-  protected boolean initializeDeviceFailed() {
-    pollingPeriod = BATTERY_ALARM_POLLING_PERIOD;
-    log.debug("[{}]: Could not bind to the power configuration cluster; polling battery alarm state every {} seconds for {}", entityID, entityID,
-        BATTERY_ALARM_POLLING_PERIOD);
-    return false;
+  protected void handleReportingResponseOnBind(CommandResult reportingResponse) {
+    handleReportingResponse(reportingResponse, BATTERY_ALARM_POLLING_PERIOD, ALARMSTATE_MAX_REPORTING_INTERVAL);
   }
 
   @Override

@@ -2,17 +2,16 @@ package org.touchhome.bundle.zigbee.converter.impl;
 
 import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
-import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclFanControlCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.zigbee.converter.impl.config.ZclFanControlConfig;
+import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
 
 /**
  * Set the fan mode This channel supports fan control
  */
-@Log4j2
 @ZigBeeConverter(name = "zigbee:fancontrol", linkType = VariableType.Float, clientCluster = ZclFanControlCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
 
@@ -25,53 +24,23 @@ public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterFanControl() {
     super(ZclClusterType.FAN_CONTROL, ZclFanControlCluster.ATTR_FANMODE, 1,
-        REPORTING_PERIOD_DEFAULT_MAX, null);
+        REPORTING_PERIOD_DEFAULT_MAX, null, POLLING_PERIOD_HIGH);
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
-    return super.acceptEndpoint(endpoint, entityID, false, false);
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+    return super.acceptEndpoint(endpoint, entityID, false, false, entityContext);
   }
 
   @Override
-  protected boolean initializeDeviceFailed() {
-    pollingPeriod = POLLING_PERIOD_HIGH;
-    return true;
-  }
-
-  @Override
-  public boolean initializeDevice() {
-    ZclFanControlCluster serverCluster = getInputCluster(ZclFanControlCluster.CLUSTER_ID);
-    if (serverCluster == null) {
-      log.error("[{}]: Error opening device fan controls {}", entityID, endpoint);
-      return false;
-    }
-
-    try {
-      CommandResult bindResponse = bind(serverCluster).get();
-      if (bindResponse.isSuccess()) {
-        // Configure reporting
-        ZclAttribute attribute = serverCluster.getAttribute(ZclFanControlCluster.ATTR_FANMODE);
-        CommandResult reportingResponse = attribute.setReporting(1, REPORTING_PERIOD_DEFAULT_MAX).get();
-        handleReportingResponseHigh(reportingResponse);
-      } else {
-        pollingPeriod = POLLING_PERIOD_HIGH;
-      }
-    } catch (Exception e) {
-      log.error("[{}]: Exception setting reporting {}", entityID, e, e);
-      return false;
-    }
-    return true;
-  }
-
-  @Override
-  protected void handleReportingResponseDuringInitializeDevice(CommandResult reportingResponse) {
+  protected void handleReportingResponseOnBind(CommandResult reportingResponse) {
     handleReportingResponse(reportingResponse, POLLING_PERIOD_HIGH, REPORTING_PERIOD_DEFAULT_MAX);
   }
 
   @Override
-  protected void afterInitializeConverter() {
-    configFanControl = new ZclFanControlConfig(getEntity(), getZclCluster());
+  public void initialize(ZigbeeEndpointService endpointService, ZigBeeEndpoint endpoint) {
+    super.initialize(endpointService, endpoint);
+    configFanControl = new ZclFanControlConfig(getEntity(), getZclCluster(), log);
   }
 
  /*@Override

@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import lombok.extern.log4j.Log4j2;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.ButtonType;
 import org.touchhome.bundle.api.state.ButtonType.ButtonPressType;
@@ -38,7 +38,6 @@ import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
  * <p>
  * As the configuration is done via channel properties, this converter is usable via static thing types only.
  */
-@Log4j2
 @ZigBeeConverter(name = "zigbee:button", linkType = VariableType.Boolean, clientCluster = 0, serverClusters = {ZclScenesCluster.CLUSTER_ID}, category = "Button")
 public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
     implements ZclCommandListener, ZclAttributeListener {
@@ -67,7 +66,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
   }
 
   @Override
-  public boolean initializeConverter() {
+  public void initializeConverter() {
     for (ButtonPressType buttonPressType : ButtonPressType.values()) {
       EventSpec eventSpec = parseEventSpec(getEndpointService().getMetadata(), buttonPressType);
       if (eventSpec != null) {
@@ -77,7 +76,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
 
     if (handledEvents.isEmpty()) {
       log.error("[{}]: No command is specified for any of the possible button press types {}", entityID, endpoint);
-      return false;
+      throw new RuntimeException("No command is specified for any of the possible button press types");
     }
 
     boolean allBindsSucceeded = true;
@@ -86,7 +85,9 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
       allBindsSucceeded &= eventSpec.bindCluster();
     }
 
-    return allBindsSucceeded;
+    if (!allBindsSucceeded) {
+      throw new RuntimeException("Not all binds succeeded");
+    }
   }
 
   @Override
@@ -103,7 +104,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
     // This converter is used only for zigbeeRequireEndpoints specified in static thing types, and cannot be used to construct
     // zigbeeRequireEndpoints based on an endpoint alone.
     return false;
