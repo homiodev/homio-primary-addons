@@ -8,9 +8,8 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclIlluminanceMeasurementCluster;
 import java.util.Objects;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
-import org.touchhome.bundle.zigbee.converter.impl.config.ReportingChangeModel;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclReportingConfig;
-import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
+import org.touchhome.bundle.zigbee.converter.config.ReportingChangeModel;
+import org.touchhome.bundle.zigbee.converter.config.ZclReportingConfig;
 
 /**
  * Indicates the current illuminance in lux Converter for the illuminance channel
@@ -34,8 +33,7 @@ public class ZigBeeConverterIlluminance extends ZigBeeInputBaseConverter {
   }
 
   @Override
-  public void initialize(ZigbeeEndpointService endpointService, ZigBeeEndpoint endpoint) {
-    super.initialize(endpointService, endpoint);
+  protected void initializeReportConfigurations() {
     configReporting = new ZclReportingConfig(getEntity());
   }
 

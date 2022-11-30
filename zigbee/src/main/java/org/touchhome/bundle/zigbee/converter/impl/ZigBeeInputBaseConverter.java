@@ -1,15 +1,11 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
-import static com.zsmartsystems.zigbee.zcl.clusters.ZclAnalogInputBasicCluster.ATTR_DESCRIPTION;
-
 import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
@@ -30,10 +26,8 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
   private final Object reportableChange;
   private final @Nullable Integer bindFailedReportPeriod;
 
-  @Getter
-  private ZclCluster zclCluster;
-  @Getter
-  private ZclAttribute attribute;
+  protected ZclCluster zclCluster;
+  protected ZclAttribute attribute;
 
   public ZigBeeInputBaseConverter(ZclClusterType zclClusterType, int attributeId, @Nullable Integer bindFailedReportPeriod) {
     this.zclClusterType = zclClusterType;
@@ -50,13 +44,10 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
 
   @Override
   public void initializeDevice() throws Exception {
-    log.debug("[{}]: Initialising {} device cluster {}", entityID, getClass().getSimpleName(), endpoint);
+    log.debug("[{}]: Initialising {} device cluster {}", entityID, getClass().getSimpleName(), this.endpoint);
+    this.zclCluster = getInputCluster(zclClusterType.getId());
+    this.initializeReportConfigurations();
 
-    ZclCluster zclCluster = getInputCluster(zclClusterType.getId());
-    if (zclCluster == null) {
-      log.error("[{}]: Error opening server cluster {}. {}", entityID, zclClusterType, endpoint);
-      throw new RuntimeException("Error opening server cluster");
-    }
     try {
       CommandResult bindResponse = bind(zclCluster).get();
       if (bindResponse.isSuccess()) {
@@ -87,17 +78,14 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
     }
   }
 
+  protected void initializeReportConfigurations() {
+
+  }
+
   protected abstract void handleReportingResponseOnBind(CommandResult reportingResponse);
 
   @Override
   public void initializeConverter() {
-    zclCluster = getZclClusterInternal();
-
-    if (zclCluster == null) {
-      log.error("[{}]: Error opening cluster {}. {}", entityID, zclClusterType, endpoint);
-      throw new RuntimeException("Error opening cluster");
-    }
-
     attribute = zclCluster.getAttribute(attributeId);
     if (attribute == null) {
       log.error("[{}]: Error opening device {} attribute {}", entityID, zclClusterType, endpoint);
@@ -141,17 +129,9 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
 
   @Override
   public void updateConfiguration() {
+    super.updateConfiguration();
     if (configReporting != null && configReporting.updateConfiguration(getEntity())) {
       updateDeviceReporting(zclCluster, attributeId, configReporting);
     }
-  }
-
-  protected ZclCluster getZclClusterInternal() {
-    ZclCluster zclCluster = getInputCluster(zclClusterType.getId());
-    if (zclCluster == null) {
-      log.error("[{}]: Error opening server cluster {}. {}", entityID, zclClusterType, endpoint);
-      return null;
-    }
-    return zclCluster;
   }
 }

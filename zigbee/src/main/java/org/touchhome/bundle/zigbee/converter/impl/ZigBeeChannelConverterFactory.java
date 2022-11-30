@@ -34,10 +34,6 @@ public final class ZigBeeChannelConverterFactory {
   @Getter
   private final Set<Integer> allServerClusterIds;
 
-  public int getConverterCount() {
-    return allConverters.size();
-  }
-
   public ZigBeeChannelConverterFactory(EntityContext entityContext) {
     List<Class<? extends ZigBeeBaseChannelConverter>> converters = entityContext.getClassesWithAnnotation(ZigBeeConverter.class);
 
@@ -50,6 +46,10 @@ public final class ZigBeeChannelConverterFactory {
         allClientClusterIds.add(additionalCluster);
       }
     }
+  }
+
+  public int getConverterCount() {
+    return allConverters.size();
   }
 
   public Collection<ZigBeeBaseChannelConverter> createConverterEndpoint(EndpointDefinition endpointDefinition) {

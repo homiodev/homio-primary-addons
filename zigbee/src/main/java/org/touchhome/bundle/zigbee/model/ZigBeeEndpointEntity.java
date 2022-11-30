@@ -25,10 +25,10 @@ import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.condition.UIFieldShowOnCondition;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldStaticSelection;
 import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclDoorLockConfig;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclFanControlConfig;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclLevelControlConfig;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclOnOffSwitchConfig;
+import org.touchhome.bundle.zigbee.converter.config.ZclDoorLockConfig;
+import org.touchhome.bundle.zigbee.converter.config.ZclFanControlConfig;
+import org.touchhome.bundle.zigbee.converter.config.ZclLevelControlConfig;
+import org.touchhome.bundle.zigbee.converter.config.ZclOnOffSwitchConfig;
 import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
 
 @Entity

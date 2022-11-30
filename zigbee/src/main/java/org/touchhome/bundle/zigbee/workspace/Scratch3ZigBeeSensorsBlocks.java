@@ -23,8 +23,8 @@ import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock.ServerMenuBlock;
 import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.ZigBeeEntrypoint;
-import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasFireIndicator;
-import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverterIasWaterSensor;
+import org.touchhome.bundle.zigbee.converter.impl.ias.ZigBeeConverterIasFireIndicator;
+import org.touchhome.bundle.zigbee.converter.impl.ias.ZigBeeConverterIasWaterSensor;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 
 @Getter

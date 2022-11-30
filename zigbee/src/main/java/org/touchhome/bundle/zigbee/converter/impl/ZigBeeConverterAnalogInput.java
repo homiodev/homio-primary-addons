@@ -1,18 +1,13 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
-import static com.zsmartsystems.zigbee.zcl.clusters.ZclAnalogInputBasicCluster.ATTR_DESCRIPTION;
-
 import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclAnalogInputBasicCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
-import org.touchhome.bundle.zigbee.converter.impl.config.ReportingChangeModel;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclReportingConfig;
+import org.touchhome.bundle.zigbee.converter.config.ReportingChangeModel;
+import org.touchhome.bundle.zigbee.converter.config.ZclReportingConfig;
 import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
 
 /**
@@ -42,8 +37,7 @@ public class ZigBeeConverterAnalogInput extends ZigBeeInputBaseConverter {
   }
 
   @Override
-  public void initialize(ZigbeeEndpointService endpointService, ZigBeeEndpoint endpoint) {
-    super.initialize(endpointService, endpoint);
+  protected void initializeReportConfigurations() {
     configReporting = new ZclReportingConfig(getEntity());
   }
 }

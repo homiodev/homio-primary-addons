@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclReportingConfig;
+import org.touchhome.bundle.zigbee.converter.config.ZclReportingConfig;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
 
@@ -60,18 +60,13 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter 
   }
 
   @Override
-  public void initialize(ZigbeeEndpointService endpointService, ZigBeeEndpoint endpoint) {
-    super.initialize(endpointService, endpoint);
-    configReporting = new ZclReportingConfig(getEntity());
-  }
-
-  @Override
   public void initializeDevice() {
     ZclWindowCoveringCluster serverCluster = getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
     if (serverCluster == null) {
-      log.error("[{}]: Error opening device window covering controls {}", entityID, endpoint);
+      log.error("[{}]: Error opening device window covering controls {}", entityID, this.endpoint);
       throw new RuntimeException("Error opening device window covering controls");
     }
+    configReporting = new ZclReportingConfig(getEntity());
 
     try {
       CommandResult bindResponse = bind(serverCluster).get();

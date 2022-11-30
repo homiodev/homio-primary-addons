@@ -28,7 +28,7 @@ import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.service.EntityService.ServiceInstance;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
-import org.touchhome.bundle.zigbee.converter.impl.config.ReportingChangeModel;
+import org.touchhome.bundle.zigbee.converter.config.ReportingChangeModel;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.requireEndpoint.DeviceDefinition.EndpointDefinition;

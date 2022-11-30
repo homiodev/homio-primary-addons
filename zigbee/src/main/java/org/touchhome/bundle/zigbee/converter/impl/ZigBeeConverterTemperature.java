@@ -33,7 +33,7 @@ public class ZigBeeConverterTemperature extends ZigBeeBaseChannelConverter imple
 
     ZclTemperatureMeasurementCluster serverCluster = getInputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID);
     if (serverCluster == null) {
-      log.error("[{}]: Error opening device temperature measurement cluster {}", entityID, endpoint);
+      log.error("[{}]: Error opening device temperature measurement cluster {}", entityID, this.endpoint);
       throw new RuntimeException("Error opening device temperature measurement cluster");
     }
 
@@ -45,10 +45,10 @@ public class ZigBeeConverterTemperature extends ZigBeeBaseChannelConverter imple
         CommandResult reportingResponse = attribute.setReporting(1, REPORTING_PERIOD_DEFAULT_MAX, 10).get();
         handleReportingResponse(reportingResponse);
       } else {
-        log.debug("[{}]: Failed to bind temperature measurement cluster {}", entityID, endpoint);
+        log.debug("[{}]: Failed to bind temperature measurement cluster {}", entityID, this.endpoint);
       }
     } catch (Exception e) {
-      log.error("[{}]: Exception setting reporting", endpoint, e);
+      log.error("[{}]: Exception setting reporting", this.endpoint, e);
       throw new RuntimeException("Exception setting reporting");
     }
   }

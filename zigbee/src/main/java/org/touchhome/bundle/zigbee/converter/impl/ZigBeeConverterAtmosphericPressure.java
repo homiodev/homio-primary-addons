@@ -35,11 +35,11 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeBaseChannelConvert
   private Integer enhancedScale = null;
 
   @Override
-  public void initializeDevice() {
+  public void initializeDevice() throws Exception {
     pollingPeriod = REPORTING_PERIOD_DEFAULT_MAX;
-    ZclCluster serverCluster = endpoint.getInputCluster(ZclPressureMeasurementCluster.CLUSTER_ID);
+    ZclCluster serverCluster = this.endpoint.getInputCluster(ZclPressureMeasurementCluster.CLUSTER_ID);
     if (serverCluster == null) {
-      log.error("[{}]: Error opening device pressure measurement cluster {}", entityID, endpoint);
+      log.error("[{}]: Error opening device pressure measurement cluster {}", entityID, this.endpoint);
       throw new RuntimeException("Error opening device pressure measurement cluster");
     }
 
@@ -59,12 +59,12 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeBaseChannelConvert
           handleReportingResponse(reportingResponse);
         }
       } else {
-        log.error("[{}]: Error 0x{} setting server binding {}", entityID, Integer.toHexString(bindResponse.getStatusCode()), endpoint);
+        log.error("[{}]: Error 0x{} setting server binding {}", entityID, Integer.toHexString(bindResponse.getStatusCode()), this.endpoint);
         pollingPeriod = POLLING_PERIOD_HIGH;
         throw new RuntimeException("Error setting server binding");
       }
     } catch (Exception e) {
-      log.error("[{}]: Exception setting reporting {}", entityID, endpoint, e);
+      log.error("[{}]: Exception setting reporting {}", entityID, this.endpoint, e);
       pollingPeriod = POLLING_PERIOD_HIGH;
       throw new RuntimeException("Exception setting reporting");
     }

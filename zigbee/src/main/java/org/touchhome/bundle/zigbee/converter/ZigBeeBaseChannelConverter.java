@@ -20,13 +20,13 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.QuantityType;
 import org.touchhome.bundle.api.state.State;
+import org.touchhome.bundle.zigbee.converter.config.ReportingChangeModel;
+import org.touchhome.bundle.zigbee.converter.config.ZclDoorLockConfig;
+import org.touchhome.bundle.zigbee.converter.config.ZclFanControlConfig;
+import org.touchhome.bundle.zigbee.converter.config.ZclLevelControlConfig;
+import org.touchhome.bundle.zigbee.converter.config.ZclOnOffSwitchConfig;
+import org.touchhome.bundle.zigbee.converter.config.ZclReportingConfig;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
-import org.touchhome.bundle.zigbee.converter.impl.config.ReportingChangeModel;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclDoorLockConfig;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclFanControlConfig;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclLevelControlConfig;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclOnOffSwitchConfig;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclReportingConfig;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.service.ZigBeeDeviceService;
 import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
@@ -107,8 +107,7 @@ public abstract class ZigBeeBaseChannelConverter {
    *
    * @return true if the device was configured correctly
    */
-  public void initializeDevice() throws Exception {
-  }
+  public abstract void initializeDevice() throws Exception;
 
   /**
    * Initialize the converter. This is called by the {@link ZigBeeDeviceService} when the channel is created. The converter should initialize any internal states, open any
@@ -332,5 +331,11 @@ public abstract class ZigBeeBaseChannelConverter {
   // return value if analogue cluster
   public ReportingChangeModel getReportingChangeModel() {
     return null;
+  }
+
+  public <T> T readAttribute(ZclCluster zclCluster, int attributeID, T defaultValue) {
+    ZclAttribute divisorAttribute = zclCluster.getAttribute(attributeID);
+    Object value = divisorAttribute.readValue(Long.MAX_VALUE);
+    return value == null ? defaultValue : (T) value;
   }
 }

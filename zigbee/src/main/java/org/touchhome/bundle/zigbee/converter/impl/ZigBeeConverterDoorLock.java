@@ -8,13 +8,12 @@ import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclDoorLockCluster;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclDoorLockConfig;
-import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
+import org.touchhome.bundle.zigbee.converter.config.ZclDoorLockConfig;
 
 /**
  * Locks and unlocks the door and maintains the lock state This channel supports changes through attribute updates to the door lock state. ON=Locked, OFF=Unlocked.
  */
-@ZigBeeConverter(name = "zigbee:door_state", linkType = VariableType.Boolean, clientCluster = ZclDoorLockCluster.CLUSTER_ID, category = "Door")
+@ZigBeeConverter(name = "zigbee:door_state", clientCluster = ZclDoorLockCluster.CLUSTER_ID, linkType = VariableType.Boolean, category = "Door")
 public class ZigBeeConverterDoorLock extends ZigBeeInputBaseConverter {
 
   public ZigBeeConverterDoorLock() {
@@ -32,9 +31,8 @@ public class ZigBeeConverterDoorLock extends ZigBeeInputBaseConverter {
   }
 
   @Override
-  public void initialize(ZigbeeEndpointService endpointService, ZigBeeEndpoint endpoint) {
-    super.initialize(endpointService, endpoint);
-    this.configDoorLock = new ZclDoorLockConfig(getEntity(), getZclCluster(), log);
+  protected void initializeReportConfigurations() {
+    this.configDoorLock = new ZclDoorLockConfig(getEntity(), zclCluster, log);
   }
 
   /*@Override

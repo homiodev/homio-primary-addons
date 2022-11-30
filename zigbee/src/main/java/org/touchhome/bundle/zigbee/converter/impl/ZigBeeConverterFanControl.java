@@ -1,13 +1,13 @@
 package org.touchhome.bundle.zigbee.converter.impl;
 
+import static com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType.FAN_CONTROL;
+
 import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclFanControlCluster;
-import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
-import org.touchhome.bundle.zigbee.converter.impl.config.ZclFanControlConfig;
-import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
+import org.touchhome.bundle.zigbee.converter.config.ZclFanControlConfig;
 
 /**
  * Set the fan mode This channel supports fan control
@@ -23,7 +23,7 @@ public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
   private static final int MODE_AUTO = 5;
 
   public ZigBeeConverterFanControl() {
-    super(ZclClusterType.FAN_CONTROL, ZclFanControlCluster.ATTR_FANMODE, 1,
+    super(FAN_CONTROL, ZclFanControlCluster.ATTR_FANMODE, 1,
         REPORTING_PERIOD_DEFAULT_MAX, null, POLLING_PERIOD_HIGH);
   }
 
@@ -38,12 +38,18 @@ public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
   }
 
   @Override
-  public void initialize(ZigbeeEndpointService endpointService, ZigBeeEndpoint endpoint) {
-    super.initialize(endpointService, endpoint);
-    configFanControl = new ZclFanControlConfig(getEntity(), getZclCluster(), log);
+  protected void initializeReportConfigurations() {
+    configFanControl = new ZclFanControlConfig(getEntity(), zclCluster, log);
   }
 
- /*@Override
+  @Override
+  public void updateConfiguration() {
+    if (configFanControl != null) {
+      configFanControl.updateConfiguration(getEntity());
+    }
+  }
+
+  /*@Override
     public void handleCommand(final ZigBeeCommand command) {
         int value;
         if (command instanceof OnOffType) {
