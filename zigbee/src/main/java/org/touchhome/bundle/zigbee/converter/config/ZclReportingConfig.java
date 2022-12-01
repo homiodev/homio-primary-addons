@@ -1,12 +1,11 @@
 package org.touchhome.bundle.zigbee.converter.config;
 
 import lombok.Getter;
-import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 @Getter
 public class ZclReportingConfig {
 
-  private int reportingTimeMin;
+  /*private int reportingTimeMin;
   private int reportingTimeMax;
 
   private double reportingChange;
@@ -38,5 +37,5 @@ public class ZclReportingConfig {
       updated = true;
     }
     return updated;
-  }
+  }*/
 }

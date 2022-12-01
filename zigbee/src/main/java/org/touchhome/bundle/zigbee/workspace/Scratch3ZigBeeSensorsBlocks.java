@@ -3,7 +3,6 @@ package org.touchhome.bundle.zigbee.workspace;
 import static org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlocks.ZIGBEE_ALARM_URL;
 import static org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlocks.ZIGBEE_CLUSTER_ID_URL;
 import static org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlocks.ZIGBEE_CLUSTER_NAME_URL;
-import static org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlocks.fetchState;
 import static org.touchhome.bundle.zigbee.workspace.Scratch3ZigBeeBlocks.getZigBeeDevice;
 
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
@@ -23,8 +22,6 @@ import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock.ServerMenuBlock;
 import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.ZigBeeEntrypoint;
-import org.touchhome.bundle.zigbee.converter.impl.ias.ZigBeeConverterIasFireIndicator;
-import org.touchhome.bundle.zigbee.converter.impl.ias.ZigBeeConverterIasWaterSensor;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 
 @Getter
@@ -54,9 +51,9 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
 
     // Menu
     this.alarmSensorMenu = menuServer("alarmSensorMenu", ZIGBEE_ALARM_URL, "Alarm Sensor");
-    this.smokeSensorMenu = menuServer("smokeSensorMenu", ZIGBEE_CLUSTER_NAME_URL + ZigBeeConverterIasFireIndicator.CLUSTER_NAME,
+    this.smokeSensorMenu = menuServer("smokeSensorMenu", ZIGBEE_CLUSTER_NAME_URL + "ZigBeeConverterIasFireIndicator.CLUSTER_NAM",
         "Smoke sensor");
-    this.waterSensorMenu = menuServer("waterSensorMenu", ZIGBEE_CLUSTER_NAME_URL + ZigBeeConverterIasWaterSensor.CLUSTER_NAME,
+    this.waterSensorMenu = menuServer("waterSensorMenu", ZIGBEE_CLUSTER_NAME_URL + "ZigBeeConverterIasWaterSensor.CLUSTER_NAME",
         "Water sensor");
     this.illuminanceSensorMenu = menuServer("illuminanceSensorMenu", ZIGBEE_CLUSTER_ID_URL + ZclIlluminanceMeasurementCluster.CLUSTER_ID,
         "Illuminance Sensor", "-", ZclIlluminanceMeasurementCluster.CLUSTER_ID);
@@ -138,15 +135,18 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
   }
 
   private State waterSensorValueEval(WorkspaceBlock workspaceBlock) {
-    return getEndpointState(workspaceBlock, WATER_SENSOR, waterSensorMenu, ZclIasZoneCluster.CLUSTER_ID, ZigBeeConverterIasWaterSensor.CLUSTER_NAME);
+    return null;
+    //return getEndpointState(workspaceBlock, WATER_SENSOR, waterSensorMenu, ZclIasZoneCluster.CLUSTER_ID, ZigBeeConverterIasWaterSensor.CLUSTER_NAME);
   }
 
   private State smokeSensorValueEval(WorkspaceBlock workspaceBlock) {
-    return getEndpointState(workspaceBlock, SMOKE_SENSOR, smokeSensorMenu, ZclIasZoneCluster.CLUSTER_ID, ZigBeeConverterIasFireIndicator.CLUSTER_NAME);
+    return null;
+//    return getEndpointState(workspaceBlock, SMOKE_SENSOR, smokeSensorMenu, ZclIasZoneCluster.CLUSTER_ID, ZigBeeConverterIasFireIndicator.CLUSTER_NAME);
   }
 
   private State getEndpointState(WorkspaceBlock workspaceBlock, String key, ServerMenuBlock menuBlock, int clusterId, String clusterName) {
-    return fetchState(getZigBeeDevice(workspaceBlock, key, menuBlock).filterEndpoints(clusterId));
+    return null;
+//    return fetchState(getZigBeeDevice(workspaceBlock, key, menuBlock).filterEndpoints(clusterId));
   }
 
   /*private ScratchDeviceState fetchValueFromDevice(WorkspaceBlock workspaceBlock, int clustersId, String sensor,

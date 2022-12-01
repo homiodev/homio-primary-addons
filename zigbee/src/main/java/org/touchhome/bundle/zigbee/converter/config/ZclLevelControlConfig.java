@@ -1,24 +1,11 @@
 package org.touchhome.bundle.zigbee.converter.config;
 
-import static com.zsmartsystems.zigbee.zcl.clusters.ZclLevelControlCluster.ATTR_DEFAULTMOVERATE;
-import static com.zsmartsystems.zigbee.zcl.clusters.ZclLevelControlCluster.ATTR_OFFTRANSITIONTIME;
-import static com.zsmartsystems.zigbee.zcl.clusters.ZclLevelControlCluster.ATTR_ONLEVEL;
-import static com.zsmartsystems.zigbee.zcl.clusters.ZclLevelControlCluster.ATTR_ONOFFTRANSITIONTIME;
-import static com.zsmartsystems.zigbee.zcl.clusters.ZclLevelControlCluster.ATTR_ONTRANSITIONTIME;
-import static org.touchhome.bundle.zigbee.converter.config.ZclOnOffSwitchConfig.configureAttribute;
-
-import com.zsmartsystems.zigbee.ZigBeeEndpointAddress;
-import com.zsmartsystems.zigbee.zcl.ZclCluster;
-import com.zsmartsystems.zigbee.zcl.clusters.ZclLevelControlCluster;
-import java.util.concurrent.Future;
 import lombok.Getter;
-import org.apache.logging.log4j.Logger;
-import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 @Getter
 public class ZclLevelControlConfig {
 
-  private final ZclLevelControlCluster levelControlCluster;
+ /* private final ZclLevelControlCluster levelControlCluster;
 
   private final boolean supportOnLevel;
   private final boolean supportOffTransitionTime;
@@ -112,5 +99,5 @@ public class ZclLevelControlConfig {
         entity.setOutdated(true);
       }
     }
-  }
+  }*/
 }

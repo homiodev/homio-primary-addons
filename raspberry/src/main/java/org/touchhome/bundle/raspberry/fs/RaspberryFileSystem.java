@@ -1,6 +1,7 @@
 package org.touchhome.bundle.raspberry.fs;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.touchhome.bundle.api.util.TouchHomeUtils.TIKA;
 
 import java.io.ByteArrayInputStream;
@@ -32,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.raspberry.RaspberryDeviceEntity;
 import org.touchhome.common.fs.FileSystemProvider;
 import org.touchhome.common.fs.TreeNode;
@@ -217,11 +219,10 @@ public class RaspberryFileSystem implements FileSystemProvider {
   }
 
   private Path buildPath(String id) {
-    Path path = Paths.get(id);
-    if (!path.toString().startsWith(entity.getFileSystemRoot())) {
-      path = Paths.get(entity.getFileSystemRoot()).resolve(path);
+    if (!id.startsWith(entity.getFileSystemRoot())) {
+      return Paths.get(entity.getFileSystemRoot()).resolve(id);
     }
-    return path;
+    return Paths.get(id);
   }
 
   @Override
@@ -309,15 +310,21 @@ public class RaspberryFileSystem implements FileSystemProvider {
   }
 
   @Override
-  public Set<TreeNode> loadTreeUpToChild(@NotNull String id) {
-    Path targetPath = buildPath(id);
+  public Set<TreeNode> loadTreeUpToChild(@Nullable String rootPath, @NotNull String id) {
+    Path targetPath;
+    if (rootPath != null) {
+      Path path = buildPath(rootPath);
+      targetPath = path.resolve(id);
+    } else {
+      targetPath = buildPath(id);
+    }
     if (!Files.exists(targetPath)) {
       return null;
     }
-    Set<TreeNode> rootChildren = getChildren("");
+    Set<TreeNode> rootChildren = getChildren(trimToEmpty(rootPath));
     Set<TreeNode> currentChildren = rootChildren;
-    Path pathId = Paths.get("");
-    for (Path pathItem : Paths.get(id)) {
+    Path pathId = Paths.get(trimToEmpty(rootPath));
+    for (Path pathItem : Paths.get(id)) { // split id by '/'
       Path pathItemId = pathId.resolve(pathItem);
       String pathItemIdStr = pathItemId.toString().replaceAll("\\\\", "/");
       TreeNode foundedObject =

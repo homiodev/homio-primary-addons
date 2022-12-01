@@ -7,6 +7,7 @@ import com.zsmartsystems.zigbee.ZigBeeNode;
 import com.zsmartsystems.zigbee.app.discovery.ZigBeeDiscoveryExtension;
 import com.zsmartsystems.zigbee.app.discovery.ZigBeeNetworkDiscoverer;
 import com.zsmartsystems.zigbee.security.ZigBeeKey;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -36,6 +37,7 @@ import org.touchhome.bundle.api.ui.field.UIFieldGroup;
 import org.touchhome.bundle.api.ui.field.UIFieldIgnore;
 import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
+import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.condition.UIFieldShowOnCondition;
 import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntities;
 import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntityWidth;
@@ -65,10 +67,22 @@ public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoo
   @OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, orphanRemoval = true)
   private Set<ZigBeeDeviceEntity> devices;
 
+  @UIField(order = 15, hideInEdit = true, hideOnEmpty = true)
+  @UIFieldColorStatusMatch
+  public Status getDesiredStatus() {
+    return optService().map(ZigBeeCoordinatorService::getDesiredStatus).orElse(null);
+  }
+
+  @UIField(order = 15, hideInEdit = true, hideOnEmpty = true)
+  @UIFieldColorStatusMatch
+  public Status getUpdatingStatus() {
+    return optService().map(ZigBeeCoordinatorService::getUpdatingStatus).orElse(null);
+  }
+
   @UIField(order = 9999, disableEdit = true)
   @UIFieldInlineEntities(bg = "#27FF000D")
   public List<ZigBeeCoordinatorDeviceEntity> getCoordinatorDevices() {
-    return devices.stream().map(ZigBeeCoordinatorDeviceEntity::new).collect(Collectors.toList());
+    return devices == null ? Collections.emptyList() : devices.stream().map(ZigBeeCoordinatorDeviceEntity::new).collect(Collectors.toList());
   }
 
   @Override
@@ -158,7 +172,7 @@ public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoo
   }
 
   @UIField(order = 1, hideOnEmpty = true)
-  @UIFieldTreeNodeSelection(rootPath = "${root}/zigbee")
+  @UIFieldTreeNodeSelection(rootPath = "zigbee", allowSelectDirs = true, allowSelectFiles = false)
   @UIFieldGroup(value = "Network", order = 10, borderColor = "#4f8a4e")
   public String getNetworkId() {
     return getJsonData("nid");
@@ -411,9 +425,11 @@ public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoo
   @Override
   public void getAllRelatedEntities(Set<BaseEntity> relations) {
     super.getAllRelatedEntities(relations);
-    relations.addAll(devices);
-    for (ZigBeeDeviceEntity device : devices) {
-      device.getAllRelatedEntities(relations);
+    if (devices != null) {
+      relations.addAll(devices);
+      for (ZigBeeDeviceEntity device : devices) {
+        device.getAllRelatedEntities(relations);
+      }
     }
   }
 
@@ -449,7 +465,7 @@ public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoo
       this.ieeeAddress = device.getIeeeAddress();
       this.model = device.getModelIdentifier();
       this.status = device.getStatus();
-      this.endpointsCount = device.getEndpoints().size();
+      this.endpointsCount = device.optService().map(s -> s.getEndpoints().size()).orElse(-1);
     }
   }
 }

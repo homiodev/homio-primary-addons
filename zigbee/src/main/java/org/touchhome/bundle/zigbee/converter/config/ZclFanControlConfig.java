@@ -1,17 +1,11 @@
 package org.touchhome.bundle.zigbee.converter.config;
 
-import static org.touchhome.bundle.zigbee.converter.config.ZclOnOffSwitchConfig.configureAttribute;
-
-import com.zsmartsystems.zigbee.zcl.ZclCluster;
-import com.zsmartsystems.zigbee.zcl.clusters.ZclFanControlCluster;
 import lombok.Getter;
-import org.apache.logging.log4j.Logger;
-import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 @Getter
 public class ZclFanControlConfig {
 
-  private final ZclFanControlCluster fanControlCluster;
+  /*private final ZclFanControlCluster fanControlCluster;
   private final boolean supportFanModeSequence;
 
   private int fanModeSequence;
@@ -36,5 +30,5 @@ public class ZclFanControlConfig {
         entity.setOutdated(true);
       }
     }
-  }
+  }*/
 }

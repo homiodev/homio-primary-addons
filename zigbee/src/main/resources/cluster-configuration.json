@@ -1,0 +1,302 @@
+{
+  "POWER_CONFIGURATION": {
+    "report": {
+      "min": 600,
+      "max": 7200,
+      "change": 1
+    },
+    "attributes": [
+      {
+        "id": "ATTR_BATTERYVOLTAGE",
+        "handler": "ZigBeePowerAttributeHandler"
+      },
+      {
+        "id": "ATTR_BATTERYALARMSTATE",
+        "handler": "ZigBeePowerAttributeHandler",
+        "poolingPeriod": 1800
+      },
+      {
+        "id": "ATTR_BATTERYPERCENTAGEREMAINING",
+        "handler": "ZigBeePowerAttributeHandler"
+      }
+    ]
+  },
+  "ON_OFF": {
+    "orOutputCluster": [
+      "ON_OFF"
+    ],
+    "app": "ZigBeeSwitchApplication",
+    "report": {
+      "configurable": true,
+      "min": 1,
+      "max": 900
+    },
+    "attributes": [
+      {
+        "id": "ATTR_ONOFF",
+        "failedPollingInterval": 60,
+        "bindFailedPollingInterval": 60
+      }
+    ]
+  },
+  "ON_OFF_SWITCH_CONFIGURATION": {
+    "orOutputCluster": [
+      "ON_OFF_SWITCH_CONFIGURATION"
+    ],
+    "app": "ZigBeeSwitchApplication",
+    "report": {
+      "configurable": true,
+      "min": 1,
+      "max": 900
+    },
+    "attributes": [
+      {
+        "id": "ATTR_ONOFF",
+        "failedPollingInterval": 60
+      }
+    ]
+  },
+  "LEVEL_CONTROL": {
+    "report": {
+      "configurable": true,
+      "min": 1,
+      "max": 900
+    }
+  },
+  "ALARMS": {
+  },
+  "ANALOG_INPUT_BASIC": {
+    "attributes": [
+      {
+        "id": "ATTR_PRESENTVALUE",
+        "report": {
+          "min": 1,
+          "max": 7200
+        }
+      }
+    ]
+  },
+  "BINARY_INPUT_BASIC": {
+    "attributes": [
+      {
+        "id": "ATTR_PRESENTVALUE",
+        "report": {
+          "min": 1,
+          "max": 7200
+        }
+      }
+    ]
+  },
+  "MULTISTATE_INPUT_BASIC": {
+    "attributes": [
+      {
+        "id": "ATTR_PRESENTVALUE",
+        "report": {
+          "min": 1,
+          "max": 7200
+        }
+      }
+    ]
+  },
+  "MULTISTATE_OUTPUT_BASIC": {
+  },
+  "MULTISTATE_VALUE_BASIC": {
+  },
+  "POLL_CONTROL": {
+  },
+  "DOOR_LOCK": {
+  },
+  "WINDOW_COVERING": {
+    "attributes": [
+      {
+        "id": "ATTR_CURRENTPOSITIONLIFTPERCENTAGE",
+        "report": {
+          "configurable": true,
+          "min": 1,
+          "max": 900
+        }
+      }
+    ]
+  },
+  "THERMOSTAT": {
+    "defaultAttributeHandler": "ZigBeeThermostatAttributeHandler",
+    "attributes": [
+      {
+        "id": "ATTR_SYSTEMMODE",
+        "report": {
+          "min": 1,
+          "max": 7200
+        }
+      },
+      {
+        "id": "ATTR_PICOOLINGDEMAND",
+        "report": {
+          "configurable": true,
+          "min": 1,
+          "max": 900,
+          "change": 10
+        },
+        "analogue": {
+          "default": 1,
+          "min": 1,
+          "max": 100
+        }
+      },
+      {
+        "id": "ATTR_PIHEATINGDEMAND",
+        "report": {
+          "configurable": true,
+          "min": 1,
+          "max": 900,
+          "change": 10
+        },
+        "analogue": {
+          "default": 1,
+          "min": 1,
+          "max": 100
+        }
+      }
+    ]
+  },
+  "FAN_CONTROL": {
+    "report": {
+      "min": 1,
+      "max": 7200
+    }
+  },
+  "DEHUMIDIFICATION_CONTROL": {
+  },
+  "THERMOSTAT_USER_INTERFACE_CONFIGURATION": {
+  },
+  "COLOR_CONTROL": {
+  },
+  "ILLUMINANCE_MEASUREMENT": {
+    "attributes": [
+      {
+        "id": "ATTR_MEASUREDVALUE",
+        "report": {
+          "configurable": true,
+          "min": 1,
+          "max": 900,
+          "analogue": {
+            "default": 5000,
+            "min": 10,
+            "max": 20000
+          }
+        }
+      }
+    ]
+  },
+  "ILLUMINANCE_LEVEL_SENSING": {
+  },
+  "TEMPERATURE_MEASUREMENT": {
+    "useOutputClusterIfNoInput": true,
+    "attributes": [
+      {
+        "id": "ATTR_MEASUREDVALUE",
+        "handler": "ZigBeeTemperatureAttributeHandler"
+      }
+    ]
+  },
+  "PRESSURE_MEASUREMENT": {
+    "failedPollingInterval": 7200,
+    "successMaxReportInterval": 7200,
+    "attributes": [
+      {
+        "id": "ATTR_MEASUREDVALUE",
+        "handler": "ZigBeeAtmosphericPressureAttributeHandler",
+        "report": {
+          "min": 1,
+          "max": 7200,
+          "change": 0.1
+        }
+      },
+      {
+        "id": "ATTR_SCALEDVALUE",
+        "handler": "ZigBeeAtmosphericPressureAttributeHandler",
+        "report": {
+          "min": 1,
+          "max": 7200,
+          "change": 0.1
+        }
+      }
+    ]
+  },
+  "FLOW_MEASUREMENT": {
+  },
+  "RELATIVE_HUMIDITY_MEASUREMENT": {
+    "attributes": [
+      {
+        "id": "ATTR_MEASUREDVALUE",
+        "precision": 2,
+        "report": {
+          "min": 1,
+          "max": 7200,
+          "change": 10
+        }
+      }
+    ]
+  },
+  "OCCUPANCY_SENSING": {
+    "attributes": [
+      {
+        "id": "ATTR_OCCUPANCY",
+        "report": {
+          "min": 1,
+          "max": 7200
+        }
+      }
+    ]
+  },
+  "LEAF_WETNESS_MEASUREMENT": {
+  },
+  "SOIL_MOISTURE_MEASUREMENT": {
+  },
+  "IAS_ZONE": {
+  },
+  "IAS_ACE": {
+  },
+  "IAS_WD": {
+  },
+  "PRICE": {
+  },
+  "DEMAND_RESPONSE_AND_LOAD_CONTROL": {
+  },
+  "METERING": {
+    "report": {
+      "min": 3,
+      "max": 7200,
+      "change": 3
+    },
+    "attributes": [
+      {
+        "id": "ATTR_INSTANTANEOUSDEMAND",
+        "handler": "ZigBeeMeteringAttributeHandler"
+      },
+      {
+        "id": "ATTR_CURRENTSUMMATIONDELIVERED",
+        "handler": "ZigBeeMeteringAttributeHandler"
+      },
+      {
+        "id": "ATTR_CURRENTSUMMATIONRECEIVED",
+        "handler": "ZigBeeMeteringAttributeHandler"
+      }
+    ]
+  },
+  "ELECTRICAL_MEASUREMENT": {
+    "defaultAttributeHandler": "ZigBeeElectricalMeasurementAttributeHandler",
+    "report": {
+      "min": 3,
+      "max": 7200,
+      "change": 1
+    },
+    "attributes": [
+      {
+        "id": "ATTR_ACTIVEPOWER",
+        "report": {
+          "change": 3
+        }
+      }
+    ]
+  }
+}
