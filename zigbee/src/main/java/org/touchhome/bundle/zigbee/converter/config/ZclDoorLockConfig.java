@@ -1,7 +1,12 @@
 package org.touchhome.bundle.zigbee.converter.config;
 
+import static org.touchhome.bundle.zigbee.converter.config.ZclOnOffSwitchConfig.configureAttribute;
+
+import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclDoorLockCluster;
 import lombok.Getter;
+import org.apache.logging.log4j.Logger;
+import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 /**
  * Configuration handler for the {@link ZclDoorLockCluster}
@@ -9,7 +14,7 @@ import lombok.Getter;
 @Getter
 public class ZclDoorLockConfig {
 
- /* private final ZclDoorLockCluster doorLockCluster;
+  private final ZclDoorLockCluster doorLockCluster;
   private final boolean supportSoundVolume;
   private final boolean supportAutoRelockTime;
   private final boolean supportEnableOneTouchLocking;
@@ -76,5 +81,5 @@ public class ZclDoorLockConfig {
         entity.setOutdated(true);
       }
     }
-  }*/
+  }
 }

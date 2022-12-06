@@ -25,7 +25,8 @@ import com.zsmartsystems.zigbee.transport.TransportConfigOption;
 import com.zsmartsystems.zigbee.transport.TrustCentreJoinMode;
 import com.zsmartsystems.zigbee.transport.ZigBeeTransportFirmwareUpdate;
 import com.zsmartsystems.zigbee.transport.ZigBeeTransportTransmit;
-import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
+import com.zsmartsystems.zigbee.zcl.clusters.ZclBasicCluster;
+import com.zsmartsystems.zigbee.zcl.clusters.ZclOtaUpgradeCluster;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,11 +34,11 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextBGP.ThreadContext;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
@@ -45,11 +46,11 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService.ServiceInstance;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.zigbee.ZigBeeConsolePlugin;
+import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.internal.ZigBeeDataStore;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryOnStartupSetting;
-import org.touchhome.bundle.zigbee.util.ClusterConfigurations;
 import org.touchhome.common.util.Lang;
 
 /**
@@ -75,6 +76,7 @@ public abstract class ZigBeeCoordinatorService
   /**
    * The factory to create the converters for the different zigbeeRequireEndpoints.
    */
+  private final ZigBeeChannelConverterFactory channelFactory;
   private final Class<?> serializerClass = DefaultSerializer.class;
   private final Class<?> deserializerClass = DefaultDeserializer.class;
 
@@ -113,9 +115,10 @@ public abstract class ZigBeeCoordinatorService
   public ZigBeeCoordinatorService(EntityContext entityContext, ZigbeeCoordinatorEntity entity) {
     this.entity = entity;
     this.entityID = entity.getEntityID();
+    this.channelFactory = entityContext.getBean(ZigBeeChannelConverterFactory.class);
     this.entityContext = entityContext;
 
-    this.discoveryService = new ZigBeeDiscoveryService(entityContext, entityID);
+    this.discoveryService = new ZigBeeDiscoveryService(entityContext, channelFactory, entityID);
     this.discoveryService.setCoordinator(entity);
 
     this.addNetworkNodeListener(this.discoveryService);
@@ -199,7 +202,7 @@ public abstract class ZigBeeCoordinatorService
     this.zigBeeTransport = zigbeeTransport;
     this.transportConfig = transportConfig;
 
-    initializeZigBee();
+      initializeZigBee();
   }
 
   /**
@@ -271,14 +274,14 @@ public abstract class ZigBeeCoordinatorService
 
     // Add all the clusters that we are supporting.
     // If we don't do this, the framework will reject any packets for clusters we have not stated support for.
-    networkManager.addSupportedClientCluster(ZclClusterType.BASIC.getId());
-    for (Integer clientCluster : ClusterConfigurations.getSupportedClientClusters()) {
-      networkManager.addSupportedClientCluster(clientCluster);
-    }
-    networkManager.addSupportedServerCluster(ZclClusterType.BASIC.getId());
-    networkManager.addSupportedServerCluster(ZclClusterType.ON_OFF.getId());
-    networkManager.addSupportedServerCluster(ZclClusterType.LEVEL_CONTROL.getId());
-    networkManager.addSupportedServerCluster(ZclClusterType.TEMPERATURE_MEASUREMENT.getId());
+    channelFactory.getAllClientClusterIds()
+        .forEach(clusterId -> networkManager.addSupportedClientCluster(clusterId));
+    channelFactory.getAllServerClusterIds()
+        .forEach(clusterId -> networkManager.addSupportedServerCluster(clusterId));
+
+    networkManager.addSupportedClientCluster(ZclBasicCluster.CLUSTER_ID);
+    networkManager.addSupportedClientCluster(ZclOtaUpgradeCluster.CLUSTER_ID);
+    networkManager.addSupportedServerCluster(ZclBasicCluster.CLUSTER_ID);
 
     // Show the initial network configuration for debugging
     ZigBeeChannel currentChannel = networkManager.getZigBeeChannel();
@@ -376,7 +379,7 @@ public abstract class ZigBeeCoordinatorService
   public void addAnnounceListener(ZigBeeAnnounceListener listener) {
     // Save the listeners until the network is initialized
     synchronized (announceListeners) {
-      announceListeners.add(listener);
+    announceListeners.add(listener);
     }
 
     if (networkManager != null) {
@@ -685,6 +688,9 @@ public abstract class ZigBeeCoordinatorService
     return false;
   }
 
+  /**
+   * Validate entity and decide if we need start/stop coordinator
+   */
   private @NotNull Status restartIfRequire(ZigbeeCoordinatorEntity newEntity) {
     String error = validateEntity(newEntity);
     if (error != null) {
@@ -734,9 +740,9 @@ public abstract class ZigBeeCoordinatorService
         zigBeeTransport.updateTransportConfig(transportConfig);
       }
 
-      if (reinitialize) {
+    if (reinitialize) {
         return Status.RESTARTING;
-      }
+    }
     }
 
     return Status.INITIALIZE;

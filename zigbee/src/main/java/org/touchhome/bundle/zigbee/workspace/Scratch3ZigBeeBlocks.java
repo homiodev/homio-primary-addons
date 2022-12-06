@@ -1,5 +1,10 @@
 package org.touchhome.bundle.zigbee.workspace;
 
+import com.zsmartsystems.zigbee.CommandResult;
+import com.zsmartsystems.zigbee.zcl.ZclCommand;
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
@@ -11,10 +16,13 @@ import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.ArgumentType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
+import org.touchhome.bundle.api.workspace.scratch.MenuBlock.ServerMenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
 import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.ZigBeeEntrypoint;
+import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
+import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 @Getter
 @Component
@@ -41,10 +49,10 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
     });
   }
 
-  /*public static void handleCommand(WorkspaceBlock workspaceBlock, ZigBeeDeviceEntity zigBeeDeviceEntity,
-      ZigBeeBaseCluster zigBeeBaseCluster, ZclCommand zclCommand) {
+  public static void handleCommand(WorkspaceBlock workspaceBlock, ZigBeeDeviceEntity zigBeeDeviceEntity,
+      ZigBeeBaseChannelConverter zigBeeBaseChannelConverter, ZclCommand zclCommand) {
     try {
-      Future<CommandResult> result = zigBeeBaseCluster.handleCommand(zclCommand);
+      Future<CommandResult> result = zigBeeBaseChannelConverter.handleCommand(zclCommand);
       if (result != null) {
         CommandResult commandResult = result.get(10, TimeUnit.SECONDS);
         if (!commandResult.isSuccess()) {
@@ -55,15 +63,15 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
     } catch (Exception ex) {
       workspaceBlock.logError("Unable to execute command <{}>", zclCommand, ex);
     }
-  }*/
+  }
 
-  /*static State fetchState(List<ZigBeeEndpointEntity> endpoints) {
+  static State fetchState(List<ZigBeeEndpointEntity> endpoints) {
     return endpoints.isEmpty() ? new DecimalType(0F) : endpoints.get(0).getLastState();
   }
 
   static List<ZigBeeEndpointEntity> getZigBeeEndpoints(WorkspaceBlock workspaceBlock, String key, ServerMenuBlock menuBlock, Integer[] clusterIds) {
     return getZigBeeDevice(workspaceBlock, workspaceBlock.getMenuValue(key, menuBlock)).filterEndpoints(clusterIds[0]);
-  }*/
+  }
 
   static ZigBeeDeviceEntity getZigBeeDevice(WorkspaceBlock workspaceBlock, String key, MenuBlock.ServerMenuBlock menuBlock) {
     return getZigBeeDevice(workspaceBlock, workspaceBlock.getMenuValue(key, menuBlock));
@@ -134,7 +142,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
   private State timeSinceLastEventEvaluate(WorkspaceBlock workspaceBlock) {
     WorkspaceBlock workspaceEventBlock = workspaceBlock.getInputWorkspaceBlock("EVENT");
 
-    /*Scratch3Block scratch3Block = this.getBlocksMap().get(workspaceEventBlock.getOpcode());
+    Scratch3Block scratch3Block = this.getBlocksMap().get(workspaceEventBlock.getOpcode());
     Pair<String, MenuBlock> menuBlock = scratch3Block.findMenuBlock(k -> k.endsWith("_SENSOR"));
 
     Integer[] clusters = ((MenuBlock.ServerMenuBlock) menuBlock.getValue()).getClusters();
@@ -143,7 +151,7 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
     if (!endpoints.isEmpty()) {
       long timestamp = endpoints.get(0).getLastAnswerFromEndpoint();
       return new DecimalType((System.currentTimeMillis() - timestamp) / 1000);
-    }*/
+    }
     return new DecimalType(Long.MAX_VALUE);
   }
 

@@ -17,22 +17,30 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclBasicCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclOtaUpgradeCluster;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextBGP.ThreadContext;
 import org.touchhome.bundle.api.EntityContextSetting;
+import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.DeviceBaseEntity;
 import org.touchhome.bundle.api.entity.HasJsonData;
 import org.touchhome.bundle.api.entity.HasStatusAndMsg;
@@ -40,29 +48,27 @@ import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.HasEntityLog;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService;
-import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
 import org.touchhome.bundle.api.ui.field.UIFieldProgress;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
-import org.touchhome.bundle.api.ui.field.color.UIFieldColorBgRef;
+import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
+import org.touchhome.bundle.api.ui.field.action.v1.UIInputEntity;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
+import org.touchhome.bundle.api.ui.field.condition.UIFieldDisableCreateTab;
 import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntities;
-import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntityColSpan;
 import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.zigbee.SelectModelIdentifierDynamicLoader;
-import org.touchhome.bundle.zigbee.converter.impl.AttributeHandler;
-import org.touchhome.bundle.zigbee.converter.impl.cluster.ZigBeeGeneralApplication;
 import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
 import org.touchhome.bundle.zigbee.model.service.ZigBeeDeviceService;
 import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryClusterTimeoutSetting;
-import org.touchhome.bundle.zigbee.setting.ZigBeeShowMissConfiguredClustersSetting;
-import org.touchhome.bundle.zigbee.util.DeviceDefinition;
-import org.touchhome.bundle.zigbee.util.ZigBeeDefineEndpoints;
+import org.touchhome.bundle.zigbee.util.DeviceConfiguration;
+import org.touchhome.bundle.zigbee.util.DeviceConfigurations;
+import org.touchhome.common.exception.NotFoundException;
 
 @Log4j2
 @Getter
@@ -76,15 +82,10 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
 
   public static final String PREFIX = "zb_";
 
-  private static String APP_TEMPLATE = "<div style=\"align-items:center;display:flex;font-size:14px;\"><div style=\"flex:auto;overflow:auto;\">[%s] %s</div>"
-      + "<div style=\"font-size:12px;\">"
-      + "<div>Report bind: <span style=\"color:%s\">%s</span></div>"
-      + "<div>Attrib disc: <span style=\"color:%s\">%s</span></div>"
-      + "</div></div>";
-
-  private static Map<Integer, String> ENDPOINT_COLORS = Map.of(1, "#57A4D160", 2, "#D1845660", 3, "#D1C15560",
-      4, "#A2D15460", 5, "#36461C60", 6, "#D054A160", 7, "#D0536260", 8, "#AE7F8460"
-  );
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "owner", orphanRemoval = true)
+  @UIField(order = 1000, hideInView = true)
+  @UIFieldDisableCreateTab
+  private Set<ZigBeeEndpointEntity> endpoints;
 
   @ManyToOne
   @JsonIgnore
@@ -93,22 +94,12 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
 
   @UIField(order = 9999, hideInEdit = true)
   @UIFieldInlineEntities(bg = "#27FF000D")
-  public List<ZigBeeEndpointClusterEntity> getClusters() {
-    return optService().map(service -> {
-      List<ZigBeeEndpointClusterEntity> entities = new ArrayList<>();
-      boolean showNoAttrApplications = getEntityContext().setting().getValue(ZigBeeShowMissConfiguredClustersSetting.class);
-      for (ZigBeeGeneralApplication zigBeeApplication : service.getZigBeeApplications()) {
-        if (!showNoAttrApplications && zigBeeApplication.getAttributes().isEmpty()) {
-          continue;
-        }
-        entities.add(new ZigBeeEndpointClusterEntity(zigBeeApplication));
-        for (AttributeHandler attribute : zigBeeApplication.getAttributes().values()) {
-          entities.add(new ZigBeeEndpointClusterEntity(attribute));
-        }
-      }
-      Collections.sort(entities);
-      return entities;
-    }).orElse(Collections.emptyList());
+  public List<ZigBeeEndpointClusterEntity> getEndpointClusters() {
+    if (endpoints == null) {
+      return Collections.emptyList();
+    }
+    return endpoints.stream().sorted(Comparator.comparingInt(o -> o.getAddress() * 1000 + o.getClusterId()))
+        .map(ZigBeeEndpointClusterEntity::new).collect(Collectors.toList());
   }
 
   @UIField(order = 1, hideInEdit = true, hideOnEmpty = true)
@@ -284,17 +275,11 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
     }).orElse(null);
   }
 
-  @UIContextMenuAction(value = "zigbee.action.poll_values", icon = "fas fa-download", iconColor = "#A939B7")
+  @UIContextMenuAction(value = "zigbee.action.pull_values", icon = "fas fa-download", iconColor = "#A939B7")
   public ActionResponseModel pollValues() {
-    getService().pullChannels(true);
+    getService().pullChannels();
     return ActionResponseModel.success();
   }
-
-  /*@UIContextMenuAction(value = "zigbee.action.re_initialize_node", icon = "fas fa-arrow-rotate-forward", iconColor = "#3272B3")
-  public ActionResponseModel reInitializeNode() {
-    getService().initializeZigBeeNode(false);
-    return ActionResponseModel.success();
-  }*/
 
   @UIContextMenuAction(value = "zigbee.action.permit_join", icon = "fas fa-arrows-to-eye", iconColor = "#1D8EB3")
   public ActionResponseModel permitJoin() {
@@ -339,26 +324,32 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
     return PREFIX;
   }
 
-  /*public @NotNull ZigBeeEndpointEntity getEndpointRequired(@NotNull Integer endpointId, @NotNull Integer clusterId) {
-    ZigBeeEndpointEntity endpoint = findEndpoint(clusterId, endpointId);
+  public @NotNull ZigBeeEndpointEntity getEndpointRequired(@NotNull Integer endpointId) {
+    ZigBeeEndpointEntity endpoint = findEndpoint(endpointId);
     if (endpoint == null) {
-      throw new NotFoundException("Unable to find endpoint: EndpointId: " + endpointId + ". ClusterId: " + clusterId);
+      throw new NotFoundException("Unable to find endpoint: EndpointId: " + endpointId);
     }
     return endpoint;
-  }*/
+  }
 
-  /*public @Nullable ZigBeeEndpointEntity findEndpoint(@NotNull Integer clusterId, @NotNull Integer endpointId) {
+  public @Nullable ZigBeeEndpointEntity findEndpoint(@NotNull Integer endpointId) {
+    if (endpoints == null) {
+      return null;
+    }
     for (ZigBeeEndpointEntity endpoint : endpoints) {
-      if (endpoint.getAddress() == endpointId && endpoint.getClusterId() == clusterId) {
+      if (endpoint.getAddress() == endpointId) {
         return endpoint;
       }
     }
     return null;
-  }*/
+  }
 
-  /*public List<ZigBeeEndpointEntity> filterEndpoints(int clusterId) {
+  public List<ZigBeeEndpointEntity> filterEndpoints(int clusterId) {
+    if (endpoints == null) {
+      return Collections.emptyList();
+    }
     return endpoints.stream().filter(e -> e.getClusterId() == clusterId).collect(Collectors.toList());
-  }*/
+  }
 
   public void updateFromNode(ZigBeeNode node, EntityContext entityContext) {
     log.info("[{}]: Starting fetch info from ZigBeeNode: <{}>", getEntityID(), node.getIeeeAddress().toString());
@@ -370,18 +361,18 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
 
     // try to find image for device
     if (isEmpty(this.getName()) || isEmpty(this.getImageIdentifier()) || isEmpty(this.getDescription())) {
-      DeviceDefinition deviceDefinition = ZigBeeDefineEndpoints.findDeviceDefinition(this);
-      if (deviceDefinition != null) {
-        if (isEmpty(this.getImageIdentifier()) && !isEmpty(deviceDefinition.getImage())) {
-          setImageIdentifier(deviceDefinition.getImage());
+      DeviceConfiguration deviceConfiguration = DeviceConfigurations.findDeviceDefinition(this);
+      if (deviceConfiguration != null) {
+        if (isEmpty(this.getImageIdentifier()) && !isEmpty(deviceConfiguration.getImage())) {
+          setImageIdentifier(deviceConfiguration.getImage());
           updated = true;
         }
-        String description = deviceDefinition.getDescription();
+        String description = deviceConfiguration.getDescription();
         if (isEmpty(this.getDescription()) && !isEmpty(description)) {
           setDescription(description);
           updated = true;
         }
-        String label = deviceDefinition.getLabel();
+        String label = deviceConfiguration.getLabel();
         if (isEmpty(this.getName()) && !isEmpty(label)) {
           setName(label);
           updated = true;
@@ -524,29 +515,27 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
     entityLogBuilder.addTopic("com.zsmartsystems.zigbee", "ieeeAddress");
   }
 
+  @Override
+  public void getAllRelatedEntities(Set<BaseEntity> set) {
+    set.addAll(getEndpoints());
+  }
+
   @Getter
   @NoArgsConstructor
-  public static class ZigBeeEndpointClusterEntity implements Comparable<ZigBeeEndpointClusterEntity> {
-
-    @UIField(hideOnEmpty = true, order = 0, type = UIFieldType.HTML)
-    @UIFieldInlineEntityColSpan(6)
-    @UIFieldColorBgRef("bg")
-    private String title;
+  public static class ZigBeeEndpointClusterEntity {
 
     private String entityID;
 
     @UIField(order = 1)
     @UIFieldInlineEntityWidth(10)
-    @UIFieldColorBgRef("bg")
     private String cls;
 
     @UIField(order = 2)
-    @UIFieldInlineEntityWidth(30)
     private String name;
 
     @UIField(order = 3, type = UIFieldType.Duration)
-    @UIFieldInlineEntityWidth(25)
-    private Long updated;
+    @UIFieldInlineEntityWidth(20)
+    private long updated;
 
     @UIField(order = 4)
     @UIFieldInlineEntityWidth(15)
@@ -557,38 +546,25 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity> imp
     @UIFieldInlineEntityWidth(20)
     private Status status;
 
-    // @JsonIgnore
-    private String order;
+    @UIField(order = 6, hideInEdit = true, label = "none")
+    @UIFieldInlineEntityWidth(8)
+    private Collection<UIInputEntity> actions;
 
-    private String bg;
+    @JsonIgnore
+    private int order;
 
-    public ZigBeeEndpointClusterEntity(AttributeHandler attribute) {
-      this.entityID = attribute.getEntityID();
-      int endpointId = attribute.getApplication().getEndpoint().getEndpointId();
-      this.cls = endpointId + "/" + attribute.getZclCluster().getClusterId();
-      this.name = attribute.getZclAttribute().getName();
-      this.status = attribute.getStatus();
-      this.updated = attribute.getUpdated();
-      State state = attribute.getValue();
-      this.value = state == null ? null : state.toString();
-      this.order = endpointId + "_" + attribute.getZclCluster().getClusterId() + "_" + attribute.getZclAttribute().getName();
-    }
+    public ZigBeeEndpointClusterEntity(ZigBeeEndpointEntity endpoint) {
+      this.entityID = endpoint.getEntityID();
+      this.cls = endpoint.getClusterId() + "/" + endpoint.getAddress();
+      this.name = endpoint.getTitle();
+      this.status = endpoint.getStatus();
+      this.updated = endpoint.getLastAnswerFromEndpoint();
+      this.value = endpoint.getValue();
+      this.order = endpoint.getAddress();
 
-    public ZigBeeEndpointClusterEntity(ZigBeeGeneralApplication application) {
-      int epId = application.getEndpoint().getEndpointId();
-      this.order = epId + "_" + application.getZclClusterType().getId();
-      this.bg = ENDPOINT_COLORS.getOrDefault(epId, "#AE7F84");
-
-      Status discovered = application.getAttributeDiscovered();
-      this.title = String.format(APP_TEMPLATE, epId, application.getZclClusterType().getLabel(),
-          application.getBindStatus().getColor(),
-          application.getBindStatus(),
-          discovered.getColor(), discovered.name());
-    }
-
-    @Override
-    public int compareTo(@NotNull ZigBeeDeviceEntity.ZigBeeEndpointClusterEntity o) {
-      return order.compareTo(o.order);
+      UIInputBuilder uiInputBuilder = endpoint.getEntityContext().ui().inputBuilder();
+      endpoint.assembleActions(uiInputBuilder);
+      actions = uiInputBuilder.buildAll();
     }
   }
 }

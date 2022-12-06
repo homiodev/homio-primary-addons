@@ -1,22 +1,19 @@
 package org.touchhome.bundle.zigbee.util;
 
-import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
 public abstract class ShareConfiguration {
-  private Integer reportMin;
-  private Integer reportMax;
-  private Integer reportChange;
-  private Boolean reportConfigurable;
 
-  private boolean analogue;
-  private Double reportChangeDefault;
-  private Integer reportChangeMin;
-  private Integer reportChangeMax;
+  protected Boolean discoverAttributes;
+  protected Boolean readAttribute;
 
-  private Integer failedPollingInterval;
-  private Integer successMaxReportInterval;
-  private Integer bindFailedPollingInterval;
+  protected Integer reportingTimeMin;
+  protected Integer reportingTimeMax;
+  protected Integer reportingChange;
+  protected Boolean reportConfigurable;
+
+  protected Integer failedPollingInterval;
+  protected Integer successMaxReportInterval;
+  protected Integer bindFailedPollingInterval;
 }

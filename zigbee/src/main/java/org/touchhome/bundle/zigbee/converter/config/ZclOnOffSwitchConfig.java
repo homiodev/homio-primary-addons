@@ -1,6 +1,11 @@
 package org.touchhome.bundle.zigbee.converter.config;
 
+import com.zsmartsystems.zigbee.zcl.ZclAttribute;
+import com.zsmartsystems.zigbee.zcl.ZclCluster;
+import com.zsmartsystems.zigbee.zcl.clusters.ZclOnOffCluster;
 import lombok.Getter;
+import org.apache.logging.log4j.Logger;
+import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 /**
  * Configuration handler for the
@@ -8,17 +13,17 @@ import lombok.Getter;
 @Getter
 public class ZclOnOffSwitchConfig {
 
-  /*private final ZclOnOffCluster onoffCluster;
+  private final ZclOnOffCluster onoffCluster;
 
   private final boolean supportOffWaitTime;
   private final boolean supportOnTime;
-  private final boolean supportStartupOnOff;*/
+  private final boolean supportStartupOnOff;
 
   private int offWaitTime;
   private int onTime;
   private int startupOnOff;
 
-  /*public ZclOnOffSwitchConfig(ZigBeeEndpointEntity entity, ZclCluster cluster, Logger log) {
+  public ZclOnOffSwitchConfig(ZigBeeEndpointEntity entity, ZclCluster cluster, Logger log) {
     this.offWaitTime = entity.getOffWaitTime();
     this.onTime = entity.getOnTime();
     this.startupOnOff = entity.getStartupOnOff() ? 1 : 0;
@@ -74,5 +79,5 @@ public class ZclOnOffSwitchConfig {
         entity.setOutdated(true);
       }
     }
-  }*/
+  }
 }

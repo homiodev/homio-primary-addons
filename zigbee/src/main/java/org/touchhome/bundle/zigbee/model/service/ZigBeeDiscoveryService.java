@@ -7,9 +7,11 @@ import com.zsmartsystems.zigbee.zdo.field.NodeDescriptor;
 import java.time.Duration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 
@@ -19,6 +21,7 @@ import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
 
   private final EntityContext entityContext;
+  private final ZigBeeChannelConverterFactory channelFactory;
   private final String entityID;
 
   private volatile boolean scanStarted = false;
@@ -58,7 +61,6 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
         continue;
       }
 
-      log.debug("[{}]: Discovery: Starting discovery for existing device {}", entityID, node.getIeeeAddress());
       nodeDiscovered(node);
     }
 
@@ -94,10 +96,10 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
 
           if (!node.isDiscovered()) {
             log.warn("[{}]: Node discovery not complete {}", entityID, node.getIeeeAddress());
-            zigBeeDeviceEntity.setStatus(Status.OFFLINE);
+            zigBeeDeviceEntity.setStatus(Status.ERROR, "Node discovery not complete");
           } else {
             log.debug("[{}]: Node discovery complete {}", entityID, node.getIeeeAddress());
-            zigBeeDeviceEntity.getService().initializeZigBeeNode();
+            zigBeeDeviceEntity.getService().tryInitializeZigBeeNode();
             coordinatorService.serializeNetwork(node.getIeeeAddress());
           }
         });

@@ -248,7 +248,7 @@ public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoo
   @UIField(order = 2)
   @UIFieldGroup("Discovery")
   public boolean isJoinDeviceDuringScanOnly() {
-    return getJsonData("jddso", true);
+    return getJsonData("jddso", false);
   }
 
   public void setJoinDeviceDuringScanOnly(boolean value) {
@@ -465,7 +465,8 @@ public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoo
       this.ieeeAddress = device.getIeeeAddress();
       this.model = device.getModelIdentifier();
       this.status = device.getStatus();
-      this.endpointsCount = device.optService().map(s -> s.getEndpoints().size()).orElse(-1);
+      Set<ZigBeeEndpointEntity> endpoints = device.getEndpoints();
+      this.endpointsCount = endpoints == null ? 0 : endpoints.size();
     }
   }
 }

@@ -1,86 +1,103 @@
 package org.touchhome.bundle.zigbee.util;
 
-import static org.touchhome.bundle.zigbee.ZigBeeConstants.POLLING_PERIOD_DEFAULT;
-import static org.touchhome.bundle.zigbee.ZigBeeConstants.REPORTING_PERIOD_DEFAULT_MAX;
-
+import java.util.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.touchhome.bundle.api.EntityContextVar.VariableType;
-import org.touchhome.bundle.zigbee.converter.impl.AttributeHandler;
-import org.touchhome.bundle.zigbee.converter.impl.attr.ZigBeeGeneralAttributeHandler;
+import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 @Getter
 @Setter
 @RequiredArgsConstructor
 public class ClusterAttributeConfiguration extends ShareConfiguration {
 
-  private @Nullable Integer precision;
-
+  private final int attributeID;
   private final @NotNull ClusterConfiguration clusterConfiguration;
-  private final @Nullable Class<? extends AttributeHandler> attributeHandler;
-
-  public int getMinInterval() {
-    if (getReportMin() == null) {
-      return clusterConfiguration.getReportMin();
-    }
-    return getReportMin();
-  }
-
-  public int getMaxInterval() {
-    if (getReportMax() == null) {
-      return clusterConfiguration.getReportMax();
-    }
-    return getReportMax();
-  }
-
-  public Object getReportableChange() {
-    if (getReportChange() == null) {
-      return clusterConfiguration.getReportChange();
-    }
-    return getReportChange();
-  }
-
-  public Class<? extends AttributeHandler> getAttributeHandlerClass() {
-    if (attributeHandler == null) {
-      if (clusterConfiguration.getDefaultAttributeHandler() == null) {
-        return ZigBeeGeneralAttributeHandler.class;
-      }
-      return clusterConfiguration.getDefaultAttributeHandler();
-    }
-    return attributeHandler;
-  }
-
-  public int getReportingFailedPollingInterval() {
-    if (getFailedPollingInterval() == null) {
-      if (clusterConfiguration.getFailedPollingInterval() == null) {
-        return POLLING_PERIOD_DEFAULT;
-      }
-      return clusterConfiguration.getFailedPollingInterval();
-    }
-    return getFailedPollingInterval();
-  }
-
-  public int getReportingSuccessMaxReportInterval() {
-    if (getSuccessMaxReportInterval() == null) {
-      if (clusterConfiguration.getSuccessMaxReportInterval() == null) {
-        return REPORTING_PERIOD_DEFAULT_MAX;
-      }
-      return clusterConfiguration.getSuccessMaxReportInterval();
-    }
-    return getSuccessMaxReportInterval();
-  }
-
-  public VariableType getVariableType() {
-    return VariableType.Float;
-  }
 
   public Integer getBindFailedPollingPeriod() {
-    if (getBindFailedPollingInterval() == null) {
-      return clusterConfiguration.getBindFailedPollingInterval();
+    if (bindFailedPollingInterval != null) {
+      return bindFailedPollingInterval;
     }
-    return getBindFailedPollingInterval();
+    return Objects.requireNonNullElse(clusterConfiguration.bindFailedPollingInterval, 60);
+  }
+
+  public int getReportMinInterval(ZigBeeEndpointEntity endpointEntity) {
+    if (isReportConfigurable()) {
+      return endpointEntity.getReportingTimeMin();
+    }
+    if (reportingTimeMin != null) {
+      return reportingTimeMin;
+    }
+    return Objects.requireNonNullElse(clusterConfiguration.reportingTimeMin, 1);
+
+  }
+
+  public boolean isReportConfigurable() {
+    if (this.reportConfigurable != null) {
+      return this.reportConfigurable;
+    }
+    return Objects.requireNonNullElse(this.clusterConfiguration.reportConfigurable, false);
+  }
+
+  public int getReportMaxInterval(ZigBeeEndpointEntity endpointEntity) {
+    if (isReportConfigurable()) {
+      return endpointEntity.getReportingTimeMax();
+    }
+    if (reportingTimeMax != null) {
+      return reportingTimeMax;
+    }
+    return Objects.requireNonNullElse(clusterConfiguration.reportingTimeMax, 7200);
+
+  }
+
+  public Object getReportChange(ZigBeeEndpointEntity endpointEntity) {
+    if (isReportConfigurable()) {
+      return endpointEntity.getReportingChange();
+    }
+    if (reportingChange != null) {
+      return reportingChange;
+    }
+    if (clusterConfiguration.reportingChange != null) {
+      return clusterConfiguration.reportingChange;
+    }
+    return null;
+  }
+
+  public Integer getFailedPollingInterval() {
+    if (failedPollingInterval != null) {
+      return failedPollingInterval;
+    }
+    return Objects.requireNonNullElse(clusterConfiguration.failedPollingInterval, 60);
+  }
+
+  public int getSuccessMaxReportInterval(ZigBeeEndpointEntity endpointEntity) {
+    if (isReportConfigurable()) {
+      return endpointEntity.getPollingPeriod();
+    }
+    if (successMaxReportInterval != null) {
+      return successMaxReportInterval;
+    }
+    return Objects.requireNonNullElse(clusterConfiguration.successMaxReportInterval, 7200);
+  }
+
+  public boolean isDiscoverAttributes() {
+    if (discoverAttributes != null) {
+      return discoverAttributes;
+    }
+    if (clusterConfiguration.discoverAttributes != null) {
+      return clusterConfiguration.discoverAttributes;
+    }
+    return false;
+  }
+
+  public boolean isReadAttribute() {
+    if (readAttribute != null) {
+      return readAttribute;
+    }
+    if (clusterConfiguration.readAttribute != null) {
+      return clusterConfiguration.readAttribute;
+    }
+    return false;
   }
 }

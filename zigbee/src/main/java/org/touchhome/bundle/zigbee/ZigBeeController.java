@@ -5,6 +5,7 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclOnOffCluster;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.OptionModel;
+import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
+import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 
 @Log4j2
@@ -25,14 +28,14 @@ public class ZigBeeController {
 
   private final EntityContext entityContext;
 
-  /*public static boolean containsAny(ZigBeeConverter zigBeeConverter, Integer value) {
+  public static boolean containsAny(ZigBeeConverter zigBeeConverter, Integer value) {
     for (int i : zigBeeConverter.additionalClientClusters()) {
       if (i == value) {
         return true;
       }
     }
     return zigBeeConverter.clientCluster() == value;
-  }*/
+  }
 
   @GetMapping("/option/zcl/{clusterId}")
   public Collection<OptionModel> filterByClusterId(@PathVariable("clusterId") int clusterId,
@@ -46,7 +49,7 @@ public class ZigBeeController {
       @RequestParam(value = "includeClusterName", required = false)
       boolean includeClusterName) {
     List<OptionModel> list = new ArrayList<>();
-    /*for (ZigbeeCoordinatorEntity coordinator : entityContext.findAll(ZigbeeCoordinatorEntity.class)) {
+    for (ZigbeeCoordinatorEntity coordinator : entityContext.findAll(ZigbeeCoordinatorEntity.class)) {
       for (ZigBeeDeviceEntity device : coordinator.getOnlineDevices()) {
         ZigBeeEndpointEntity endpoint = device.getEndpoints().stream().filter(f -> f.getName().equals(clusterName)).findAny().orElse(null);
 
@@ -57,7 +60,7 @@ public class ZigBeeController {
           list.add(OptionModel.of(key, endpoint.getDescription() + " - " + device.getTitle()));
         }
       }
-    }*/
+    }
     return list;
   }
 
@@ -97,7 +100,7 @@ public class ZigBeeController {
   private Collection<OptionModel> filterByClusterIdAndEndpointCount(Integer clusterId, Integer endpointCount,
       boolean includeClusterName) {
     List<OptionModel> list = new ArrayList<>();
-    /*for (ZigbeeCoordinatorEntity coordinator : entityContext.findAll(ZigbeeCoordinatorEntity.class)) {
+    for (ZigbeeCoordinatorEntity coordinator : entityContext.findAll(ZigbeeCoordinatorEntity.class)) {
       for (ZigBeeDeviceEntity device : coordinator.getOnlineDevices()) {
         List<ZigBeeEndpointEntity> endpoints = device.getEndpoints().stream().filter(e ->
             containsAny(e.getService().getCluster().getAnnotation(), clusterId)).collect(Collectors.toList());
@@ -110,7 +113,7 @@ public class ZigBeeController {
           }
         }
       }
-    }*/
+    }
     return list;
   }
 }

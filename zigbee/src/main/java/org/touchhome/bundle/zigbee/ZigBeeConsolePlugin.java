@@ -19,6 +19,7 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
+import org.touchhome.bundle.api.ui.field.color.UIFieldColorBooleanMatch;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
@@ -64,6 +65,7 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
           entity.getStatusMessage(),
           entity.getModelIdentifier(),
           entity.getFetchInfoStatus(),
+          !entity.getEndpoints().isEmpty(),
           entity.getNodeLastUpdateTime(),
           entity.getEntityID()
       ));
@@ -107,15 +109,14 @@ public class ZigBeeConsolePlugin implements ConsolePluginTable<ZigBeeConsolePlug
     @UIField(order = 5)
     private Status fetchInfoStatus;
 
+    @UIField(order = 6)
+    @UIFieldColorBooleanMatch
+    private boolean channelsInitialized;
+
     @UIField(order = 8)
     private long lastUpdate;
 
     private String entityID;
-
-    @UIContextMenuAction("zigbee.action.poll_values")
-    public ActionResponseModel pollValues(ZigBeeDeviceEntity zigBeeDeviceEntity) {
-      return zigBeeDeviceEntity.pollValues();
-    }
 
     @UIContextMenuAction("zigbee.action.permit_join")
     public ActionResponseModel permitJoin(ZigBeeDeviceEntity zigBeeDeviceEntity) {
