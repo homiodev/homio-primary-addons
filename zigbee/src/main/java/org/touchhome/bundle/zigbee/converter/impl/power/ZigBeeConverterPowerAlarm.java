@@ -13,8 +13,8 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
 /**
  * Converter for a battery alarm channel.
  * <p>
- * This converter relies on reports for the BatteryAlarmState attribute of the power configuration cluster, setting the state of the battery alarm channel depending on the bits set
- * in the BatteryAlarmState.
+ * This converter relies on reports for the BatteryAlarmState attribute of the power configuration cluster, setting the state of the battery alarm channel depending on the bits set in the
+ * BatteryAlarmState.
  * <p>
  * Possible future improvements:
  * <ul>
@@ -27,8 +27,8 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
  * </ul>
  */
 @ZigBeeConverter(name = "zigbee:battery_alarm", linkType = VariableType.Float,
-    clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
-public class ZigBeeConverterPowerAlarm extends ZigBeeInputBaseConverter {
+                 clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
+public class ZigBeeConverterPowerAlarm extends ZigBeeInputBaseConverter<ZclPowerConfigurationCluster> {
 
   public static final String STATE_OPTION_BATTERY_THRESHOLD_1 = "threshold1";
   public static final String STATE_OPTION_BATTERY_THRESHOLD_2 = "threshold2";

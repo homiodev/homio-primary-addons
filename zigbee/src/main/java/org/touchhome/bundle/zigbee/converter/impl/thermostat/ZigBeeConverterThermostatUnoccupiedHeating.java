@@ -10,15 +10,14 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
 
 /**
- * Set the heating temperature when the room is unoccupied Converter for the thermostat unoccupied
- * heating setpoint channel
+ * Set the heating temperature when the room is unoccupied Converter for the thermostat unoccupied heating setpoint channel
  */
 @ZigBeeConverter(
     name = "zigbee:thermostat_unoccupiedheating",
     linkType = VariableType.Float,
     clientCluster = ZclThermostatCluster.CLUSTER_ID,
     category = "HVAC")
-public class ZigBeeConverterThermostatUnoccupiedHeating extends ZigBeeInputBaseConverter {
+public class ZigBeeConverterThermostatUnoccupiedHeating extends ZigBeeInputBaseConverter<ZclThermostatCluster> {
 
   public ZigBeeConverterThermostatUnoccupiedHeating() {
     super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_UNOCCUPIEDHEATINGSETPOINT);

@@ -10,15 +10,14 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
 
 /**
- * Set the heating temperature when the room is occupied Converter for the thermostat occupied
- * heating setpoint channel
+ * Set the heating temperature when the room is occupied Converter for the thermostat occupied heating setpoint channel
  */
 @ZigBeeConverter(
     name = "zigbee:thermostat_occupiedheating",
     linkType = VariableType.Float,
     clientCluster = ZclThermostatCluster.CLUSTER_ID,
     category = "HVAC")
-public class ZigBeeConverterThermostatOccupiedHeating extends ZigBeeInputBaseConverter {
+public class ZigBeeConverterThermostatOccupiedHeating extends ZigBeeInputBaseConverter<ZclThermostatCluster> {
 
   public ZigBeeConverterThermostatOccupiedHeating() {
     super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_OCCUPIEDHEATINGSETPOINT);

@@ -1,4 +1,54 @@
 {
+  "PRESSURE_MEASUREMENT": {
+  },
+  "ON_OFF": {
+    "attributes": [
+      {
+        "id": "0x0000",
+        "name": "ATTR_ONOFF",
+        "report": {
+          "configurable": true,
+          "failedPollingInterval": 60,
+          "bindFailedPollingInterval": 60
+        }
+      }
+    ]
+  },
+  "FAN_CONTROL": {
+    "attributes": [
+      {
+        "id": "0x0000",
+        "name": "ATTR_FANMODE",
+        "report": {
+          "failedPollingInterval": 60,
+          "bindFailedPollingInterval": 60
+        }
+      }
+    ]
+  },
+  "DOOR_LOCK": {
+    "attributes": [
+      {
+        "id": "0x0000",
+        "name": "ATTR_LOCKSTATE",
+        "report": {
+          "failedPollingInterval": 60,
+          "bindFailedPollingInterval": 60
+        }
+      }
+    ]
+  },
+  "TEMPERATURE_MEASUREMENT": {
+    "attributes": [
+      {
+        "id": "0x0000",
+        "name": "ATTR_MEASUREDVALUE",
+        "report": {
+          "change": 10
+        }
+      }
+    ]
+  },
   "POWER_CONFIGURATION": {
     "report": {
       "min": 600
@@ -9,7 +59,8 @@
         "name": "ATTR_BATTERYVOLTAGE",
         "readAttributes": true,
         "report": {
-          "change": 1
+          "change": 1,
+          "failedPollingInterval": 60
         }
       },
       {
@@ -17,7 +68,8 @@
         "name": "ATTR_BATTERYPERCENTAGEREMAINING",
         "readAttributes": true,
         "report": {
-          "change": 1
+          "change": 1,
+          "failedPollingInterval": 60
         }
       },
       {
@@ -40,7 +92,9 @@
         "id": "0x0008",
         "name": "ATTR_CURRENTPOSITIONLIFTPERCENTAGE",
         "report": {
-          "configurable": true
+          "configurable": true,
+          "failedPollingInterval": 60,
+          "bindFailedPollingInterval": 60
         }
       }
     ]
@@ -137,13 +191,19 @@
       }
     ]
   },
+  "ANALOG_INPUT_BASIC": {
+    "report": {
+      "configurable": true
+    }
+  },
   "RELATIVE_HUMIDITY_MEASUREMENT": {
     "attributes": [
       {
         "id": "0x0000",
         "name": "ATTR_MEASUREDVALUE",
         "report": {
-          "change": 10
+          "change": 50,
+          "bindFailedPollingInterval": 60
         }
       }
     ]
@@ -151,33 +211,27 @@
   "METERING": {
     "discoverAttributes": true,
     "readAttributes": true,
+    "failedPollingInterval": 60,
+    "bindFailedPollingInterval": 60,
     "report": {
       "min": 3,
       "change": 3
     }
   },
   "ELECTRICAL_MEASUREMENT": {
+    "readAttributes": true,
+    "discoverAttributes": true,
     "report": {
       "min": 3,
-      "change": 1
+      "change": 1,
+      "failedPollingInterval": 60,
+      "bindFailedPollingInterval": 60
     },
     "attributes": [
       {
-        "id": "0x0505",
-        "name": "ATTR_RMSVOLTAGE",
-        "discoverAttributes": true,
-        "readAttributes": true
-      },
-      {
-        "id": "0x0508",
-        "name": "ATTR_RMSCURRENT",
-        "discoverAttributes": true,
-        "readAttributes": true
-      },
-      {
         "id": "0x050B",
         "name": "ATTR_ACTIVEPOWER",
-        "readAttributes": true
+        "discoverAttributes": false
       }
     ]
   }

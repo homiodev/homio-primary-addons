@@ -13,8 +13,8 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
  * The total delivered from the metering system ZigBee channel converter for summation received measurement
  */
 @ZigBeeConverter(name = "zigbee:metering_sumreceived", linkType = VariableType.Float,
-    clientCluster = ZclMeteringCluster.CLUSTER_ID, category = "Number")
-public class ZigBeeConverterMeteringSummationReceived extends ZigBeeInputBaseConverter {
+                 clientCluster = ZclMeteringCluster.CLUSTER_ID, category = "Number")
+public class ZigBeeConverterMeteringSummationReceived extends ZigBeeInputBaseConverter<ZclMeteringCluster> {
 
   private double divisor = 1.0;
   private double multiplier = 1.0;

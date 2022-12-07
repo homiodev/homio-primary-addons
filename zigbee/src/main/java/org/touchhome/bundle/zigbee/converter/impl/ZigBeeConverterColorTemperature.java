@@ -15,8 +15,8 @@ import org.touchhome.bundle.api.state.DecimalType;
  * Channel converter for color temperature, converting between the color control cluster and a percent-typed channel.
  */
 @ZigBeeConverter(name = "zigbee:color_temperature", linkType = VariableType.Float,
-    clientCluster = ZclColorControlCluster.CLUSTER_ID, category = "Color")
-public class ZigBeeConverterColorTemperature extends ZigBeeInputBaseConverter {
+                 clientCluster = ZclColorControlCluster.CLUSTER_ID, category = "Color")
+public class ZigBeeConverterColorTemperature extends ZigBeeInputBaseConverter<ZclColorControlCluster> {
 
   // Default range of 2000K to 6500K
   private final Integer DEFAULT_MIN_TEMPERATURE_IN_KELVIN = 2000;
@@ -74,9 +74,9 @@ public class ZigBeeConverterColorTemperature extends ZigBeeInputBaseConverter {
     }
 
     Integer capabilities = (Integer) clusterColorControl.getAttribute(ZclColorControlCluster.ATTR_COLORCAPABILITIES)
-        .readValue(Long.MAX_VALUE);
+                                                        .readValue(Long.MAX_VALUE);
     if (capabilities == null && clusterColorControl.getAttribute(ZclColorControlCluster.ATTR_COLORTEMPERATURE)
-        .readValue(Long.MAX_VALUE) == null) {
+                                                   .readValue(Long.MAX_VALUE) == null) {
       log.debug("[{}]: Color control color temperature attribute returned null for {}", entityID, endpoint);
       return false;
     }

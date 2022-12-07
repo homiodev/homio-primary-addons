@@ -42,14 +42,14 @@ import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 /**
  * Sets the level of the light Level control converter uses both the {@link ZclLevelControlCluster} and the {@link ZclOnOffCluster}.
  * <p>
- * For the server side, if the {@link ZclOnOffCluster} has reported the device is OFF, then reports from {@link ZclLevelControlCluster} are ignored. This is required as devices can
- * report via the {@link ZclLevelControlCluster} that they have a specified level, but still be OFF.
+ * For the server side, if the {@link ZclOnOffCluster} has reported the device is OFF, then reports from {@link ZclLevelControlCluster} are ignored. This is required as devices can report via the
+ * {@link ZclLevelControlCluster} that they have a specified level, but still be OFF.
  */
 @ZigBeeConverter(name = "zigbee:switch_level",
-    linkType = VariableType.Boolean,
-    serverClusters = {ZclOnOffCluster.CLUSTER_ID, ZclLevelControlCluster.CLUSTER_ID},
-    clientCluster = ZclOnOffCluster.CLUSTER_ID,
-    additionalClientClusters = {ZclLevelControlCluster.CLUSTER_ID}, category = "Light")
+                 linkType = VariableType.Boolean,
+                 serverClusters = {ZclOnOffCluster.CLUSTER_ID, ZclLevelControlCluster.CLUSTER_ID},
+                 clientCluster = ZclOnOffCluster.CLUSTER_ID,
+                 additionalClientClusters = {ZclLevelControlCluster.CLUSTER_ID}, category = "Light")
 public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     implements ZclAttributeListener, ZclCommandListener {
 
@@ -71,6 +71,10 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
 
   private ScheduledExecutorService updateScheduler;
   private ScheduledFuture<?> updateTimer = null;
+
+  public static DecimalType levelToPercent(int level) {
+    return new DecimalType((int) (level * 100.0 / 254.0 + 0.5));
+  }
 
   @Override
   public void initializeDevice() {
@@ -96,7 +100,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     }
 
     try {
-      CommandResult bindResponse = bind(serverClusterLevelControl).get();
+      CommandResult bindResponse = bind(serverClusterLevelControl);
       if (bindResponse.isSuccess()) {
         // Configure reporting
         ZigBeeEndpointEntity endpointEntity = getEndpointService().getEntity();
@@ -121,7 +125,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     }
 
     try {
-      CommandResult bindResponse = bind(serverClusterOnOff).get();
+      CommandResult bindResponse = bind(serverClusterOnOff);
       if (bindResponse.isSuccess()) {
         // Configure reporting
         ZigBeeEndpointEntity endpointEntity = getEndpointService().getEntity();
@@ -144,11 +148,11 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
   }
 
   @Override
-  public int getPollingPeriod() {
+  public Integer getPollingPeriod() {
     if (configReporting != null) {
       return configReporting.getPollingPeriod();
     }
-    return Integer.MAX_VALUE;
+    return null;
   }
 
   private boolean initializeDeviceClient() {
@@ -159,7 +163,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     }
 
     try {
-      CommandResult bindResponse = bind(clusterLevelControl).get();
+      CommandResult bindResponse = bind(clusterLevelControl);
       if (!bindResponse.isSuccess()) {
         log.error("[{}]: Error 0x{} setting client binding {}", entityID, Integer.toHexString(bindResponse.getStatusCode()), endpoint);
       }
@@ -175,7 +179,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     }
 
     try {
-      CommandResult bindResponse = bind(clusterOnOff).get();
+      CommandResult bindResponse = bind(clusterOnOff);
       if (!bindResponse.isSuccess()) {
         log.error("[{}]: Error 0x{} setting client binding {}", entityID, Integer.toHexString(bindResponse.getStatusCode()), endpoint);
       }
@@ -282,16 +286,6 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     updateScheduler.shutdownNow();
   }
 
-  @Override
-  protected void handleRefresh() {
-    if (attributeOnOff != null) {
-      attributeOnOff.readValue(0);
-    }
-    if (attributeLevel != null) {
-      attributeLevel.readValue(0);
-    }
-  }
-
   /*  @Override
     public void handleCommand(final ZigBeeCommand command) {
         if (command instanceof OnOffType) {
@@ -310,8 +304,8 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     }*/
 
   /**
-   * If we support the OnOff cluster then we should perform the same function as the SwitchOnoffConverter. Otherwise,
-   * interpret ON commands as moving to level 100%, and OFF commands as moving to level 0%.
+   * If we support the OnOff cluster then we should perform the same function as the SwitchOnoffConverter. Otherwise, interpret ON commands as moving to level 100%, and OFF commands as moving to level
+   * 0%.
    */
     /*private void handleOnOffCommand(OnOffType cmdOnOff) {
         if (clusterOnOffServer != null) {
@@ -346,12 +340,20 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
                     configLevelControl.getDefaultTransitionTime());
         }
     }*/
+  @Override
+  protected void handleRefresh() {
+    if (attributeOnOff != null) {
+      attributeOnOff.readValue(0);
+    }
+    if (attributeLevel != null) {
+      attributeLevel.readValue(0);
+    }
+  }
 
   /**
-   * The IncreaseDecreaseType in openHAB is defined as a STEP command. however we want to use this for the Move/Stop command which is not available in openHAB. When the first
-   * IncreaseDecreaseType is received, we send the Move command and start a timer to send the Stop command when no further IncreaseDecreaseType commands are received. We use the
-   * lastCommand to check if the current command is the same IncreaseDecreaseType, and if so we just restart the timer. When the timer times out and sends the Stop command, it also
-   * sets lastCommand to null.
+   * The IncreaseDecreaseType in openHAB is defined as a STEP command. however we want to use this for the Move/Stop command which is not available in openHAB. When the first IncreaseDecreaseType is
+   * received, we send the Move command and start a timer to send the Stop command when no further IncreaseDecreaseType commands are received. We use the lastCommand to check if the current command is
+   * the same IncreaseDecreaseType, and if so we just restart the timer. When the timer times out and sends the Stop command, it also sets lastCommand to null.
    * <p>
    * // * @param cmdIncreaseDecrease the command received
    */
@@ -385,8 +387,8 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
   public void updateConfiguration() {
     if (configReporting != null) {
       if (configReporting.updateConfiguration(getEntity())) {
-        updateDeviceReporting(clusterLevelControlServer, ZclOnOffCluster.ATTR_ONOFF, configReporting);
-        updateServerPollingPeriodNoChange(clusterLevelControlServer, ZclLevelControlCluster.ATTR_CURRENTLEVEL);
+        updateDeviceReporting(clusterLevelControlServer, ZclOnOffCluster.ATTR_ONOFF, true);
+        updateDeviceReporting(clusterLevelControlServer, ZclLevelControlCluster.ATTR_CURRENTLEVEL, false);
       }
     }
 
@@ -618,6 +620,25 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     }, delay, TimeUnit.MILLISECONDS);
   }
 
+  /*
+   * Starts a timer after which the Stop command will be sent
+   *
+   * @param delay the number of milliseconds to wait before setting the value to OFF
+   */
+    /*private void startStopTimer(int delay) {
+        stopTransitionTimer();
+
+        updateTimer = updateScheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                log.debug("[{}]: IncreaseDecrease Stop timer expired", endpoint);
+                clusterLevelControlServer.stopWithOnOffCommand();
+                // lastCommand = null;
+                updateTimer = null;
+            }
+        }, delay, TimeUnit.MILLISECONDS);
+    }*/
+
   /**
    * Starts a timer to perform the off effect
    *
@@ -649,23 +670,4 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
         break;
     }
   }
-
-  /*
-   * Starts a timer after which the Stop command will be sent
-   *
-   * @param delay the number of milliseconds to wait before setting the value to OFF
-   */
-    /*private void startStopTimer(int delay) {
-        stopTransitionTimer();
-
-        updateTimer = updateScheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                log.debug("[{}]: IncreaseDecrease Stop timer expired", endpoint);
-                clusterLevelControlServer.stopWithOnOffCommand();
-                // lastCommand = null;
-                updateTimer = null;
-            }
-        }, delay, TimeUnit.MILLISECONDS);
-    }*/
 }

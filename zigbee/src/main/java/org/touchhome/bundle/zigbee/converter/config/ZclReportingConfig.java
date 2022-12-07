@@ -9,7 +9,7 @@ public class ZclReportingConfig {
   private int reportingTimeMin;
   private int reportingTimeMax;
 
-  private double reportingChange;
+  private Double reportingChange;
   private int pollingPeriod;
 
   public ZclReportingConfig(ZigBeeEndpointEntity entity) {
@@ -29,8 +29,9 @@ public class ZclReportingConfig {
       reportingTimeMax = entity.getReportingTimeMax();
       updated = true;
     }
-    if (Double.compare(reportingChange, entity.getReportingChange()) != 0) {
-      reportingChange = entity.getReportingChange();
+    Double newReportingChange = entity.getReportingChange();
+    if (newReportingChange != null && Double.compare(reportingChange, newReportingChange) != 0) {
+      reportingChange = newReportingChange;
       updated = true;
     }
     if (pollingPeriod != entity.getPollingPeriod()) {

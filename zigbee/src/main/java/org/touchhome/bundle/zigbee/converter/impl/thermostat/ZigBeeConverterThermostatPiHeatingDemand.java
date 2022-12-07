@@ -10,13 +10,15 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import tec.uom.se.unit.Units;
 
-/** The level of heating currently demanded by the thermostat */
+/**
+ * The level of heating currently demanded by the thermostat
+ */
 @ZigBeeConverter(
     name = "zigbee:thermostat_heatingdemand",
     linkType = VariableType.Float,
     clientCluster = ZclThermostatCluster.CLUSTER_ID,
     category = "HVAC")
-public class ZigBeeConverterThermostatPiHeatingDemand extends ZigBeeInputBaseConverter {
+public class ZigBeeConverterThermostatPiHeatingDemand extends ZigBeeInputBaseConverter<ZclThermostatCluster> {
 
   public ZigBeeConverterThermostatPiHeatingDemand() {
     super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_PIHEATINGDEMAND);

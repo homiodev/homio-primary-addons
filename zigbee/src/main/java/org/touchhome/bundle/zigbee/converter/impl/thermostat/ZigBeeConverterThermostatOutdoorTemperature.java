@@ -10,15 +10,14 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
 
 /**
- * Indicates the outdoor temperature provided by the thermostat Converter for the thermostat outdoor
- * temperature channel
+ * Indicates the outdoor temperature provided by the thermostat Converter for the thermostat outdoor temperature channel
  */
 @ZigBeeConverter(
     name = "zigbee:thermostat_outdoortemp",
     linkType = VariableType.Float,
     clientCluster = ZclThermostatCluster.CLUSTER_ID,
     category = "HVAC")
-public class ZigBeeConverterThermostatOutdoorTemperature extends ZigBeeInputBaseConverter {
+public class ZigBeeConverterThermostatOutdoorTemperature extends ZigBeeInputBaseConverter<ZclThermostatCluster> {
 
   public ZigBeeConverterThermostatOutdoorTemperature() {
     super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_OUTDOORTEMPERATURE);

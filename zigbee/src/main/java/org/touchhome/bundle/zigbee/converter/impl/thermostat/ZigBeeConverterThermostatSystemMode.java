@@ -12,8 +12,8 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
  * Set the system mode of the thermostat Converter for the thermostat system mode channel. The SystemMode attribute specifies the current operating mode of the thermostat,
  */
 @ZigBeeConverter(name = "zigbee:thermostat_systemmode", linkType = VariableType.Float,
-    clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
-public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverter {
+                 clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
+public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverter<ZclThermostatCluster> {
 
    /* private final static int STATE_MIN = 0;
     private final static int STATE_MAX = 9;
@@ -33,7 +33,7 @@ public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverte
     }
 
     try {
-      CommandResult bindResponse = bind(serverCluster).get();
+      CommandResult bindResponse = bind(serverCluster);
       if (bindResponse.isSuccess()) {
         // Configure reporting
         ZclAttribute attribute = serverCluster.getAttribute(ZclThermostatCluster.ATTR_SYSTEMMODE);

@@ -13,12 +13,11 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 /**
- * Sets the window covering level - supporting open/close and up/down type commands Window Covering Lift Sets the window covering level - supporting open/close and up/down type
- * commands
+ * Sets the window covering level - supporting open/close and up/down type commands Window Covering Lift Sets the window covering level - supporting open/close and up/down type commands
  */
 @ZigBeeConverter(name = "zigbee:windowcovering_lift", linkType = VariableType.Boolean,
-    category = "Blinds", clientCluster = ZclWindowCoveringCluster.CLUSTER_ID)
-public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter {
+                 category = "Blinds", clientCluster = ZclWindowCoveringCluster.CLUSTER_ID)
+public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter<ZclWindowCoveringCluster> {
 
   public ZigBeeConverterWindowCoveringLift() {
     super(WINDOW_COVERING, ZclWindowCoveringCluster.ATTR_CURRENTPOSITIONLIFTPERCENTAGE);
@@ -26,27 +25,25 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter 
 
   @Override
   public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
-    ZclWindowCoveringCluster serverCluster = (ZclWindowCoveringCluster) endpoint
-        .getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
-    if (serverCluster == null) {
-      log.trace("[{}]: Window covering cluster not found {}", entityID, endpoint);
-      return false;
-    }
-
-    try {
-      if (serverCluster.discoverCommandsReceived(false).get()) {
-        if (!(serverCluster.getSupportedCommandsReceived().contains(WindowCoveringDownClose.COMMAND_ID)
-            && serverCluster.getSupportedCommandsReceived().contains(WindowCoveringUpOpen.COMMAND_ID))) {
-          log.debug("[{}]: Window covering cluster up/down commands not supported {}",
-              entityID, endpoint.getIeeeAddress());
-          return false;
+    if (super.acceptEndpoint(endpoint, entityID, entityContext)) {
+      ZclWindowCoveringCluster serverCluster = (ZclWindowCoveringCluster) endpoint
+          .getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
+      try {
+        if (serverCluster.discoverCommandsReceived(false).get()) {
+          if (!(serverCluster.getSupportedCommandsReceived().contains(WindowCoveringDownClose.COMMAND_ID)
+              && serverCluster.getSupportedCommandsReceived().contains(WindowCoveringUpOpen.COMMAND_ID))) {
+            log.debug("[{}]: Window covering cluster up/down commands not supported {}",
+                entityID, endpoint.getIeeeAddress());
+            return false;
+          }
         }
+      } catch (Exception e) {
+        log.warn("[{}]: Exception discovering received commands in window covering cluster {}", entityID, endpoint, e);
+        return false;
       }
-    } catch (Exception e) {
-      log.warn("[{}]: Exception discovering received commands in window covering cluster {}", entityID, endpoint, e);
-      return false;
+      return true;
     }
-    return true;
+    return false;
   }
 
   @Override

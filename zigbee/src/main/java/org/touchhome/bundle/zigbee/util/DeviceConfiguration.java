@@ -35,10 +35,23 @@ public class DeviceConfiguration {
   }
 
   public String getDescription() {
-    if (description == null) {
-      return id;
+    if (description != null) {
+      if (description.containsKey(Lang.CURRENT_LANG)) {
+        return description.get(Lang.CURRENT_LANG);
+      }
+      if (description.containsKey("en")) {
+        return description.get("en");
+      }
     }
-    return description.getOrDefault(Lang.CURRENT_LANG, label.getOrDefault("en", id));
+    return getLabel();
+  }
+
+  public JsonNode findMetadata(int endpointId) {
+    return endpoints.stream()
+                    .filter(e -> e.getEndpoint() == endpointId)
+                    .findAny()
+                    .map(EndpointDefinition::getMetadata)
+                    .orElse(null);
   }
 
   @Getter

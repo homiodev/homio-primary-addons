@@ -34,8 +34,8 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 /**
  * Generic converter for buttons (e.g., from remote controls).
  * <p>
- * This converter needs to be configured with the ZigBee commands that are triggered by the button presses. This is done by channel properties that specify the endpoint, the
- * cluster, the command ID, and (optionally) a command parameter.
+ * This converter needs to be configured with the ZigBee commands that are triggered by the button presses. This is done by channel properties that specify the endpoint, the cluster, the command ID,
+ * and (optionally) a command parameter.
  * <p>
  * As the configuration is done via channel properties, this converter is usable via static thing types only.
  */
@@ -254,7 +254,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
       }
 
       try {
-        CommandResult bindResponse = bind(cluster).get();
+        CommandResult bindResponse = bind(cluster);
         if (!bindResponse.isSuccess()) {
           log.error("[{}]: Error 0x{} setting {} binding for cluster {}. {}", entityID,
               toHexString(bindResponse.getStatusCode()), clusterType, clusterId, entityID);

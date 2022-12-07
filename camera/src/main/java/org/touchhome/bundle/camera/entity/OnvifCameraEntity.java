@@ -305,7 +305,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
 
                 entityContext.save(entity);
                 entityContext.ui()
-                    .sendSuccessMessage("Onvif camera: " + this + " authenticated successfully");
+                             .sendSuccessMessage("Onvif camera: " + this + " authenticated successfully");
               } catch (Exception ex) {
                 entityContext.ui().sendWarningMessage(
                     "Onvif camera: " + this + " fault response: " + ex.getMessage());
@@ -313,8 +313,10 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
               return null;
             }).editDialog(dialogBuilder -> {
           dialogBuilder.setTitle(null, "fas fa-sign-in-alt");
-          dialogBuilder.addTextInput("user", getUser(), true);
-          dialogBuilder.addTextInput("pwd", getPassword().asString(), false);
+          dialogBuilder.addFlex("main", flex -> {
+            flex.addTextInput("user", getUser(), true);
+            flex.addTextInput("pwd", getPassword().asString(), false);
+          });
         });
       }
     }

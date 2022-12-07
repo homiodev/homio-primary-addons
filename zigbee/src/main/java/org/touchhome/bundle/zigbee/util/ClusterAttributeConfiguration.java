@@ -1,10 +1,12 @@
 package org.touchhome.bundle.zigbee.util;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNullElse;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 @Getter
@@ -15,11 +17,14 @@ public class ClusterAttributeConfiguration extends ShareConfiguration {
   private final int attributeID;
   private final @NotNull ClusterConfiguration clusterConfiguration;
 
-  public Integer getBindFailedPollingPeriod() {
+  public @Nullable Integer getBindFailedPollingPeriod() {
     if (bindFailedPollingInterval != null) {
       return bindFailedPollingInterval;
     }
-    return Objects.requireNonNullElse(clusterConfiguration.bindFailedPollingInterval, 60);
+    if (clusterConfiguration.bindFailedPollingInterval != null) {
+      return clusterConfiguration.bindFailedPollingInterval;
+    }
+    return null;
   }
 
   public int getReportMinInterval(ZigBeeEndpointEntity endpointEntity) {
@@ -29,7 +34,7 @@ public class ClusterAttributeConfiguration extends ShareConfiguration {
     if (reportingTimeMin != null) {
       return reportingTimeMin;
     }
-    return Objects.requireNonNullElse(clusterConfiguration.reportingTimeMin, 1);
+    return requireNonNullElse(clusterConfiguration.reportingTimeMin, 1);
 
   }
 
@@ -37,7 +42,7 @@ public class ClusterAttributeConfiguration extends ShareConfiguration {
     if (this.reportConfigurable != null) {
       return this.reportConfigurable;
     }
-    return Objects.requireNonNullElse(this.clusterConfiguration.reportConfigurable, false);
+    return requireNonNullElse(this.clusterConfiguration.reportConfigurable, false);
   }
 
   public int getReportMaxInterval(ZigBeeEndpointEntity endpointEntity) {
@@ -47,7 +52,7 @@ public class ClusterAttributeConfiguration extends ShareConfiguration {
     if (reportingTimeMax != null) {
       return reportingTimeMax;
     }
-    return Objects.requireNonNullElse(clusterConfiguration.reportingTimeMax, 7200);
+    return requireNonNullElse(clusterConfiguration.reportingTimeMax, 7200);
 
   }
 
@@ -68,7 +73,7 @@ public class ClusterAttributeConfiguration extends ShareConfiguration {
     if (failedPollingInterval != null) {
       return failedPollingInterval;
     }
-    return Objects.requireNonNullElse(clusterConfiguration.failedPollingInterval, 60);
+    return requireNonNullElse(clusterConfiguration.failedPollingInterval, 7200);
   }
 
   public int getSuccessMaxReportInterval(ZigBeeEndpointEntity endpointEntity) {
@@ -78,7 +83,7 @@ public class ClusterAttributeConfiguration extends ShareConfiguration {
     if (successMaxReportInterval != null) {
       return successMaxReportInterval;
     }
-    return Objects.requireNonNullElse(clusterConfiguration.successMaxReportInterval, 7200);
+    return requireNonNullElse(clusterConfiguration.successMaxReportInterval, 7200);
   }
 
   public boolean isDiscoverAttributes() {

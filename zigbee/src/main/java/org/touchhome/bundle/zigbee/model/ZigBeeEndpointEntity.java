@@ -2,6 +2,7 @@ package org.touchhome.bundle.zigbee.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import javax.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,8 +26,8 @@ import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.action.HasDynamicContextMenuActions;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
-import org.touchhome.bundle.api.ui.field.action.v1.item.UISliderItemBuilder.SliderType;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
+import org.touchhome.bundle.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.condition.UIFieldShowOnCondition;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldStaticSelection;
@@ -45,15 +46,15 @@ import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
 @Accessors(chain = true)
 public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, ZigBeeDeviceEntity>
     implements HasJsonData,
-        HasStatusAndMsg<ZigBeeEndpointEntity>,
-        EntityService<ZigbeeEndpointService, ZigBeeEndpointEntity>,
-        HasDynamicContextMenuActions {
+    HasStatusAndMsg<ZigBeeEndpointEntity>,
+    EntityService<ZigbeeEndpointService, ZigBeeEndpointEntity>,
+    HasDynamicContextMenuActions {
 
   // uses for changes inside cluster configuration to mark that entity has to be saved
   @Getter @Setter @JsonIgnore private transient boolean outdated;
 
   @Override
-  public ZigBeeEndpointEntity setStatus(@Nullable Status status, @Nullable String msg) {
+  public ZigBeeEndpointEntity setStatus(@NotNull Status status, @Nullable String msg) {
     EntityContextSetting.setStatus(this, "", "Status", status, msg);
     getEntityContext()
         .ui()
@@ -68,6 +69,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return EntityContextSetting.getStatus(this, "", Status.UNKNOWN);
   }
 
+  @UIField(order = 10, disableEdit = true)
+  @UIFieldColorStatusMatch
+  public Status getBindingStatus() {
+    return optService().map(service -> service.getCluster().getBindStatus()).orElse(Status.UNKNOWN);
+  }
+
   @Override
   @UIField(order = 11, hideInView = true, disableEdit = true, hideOnEmpty = true)
   public String getStatusMessage() {
@@ -76,7 +83,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   @UIField(order = 12, disableEdit = true)
   @UIFieldColorStatusMatch
-  public Status getDeviceInitializeStatus(Status status) {
+  public Status getDeviceInitializeStatus() {
     return EntityContextSetting.getStatus(this, "DeviceInitializeStatus", Status.UNKNOWN);
   }
 
@@ -118,9 +125,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   public void setLastAnswerFromEndpoint(long currentTimeMillis) {
     EntityContextSetting.setMemValue(this, "lafe", "LastAnswerFromEndpoint", currentTimeMillis);
-    getEntityContext()
-        .ui()
-        .updateInnerSetItem(getOwner(), "endpointClusters", this, "updated", currentTimeMillis);
+    getEntityContext().ui().updateInnerSetItem(getOwner(), "endpointClusters", this, "updated", currentTimeMillis);
   }
 
   @UIField(order = 6, disableEdit = true)
@@ -131,9 +136,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   public void setValue(State state) {
     EntityContextSetting.setMemValue(this, "last", "Value", state);
-    getEntityContext()
-        .ui()
-        .updateInnerSetItem(getOwner(), "endpointClusters", this, "value", state.toString());
+    getEntityContext().ui().updateInnerSetItem(getOwner(), "endpointClusters", this, "value", state.toString());
   }
 
   @JsonIgnore
@@ -185,13 +188,11 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
   }
 
   @UIField(order = 102)
-  @UIFieldShowOnCondition(
-      "return context.get('supportAnalogue') == 'true'") // is analogue is true, then
-  // 'supportReporting' also true
+  @UIFieldShowOnCondition("return context.get('supportAnalogue') == 'true'") // is analogue is true, then 'supportReporting' also true
   @UIFieldNumber(minRef = "reportingChangeMin", maxRef = "reportingChangeMax")
   @UIFieldGroup("Reporting")
-  public double getReportingChange() {
-    return getJsonData("rt_ch", 1);
+  public @Nullable Double getReportingChange() {
+    return isSupportAnalogue() ? getJsonData("rt_ch", Double.class) : null;
   }
 
   @UIField(order = 103)
@@ -202,8 +203,8 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("pp", 7200);
   }
 
-  public ZigBeeEndpointEntity setPollingPeriod(int value) {
-    if (value != getPollingPeriod()) {
+  public ZigBeeEndpointEntity setPollingPeriod(Integer value) {
+    if (value != null && value != getPollingPeriod()) {
       setJsonData("pp", value);
     }
     return this;
@@ -357,11 +358,11 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
   @UIField(order = 400)
   @UIFieldShowOnCondition("return context.get('supportFanModeSequence') == 'true'")
   @UIFieldStaticSelection({
-    "0:Low/Med/High",
-    "1:Low/High",
-    "2:Low/Med/High/Auto",
-    "3:Low/High/Auto",
-    "4:On/Auto"
+      "0:Low/Med/High",
+      "1:Low/High",
+      "2:Low/Med/High/Auto",
+      "3:Low/High/Auto",
+      "4:On/Auto"
   })
   @UIFieldGroup("Fan")
   public int getFanModeSequence() {
@@ -455,29 +456,24 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   public boolean isSupportOffWaitTime() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigOnOff())
-                    .map(ZclOnOffSwitchConfig::isSupportOffWaitTime)
-                    .orElse(false))
+        .map(service -> Optional.ofNullable(service.getCluster().getConfigOnOff())
+                                .map(ZclOnOffSwitchConfig::isSupportOffWaitTime)
+                                .orElse(false))
         .orElse(false);
   }
 
   public boolean isSupportOnTime() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigOnOff())
-                    .map(ZclOnOffSwitchConfig::isSupportOnTime)
-                    .orElse(false))
+        .map(service -> Optional.ofNullable(service.getCluster().getConfigOnOff())
+                                .map(ZclOnOffSwitchConfig::isSupportOnTime)
+                                .orElse(false))
         .orElse(false);
   }
 
   public boolean isSupportStartupOnOff() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigOnOff())
+        .map(service ->
+            Optional.ofNullable(service.getCluster().getConfigOnOff())
                     .map(ZclOnOffSwitchConfig::isSupportStartupOnOff)
                     .orElse(false))
         .orElse(false);
@@ -485,51 +481,41 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   public boolean isSupportFanModeSequence() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigFanControl())
-                    .map(ZclFanControlConfig::isSupportFanModeSequence)
-                    .orElse(false))
+        .map(service -> Optional.ofNullable(service.getCluster().getConfigFanControl())
+                                .map(ZclFanControlConfig::isSupportFanModeSequence)
+                                .orElse(false))
         .orElse(false);
   }
 
   public boolean isSupportSoundVolume() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigDoorLock())
-                    .map(ZclDoorLockConfig::isSupportSoundVolume)
-                    .orElse(false))
+        .map(service -> Optional.ofNullable(service.getCluster().getConfigDoorLock())
+                                .map(ZclDoorLockConfig::isSupportSoundVolume)
+                                .orElse(false))
         .orElse(false);
   }
 
   public boolean isSupportAutoRelockTime() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigDoorLock())
-                    .map(ZclDoorLockConfig::isSupportAutoRelockTime)
-                    .orElse(false))
+        .map(service -> Optional.ofNullable(service.getCluster().getConfigDoorLock())
+                                .map(ZclDoorLockConfig::isSupportAutoRelockTime)
+                                .orElse(false))
         .orElse(false);
   }
 
   public boolean isSupportEnableOneTouchLocking() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigDoorLock())
-                    .map(ZclDoorLockConfig::isSupportEnableOneTouchLocking)
-                    .orElse(false))
+        .map(service -> Optional.ofNullable(service.getCluster().getConfigDoorLock())
+                                .map(ZclDoorLockConfig::isSupportEnableOneTouchLocking)
+                                .orElse(false))
         .orElse(false);
   }
 
   public boolean isSupportLocalProgramming() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigDoorLock())
-                    .map(ZclDoorLockConfig::isSupportLocalProgramming)
-                    .orElse(false))
+        .map(service -> Optional.ofNullable(service.getCluster().getConfigDoorLock())
+                                .map(ZclDoorLockConfig::isSupportLocalProgramming)
+                                .orElse(false))
         .orElse(false);
   }
 
@@ -547,51 +533,41 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   public boolean isSupportOnOffTransitionTime() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigLevelControl())
-                    .map(ZclLevelControlConfig::isSupportOnOffTransitionTime)
-                    .orElse(false))
+        .map(service -> Optional.ofNullable(service.getCluster().getConfigLevelControl())
+                                .map(ZclLevelControlConfig::isSupportOnOffTransitionTime)
+                                .orElse(false))
         .orElse(false);
   }
 
   public boolean isSupportOnTransitionTime() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigLevelControl())
-                    .map(ZclLevelControlConfig::isSupportOnTransitionTime)
-                    .orElse(false))
+        .map(service -> Optional.ofNullable(service.getCluster().getConfigLevelControl())
+                                .map(ZclLevelControlConfig::isSupportOnTransitionTime)
+                                .orElse(false))
         .orElse(false);
   }
 
   public boolean isSupportOffTransitionTime() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigLevelControl())
-                    .map(ZclLevelControlConfig::isSupportOffTransitionTime)
-                    .orElse(false))
+        .map(service -> Optional.ofNullable(service.getCluster().getConfigLevelControl())
+                                .map(ZclLevelControlConfig::isSupportOffTransitionTime)
+                                .orElse(false))
         .orElse(false);
   }
 
   public boolean isSupportOnLevel() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigLevelControl())
-                    .map(ZclLevelControlConfig::isSupportOnLevel)
-                    .orElse(false))
+        .map(service -> Optional.ofNullable(service.getCluster().getConfigLevelControl())
+                                .map(ZclLevelControlConfig::isSupportOnLevel)
+                                .orElse(false))
         .orElse(false);
   }
 
   public boolean isSupportDefaultMoveRate() {
     return optService()
-        .map(
-            s ->
-                Optional.ofNullable(s.getCluster().getConfigLevelControl())
-                    .map(ZclLevelControlConfig::isSupportDefaultMoveRate)
-                    .orElse(false))
+        .map(service -> Optional.ofNullable(service.getCluster().getConfigLevelControl())
+                                .map(ZclLevelControlConfig::isSupportDefaultMoveRate)
+                                .orElse(false))
         .orElse(false);
   }
 
@@ -607,17 +583,8 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   @Override
   public String toString() {
-    return "ZigBee endpoint '"
-        + getTitle()
-        + "'. [ieeeAddress='"
-        + getIeeeAddress()
-        + "', clusterId="
-        + getClusterId()
-        + ", endpointId="
-        + getAddress()
-        + ", clusterName='"
-        + getName()
-        + "']";
+    return "ZigBee endpoint '" + getTitle() + "'. [ieeeAddress='" + getIeeeAddress() + "', clusterId=" +
+        getClusterId() + ", endpointId=" + getAddress() + ", clusterName='" + getName() + "']";
   }
 
   @JsonIgnore
@@ -633,74 +600,95 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     if (maximumChange != getReportingChangeMax()) {
       setJsonData("rt_ch_max", maximumChange);
     }
-    if (defaultChange != getReportingChange()) {
+    if (getReportingChange() == null || defaultChange != getReportingChange().doubleValue()) {
       setJsonData("rt_ch", defaultChange);
     }
   }
 
   @Override
   public void assembleActions(UIInputBuilder builder) {
-    optService()
-        .ifPresent(
-            service -> {
-              ZigBeeBaseChannelConverter cluster = service.getCluster();
-              builder.addSelectableButton(
-                  "zigbee.action.pull_values",
-                  "fas fa-download",
-                  "#A939B7",
-                  (entityContext, params) -> {
-                    cluster.fireHandleRefresh();
-                    return ActionResponseModel.success();
-                  });
-              assembleReportConfigActions(builder);
-              assembleLevelControlActions(builder);
-              assembleOnOfSwitchActions(builder);
+    this.addStatusInfo(builder, "field.deviceInitializeStatus", getDeviceInitializeStatus());
+    this.addStatusInfo(builder, "field.bindStatus", getBindingStatus());
 
-              // TODO: not all actions are assembled!!! i.e. fan, door lock, etc...
+    optService().ifPresent(service -> {
+      ZigBeeBaseChannelConverter cluster = service.getCluster();
 
-              cluster.assembleActions(builder);
-            });
+      if (!isSupportReporting()) {
+        builder.addFlex("pp", flex -> {
+          flex.addInfo("field.pollingPeriod").appendStyle("min-width", "150px");
+          Integer pollingPeriod = cluster.getPollingPeriod();
+          flex.addInfo(pollingPeriod == null ? "Not Set" : String.valueOf(pollingPeriod));
+        });
+      }
+
+      builder.addSelectableButton("zigbee.action.pull_values", "fas fa-download", "#A939B7",
+          (entityContext, params) -> {
+            cluster.fireHandleRefresh();
+            return ActionResponseModel.success();
+          });
+      assembleReportConfigActions(builder);
+      assembleLevelControlActions(builder);
+      assembleOnOfSwitchActions(builder);
+
+      // TODO: not all actions are assembled!!! i.e. fan, door lock, etc...
+
+      cluster.assembleActions(builder);
+    });
+  }
+
+  private void addNumber(UILayoutBuilder builder, String name, String infoName, int value, int min, int max, BiFunction<Integer, EntityContext, ActionResponseModel> handler) {
+    builder.addFlex(name, flex -> {
+      flex.addInfo(infoName).appendStyle("min-width", "200px");
+      flex.addNumberInput(name + "_input", value, min, max, (entityContext, params) ->
+          handler.apply(params.getInt("value"), entityContext)).appendStyle("width", "100px");
+    });
+  }
+
+  private void addNumberWithButton(UILayoutBuilder builder, String name, String infoName, String btnName, int btnValue,
+      int value, BiFunction<Integer, EntityContext, ActionResponseModel> handler) {
+    builder.addFlex(name, flex -> {
+      flex.addInfo(infoName).appendStyle("min-width", "200px");
+      flex.addButton(btnName, null, null, (entityContext, params) -> handler.apply(btnValue, entityContext));
+      flex.addNumberInput(name + "_input", value, 0, 60000, (entityContext, params) ->
+          handler.apply(params.getInt("value"), entityContext)).appendStyle("width", "100px");
+    });
+  }
+
+  private void addStatusInfo(UIInputBuilder builder, String name, Status status) {
+    UIFlexLayoutBuilder flex = builder.addFlex(name);
+    flex.addInfo(name).appendStyle("min-width", "200px");
+    flex.addInfo(status.toString()).setColor(status.getColor());
   }
 
   private void assembleOnOfSwitchActions(UIInputBuilder builder) {
     if (isSupportOffWaitTime() || isSupportOnTime() || isSupportStartupOnOff()) {
-      UIFlexLayoutBuilder onOffSwitchFlex =
-          builder.addFlex("OnOffSwitch").setBorderArea("OnOffSwitch").setBorderColor("#B58A35");
+      UIFlexLayoutBuilder onOffSwitchFlex = builder.addFlex("OnOffSwitch").setBorderArea("OnOffSwitch"
+      ).setBorderColor("#B58A35").columnFlexDirection();
 
       if (isSupportOffWaitTime()) {
-        onOffSwitchFlex.addSlider(
-            "field.offWaitTime",
-            getOffWaitTime(),
-            0,
-            60000,
+        onOffSwitchFlex.addSlider("field.offWaitTime", getOffWaitTime(), 0, 60000,
             (entityContext, params) -> {
               if (getOffWaitTime() != params.getInt("value")) {
                 entityContext.save(setOffWaitTime(params.getInt("value")));
                 return ActionResponseModel.success();
               }
               return null;
-            },
-            SliderType.Regular);
+            }).appendStyle("width", "200px");
       }
 
       if (isSupportOnTime()) {
-        UIFlexLayoutBuilder onTimeFlex =
-            onOffSwitchFlex.addFlex("on-time", 3).columnFlexDirection();
-        onTimeFlex.addButton(
-            "Not Set", null, null, (entityContext, params) -> updateOnTime(entityContext, 65535));
-        onTimeFlex.addSlider(
-            "field.onTime",
-            getOnTime(),
-            0,
-            60000,
-            (entityContext, params) -> updateOnTime(entityContext, params.getInt("value")),
-            SliderType.Regular);
+        addNumberWithButton(onOffSwitchFlex, "ot", "field.onTime", "field.notSet", 65535, getOnTime(),
+            (value, entityContext) -> {
+              if (getOnTime() != value) {
+                entityContext.save(setOnTime(value));
+                return ActionResponseModel.success();
+              }
+              return null;
+            });
       }
 
       if (isSupportStartupOnOff()) {
-        onOffSwitchFlex.addCheckbox(
-            "field.startupOnOff",
-            getStartupOnOff(),
+        onOffSwitchFlex.addCheckbox("field.startupOnOff", getStartupOnOff(),
             (entityContext, params) -> {
               if (getStartupOnOff() != params.getBoolean("value")) {
                 entityContext.save(setStartupOnOff(params.getBoolean("value")));
@@ -714,28 +702,19 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   private void assembleLevelControlActions(UIInputBuilder builder) {
     if (isSupportLevelControl()) {
-      UIFlexLayoutBuilder levelControlFlex =
-          builder.addFlex("LevelControl").setBorderArea("LevelControl").setBorderColor("#35786f");
+      UIFlexLayoutBuilder levelControlFlex = builder.addFlex("LevelControl").setBorderArea("LevelControl")
+                                                    .setBorderColor("#35786f").columnFlexDirection();
 
-      UIFlexLayoutBuilder defaultTransitionTimeFlex =
-          levelControlFlex.addFlex("def-trans-time", 0).columnFlexDirection();
-      defaultTransitionTimeFlex.addButton(
-          "Use On/Off times",
-          null,
-          null,
-          (entityContext, params) -> updateDefaultTransitionTime(entityContext, 65535));
-      defaultTransitionTimeFlex.addSlider(
-          "field.defaultTransitionTime",
-          getDefaultTransitionTime(),
-          0,
-          60000,
-          (entityContext, params) ->
-              updateDefaultTransitionTime(entityContext, params.getInt("value")),
-          SliderType.Regular);
+      addNumberWithButton(levelControlFlex, "DTT", "def-trans-time", "field.useOnOffTime", 65535, getDefaultTransitionTime(),
+          (value, entityContext) -> {
+            if (getDefaultTransitionTime() != value) {
+              entityContext.save(setDefaultTransitionTime(value));
+              return ActionResponseModel.success();
+            }
+            return null;
+          });
 
-      levelControlFlex.addCheckbox(
-          "field.invertLevelControl",
-          getInvertLevelControl(),
+      levelControlFlex.addCheckbox("field.invertLevelControl", getInvertLevelControl(),
           (entityContext, params) -> {
             if (getInvertLevelControl() != params.getBoolean("value")) {
               entityContext.save(setInvertLevelControl(params.getBoolean("value")));
@@ -744,9 +723,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
             return null;
           });
 
-      levelControlFlex.addCheckbox(
-          "field.invertLevelControl",
-          getInvertLevelControl(),
+      levelControlFlex.addCheckbox("field.invertLevelControl", getInvertLevelControl(),
           (entityContext, params) -> {
             if (getInvertLevelControl() != params.getBoolean("value")) {
               entityContext.save(setInvertLevelControl(params.getBoolean("value")));
@@ -755,9 +732,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
             return null;
           });
 
-      levelControlFlex.addCheckbox(
-          "field.invertReportControl",
-          getInvertReportControl(),
+      levelControlFlex.addCheckbox("field.invertReportControl", getInvertReportControl(),
           (entityContext, params) -> {
             if (getInvertReportControl() != params.getBoolean("value")) {
               entityContext.save(setInvertReportControl(params.getBoolean("value")));
@@ -767,201 +742,103 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
           });
 
       if (isSupportOnOffTransitionTime()) {
-        levelControlFlex.addSlider(
-            "field.onOffTransitionTime",
-            getOnOffTransitionTime(),
-            0,
-            60000,
-            (entityContext, params) -> {
-              if (getOnOffTransitionTime() != params.getInt("value")) {
-                entityContext.save(setOnOffTransitionTime(params.getInt("value")));
+        addNumber(levelControlFlex, "onOffTT", "field.onOffTransitionTime", getOnOffTransitionTime(),
+            0, 60000, (value, entityContext) -> {
+              if (getOnOffTransitionTime() != value) {
+                entityContext.save(setOnOffTransitionTime(value));
                 return ActionResponseModel.success();
               }
               return null;
-            },
-            SliderType.Regular);
+            });
       }
 
       if (isSupportOnTransitionTime()) {
-        UIFlexLayoutBuilder onTransitionTimeFlex =
-            levelControlFlex.addFlex("on-trans-time", 1).columnFlexDirection();
-        onTransitionTimeFlex.addButton(
-            "Use On/Off transition time",
-            null,
-            null,
-            (entityContext, params) -> updateOnTransitionTime(entityContext, 65535));
-        onTransitionTimeFlex.addSlider(
-            "field.defaultTransitionTime",
-            getOnTransitionTime(),
-            0,
-            60000,
-            (entityContext, params) ->
-                updateOnTransitionTime(entityContext, params.getInt("value")),
-            SliderType.Regular);
+        addNumberWithButton(levelControlFlex, "onTT", "field.defaultTransitionTime", "field.useOnOffTransitionTime", 65535,
+            getOnOffTransitionTime(), (value, entityContext) -> {
+              if (getOnTransitionTime() != value) {
+                entityContext.save(setOnTransitionTime(value));
+                return ActionResponseModel.success();
+              }
+              return null;
+            });
       }
 
       if (isSupportOffTransitionTime()) {
-        UIFlexLayoutBuilder offTransitionTimeFlex =
-            levelControlFlex.addFlex("off-trans-time", 2).columnFlexDirection();
-        offTransitionTimeFlex.addButton(
-            "Use On/Off transition time",
-            null,
-            null,
-            (entityContext, params) -> updateOffTransitionTime(entityContext, 65535));
-        offTransitionTimeFlex.addSlider(
-            "field.offTransitionTime",
-            getOffTransitionTime(),
-            0,
-            60000,
-            (entityContext, params) ->
-                updateOffTransitionTime(entityContext, params.getInt("value")),
-            SliderType.Regular);
+        addNumberWithButton(levelControlFlex, "offTT", "field.offTransitionTime", "field.useOffTransitionTime", 65535,
+            getOffTransitionTime(), (value, entityContext) -> {
+              if (getOffTransitionTime() != value) {
+                entityContext.save(setOffTransitionTime(value));
+                return ActionResponseModel.success();
+              }
+              return null;
+            });
       }
 
       if (isSupportOnLevel()) {
-        UIFlexLayoutBuilder onLevelFlex =
-            levelControlFlex.addFlex("on-level", 3).columnFlexDirection();
-        onLevelFlex.addButton(
-            "Not Set", null, null, (entityContext, params) -> updateOnLevel(entityContext, 255));
-        onLevelFlex.addSlider(
-            "field.offTransitionTime",
-            getOnLevel(),
-            0,
-            60000,
-            (entityContext, params) -> updateOnLevel(entityContext, params.getInt("value")),
-            SliderType.Regular);
+        addNumberWithButton(levelControlFlex, "onLVL", "field.offTransitionTime", "field.notSet", 255,
+            getOnLevel(), (value, entityContext) -> {
+              if (getOnLevel() != value) {
+                entityContext.save(setOnLevel(value));
+                return ActionResponseModel.success();
+              }
+              return null;
+            });
       }
 
       if (isSupportDefaultMoveRate()) {
-        UIFlexLayoutBuilder defaultMoveRateFlex =
-            levelControlFlex.addFlex("def-move-rate", 4).columnFlexDirection();
-        defaultMoveRateFlex.addButton(
-            "Not Set",
-            null,
-            null,
-            (entityContext, params) -> updateDefaultMoveRate(entityContext, 255));
-        defaultMoveRateFlex.addSlider(
-            "field.defaultMoveRate",
-            getDefaultMoveRate(),
-            0,
-            60000,
-            (entityContext, params) -> updateDefaultMoveRate(entityContext, params.getInt("value")),
-            SliderType.Regular);
+        addNumberWithButton(levelControlFlex, "DMR", "field.defaultMoveRate", "field.notSet", 255,
+            getDefaultMoveRate(), (value, entityContext) -> {
+              if (getDefaultMoveRate() != value) {
+                entityContext.save(setDefaultMoveRate(value));
+                return ActionResponseModel.success();
+              }
+              return null;
+            });
       }
     }
   }
 
   private void assembleReportConfigActions(UIInputBuilder builder) {
     if (isSupportReporting()) {
-      UIFlexLayoutBuilder reportFlex =
-          builder.addFlex("Reporting").setBorderArea("Reporting").setBorderColor("#517531");
+      UIFlexLayoutBuilder reportFlex = builder.addFlex("Reporting").setBorderArea("Reporting")
+                                              .setBorderColor("#35B2B5").columnFlexDirection();
 
-      reportFlex.addSlider(
-          "field.reportingTimeMin",
-          getReportingTimeMin(),
-          1,
-          86400,
-          (entityContext, params) -> {
-            if (getReportingTimeMin() != params.getInt("value")) {
-              entityContext.save(setReportingTimeMin(params.getInt("value")));
+      addNumber(reportFlex, "rtmin", "field.reportingTimeMin", getReportingTimeMin(),
+          1, 86400, (value, entityContext) -> {
+            if (getReportingTimeMin() != value) {
+              entityContext.save(setReportingTimeMin(value));
               return ActionResponseModel.success();
             }
             return null;
-          },
-          SliderType.Regular);
-
-      reportFlex.addSlider(
-          "field.reportingTimeMax",
-          getReportingTimeMax(),
-          1,
-          86400,
-          (entityContext, params) -> {
-            if (getReportingTimeMax() != params.getInt("value")) {
-              entityContext.save(setReportingTimeMax(params.getInt("value")));
+          });
+      addNumber(reportFlex, "rtmax", "field.reportingTimeMax", getReportingTimeMax(),
+          1, 86400, (value, entityContext) -> {
+            if (getReportingTimeMax() != value) {
+              entityContext.save(setReportingTimeMax(value));
               return ActionResponseModel.success();
             }
             return null;
-          },
-          SliderType.Regular);
-
-      reportFlex.addSlider(
-          "field.pollingPeriod",
-          getPollingPeriod(),
-          15,
-          86400,
-          (entityContext, params) -> {
-            if (getPollingPeriod() != params.getInt("value")) {
-              entityContext.save(setPollingPeriod(params.getInt("value")));
+          });
+      addNumber(reportFlex, "pp", "field.pollingPeriod", getPollingPeriod(),
+          15, 86400, (value, entityContext) -> {
+            if (getPollingPeriod() != value) {
+              entityContext.save(setPollingPeriod(value));
               return ActionResponseModel.success();
             }
             return null;
-          },
-          SliderType.Regular);
+          });
 
       if (isSupportAnalogue()) {
-        reportFlex.addSlider(
-            "field.reportingChange",
-            getPollingPeriod(),
-            getReportingChangeMin(),
-            getReportingChangeMax(),
-            (entityContext, params) -> {
-              if (getReportingChange() != params.getInt("value")) {
-                entityContext.save(setPollingPeriod(params.getInt("value")));
+        addNumber(reportFlex, "rc", "field.reportingChange", getPollingPeriod(),
+            getReportingChangeMin(), getReportingChangeMax(), (value, entityContext) -> {
+              if (getReportingChange() != null && getReportingChange() != value.doubleValue()) {
+                entityContext.save(setPollingPeriod(value));
                 return ActionResponseModel.success();
               }
               return null;
-            },
-            SliderType.Regular);
+            });
       }
     }
-  }
-
-  private ActionResponseModel updateDefaultTransitionTime(EntityContext entityContext, int value) {
-    if (getDefaultTransitionTime() != value) {
-      entityContext.save(setDefaultTransitionTime(value));
-      return ActionResponseModel.success();
-    }
-    return null;
-  }
-
-  private ActionResponseModel updateOnTransitionTime(EntityContext entityContext, int value) {
-    if (getOnTransitionTime() != value) {
-      entityContext.save(setOnTransitionTime(value));
-      return ActionResponseModel.success();
-    }
-    return null;
-  }
-
-  private ActionResponseModel updateOffTransitionTime(EntityContext entityContext, int value) {
-    if (getOffTransitionTime() != value) {
-      entityContext.save(setOffTransitionTime(value));
-      return ActionResponseModel.success();
-    }
-    return null;
-  }
-
-  private ActionResponseModel updateOnLevel(EntityContext entityContext, int value) {
-    if (getOnLevel() != value) {
-      entityContext.save(setOnLevel(value));
-      return ActionResponseModel.success();
-    }
-    return null;
-  }
-
-  private ActionResponseModel updateDefaultMoveRate(EntityContext entityContext, int value) {
-    if (getDefaultMoveRate() != value) {
-      entityContext.save(setDefaultMoveRate(value));
-      return ActionResponseModel.success();
-    }
-    return null;
-  }
-
-  private ActionResponseModel updateOnTime(EntityContext entityContext, int value) {
-    if (getOnTime() != value) {
-      entityContext.save(setOnTime(value));
-      return ActionResponseModel.success();
-    }
-    return null;
   }
 
   public enum ControlMethod {

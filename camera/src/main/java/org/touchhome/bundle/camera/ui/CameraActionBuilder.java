@@ -75,16 +75,16 @@ public class CameraActionBuilder {
 
           if (StringUtils.isEmpty(uiVideoAction.subGroup())) {
             layoutBuilder = uiInputBuilder.addFlex(uiVideoAction.group(), uiVideoAction.order())
-                .columnFlexDirection()
-                .setBorderArea(uiVideoAction.group());
+                                          .columnFlexDirection()
+                                          .setBorderArea(uiVideoAction.group());
           } else {
             UIStickyDialogItemBuilder stickyLayoutBuilder = layoutBuilder.addStickyDialogButton(
-                    uiVideoAction.group() + "_sb", uiVideoAction.subGroupIcon(), null, uiVideoAction.order())
-                .editButton(buttonItemBuilder -> buttonItemBuilder.setText(uiVideoAction.group()));
+                                                                             uiVideoAction.group() + "_sb", uiVideoAction.subGroupIcon(), null, uiVideoAction.order())
+                                                                         .editButton(buttonItemBuilder -> buttonItemBuilder.setText(uiVideoAction.group()));
 
             layoutBuilder = stickyLayoutBuilder.addFlex(uiVideoAction.subGroup(), uiVideoAction.order())
-                .setBorderArea(uiVideoAction.subGroup())
-                .columnFlexDirection();
+                                               .setBorderArea(uiVideoAction.subGroup())
+                                               .columnFlexDirection();
           }
         }
         UICameraDimmerButton[] buttons = method.getDeclaredAnnotationsByType(UICameraDimmerButton.class);
@@ -168,19 +168,22 @@ public class CameraActionBuilder {
   }
 
   private static UIEntityItemBuilder<?, ?> createUIEntity(UIVideoAction uiVideoAction, UIFieldType type,
-      UILayoutBuilder layoutBuilder,
+      UILayoutBuilder flex,
       UIActionHandler handler) {
     switch (type) {
       case SelectBox:
-        return layoutBuilder.addSelectBox(uiVideoAction.name(), handler, uiVideoAction.order()).setSelectReplacer(uiVideoAction.min(),
-            uiVideoAction.max(), uiVideoAction.selectReplacer());
+        return flex.addSelectBox(uiVideoAction.name(), handler, uiVideoAction.order()).setSelectReplacer(uiVideoAction.min(),
+                       uiVideoAction.max(), uiVideoAction.selectReplacer())
+                   .setSeparatedText("CONTEXT.ACTION." + uiVideoAction.name());
       case Slider:
-        return layoutBuilder.addSlider(uiVideoAction.name(), 0, uiVideoAction.min(),
-            uiVideoAction.max(), handler, UISliderItemBuilder.SliderType.Regular, uiVideoAction.order());
+        return flex.addSlider(uiVideoAction.name(), 0, uiVideoAction.min(),
+                       uiVideoAction.max(), handler, UISliderItemBuilder.SliderType.Regular, uiVideoAction.order())
+                   .setSeparatedText("CONTEXT.ACTION." + uiVideoAction.name());
       case Boolean:
-        return layoutBuilder.addCheckbox(uiVideoAction.name(), false, handler, uiVideoAction.order());
+        return flex.addCheckbox(uiVideoAction.name(), false, handler, uiVideoAction.order())
+                   .setSeparatedText("CONTEXT.ACTION." + uiVideoAction.name());
       case String:
-        return layoutBuilder.addInfo(uiVideoAction.name(), uiVideoAction.order());
+        return flex.addInfo(uiVideoAction.name(), uiVideoAction.order());
       default:
         throw new RuntimeException("Unknown type: " + type);
     }

@@ -11,7 +11,7 @@ import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
     linkType = VariableType.Float,
     clientCluster = ZclIlluminanceMeasurementCluster.CLUSTER_ID,
     category = "Illuminance")
-public class ZigBeeConverterIlluminance extends ZigBeeInputBaseConverter {
+public class ZigBeeConverterIlluminance extends ZigBeeInputBaseConverter<ZclIlluminanceMeasurementCluster> {
 
   public ZigBeeConverterIlluminance() {
     super(ILLUMINANCE_MEASUREMENT, ZclIlluminanceMeasurementCluster.ATTR_MEASUREDVALUE);

@@ -11,7 +11,7 @@ import org.touchhome.bundle.zigbee.converter.config.ZclFanControlConfig;
  * Set the fan mode This channel supports fan control
  */
 @ZigBeeConverter(name = "zigbee:fancontrol", linkType = VariableType.Float, clientCluster = ZclFanControlCluster.CLUSTER_ID, category = "HVAC")
-public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter {
+public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter<ZclFanControlCluster> {
 
   private static final int MODE_OFF = 0;
   private static final int MODE_LOW = 1;

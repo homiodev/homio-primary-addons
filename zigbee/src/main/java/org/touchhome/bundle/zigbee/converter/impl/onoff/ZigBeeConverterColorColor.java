@@ -8,6 +8,7 @@ import static com.zsmartsystems.zigbee.zcl.clusters.ZclColorControlCluster.ATTR_
 import static com.zsmartsystems.zigbee.zcl.clusters.ZclColorControlCluster.ATTR_CURRENTY;
 import static com.zsmartsystems.zigbee.zcl.clusters.ZclLevelControlCluster.ATTR_CURRENTLEVEL;
 import static com.zsmartsystems.zigbee.zcl.clusters.ZclOnOffCluster.ATTR_ONOFF;
+import static org.touchhome.bundle.zigbee.converter.impl.onoff.ZigBeeConverterSwitchLevel.levelToPercent;
 
 import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
@@ -46,12 +47,12 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity.ControlMethod;
 
 /**
- * The color channel allows to control the color of a light. It is also possible to dim values and switch the light on and off. Converter for color control. Uses the
- * {@link ZclColorControlCluster}, and may also use the {@link ZclLevelControlCluster} and {@link ZclOnOffCluster} if available.
+ * The color channel allows to control the color of a light. It is also possible to dim values and switch the light on and off. Converter for color control. Uses the {@link ZclColorControlCluster},
+ * and may also use the {@link ZclLevelControlCluster} and {@link ZclOnOffCluster} if available.
  */
 @ZigBeeConverter(name = "zigbee:color_color",
-    clientCluster = ZclOnOffCluster.CLUSTER_ID, linkType = VariableType.Float,
-    additionalClientClusters = {ZclLevelControlCluster.CLUSTER_ID, ZclColorControlCluster.CLUSTER_ID}, category = "ColorLight")
+                 clientCluster = ZclOnOffCluster.CLUSTER_ID, linkType = VariableType.Float,
+                 additionalClientClusters = {ZclLevelControlCluster.CLUSTER_ID, ZclColorControlCluster.CLUSTER_ID}, category = "ColorLight")
 public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implements ZclAttributeListener {
 
   private final Object colorUpdateSync = new Object();
@@ -99,7 +100,7 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
     // Bind to attribute reports, add listeners, then request the status
     // Configure reporting - no faster than once per second - no slower than 10 minutes.
     try {
-      CommandResult bindResponse = bind(serverClusterColorControl).get();
+      CommandResult bindResponse = bind(serverClusterColorControl);
       if (bindResponse.isSuccess()) {
         CommandResult reportingResponse;
         if (supportsHue) {
@@ -130,7 +131,7 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
       log.warn("[{}]: Device does not support level control {}", entityID, this.endpoint);
     } else {
       try {
-        CommandResult bindResponse = bind(serverClusterLevelControl).get();
+        CommandResult bindResponse = bind(serverClusterLevelControl);
         if (!bindResponse.isSuccess()) {
           pollingPeriod = POLLING_PERIOD_HIGH;
         }
@@ -149,7 +150,7 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
       log.debug("[{}]: Device does not support on/off control {}", entityID, this.endpoint);
     } else {
       try {
-        CommandResult bindResponse = bind(serverClusterOnOff).get();
+        CommandResult bindResponse = bind(serverClusterOnOff);
         if (!bindResponse.isSuccess()) {
           pollingPeriod = POLLING_PERIOD_HIGH;
         }
@@ -529,7 +530,7 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
         log.debug("[{}]: Device supports Hue/Saturation color set of commands {}", entityID, endpoint);
         supportsHue = true;
       } else if (serverClusterColorControl.getSupportedAttributes()
-          .contains(ATTR_CURRENTX)) {
+                                          .contains(ATTR_CURRENTX)) {
         log.debug("[{}]: Device supports XY color set of commands {}", entityID, endpoint);
         supportsHue = false;
         delayedColorChange = true; // For now, only for XY lights till this is configurable
@@ -542,5 +543,13 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
       log.warn("[{}]: Exception checking whether device endpoint supports RGB color. Assuming it supports HUE/SAT {}", entityID, endpoint, e);
       supportsHue = true;
     }
+  }
+
+  private void handleReportingResponseHigh(CommandResult reportResponse) {
+    handleReportingResponse(reportResponse, POLLING_PERIOD_HIGH, REPORTING_PERIOD_DEFAULT_MAX);
+  }
+
+  private int percentToLevel(DecimalType percent) {
+    return (int) (percent.floatValue() * 254.0f / 100.0f + 0.5f);
   }
 }

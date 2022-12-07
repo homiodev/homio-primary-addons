@@ -82,10 +82,10 @@ import org.touchhome.common.exception.NotFoundException;
     overridePath = "zigbee")
 public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
     implements HasJsonData,
-        HasNodeDescriptor,
-        HasEntityLog,
-        HasStatusAndMsg<ZigBeeDeviceEntity>,
-        EntityService<ZigBeeDeviceService, ZigBeeDeviceEntity> {
+    HasNodeDescriptor,
+    HasEntityLog,
+    HasStatusAndMsg<ZigBeeDeviceEntity>,
+    EntityService<ZigBeeDeviceService, ZigBeeDeviceEntity> {
 
   public static final String PREFIX = "zb_";
 
@@ -110,9 +110,9 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
       return Collections.emptyList();
     }
     return endpoints.stream()
-        .sorted(Comparator.comparingInt(o -> o.getAddress() * 1000 + o.getClusterId()))
-        .map(ZigBeeEndpointClusterEntity::new)
-        .collect(Collectors.toList());
+                    .sorted(Comparator.comparingInt(o -> o.getAddress() * 1000 + o.getClusterId()))
+                    .map(ZigBeeEndpointClusterEntity::new)
+                    .collect(Collectors.toList());
   }
 
   @UIField(order = 1, hideInEdit = true, hideOnEmpty = true)
@@ -372,10 +372,10 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
     return PREFIX;
   }
 
-  public @NotNull ZigBeeEndpointEntity getEndpointRequired(@NotNull Integer endpointId) {
-    ZigBeeEndpointEntity endpoint = findEndpoint(endpointId);
+  public @NotNull ZigBeeEndpointEntity getEndpointRequired(@NotNull Integer endpointId, @NotNull Integer clusterId) {
+    ZigBeeEndpointEntity endpoint = findEndpoint(endpointId, clusterId);
     if (endpoint == null) {
-      throw new NotFoundException("Unable to find endpoint: EndpointId: " + endpointId);
+      throw new NotFoundException("Unable to find endpoint: EndpointId: " + endpointId + " with cluster: " + clusterId);
     }
     return endpoint;
   }
@@ -398,8 +398,8 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
       return Collections.emptyList();
     }
     return endpoints.stream()
-        .filter(e -> e.getClusterId() == clusterId)
-        .collect(Collectors.toList());
+                    .filter(e -> e.getClusterId() == clusterId)
+                    .collect(Collectors.toList());
   }
 
   public void updateFromNode(ZigBeeNode node, EntityContext entityContext) {

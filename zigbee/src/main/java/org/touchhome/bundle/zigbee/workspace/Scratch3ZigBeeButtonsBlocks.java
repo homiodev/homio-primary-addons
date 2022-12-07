@@ -135,8 +135,8 @@ final class Scratch3ZigBeeButtonsBlocks extends Scratch3ZigBeeExtensionBlocks {
 
     for (ZigBeeEndpointEntity onOffChannel : onOffEndpoints) {
       ZigBeeBaseChannelConverter beeBaseChannelConverter =
-          zigBeeDeviceEntity.getEndpointRequired(onOffChannel.getAddress()/* TODO:??/, onOffChannel.getClusterId()*/)
-              .getService().getCluster();
+          zigBeeDeviceEntity.getEndpointRequired(onOffChannel.getAddress(), onOffChannel.getClusterId())
+                            .getService().getCluster();
       handleCommand(workspaceBlock, zigBeeDeviceEntity, beeBaseChannelConverter, zclOnOffCommand);
     }
   }

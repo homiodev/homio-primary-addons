@@ -14,8 +14,8 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
 import tec.uom.se.unit.Units;
 
 @ZigBeeConverter(name = "zigbee:electrical_rmscurrent", linkType = VariableType.Float,
-    clientCluster = ZclElectricalMeasurementCluster.CLUSTER_ID, category = "Energy")
-public class ZigBeeConverterMeasurementRmsCurrent extends ZigBeeInputBaseConverter {
+                 clientCluster = ZclElectricalMeasurementCluster.CLUSTER_ID, category = "Energy")
+public class ZigBeeConverterMeasurementRmsCurrent extends ZigBeeInputBaseConverter<ZclElectricalMeasurementCluster> {
 
   private Integer divisor;
   private Integer multiplier;

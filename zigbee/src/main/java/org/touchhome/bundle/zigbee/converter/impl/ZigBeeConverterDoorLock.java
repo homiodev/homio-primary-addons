@@ -11,7 +11,7 @@ import org.touchhome.bundle.zigbee.converter.config.ZclDoorLockConfig;
  * Locks and unlocks the door and maintains the lock state This channel supports changes through attribute updates to the door lock state. ON=Locked, OFF=Unlocked.
  */
 @ZigBeeConverter(name = "zigbee:door_state", clientCluster = ZclDoorLockCluster.CLUSTER_ID, linkType = VariableType.Boolean, category = "Door")
-public class ZigBeeConverterDoorLock extends ZigBeeInputBaseConverter {
+public class ZigBeeConverterDoorLock extends ZigBeeInputBaseConverter<ZclDoorLockCluster> {
 
   public ZigBeeConverterDoorLock() {
     super(DOOR_LOCK, ATTR_LOCKSTATE);

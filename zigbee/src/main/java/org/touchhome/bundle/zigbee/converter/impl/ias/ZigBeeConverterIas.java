@@ -49,7 +49,7 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
     }
 
     try {
-      CommandResult bindResponse = bind(serverClusterIasZone).get();
+      CommandResult bindResponse = bind(serverClusterIasZone);
       if (bindResponse.isSuccess()) {
         // Configure reporting - no faster than once per second - no slower than 2 hours.
         ZclAttribute attribute = serverClusterIasZone.getAttribute(ZclIasZoneCluster.ATTR_ZONESTATUS);

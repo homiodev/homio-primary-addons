@@ -16,8 +16,8 @@ import tec.uom.se.unit.Units;
  * Battery Voltage The current battery voltage
  */
 @ZigBeeConverter(name = "zigbee:battery_voltage", linkType = VariableType.Float,
-    clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
-public class ZigBeeConverterPowerVoltage extends ZigBeeInputBaseConverter {
+                 clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
+public class ZigBeeConverterPowerVoltage extends ZigBeeInputBaseConverter<ZclPowerConfigurationCluster> {
 
   public ZigBeeConverterPowerVoltage() {
     super(POWER_CONFIGURATION, ATTR_BATTERYVOLTAGE);

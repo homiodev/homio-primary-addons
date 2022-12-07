@@ -17,13 +17,13 @@ import org.touchhome.bundle.zigbee.util.ClusterAttributeConfiguration;
 import org.touchhome.bundle.zigbee.util.ClusterConfiguration;
 import org.touchhome.bundle.zigbee.util.ClusterConfigurations;
 
-public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverter
+public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> extends ZigBeeBaseChannelConverter
     implements ZclAttributeListener {
 
   @Getter private final ZclClusterType zclClusterType;
   @Getter private final int attributeId;
 
-  protected ZclCluster zclCluster;
+  protected Cluster zclCluster;
   protected ZclAttribute attribute;
   @Getter protected ClusterAttributeConfiguration configuration;
 
@@ -37,25 +37,14 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
   }
 
   @Override
-  public boolean acceptEndpoint(
-      ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
-    return acceptEndpoint(
-        endpoint,
-        entityID,
-        entityContext,
-        zclClusterType.getId(),
-        attributeId,
-        configuration.isDiscoverAttributes(),
-        configuration.isReadAttribute());
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+    return acceptEndpoint(endpoint, entityID, entityContext, zclClusterType.getId(), attributeId,
+        configuration.isDiscoverAttributes(), configuration.isReadAttribute());
   }
 
   @Override
   public void initializeDevice() throws Exception {
-    log.debug(
-        "[{}]: Initialising {} device cluster {}",
-        entityID,
-        getClass().getSimpleName(),
-        this.endpoint);
+    log.debug("[{}]: Initialising {} device cluster {}", entityID, getClass().getSimpleName(), this.endpoint);
     this.zclCluster = getInputCluster(zclClusterType.getId());
 
     if (configuration.isReportConfigurable()) {
@@ -64,40 +53,37 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
     this.initializeReportConfigurations();
 
     try {
-      CommandResult bindResponse = bind(zclCluster).get();
+      CommandResult bindResponse = bind(zclCluster);
       if (bindResponse.isSuccess()) {
         ZclAttribute attribute = zclCluster.getAttribute(this.attributeId);
 
         ZigBeeEndpointEntity endpointEntity = getEndpointService().getEntity();
-        configuration.getReportMinInterval(endpointEntity);
-        CommandResult reportingResponse =
-            attribute
-                .setReporting(
-                    configuration.getReportMinInterval(endpointEntity),
-                    configuration.getReportMaxInterval(endpointEntity),
-                    configuration.getReportChange(endpointEntity))
-                .get();
+        CommandResult reportingResponse = attribute.setReporting(
+            configuration.getReportMinInterval(endpointEntity),
+            configuration.getReportMaxInterval(endpointEntity),
+            configuration.getReportChange(endpointEntity)).get();
 
         handleReportingResponse(
             reportingResponse,
             configuration.getFailedPollingInterval(),
             configuration.getSuccessMaxReportInterval(endpointEntity));
       } else {
-        pollingPeriod = configuration.getBindFailedPollingPeriod();
-        log.warn(
-            "[{}]: Could not bind to the '{}' configuration cluster; Response code: {}",
-            entityID,
-            zclClusterType.name(),
-            bindResponse.getStatusCode());
+        if (configuration.getBindFailedPollingPeriod() != null) {
+          pollingPeriod = configuration.getBindFailedPollingPeriod();
+        }
+        log.warn("[{}]: Could not bind to the '{}' configuration cluster; Response code: {}", entityID, zclClusterType.name(), bindResponse.getStatusCode());
       }
     } catch (Exception e) {
       log.error("[{}]: Exception setting reporting {}", endpoint, e);
-      pollingPeriod = configuration.getBindFailedPollingPeriod();
+      if (configuration.getBindFailedPollingPeriod() != null) {
+        pollingPeriod = configuration.getBindFailedPollingPeriod();
+      }
       throw new RuntimeException("Exception setting reporting");
     }
   }
 
-  protected void initializeReportConfigurations() {}
+  protected void initializeReportConfigurations() {
+  }
 
   @Override
   public void initializeConverter() {
@@ -119,7 +105,9 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
 
   @Override
   protected void handleRefresh() {
-    attribute.readValue(0);
+    if (attribute != null) {
+      attribute.readValue(0);
+    }
   }
 
   @Override
@@ -146,12 +134,7 @@ public abstract class ZigBeeInputBaseConverter extends ZigBeeBaseChannelConverte
   public void updateConfiguration() {
     super.updateConfiguration();
     if (configReporting != null && configReporting.updateConfiguration(getEntity())) {
-      updateDeviceReporting(zclCluster, attributeId, configReporting);
+      updateDeviceReporting(zclCluster, attributeId, true);
     }
-  }
-
-  @Override
-  public void configureNewEndpointEntity(ZigBeeEndpointEntity endpointEntity) {
-    super.configureNewEndpointEntity(endpointEntity);
   }
 }
