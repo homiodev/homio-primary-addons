@@ -122,9 +122,13 @@ public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> exten
       throw new IllegalStateException("Cluster with null attributeId must override attributeUpdated(...) method");
     }
 
-    log.debug("[{}]: ZigBee attribute reports {}. {}", entityID, attribute, endpoint);
-    if (attribute.getClusterType() == zclClusterType && attribute.getId() == attributeId) {
-      updateValue(val, attribute);
+    log.debug("[{}]: ZigBee attribute reports {}. {}. Value: {}", entityID, attribute, endpoint, val);
+    if (attribute.getClusterType() == zclClusterType) {
+      if (attribute.getId() == attributeId) {
+        updateValue(val, attribute);
+      } else {
+        log.debug("[{}]: Got value from another attribute: {}. {}. Value: {}", entityID, attribute, endpoint, val);
+      }
     }
   }
 
@@ -145,6 +149,12 @@ public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> exten
     if (configReporting != null && configReporting.updateConfiguration(getEntity())) {
       updateDeviceReporting(zclCluster, attributeId, true);
     }
+  }
+
+  @Override
+  public boolean tryBind() throws Exception {
+    CommandResult commandResult = bind(zclCluster);
+    return commandResult.isSuccess();
   }
 
   protected void initializeBindingReport() throws Exception {

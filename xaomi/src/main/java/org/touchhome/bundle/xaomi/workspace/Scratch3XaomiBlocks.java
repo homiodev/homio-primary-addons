@@ -28,7 +28,7 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
 
   private static final String CUBE_SENSOR = "CUBE_SENSOR";
 
-  private final MenuBlock.StaticMenuBlock cubeEventMenu;
+  private final MenuBlock.StaticMenuBlock<MagicCubeEvent> cubeEventMenu;
   private final MenuBlock.ServerMenuBlock cubeSensorMenu;
 
   public Scratch3XaomiBlocks(EntityContext entityContext, XaomiEntrypoint xaomiEntrypoint) {

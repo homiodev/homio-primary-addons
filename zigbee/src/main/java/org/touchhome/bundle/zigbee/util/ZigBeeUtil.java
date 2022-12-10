@@ -13,7 +13,7 @@ public final class ZigBeeUtil {
         return ActionResponseModel.success();
       } else {
         return ActionResponseModel.showError("Unable to execute command. Response: [code '" +
-            commandResult.getStatusCode() + "', data: '" + commandResult.getResponse().toString() + "']");
+            commandResult.getStatusCode() + "', data: '" + commandResult + "']");
       }
     } catch (Exception ex) {
       return ActionResponseModel.showError(ex);

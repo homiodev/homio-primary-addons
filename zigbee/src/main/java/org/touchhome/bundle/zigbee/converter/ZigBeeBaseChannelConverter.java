@@ -1,13 +1,15 @@
 package org.touchhome.bundle.zigbee.converter;
 
+import static java.lang.String.format;
+
 import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeCommand;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.ZigBeeProfileType;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
+import com.zsmartsystems.zigbee.zdo.command.BindResponse;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
@@ -30,6 +32,7 @@ import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.service.ZigBeeDeviceService;
 import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
 import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryClusterTimeoutSetting;
+import org.touchhome.common.util.CommonUtils;
 
 public abstract class ZigBeeBaseChannelConverter {
 
@@ -47,9 +50,11 @@ public abstract class ZigBeeBaseChannelConverter {
   @Getter @Nullable protected ZclFanControlConfig configFanControl;
   @Getter @Nullable protected ZclDoorLockConfig configDoorLock;
   @Getter protected boolean supportConfigColorControl;
+  // binding result
   @Getter @NotNull protected Status bindStatus = Status.UNKNOWN;
   @Getter @Setter private ZigBeeConverter annotation;
   @Getter private ZigbeeEndpointService endpointService;
+  @Getter @Nullable private String bindStatusMsg;
 
   public Integer getPollingPeriod() {
     return configReporting == null ? pollingPeriod : configReporting.getPollingPeriod();
@@ -71,6 +76,10 @@ public abstract class ZigBeeBaseChannelConverter {
 
   protected <T> T getInputCluster(int clusterId) {
     return (T) endpoint.getInputCluster(clusterId);
+  }
+
+  protected boolean hasInputCluster(int clusterId) {
+    return endpoint.getInputCluster(clusterId) != null;
   }
 
   protected <T> T getOutputCluster(int clusterId) {
@@ -150,8 +159,7 @@ public abstract class ZigBeeBaseChannelConverter {
   }
 
   protected void handleReportingResponse(CommandResult reportResponse) {
-    handleReportingResponse(
-        reportResponse, REPORTING_PERIOD_DEFAULT_MAX, REPORTING_PERIOD_DEFAULT_MAX);
+    handleReportingResponse(reportResponse, REPORTING_PERIOD_DEFAULT_MAX, REPORTING_PERIOD_DEFAULT_MAX);
   }
 
   /**
@@ -161,10 +169,7 @@ public abstract class ZigBeeBaseChannelConverter {
    * @param reportingFailedPollingInterval    the polling interval to be used in case configuring reporting has failed
    * @param reportingSuccessMaxReportInterval the maximum reporting interval in case reporting is successfully configured
    */
-  protected void handleReportingResponse(
-      CommandResult reportResponse,
-      int reportingFailedPollingInterval,
-      int reportingSuccessMaxReportInterval) {
+  protected void handleReportingResponse(CommandResult reportResponse, int reportingFailedPollingInterval, int reportingSuccessMaxReportInterval) {
     if (!reportResponse.isSuccess()) {
       // we want the minimum of all pollingPeriods
       pollingPeriod = Math.min(pollingPeriod, reportingFailedPollingInterval);
@@ -180,11 +185,24 @@ public abstract class ZigBeeBaseChannelConverter {
    * @param cluster the remote {@link ZclCluster} to bind to
    * @return the future {@link CommandResult}
    */
-  protected CommandResult bind(ZclCluster cluster) throws ExecutionException, InterruptedException {
+  protected CommandResult bind(ZclCluster cluster) throws Exception {
     this.bindStatus = Status.ERROR;
-    CommandResult commandResult = cluster.bind(endpointService.getLocalIpAddress(), endpointService.getLocalEndpointId()).get();
-    this.bindStatus = commandResult.isSuccess() ? Status.DONE : Status.OFFLINE;
-    return commandResult;
+    try {
+      CommandResult commandResult = cluster.bind(endpointService.getLocalIpAddress(), endpointService.getLocalEndpointId()).get();
+      this.bindStatus = commandResult.isSuccess() ? Status.DONE : Status.OFFLINE;
+      if (this.bindStatus != Status.DONE) {
+        if (commandResult.getResponse() == null) {
+          this.bindStatusMsg = format("code: '%s'. '%s'", Integer.toHexString(commandResult.getStatusCode()).toUpperCase(), commandResult);
+        } else {
+          this.bindStatusMsg = format("code: '%s'. status: '%s'", Integer.toHexString(commandResult.getStatusCode()).toUpperCase(),
+              ((BindResponse) commandResult.getResponse()).getStatus().name());
+        }
+      }
+      return commandResult;
+    } catch (Exception ex) {
+      this.bindStatusMsg = format("code: '-'. msg: '%s'", CommonUtils.getErrorMessage(ex));
+      throw ex;
+    }
   }
 
   protected void updateChannelState(State state) {
@@ -233,7 +251,7 @@ public abstract class ZigBeeBaseChannelConverter {
   public void updateConfiguration() {
   }
 
-  public Integer getMinPoolingInterval() {
+  public Integer getMinPollingInterval() {
     return Math.min(this.pollingPeriod, this.minimalReportingPeriod);
   }
 
@@ -248,5 +266,10 @@ public abstract class ZigBeeBaseChannelConverter {
   }
 
   public void assembleActions(UIInputBuilder uiInputBuilder) {
+  }
+
+  public boolean tryBind() throws Exception {
+
+    return false;
   }
 }

@@ -12,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService.ServiceInstance;
 import org.touchhome.bundle.api.state.ObjectType;
 import org.touchhome.bundle.api.state.State;
@@ -40,11 +41,15 @@ public class ZigbeeEndpointService implements ServiceInstance<ZigBeeEndpointEnti
   private final String variableId;
   @Getter
   private final JsonNode metadata;
+  private final int maxFailedPollRequests = 10;
   private ZigBeeEndpointEntity entity;
   // TODO: NEED HANDLE into properties!
   @Setter
   @Getter
   private List<Object> configOptions;
+  @Setter
+  private long lastPollRequest = System.currentTimeMillis();
+  private int failedPollRequests = 0;
 
   public ZigbeeEndpointService(@NotNull EntityContext entityContext, ZigBeeBaseChannelConverter cluster,
       ZigBeeDeviceService zigBeeDeviceService, ZigBeeEndpointEntity entity, String ieeeAddress,
@@ -72,6 +77,16 @@ public class ZigbeeEndpointService implements ServiceInstance<ZigBeeEndpointEnti
   }
 
   public void updateValue(State state) {
+    this.failedPollRequests = 0;
+    this.lastPollRequest = System.currentTimeMillis();
+    // wake up endpoint if device send request after TTL
+    if (this.entity.getStatus() == Status.OFFLINE) {
+      this.entity.setStatus(Status.ONLINE);
+      if (this.zigBeeDeviceService.getEntity().getStatus() == Status.OFFLINE) {
+        this.zigBeeDeviceService.getEntity().setStatus(Status.ONLINE);
+      }
+    }
+
     this.entity.setValue(state);
     this.entity.setLastAnswerFromEndpoint(System.currentTimeMillis());
 
@@ -92,7 +107,7 @@ public class ZigbeeEndpointService implements ServiceInstance<ZigBeeEndpointEnti
     this.cluster.updateConfiguration();
     // if entity has been updated during configuration
     if (entity.isOutdated()) {
-      log.info("Endpoint had been updated during cluster configuration");
+      log.info("[{}]: Endpoint had been updated during cluster configuration", zigBeeDeviceService.getEntityID());
       entityContext.save(entity);
     }
     return false;
@@ -106,6 +121,23 @@ public class ZigbeeEndpointService implements ServiceInstance<ZigBeeEndpointEnti
   @Override
   public boolean testService() {
     return false;
+  }
+
+  public void pollRequest(boolean force) {
+    if (force) {
+      cluster.fireHandleRefresh();
+      return;
+    }
+    if (this.failedPollRequests > maxFailedPollRequests) {
+      entity.setStatus(Status.OFFLINE);
+      return;
+    }
+    if ((System.currentTimeMillis() - lastPollRequest) / 1000 > cluster.getMinPollingInterval()) {
+      log.info("[{}]: Polling endpoint {} attribute", zigBeeDeviceService.getEntityID(), entity);
+      lastPollRequest = System.currentTimeMillis();
+      failedPollRequests++;
+      cluster.fireHandleRefresh();
+    }
   }
 
   @Getter

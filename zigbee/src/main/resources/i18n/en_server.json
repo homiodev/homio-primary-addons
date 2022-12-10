@@ -1,5 +1,6 @@
 {
   "zigbee": {
+    "no_coordinators": "Unable to find any created zigbee coordinators",
     "new_coordinator": {
       "coordinator": "ZigBee coordinator {{NAME}}",
       "port": "Port: {{NAME}}",
@@ -8,6 +9,9 @@
       "question": "Do you want create new zigbee coordinator?"
     },
     "error": {
+      "scan_already_started": "Coordinator already started",
+      "coordinator_offline": "Coordinator is offline",
+      "coordinator_not_started": "Coordinator not started",
       "port_not_found": "No {{NAME}} port found"
     }
   },

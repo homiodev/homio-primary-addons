@@ -38,7 +38,6 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.EntityContextBGP.ThreadContext;
 import org.touchhome.bundle.api.EntityContextSetting;
 import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.DeviceBaseEntity;
@@ -48,6 +47,7 @@ import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.HasEntityLog;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService;
+import org.touchhome.bundle.api.ui.UISidebarButton;
 import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
@@ -63,6 +63,7 @@ import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.zigbee.SelectModelIdentifierDynamicLoader;
+import org.touchhome.bundle.zigbee.ZigBeeDiscoveryHandler;
 import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
 import org.touchhome.bundle.zigbee.model.service.ZigBeeDeviceService;
 import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryClusterTimeoutSetting;
@@ -74,12 +75,11 @@ import org.touchhome.common.exception.NotFoundException;
 @Getter
 @Setter
 @Entity
+@UISidebarButton(buttonIcon = "fas fa-search-location", confirm = "", buttonIconColor = "#899343",
+                 buttonTitle = "zigbee.action.start_scan", handlerClass = ZigBeeDiscoveryHandler.class)
 @UISidebarMenu(icon = "fas fa-bezier-curve", parent = UISidebarMenu.TopSidebarMenu.HARDWARE, bg = "#de9ed7", order = 5, overridePath = "zigbee")
 public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
-    implements HasJsonData,
-    HasNodeDescriptor,
-    HasEntityLog,
-    HasStatusAndMsg<ZigBeeDeviceEntity>,
+    implements HasJsonData, HasNodeDescriptor, HasEntityLog, HasStatusAndMsg<ZigBeeDeviceEntity>,
     EntityService<ZigBeeDeviceService, ZigBeeDeviceEntity> {
 
   public static final String PREFIX = "zb_";
@@ -234,54 +234,15 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
     setJsonData("d_c", dateCode);
   }
 
-  @UIField(hideInEdit = true, order = 4, hideOnEmpty = true)
-  @UIFieldGroup("General")
-  public String getMaxTimeoutBeforeOfflineNode() {
-    return optService().map(service -> {
-      Integer interval = service.getExpectedUpdateInterval();
-      return interval == null ? "Not set" : TimeUnit.SECONDS.toMinutes(interval) + "min";
-    }).orElse(null);
-  }
-
-  @UIField(order = 5, hideInEdit = true, hideOnEmpty = true)
-  @UIFieldGroup("General")
-  public String getTimeoutBeforeOfflineNode() {
-    return optService().map(service -> {
-      Integer interval = service.getExpectedUpdateInterval();
-      if (interval == null) {
-        return "Not set";
-      }
-      long lastAnswerFromEndpoints = getLastAnswerFromEndpoints();
-      long diff = TimeUnit.SECONDS.toMinutes(interval - (System.currentTimeMillis() - lastAnswerFromEndpoints) / 1000);
-      if (diff < 0) { // already timed out
-        return null;
-      }
-      String min = String.valueOf(diff);
-      return "Expire in: " + min + "min";
-    }).orElse(null);
-  }
-
   @UIField(order = 7, hideInEdit = true, hideOnEmpty = true)
   @UIFieldGroup("General")
   public String getFetchInfoStatusMessage() {
     return EntityContextSetting.getMessage(this, "fetch_info");
   }
 
-  @UIField(hideInEdit = true, order = 100, hideOnEmpty = true)
-  @UIFieldGroup("General")
-  public String getTimeToNextSchedule() {
-    return optService().map(service -> {
-      ThreadContext<Void> pollingJob = service.getPollingJob();
-      if (pollingJob != null) {
-        return pollingJob.getTimeToNextSchedule();
-      }
-      return null;
-    }).orElse(null);
-  }
-
-  @UIContextMenuAction(value = "zigbee.action.pull_values", icon = "fas fa-download", iconColor = "#A939B7")
+  @UIContextMenuAction(value = "zigbee.action.poll_values", icon = "fas fa-download", iconColor = "#A939B7")
   public ActionResponseModel pollValues() {
-    getService().pullChannels();
+    getService().checkOffline(true);
     return ActionResponseModel.success();
   }
 

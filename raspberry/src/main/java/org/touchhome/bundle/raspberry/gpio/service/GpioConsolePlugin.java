@@ -15,6 +15,7 @@ import org.touchhome.bundle.api.console.ConsolePluginTable;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.ui.field.UIField;
+import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorMatch;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorRef;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorSource;
@@ -96,7 +97,7 @@ public class GpioConsolePlugin implements ConsolePluginTable<GpioConsolePlugin.G
     @UIField(order = 7, label = "Occupied")
     private String occupied;
 
-    @UIField(order = 8, label = "Supported modes")
+    @UIField(order = 8, label = "Supported modes", type = UIFieldType.Chips)
     private Set<PinMode> supportedModes;
 
     @UIField(order = 9, label = "Pull Resistance")

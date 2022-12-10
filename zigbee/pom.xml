@@ -35,6 +35,6 @@
 
   <properties>
     <xstream.version>1.4.19</xstream.version>
-    <zsmartsystems.version>1.4.7</zsmartsystems.version>
+    <zsmartsystems.version>1.4.9</zsmartsystems.version>
   </properties>
 </project>

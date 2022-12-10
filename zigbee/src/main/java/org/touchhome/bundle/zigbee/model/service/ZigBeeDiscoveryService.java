@@ -50,33 +50,44 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
 
   public void startScan() {
     if (scanStarted) {
-      return;
+      throw new IllegalStateException("zigbee.error.scan_already_started");
     }
-    log.info("[{}]: Start scanning...", entityID);
-    scanStarted = true;
+    if (!coordinator.getStatus().isOnline()) {
+      throw new IllegalStateException("zigbee.error.coordinator_offline");
+    }
+    try {
+      if (!coordinator.isStart()) {
+        throw new IllegalStateException("zigbee.error.coordinator_not_started");
+      }
+      log.info("[{}]: Start scanning...", entityID);
+      scanStarted = true;
 
-    for (ZigBeeNode node : coordinator.getService().getNodes()) {
-      if (node.getNetworkAddress() == 0) {
-        continue;
+      for (ZigBeeNode node : coordinator.getService().getNodes()) {
+        if (node.getNetworkAddress() == 0) {
+          continue;
+        }
+
+        nodeDiscovered(node);
       }
 
-      nodeDiscovered(node);
+      int duration = coordinator.getDiscoveryDuration();
+      coordinator.getService().scanStart(duration);
+
+      entityContext.ui().headerButtonBuilder("zigbee-scan").title("zigbee.action.scan")
+                   .border(1, "#899343")
+                   .duration(duration).icon("fas fa-search-location", "#899343", false).build();
+
+      entityContext.bgp().builder("zigbee-scan-killer")
+                   .delay(Duration.ofSeconds(coordinator.getDiscoveryDuration()))
+                   .execute(() -> {
+                     log.info("[{}]: Scanning stopped", entityID);
+                     scanStarted = false;
+                     entityContext.ui().removeHeaderButton("zigbee-scan");
+                   });
+    } catch (Exception ex) {
+      scanStarted = false;
+      throw ex;
     }
-
-    int duration = coordinator.getDiscoveryDuration();
-    coordinator.getService().scanStart(duration);
-
-    entityContext.ui().headerButtonBuilder("zigbee-scan").title("zigbee.action.scan")
-                 .border(1, "#899343")
-                 .duration(duration).icon("fas fa-search-location", "#899343", false).build();
-
-    entityContext.bgp().builder("zigbee-scan-killer")
-                 .delay(Duration.ofSeconds(coordinator.getDiscoveryDuration()))
-                 .execute(() -> {
-                   log.info("[{}]: Scanning stopped", entityID);
-                   scanStarted = false;
-                   entityContext.ui().removeHeaderButton("zigbee-scan");
-                 });
   }
 
   private void nodeDiscovered(ZigBeeNode node) {
@@ -87,15 +98,15 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
       return;
     }
 
-    entityContext.bgp().builder("zigbee-pooling-" + coordinator.getEntityID())
+    entityContext.bgp().builder("zigbee-polling-" + coordinator.getEntityID())
                  .delay(Duration.ofMillis(10))
                  .execute(() -> {
                    log.info("[{}]: Starting ZigBee device discovery {}", entityID, node.getIeeeAddress());
                    ZigBeeDeviceEntity zigBeeDeviceEntity = addZigBeeDevice(node);
 
                    if (!node.isDiscovered()) {
-                     log.warn("[{}]: Node discovery not complete {}", entityID, node.getIeeeAddress());
-                     zigBeeDeviceEntity.setStatus(Status.ERROR, "Node discovery not complete");
+                     log.debug("[{}]: Node discovery not complete {}", entityID, node.getIeeeAddress());
+                     zigBeeDeviceEntity.setStatus(Status.NOT_READY);
                    } else {
                      log.debug("[{}]: Node discovery complete {}", entityID, node.getIeeeAddress());
                      zigBeeDeviceEntity.getService().tryInitializeZigBeeNode();

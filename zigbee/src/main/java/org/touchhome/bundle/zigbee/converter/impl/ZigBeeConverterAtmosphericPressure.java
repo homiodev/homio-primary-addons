@@ -55,7 +55,8 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeInputBaseConverter
           handleReportingResponse(reportingResponse);
         }
       } else {
-        log.error("[{}]: Error 0x{} setting server binding {}", entityID, Integer.toHexString(bindResponse.getStatusCode()), this.endpoint);
+        log.error("[{}]: Error 0x{} setting server binding {}", entityID,
+            Integer.toHexString(bindResponse.getStatusCode()).toUpperCase(), this.endpoint);
         pollingPeriod = POLLING_PERIOD_HIGH;
         throw new RuntimeException("Error setting server binding");
       }

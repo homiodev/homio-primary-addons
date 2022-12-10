@@ -56,7 +56,7 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeInputBaseConverter<ZclOnOf
     if (zclCluster == null && clusterOnOffClient == null) {
       updateScheduler = Executors.newSingleThreadScheduledExecutor();
 
-      if (getInputCluster(ZclOnOffCluster.CLUSTER_ID) != null) {
+      if (hasInputCluster(ZclOnOffCluster.CLUSTER_ID)) {
         super.initialize();
         configOnOff = new ZclOnOffSwitchConfig(getEntity(), zclCluster, log);
       }
@@ -66,7 +66,8 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeInputBaseConverter<ZclOnOf
         try {
           CommandResult bindResponse = bind(clusterOnOffClient);
           if (!bindResponse.isSuccess()) {
-            log.error("[{}]: Error 0x{} setting client binding {}", entityID, Integer.toHexString(bindResponse.getStatusCode()), this.endpoint);
+            log.error("[{}]: Error 0x{} setting client binding {}", entityID,
+                Integer.toHexString(bindResponse.getStatusCode()).toUpperCase(), this.endpoint);
           }
         } catch (Exception e) {
           log.error("[{}]: Exception setting binding {}", entityID, this.endpoint, e);
@@ -135,15 +136,12 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeInputBaseConverter<ZclOnOf
   }
 
   @Override
-  public void attributeUpdated(ZclAttribute attribute, Object val) {
-    log.debug("[{}]: ZigBee attribute reports {}. {}", entityID, attribute, endpoint);
-    if (attribute.getClusterType() == ZclClusterType.ON_OFF && attribute.getId() == ZclOnOffCluster.ATTR_ONOFF) {
-      Boolean value = (Boolean) val;
-      if (value != null && value) {
-        updateChannelState(OnOffType.ON);
-      } else {
-        updateChannelState(OnOffType.OFF);
-      }
+  protected void updateValue(Object val, ZclAttribute attribute) {
+    Boolean value = (Boolean) val;
+    if (value != null && value) {
+      updateChannelState(OnOffType.ON);
+    } else {
+      updateChannelState(OnOffType.OFF);
     }
   }
 

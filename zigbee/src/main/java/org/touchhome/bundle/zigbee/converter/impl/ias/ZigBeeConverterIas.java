@@ -104,12 +104,8 @@ public abstract class ZigBeeConverterIas extends ZigBeeInputBaseConverter<ZclIas
   }
 
   @Override
-  public void attributeUpdated(ZclAttribute attribute, Object val) {
-    log.debug("[{}]: ZigBee attribute reports {}. {}", entityID, attribute, endpoint);
-    if (attribute.getClusterType() == ZclClusterType.IAS_ZONE
-        && attribute.getId() == ZclIasZoneCluster.ATTR_ZONESTATUS) {
-      updateChannelState((Integer) val);
-    }
+  protected void updateValue(Object val, ZclAttribute attribute) {
+    updateChannelState((Integer) val);
   }
 
   private void updateChannelState(Integer state) {

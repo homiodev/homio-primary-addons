@@ -149,7 +149,8 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     try {
       CommandResult bindResponse = bind(clusterLevelControl);
       if (!bindResponse.isSuccess()) {
-        log.error("[{}]: Error 0x{} setting client binding {}", entityID, Integer.toHexString(bindResponse.getStatusCode()), endpoint);
+        log.error("[{}]: Error 0x{} setting client binding {}", entityID,
+            Integer.toHexString(bindResponse.getStatusCode()).toUpperCase(), endpoint);
       }
     } catch (Exception e) {
       log.error("[{}]: Exception setting level control reporting {}", entityID, endpoint, e);
@@ -165,7 +166,8 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     try {
       CommandResult bindResponse = bind(clusterOnOff);
       if (!bindResponse.isSuccess()) {
-        log.error("[{}]: Error 0x{} setting client binding {}", entityID, Integer.toHexString(bindResponse.getStatusCode()), endpoint);
+        log.error("[{}]: Error 0x{} setting client binding {}", entityID,
+            Integer.toHexString(bindResponse.getStatusCode()).toUpperCase(), endpoint);
       }
     } catch (Exception e) {
       log.error("[{}]: Exception setting on off reporting {}", entityID, endpoint, e);

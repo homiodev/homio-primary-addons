@@ -103,7 +103,6 @@
     <dependency>
       <artifactId>uom-se</artifactId>
       <groupId>tec.uom</groupId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>jakarta.ws.rs-api</artifactId>

@@ -81,7 +81,6 @@
         "id": "0x003E",
         "name": "ATTR_BATTERYALARMSTATE",
         "discoverAttributes": true,
-        "poolingPeriod": 1800,
         "failedPollingInterval": 1800
       }
     ]

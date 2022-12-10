@@ -1,6 +1,11 @@
 package org.touchhome.bundle.zigbee.model;
 
+import static java.lang.String.format;
+import static org.touchhome.bundle.api.model.ActionResponseModel.showWarn;
+import static org.touchhome.bundle.api.model.ActionResponseModel.success;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import javax.persistence.Entity;
@@ -19,6 +24,7 @@ import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.state.State;
+import org.touchhome.bundle.api.ui.UI.Color;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
 import org.touchhome.bundle.api.ui.field.UIFieldNumber;
@@ -26,6 +32,7 @@ import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.action.HasDynamicContextMenuActions;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
+import org.touchhome.bundle.api.ui.field.action.v1.item.UIInfoItemBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
@@ -45,13 +52,11 @@ import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
 @Getter
 @Accessors(chain = true)
 public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, ZigBeeDeviceEntity>
-    implements HasJsonData,
-    HasStatusAndMsg<ZigBeeEndpointEntity>,
-    EntityService<ZigbeeEndpointService, ZigBeeEndpointEntity>,
-    HasDynamicContextMenuActions {
+    implements HasJsonData, HasStatusAndMsg<ZigBeeEndpointEntity>,
+    EntityService<ZigbeeEndpointService, ZigBeeEndpointEntity>, HasDynamicContextMenuActions {
 
   // uses for changes inside cluster configuration to mark that entity has to be saved
-  @Getter @Setter @JsonIgnore private transient boolean outdated;
+  @JsonIgnore private transient boolean outdated;
 
   @Override
   public ZigBeeEndpointEntity setStatus(@NotNull Status status, @Nullable String msg) {
@@ -115,6 +120,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
   public void setLastAnswerFromEndpoint(long currentTimeMillis) {
     EntityContextSetting.setMemValue(this, "lafe", "LastAnswerFromEndpoint", currentTimeMillis);
     getEntityContext().ui().updateInnerSetItem(getOwner(), "endpointClusters", this, "updated", currentTimeMillis);
+  }
+
+  @UIField(order = 5, disableEdit = true, hideOnEmpty = true)
+  @UIFieldGroup("General")
+  public Integer getFailedPollRequests() {
+    return optService().map(ZigbeeEndpointService::getFailedPollRequests).orElse(null);
   }
 
   @UIField(order = 6, disableEdit = true)
@@ -182,6 +193,13 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
   @UIFieldGroup("Reporting")
   public @Nullable Double getReportingChange() {
     return isSupportAnalogue() ? getJsonData("rt_ch", Double.class) : null;
+  }
+
+  public ZigBeeEndpointEntity setReportingChange(Number value) {
+    if (isSupportAnalogue()) {
+      setJsonData("rt_ch", value.doubleValue());
+    }
+    return this;
   }
 
   @UIField(order = 103)
@@ -590,7 +608,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
       setJsonData("rt_ch_max", maximumChange);
     }
     if (getReportingChange() == null || defaultChange != getReportingChange().doubleValue()) {
-      setJsonData("rt_ch", defaultChange);
+      setReportingChange(defaultChange);
     }
   }
 
@@ -601,18 +619,35 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     optService().ifPresent(service -> {
       ZigBeeBaseChannelConverter cluster = service.getCluster();
 
+      // add general info
+      this.addText(builder, "field.minPollingInterval", cluster.getMinPollingInterval() / 60 + "min.");
+      this.addText(builder, "field.failedPollRequests", service.getFailedPollRequests() + "/" + service.getMaxFailedPollRequests());
+
+      long lastPollRequest = Duration.ofMillis(System.currentTimeMillis() - service.getLastPollRequest()).toMinutes();
+      this.addText(builder, "field.lastPollRequest", lastPollRequest + "min. ago");
+
+      long nextPoll = Duration.ofSeconds(cluster.getMinPollingInterval()).minusMillis(System.currentTimeMillis() -
+          service.getLastPollRequest()).toMinutes();
+      this.addText(builder, "field.expectedNextPollRequest", "in " + nextPoll + "min.");
+
+      if (cluster.getBindStatusMsg() != null) {
+        this.addText(builder, "field.bindErrorMessage", cluster.getBindStatusMsg())
+            .setColor(cluster.getBindStatus() == Status.OFFLINE ? Color.PRIMARY_COLOR : Color.RED).appendStyle("max-width", "200px");
+        builder.addSelectableButton("zigbee.action.rebind", "fas fa-litecoin-sign", "#3961B7",
+            (entityContext, params) -> cluster.tryBind() ? success() : showWarn("ACTION.NOT_SUCCESS"));
+      }
+
       if (!isSupportReporting()) {
         builder.addFlex("pp", flex -> {
-          flex.addInfo("field.pollingPeriod").appendStyle("min-width", "150px");
           Integer pollingPeriod = cluster.getPollingPeriod();
-          flex.addInfo(pollingPeriod == null ? "Not Set" : String.valueOf(pollingPeriod));
+          addText(flex, "field.pollingPeriod", pollingPeriod == null ? "Not Set" : pollingPeriod / 60 + "min.");
         });
       }
 
-      builder.addSelectableButton("zigbee.action.pull_values", "fas fa-download", "#A939B7",
+      builder.addSelectableButton("zigbee.action.poll_values", "fas fa-download", "#A939B7",
           (entityContext, params) -> {
             cluster.fireHandleRefresh();
-            return ActionResponseModel.success();
+            return success();
           });
       assembleReportConfigActions(builder);
       assembleLevelControlActions(builder);
@@ -628,7 +663,8 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     builder.addFlex(name, flex -> {
       flex.addInfo(infoName).appendStyle("min-width", "200px");
       flex.addNumberInput(name + "_input", value, min, max, (entityContext, params) ->
-          handler.apply(params.getInt("value"), entityContext)).appendStyle("width", "100px");
+              handler.apply(params.getInt("value"), entityContext)).appendStyle("width", "100px")
+          .setTitle(format("Range '%s..%s'", min, max));
     });
   }
 
@@ -642,10 +678,14 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     });
   }
 
-  private void addStatusInfo(UIInputBuilder builder, String name, Status status) {
-    UIFlexLayoutBuilder flex = builder.addFlex(name);
+  private void addStatusInfo(UILayoutBuilder layoutBuilder, String name, Status status) {
+    addText(layoutBuilder, name, status.toString()).setColor(status.getColor());
+  }
+
+  private UIInfoItemBuilder addText(UILayoutBuilder layoutBuilder, String name, String value) {
+    UIFlexLayoutBuilder flex = layoutBuilder.addFlex(name);
     flex.addInfo(name).appendStyle("min-width", "200px");
-    flex.addInfo(status.toString()).setColor(status.getColor());
+    return flex.addInfo(value);
   }
 
   private void assembleOnOfSwitchActions(UIInputBuilder builder) {
@@ -658,7 +698,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
             (entityContext, params) -> {
               if (getOffWaitTime() != params.getInt("value")) {
                 entityContext.save(setOffWaitTime(params.getInt("value")));
-                return ActionResponseModel.success();
+                return success();
               }
               return null;
             }).appendStyle("width", "200px");
@@ -669,7 +709,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
             (value, entityContext) -> {
               if (getOnTime() != value) {
                 entityContext.save(setOnTime(value));
-                return ActionResponseModel.success();
+                return success();
               }
               return null;
             });
@@ -680,7 +720,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
             (entityContext, params) -> {
               if (getStartupOnOff() != params.getBoolean("value")) {
                 entityContext.save(setStartupOnOff(params.getBoolean("value")));
-                return ActionResponseModel.success();
+                return success();
               }
               return null;
             });
@@ -697,7 +737,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
           (value, entityContext) -> {
             if (getDefaultTransitionTime() != value) {
               entityContext.save(setDefaultTransitionTime(value));
-              return ActionResponseModel.success();
+              return success();
             }
             return null;
           });
@@ -706,7 +746,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
           (entityContext, params) -> {
             if (getInvertLevelControl() != params.getBoolean("value")) {
               entityContext.save(setInvertLevelControl(params.getBoolean("value")));
-              return ActionResponseModel.success();
+              return success();
             }
             return null;
           });
@@ -715,7 +755,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
           (entityContext, params) -> {
             if (getInvertLevelControl() != params.getBoolean("value")) {
               entityContext.save(setInvertLevelControl(params.getBoolean("value")));
-              return ActionResponseModel.success();
+              return success();
             }
             return null;
           });
@@ -724,7 +764,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
           (entityContext, params) -> {
             if (getInvertReportControl() != params.getBoolean("value")) {
               entityContext.save(setInvertReportControl(params.getBoolean("value")));
-              return ActionResponseModel.success();
+              return success();
             }
             return null;
           });
@@ -734,7 +774,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
             0, 60000, (value, entityContext) -> {
               if (getOnOffTransitionTime() != value) {
                 entityContext.save(setOnOffTransitionTime(value));
-                return ActionResponseModel.success();
+                return success();
               }
               return null;
             });
@@ -745,7 +785,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
             getOnOffTransitionTime(), (value, entityContext) -> {
               if (getOnTransitionTime() != value) {
                 entityContext.save(setOnTransitionTime(value));
-                return ActionResponseModel.success();
+                return success();
               }
               return null;
             });
@@ -756,7 +796,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
             getOffTransitionTime(), (value, entityContext) -> {
               if (getOffTransitionTime() != value) {
                 entityContext.save(setOffTransitionTime(value));
-                return ActionResponseModel.success();
+                return success();
               }
               return null;
             });
@@ -767,7 +807,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
             getOnLevel(), (value, entityContext) -> {
               if (getOnLevel() != value) {
                 entityContext.save(setOnLevel(value));
-                return ActionResponseModel.success();
+                return success();
               }
               return null;
             });
@@ -778,7 +818,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
             getDefaultMoveRate(), (value, entityContext) -> {
               if (getDefaultMoveRate() != value) {
                 entityContext.save(setDefaultMoveRate(value));
-                return ActionResponseModel.success();
+                return success();
               }
               return null;
             });
@@ -795,7 +835,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
           1, 86400, (value, entityContext) -> {
             if (getReportingTimeMin() != value) {
               entityContext.save(setReportingTimeMin(value));
-              return ActionResponseModel.success();
+              return success();
             }
             return null;
           });
@@ -803,7 +843,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
           1, 86400, (value, entityContext) -> {
             if (getReportingTimeMax() != value) {
               entityContext.save(setReportingTimeMax(value));
-              return ActionResponseModel.success();
+              return success();
             }
             return null;
           });
@@ -811,17 +851,17 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
           15, 86400, (value, entityContext) -> {
             if (getPollingPeriod() != value) {
               entityContext.save(setPollingPeriod(value));
-              return ActionResponseModel.success();
+              return success();
             }
             return null;
           });
 
-      if (isSupportAnalogue()) {
-        addNumber(reportFlex, "rc", "field.reportingChange", getPollingPeriod(),
+      if (isSupportAnalogue() && getReportingChange() != null) {
+        addNumber(reportFlex, "rc", "field.reportingChange", getReportingChange().intValue(),
             getReportingChangeMin(), getReportingChangeMax(), (value, entityContext) -> {
               if (getReportingChange() != null && getReportingChange() != value.doubleValue()) {
-                entityContext.save(setPollingPeriod(value));
-                return ActionResponseModel.success();
+                entityContext.save(setReportingChange(value));
+                return success();
               }
               return null;
             });

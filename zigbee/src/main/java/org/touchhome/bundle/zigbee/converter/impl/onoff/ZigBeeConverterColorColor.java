@@ -121,11 +121,11 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
           }
         } else {
           log.error("[{}]: Error 0x{} setting server binding {}", entityID,
-              Integer.toHexString(bindResponse.getStatusCode()), this.endpoint);
+              Integer.toHexString(bindResponse.getStatusCode()).toUpperCase(), this.endpoint);
           pollingPeriod = POLLING_PERIOD_HIGH;
           throw new RuntimeException("Error setting server binding");
         }
-      } catch (ExecutionException | InterruptedException e) {
+      } catch (Exception e) {
         log.debug("[{}]: Exception configuring color reporting {}", this.endpoint, e);
       }
 
@@ -143,7 +143,7 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
               .setReporting(ATTR_CURRENTLEVEL, 1, REPORTING_PERIOD_DEFAULT_MAX, 1)
               .get();
           handleReportingResponseHigh(reportingResponse);
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (Exception e) {
           log.debug("[{}]: Exception configuring level reporting {}", this.endpoint, e);
         }
       }
@@ -160,7 +160,7 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
           CommandResult reportingResponse = serverClusterOnOff
               .setReporting(ATTR_ONOFF, 1, REPORTING_PERIOD_DEFAULT_MAX).get();
           handleReportingResponseHigh(reportingResponse);
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (Exception e) {
           log.debug("[{}]: Exception configuring on/off reporting {}", this.endpoint, e);
           throw new RuntimeException("Exception configuring on/off reporting");
         }

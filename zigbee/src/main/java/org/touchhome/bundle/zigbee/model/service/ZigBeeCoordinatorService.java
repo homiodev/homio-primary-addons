@@ -126,10 +126,10 @@ public abstract class ZigBeeCoordinatorService
     this.entityContext.ui().registerConsolePlugin("zigbee-console-" + entityID,
         new ZigBeeConsolePlugin(entityContext, this));
 
-    this.entityContext.bgp().builder("zigbee-node-alive-" + entityID)
+    this.entityContext.bgp().builder("zigbee-coordinator-" + entityID)
                       .delay(Duration.ofMinutes(1)).interval(Duration.ofMinutes(1)).cancelOnError(false).execute(() -> {
           for (ZigBeeDeviceService device : registeredDevices) {
-            device.checkOffline();
+            device.checkOffline(false);
           }
         });
   }
@@ -630,6 +630,7 @@ public abstract class ZigBeeCoordinatorService
   public void scanStart(int duration) {
     if (entity.getStatus() != Status.ONLINE) {
       log.debug("[{}]: ZigBee coordinator is offline - aborted scan", entityID);
+      throw new IllegalStateException("zigbee.error.coordinator_offline");
     } else {
       networkManager.permitJoin(duration);
     }
