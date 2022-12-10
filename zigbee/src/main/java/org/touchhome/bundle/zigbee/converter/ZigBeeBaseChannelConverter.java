@@ -47,9 +47,9 @@ public abstract class ZigBeeBaseChannelConverter {
   @Getter @Nullable protected ZclFanControlConfig configFanControl;
   @Getter @Nullable protected ZclDoorLockConfig configDoorLock;
   @Getter protected boolean supportConfigColorControl;
+  @Getter @NotNull protected Status bindStatus = Status.UNKNOWN;
   @Getter @Setter private ZigBeeConverter annotation;
   @Getter private ZigbeeEndpointService endpointService;
-  @Getter @NotNull private Status bindStatus = Status.UNKNOWN;
 
   public Integer getPollingPeriod() {
     return configReporting == null ? pollingPeriod : configReporting.getPollingPeriod();
@@ -78,23 +78,12 @@ public abstract class ZigBeeBaseChannelConverter {
   }
 
   /**
-   * Configures the device. This method should perform the one off device configuration such as performing the bind and reporting configuration.
-   *
-   * <p>The binding should initialize reporting using one of the {@link ZclCluster#setReporting}
-   * commands.
-   *
-   * <p>Note that this method should be self contained, and may not make any assumptions about the
-   * initialization of any internal fields of the converter other than those initialized in the #initialize method.
-   */
-  public abstract void initializeDevice() throws Exception;
-
-  /**
    * Initialize the converter. This is called by the {@link ZigBeeDeviceService} when the channel is created. The converter should initialize any internal states, open any clusters, add reporting and
    * binding that it needs to operate.
    *
    * <p>
    */
-  public abstract void initializeConverter() throws Exception;
+  public abstract void initialize();
 
   /**
    * Closes the converter and releases any resources.
@@ -124,20 +113,6 @@ public abstract class ZigBeeBaseChannelConverter {
 
   /**
    * Check if this converter supports features from the {@link ZigBeeEndpoint} If the converter doesn't support any features, it returns null.
-   *
-   * <p>The converter should perform the following -:
-   *
-   * <ul>
-   *   <li>Check if the device supports the cluster(s) required by the converter
-   *   <li>Check if the cluster supports the attributes or commands required by the converter
-   * </ul>
-   * <p>
-   * Only if the device supports the features required by the channel should the channel be
-   * implemented.
-   *
-   * @param endpoint      The {@link ZigBeeEndpoint} to search for zigbeeRequireEndpoints
-   * @param entityContext
-   * @return a if the converter supports features from the {@link ZigBeeEndpoint}, otherwise null.
    */
   public abstract boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext);
 
@@ -237,9 +212,12 @@ public abstract class ZigBeeBaseChannelConverter {
   }
 
   // Configure reporting
-  protected void updateDeviceReporting(@NotNull ZclCluster serverCluster, int attributeId, boolean setChange) {
+  protected void updateDeviceReporting(@NotNull ZclCluster serverCluster, @Nullable Integer attributeId, boolean setChange) {
     if (configReporting == null) {
       throw new IllegalArgumentException("configReporting is null");
+    }
+    if (attributeId == null) {
+      throw new IllegalStateException("Cluster with null attributeId must override updateDeviceReporting(...) method");
     }
     try {
       CommandResult reportingResponse = serverCluster.setReporting(attributeId,

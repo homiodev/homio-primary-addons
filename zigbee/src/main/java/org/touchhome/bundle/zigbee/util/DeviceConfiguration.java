@@ -18,7 +18,7 @@ public class DeviceConfiguration {
 
   private @Nullable String id;
   private @Nullable String category;
-  private @Nullable String modelId;
+  private @NotNull Set<String> models;
   private @NotNull String vendor;
   private @Nullable String image;
 

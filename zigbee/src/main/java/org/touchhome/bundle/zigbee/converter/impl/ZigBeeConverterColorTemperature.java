@@ -32,8 +32,8 @@ public class ZigBeeConverterColorTemperature extends ZigBeeInputBaseConverter<Zc
   }
 
   @Override
-  public void initializeDevice() throws Exception {
-    super.initializeDevice();
+  protected void initializeBindingReport() throws Exception {
+    super.initializeBindingReport();
 
     // ColorMode reporting
     CommandResult reportingResponse = zclCluster.setReporting(ZclColorControlCluster.ATTR_COLORMODE,
@@ -42,8 +42,8 @@ public class ZigBeeConverterColorTemperature extends ZigBeeInputBaseConverter<Zc
   }
 
   @Override
-  public void initializeConverter() {
-    super.initializeConverter();
+  public void initialize() {
+    super.initialize();
     determineMinMaxTemperature(clusterColorControl);
   }
 

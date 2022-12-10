@@ -5,9 +5,11 @@ import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclTemperatureMeasurementCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import java.math.BigDecimal;
+import lombok.Getter;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.QuantityType;
+import org.touchhome.bundle.zigbee.converter.config.ZclReportingConfig;
 import tec.uom.se.unit.Units;
 
 /**
@@ -21,6 +23,7 @@ import tec.uom.se.unit.Units;
     category = "Temperature")
 public class ZigBeeConverterTemperature extends ZigBeeInputBaseConverter<ZclTemperatureMeasurementCluster> {
 
+  @Getter
   private boolean asClient;
 
   public ZigBeeConverterTemperature() {
@@ -43,21 +46,18 @@ public class ZigBeeConverterTemperature extends ZigBeeInputBaseConverter<ZclTemp
   }
 
   @Override
-  public void initializeDevice() throws Exception {
+  public void initialize() {
     zclCluster = getInputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID);
     if (zclCluster != null) {
-      super.initializeDevice();
+      super.initialize();
+      if (configuration.isReportConfigurable()) {
+        configReporting = new ZclReportingConfig(getEntity());
+      }
+      initializeBinding();
+      initializeAttribute();
     } else {
       this.asClient = true;
       zclCluster = getOutputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID);
-    }
-  }
-
-  @Override
-  public void initializeConverter() {
-    if (!asClient) {
-      super.initializeConverter();
-    } else {
       attribute = zclCluster.getLocalAttribute(ZclTemperatureMeasurementCluster.ATTR_MEASUREDVALUE);
       attribute.setImplemented(true);
     }

@@ -2,7 +2,6 @@ package org.touchhome.bundle.zigbee.converter.impl.ias;
 
 import static com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster.ATTR_ZONETYPE;
 
-import com.zsmartsystems.zigbee.CommandResult;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
@@ -13,13 +12,15 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneStatusChangeNotificationCommand;
 import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
+import org.jetbrains.annotations.Nullable;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.OnOffType;
-import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
+import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
 
 /**
  * Converter for the IAS zone sensors. This is an abstract class used as a base for different IAS sensors.
  */
-public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
+public abstract class ZigBeeConverterIas extends ZigBeeInputBaseConverter<ZclIasZoneCluster>
     implements ZclCommandListener, ZclAttributeListener {
 
   /**
@@ -35,59 +36,25 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
   protected static final int CIE_ACMAINS = 0x0080;
   protected static final int CIE_TEST = 0x0100;
   protected static final int CIE_BATTERYDEFECT = 0x0200;
+  private final @Nullable ZoneTypeEnum zoneType;
   protected int bitTest = CIE_ALARM1;
-  private ZclIasZoneCluster clusterIasZone;
 
-  @Override
-  public void initializeDevice() {
-    log.debug("[{}]: Initialising device IAS Zone cluster {}", entityID, this.endpoint);
+  public ZigBeeConverterIas(@Nullable ZoneTypeEnum zoneType) {
+    super(ZclClusterType.IAS_ZONE, ZclIasZoneCluster.ATTR_ZONESTATUS);
+    this.zoneType = zoneType;
+  }
 
-    ZclIasZoneCluster serverClusterIasZone = getInputCluster(ZclIasZoneCluster.CLUSTER_ID);
-    if (serverClusterIasZone == null) {
-      log.error("[{}]: Error opening IAS zone cluster {}", entityID, this.endpoint);
-      throw new RuntimeException("Error opening IAS zone cluster");
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+    if (zoneType == null) {
+      return hasIasZoneInputCluster(endpoint, entityID);
     }
-
-    try {
-      CommandResult bindResponse = bind(serverClusterIasZone);
-      if (bindResponse.isSuccess()) {
-        // Configure reporting - no faster than once per second - no slower than 2 hours.
-        ZclAttribute attribute = serverClusterIasZone.getAttribute(ZclIasZoneCluster.ATTR_ZONESTATUS);
-        CommandResult reportingResponse = serverClusterIasZone
-            .setReporting(attribute, 3, REPORTING_PERIOD_DEFAULT_MAX).get();
-        handleReportingResponse(reportingResponse);
-      }
-    } catch (Exception e) {
-      log.debug("[{}]: Exception configuring ias zone status reporting {}", entityID, this.endpoint, e);
-      throw new RuntimeException("Exception configuring ias zone status reporting");
-    }
+    return supportsIasChannel(endpoint, entityID, zoneType);
   }
 
   @Override
-  public void initializeConverter() {
-    log.debug("[{}]: Initialising device IAS Zone cluster {}", entityID, endpoint);
-
-    clusterIasZone = getInputCluster(ZclIasZoneCluster.CLUSTER_ID);
-    if (clusterIasZone == null) {
-      log.error("[{}]: Error opening IAS zone cluster {}", entityID, endpoint);
-      throw new RuntimeException("Error opening IAS zone cluster");
-    }
-    // Add a listener, then request the status
-    clusterIasZone.addCommandListener(this);
-    clusterIasZone.addAttributeListener(this);
-  }
-
-  @Override
-  public void disposeConverter() {
-    log.debug("[{}]: Closing device IAS zone cluster {}", entityID, endpoint);
-
-    clusterIasZone.removeCommandListener(this);
-    clusterIasZone.removeAttributeListener(this);
-  }
-
-  @Override
-  protected void handleRefresh() {
-    clusterIasZone.getZoneStatus(0);
+  public void initialize() {
+    super.initialize();
+    zclCluster.addCommandListener(this);
   }
 
   protected boolean supportsIasChannel(ZigBeeEndpoint endpoint, String entityID, ZoneTypeEnum requiredZoneType) {
@@ -129,7 +96,7 @@ public abstract class ZigBeeConverterIas extends ZigBeeBaseChannelConverter
       ZoneStatusChangeNotificationCommand zoneStatus = (ZoneStatusChangeNotificationCommand) command;
       updateChannelState(zoneStatus.getZoneStatus());
 
-      clusterIasZone.sendDefaultResponse(command, ZclStatus.SUCCESS);
+      zclCluster.sendDefaultResponse(command, ZclStatus.SUCCESS);
       return true;
     }
 

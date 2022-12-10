@@ -113,7 +113,9 @@
               "en": "The magnetic contact, seen by the device as a switch that is on when the contact is open"
             },
             "endpoint": 1,
-            "input_clusters": [6]
+            "input_clusters": [
+              6
+            ]
           }
         ]
       },
@@ -130,7 +132,9 @@
             "id": "occupancy",
             "type_id": "sensor_occupancy",
             "endpoint": 1,
-            "input_clusters": [1030]
+            "input_clusters": [
+              1030
+            ]
           }
         ]
       },
@@ -148,19 +152,25 @@
             "id": "switch_1",
             "type_id": "switch_onoff",
             "endpoint": 1,
-            "input_clusters": [6]
+            "input_clusters": [
+              6
+            ]
           },
           {
             "id": "switch_2",
             "type_id": "switch_onoff",
             "endpoint": 2,
-            "input_clusters": [6]
+            "input_clusters": [
+              6
+            ]
           },
           {
             "id": "switch_3",
             "type_id": "switch_onoff",
             "endpoint": 3,
-            "input_clusters": [6]
+            "input_clusters": [
+              6
+            ]
           }
         ]
       },
@@ -178,13 +188,17 @@
             "id": "temperature",
             "type_id": "measurement_temperature",
             "endpoint": 1,
-            "input_clusters": [1026]
+            "input_clusters": [
+              1026
+            ]
           },
           {
             "id": "humidity",
             "type_id": "measurement_relativehumidity",
             "endpoint": 1,
-            "input_clusters": [1029]
+            "input_clusters": [
+              1029
+            ]
           }
         ]
       },
@@ -199,7 +213,9 @@
             "id": "alarm_water",
             "type_id": "ias_water",
             "endpoint": 1,
-            "input_clusters": [1280]
+            "input_clusters": [
+              1280
+            ]
           }
         ]
       },
@@ -213,21 +229,22 @@
             "id": "switch",
             "type_id": "switch_onoff",
             "endpoint": 1,
-            "input_clusters": [6]
+            "input_clusters": [
+              6
+            ]
           }
         ]
       },
       {
         "id": "lumi.sensor_motion.aq2",
-        "models": [
-          "lumi.sensor_motion.aq2"
-        ],
         "image": "zigbee-motion-sensor",
         "endpoints": [
           {
             "type_id": "sensor_occupancy",
             "endpoint": 1,
-            "input_clusters": [1030]
+            "input_clusters": [
+              1030
+            ]
           }
         ]
       },
@@ -268,15 +285,11 @@
       },
       {
         "id": "lumi.ctrl_ln2.aq1",
-        "models": [
-          "lumi.ctrl_ln2.aq1"
-        ],
         "image": "zigbee-button-double"
       },
       {
         "id": "lumi.sensor_cube.aqgl01",
         "models": [
-          "lumi.sensor_cube.aqgl01",
           "lumi.sensor_cube"
         ],
         "image": "zigbee-cube"
@@ -287,9 +300,6 @@
     "devices": [
       {
         "id": "innr-rc-110",
-        "models": [
-          "innr-rc-110"
-        ],
         "label": {
           "en": "Innr RC 110 Remote Control"
         },
@@ -476,7 +486,6 @@
     "devices": [
       {
         "id": "bitron-video-902010-23",
-        "models": "bitron-video-902010-23",
         "label": {
           "en": "BitronVideo 4-button Remote Control"
         },
@@ -549,9 +558,6 @@
       },
       {
         "id": "bitron-video-av2010-34",
-        "models": [
-          "bitron-video-av2010-34"
-        ],
         "label": {
           "en": "Bitron Video Wall Switch AV2010/34"
         },
@@ -632,9 +638,6 @@
     "devices": [
       {
         "id": "philips_rwl021",
-        "models": [
-          "philips_rwl021"
-        ],
         "label": {
           "en": "Hue Dimmer Switch"
         },
@@ -721,9 +724,6 @@
       },
       {
         "id": "philips_rwl022",
-        "models": [
-          "philips_rwl022"
-        ],
         "label": {
           "en": "Hue Dimmer Switch"
         },
@@ -810,9 +810,6 @@
       },
       {
         "id": "philips_sml001",
-        "models": [
-          "philips_sml001"
-        ],
         "label": {
           "en": "Hue Motion Sensor"
         },
@@ -1040,9 +1037,6 @@
     "devices": [
       {
         "id": "legrand_dimmer_without_neutral",
-        "models": [
-          "legrand_dimmer_without_neutral"
-        ],
         "label": {
           "en": "Legrand with Netatmo Dimmer"
         },
@@ -1066,23 +1060,14 @@
     "devices": [
       {
         "id": "lumi.weather",
-        "models": [
-          "lumi.weather"
-        ],
         "image": "zigbee-weather-sensor"
       },
       {
         "id": "lumi.remote.b186acn01",
-        "models": [
-          "lumi.remote.b186acn01"
-        ],
         "image": "zigbee-button-remote"
       },
       {
         "id": "lumi.sensor_smoke",
-        "models": [
-          "lumi.sensor_smoke"
-        ],
         "image": "zigbee-smoke"
       }
     ]

@@ -1,4 +1,9 @@
 {
+  "IAS_ZONE": {
+    "report": {
+      "min": 3
+    }
+  },
   "PRESSURE_MEASUREMENT": {
   },
   "ON_OFF": {

@@ -25,8 +25,7 @@ public class ZigBeeConverterMeasurementPower extends ZigBeeInputBaseConverter<Zc
   }
 
   @Override
-  public void initializeConverter() {
-    super.initializeConverter();
+  protected void initializeReportConfigurations() {
     this.divisor = readAttribute(zclCluster, ZclMeteringCluster.ATTR_DIVISOR, 1);
     this.multiplier = readAttribute(zclCluster, ZclMeteringCluster.ATTR_DIVISOR, 1);
   }

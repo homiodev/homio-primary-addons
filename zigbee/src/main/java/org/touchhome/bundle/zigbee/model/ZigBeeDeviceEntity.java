@@ -74,12 +74,7 @@ import org.touchhome.common.exception.NotFoundException;
 @Getter
 @Setter
 @Entity
-@UISidebarMenu(
-    icon = "fas fa-bezier-curve",
-    parent = UISidebarMenu.TopSidebarMenu.HARDWARE,
-    bg = "#de9ed7",
-    order = 5,
-    overridePath = "zigbee")
+@UISidebarMenu(icon = "fas fa-bezier-curve", parent = UISidebarMenu.TopSidebarMenu.HARDWARE, bg = "#de9ed7", order = 5, overridePath = "zigbee")
 public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
     implements HasJsonData,
     HasNodeDescriptor,
@@ -89,11 +84,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
 
   public static final String PREFIX = "zb_";
 
-  @OneToMany(
-      fetch = FetchType.EAGER,
-      cascade = CascadeType.ALL,
-      mappedBy = "owner",
-      orphanRemoval = true)
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "owner", orphanRemoval = true)
   @UIField(order = 1000, hideInView = true)
   @UIFieldDisableCreateTab
   private Set<ZigBeeEndpointEntity> endpoints;
@@ -117,13 +108,10 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
 
   @UIField(order = 1, hideInEdit = true, hideOnEmpty = true)
   public UIFieldProgress.Progress getInitProgress() {
-    return optService()
-        .map(
-            service -> {
-              double progress = service.getProgress();
-              return progress == -1 ? null : new UIFieldProgress.Progress((int) progress, 100, "");
-            })
-        .orElse(null);
+    return optService().map(service -> {
+      double progress = service.getProgress();
+      return progress == 0 ? null : new UIFieldProgress.Progress((int) progress, 100, "");
+    }).orElse(null);
   }
 
   @UIField(order = 11, hideInEdit = true)
@@ -161,9 +149,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
 
   public void setLastAnswerFromEndpoints(long currentTimeMillis) {
     EntityContextSetting.setMemValue(this, "lafe", "", currentTimeMillis);
-    getEntityContext()
-        .ui()
-        .updateItem(this, "lastAnswerFromEndpoints", getLastAnswerFromEndpoints());
+    getEntityContext().ui().updateItem(this, "lastAnswerFromEndpoints", getLastAnswerFromEndpoints());
   }
 
   @UIField(hideInEdit = true, order = 2, hideOnEmpty = true)
@@ -251,36 +237,28 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
   @UIField(hideInEdit = true, order = 4, hideOnEmpty = true)
   @UIFieldGroup("General")
   public String getMaxTimeoutBeforeOfflineNode() {
-    return optService()
-        .map(
-            service -> {
-              Integer interval = service.getExpectedUpdateInterval();
-              return interval == null ? "Not set" : TimeUnit.SECONDS.toMinutes(interval) + "min";
-            })
-        .orElse(null);
+    return optService().map(service -> {
+      Integer interval = service.getExpectedUpdateInterval();
+      return interval == null ? "Not set" : TimeUnit.SECONDS.toMinutes(interval) + "min";
+    }).orElse(null);
   }
 
   @UIField(order = 5, hideInEdit = true, hideOnEmpty = true)
   @UIFieldGroup("General")
   public String getTimeoutBeforeOfflineNode() {
-    return optService()
-        .map(
-            service -> {
-              Integer interval = service.getExpectedUpdateInterval();
-              if (interval == null) {
-                return "Not set";
-              }
-              long lastAnswerFromEndpoints = getLastAnswerFromEndpoints();
-              long diff =
-                  TimeUnit.SECONDS.toMinutes(
-                      interval - (System.currentTimeMillis() - lastAnswerFromEndpoints) / 1000);
-              if (diff < 0) { // already timed out
-                return null;
-              }
-              String min = String.valueOf(diff);
-              return "Expire in: " + min + "min";
-            })
-        .orElse(null);
+    return optService().map(service -> {
+      Integer interval = service.getExpectedUpdateInterval();
+      if (interval == null) {
+        return "Not set";
+      }
+      long lastAnswerFromEndpoints = getLastAnswerFromEndpoints();
+      long diff = TimeUnit.SECONDS.toMinutes(interval - (System.currentTimeMillis() - lastAnswerFromEndpoints) / 1000);
+      if (diff < 0) { // already timed out
+        return null;
+      }
+      String min = String.valueOf(diff);
+      return "Expire in: " + min + "min";
+    }).orElse(null);
   }
 
   @UIField(order = 7, hideInEdit = true, hideOnEmpty = true)
@@ -292,41 +270,29 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
   @UIField(hideInEdit = true, order = 100, hideOnEmpty = true)
   @UIFieldGroup("General")
   public String getTimeToNextSchedule() {
-    return optService()
-        .map(
-            service -> {
-              ThreadContext<Void> pollingJob = service.getPollingJob();
-              if (pollingJob != null) {
-                return pollingJob.getTimeToNextSchedule();
-              }
-              return null;
-            })
-        .orElse(null);
+    return optService().map(service -> {
+      ThreadContext<Void> pollingJob = service.getPollingJob();
+      if (pollingJob != null) {
+        return pollingJob.getTimeToNextSchedule();
+      }
+      return null;
+    }).orElse(null);
   }
 
-  @UIContextMenuAction(
-      value = "zigbee.action.pull_values",
-      icon = "fas fa-download",
-      iconColor = "#A939B7")
+  @UIContextMenuAction(value = "zigbee.action.pull_values", icon = "fas fa-download", iconColor = "#A939B7")
   public ActionResponseModel pollValues() {
     getService().pullChannels();
     return ActionResponseModel.success();
   }
 
-  @UIContextMenuAction(
-      value = "zigbee.action.permit_join",
-      icon = "fas fa-arrows-to-eye",
-      iconColor = "#1D8EB3")
+  @UIContextMenuAction(value = "zigbee.action.permit_join", icon = "fas fa-arrows-to-eye", iconColor = "#1D8EB3")
   public ActionResponseModel permitJoin() {
     if (parent.getStatus() != Status.ONLINE) {
       throw new IllegalStateException("DEVICE_OFFLINE");
     }
     ZigBeeCoordinatorService zigBeeCoordinatorService = parent.getService();
-    boolean join =
-        zigBeeCoordinatorService.permitJoin(toIeeeAddress(), parent.getDiscoveryDuration());
-    return join
-        ? ActionResponseModel.success()
-        : ActionResponseModel.showError("ACTION.RESPONSE.ERROR");
+    boolean join = zigBeeCoordinatorService.permitJoin(toIeeeAddress(), parent.getDiscoveryDuration());
+    return join ? ActionResponseModel.success() : ActionResponseModel.showError("ACTION.RESPONSE.ERROR");
   }
 
   @Override
@@ -341,30 +307,20 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
 
   @Override
   public String toString() {
-    return "ZigBee device '"
-        + getTitle()
-        + "'. [IeeeAddress='"
-        + getIeeeAddress()
-        + ", ModelIdentifier="
-        + getModelIdentifier()
-        + "]";
+    return "ZigBee device '" + getTitle() + "'. [IeeeAddress='" + getIeeeAddress() + ", ModelIdentifier=" + getModelIdentifier() + "]";
   }
 
   @Override
   public void afterDelete(EntityContext entityContext) {
-    parent
-        .optService()
-        .ifPresent(
-            service -> {
-              try {
-                service.removeNode(toIeeeAddress());
-                service.leave(toIeeeAddress(), true);
-              } catch (Exception ex) {
-                log.error(
-                    "Something went wrong during detaching removed ZigBeeDeviceEntity from coordinator: {}",
-                    parent.getTitle());
-              }
-            });
+    parent.optService().ifPresent(service -> {
+      try {
+        service.removeNode(toIeeeAddress());
+        service.leave(toIeeeAddress(), true);
+      } catch (Exception ex) {
+        log.error("[{}]: Something went wrong during detaching removed ZigBeeDeviceEntity from coordinator: {}",
+            getEntityID(), parent.getTitle());
+      }
+    });
   }
 
   @Override
@@ -397,16 +353,11 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
     if (endpoints == null) {
       return Collections.emptyList();
     }
-    return endpoints.stream()
-                    .filter(e -> e.getClusterId() == clusterId)
-                    .collect(Collectors.toList());
+    return endpoints.stream().filter(e -> e.getClusterId() == clusterId).collect(Collectors.toList());
   }
 
   public void updateFromNode(ZigBeeNode node, EntityContext entityContext) {
-    log.info(
-        "[{}]: Starting fetch info from ZigBeeNode: <{}>",
-        getEntityID(),
-        node.getIeeeAddress().toString());
+    log.info("[{}]: Starting fetch info from ZigBeeNode: <{}>", getEntityID(), node.getIeeeAddress().toString());
     setFetchInfoStatus(Status.RUNNING, null);
 
     boolean updated = updateFromNodeDescriptor(node);
@@ -414,9 +365,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
     updated |= updateFromBasicCluster(node, entityContext);
 
     // try to find image for device
-    if (isEmpty(this.getName())
-        || isEmpty(this.getImageIdentifier())
-        || isEmpty(this.getDescription())) {
+    if (isEmpty(this.getName()) || isEmpty(this.getImageIdentifier()) || isEmpty(this.getDescription())) {
       DeviceConfiguration deviceConfiguration = DeviceConfigurations.findDeviceDefinition(this);
       if (deviceConfiguration != null) {
         if (isEmpty(this.getImageIdentifier()) && !isEmpty(deviceConfiguration.getImage())) {
@@ -436,8 +385,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
       }
     }
 
-    log.info(
-        "[{}]: Finished fetch info from ZigBeeNode: <{}>", getEntityID(), node.getIeeeAddress());
+    log.info("[{}]: Finished fetch info from ZigBeeNode: <{}>", getEntityID(), node.getIeeeAddress());
     setFetchInfoStatus(Status.DONE, null);
 
     if (updated) {
@@ -447,24 +395,16 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
 
   private boolean updateFromBasicCluster(ZigBeeNode node, EntityContext entityContext) {
     boolean updated = false;
-    ZclBasicCluster basicCluster =
-        (ZclBasicCluster)
-            node.getEndpoints().stream()
-                .map(ep -> ep.getInputCluster(ZclBasicCluster.CLUSTER_ID))
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
+    ZclBasicCluster basicCluster = (ZclBasicCluster) node.getEndpoints().stream().map(
+        ep -> ep.getInputCluster(ZclBasicCluster.CLUSTER_ID)).filter(Objects::nonNull).findFirst().orElse(null);
 
     if (basicCluster == null) {
       log.warn("[{}]: Node {} doesn't support basic cluster", getEntityID(), node.getIeeeAddress());
       return false;
     }
 
-    log.debug(
-        "[{}]: ZigBee node {} property discovery using basic cluster on endpoint {}",
-        getEntityID(),
-        node.getIeeeAddress(),
-        basicCluster.getZigBeeAddress());
+    log.debug("[{}]: ZigBee node {} property discovery using basic cluster on endpoint {}",
+        getEntityID(), node.getIeeeAddress(), basicCluster.getZigBeeAddress());
 
     // Attempt to read all properties with a single command.
     // If successful, this updates the cache with the property values.
@@ -491,11 +431,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
         basicCluster.readAttributes(attributes).get(timeout, TimeUnit.SECONDS);
       }
     } catch (Exception ex) {
-      log.warn(
-          "[{}]: There was an error when trying to read all properties. {}",
-          getEntityID(),
-          node.getIeeeAddress(),
-          ex);
+      log.warn("[{}]: There was an error when trying to read all properties. {}", getEntityID(), node.getIeeeAddress(), ex);
     }
 
     String manufacturerName =
@@ -550,20 +486,11 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
   }
 
   private boolean updateFromOtaCluster(ZigBeeNode node) {
-    ZclOtaUpgradeCluster otaCluster =
-        (ZclOtaUpgradeCluster)
-            node.getEndpoints().stream()
-                .map(ep -> ep.getOutputCluster(ZclOtaUpgradeCluster.CLUSTER_ID))
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
+    ZclOtaUpgradeCluster otaCluster = (ZclOtaUpgradeCluster) node.getEndpoints().stream().map(
+        ep -> ep.getOutputCluster(ZclOtaUpgradeCluster.CLUSTER_ID)).filter(Objects::nonNull).findFirst().orElse(null);
 
     if (otaCluster != null) {
-      log.debug(
-          "[{}]: ZigBee node {} property discovery using OTA cluster on endpoint {}",
-          getEntityID(),
-          node.getIeeeAddress(),
-          otaCluster.getZigBeeAddress());
+      log.debug("[{}]: ZigBee node {} property discovery using OTA cluster on endpoint {}", getEntityID(), node.getIeeeAddress(), otaCluster.getZigBeeAddress());
 
       ZclAttribute attribute =
           otaCluster.getAttribute(ZclOtaUpgradeCluster.ATTR_CURRENTFILEVERSION);
@@ -575,10 +502,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
           return true;
         }
       } else {
-        log.debug(
-            "[{}]: Could not get OTA firmware version from device {}",
-            getEntityID(),
-            node.getIeeeAddress());
+        log.debug("[{}]: Could not get OTA firmware version from device {}", getEntityID(), node.getIeeeAddress());
       }
     } else {
       log.debug("[{}]: Node doesn't support OTA cluster {}", getEntityID(), node.getIeeeAddress());
@@ -597,10 +521,8 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
 
   @Override
   public ZigBeeDeviceService createService(@NotNull EntityContext entityContext) {
-    ZigBeeCoordinatorService coordinatorService =
-        parent
-            .getOrCreateService(entityContext)
-            .orElseThrow(() -> new RuntimeException("Unable to create zigbee discovery service"));
+    ZigBeeCoordinatorService coordinatorService = parent.getOrCreateService(entityContext).orElseThrow(
+        () -> new RuntimeException("Unable to create zigbee discovery service"));
     return new ZigBeeDeviceService(coordinatorService, toIeeeAddress(), entityContext, this);
   }
 

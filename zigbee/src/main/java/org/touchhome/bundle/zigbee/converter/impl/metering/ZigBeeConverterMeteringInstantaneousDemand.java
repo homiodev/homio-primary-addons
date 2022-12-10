@@ -24,8 +24,8 @@ public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeInputBaseC
   }
 
   @Override
-  public void initializeConverter() {
-    super.initializeConverter();
+  public void initialize() {
+    super.initialize();
     this.divisor = readAttribute(zclCluster, ZclMeteringCluster.ATTR_DIVISOR, 1);
     this.multiplier = readAttribute(zclCluster, ZclMeteringCluster.ATTR_MULTIPLIER, 1);
   }

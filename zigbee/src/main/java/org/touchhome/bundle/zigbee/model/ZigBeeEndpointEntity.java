@@ -81,17 +81,6 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return EntityContextSetting.getMessage(this, "");
   }
 
-  @UIField(order = 12, disableEdit = true)
-  @UIFieldColorStatusMatch
-  public Status getDeviceInitializeStatus() {
-    return EntityContextSetting.getStatus(this, "DeviceInitializeStatus", Status.UNKNOWN);
-  }
-
-  public void setDeviceInitializeStatus(Status status) {
-    EntityContextSetting.setStatus(
-        this, "DeviceInitializeStatus", "DeviceInitializeStatus", status);
-  }
-
   @UIField(order = 2, disableEdit = true)
   @UIFieldGroup(value = "General", order = 1, borderColor = "#317175")
   public int getClusterId() {

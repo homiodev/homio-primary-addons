@@ -192,7 +192,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
   }
 
   @Override
-  public synchronized void initializeConverter() {
+  public synchronized void initialize() {
     updateScheduler = Executors.newSingleThreadScheduledExecutor();
 
     if (initializeConverterServer()) {

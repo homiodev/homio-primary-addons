@@ -72,7 +72,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
   }
 
   @Override
-  public void initializeConverter() {
+  public void initialize() {
     for (ButtonPressType buttonPressType : ButtonPressType.values()) {
       EventSpec eventSpec = parseEventSpec(getEndpointService().getMetadata(), buttonPressType);
       if (eventSpec != null) {

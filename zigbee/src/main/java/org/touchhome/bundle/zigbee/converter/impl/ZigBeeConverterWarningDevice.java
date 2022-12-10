@@ -12,7 +12,7 @@ import org.touchhome.bundle.zigbee.converter.warningdevice.WarningType;
  * Triggers warnings on a warning device Channel converter for warning devices, based on the IAS WD cluster.
  */
 @ZigBeeConverter(name = "zigbee:warning_device", linkType = VariableType.Float,
-    clientCluster = ZclIasWdCluster.CLUSTER_ID, category = "Siren")
+                 clientCluster = ZclIasWdCluster.CLUSTER_ID, category = "Siren")
 public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
 
   private static final String CONFIG_PREFIX = "zigbee_iaswd_";
@@ -25,7 +25,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
   }
 
   @Override
-  public void initializeConverter() {
+  public void initialize() {
     iasWdCluster = getInputCluster(ZclIasWdCluster.CLUSTER_ID);
     if (iasWdCluster == null) {
       log.error("[{}]: Error opening warning device controls {}", entityID, endpoint);

@@ -1,9 +1,7 @@
 package org.touchhome.bundle.zigbee.converter.impl.ias;
 
-import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIasZoneCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.iaszone.ZoneTypeEnum;
-import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 
@@ -11,17 +9,16 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
  * Motion presence sensor Converter for the IAS presence sensor.
  */
 @ZigBeeConverter(name = "zigbee:ias_motionpresence", linkType = VariableType.Float,
-    clientCluster = ZclIasZoneCluster.CLUSTER_ID, category = "Motion")
+                 clientCluster = ZclIasZoneCluster.CLUSTER_ID, category = "Motion")
 public class ZigBeeConverterIasMotionPresence extends ZigBeeConverterIas {
 
-  @Override
-  public void initializeConverter() {
-    bitTest = CIE_ALARM2;
-    super.initializeConverter();
+  public ZigBeeConverterIasMotionPresence() {
+    super(ZoneTypeEnum.MOTION_SENSOR);
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
-    return supportsIasChannel(endpoint, entityID, ZoneTypeEnum.MOTION_SENSOR);
+  public void initialize() {
+    bitTest = CIE_ALARM2;
+    super.initialize();
   }
 }

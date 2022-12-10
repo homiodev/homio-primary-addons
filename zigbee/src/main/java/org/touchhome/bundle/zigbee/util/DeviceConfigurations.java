@@ -1,6 +1,7 @@
 package org.touchhome.bundle.zigbee.util;
 
 import static java.util.Optional.ofNullable;
+import static org.touchhome.bundle.zigbee.util.JsonReaderUtil.getOptStringArray;
 import static org.touchhome.common.util.CommonUtils.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,8 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
@@ -32,7 +33,9 @@ public final class DeviceConfigurations {
         deviceDefinition.setId(ofNullable(deviceNode.get("id")).map(JsonNode::textValue).orElse(null));
         deviceDefinition.setImage(ofNullable(deviceNode.get("image")).map(JsonNode::textValue).orElse(null));
         deviceDefinition.setCategory(ofNullable(deviceNode.get("category")).map(JsonNode::textValue).orElse(null));
-        deviceDefinition.setModelId(ofNullable(deviceNode.get("model_id")).map(JsonNode::textValue).orElse(null));
+        Set<String> models = getOptStringArray(deviceNode, "models");
+        models.add(deviceDefinition.getId());
+        deviceDefinition.setModels(models);
         deviceDefinition.setLabel(getDefinitionMap(deviceNode, "label"));
         deviceDefinition.setDescription(getDefinitionMap(deviceNode, "description"));
 
@@ -67,7 +70,7 @@ public final class DeviceConfigurations {
 
   public static Optional<DeviceConfiguration> getDeviceDefinition(@NotNull String modelIdentifier) {
     for (DeviceConfiguration defineEndpoint : defineEndpoints) {
-      if (modelIdentifier.equals(defineEndpoint.getModelId())) {
+      if (defineEndpoint.getModels().contains(modelIdentifier)) {
         return Optional.of(defineEndpoint);
       }
     }
@@ -76,8 +79,7 @@ public final class DeviceConfigurations {
 
   public static DeviceConfiguration findDeviceDefinition(ZigBeeDeviceEntity entity) {
     if (entity.getModelIdentifier() != null) {
-      return defineEndpoints.stream().filter(c -> Objects.equals(c.getModelId(), entity.getModelIdentifier()))
-          .findAny().orElse(null);
+      return getDeviceDefinition(entity.getModelIdentifier()).orElse(null);
     }
     return null;
   }

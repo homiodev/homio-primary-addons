@@ -78,12 +78,12 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeInputBaseConverter<ZclOnOf
   }
 
   @Override
-  public void initializeConverter() {
+  public void initialize() {
     updateScheduler = Executors.newSingleThreadScheduledExecutor();
     zclCluster = getInputCluster(ZclOnOffCluster.CLUSTER_ID);
 
     if (zclCluster != null) {
-      super.initializeConverter();
+      super.initialize();
       configOnOff = new ZclOnOffSwitchConfig(getEntity(), zclCluster, log);
       configReporting = new ZclReportingConfig(getEntity());
     }

@@ -165,7 +165,7 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
   }
 
   @Override
-  public void initializeConverter() {
+  public void initialize() {
     colorUpdateScheduler = Executors.newSingleThreadScheduledExecutor();
 
     clusterColorControl = getInputCluster(ZclColorControlCluster.CLUSTER_ID);

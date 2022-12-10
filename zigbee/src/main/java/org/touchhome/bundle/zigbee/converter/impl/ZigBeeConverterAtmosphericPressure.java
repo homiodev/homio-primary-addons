@@ -35,16 +35,13 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeInputBaseConverter
   }
 
   @Override
-  public void initializeDevice() throws Exception {
-    zclCluster = getInputCluster(ZclPressureMeasurementCluster.CLUSTER_ID);
-    if (zclCluster == null) {
-      log.error("[{}]: Error opening device pressure measurement cluster {}", entityID, this.endpoint);
-      throw new RuntimeException("Error opening device pressure measurement cluster");
-    }
-
+  protected void initializeReportConfigurations() {
     // Check if the enhanced attributes are supported
     determineEnhancedScale(zclCluster);
+  }
 
+  @Override
+  protected void initializeBindingReport() {
     try {
       CommandResult bindResponse = bind(zclCluster);
       if (bindResponse.isSuccess()) {
@@ -70,12 +67,7 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeInputBaseConverter
   }
 
   @Override
-  public void initializeConverter() {
-    zclCluster = getInputCluster(ZclPressureMeasurementCluster.CLUSTER_ID);
-    // Check if the enhanced attributes are supported
-    determineEnhancedScale(zclCluster);
-
-    // Add a listener
+  protected void initializeAttribute() {
     zclCluster.addAttributeListener(this);
   }
 
