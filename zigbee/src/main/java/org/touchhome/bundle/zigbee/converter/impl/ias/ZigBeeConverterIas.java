@@ -37,11 +37,12 @@ public abstract class ZigBeeConverterIas extends ZigBeeInputBaseConverter<ZclIas
   protected static final int CIE_TEST = 0x0100;
   protected static final int CIE_BATTERYDEFECT = 0x0200;
   private final @Nullable ZoneTypeEnum zoneType;
-  protected int bitTest = CIE_ALARM1;
+  protected int bitTest;
 
-  public ZigBeeConverterIas(@Nullable ZoneTypeEnum zoneType) {
+  public ZigBeeConverterIas(@Nullable ZoneTypeEnum zoneType, int bitTest) {
     super(ZclClusterType.IAS_ZONE, ZclIasZoneCluster.ATTR_ZONESTATUS);
     this.zoneType = zoneType;
+    this.bitTest = bitTest;
   }
 
   public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
@@ -52,8 +53,7 @@ public abstract class ZigBeeConverterIas extends ZigBeeInputBaseConverter<ZclIas
   }
 
   @Override
-  public void initialize() {
-    super.initialize();
+  protected void afterClusterInitialized() {
     zclCluster.addCommandListener(this);
   }
 

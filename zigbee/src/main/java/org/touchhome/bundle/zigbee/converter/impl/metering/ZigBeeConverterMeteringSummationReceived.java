@@ -24,8 +24,7 @@ public class ZigBeeConverterMeteringSummationReceived extends ZigBeeInputBaseCon
   }
 
   @Override
-  public void initialize() {
-    super.initialize();
+  public void afterClusterInitialized() {
     this.divisor = readAttribute(zclCluster, ZclMeteringCluster.ATTR_DIVISOR, 1);
     this.multiplier = readAttribute(zclCluster, ZclMeteringCluster.ATTR_MULTIPLIER, 1);
   }

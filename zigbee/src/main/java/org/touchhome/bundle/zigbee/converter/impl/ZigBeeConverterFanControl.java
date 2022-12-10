@@ -25,7 +25,7 @@ public class ZigBeeConverterFanControl extends ZigBeeInputBaseConverter<ZclFanCo
   }
 
   @Override
-  protected void initializeReportConfigurations() {
+  protected void afterClusterInitialized() {
     configFanControl = new ZclFanControlConfig(getEntity(), zclCluster, log);
   }
 

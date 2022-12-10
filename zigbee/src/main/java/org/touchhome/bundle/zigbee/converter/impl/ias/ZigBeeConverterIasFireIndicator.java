@@ -16,12 +16,6 @@ public class ZigBeeConverterIasFireIndicator extends ZigBeeConverterIas {
   public static final String CLUSTER_NAME = "zigbee:ias_fire";
 
   public ZigBeeConverterIasFireIndicator() {
-    super(ZoneTypeEnum.FIRE_SENSOR);
-  }
-
-  @Override
-  public void initialize() {
-    bitTest = CIE_ALARM1;
-    super.initialize();
+    super(ZoneTypeEnum.FIRE_SENSOR, CIE_ALARM1);
   }
 }

@@ -10,8 +10,8 @@ import java.util.Map;
 /**
  * A type of warning for a warning device.
  * <p>
- * Warning types represented by this class can also be represented by ESH commands; for this, a rather simple format is used, by configuring the properties of the type using
- * 'key=value' pairs that are separated by whitespace.
+ * Warning types represented by this class can also be represented by ESH commands; for this, a rather simple format is used, by configuring the properties of the type using 'key=value' pairs that are
+ * separated by whitespace.
  * <p>
  * Example for such a command: 'type=warning useStrobe=true warningMode=BURGLAR sirenLevel=HIGH duration=PT15M'.
  * <p>
@@ -42,7 +42,7 @@ public class WarningType {
    */
   public static WarningType parse(String command) {
     Map<String, String> parameters = stream(command.split("\\s+")).filter(s -> s.contains("="))
-        .collect(toMap(s -> s.split("=")[0], s -> s.split("=")[1]));
+                                                                  .collect(toMap(s -> s.split("=")[0], s -> s.split("=")[1]));
 
     if ("warning".equals(parameters.get("type"))) {
       return new WarningType(Boolean.valueOf(parameters.getOrDefault("useStrobe", "true")),

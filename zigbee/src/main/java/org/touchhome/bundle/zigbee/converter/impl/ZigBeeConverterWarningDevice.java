@@ -2,9 +2,9 @@ package org.touchhome.bundle.zigbee.converter.impl;
 
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIasWdCluster;
+import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
-import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.warningdevice.SquawkType;
 import org.touchhome.bundle.zigbee.converter.warningdevice.WarningType;
 
@@ -13,23 +13,20 @@ import org.touchhome.bundle.zigbee.converter.warningdevice.WarningType;
  */
 @ZigBeeConverter(name = "zigbee:warning_device", linkType = VariableType.Float,
                  clientCluster = ZclIasWdCluster.CLUSTER_ID, category = "Siren")
-public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
+public class ZigBeeConverterWarningDevice extends ZigBeeInputBaseConverter<ZclIasWdCluster> {
 
   private static final String CONFIG_PREFIX = "zigbee_iaswd_";
   private static final String CONFIG_MAXDURATION = CONFIG_PREFIX + "maxDuration";
 
-  private ZclIasWdCluster iasWdCluster;
-
-  @Override
-  public void initializeDevice() {
+  public ZigBeeConverterWarningDevice() {
+    super(ZclClusterType.IAS_WD, null);
   }
 
   @Override
   public void initialize() {
-    iasWdCluster = getInputCluster(ZclIasWdCluster.CLUSTER_ID);
-    if (iasWdCluster == null) {
-      log.error("[{}]: Error opening warning device controls {}", entityID, endpoint);
-      throw new RuntimeException("Error opening warning device controls");
+    if (zclCluster == null) {
+      log.debug("[{}]: Initialising {} device cluster {}", entityID, getClass().getSimpleName(), endpoint);
+      zclCluster = getInputCluster(ZclIasWdCluster.CLUSTER_ID);
     }
   }
 
@@ -38,7 +35,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
     return acceptEndpoint(endpoint, entityID, entityContext, ZclIasWdCluster.CLUSTER_ID, 0, false, false);
   }
 
-    /*@Override
+  /*@Override
     public void updateConfiguration( Configuration currentConfiguration,
             Map<String, Object> updatedParameters) {
         for (Entry<String, Object> updatedParameter : updatedParameters.entrySet()) {
@@ -100,7 +97,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
     }*/
 
   private void sendWarning(WarningType warningType) {
-    iasWdCluster.startWarningCommand(
+    zclCluster.startWarningCommand(
         makeWarningHeader(warningType.getWarningMode(), warningType.isUseStrobe(), warningType.getSirenLevel()),
         (int) warningType.getDuration().getSeconds());
   }
@@ -114,8 +111,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeBaseChannelConverter {
   }
 
   private void squawk(SquawkType squawkType) {
-    iasWdCluster.squawk(
-        makeSquawkHeader(squawkType.getSquawkMode(), squawkType.isUseStrobe(), squawkType.getSquawkLevel()));
+    zclCluster.squawk(makeSquawkHeader(squawkType.getSquawkMode(), squawkType.isUseStrobe(), squawkType.getSquawkLevel()));
   }
 
   private Integer makeSquawkHeader(int squawkMode, boolean useStrobe, int squawkLevel) {

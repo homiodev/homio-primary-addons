@@ -16,12 +16,6 @@ public class ZigBeeConverterIasWaterSensor extends ZigBeeConverterIas {
   public static final String CLUSTER_NAME = "zigbee:ias_water";
 
   public ZigBeeConverterIasWaterSensor() {
-    super(ZoneTypeEnum.WATER_SENSOR);
-  }
-
-  @Override
-  public void initialize() {
-    bitTest = CIE_ALARM1;
-    super.initialize();
+    super(ZoneTypeEnum.WATER_SENSOR, CIE_ALARM1);
   }
 }

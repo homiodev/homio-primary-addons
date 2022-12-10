@@ -1,7 +1,5 @@
 package org.touchhome.bundle.zigbee.converter.impl.thermostat;
 
-import com.zsmartsystems.zigbee.CommandResult;
-import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclThermostatCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
@@ -22,30 +20,6 @@ public class ZigBeeConverterThermostatSystemMode extends ZigBeeInputBaseConverte
 
   public ZigBeeConverterThermostatSystemMode() {
     super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_SYSTEMMODE);
-  }
-
-  @Override
-  public void initializeDevice() {
-    ZclThermostatCluster serverCluster = getInputCluster(ZclThermostatCluster.CLUSTER_ID);
-    if (serverCluster == null) {
-      log.error("[{}]: Error opening device thermostat cluster {}", entityID, this.endpoint);
-      throw new RuntimeException("Error opening device thermostat cluster");
-    }
-
-    try {
-      CommandResult bindResponse = bind(serverCluster);
-      if (bindResponse.isSuccess()) {
-        // Configure reporting
-        ZclAttribute attribute = serverCluster.getAttribute(ZclThermostatCluster.ATTR_SYSTEMMODE);
-        CommandResult reportingResponse = attribute
-            .setReporting(1, REPORTING_PERIOD_DEFAULT_MAX).get();
-        handleReportingResponse(reportingResponse);
-      } else {
-        log.debug("[{}]: Failed to bind thermostat cluster {}", entityID, this.endpoint);
-      }
-    } catch (Exception e) {
-      log.error("[{}]: Exception setting reporting {}", entityID, this.endpoint, e);
-    }
   }
 
   /**

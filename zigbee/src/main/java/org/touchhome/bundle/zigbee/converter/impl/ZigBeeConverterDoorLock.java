@@ -18,7 +18,7 @@ public class ZigBeeConverterDoorLock extends ZigBeeInputBaseConverter<ZclDoorLoc
   }
 
   @Override
-  protected void initializeReportConfigurations() {
+  protected void afterClusterInitialized() {
     this.configDoorLock = new ZclDoorLockConfig(getEntity(), zclCluster, log);
   }
 

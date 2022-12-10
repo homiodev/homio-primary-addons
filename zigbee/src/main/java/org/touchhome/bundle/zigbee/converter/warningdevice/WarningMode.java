@@ -12,7 +12,7 @@ public enum WarningMode {
   FIRE_PANIC(5),
   EMERGENCY_PANIC(6);
 
-  private int value;
+  private final int value;
 
   WarningMode(int value) {
     this.value = value;

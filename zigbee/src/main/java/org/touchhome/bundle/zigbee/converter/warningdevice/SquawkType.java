@@ -8,8 +8,8 @@ import java.util.Map;
 /**
  * A type of squawk for a warning device.
  * <p>
- * Squawk types represented by this class can also be represented by ESH commands; for this, a rather simple format is used, by configuring the properties of the type using
- * 'key=value' pairs that are separated by whitespace.
+ * Squawk types represented by this class can also be represented by ESH commands; for this, a rather simple format is used, by configuring the properties of the type using 'key=value' pairs that are
+ * separated by whitespace.
  * <p>
  * Example for such a command: 'type=squawk squawkMode=ARMED useStrobe=true squawkLevel=HIGH'.
  */
@@ -34,7 +34,7 @@ public class SquawkType {
    */
   public static SquawkType parse(String command) {
     Map<String, String> parameters = stream(command.split("\\s+")).filter(s -> s.contains("="))
-        .collect(toMap(s -> s.split("=")[0], s -> s.split("=")[1]));
+                                                                  .collect(toMap(s -> s.split("=")[0], s -> s.split("=")[1]));
 
     if ("squawk".equals(parameters.get("type"))) {
       return new SquawkType(Boolean.valueOf(parameters.getOrDefault("useStrobe", "true")),

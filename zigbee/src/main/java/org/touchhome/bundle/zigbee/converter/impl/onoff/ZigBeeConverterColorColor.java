@@ -88,85 +88,84 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
   }
 
   @Override
-  public void initializeDevice() throws Exception {
-    ZclColorControlCluster serverClusterColorControl = getInputCluster(ZclColorControlCluster.CLUSTER_ID);
-    if (serverClusterColorControl == null) {
-      log.error("[{}]: Error opening device color controls {}", entityID, this.endpoint);
-      throw new RuntimeException("Error opening device color controls");
-    }
-
-    discoverSupportedColorCommands(serverClusterColorControl);
-
-    // Bind to attribute reports, add listeners, then request the status
-    // Configure reporting - no faster than once per second - no slower than 10 minutes.
-    try {
-      CommandResult bindResponse = bind(serverClusterColorControl);
-      if (bindResponse.isSuccess()) {
-        CommandResult reportingResponse;
-        if (supportsHue) {
-          reportingResponse = serverClusterColorControl.setReporting(serverClusterColorControl.getAttribute(ATTR_CURRENTHUE), 1, REPORTING_PERIOD_DEFAULT_MAX, 1).get();
-          handleReportingResponseHigh(reportingResponse);
-
-          reportingResponse = serverClusterColorControl.setReporting(serverClusterColorControl.getAttribute(ATTR_CURRENTSATURATION), 1, REPORTING_PERIOD_DEFAULT_MAX, 1).get();
-          handleReportingResponseHigh(reportingResponse);
-        } else {
-          reportingResponse = serverClusterColorControl.setReporting(ATTR_CURRENTX, 1, REPORTING_PERIOD_DEFAULT_MAX, 1).get();
-          handleReportingResponseHigh(reportingResponse);
-
-          reportingResponse = serverClusterColorControl.setReporting(ATTR_CURRENTY, 1, REPORTING_PERIOD_DEFAULT_MAX, 1).get();
-          handleReportingResponseHigh(reportingResponse);
-        }
-      } else {
-        log.error("[{}]: Error 0x{} setting server binding {}", entityID,
-            Integer.toHexString(bindResponse.getStatusCode()), this.endpoint);
-        pollingPeriod = POLLING_PERIOD_HIGH;
-        throw new RuntimeException("Error setting server binding");
-      }
-    } catch (ExecutionException | InterruptedException e) {
-      log.debug("[{}]: Exception configuring color reporting {}", this.endpoint, e);
-    }
-
-    ZclLevelControlCluster serverClusterLevelControl = getInputCluster(ZclLevelControlCluster.CLUSTER_ID);
-    if (serverClusterLevelControl == null) {
-      log.warn("[{}]: Device does not support level control {}", entityID, this.endpoint);
-    } else {
-      try {
-        CommandResult bindResponse = bind(serverClusterLevelControl);
-        if (!bindResponse.isSuccess()) {
-          pollingPeriod = POLLING_PERIOD_HIGH;
-        }
-
-        CommandResult reportingResponse = serverClusterLevelControl
-            .setReporting(ATTR_CURRENTLEVEL, 1, REPORTING_PERIOD_DEFAULT_MAX, 1)
-            .get();
-        handleReportingResponseHigh(reportingResponse);
-      } catch (ExecutionException | InterruptedException e) {
-        log.debug("[{}]: Exception configuring level reporting {}", this.endpoint, e);
-      }
-    }
-
-    ZclOnOffCluster serverClusterOnOff = getInputCluster(ZclOnOffCluster.CLUSTER_ID);
-    if (serverClusterOnOff == null) {
-      log.debug("[{}]: Device does not support on/off control {}", entityID, this.endpoint);
-    } else {
-      try {
-        CommandResult bindResponse = bind(serverClusterOnOff);
-        if (!bindResponse.isSuccess()) {
-          pollingPeriod = POLLING_PERIOD_HIGH;
-        }
-        CommandResult reportingResponse = serverClusterOnOff
-            .setReporting(ATTR_ONOFF, 1, REPORTING_PERIOD_DEFAULT_MAX).get();
-        handleReportingResponseHigh(reportingResponse);
-      } catch (ExecutionException | InterruptedException e) {
-        log.debug("[{}]: Exception configuring on/off reporting {}", this.endpoint, e);
-        throw new RuntimeException("Exception configuring on/off reporting");
-      }
-    }
-  }
-
-  @Override
   public void initialize() {
-    colorUpdateScheduler = Executors.newSingleThreadScheduledExecutor();
+    if (colorUpdateScheduler == null) {
+      colorUpdateScheduler = Executors.newSingleThreadScheduledExecutor();
+
+      ZclColorControlCluster serverClusterColorControl = getInputCluster(ZclColorControlCluster.CLUSTER_ID);
+      if (serverClusterColorControl == null) {
+        log.error("[{}]: Error opening device color controls {}", entityID, this.endpoint);
+        throw new RuntimeException("Error opening device color controls");
+      }
+
+      discoverSupportedColorCommands(serverClusterColorControl);
+
+      // Bind to attribute reports, add listeners, then request the status
+      // Configure reporting - no faster than once per second - no slower than 10 minutes.
+      try {
+        CommandResult bindResponse = bind(serverClusterColorControl);
+        if (bindResponse.isSuccess()) {
+          CommandResult reportingResponse;
+          if (supportsHue) {
+            reportingResponse = serverClusterColorControl.setReporting(serverClusterColorControl.getAttribute(ATTR_CURRENTHUE), 1, REPORTING_PERIOD_DEFAULT_MAX, 1).get();
+            handleReportingResponseHigh(reportingResponse);
+
+            reportingResponse = serverClusterColorControl.setReporting(serverClusterColorControl.getAttribute(ATTR_CURRENTSATURATION), 1, REPORTING_PERIOD_DEFAULT_MAX, 1).get();
+            handleReportingResponseHigh(reportingResponse);
+          } else {
+            reportingResponse = serverClusterColorControl.setReporting(ATTR_CURRENTX, 1, REPORTING_PERIOD_DEFAULT_MAX, 1).get();
+            handleReportingResponseHigh(reportingResponse);
+
+            reportingResponse = serverClusterColorControl.setReporting(ATTR_CURRENTY, 1, REPORTING_PERIOD_DEFAULT_MAX, 1).get();
+            handleReportingResponseHigh(reportingResponse);
+          }
+        } else {
+          log.error("[{}]: Error 0x{} setting server binding {}", entityID,
+              Integer.toHexString(bindResponse.getStatusCode()), this.endpoint);
+          pollingPeriod = POLLING_PERIOD_HIGH;
+          throw new RuntimeException("Error setting server binding");
+        }
+      } catch (ExecutionException | InterruptedException e) {
+        log.debug("[{}]: Exception configuring color reporting {}", this.endpoint, e);
+      }
+
+      ZclLevelControlCluster serverClusterLevelControl = getInputCluster(ZclLevelControlCluster.CLUSTER_ID);
+      if (serverClusterLevelControl == null) {
+        log.warn("[{}]: Device does not support level control {}", entityID, this.endpoint);
+      } else {
+        try {
+          CommandResult bindResponse = bind(serverClusterLevelControl);
+          if (!bindResponse.isSuccess()) {
+            pollingPeriod = POLLING_PERIOD_HIGH;
+          }
+
+          CommandResult reportingResponse = serverClusterLevelControl
+              .setReporting(ATTR_CURRENTLEVEL, 1, REPORTING_PERIOD_DEFAULT_MAX, 1)
+              .get();
+          handleReportingResponseHigh(reportingResponse);
+        } catch (ExecutionException | InterruptedException e) {
+          log.debug("[{}]: Exception configuring level reporting {}", this.endpoint, e);
+        }
+      }
+
+      ZclOnOffCluster serverClusterOnOff = getInputCluster(ZclOnOffCluster.CLUSTER_ID);
+      if (serverClusterOnOff == null) {
+        log.debug("[{}]: Device does not support on/off control {}", entityID, this.endpoint);
+      } else {
+        try {
+          CommandResult bindResponse = bind(serverClusterOnOff);
+          if (!bindResponse.isSuccess()) {
+            pollingPeriod = POLLING_PERIOD_HIGH;
+          }
+          CommandResult reportingResponse = serverClusterOnOff
+              .setReporting(ATTR_ONOFF, 1, REPORTING_PERIOD_DEFAULT_MAX).get();
+          handleReportingResponseHigh(reportingResponse);
+        } catch (ExecutionException | InterruptedException e) {
+          log.debug("[{}]: Exception configuring on/off reporting {}", this.endpoint, e);
+          throw new RuntimeException("Exception configuring on/off reporting");
+        }
+      }
+    }
 
     clusterColorControl = getInputCluster(ZclColorControlCluster.CLUSTER_ID);
     if (clusterColorControl == null) {
@@ -300,7 +299,7 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
   }
 
   private Future<CommandResult> changeColorXY(HSBType color) {
-    DecimalType xy[] = color.toXY();
+    DecimalType[] xy = color.toXY();
 
     log.debug("[{}]: Change Color HSV ({}, {}, {}) -> XY ({}, {}) for {}", entityID, color.getHue(),
         color.getSaturation(), color.getBrightness(), xy[0], xy[1], endpoint);

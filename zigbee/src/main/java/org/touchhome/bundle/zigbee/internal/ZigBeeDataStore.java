@@ -166,7 +166,7 @@ public class ZigBeeDataStore implements ZigBeeNetworkDataStore {
     try {
       log.debug("[{}]: Deleting ZigBee network state", entityID);
       Files.walk(networkStateFilePath).sorted(Comparator.reverseOrder()).map(Path::toFile)
-          .forEach(File::delete);
+           .forEach(File::delete);
     } catch (IOException e) {
       log.error("[{}]: Error deleting ZigBee network state {} ", entityID, networkStateFilePath, e);
     }

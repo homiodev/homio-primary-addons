@@ -7,7 +7,7 @@ public enum SquawkMode {
   ARMED(0),
   DISARMED(1);
 
-  private int value;
+  private final int value;
 
   SquawkMode(int value) {
     this.value = value;

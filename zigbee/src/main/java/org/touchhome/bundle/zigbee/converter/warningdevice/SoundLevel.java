@@ -10,7 +10,7 @@ public enum SoundLevel {
   HIGH(2),
   VERY_HIGH(3);
 
-  private int value;
+  private final int value;
 
   SoundLevel(int value) {
     this.value = value;

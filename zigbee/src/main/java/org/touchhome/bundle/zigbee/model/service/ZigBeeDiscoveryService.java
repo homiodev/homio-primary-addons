@@ -7,7 +7,6 @@ import com.zsmartsystems.zigbee.zdo.field.NodeDescriptor;
 import java.time.Duration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
@@ -68,16 +67,16 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
     coordinator.getService().scanStart(duration);
 
     entityContext.ui().headerButtonBuilder("zigbee-scan").title("zigbee.action.scan")
-        .border(1, "#899343")
-        .duration(duration).icon("fas fa-search-location", "#899343", false).build();
+                 .border(1, "#899343")
+                 .duration(duration).icon("fas fa-search-location", "#899343", false).build();
 
     entityContext.bgp().builder("zigbee-scan-killer")
-        .delay(Duration.ofSeconds(coordinator.getDiscoveryDuration()))
-        .execute(() -> {
-          log.info("[{}]: Scanning stopped", entityID);
-          scanStarted = false;
-          entityContext.ui().removeHeaderButton("zigbee-scan");
-        });
+                 .delay(Duration.ofSeconds(coordinator.getDiscoveryDuration()))
+                 .execute(() -> {
+                   log.info("[{}]: Scanning stopped", entityID);
+                   scanStarted = false;
+                   entityContext.ui().removeHeaderButton("zigbee-scan");
+                 });
   }
 
   private void nodeDiscovered(ZigBeeNode node) {
@@ -89,20 +88,20 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
     }
 
     entityContext.bgp().builder("zigbee-pooling-" + coordinator.getEntityID())
-        .delay(Duration.ofMillis(10))
-        .execute(() -> {
-          log.info("[{}]: Starting ZigBee device discovery {}", entityID, node.getIeeeAddress());
-          ZigBeeDeviceEntity zigBeeDeviceEntity = addZigBeeDevice(node);
+                 .delay(Duration.ofMillis(10))
+                 .execute(() -> {
+                   log.info("[{}]: Starting ZigBee device discovery {}", entityID, node.getIeeeAddress());
+                   ZigBeeDeviceEntity zigBeeDeviceEntity = addZigBeeDevice(node);
 
-          if (!node.isDiscovered()) {
-            log.warn("[{}]: Node discovery not complete {}", entityID, node.getIeeeAddress());
-            zigBeeDeviceEntity.setStatus(Status.ERROR, "Node discovery not complete");
-          } else {
-            log.debug("[{}]: Node discovery complete {}", entityID, node.getIeeeAddress());
-            zigBeeDeviceEntity.getService().tryInitializeZigBeeNode();
-            coordinatorService.serializeNetwork(node.getIeeeAddress());
-          }
-        });
+                   if (!node.isDiscovered()) {
+                     log.warn("[{}]: Node discovery not complete {}", entityID, node.getIeeeAddress());
+                     zigBeeDeviceEntity.setStatus(Status.ERROR, "Node discovery not complete");
+                   } else {
+                     log.debug("[{}]: Node discovery complete {}", entityID, node.getIeeeAddress());
+                     zigBeeDeviceEntity.getService().tryInitializeZigBeeNode();
+                     coordinatorService.serializeNetwork(node.getIeeeAddress());
+                   }
+                 });
   }
 
   /**

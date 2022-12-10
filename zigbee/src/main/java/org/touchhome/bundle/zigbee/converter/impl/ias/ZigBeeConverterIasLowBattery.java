@@ -12,12 +12,6 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 public class ZigBeeConverterIasLowBattery extends ZigBeeConverterIas {
 
   public ZigBeeConverterIasLowBattery() {
-    super(null);
-  }
-
-  @Override
-  public void initialize() {
-    bitTest = CIE_BATTERY;
-    super.initialize();
+    super(null, CIE_BATTERY);
   }
 }

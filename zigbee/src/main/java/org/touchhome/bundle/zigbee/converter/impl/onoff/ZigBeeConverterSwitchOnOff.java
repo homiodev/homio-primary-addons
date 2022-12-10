@@ -29,7 +29,6 @@ import org.touchhome.bundle.api.ui.UI.Color;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
 import org.touchhome.bundle.zigbee.converter.config.ZclOnOffSwitchConfig;
-import org.touchhome.bundle.zigbee.converter.config.ZclReportingConfig;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
 import org.touchhome.bundle.zigbee.util.ZigBeeUtil;
@@ -53,44 +52,27 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeInputBaseConverter<ZclOnOf
   }
 
   @Override
-  public void initializeDevice() throws Exception {
-    ZclOnOffCluster clientCluster = getOutputCluster(ZclOnOffCluster.CLUSTER_ID);
-    zclCluster = getInputCluster(ZclOnOffCluster.CLUSTER_ID);
-    if (clientCluster == null && zclCluster == null) {
-      log.error("[{}]: Error opening device on/off controls {}", entityID, this.endpoint);
-      throw new RuntimeException("Error opening device on/off controls");
-    }
-
-    if (zclCluster != null) {
-      super.initializeDevice();
-    }
-
-    if (clientCluster != null) {
-      try {
-        CommandResult bindResponse = bind(clientCluster);
-        if (!bindResponse.isSuccess()) {
-          log.error("[{}]: Error 0x{} setting client binding {}", entityID, Integer.toHexString(bindResponse.getStatusCode()), this.endpoint);
-        }
-      } catch (Exception e) {
-        log.error("[{}]: Exception setting binding {}", entityID, this.endpoint, e);
-      }
-    }
-  }
-
-  @Override
   public void initialize() {
-    updateScheduler = Executors.newSingleThreadScheduledExecutor();
-    zclCluster = getInputCluster(ZclOnOffCluster.CLUSTER_ID);
+    if (zclCluster == null && clusterOnOffClient == null) {
+      updateScheduler = Executors.newSingleThreadScheduledExecutor();
 
-    if (zclCluster != null) {
-      super.initialize();
-      configOnOff = new ZclOnOffSwitchConfig(getEntity(), zclCluster, log);
-      configReporting = new ZclReportingConfig(getEntity());
-    }
+      if (getInputCluster(ZclOnOffCluster.CLUSTER_ID) != null) {
+        super.initialize();
+        configOnOff = new ZclOnOffSwitchConfig(getEntity(), zclCluster, log);
+      }
 
-    clusterOnOffClient = getOutputCluster(ZclOnOffCluster.CLUSTER_ID);
-    if (clusterOnOffClient != null) {
-      clusterOnOffClient.addCommandListener(this);
+      clusterOnOffClient = getOutputCluster(ZclOnOffCluster.CLUSTER_ID);
+      if (clusterOnOffClient != null) {
+        try {
+          CommandResult bindResponse = bind(clusterOnOffClient);
+          if (!bindResponse.isSuccess()) {
+            log.error("[{}]: Error 0x{} setting client binding {}", entityID, Integer.toHexString(bindResponse.getStatusCode()), this.endpoint);
+          }
+        } catch (Exception e) {
+          log.error("[{}]: Exception setting binding {}", entityID, this.endpoint, e);
+        }
+        clusterOnOffClient.addCommandListener(this);
+      }
     }
   }
 
@@ -221,11 +203,13 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeInputBaseConverter<ZclOnOf
     if (zclCluster != null) {
       UIFlexLayoutBuilder flex = uiInputBuilder.addFlex("switch-cluster")
                                                .setBorderArea("zigbee.switch_cluster")
-                                               .setBorderColor("D4D852");
+                                               .setBorderColor("#D4D852");
       flex.addButton("on", "fas fa-toggle-on", Color.GREEN, (entityContext, params) ->
-          ZigBeeUtil.toResponseModel(zclCluster.sendCommand(new OnCommand()))).setText("Turn on switch");
+              ZigBeeUtil.toResponseModel(zclCluster.sendCommand(new OnCommand())))
+          .setText("Turn on switch").appendStyle("margin-right", "10px");
       flex.addButton("off", "fas fa-toggle-off", Color.GREEN, (entityContext, params) ->
-          ZigBeeUtil.toResponseModel(zclCluster.sendCommand(new OffCommand()))).setText("Turn off switch");
+              ZigBeeUtil.toResponseModel(zclCluster.sendCommand(new OffCommand())))
+          .setText("Turn off switch");
     }
   }
 }

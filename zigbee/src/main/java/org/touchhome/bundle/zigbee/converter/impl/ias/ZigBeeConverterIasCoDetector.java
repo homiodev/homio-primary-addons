@@ -13,12 +13,6 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 public class ZigBeeConverterIasCoDetector extends ZigBeeConverterIas {
 
   public ZigBeeConverterIasCoDetector() {
-    super(ZoneTypeEnum.CO_SENSOR);
-  }
-
-  @Override
-  public void initialize() {
-    bitTest = CIE_ALARM1;
-    super.initialize();
+    super(ZoneTypeEnum.CO_SENSOR, CIE_ALARM1);
   }
 }

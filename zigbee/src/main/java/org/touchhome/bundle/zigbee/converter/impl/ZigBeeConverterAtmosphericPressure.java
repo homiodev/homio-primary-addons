@@ -35,7 +35,7 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeInputBaseConverter
   }
 
   @Override
-  protected void initializeReportConfigurations() {
+  protected void afterClusterInitialized() {
     // Check if the enhanced attributes are supported
     determineEnhancedScale(zclCluster);
   }

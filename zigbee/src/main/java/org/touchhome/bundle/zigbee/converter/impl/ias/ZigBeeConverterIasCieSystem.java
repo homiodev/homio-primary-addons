@@ -13,12 +13,6 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 public class ZigBeeConverterIasCieSystem extends ZigBeeConverterIas {
 
   public ZigBeeConverterIasCieSystem() {
-    super(ZoneTypeEnum.STANDARD_CIE);
-  }
-
-  @Override
-  public void initialize() {
-    bitTest = CIE_ALARM1;
-    super.initialize();
+    super(ZoneTypeEnum.STANDARD_CIE, CIE_ALARM1);
   }
 }

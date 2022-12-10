@@ -127,7 +127,7 @@ public abstract class ZigBeeCoordinatorService
         new ZigBeeConsolePlugin(entityContext, this));
 
     this.entityContext.bgp().builder("zigbee-node-alive-" + entityID)
-        .delay(Duration.ofMinutes(1)).interval(Duration.ofMinutes(1)).cancelOnError(false).execute(() -> {
+                      .delay(Duration.ofMinutes(1)).interval(Duration.ofMinutes(1)).cancelOnError(false).execute(() -> {
           for (ZigBeeDeviceService device : registeredDevices) {
             device.checkOffline();
           }
@@ -158,8 +158,7 @@ public abstract class ZigBeeCoordinatorService
   protected abstract void initializeDongle();
 
   /**
-   * A dongle specific initialisation method. This can be overridden by coordinator handlers and is called just before the {@link ZigBeeTransportTransmit#startup(boolean)} is
-   * called.
+   * A dongle specific initialisation method. This can be overridden by coordinator handlers and is called just before the {@link ZigBeeTransportTransmit#startup(boolean)} is called.
    */
   protected void initializeDongleSpecific() {
     // Can be overridden to provide dongle specific configuration
@@ -202,7 +201,7 @@ public abstract class ZigBeeCoordinatorService
     this.zigBeeTransport = zigbeeTransport;
     this.transportConfig = transportConfig;
 
-      initializeZigBee();
+    initializeZigBee();
   }
 
   /**
@@ -275,9 +274,9 @@ public abstract class ZigBeeCoordinatorService
     // Add all the clusters that we are supporting.
     // If we don't do this, the framework will reject any packets for clusters we have not stated support for.
     channelFactory.getAllClientClusterIds()
-        .forEach(clusterId -> networkManager.addSupportedClientCluster(clusterId));
+                  .forEach(clusterId -> networkManager.addSupportedClientCluster(clusterId));
     channelFactory.getAllServerClusterIds()
-        .forEach(clusterId -> networkManager.addSupportedServerCluster(clusterId));
+                  .forEach(clusterId -> networkManager.addSupportedServerCluster(clusterId));
 
     networkManager.addSupportedClientCluster(ZclBasicCluster.CLUSTER_ID);
     networkManager.addSupportedClientCluster(ZclOtaUpgradeCluster.CLUSTER_ID);
@@ -379,7 +378,7 @@ public abstract class ZigBeeCoordinatorService
   public void addAnnounceListener(ZigBeeAnnounceListener listener) {
     // Save the listeners until the network is initialized
     synchronized (announceListeners) {
-    announceListeners.add(listener);
+      announceListeners.add(listener);
     }
 
     if (networkManager != null) {
@@ -479,7 +478,7 @@ public abstract class ZigBeeCoordinatorService
 
     log.info("Created 'reconnect' coordinator polling");
     reconnectPollingTimer = entityContext.bgp().builder("zigbee-reconnect").delay(Duration.ofSeconds(1))
-        .interval(Duration.ofSeconds(RECONNECT_RATE)).execute(() -> {
+                                         .interval(Duration.ofSeconds(RECONNECT_RATE)).execute(() -> {
           ZigBeeNetworkState state = networkManager.getNetworkState();
           if (state == ZigBeeNetworkState.ONLINE || state == ZigBeeNetworkState.INITIALISING) {
             return;
@@ -545,8 +544,8 @@ public abstract class ZigBeeCoordinatorService
   }
 
   /**
-   * Removes a node from the network manager. This does not cause the network manager to tell the node to leave the network, but will only remove the node from the network manager
-   * lists. Thus, if the node is still alive, it may be able to rejoin the network.
+   * Removes a node from the network manager. This does not cause the network manager to tell the node to leave the network, but will only remove the node from the network manager lists. Thus, if the
+   * node is still alive, it may be able to rejoin the network.
    * <p>
    *
    * @param nodeIeeeAddress the {@link IeeeAddress} of the node to remove
@@ -664,20 +663,20 @@ public abstract class ZigBeeCoordinatorService
           updatingStatus = desiredStatus;
           desiredStatus = null;
           entityContext.bgp().builder("zigbee-coordinator-entity-updated-" + entityID)
-              .delay(Duration.ofSeconds(1)).execute(() -> {
-                if (updatingStatus == Status.CLOSING && initialized) {
-                  this.dispose();
-                } else if (updatingStatus == Status.INITIALIZE || updatingStatus == Status.RESTARTING) {
-                  if (initialized) {
-                    this.dispose();
-                  }
-                  this.initialize();
-                }
-                this.updatingStatus = null;
-                entityContext.ui().updateItem(entity);
-                // fire recursively if state updated since last time
-                scheduleUpdateStatusIfRequire();
-              });
+                       .delay(Duration.ofSeconds(1)).execute(() -> {
+                         if (updatingStatus == Status.CLOSING && initialized) {
+                           this.dispose();
+                         } else if (updatingStatus == Status.INITIALIZE || updatingStatus == Status.RESTARTING) {
+                           if (initialized) {
+                             this.dispose();
+                           }
+                           this.initialize();
+                         }
+                         this.updatingStatus = null;
+                         entityContext.ui().updateItem(entity);
+                         // fire recursively if state updated since last time
+                         scheduleUpdateStatusIfRequire();
+                       });
         }
       }
     }
@@ -740,9 +739,9 @@ public abstract class ZigBeeCoordinatorService
         zigBeeTransport.updateTransportConfig(transportConfig);
       }
 
-    if (reinitialize) {
+      if (reinitialize) {
         return Status.RESTARTING;
-    }
+      }
     }
 
     return Status.INITIALIZE;

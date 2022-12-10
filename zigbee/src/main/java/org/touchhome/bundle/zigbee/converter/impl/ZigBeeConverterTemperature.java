@@ -47,8 +47,7 @@ public class ZigBeeConverterTemperature extends ZigBeeInputBaseConverter<ZclTemp
 
   @Override
   public void initialize() {
-    zclCluster = getInputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID);
-    if (zclCluster != null) {
+    if (getInputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID)) {
       super.initialize();
       if (configuration.isReportConfigurable()) {
         configReporting = new ZclReportingConfig(getEntity());

@@ -13,12 +13,6 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 public class ZigBeeConverterIasMotionPresence extends ZigBeeConverterIas {
 
   public ZigBeeConverterIasMotionPresence() {
-    super(ZoneTypeEnum.MOTION_SENSOR);
-  }
-
-  @Override
-  public void initialize() {
-    bitTest = CIE_ALARM2;
-    super.initialize();
+    super(ZoneTypeEnum.MOTION_SENSOR, CIE_ALARM2);
   }
 }

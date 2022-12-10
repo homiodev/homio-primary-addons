@@ -76,22 +76,6 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
     return new DecimalType((int) (level * 100.0 / 254.0 + 0.5));
   }
 
-  @Override
-  public void initializeDevice() {
-    if (initializeDeviceServer()) {
-      log.debug("[{}]: Level control device initialized as server {}", entityID, this.endpoint);
-      return;
-    }
-
-    if (initializeDeviceClient()) {
-      log.debug("[{}]: Level control device initialized as client {}", entityID, this.endpoint);
-      return;
-    }
-
-    log.error("[{}]: Error opening device level controls {}", entityID, this.endpoint);
-    throw new RuntimeException("Error opening device level controls");
-  }
-
   private boolean initializeDeviceServer() {
     ZclLevelControlCluster serverClusterLevelControl = getInputCluster(ZclLevelControlCluster.CLUSTER_ID);
     if (serverClusterLevelControl == null) {
@@ -193,20 +177,17 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
 
   @Override
   public synchronized void initialize() {
-    updateScheduler = Executors.newSingleThreadScheduledExecutor();
+    if (updateScheduler == null) {
+      updateScheduler = Executors.newSingleThreadScheduledExecutor();
 
-    if (initializeConverterServer()) {
-      log.debug("[{}]: Level control initialized as server {}", entityID, endpoint);
-      return;
+      if (initializeDeviceServer()) {
+        log.debug("[{}]: Level control device initialized as server {}", entityID, this.endpoint);
+        initializeConverterServer();
+      } else if (initializeDeviceClient()) {
+        log.debug("[{}]: Level control device initialized as client {}", entityID, this.endpoint);
+        initializeConverterClient();
+      }
     }
-
-    if (initializeConverterClient()) {
-      log.debug("[{}]: Level control initialized as client {}", entityID, endpoint);
-      return;
-    }
-
-    log.error("[{}]: Error opening device level controls {}", entityID, endpoint);
-    throw new RuntimeException("Error opening device level controls");
   }
 
   private boolean initializeConverterServer() {

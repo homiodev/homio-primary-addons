@@ -42,8 +42,7 @@ public class ZigBeeConverterColorTemperature extends ZigBeeInputBaseConverter<Zc
   }
 
   @Override
-  public void initialize() {
-    super.initialize();
+  protected void afterClusterInitialized() {
     determineMinMaxTemperature(clusterColorControl);
   }
 

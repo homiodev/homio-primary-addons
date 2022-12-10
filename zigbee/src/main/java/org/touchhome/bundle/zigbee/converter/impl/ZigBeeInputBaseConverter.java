@@ -53,7 +53,7 @@ public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> exten
         configuration.isDiscoverAttributes(), configuration.isReadAttribute());
   }
 
-  protected void initializeReportConfigurations() {
+  protected void afterClusterInitialized() {
   }
 
   @Override
@@ -65,7 +65,7 @@ public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> exten
       if (configuration.isReportConfigurable()) {
         configReporting = new ZclReportingConfig(getEntity());
       }
-      initializeReportConfigurations();
+      afterClusterInitialized();
     }
 
     initializeBinding();

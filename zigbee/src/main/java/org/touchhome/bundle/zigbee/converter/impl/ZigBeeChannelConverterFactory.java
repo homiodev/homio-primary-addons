@@ -6,12 +6,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
@@ -37,7 +39,7 @@ public final class ZigBeeChannelConverterFactory {
 
     allConverters = converters.stream().map(ConverterContext::new).collect(Collectors.toList());
     allServerClusterIds = allConverters.stream().flatMapToInt(c -> IntStream.of(c.zigBeeConverter.serverClusters()))
-        .boxed().collect(Collectors.toSet());
+                                       .boxed().collect(Collectors.toSet());
     for (ConverterContext context : allConverters) {
       allClientClusterIds.add(context.zigBeeConverter.clientCluster());
       for (int additionalCluster : context.zigBeeConverter.additionalClientClusters()) {
@@ -95,12 +97,16 @@ public final class ZigBeeChannelConverterFactory {
 
   private static class ConverterContext {
 
-    private final ZigBeeConverter zigBeeConverter;
-    private final ZigBeeBaseChannelConverter converter;
+    private final @NotNull ZigBeeConverter zigBeeConverter;
+    private final @NotNull ZigBeeBaseChannelConverter converter;
 
     public ConverterContext(Class<? extends ZigBeeBaseChannelConverter> converterClass) {
-      zigBeeConverter = AnnotationUtils.getAnnotation(converterClass, ZigBeeConverter.class);
+      zigBeeConverter = Optional.ofNullable(AnnotationUtils.getAnnotation(converterClass, ZigBeeConverter.class)).orElseThrow(
+          () -> new IllegalStateException("Unable to get ZigBeeConverter annotation from type: " + converterClass.getSimpleName()));
       converter = CommonUtils.newInstance(converterClass);
+      if (converter == null) {
+        throw new IllegalStateException("Unable to create instance of type: " + converterClass.getSimpleName());
+      }
     }
   }
 }

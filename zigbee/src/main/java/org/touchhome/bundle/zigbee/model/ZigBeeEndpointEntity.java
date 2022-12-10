@@ -596,7 +596,6 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   @Override
   public void assembleActions(UIInputBuilder builder) {
-    this.addStatusInfo(builder, "field.deviceInitializeStatus", getDeviceInitializeStatus());
     this.addStatusInfo(builder, "field.bindStatus", getBindingStatus());
 
     optService().ifPresent(service -> {

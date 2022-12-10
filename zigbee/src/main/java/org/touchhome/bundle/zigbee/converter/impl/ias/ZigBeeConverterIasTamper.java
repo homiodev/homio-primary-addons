@@ -12,12 +12,6 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 public class ZigBeeConverterIasTamper extends ZigBeeConverterIas {
 
   public ZigBeeConverterIasTamper() {
-    super(null);
-  }
-
-  @Override
-  public void initialize() {
-    bitTest = CIE_TAMPER;
-    super.initialize();
+    super(null, CIE_TAMPER);
   }
 }

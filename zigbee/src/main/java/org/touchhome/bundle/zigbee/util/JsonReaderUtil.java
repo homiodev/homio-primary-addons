@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class JsonReaderUtil {
+
   public static Boolean getBoolean(JsonNode jsonNode, String key, Boolean defaultValue) {
     if (jsonNode.has(key)) {
       return jsonNode.get(key).asBoolean();
