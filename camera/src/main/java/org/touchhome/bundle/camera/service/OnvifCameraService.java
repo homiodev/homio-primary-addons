@@ -215,7 +215,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
   public static Map<String, CameraBrandHandlerDescription> getCameraBrands(EntityContext entityContext) {
     if (cameraBrands.isEmpty()) {
       for (Class<? extends BaseOnvifCameraBrandHandler> brandHandlerClass :
-          entityContext.getClassesWithParent(BaseOnvifCameraBrandHandler.class, "org.touchhome.bundle.camera.onvif")) {
+          entityContext.getClassesWithParent(BaseOnvifCameraBrandHandler.class)) {
         cameraBrands.put(brandHandlerClass.getSimpleName(), new CameraBrandHandlerDescription(brandHandlerClass));
       }
     }
@@ -412,27 +412,27 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
     }
 
     mainBootstrap.connect(new InetSocketAddress(entity.getIp(), port))
-        .addListener((ChannelFutureListener) future -> {
-          if (future == null) {
-            return;
-          }
-          if (future.isDone() && future.isSuccess()) {
-            Channel ch = future.channel();
-            openChannels.add(ch);
-            log.debug("[{}]: Sending camera: {}: http://{}:{}{}", getEntityID(), httpMethod,
-                entity.getIp(), port, httpRequestURL);
-            channelTrackingMap.put(httpRequestURL, new ChannelTracking(ch, httpRequestURL));
+                 .addListener((ChannelFutureListener) future -> {
+                   if (future == null) {
+                     return;
+                   }
+                   if (future.isDone() && future.isSuccess()) {
+                     Channel ch = future.channel();
+                     openChannels.add(ch);
+                     log.debug("[{}]: Sending camera: {}: http://{}:{}{}", getEntityID(), httpMethod,
+                         entity.getIp(), port, httpRequestURL);
+                     channelTrackingMap.put(httpRequestURL, new ChannelTracking(ch, httpRequestURL));
 
-            CommonCameraHandler commonHandler = (CommonCameraHandler) ch.pipeline().get(COMMON_HANDLER);
-            commonHandler.setURL(httpRequestURLFull);
-            MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline().get(AUTH_HANDLER);
-            authHandler.setURL(httpMethod, httpRequestURL);
+                     CommonCameraHandler commonHandler = (CommonCameraHandler) ch.pipeline().get(COMMON_HANDLER);
+                     commonHandler.setURL(httpRequestURLFull);
+                     MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline().get(AUTH_HANDLER);
+                     authHandler.setURL(httpMethod, httpRequestURL);
 
-            brandHandler.handleSetURL(ch.pipeline(), httpRequestURL);
-            ch.writeAndFlush(request);
-          } else { // an error occurred
-            log.warn("[{}]: Error handle camera: <{}>. Error: <{}>", getEntityID(), entity,
-                CommonUtils.getErrorMessage(future.cause()));
+                     brandHandler.handleSetURL(ch.pipeline(), httpRequestURL);
+                     ch.writeAndFlush(request);
+                   } else { // an error occurred
+                     log.warn("[{}]: Error handle camera: <{}>. Error: <{}>", getEntityID(), entity,
+                         CommonUtils.getErrorMessage(future.cause()));
 
                         /*if (!this.restartingBgp) {
                             log.error("Error in camera <{}> boostrap: <{}>", cameraEntity.getTitle(),
@@ -449,8 +449,8 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
                                 this.restartingBgp = false;
                             }, false);
                         }*/
-          }
-        });
+                   }
+                 });
   }
 
   @Override
@@ -553,8 +553,8 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
   }
 
   /**
-   * This method should never run under normal use, if there is a bug in a camera or binding it may be possible to open large amounts of channels. This may help to keep it under
-   * control and WARN the user every 8 seconds this is still occurring.
+   * This method should never run under normal use, if there is a bug in a camera or binding it may be possible to open large amounts of channels. This may help to keep it under control and WARN the
+   * user every 8 seconds this is still occurring.
    */
   void cleanChannels() {
     for (Channel channel : openChannels) {
@@ -821,7 +821,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
       snapshotPolling = true;
       OnvifCameraEntity entity = getEntity();
       snapshotJob = entityContext.bgp().builder(entity.getTitle() + " SnapshotJob").delay(Duration.ofMillis(200))
-          .interval(Duration.ofSeconds(entity.getSnapshotPollInterval())).execute(() -> sendHttpGET(snapshotUri));
+                                 .interval(Duration.ofSeconds(entity.getSnapshotPollInterval())).execute(() -> sendHttpGET(snapshotUri));
     }
   }
 
@@ -862,7 +862,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
     brandHandler.initialize(entityContext);
 
     pullConfigSchedule = entityContext.bgp().builder("Camera " + entity.getEntityID() + " run per minute")
-        .delay(Duration.ofSeconds(30)).interval(Duration.ofSeconds(60)).execute(() -> {
+                                      .delay(Duration.ofSeconds(30)).interval(Duration.ofSeconds(60)).execute(() -> {
           try {
             onvifDeviceState.runOncePerMinute();
             brandHandler.runOncePerMinute(entityContext);

@@ -13,11 +13,11 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
 /**
  * Converter for the battery percent channel.
  */
-@ZigBeeConverter(name = "zigbee:battery_level", linkType = VariableType.Float,
-                 clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Battery")
-public class ZigBeeConverterPowerPercent extends ZigBeeInputBaseConverter<ZclPowerConfigurationCluster> {
+@ZigBeeConverter(name = "battery_level", linkType = VariableType.Float,
+                 color = "#CF8B34", clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Battery")
+public class ZigBeeConverterBatteryPercent extends ZigBeeInputBaseConverter<ZclPowerConfigurationCluster> {
 
-  public ZigBeeConverterPowerPercent() {
+  public ZigBeeConverterBatteryPercent() {
     super(POWER_CONFIGURATION, ATTR_BATTERYPERCENTAGEREMAINING);
   }
 

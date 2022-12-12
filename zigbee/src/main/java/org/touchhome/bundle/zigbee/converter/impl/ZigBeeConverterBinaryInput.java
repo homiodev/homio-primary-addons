@@ -7,8 +7,8 @@ import org.touchhome.bundle.api.EntityContextVar.VariableType;
 /**
  * Binary Input Sensor(Switch) Indicates a binary input sensor state Converter for the binary input sensor.
  */
-@ZigBeeConverter(name = "zigbee:binaryinput", linkType = VariableType.Float,
-                 clientCluster = ZclBinaryInputBasicCluster.CLUSTER_ID, category = "")
+@ZigBeeConverter(name = "binaryinput", linkType = VariableType.Float,
+                 color = "#AA4C49", clientCluster = ZclBinaryInputBasicCluster.CLUSTER_ID, category = "")
 public class ZigBeeConverterBinaryInput extends ZigBeeInputBaseConverter<ZclBinaryInputBasicCluster> {
 
   public ZigBeeConverterBinaryInput() {

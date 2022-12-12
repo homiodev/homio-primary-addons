@@ -5,6 +5,11 @@
     }
   },
   "PRESSURE_MEASUREMENT": {
+    "report": {
+      "change": 0.1,
+      "failedPollingInterval": 60,
+      "bindFailedPollingInterval": 60
+    }
   },
   "ON_OFF": {
     "attributes": [
@@ -59,6 +64,11 @@
       "min": 600
     },
     "attributes": [
+      {
+        "id": "0x0000",
+        "name": "ATTR_MAINSVOLTAGE",
+        "readAttributes": true
+      },
       {
         "id": "0x0020",
         "name": "ATTR_BATTERYVOLTAGE",

@@ -29,7 +29,8 @@ public class ZclOnOffSwitchConfig {
     this.startupOnOff = entity.getStartupOnOff() ? 1 : 0;
 
     onoffCluster = (ZclOnOffCluster) cluster;
-    ZclLevelControlConfig.initCluster(onoffCluster.discoverAttributes(false), log, onoffCluster.getZigBeeAddress(), onoffCluster.getClusterName());
+    ZclLevelControlConfig.initCluster(onoffCluster.discoverAttributes(false), log,
+        onoffCluster.getZigBeeAddress(), onoffCluster.getClusterName());
 
     this.supportOffWaitTime = onoffCluster.isAttributeSupported(ZclOnOffCluster.ATTR_OFFWAITTIME);
     this.supportOnTime = onoffCluster.isAttributeSupported(ZclOnOffCluster.ATTR_ONTIME);

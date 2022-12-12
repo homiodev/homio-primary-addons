@@ -4,8 +4,8 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclMultistateInputBasicCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
-@ZigBeeConverter(name = "zigbee:multistateinput", linkType = VariableType.Float,
-                 clientCluster = ZclMultistateInputBasicCluster.CLUSTER_ID, category = "")
+@ZigBeeConverter(name = "multistate_input", linkType = VariableType.Float,
+                 color = "#8F49AA", clientCluster = ZclMultistateInputBasicCluster.CLUSTER_ID, category = "")
 public class ZigBeeConverterMultiStateInput extends ZigBeeInputBaseConverter<ZclMultistateInputBasicCluster> {
 
   public ZigBeeConverterMultiStateInput() {

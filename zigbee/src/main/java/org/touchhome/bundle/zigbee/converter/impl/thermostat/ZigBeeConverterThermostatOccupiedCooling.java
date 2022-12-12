@@ -14,8 +14,8 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
  * set to a value in the range defined by the MinCoolSetpointLimit and MaxCoolSetpointLimit attributes.
  */
 @ZigBeeConverter(
-    name = "zigbee:thermostat_occupiedcooling",
-    linkType = VariableType.Float,
+    name = "thermostat_occupiedcooling",
+    color = "#F349C", linkType = VariableType.Float,
     clientCluster = ZclThermostatCluster.CLUSTER_ID,
     category = "HVAC")
 public class ZigBeeConverterThermostatOccupiedCooling extends ZigBeeInputBaseConverter<ZclThermostatCluster> {

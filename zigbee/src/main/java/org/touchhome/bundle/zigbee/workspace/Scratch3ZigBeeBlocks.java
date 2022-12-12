@@ -5,7 +5,6 @@ import com.zsmartsystems.zigbee.zcl.ZclCommand;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,6 @@ import org.touchhome.bundle.api.workspace.scratch.ArgumentType;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock.ServerMenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
-import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.ZigBeeEntrypoint;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
@@ -124,7 +122,9 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
           Integer[] clusters = ((MenuBlock.ServerMenuBlock) sensorMenuBlock.getValue()).getClusters();
           if (clusters != null) {
             availableReceiveEvents = true;
-            addZigBeeEventListener(ieeeAddress, clusters, null, lock::signalAll);
+            for (Integer cluster : clusters) {
+              entityContext.event().addEventListener(ieeeAddress + "_" + cluster, lock::signalAll);
+            }
           }
 
           if (!availableReceiveEvents) {
@@ -153,12 +153,5 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
       return new DecimalType((System.currentTimeMillis() - timestamp) / 1000);
     }
     return new DecimalType(Long.MAX_VALUE);
-  }
-
-  private void addZigBeeEventListener(String nodeIEEEAddress, Integer[] clusters, Integer endpoint, Consumer<Object> consumer) {
-    for (Integer clusterId : clusters) {
-      ZigBeeEndpointUUID zigBeeEndpointUUID = ZigBeeEndpointUUID.require(nodeIEEEAddress, clusterId, endpoint, null);
-      entityContext.event().addEventListener(zigBeeEndpointUUID.asKey(), consumer);
-    }
   }
 }

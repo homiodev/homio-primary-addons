@@ -12,8 +12,8 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
  * ThermostatRunningMode represents the running mode of the thermostat. The thermostat running mode can only be Off, Cool or Heat. This attribute is intended to provide additional information when the
  * thermostat’s system mode is in auto mode. The attribute value is maintained to have the same value as the SystemMode attribute.
  */
-@ZigBeeConverter(name = "zigbee:thermostat_runningmode", linkType = VariableType.Float,
-                 clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
+@ZigBeeConverter(name = "thermostat_runningmode", linkType = VariableType.Float,
+                 color = "#F349C", clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatRunningMode extends ZigBeeInputBaseConverter<ZclThermostatCluster> {
 
   public ZigBeeConverterThermostatRunningMode() {

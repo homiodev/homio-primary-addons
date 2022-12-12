@@ -5,20 +5,21 @@ import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclTemperatureMeasurementCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import java.math.BigDecimal;
+import java.util.function.Consumer;
 import lombok.Getter;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.QuantityType;
 import org.touchhome.bundle.zigbee.converter.config.ZclReportingConfig;
-import tec.uom.se.unit.Units;
+import tech.units.indriya.unit.Units;
 
 /**
  * Indicates the current temperature Converter for the temperature channel
  */
 @ZigBeeConverter(
-    name = "zigbee:measurement_temperature",
+    name = "measurement_temperature",
     linkType = VariableType.Float,
-    serverClusters = {ZclTemperatureMeasurementCluster.CLUSTER_ID},
+    color = "#CF8E34", serverClusters = {ZclTemperatureMeasurementCluster.CLUSTER_ID},
     clientCluster = ZclTemperatureMeasurementCluster.CLUSTER_ID,
     category = "Temperature")
 public class ZigBeeConverterTemperature extends ZigBeeInputBaseConverter<ZclTemperatureMeasurementCluster> {
@@ -35,7 +36,7 @@ public class ZigBeeConverterTemperature extends ZigBeeInputBaseConverter<ZclTemp
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage) {
     if (endpoint.getOutputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID) == null
         && endpoint.getInputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID) == null) {
       log.trace("[{}]: Temperature measurement cluster not found {}", entityID, endpoint);
@@ -46,13 +47,13 @@ public class ZigBeeConverterTemperature extends ZigBeeInputBaseConverter<ZclTemp
   }
 
   @Override
-  public void initialize() {
+  public void initialize(Consumer<String> progressMessage) {
     if (hasInputCluster(ZclTemperatureMeasurementCluster.CLUSTER_ID)) {
-      super.initialize();
+      super.initialize(progressMessage);
       if (configuration.isReportConfigurable()) {
         configReporting = new ZclReportingConfig(getEntity());
       }
-      initializeBinding();
+      initializeBinding(progressMessage);
       initializeAttribute();
     } else {
       this.asClient = true;

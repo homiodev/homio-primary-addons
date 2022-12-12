@@ -12,8 +12,8 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
 /**
  * The instantaneous demand from the metering system ZigBee channel converter for instantaneous demand measurement
  */
-@ZigBeeConverter(name = "zigbee:metering_instantdemand", linkType = VariableType.Float,
-                 clientCluster = ZclMeteringCluster.CLUSTER_ID, category = "Number")
+@ZigBeeConverter(name = "metering_instantdemand", linkType = VariableType.Float,
+                 color = "#3479CF", clientCluster = ZclMeteringCluster.CLUSTER_ID, category = "Number")
 public class ZigBeeConverterMeteringInstantaneousDemand extends ZigBeeInputBaseConverter<ZclMeteringCluster> {
 
   private double divisor = 1.0;

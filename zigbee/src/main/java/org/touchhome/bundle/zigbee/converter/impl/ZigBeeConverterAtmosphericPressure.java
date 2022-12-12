@@ -3,25 +3,26 @@ package org.touchhome.bundle.zigbee.converter.impl;
 import static com.zsmartsystems.zigbee.zcl.clusters.ZclPressureMeasurementCluster.ATTR_MEASUREDVALUE;
 import static com.zsmartsystems.zigbee.zcl.clusters.ZclPressureMeasurementCluster.ATTR_SCALE;
 import static com.zsmartsystems.zigbee.zcl.clusters.ZclPressureMeasurementCluster.ATTR_SCALEDVALUE;
-import static tec.uom.se.unit.MetricPrefix.HECTO;
+import static javax.measure.MetricPrefix.HECTO;
 
-import com.zsmartsystems.zigbee.CommandResult;
+import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
-import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclPressureMeasurementCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import java.math.BigDecimal;
+import java.util.function.Consumer;
+import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.QuantityType;
-import tec.uom.se.unit.Units;
+import tech.units.indriya.unit.Units;
 
 /**
  * Indicates the current pressure Converter for the atmospheric pressure channel. This channel will attempt to detect if the device is supporting the enhanced (scaled) value reports and use them if
  * they are available.
  */
-@ZigBeeConverter(name = "zigbee:measurement_pressure", linkType = VariableType.Float,
-                 clientCluster = ZclPressureMeasurementCluster.CLUSTER_ID, category = "Pressure")
+@ZigBeeConverter(name = "measurement_pressure", linkType = VariableType.Float,
+                 color = "#CF8E34", clientCluster = ZclPressureMeasurementCluster.CLUSTER_ID, category = "Pressure")
 public class ZigBeeConverterAtmosphericPressure extends ZigBeeInputBaseConverter<ZclPressureMeasurementCluster>
     implements ZclAttributeListener {
 
@@ -31,54 +32,24 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeInputBaseConverter
   private Integer enhancedScale = null;
 
   public ZigBeeConverterAtmosphericPressure() {
-    super(ZclClusterType.PRESSURE_MEASUREMENT, ATTR_MEASUREDVALUE);
+    super(ZclClusterType.PRESSURE_MEASUREMENT, null);
+  }
+
+  @Override
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage) {
+    return endpoint.getInputCluster(ZclPressureMeasurementCluster.CLUSTER_ID) != null;
   }
 
   @Override
   protected void afterClusterInitialized() {
     // Check if the enhanced attributes are supported
-    determineEnhancedScale(zclCluster);
-  }
-
-  @Override
-  protected void initializeBindingReport() {
-    try {
-      CommandResult bindResponse = bind(zclCluster);
-      if (bindResponse.isSuccess()) {
-        // Configure reporting - no faster than once per second - no slower than 2 hours.
-        CommandResult reportingResponse;
-        if (enhancedScale != null) {
-          reportingResponse = zclCluster.setReporting(ATTR_SCALEDVALUE, 1, REPORTING_PERIOD_DEFAULT_MAX, 0.1).get();
-          handleReportingResponse(reportingResponse);
-        } else {
-          reportingResponse = zclCluster.setReporting(ATTR_MEASUREDVALUE, 1, REPORTING_PERIOD_DEFAULT_MAX, 0.1).get();
-          handleReportingResponse(reportingResponse);
-        }
-      } else {
-        log.error("[{}]: Error 0x{} setting server binding {}", entityID,
-            Integer.toHexString(bindResponse.getStatusCode()).toUpperCase(), this.endpoint);
-        pollingPeriod = POLLING_PERIOD_HIGH;
-        throw new RuntimeException("Error setting server binding");
-      }
-    } catch (Exception e) {
-      log.error("[{}]: Exception setting reporting {}", entityID, this.endpoint, e);
-      pollingPeriod = POLLING_PERIOD_HIGH;
-      throw new RuntimeException("Exception setting reporting");
-    }
+    determineEnhancedScale();
   }
 
   @Override
   protected void initializeAttribute() {
-    zclCluster.addAttributeListener(this);
-  }
-
-  @Override
-  protected void handleRefresh() {
-    if (enhancedScale != null) {
-      getScaleValue(zclCluster, 0);
-    } else {
-      getMeasuredValue(zclCluster);
-    }
+    this.attributeId = enhancedScale == null ? ATTR_MEASUREDVALUE : ATTR_SCALEDVALUE;
+    super.initializeAttribute();
   }
 
   @Override
@@ -89,46 +60,37 @@ public class ZigBeeConverterAtmosphericPressure extends ZigBeeInputBaseConverter
     }
 
     // Handle automatic reporting of the enhanced attribute configuration
-    if (attribute.getId() == ATTR_SCALE) {
-      enhancedScale = (Integer) value;
+    switch (attribute.getId()) {
+      case ATTR_SCALE:
+        enhancedScale = (Integer) value;
+        if (enhancedScale != null) {
+          enhancedScale *= -1;
+        }
+        break;
+      case ATTR_SCALEDVALUE:
+        if (enhancedScale != null) {
+          updateChannelState(new QuantityType<>(BigDecimal.valueOf((Integer) value, enhancedScale), HECTO(Units.PASCAL)));
+        }
+        break;
+      case ATTR_MEASUREDVALUE:
+        if (enhancedScale == null) {
+          updateChannelState(new QuantityType<>(BigDecimal.valueOf((Integer) value, 0), HECTO(Units.PASCAL)));
+        }
+        break;
+      default:
+        log.error("[{}]: Unable to find handler for attribute: {}. AtmosphericPressure cluster", entityID, attribute.getName());
+    }
+  }
+
+  private void determineEnhancedScale() {
+    if (zclCluster.getAttribute(ATTR_SCALEDVALUE).readValue(Long.MAX_VALUE) != null) {
+      enhancedScale = (Integer) zclCluster.getAttribute(ATTR_SCALE).readValue(Long.MAX_VALUE);
       if (enhancedScale != null) {
         enhancedScale *= -1;
-      }
-      return;
-    }
-
-    if (attribute.getId() == ZclPressureMeasurementCluster.ATTR_SCALEDVALUE && enhancedScale != null) {
-      updateChannelState(new QuantityType<>(BigDecimal.valueOf((Integer) value, enhancedScale), HECTO(Units.PASCAL)));
-      return;
-    }
-
-    if (attribute.getId() == ATTR_MEASUREDVALUE && enhancedScale == null) {
-      updateChannelState(new QuantityType<>(BigDecimal.valueOf((Integer) value, 0), HECTO(Units.PASCAL)));
-    }
-  }
-
-  private void determineEnhancedScale(ZclCluster cluster) {
-    if (getScaleValue(cluster, Long.MAX_VALUE) != null) {
-      enhancedScale = getScale(cluster);
-      if (enhancedScale != null) {
-        enhancedScale *= -1;
+        attribute = zclCluster.getAttribute(ATTR_SCALEDVALUE);
+      } else {
+        attribute = zclCluster.getAttribute(ATTR_MEASUREDVALUE);
       }
     }
-  }
-
-  private void getMeasuredValue(ZclCluster zclCluster) {
-    readAttribute(zclCluster, ATTR_MEASUREDVALUE, 0L);
-  }
-
-  private Integer getScaleValue(ZclCluster zclCluster, long refreshPeriod) {
-    return (Integer) readAttribute(zclCluster, ATTR_SCALEDVALUE, refreshPeriod);
-  }
-
-  private Integer getScale(ZclCluster zclCluster) {
-    return (Integer) zclCluster.getAttribute(ATTR_SCALE).readValue(Long.MAX_VALUE);
-  }
-
-  private Object readAttribute(ZclCluster zclCluster, int attributeID, long refreshPeriod) {
-    return zclCluster.getAttribute(attributeID).readValue(refreshPeriod);
   }
 }

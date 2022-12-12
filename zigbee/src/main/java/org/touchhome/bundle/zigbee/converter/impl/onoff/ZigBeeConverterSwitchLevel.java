@@ -28,6 +28,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.DecimalType;
@@ -45,9 +47,9 @@ import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
  * For the server side, if the {@link ZclOnOffCluster} has reported the device is OFF, then reports from {@link ZclLevelControlCluster} are ignored. This is required as devices can report via the
  * {@link ZclLevelControlCluster} that they have a specified level, but still be OFF.
  */
-@ZigBeeConverter(name = "zigbee:switch_level",
+@ZigBeeConverter(name = "switch_level",
                  linkType = VariableType.Boolean,
-                 serverClusters = {ZclOnOffCluster.CLUSTER_ID, ZclLevelControlCluster.CLUSTER_ID},
+                 color = "#3479CF", serverClusters = {ZclOnOffCluster.CLUSTER_ID, ZclLevelControlCluster.CLUSTER_ID},
                  clientCluster = ZclOnOffCluster.CLUSTER_ID,
                  additionalClientClusters = {ZclLevelControlCluster.CLUSTER_ID}, category = "Light")
 public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
@@ -178,7 +180,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
   }
 
   @Override
-  public synchronized void initialize() {
+  public synchronized void initialize(Consumer<String> progressMessage) {
     if (updateScheduler == null) {
       updateScheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -324,11 +326,17 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
         }
     }*/
   @Override
-  protected void handleRefresh() {
+  protected void handleRefresh(@Nullable Consumer<String> progressMessage) {
     if (attributeOnOff != null) {
+      if (progressMessage != null) {
+        progressMessage.accept("read attr: '" + attributeOnOff.getName() + "'");
+      }
       attributeOnOff.readValue(0);
     }
     if (attributeLevel != null) {
+      if (progressMessage != null) {
+        progressMessage.accept("read attr: '" + attributeLevel.getName() + "'");
+      }
       attributeLevel.readValue(0);
     }
   }
@@ -356,7 +364,7 @@ public class ZigBeeConverterSwitchLevel extends ZigBeeBaseChannelConverter
         startStopTimer(INCREASEDECREASE_TIMEOUT);
     }*/
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage) {
     if (endpoint.getInputCluster(ZclLevelControlCluster.CLUSTER_ID) == null
         && endpoint.getOutputCluster(ZclLevelControlCluster.CLUSTER_ID) == null) {
       log.trace("[{}]: Level control cluster not found {}", entityID, endpoint);

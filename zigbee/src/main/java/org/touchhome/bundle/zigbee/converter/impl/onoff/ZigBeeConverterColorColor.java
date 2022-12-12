@@ -35,6 +35,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.DecimalType;
@@ -50,8 +52,8 @@ import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity.ControlMethod;
  * The color channel allows to control the color of a light. It is also possible to dim values and switch the light on and off. Converter for color control. Uses the {@link ZclColorControlCluster},
  * and may also use the {@link ZclLevelControlCluster} and {@link ZclOnOffCluster} if available.
  */
-@ZigBeeConverter(name = "zigbee:color_color",
-                 clientCluster = ZclOnOffCluster.CLUSTER_ID, linkType = VariableType.Float,
+@ZigBeeConverter(name = "color_color",
+                 color = "#3479CF", clientCluster = ZclOnOffCluster.CLUSTER_ID, linkType = VariableType.Float,
                  additionalClientClusters = {ZclLevelControlCluster.CLUSTER_ID, ZclColorControlCluster.CLUSTER_ID}, category = "ColorLight")
 public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implements ZclAttributeListener {
 
@@ -88,7 +90,7 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
   }
 
   @Override
-  public void initialize() {
+  public void initialize(Consumer<String> progressMessage) {
     if (colorUpdateScheduler == null) {
       colorUpdateScheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -227,23 +229,37 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
   }
 
   @Override
-  protected void handleRefresh() {
+  protected void handleRefresh(@Nullable Consumer<String> progressMessage) {
     if (clusterOnOff != null) {
+      if (progressMessage != null) {
+        progressMessage.accept("read attr: 'ATTR_ONOFF'");
+      }
       clusterOnOff.readAttribute(ATTR_ONOFF);
     }
 
     List<Integer> colorAttributes = new ArrayList<>();
+    List<String> colorAttributeNames = new ArrayList<>();
     if (supportsHue) {
       colorAttributes.add(ATTR_CURRENTHUE);
+      colorAttributeNames.add("ATTR_CURRENTHUE");
       colorAttributes.add(ATTR_CURRENTSATURATION);
+      colorAttributeNames.add("ATTR_CURRENTSATURATION");
     } else {
       colorAttributes.add(ATTR_CURRENTX);
+      colorAttributeNames.add("ATTR_CURRENTX");
       colorAttributes.add(ATTR_CURRENTY);
+      colorAttributeNames.add("ATTR_CURRENTY");
     }
     colorAttributes.add(ATTR_COLORMODE);
+    if (progressMessage != null) {
+      progressMessage.accept("read attrs: '" + String.join(", ", colorAttributeNames) + "'");
+    }
     clusterColorControl.readAttributes(colorAttributes);
 
     if (clusterLevelControl != null) {
+      if (progressMessage != null) {
+        progressMessage.accept("read attr: 'ATTR_CURRENTLEVEL'");
+      }
       clusterLevelControl.readAttribute(ATTR_CURRENTLEVEL);
     }
   }
@@ -341,7 +357,7 @@ public class ZigBeeConverterColorColor extends ZigBeeBaseChannelConverter implem
     }*/
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage) {
     ZclColorControlCluster clusterColorControl = (ZclColorControlCluster) endpoint.getInputCluster(ZclColorControlCluster.CLUSTER_ID);
     if (clusterColorControl == null) {
       log.trace("[{}]: Color control cluster not found for {}", entityID, endpoint);

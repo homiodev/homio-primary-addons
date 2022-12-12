@@ -8,6 +8,7 @@ import com.zsmartsystems.zigbee.zdo.field.PowerDescriptor;
 import com.zsmartsystems.zigbee.zdo.field.PowerDescriptor.CurrentPowerModeType;
 import com.zsmartsystems.zigbee.zdo.field.PowerDescriptor.PowerLevelType;
 import com.zsmartsystems.zigbee.zdo.field.PowerDescriptor.PowerSourceType;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -67,8 +68,12 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     return getJsonDataEnum("lt", LogicalType.UNKNOWN);
   }
 
-  default void setLogicalType(LogicalType value) {
-    setJsonDataEnum("lt", value);
+  default boolean setLogicalType(LogicalType value) {
+    if (!Objects.equals(getLogicalType(), value)) {
+      setJsonDataEnum("lt", value);
+      return true;
+    }
+    return false;
   }
 
   @UIField(hideInEdit = true, order = 6, hideOnEmpty = true)
@@ -77,8 +82,12 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     return getJsonData("mc", 0);
   }
 
-  default void setManufacturerCode(int value) {
-    setJsonData("mc", value);
+  default boolean setManufacturerCode(int value) {
+    if (!Objects.equals(getManufacturerCode(), value)) {
+      setJsonData("mc", value);
+      return true;
+    }
+    return false;
   }
 
   @UIField(hideInEdit = true, order = 7, hideOnEmpty = true)
@@ -87,8 +96,14 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     return getJsonData("lu", 0L);
   }
 
-  default void setNodeLastUpdateTime(long value) {
-    setJsonData("lu", value);
+  default boolean setNodeLastUpdateTime(Date value) {
+    if (value != null) {
+      if (getNodeLastUpdateTime() != value.getTime()) {
+        setJsonData("lu", value.getTime());
+        return true;
+      }
+    }
+    return false;
   }
 
   @UIField(hideInEdit = true, order = 8, hideOnEmpty = true)
@@ -112,8 +127,12 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     return getJsonDataEnum("pw", PowerLevelType.UNKNOWN);
   }
 
-  default void setCurrentPowerLevel(PowerLevelType powerLevel) {
-    setJsonDataEnum("pw", powerLevel);
+  default boolean setCurrentPowerLevel(PowerLevelType powerLevel) {
+    if (!Objects.equals(getCurrentPowerLevel(), powerLevel)) {
+      setJsonDataEnum("pw", powerLevel);
+      return true;
+    }
+    return false;
   }
 
   @UIField(hideInEdit = true, order = 2)
@@ -122,8 +141,12 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     return getJsonDataEnum("pm", CurrentPowerModeType.UNKNOWN);
   }
 
-  default void setCurrentPowerMode(CurrentPowerModeType value) {
-    setJsonDataEnum("pm", value);
+  default boolean setCurrentPowerMode(CurrentPowerModeType value) {
+    if (!Objects.equals(getCurrentPowerMode(), value)) {
+      setJsonDataEnum("pm", value);
+      return true;
+    }
+    return false;
   }
 
   @UIField(hideInEdit = true, order = 3, hideOnEmpty = true)
@@ -132,8 +155,12 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     return getJsonDataEnum("ps", PowerSourceType.UNKNOWN);
   }
 
-  default void setCurrentPowerSource(PowerSourceType value) {
-    setJsonDataEnum("ps", value);
+  default boolean setCurrentPowerSource(PowerSourceType value) {
+    if (!Objects.equals(value, getCurrentPowerSource())) {
+      setJsonDataEnum("ps", value);
+      return true;
+    }
+    return false;
   }
 
   @UIField(hideInEdit = true, type = UIFieldType.Chips, order = 4, hideOnEmpty = true)
@@ -142,8 +169,12 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     return getJsonDataSet("aps");
   }
 
-  default void setAvailablePowerSources(String value) {
-    setJsonData("aps", value);
+  default boolean setAvailablePowerSources(Set<String> availablePowerSources) {
+    if (!Objects.equals(getAvailablePowerSources(), availablePowerSources)) {
+      setJsonData("aps", String.join("~~~", availablePowerSources));
+      return true;
+    }
+    return false;
   }
 
   default boolean updateFromNodeDescriptor(ZigBeeNode node) {
@@ -156,41 +187,17 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     }
     PowerDescriptor pd = node.getPowerDescriptor();
     if (pd != null) {
-      if (!Objects.equals(getCurrentPowerLevel(), pd.getPowerLevel())) {
-        setCurrentPowerLevel(pd.getPowerLevel());
-        updated = true;
-      }
-      if (!Objects.equals(getCurrentPowerMode(), pd.getCurrentPowerMode())) {
-        setCurrentPowerMode(pd.getCurrentPowerMode());
-        updated = true;
-      }
-      if (!Objects.equals(getCurrentPowerSource(), pd.getCurrentPowerSource())) {
-        setCurrentPowerSource(pd.getCurrentPowerSource());
-        updated = true;
-      }
-      Set<String> availablePowerSources = pd.getAvailablePowerSources().stream().map(Enum::name).collect(Collectors.toSet());
-      if (!Objects.equals(getAvailablePowerSources(), availablePowerSources)) {
-        setAvailablePowerSources(String.join("~~~", availablePowerSources));
-        updated = true;
-      }
+      updated |= setCurrentPowerLevel(pd.getPowerLevel());
+      updated |= setCurrentPowerMode(pd.getCurrentPowerMode());
+      updated |= setCurrentPowerSource(pd.getCurrentPowerSource());
+      updated |= setAvailablePowerSources(pd.getAvailablePowerSources().stream().map(Enum::name).collect(Collectors.toSet()));
     }
     NodeDescriptor nd = node.getNodeDescriptor();
     if (nd != null) {
-      if (!Objects.equals(getManufacturerCode(), nd.getManufacturerCode())) {
-        setManufacturerCode(nd.getManufacturerCode());
-        updated = true;
-      }
-      if (!Objects.equals(getLogicalType(), nd.getLogicalType())) {
-        setLogicalType(nd.getLogicalType());
-        updated = true;
-      }
+      updated |= setManufacturerCode(nd.getManufacturerCode());
+      updated |= setLogicalType(nd.getLogicalType());
     }
-    if (node.getLastUpdateTime() != null) {
-      if (getNodeLastUpdateTime() != node.getLastUpdateTime().getTime()) {
-        setNodeLastUpdateTime(node.getLastUpdateTime().getTime());
-        updated = true;
-      }
-    }
+    updated |= setNodeLastUpdateTime(node.getLastUpdateTime());
     return updated;
   }
 }

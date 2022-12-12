@@ -31,4 +31,6 @@ public @interface ZigBeeConverter {
   VariableType linkType(); // Any mean NONE!
 
   String category();
+
+  String color();
 }

@@ -8,8 +8,8 @@ import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 /**
  * Analog Input Sensor(Switch) Indicates a analog input sensor state Converter for the binary input sensor.
  */
-@ZigBeeConverter(name = "zigbee:analoginput", linkType = VariableType.Float,
-                 clientCluster = ZclAnalogInputBasicCluster.CLUSTER_ID, category = "")
+@ZigBeeConverter(name = "analog_input", linkType = VariableType.Float,
+                 color = "#B976AE", clientCluster = ZclAnalogInputBasicCluster.CLUSTER_ID, category = "")
 public class ZigBeeConverterAnalogInput extends ZigBeeInputBaseConverter<ZclAnalogInputBasicCluster> {
 
   public ZigBeeConverterAnalogInput() {
@@ -20,5 +20,10 @@ public class ZigBeeConverterAnalogInput extends ZigBeeInputBaseConverter<ZclAnal
   public void configureNewEndpointEntity(ZigBeeEndpointEntity endpointEntity) {
     super.configureNewEndpointEntity(endpointEntity);
     endpointEntity.setAnalogue(1D, 1, 100);
+  }
+
+  @Override
+  public String getColor() {
+    return "#872B2B";
   }
 }

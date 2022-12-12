@@ -2,56 +2,64 @@ package org.touchhome.bundle.zigbee.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.measure.Unit;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.touchhome.common.util.Lang;
 
 @Getter
 @Setter
 public class DeviceConfiguration {
 
-  private @Nullable String id;
   private @Nullable String category;
   private @NotNull Set<String> models;
   private @NotNull String vendor;
   private @Nullable String image;
+  private @Nullable String icon;
+  private @Nullable String iconColor;
+  private Map<Integer, Map<String, EndpointDefinition>> endpoints = new HashMap<>();
 
-  private @Nullable Map<String, String> label;
-  private @Nullable Map<String, String> description;
-
-  private List<EndpointDefinition> endpoints = new ArrayList<>();
-
-  public String getLabel() {
-    if (label == null) {
-      return id;
-    }
-    return label.getOrDefault(Lang.CURRENT_LANG, label.getOrDefault("en", id));
+  public String getImage() {
+    return image == null ? "zigbee-" + getFirstModel() : image;
   }
 
-  public String getDescription() {
-    if (description != null) {
-      if (description.containsKey(Lang.CURRENT_LANG)) {
-        return description.get(Lang.CURRENT_LANG);
-      }
-      if (description.containsKey("en")) {
-        return description.get("en");
-      }
+  public List<EndpointDefinition> getEndpoints() {
+    List<EndpointDefinition> definitions = new ArrayList<>();
+    for (Map<String, EndpointDefinition> entry : endpoints.values()) {
+      definitions.addAll(entry.values());
     }
-    return getLabel();
+    return definitions;
   }
 
-  public JsonNode findMetadata(int endpointId) {
-    return endpoints.stream()
-                    .filter(e -> e.getEndpoint() == endpointId)
-                    .findAny()
-                    .map(EndpointDefinition::getMetadata)
-                    .orElse(null);
+  public String getFirstModel() {
+    return models.iterator().next();
+  }
+
+  public @Nullable JsonNode findMetadata(int endpointId, String converterName) {
+    EndpointDefinition endpointDefinition = getEndpoint(endpointId, converterName);
+    if (endpointDefinition != null) {
+      return endpointDefinition.getMetadata();
+    }
+    return null;
+  }
+
+  public @Nullable EndpointDefinition getEndpoint(int endpointId, String converterName) {
+    Map<String, EndpointDefinition> map = endpoints.get(endpointId);
+    if (map != null) {
+      return map.get(converterName);
+    }
+    return null;
+  }
+
+  public void addEndpoint(EndpointDefinition endpointDefinition) {
+    endpoints.computeIfAbsent(endpointDefinition.getEndpoint(), e -> new HashMap<>())
+             .put(endpointDefinition.getTypeId(), endpointDefinition);
   }
 
   @Getter
@@ -63,14 +71,20 @@ public class DeviceConfiguration {
     private int endpoint;
     private @NotNull Set<Integer> inputClusters;
     private @NotNull String typeId;
-
-    private Map<String, String> label;
-    private Map<String, String> description;
+    private @Nullable Unit unit;
 
     private JsonNode metadata;
 
     public String getId() {
       return id == null ? typeId : id;
+    }
+
+    public String getLabel() {
+      return "zigbee.endpoint.name." + getId();
+    }
+
+    public String getDescription() {
+      return "zigbee.endpoint.description." + getId();
     }
   }
 }

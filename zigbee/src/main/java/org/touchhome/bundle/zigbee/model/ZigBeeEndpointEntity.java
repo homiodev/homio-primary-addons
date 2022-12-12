@@ -6,13 +6,16 @@ import static org.touchhome.bundle.api.model.ActionResponseModel.success;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import javax.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
@@ -27,6 +30,7 @@ import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.ui.UI.Color;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
+import org.touchhome.bundle.api.ui.field.UIFieldIgnoreGetDefault;
 import org.touchhome.bundle.api.ui.field.UIFieldNumber;
 import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
@@ -38,13 +42,17 @@ import org.touchhome.bundle.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.condition.UIFieldShowOnCondition;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldStaticSelection;
-import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
+import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter.AttributeDescription;
 import org.touchhome.bundle.zigbee.converter.config.ZclDoorLockConfig;
 import org.touchhome.bundle.zigbee.converter.config.ZclFanControlConfig;
 import org.touchhome.bundle.zigbee.converter.config.ZclLevelControlConfig;
 import org.touchhome.bundle.zigbee.converter.config.ZclOnOffSwitchConfig;
 import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
+import org.touchhome.bundle.zigbee.util.DeviceConfiguration;
+import org.touchhome.bundle.zigbee.util.DeviceConfiguration.EndpointDefinition;
+import org.touchhome.bundle.zigbee.util.DeviceConfigurations;
+import org.touchhome.common.util.Lang;
 
 @Log4j2
 @Entity
@@ -58,12 +66,25 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
   // uses for changes inside cluster configuration to mark that entity has to be saved
   @JsonIgnore private transient boolean outdated;
 
+  @JsonIgnore
+  public String getVariableId() {
+    return getIeeeAddress() + "-" + getAddress() + "-" + getClusterName();
+  }
+
+  @JsonIgnore
+  public String getVariableName() {
+    return getName();
+  }
+
+  @JsonIgnore
+  public String getVariableDescription() {
+    return format("EP[%s] ${%s} [%s]", getAddress(), getOwnerTarget().getName(), getIeeeAddress());
+  }
+
   @Override
   public ZigBeeEndpointEntity setStatus(@NotNull Status status, @Nullable String msg) {
     EntityContextSetting.setStatus(this, "", "Status", status, msg);
-    getEntityContext()
-        .ui()
-        .updateInnerSetItem(getOwner(), "endpointClusters", this, "status", status);
+    getEntityContext().ui().updateInnerSetItem(getOwnerTarget(), "endpointClusters", this, "status", status);
     return this;
   }
 
@@ -76,7 +97,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   @UIField(order = 10, disableEdit = true)
   @UIFieldColorStatusMatch
-  public Status getBindingStatus() {
+  public Status getBindStatus() {
     return optService().map(service -> service.getCluster().getBindStatus()).orElse(Status.UNKNOWN);
   }
 
@@ -107,7 +128,11 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
   @Override
   @UIField(order = 4)
   @UIFieldGroup("General")
+  @UIFieldIgnoreGetDefault
   public String getName() {
+    if (StringUtils.isEmpty(super.getName())) {
+      return "zigbee.endpoint.name." + getValueFromConfiguration();
+    }
     return super.getName();
   }
 
@@ -119,11 +144,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   public void setLastAnswerFromEndpoint(long currentTimeMillis) {
     EntityContextSetting.setMemValue(this, "lafe", "LastAnswerFromEndpoint", currentTimeMillis);
-    getEntityContext().ui().updateInnerSetItem(getOwner(), "endpointClusters", this, "updated", currentTimeMillis);
+    getEntityContext().ui().updateInnerSetItem(getOwnerTarget(), "endpointClusters", this, "updated", currentTimeMillis);
   }
 
   @UIField(order = 5, disableEdit = true, hideOnEmpty = true)
   @UIFieldGroup("General")
+  @SuppressWarnings("unused")
   public Integer getFailedPollRequests() {
     return optService().map(ZigbeeEndpointService::getFailedPollRequests).orElse(null);
   }
@@ -136,7 +162,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   public void setValue(State state) {
     EntityContextSetting.setMemValue(this, "last", "Value", state);
-    getEntityContext().ui().updateInnerSetItem(getOwner(), "endpointClusters", this, "value", state.toString());
+    getEntityContext().ui().updateInnerSetItem(getOwnerTarget(), "endpointClusters", this, "value", state.toString());
   }
 
   @JsonIgnore
@@ -144,10 +170,24 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return EntityContextSetting.getMemValue(this, "last", null);
   }
 
-  @UIField(order = 5, hideInView = true, disableEdit = true)
+  @UIField(order = 7, hideInView = true, disableEdit = true)
   @UIFieldGroup("General")
   public String getDescription() {
+    if (StringUtils.isEmpty(super.getDescription())) {
+      return "zigbee.endpoint.description." + getValueFromConfiguration();
+    }
     return super.getDescription();
+  }
+
+  @UIField(order = 8, disableEdit = true)
+  @UIFieldGroup("General")
+  public String getClusterName() {
+    return getJsonData().getString("c_name");
+  }
+
+  public ZigBeeEndpointEntity setClusterName(String clusterName) {
+    setJsonData("c_name", clusterName);
+    return this;
   }
 
   public String getIeeeAddress() {
@@ -168,9 +208,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("rt_min", 1);
   }
 
-  public ZigBeeEndpointEntity setReportingTimeMin(int value) {
-    setJsonData("rt_min", value);
-    return this;
+  public boolean setReportingTimeMin(int value) {
+    if (getReportingTimeMin() != value) {
+      setJsonData("rt_min", value);
+      return true;
+    }
+    return false;
   }
 
   // The maximum time period in seconds between device state updates
@@ -182,9 +225,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("rt_max", 900);
   }
 
-  public ZigBeeEndpointEntity setReportingTimeMax(int value) {
-    setJsonData("rt_max", value);
-    return this;
+  public boolean setReportingTimeMax(int value) {
+    if (getReportingTimeMax() != value) {
+      setJsonData("rt_max", value);
+      return true;
+    }
+    return false;
   }
 
   @UIField(order = 102)
@@ -195,11 +241,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return isSupportAnalogue() ? getJsonData("rt_ch", Double.class) : null;
   }
 
-  public ZigBeeEndpointEntity setReportingChange(Number value) {
-    if (isSupportAnalogue()) {
+  public boolean setReportingChange(Number value) {
+    if (getReportingChange() != null && getReportingChange() != value.doubleValue()) {
       setJsonData("rt_ch", value.doubleValue());
+      return true;
     }
-    return this;
+    return false;
   }
 
   @UIField(order = 103)
@@ -210,11 +257,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("pp", 7200);
   }
 
-  public ZigBeeEndpointEntity setPollingPeriod(Integer value) {
+  public boolean setPollingPeriod(Integer value) {
     if (value != null && value != getPollingPeriod()) {
       setJsonData("pp", value);
+      return true;
     }
-    return this;
+    return false;
   }
 
   // options.add(new ParameterOption("65535", "Use On/Off times"));
@@ -226,9 +274,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("ttc", 0);
   }
 
-  public ZigBeeEndpointEntity setDefaultTransitionTime(int value) {
-    setJsonData("ttc", value);
-    return this;
+  public boolean setDefaultTransitionTime(int value) {
+    if (getDefaultTransitionTime() != value) {
+      setJsonData("ttc", value);
+      return true;
+    }
+    return false;
   }
 
   @UIField(order = 201)
@@ -238,9 +289,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("ilc", false);
   }
 
-  public ZigBeeEndpointEntity setInvertLevelControl(boolean value) {
-    setJsonData("ilc", value);
-    return this;
+  public boolean setInvertLevelControl(boolean value) {
+    if (getInvertLevelControl() != value) {
+      setJsonData("ilc", value);
+      return true;
+    }
+    return false;
   }
 
   @UIField(order = 202)
@@ -250,9 +304,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("irc", false);
   }
 
-  public ZigBeeEndpointEntity setInvertReportControl(boolean value) {
-    setJsonData("irc", value);
-    return this;
+  public boolean setInvertReportControl(boolean value) {
+    if (getInvertReportControl() != value) {
+      setJsonData("irc", value);
+      return true;
+    }
+    return false;
   }
 
   @UIField(order = 203)
@@ -263,9 +320,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("onOffTT", 0);
   }
 
-  public ZigBeeEndpointEntity setOnOffTransitionTime(int value) {
-    setJsonData("onOffTT", value);
-    return this;
+  public boolean setOnOffTransitionTime(int value) {
+    if (getOnOffTransitionTime() != value) {
+      setJsonData("onOffTT", value);
+      return true;
+    }
+    return false;
   }
 
   // options.add(new ParameterOption("65535", "Use On/Off transition time"));
@@ -277,9 +337,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("onTT", 65535);
   }
 
-  public ZigBeeEndpointEntity setOnTransitionTime(int value) {
-    setJsonData("onTT", value);
-    return this;
+  public boolean setOnTransitionTime(int value) {
+    if (getOnTransitionTime() != value) {
+      setJsonData("onTT", value);
+      return true;
+    }
+    return false;
   }
 
   // options.add(new ParameterOption("65535", "Use On/Off transition time"));
@@ -291,9 +354,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("offTT", 65535);
   }
 
-  public ZigBeeEndpointEntity setOffTransitionTime(int value) {
-    setJsonData("offTT", value);
-    return this;
+  public boolean setOffTransitionTime(int value) {
+    if (getOffTransitionTime() != value) {
+      setJsonData("offTT", value);
+      return true;
+    }
+    return false;
   }
 
   // options.add(new ParameterOption("255", "Not Set"));
@@ -305,9 +371,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("onLvl", 255);
   }
 
-  public ZigBeeEndpointEntity setOnLevel(int value) {
-    setJsonData("onLvl", value);
-    return this;
+  public boolean setOnLevel(int value) {
+    if (getOnLevel() != value) {
+      setJsonData("onLvl", value);
+      return true;
+    }
+    return false;
   }
 
   // options.add(new ParameterOption("255", "Not Set"));
@@ -319,9 +388,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("defMoveRate", 255);
   }
 
-  public ZigBeeEndpointEntity setDefaultMoveRate(int value) {
-    setJsonData("defMoveRate", value);
-    return this;
+  public boolean setDefaultMoveRate(int value) {
+    if (getDefaultMoveRate() != value) {
+      setJsonData("defMoveRate", value);
+      return true;
+    }
+    return false;
   }
 
   @UIField(order = 300)
@@ -332,9 +404,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("offWaitTime", 0);
   }
 
-  public ZigBeeEndpointEntity setOffWaitTime(int value) {
-    setJsonData("offWaitTime", value);
-    return this;
+  public boolean setOffWaitTime(int value) {
+    if (getOffWaitTime() != value) {
+      setJsonData("offWaitTime", value);
+      return true;
+    }
+    return false;
   }
 
   @UIField(order = 301)
@@ -345,9 +420,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("onTime", 65535);
   }
 
-  public ZigBeeEndpointEntity setOnTime(int value) {
-    setJsonData("onTime", value);
-    return this;
+  public boolean setOnTime(int value) {
+    if (getOnTime() != value) {
+      setJsonData("onTime", value);
+      return true;
+    }
+    return false;
   }
 
   @UIField(order = 302)
@@ -357,9 +435,12 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("startupOnOff", false);
   }
 
-  public ZigBeeEndpointEntity setStartupOnOff(boolean value) {
-    setJsonData("startupOnOff", value);
-    return this;
+  public boolean setStartupOnOff(boolean value) {
+    if (getStartupOnOff() != value) {
+      setJsonData("startupOnOff", value);
+      return true;
+    }
+    return false;
   }
 
   @UIField(order = 400)
@@ -443,6 +524,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonDataEnum("cc_ccm", ControlMethod.AUTO);
   }
 
+  @SuppressWarnings("unused")
   public void setColorControlMethod(ControlMethod value) {
     setJsonDataEnum("cc_ccm", value);
   }
@@ -457,6 +539,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     return getJsonData("rt_ch_max", 0);
   }
 
+  @SuppressWarnings("unused")
   public boolean isSupportColorControl() {
     return optService().map(s -> s.getCluster().isSupportConfigColorControl()).orElse(false);
   }
@@ -486,6 +569,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
         .orElse(false);
   }
 
+  @SuppressWarnings("unused")
   public boolean isSupportFanModeSequence() {
     return optService()
         .map(service -> Optional.ofNullable(service.getCluster().getConfigFanControl())
@@ -494,6 +578,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
         .orElse(false);
   }
 
+  @SuppressWarnings("unused")
   public boolean isSupportSoundVolume() {
     return optService()
         .map(service -> Optional.ofNullable(service.getCluster().getConfigDoorLock())
@@ -502,6 +587,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
         .orElse(false);
   }
 
+  @SuppressWarnings("unused")
   public boolean isSupportAutoRelockTime() {
     return optService()
         .map(service -> Optional.ofNullable(service.getCluster().getConfigDoorLock())
@@ -510,6 +596,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
         .orElse(false);
   }
 
+  @SuppressWarnings("unused")
   public boolean isSupportEnableOneTouchLocking() {
     return optService()
         .map(service -> Optional.ofNullable(service.getCluster().getConfigDoorLock())
@@ -518,6 +605,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
         .orElse(false);
   }
 
+  @SuppressWarnings("unused")
   public boolean isSupportLocalProgramming() {
     return optService()
         .map(service -> Optional.ofNullable(service.getCluster().getConfigDoorLock())
@@ -579,7 +667,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
   }
 
   @Override
-  public Class<ZigbeeEndpointService> getEntityServiceItemClass() {
+  public @NotNull Class<ZigbeeEndpointService> getEntityServiceItemClass() {
     return ZigbeeEndpointService.class;
   }
 
@@ -590,13 +678,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   @Override
   public String toString() {
-    return "ZigBee endpoint '" + getTitle() + "'. [ieeeAddress='" + getIeeeAddress() + "', clusterId=" +
-        getClusterId() + ", endpointId=" + getAddress() + ", clusterName='" + getName() + "']";
-  }
-
-  @JsonIgnore
-  public ZigBeeEndpointUUID getEndpointUUID() {
-    return new ZigBeeEndpointUUID(getIeeeAddress(), getClusterId(), getAddress(), getName());
+    return "[ieeeAddress='" + getIeeeAddress() + "', clusterId=" + getClusterId() + ", endpointId=" + getAddress() + ", clusterName='" + getClusterName() + "']";
   }
 
   public void setAnalogue(Double defaultChange, Integer minimumChange, Integer maximumChange) {
@@ -614,7 +696,7 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
   @Override
   public void assembleActions(UIInputBuilder builder) {
-    this.addStatusInfo(builder, "field.bindStatus", getBindingStatus());
+    this.addStatusInfo(builder, getBindStatus());
 
     optService().ifPresent(service -> {
       ZigBeeBaseChannelConverter cluster = service.getCluster();
@@ -634,7 +716,11 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
         this.addText(builder, "field.bindErrorMessage", cluster.getBindStatusMsg())
             .setColor(cluster.getBindStatus() == Status.OFFLINE ? Color.PRIMARY_COLOR : Color.RED).appendStyle("max-width", "200px");
         builder.addSelectableButton("zigbee.action.rebind", "fas fa-litecoin-sign", "#3961B7",
-            (entityContext, params) -> cluster.tryBind() ? success() : showWarn("ACTION.NOT_SUCCESS"));
+            (entityContext, params) -> {
+              boolean success = entityContext.ui().runWithProgressAndGet("bind-" + getEntityID(), false,
+                  progressBar -> cluster.tryBind(), null);
+              return success ? success() : showWarn("ACTION.NOT_SUCCESS");
+            });
       }
 
       if (!isSupportReporting()) {
@@ -646,9 +732,17 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
       builder.addSelectableButton("zigbee.action.poll_values", "fas fa-download", "#A939B7",
           (entityContext, params) -> {
-            cluster.fireHandleRefresh();
+            entityContext.ui().runWithProgress("poll-" + getEntityID(), false,
+                progressBar -> cluster.fireRefreshAttribute(message -> progressBar.progress(0, message)), null);
             return success();
           });
+      builder.addSelectableButton("zigbee.action.read_attributes", "fas fa-satellite-dish", "#39AEB7",
+          (entityContext, params) -> {
+            List<AttributeDescription> attributes = entityContext.ui().runWithProgressAndGet("read-attr-" + getEntityID(), false,
+                cluster::readAllAttributes, null);
+            return ActionResponseModel.showJson(Lang.getServerMessage("zigbee.attributes", "NAME", cluster.getName()), attributes);
+          });
+
       assembleReportConfigActions(builder);
       assembleLevelControlActions(builder);
       assembleOnOfSwitchActions(builder);
@@ -678,8 +772,8 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
     });
   }
 
-  private void addStatusInfo(UILayoutBuilder layoutBuilder, String name, Status status) {
-    addText(layoutBuilder, name, status.toString()).setColor(status.getColor());
+  private void addStatusInfo(UILayoutBuilder layoutBuilder, Status status) {
+    addText(layoutBuilder, "field.bindStatus", status.toString()).setColor(status.getColor());
   }
 
   private UIInfoItemBuilder addText(UILayoutBuilder layoutBuilder, String name, String value) {
@@ -695,37 +789,29 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
 
       if (isSupportOffWaitTime()) {
         onOffSwitchFlex.addSlider("field.offWaitTime", getOffWaitTime(), 0, 60000,
-            (entityContext, params) -> {
-              if (getOffWaitTime() != params.getInt("value")) {
-                entityContext.save(setOffWaitTime(params.getInt("value")));
-                return success();
-              }
-              return null;
-            }).appendStyle("width", "200px");
+            (entityContext, params) -> saveField(entityContext, entity -> entity.setOffWaitTime(params.getInt("value")))).appendStyle("width", "200px");
       }
 
       if (isSupportOnTime()) {
         addNumberWithButton(onOffSwitchFlex, "ot", "field.onTime", "field.notSet", 65535, getOnTime(),
-            (value, entityContext) -> {
-              if (getOnTime() != value) {
-                entityContext.save(setOnTime(value));
-                return success();
-              }
-              return null;
-            });
+            (value, entityContext) -> saveField(entityContext, entity -> entity.setOnTime(value)));
       }
 
       if (isSupportStartupOnOff()) {
         onOffSwitchFlex.addCheckbox("field.startupOnOff", getStartupOnOff(),
-            (entityContext, params) -> {
-              if (getStartupOnOff() != params.getBoolean("value")) {
-                entityContext.save(setStartupOnOff(params.getBoolean("value")));
-                return success();
-              }
-              return null;
-            });
+            (entityContext, params) -> saveField(entityContext, entity -> entity.setStartupOnOff(params.getBoolean("value"))));
       }
     }
+  }
+
+  private ActionResponseModel saveField(EntityContext entityContext, Function<ZigBeeEndpointEntity, Boolean> updater) {
+    ZigBeeEndpointEntity entity = entityContext.getEntity(getEntityID(), false);
+    if (updater.apply(entity)) {
+      updater.apply(this);
+      entityContext.save(entity);
+      return success();
+    }
+    return null;
   }
 
   private void assembleLevelControlActions(UIInputBuilder builder) {
@@ -734,94 +820,37 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
                                                     .setBorderColor("#35786f").columnFlexDirection();
 
       addNumberWithButton(levelControlFlex, "DTT", "def-trans-time", "field.useOnOffTime", 65535, getDefaultTransitionTime(),
-          (value, entityContext) -> {
-            if (getDefaultTransitionTime() != value) {
-              entityContext.save(setDefaultTransitionTime(value));
-              return success();
-            }
-            return null;
-          });
+          (value, entityContext) -> saveField(entityContext, entity -> entity.setDefaultTransitionTime(value)));
 
       levelControlFlex.addCheckbox("field.invertLevelControl", getInvertLevelControl(),
-          (entityContext, params) -> {
-            if (getInvertLevelControl() != params.getBoolean("value")) {
-              entityContext.save(setInvertLevelControl(params.getBoolean("value")));
-              return success();
-            }
-            return null;
-          });
-
-      levelControlFlex.addCheckbox("field.invertLevelControl", getInvertLevelControl(),
-          (entityContext, params) -> {
-            if (getInvertLevelControl() != params.getBoolean("value")) {
-              entityContext.save(setInvertLevelControl(params.getBoolean("value")));
-              return success();
-            }
-            return null;
-          });
+          (entityContext, params) -> saveField(entityContext, entity -> entity.setInvertLevelControl(params.getBoolean("value"))));
 
       levelControlFlex.addCheckbox("field.invertReportControl", getInvertReportControl(),
-          (entityContext, params) -> {
-            if (getInvertReportControl() != params.getBoolean("value")) {
-              entityContext.save(setInvertReportControl(params.getBoolean("value")));
-              return success();
-            }
-            return null;
-          });
+          (entityContext, params) -> saveField(entityContext, entity -> entity.setInvertReportControl(params.getBoolean("value"))));
 
       if (isSupportOnOffTransitionTime()) {
         addNumber(levelControlFlex, "onOffTT", "field.onOffTransitionTime", getOnOffTransitionTime(),
-            0, 60000, (value, entityContext) -> {
-              if (getOnOffTransitionTime() != value) {
-                entityContext.save(setOnOffTransitionTime(value));
-                return success();
-              }
-              return null;
-            });
+            0, 60000, (value, entityContext) -> saveField(entityContext, entity -> entity.setOnOffTransitionTime(value)));
       }
 
       if (isSupportOnTransitionTime()) {
         addNumberWithButton(levelControlFlex, "onTT", "field.defaultTransitionTime", "field.useOnOffTransitionTime", 65535,
-            getOnOffTransitionTime(), (value, entityContext) -> {
-              if (getOnTransitionTime() != value) {
-                entityContext.save(setOnTransitionTime(value));
-                return success();
-              }
-              return null;
-            });
+            getOnOffTransitionTime(), (value, entityContext) -> saveField(entityContext, entity -> entity.setOnTransitionTime(value)));
       }
 
       if (isSupportOffTransitionTime()) {
         addNumberWithButton(levelControlFlex, "offTT", "field.offTransitionTime", "field.useOffTransitionTime", 65535,
-            getOffTransitionTime(), (value, entityContext) -> {
-              if (getOffTransitionTime() != value) {
-                entityContext.save(setOffTransitionTime(value));
-                return success();
-              }
-              return null;
-            });
+            getOffTransitionTime(), (value, entityContext) -> saveField(entityContext, entity -> entity.setOffTransitionTime(value)));
       }
 
       if (isSupportOnLevel()) {
         addNumberWithButton(levelControlFlex, "onLVL", "field.offTransitionTime", "field.notSet", 255,
-            getOnLevel(), (value, entityContext) -> {
-              if (getOnLevel() != value) {
-                entityContext.save(setOnLevel(value));
-                return success();
-              }
-              return null;
-            });
+            getOnLevel(), (value, entityContext) -> saveField(entityContext, entity -> entity.setOnLevel(value)));
       }
 
       if (isSupportDefaultMoveRate()) {
         addNumberWithButton(levelControlFlex, "DMR", "field.defaultMoveRate", "field.notSet", 255,
-            getDefaultMoveRate(), (value, entityContext) -> {
-              if (getDefaultMoveRate() != value) {
-                entityContext.save(setDefaultMoveRate(value));
-                return success();
-              }
-              return null;
-            });
+            getDefaultMoveRate(), (value, entityContext) -> saveField(entityContext, entity -> entity.setDefaultMoveRate(value)));
       }
     }
   }
@@ -832,41 +861,33 @@ public class ZigBeeEndpointEntity extends PinBaseEntity<ZigBeeEndpointEntity, Zi
                                               .setBorderColor("#35B2B5").columnFlexDirection();
 
       addNumber(reportFlex, "rtmin", "field.reportingTimeMin", getReportingTimeMin(),
-          1, 86400, (value, entityContext) -> {
-            if (getReportingTimeMin() != value) {
-              entityContext.save(setReportingTimeMin(value));
-              return success();
-            }
-            return null;
-          });
+          1, 86400, (value, entityContext) -> saveField(entityContext, entity -> entity.setReportingTimeMin(value)));
       addNumber(reportFlex, "rtmax", "field.reportingTimeMax", getReportingTimeMax(),
-          1, 86400, (value, entityContext) -> {
-            if (getReportingTimeMax() != value) {
-              entityContext.save(setReportingTimeMax(value));
-              return success();
-            }
-            return null;
-          });
+          1, 86400, (value, entityContext) -> saveField(entityContext, entity -> entity.setReportingTimeMax(value)));
       addNumber(reportFlex, "pp", "field.pollingPeriod", getPollingPeriod(),
-          15, 86400, (value, entityContext) -> {
-            if (getPollingPeriod() != value) {
-              entityContext.save(setPollingPeriod(value));
-              return success();
-            }
-            return null;
-          });
+          15, 86400, (value, entityContext) -> saveField(entityContext, entity -> entity.setPollingPeriod(value)));
 
       if (isSupportAnalogue() && getReportingChange() != null) {
         addNumber(reportFlex, "rc", "field.reportingChange", getReportingChange().intValue(),
-            getReportingChangeMin(), getReportingChangeMax(), (value, entityContext) -> {
-              if (getReportingChange() != null && getReportingChange() != value.doubleValue()) {
-                entityContext.save(setReportingChange(value));
-                return success();
-              }
-              return null;
-            });
+            getReportingChangeMin(), getReportingChangeMax(), (value, entityContext) ->
+                saveField(entityContext, entity -> entity.setReportingChange(getReportingChange())));
       }
     }
+  }
+
+  private String getValueFromConfiguration() {
+    ZigBeeDeviceEntity owner = getOwnerTarget();
+    if (owner != null && owner.getModelIdentifier() != null) {
+      Optional<DeviceConfiguration> deviceDefinitionOptional = DeviceConfigurations.getDeviceDefinition(owner.getModelIdentifier());
+      if (deviceDefinitionOptional.isPresent()) {
+        DeviceConfiguration deviceConfiguration = deviceDefinitionOptional.get();
+        EndpointDefinition endpointDefinition = deviceConfiguration.getEndpoint(getAddress(), getClusterName());
+        if (endpointDefinition != null) {
+          return endpointDefinition.getId();
+        }
+      }
+    }
+    return getClusterName();
   }
 
   public enum ControlMethod {

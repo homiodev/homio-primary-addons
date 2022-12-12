@@ -7,6 +7,7 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclColorControlCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.colorcontrol.ColorCapabilitiesEnum;
 import com.zsmartsystems.zigbee.zcl.clusters.colorcontrol.ColorModeEnum;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
+import java.util.function.Consumer;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.DecimalType;
@@ -14,8 +15,8 @@ import org.touchhome.bundle.api.state.DecimalType;
 /**
  * Channel converter for color temperature, converting between the color control cluster and a percent-typed channel.
  */
-@ZigBeeConverter(name = "zigbee:color_temperature", linkType = VariableType.Float,
-                 clientCluster = ZclColorControlCluster.CLUSTER_ID, category = "Color")
+@ZigBeeConverter(name = "color_temperature", linkType = VariableType.Float,
+                 color = "#CF8E34", clientCluster = ZclColorControlCluster.CLUSTER_ID, category = "Color")
 public class ZigBeeConverterColorTemperature extends ZigBeeInputBaseConverter<ZclColorControlCluster> {
 
   // Default range of 2000K to 6500K
@@ -32,10 +33,11 @@ public class ZigBeeConverterColorTemperature extends ZigBeeInputBaseConverter<Zc
   }
 
   @Override
-  protected void initializeBindingReport() throws Exception {
-    super.initializeBindingReport();
+  protected void initializeBindingReport(Consumer<String> progressMessage) throws Exception {
+    super.initializeBindingReport(progressMessage);
 
     // ColorMode reporting
+    progressMessage.accept("set attr: 'ATTR_COLORMODE' report");
     CommandResult reportingResponse = zclCluster.setReporting(ZclColorControlCluster.ATTR_COLORMODE,
         1, REPORTING_PERIOD_DEFAULT_MAX, 1).get();
     handleReportingResponse(reportingResponse);
@@ -65,7 +67,7 @@ public class ZigBeeConverterColorTemperature extends ZigBeeInputBaseConverter<Zc
     }*/
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage) {
     ZclColorControlCluster clusterColorControl = (ZclColorControlCluster) endpoint.getInputCluster(ZclColorControlCluster.CLUSTER_ID);
     if (clusterColorControl == null) {
       log.trace("[{}]: Color control cluster not found for {}", entityID, endpoint);

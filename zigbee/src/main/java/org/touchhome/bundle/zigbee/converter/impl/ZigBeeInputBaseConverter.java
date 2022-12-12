@@ -7,25 +7,36 @@ import com.zsmartsystems.zigbee.zcl.ZclAttributeListener;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zcl.ZclCommandListener;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+import javax.measure.Unit;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.OnOffType;
+import org.touchhome.bundle.api.state.QuantityType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.config.ZclReportingConfig;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.util.ClusterAttributeConfiguration;
 import org.touchhome.bundle.zigbee.util.ClusterConfiguration;
 import org.touchhome.bundle.zigbee.util.ClusterConfigurations;
+import org.touchhome.bundle.zigbee.util.DeviceConfiguration.EndpointDefinition;
+import org.touchhome.common.model.ProgressBar;
+import org.touchhome.common.util.CommonUtils;
 
 public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> extends ZigBeeBaseChannelConverter
     implements ZclAttributeListener {
 
   @Getter private final ZclClusterType zclClusterType;
-  @Getter @Nullable private final Integer attributeId;
+  @Getter @Nullable protected Integer attributeId;
   protected @Nullable ZclAttribute attribute;
 
   protected Cluster zclCluster;
@@ -35,8 +46,7 @@ public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> exten
     this.zclClusterType = zclClusterType;
     this.attributeId = attributeId;
 
-    ClusterConfiguration configuration =
-        ClusterConfigurations.getClusterConfiguration(zclClusterType.getId());
+    ClusterConfiguration configuration = ClusterConfigurations.getClusterConfiguration(zclClusterType.getId());
     // get or create configuration
     this.configuration = configuration.getAttributeConfiguration(attributeId == null ? -1 : attributeId);
   }
@@ -45,19 +55,19 @@ public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> exten
    * Test cluster. must be override if attributeID is null
    */
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage) {
     if (attributeId == null) {
       throw new IllegalStateException("Cluster with null attributeId must override acceptEndpoint(...) method");
     }
     return acceptEndpoint(endpoint, entityID, entityContext, zclClusterType.getId(), attributeId,
-        configuration.isDiscoverAttributes(), configuration.isReadAttribute());
+        configuration.isDiscoverAttributes(), configuration.isReadAttribute(), progressMessage);
   }
 
   protected void afterClusterInitialized() {
   }
 
   @Override
-  public void initialize() {
+  public void initialize(Consumer<String> progressMessage) {
     if (zclCluster == null) {
       log.debug("[{}]: Initialising {} device cluster {}", entityID, getClass().getSimpleName(), endpoint);
       zclCluster = getInputCluster(zclClusterType.getId());
@@ -67,19 +77,17 @@ public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> exten
       }
       afterClusterInitialized();
     }
-
-    initializeBinding();
-
+    initializeBinding(progressMessage);
     initializeAttribute();
   }
 
-  protected void initializeBinding() {
+  protected void initializeBinding(Consumer<String> progressMessage) {
     if (bindStatus != Status.DONE) {
       try {
-        initializeBindingReport();
+        initializeBindingReport(progressMessage);
       } catch (Exception ex) {
         bindStatus = Status.ERROR;
-        log.error("[{}]: Exception setting reporting {}", endpoint, ex);
+        log.error("[{}]: Exception setting reporting {}. Msg: {}", entityID, endpoint, CommonUtils.getErrorMessage(ex));
         if (configuration.getBindFailedPollingPeriod() != null) {
           pollingPeriod = configuration.getBindFailedPollingPeriod();
         }
@@ -110,8 +118,11 @@ public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> exten
   }
 
   @Override
-  protected void handleRefresh() {
+  protected void handleRefresh(@Nullable Consumer<String> progressMessage) {
     if (attribute != null) {
+      if (progressMessage != null) {
+        progressMessage.accept("read attr: '" + attribute.getName() + "'");
+      }
       attribute.readValue(0);
     }
   }
@@ -127,16 +138,25 @@ public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> exten
       if (attribute.getId() == attributeId) {
         updateValue(val, attribute);
       } else {
-        log.debug("[{}]: Got value from another attribute: {}. {}. Value: {}", entityID, attribute, endpoint, val);
+        log.debug("[{}]: Got value for another attribute: {}. {}. Value: {}", entityID, attribute, endpoint, val);
       }
     }
   }
 
   protected void updateValue(Object val, ZclAttribute attribute) {
+    Unit unit = getEndpointService().getEndpointDefinition().map(EndpointDefinition::getUnit).orElse(null);
     if (val instanceof Double) {
-      updateChannelState(new DecimalType((Double) val));
+      if (unit != null) {
+        updateChannelState(new QuantityType<>(BigDecimal.valueOf((Double) val), unit));
+      } else {
+        updateChannelState(new DecimalType((Double) val));
+      }
     } else if (val instanceof Integer) {
-      updateChannelState(new DecimalType((Integer) val));
+      if (unit != null) {
+        updateChannelState(new QuantityType<>(BigDecimal.valueOf((Integer) val, 0), unit));
+      } else {
+        updateChannelState(new DecimalType((Integer) val));
+      }
     } else if (val instanceof Boolean) {
       updateChannelState(OnOffType.of(val));
     } else {
@@ -157,15 +177,17 @@ public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> exten
     return commandResult.isSuccess();
   }
 
-  protected void initializeBindingReport() throws Exception {
+  protected void initializeBindingReport(Consumer<String> progressMessage) throws Exception {
     if (attributeId == null) {
       throw new IllegalStateException("Cluster with null attributeId must override initializeBindingReport(...) method");
     }
+    progressMessage.accept("binding cluster");
     CommandResult bindResponse = bind(zclCluster);
     if (bindResponse.isSuccess()) {
       ZclAttribute attribute = zclCluster.getAttribute(attributeId);
 
       ZigBeeEndpointEntity endpointEntity = getEndpointService().getEntity();
+      progressMessage.accept("set attr: '" + attribute.getName() + "' report");
       CommandResult reportingResponse = attribute.setReporting(
           configuration.getReportMinInterval(endpointEntity),
           configuration.getReportMaxInterval(endpointEntity),
@@ -176,7 +198,26 @@ public abstract class ZigBeeInputBaseConverter<Cluster extends ZclCluster> exten
       if (configuration.getBindFailedPollingPeriod() != null) {
         pollingPeriod = configuration.getBindFailedPollingPeriod();
       }
-      log.warn("[{}]: Could not bind to the '{}' configuration cluster; Response code: {}", entityID, zclClusterType.name(), bindResponse.getStatusCode());
+      log.warn("[{}]: Could not bind '{}'. Response code: {}", entityID, zclClusterType.name(), bindResponse.getStatusCode());
     }
+  }
+
+  @SneakyThrows
+  @Override
+  public List<AttributeDescription> readAllAttributes(ProgressBar progressBar) {
+    List<AttributeDescription> list = new ArrayList<>();
+    progressBar.progress(0, getName() + ":discovery attributes");
+    if (zclCluster.discoverAttributes(false).get()) {
+      Set<Integer> supportedAttributes = zclCluster.getSupportedAttributes();
+      float delta = 99F / supportedAttributes.size();
+      float progress = 1;
+      for (Integer attributeId : supportedAttributes) {
+        ZclAttribute attribute = zclCluster.getAttribute(attributeId);
+        progressBar.progress(progress, getName() + ":read:" + attribute.getName());
+        list.add(new AttributeDescription(attribute, attribute.readValue(0)));
+        progress += delta;
+      }
+    }
+    return list;
   }
 }

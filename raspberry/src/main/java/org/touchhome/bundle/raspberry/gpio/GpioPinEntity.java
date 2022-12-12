@@ -6,7 +6,6 @@ import java.util.Set;
 import javax.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.proxy.HibernateProxy;
 import org.touchhome.bundle.api.entity.PinBaseEntity;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldColorPicker;
@@ -46,6 +45,10 @@ public class GpioPinEntity extends PinBaseEntity<GpioPinEntity, RaspberryDeviceE
     return getJsonDataEnum("mode", PinMode.DIGITAL_INPUT);
   }
 
+  public void setMode(PinMode value) {
+    setJsonDataEnum("mode", value);
+  }
+
   @UIField(order = 40)
   @UIFieldInlineEntityWidth(20)
   @UIFieldInlineEntityEditWidth(25)
@@ -54,21 +57,18 @@ public class GpioPinEntity extends PinBaseEntity<GpioPinEntity, RaspberryDeviceE
     return getJsonDataEnum("pull", PullResistance.OFF);
   }
 
+  public void setPull(PullResistance value) {
+    setJsonDataEnum("pull", value);
+  }
+
   @UIField(order = 50, hideInEdit = true)
   @UIFieldInlineEntityWidth(20)
   public String getValue() {
-    Object owner = getOwner();
-    RaspberryDeviceEntity entity;
-    if (owner instanceof HibernateProxy) {
-      if (((HibernateProxy) owner).getHibernateLazyInitializer().isUninitialized()) {
-        return null;
-      }
-      entity = ((RaspberryDeviceEntity) ((HibernateProxy) owner).getHibernateLazyInitializer().getImplementation());
-    } else {
-      entity = (RaspberryDeviceEntity) owner;
-    }
     if (getMode() == PinMode.DIGITAL_INPUT) {
-      return entity.optService().map(service -> service.getState(getAddress()).stringValue()).orElse(null);
+      RaspberryDeviceEntity entity = getOwnerTarget();
+      if (entity != null) {
+        return entity.optService().map(service -> service.getState(getAddress()).stringValue()).orElse(null);
+      }
     }
     return null;
   }
@@ -80,6 +80,10 @@ public class GpioPinEntity extends PinBaseEntity<GpioPinEntity, RaspberryDeviceE
     return getJsonData("clr", "");
   }
 
+  public void setColor(String value) {
+    setJsonData("clr", value);
+  }
+
   @Override
   @UIFieldIgnore
   public String getDescription() {
@@ -89,18 +93,6 @@ public class GpioPinEntity extends PinBaseEntity<GpioPinEntity, RaspberryDeviceE
   @JsonIgnore
   public GpioPin getGpioPin() {
     return RaspberryGpioPin.getPin(getAddress()).getGpioPin();
-  }
-
-  public void setMode(PinMode value) {
-    setJsonDataEnum("mode", value);
-  }
-
-  public void setPull(PullResistance value) {
-    setJsonDataEnum("pull", value);
-  }
-
-  public void setColor(String value) {
-    setJsonData("clr", value);
   }
 
   public Set<String> setSupportedModes() {

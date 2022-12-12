@@ -9,9 +9,11 @@ import com.zsmartsystems.zigbee.ZigBeeProfileType;
 import com.zsmartsystems.zigbee.zcl.ZclAttribute;
 import com.zsmartsystems.zigbee.zcl.ZclCluster;
 import com.zsmartsystems.zigbee.zdo.command.BindResponse;
-import java.util.Objects;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
@@ -27,14 +30,16 @@ import org.touchhome.bundle.zigbee.converter.config.ZclFanControlConfig;
 import org.touchhome.bundle.zigbee.converter.config.ZclLevelControlConfig;
 import org.touchhome.bundle.zigbee.converter.config.ZclOnOffSwitchConfig;
 import org.touchhome.bundle.zigbee.converter.config.ZclReportingConfig;
+import org.touchhome.bundle.zigbee.converter.impl.HasClusterDefinition;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.service.ZigBeeDeviceService;
 import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
 import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryClusterTimeoutSetting;
+import org.touchhome.common.model.ProgressBar;
 import org.touchhome.common.util.CommonUtils;
 
-public abstract class ZigBeeBaseChannelConverter {
+public abstract class ZigBeeBaseChannelConverter implements HasClusterDefinition {
 
   public static final int REPORTING_PERIOD_DEFAULT_MAX = 7200;
   public static final int POLLING_PERIOD_HIGH = 60;
@@ -52,7 +57,7 @@ public abstract class ZigBeeBaseChannelConverter {
   @Getter protected boolean supportConfigColorControl;
   // binding result
   @Getter @NotNull protected Status bindStatus = Status.UNKNOWN;
-  @Getter @Setter private ZigBeeConverter annotation;
+  @Setter @Nullable private ZigBeeConverter annotation;
   @Getter private ZigbeeEndpointService endpointService;
   @Getter @Nullable private String bindStatusMsg;
 
@@ -92,7 +97,7 @@ public abstract class ZigBeeBaseChannelConverter {
    *
    * <p>
    */
-  public abstract void initialize();
+  public abstract void initialize(Consumer<String> progressMessage);
 
   /**
    * Closes the converter and releases any resources.
@@ -112,21 +117,21 @@ public abstract class ZigBeeBaseChannelConverter {
    * <p>This is run in a separate thread by the Thing Handler so the converter doesn't need to worry
    * about returning quickly.
    */
-  protected void handleRefresh() {
+  protected void handleRefresh(@Nullable Consumer<String> progressMessage) {
     // Overridable if a channel can be refreshed
   }
 
-  public final void fireHandleRefresh() {
-    this.handleRefresh();
+  public final void fireRefreshAttribute(@Nullable Consumer<String> progressMessage) {
+    this.handleRefresh(progressMessage);
   }
 
   /**
    * Check if this converter supports features from the {@link ZigBeeEndpoint} If the converter doesn't support any features, it returns null.
    */
-  public abstract boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext);
+  public abstract boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage);
 
   public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext,
-      int clusterID, int attributeId, boolean discoverAttribute, boolean readAttribute) {
+      int clusterID, int attributeId, boolean discoverAttribute, boolean readAttribute, Consumer<String> progressMessage) {
     ZclCluster cluster = endpoint.getInputCluster(clusterID);
     if (cluster == null) {
       log.trace("[{}]: Cluster '{}' not found {}", entityID, clusterID, endpoint);
@@ -135,6 +140,7 @@ public abstract class ZigBeeBaseChannelConverter {
 
     if (discoverAttribute) {
       try {
+        progressMessage.accept("discovery attributes");
         if (!cluster.discoverAttributes(false).get(getDiscoveryTimeout(entityContext), TimeUnit.SECONDS)
             && !cluster.isAttributeSupported(attributeId)) {
           log.debug("[{}]: Error discover attribute {}. {}", entityID, attributeId, endpoint);
@@ -148,6 +154,7 @@ public abstract class ZigBeeBaseChannelConverter {
 
     if (readAttribute) {
       ZclAttribute zclAttribute = cluster.getAttribute(attributeId);
+      progressMessage.accept("read attr");
       Object value = zclAttribute.readValue(Long.MAX_VALUE);
       if (value == null) {
         log.debug(
@@ -219,14 +226,12 @@ public abstract class ZigBeeBaseChannelConverter {
       return false;
     }
     ZigBeeBaseChannelConverter that = (ZigBeeBaseChannelConverter) o;
-    return Objects.equals(
-        endpointService.getEntity().getEndpointUUID(),
-        that.endpointService.getEntity().getEndpointUUID());
+    return this.endpointService.getEntity().equals(that.getEndpointService().getEntity());
   }
 
   @Override
   public int hashCode() {
-    return endpointService.getEntity().getEndpointUUID().hashCode();
+    return this.endpointService.getEntity().hashCode();
   }
 
   // Configure reporting
@@ -271,5 +276,68 @@ public abstract class ZigBeeBaseChannelConverter {
   public boolean tryBind() throws Exception {
 
     return false;
+  }
+
+  @Override
+  public VariableType getVariableType() {
+    assert annotation != null;
+    return annotation.linkType();
+  }
+
+  @Override
+  public int getClientCluster() {
+    assert annotation != null;
+    return annotation.clientCluster();
+  }
+
+  @Override
+  public String getName() {
+    assert annotation != null;
+    return annotation.name();
+  }
+
+  public int[] getAdditionalClientClusters() {
+    if (annotation != null) {
+      return annotation.additionalClientClusters();
+    }
+    return new int[0];
+  }
+
+  public List<AttributeDescription> readAllAttributes(ProgressBar progressBar) {
+    return Collections.emptyList();
+  }
+
+  public String getColor() {
+    return annotation.color();
+  }
+
+  @Getter
+  public static class AttributeDescription {
+
+    private final String id;
+    private final String name;
+    private final String value;
+    private final String dataType;
+    private final boolean reportable;
+    private final boolean readable;
+    private final boolean writable;
+    private final int reportingTimeout;
+    private final int minReportingPeriod;
+    private final int maxReportingPeriod;
+    private final String reportingChange;
+
+    public AttributeDescription(ZclAttribute attribute, Object value) {
+      this.id = Integer.toHexString(attribute.getId());
+      this.name = attribute.getName();
+      this.value = value == null ? "N/A" : value.toString();
+      this.dataType = attribute.getDataType().name();
+      this.reportable = attribute.isReportable();
+      this.readable = attribute.isReadable();
+      this.writable = attribute.isWritable();
+      this.reportingTimeout = attribute.getReportingTimeout();
+      this.minReportingPeriod = attribute.getMinimumReportingPeriod();
+      this.maxReportingPeriod = attribute.getMaximumReportingPeriod();
+      this.reportingChange = attribute.getReportingChange() == null ? "N/A" : attribute.getReportingChange().toString();
+    }
   }
 }

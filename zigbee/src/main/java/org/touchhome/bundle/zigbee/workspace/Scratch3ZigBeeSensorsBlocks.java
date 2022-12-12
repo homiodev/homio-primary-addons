@@ -21,7 +21,6 @@ import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock.ServerMenuBlock;
-import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.ZigBeeEntrypoint;
 import org.touchhome.bundle.zigbee.converter.impl.ias.ZigBeeConverterIasFireIndicator;
 import org.touchhome.bundle.zigbee.converter.impl.ias.ZigBeeConverterIasWaterSensor;
@@ -126,9 +125,7 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
       ZigBeeDeviceEntity zigBeeDevice = getZigBeeDevice(workspaceBlock, keys[0]);
       String alarmCluster = keys[1];
       BroadcastLock lock = workspaceBlock.getBroadcastLockManager().getOrCreateLock(workspaceBlock);
-      ZigBeeEndpointUUID zigBeeEndpointUUID = ZigBeeEndpointUUID.require(zigBeeDevice.getIeeeAddress(),
-          ZclIasZoneCluster.CLUSTER_ID, null, alarmCluster);
-      entityContext.event().addEventListener(zigBeeEndpointUUID.asKey(), state -> {
+      entityContext.event().addEventListener(zigBeeDevice.getIeeeAddress() + "_" + ZclIasZoneCluster.CLUSTER_ID, state -> {
         if (state == OnOffType.ON) {
           lock.signalAll();
         }

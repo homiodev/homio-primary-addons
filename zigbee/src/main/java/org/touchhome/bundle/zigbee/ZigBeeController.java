@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.OptionModel;
-import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
+import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
@@ -28,13 +28,13 @@ public class ZigBeeController {
 
   private final EntityContext entityContext;
 
-  public static boolean containsAny(ZigBeeConverter zigBeeConverter, Integer value) {
-    for (int i : zigBeeConverter.additionalClientClusters()) {
+  public static boolean containsAny(ZigBeeBaseChannelConverter converter, Integer value) {
+    for (int i : converter.getAdditionalClientClusters()) {
       if (i == value) {
         return true;
       }
     }
-    return zigBeeConverter.clientCluster() == value;
+    return converter.getClientCluster() == value;
   }
 
   @GetMapping("/option/zcl/{clusterId}")
@@ -103,7 +103,7 @@ public class ZigBeeController {
     for (ZigbeeCoordinatorEntity coordinator : entityContext.findAll(ZigbeeCoordinatorEntity.class)) {
       for (ZigBeeDeviceEntity device : coordinator.getOnlineDevices()) {
         List<ZigBeeEndpointEntity> endpoints = device.getEndpoints().stream().filter(e ->
-            containsAny(e.getService().getCluster().getAnnotation(), clusterId)).collect(Collectors.toList());
+            containsAny(e.getService().getCluster(), clusterId)).collect(Collectors.toList());
 
         if (!endpoints.isEmpty()) {
           if (endpointCount == null || endpointCount == endpoints.size()) {

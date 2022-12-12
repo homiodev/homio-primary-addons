@@ -24,12 +24,14 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.ButtonType;
 import org.touchhome.bundle.api.state.ButtonType.ButtonPressType;
 import org.touchhome.bundle.zigbee.converter.ZigBeeBaseChannelConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
+import org.touchhome.bundle.zigbee.util.DeviceConfiguration.EndpointDefinition;
 
 /**
  * Generic converter for buttons (e.g., from remote controls).
@@ -39,7 +41,7 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
  * <p>
  * As the configuration is done via channel properties, this converter is usable via static thing types only.
  */
-@ZigBeeConverter(name = "zigbee:button", linkType = VariableType.Boolean, clientCluster = 0, serverClusters = {ZclScenesCluster.CLUSTER_ID}, category = "Button")
+@ZigBeeConverter(name = "button", color = "#3479CF", linkType = VariableType.Boolean, clientCluster = 0, serverClusters = {ZclScenesCluster.CLUSTER_ID}, category = "Button")
 public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
     implements ZclCommandListener, ZclAttributeListener {
 
@@ -67,9 +69,10 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
   }
 
   @Override
-  public void initialize() {
+  public void initialize(Consumer<String> progressMessage) {
     for (ButtonPressType buttonPressType : ButtonPressType.values()) {
-      EventSpec eventSpec = parseEventSpec(getEndpointService().getMetadata(), buttonPressType);
+      EventSpec eventSpec = parseEventSpec(getEndpointService().getEndpointDefinition().map(EndpointDefinition::getMetadata)
+                                                               .orElse(null), buttonPressType);
       if (eventSpec != null) {
         handledEvents.put(buttonPressType, eventSpec);
       }
@@ -105,7 +108,7 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage) {
     // This converter is used only for zigbeeRequireEndpoints specified in static thing types, and cannot be used to construct
     // zigbeeRequireEndpoints based on an endpoint alone.
     return false;
@@ -150,7 +153,10 @@ public class ZigBeeConverterGenericButton extends ZigBeeBaseChannelConverter
     return null;
   }
 
-  private EventSpec parseEventSpec(JsonNode metadata, ButtonType.ButtonPressType pressType) {
+  private EventSpec parseEventSpec(@Nullable JsonNode metadata, ButtonType.ButtonPressType pressType) {
+    if (metadata == null) {
+      return null;
+    }
     String clusterProperty = metadata.get(getParameterName(CLUSTER, pressType)).asText();
 
     if (clusterProperty == null) {

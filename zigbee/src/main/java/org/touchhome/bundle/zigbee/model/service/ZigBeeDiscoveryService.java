@@ -98,7 +98,7 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
       return;
     }
 
-    entityContext.bgp().builder("zigbee-polling-" + coordinator.getEntityID())
+    entityContext.bgp().builder("zigbee-node-discover-" + node.getIeeeAddress())
                  .delay(Duration.ofMillis(10))
                  .execute(() -> {
                    log.info("[{}]: Starting ZigBee device discovery {}", entityID, node.getIeeeAddress());

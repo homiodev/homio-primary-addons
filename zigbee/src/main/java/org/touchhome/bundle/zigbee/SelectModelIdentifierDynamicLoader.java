@@ -14,11 +14,7 @@ public class SelectModelIdentifierDynamicLoader implements DynamicOptionLoader {
     List<OptionModel> models = new ArrayList<>();
     for (DeviceConfiguration defineEndpoint : DeviceConfigurations.getDefineEndpoints()) {
       for (String model : defineEndpoint.getModels()) {
-        String title = defineEndpoint.getLabel();
-        if (defineEndpoint.getCategory() != null) {
-          title += "(" + defineEndpoint.getCategory() + ")";
-        }
-        models.add(OptionModel.of(model, title).setIcon(defineEndpoint.getImage()).setDescription(defineEndpoint.getDescription()));
+        models.add(OptionModel.of(model, defineEndpoint.getImage()).setIcon(defineEndpoint.getImage()));
       }
     }
     return models;

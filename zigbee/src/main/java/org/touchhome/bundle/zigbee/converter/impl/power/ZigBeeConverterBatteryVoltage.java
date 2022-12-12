@@ -8,18 +8,18 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster;
 import java.math.BigDecimal;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.QuantityType;
+import org.touchhome.bundle.api.util.Units;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
-import tec.uom.se.unit.Units;
 
 /**
  * Battery Voltage The current battery voltage
  */
-@ZigBeeConverter(name = "zigbee:battery_voltage", linkType = VariableType.Float,
-                 clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
-public class ZigBeeConverterPowerVoltage extends ZigBeeInputBaseConverter<ZclPowerConfigurationCluster> {
+@ZigBeeConverter(name = "battery_voltage", linkType = VariableType.Float,
+                 color = "#CF8B34", clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
+public class ZigBeeConverterBatteryVoltage extends ZigBeeInputBaseConverter<ZclPowerConfigurationCluster> {
 
-  public ZigBeeConverterPowerVoltage() {
+  public ZigBeeConverterBatteryVoltage() {
     super(POWER_CONFIGURATION, ATTR_BATTERYVOLTAGE);
   }
 

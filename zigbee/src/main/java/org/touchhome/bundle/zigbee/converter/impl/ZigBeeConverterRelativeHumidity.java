@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.DecimalType;
 
-@ZigBeeConverter(name = "zigbee:measurement_relativehumidity", linkType = VariableType.Float,
-                 clientCluster = ZclRelativeHumidityMeasurementCluster.CLUSTER_ID, category = "Humidity")
+@ZigBeeConverter(name = "measurement_relativehumidity", linkType = VariableType.Float,
+                 color = "#CF8E34", clientCluster = ZclRelativeHumidityMeasurementCluster.CLUSTER_ID, category = "Humidity")
 public class ZigBeeConverterRelativeHumidity extends ZigBeeInputBaseConverter<ZclRelativeHumidityMeasurementCluster> {
 
   public ZigBeeConverterRelativeHumidity() {

@@ -17,7 +17,6 @@ import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
 import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.touchhome.bundle.xaomi.XaomiEntrypoint;
-import org.touchhome.bundle.zigbee.ZigBeeEndpointUUID;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 
 @Getter
@@ -84,8 +83,8 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
         }*/
       };
 
-      addZigBeeEventListener(ieeeAddress, ZclMultistateInputBasicCluster.CLUSTER_ID, consumer);
-      addZigBeeEventListener(ieeeAddress, ZclAnalogInputBasicCluster.CLUSTER_ID, consumer);
+      entityContext.event().addEventListener(ieeeAddress + "_" + ZclMultistateInputBasicCluster.CLUSTER_ID, consumer);
+      entityContext.event().addEventListener(ieeeAddress + "_" + ZclAnalogInputBasicCluster.CLUSTER_ID, consumer);
 
       workspaceBlock.subscribeToLock(lock, next::handle);
     });
@@ -98,10 +97,5 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
       workspaceBlock.logErrorAndThrow("Unable to find Magic cube entity: <{}>", ieeeAddress);
     }
     return ieeeAddress;
-  }
-
-  private void addZigBeeEventListener(String nodeIEEEAddress, int clusterId, Consumer<Object> consumer) {
-    ZigBeeEndpointUUID zigBeeEndpointUUID = ZigBeeEndpointUUID.require(nodeIEEEAddress, clusterId, null, null);
-    entityContext.event().addEventListener(zigBeeEndpointUUID.asKey(), consumer);
   }
 }

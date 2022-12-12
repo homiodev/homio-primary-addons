@@ -447,14 +447,15 @@ public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoo
   private static class ZigBeeCoordinatorDeviceEntity {
 
     @UIField(order = 1)
-    @UIFieldInlineEntityWidth(40)
+    @UIFieldInlineEntityWidth(35)
     private String ieeeAddress;
 
     @UIField(order = 2)
-    private String model;
+    private String name;
 
     @UIField(order = 3)
-    @UIFieldInlineEntityWidth(20)
+    @UIFieldColorStatusMatch
+    @UIFieldInlineEntityWidth(15)
     private Status status;
 
     @UIField(order = 4)
@@ -463,7 +464,7 @@ public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoo
 
     public ZigBeeCoordinatorDeviceEntity(ZigBeeDeviceEntity device) {
       this.ieeeAddress = device.getIeeeAddress();
-      this.model = device.getModelIdentifier();
+      this.name = device.getName();
       this.status = device.getStatus();
       Set<ZigBeeEndpointEntity> endpoints = device.getEndpoints();
       this.endpointsCount = endpoints == null ? 0 : endpoints.size();

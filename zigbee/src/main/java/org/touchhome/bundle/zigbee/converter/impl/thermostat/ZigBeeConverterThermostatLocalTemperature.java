@@ -10,10 +10,8 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
 
 @ZigBeeConverter(
-    name = "zigbee:thermostat_localtemp",
-    linkType = VariableType.Float,
-    clientCluster = ZclThermostatCluster.CLUSTER_ID,
-    category = "HVAC")
+    name = "thermostat_localtemp", linkType = VariableType.Float,
+    color = "#F349C", clientCluster = ZclThermostatCluster.CLUSTER_ID, category = "HVAC")
 public class ZigBeeConverterThermostatLocalTemperature extends ZigBeeInputBaseConverter<ZclThermostatCluster> {
 
   public ZigBeeConverterThermostatLocalTemperature() {

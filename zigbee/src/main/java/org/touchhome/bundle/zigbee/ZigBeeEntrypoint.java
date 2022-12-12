@@ -4,6 +4,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntrypoint;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity.ZigbeeCoordinator;
 import org.touchhome.common.util.Lang;
@@ -47,6 +49,13 @@ public class ZigBeeEntrypoint implements BundleEntrypoint {
         }
       }
       this.checkNewCoordinator(coordinators, ports);
+    });
+
+    entityContext.event().addEntityUpdateListener(ZigBeeDeviceEntity.class, "zigbee-dev-change", (newValue, oldValue) -> {
+      if (!Objects.equals(newValue.getPlace(), oldValue.getPlace())
+          || !Objects.equals(newValue.getName(), oldValue.getName())) {
+        newValue.createOrUpdateVarGroup(entityContext);
+      }
     });
   }
 

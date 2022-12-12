@@ -2,17 +2,61 @@
   "Xaomi": {
     "devices": [
       {
-        "id": "xiaomi_lumiremoteb286acn01",
+        "icon": "fas fa-shuffle",
+        "iconColor": "#57A4D1",
+        "models": [
+          "lumi.relay.c2acn01"
+        ],
+        "endpoints": [
+          {
+            "id": "power_consumption",
+            "type_id": "analog_input",
+            "endpoint": 1,
+            "unit": "Wh"
+          },
+          {
+            "id": "rely_channel_1",
+            "type_id": "switch_onoff",
+            "endpoint": 1
+          },
+          {
+            "id": "rely_channel_2",
+            "type_id": "switch_onoff",
+            "endpoint": 2
+          }
+        ]
+      },
+      {
+        "models": [
+          "lumi.weather"
+        ],
+        "icon": "fas fa-cloud",
+        "iconColor": "#57A4D1"
+      },
+      {
+        "models": [
+          "lumi.remote.b186acn01"
+        ],
+        "icon": "fas fa-circle-dot",
+        "iconColor": "#D1C155"
+      },
+      {
+        "models": [
+          "lumi.sensor_smoke"
+        ],
+        "icon": "fas fa-volcano",
+        "iconColor": "#EB6933"
+      },
+      {
+        "icon": "fas fa-circle-dot",
+        "iconColor": "#B5C64E",
         "models": [
           "lumi.remote.b286acn01"
         ],
         "category": "WallSwitch",
-        "label": {
-          "en": "Xiaomi Wall Switch"
-        },
         "endpoints": [
           {
-            "id": "left",
+            "id": "left_button",
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -28,7 +72,7 @@
             }
           },
           {
-            "id": "right",
+            "id": "right_button",
             "type_id": "button",
             "endpoint": 2,
             "meta": {
@@ -56,14 +100,12 @@
         ]
       },
       {
-        "id": "xiaomi_lumiremotemini",
+        "icon": "fas fa-square-check",
+        "iconColor": "#B5C64E",
         "models": [
           "lumi.remote.b1acn01"
         ],
         "category": "WallSwitch",
-        "label": {
-          "en": "AQARA WXKG11LM"
-        },
         "endpoints": [
           {
             "id": "center",
@@ -94,24 +136,15 @@
         ]
       },
       {
-        "id": "xiaomi_lumisensormagnet",
+        "icon": "fas fa-door-open",
+        "iconColor": "#A41CE2",
         "models": [
-          "lumi.sensor_magnet"
+          "lumi.sensor_magnet.aq1"
         ],
-        "image": "zigbee-door-sensor",
-        "label": {
-          "en": "Xiaomi Door Window Sensor"
-        },
         "endpoints": [
           {
             "id": "contact_switch",
             "type_id": "switch_onoff",
-            "label": {
-              "en": "Contact open (Switch)"
-            },
-            "description": {
-              "en": "The magnetic contact, seen by the device as a switch that is on when the contact is open"
-            },
             "endpoint": 1,
             "input_clusters": [
               6
@@ -120,16 +153,37 @@
         ]
       },
       {
-        "id": "xiaomi_lumisensor-motion",
+        "icon": "fas fa-door-open",
+        "iconColor": "#A41CE2",
         "models": [
-          "lumi.sensor_motion"
+          "lumi.sensor_magnet.aq2"
         ],
-        "label": {
-          "en": "Xiaomi Lumi Motion Sensor"
-        },
         "endpoints": [
           {
-            "id": "occupancy",
+            "id": "contact_switch",
+            "type_id": "switch_onoff",
+            "endpoint": 1,
+            "input_clusters": [
+              6
+            ]
+          }
+        ]
+      },
+      {
+        "icon": "fas fa-person-circle-exclamation",
+        "iconColor": "#56be9e",
+        "models": [
+          "lumi.sensor_motion.aq2"
+        ],
+        "endpoints": [
+          {
+            "type_id": "measurement_illuminance",
+            "endpoint": 1,
+            "input_clusters": [
+              1024
+            ]
+          },
+          {
             "type_id": "sensor_occupancy",
             "endpoint": 1,
             "input_clusters": [
@@ -139,17 +193,14 @@
         ]
       },
       {
-        "id": "xiaomi_lumisensor86sw2",
         "models": [
           "lumi.sensor_86sw2"
         ],
-        "image": "zigbee-button-doubleRemote",
-        "label": {
-          "en": "Xiaomi Wireless 2-Button Switch"
-        },
+        "icon": "fas fa-square-check",
+        "iconColor": "#56be9e",
         "endpoints": [
           {
-            "id": "switch_1",
+            "id": "left_button",
             "type_id": "switch_onoff",
             "endpoint": 1,
             "input_clusters": [
@@ -157,7 +208,7 @@
             ]
           },
           {
-            "id": "switch_2",
+            "id": "right_button",
             "type_id": "switch_onoff",
             "endpoint": 2,
             "input_clusters": [
@@ -165,7 +216,7 @@
             ]
           },
           {
-            "id": "switch_3",
+            "id": "both_button",
             "type_id": "switch_onoff",
             "endpoint": 3,
             "input_clusters": [
@@ -175,17 +226,35 @@
         ]
       },
       {
-        "id": "xiaomi_lumisensorht",
+        "icon": "fas fa-plug-circle-bolt",
+        "iconColor": "#79BE56",
+        "models": [
+          "lumi.plug"
+        ],
+        "endpoints": [
+          {
+            "type_id": "switch_onoff",
+            "endpoint": 1,
+            "input_clusters": [
+              6
+            ]
+          },
+          {
+            "id": "power_consumption",
+            "type_id": "analog_input",
+            "endpoint": 2,
+            "unit": "Wh"
+          }
+        ]
+      },
+      {
+        "icon": "fas fa-temperature-half",
+        "iconColor": "#79BE56",
         "models": [
           "lumi.sensor_ht"
         ],
-        "image": "zigbee-ht",
-        "label": {
-          "en": "Xiaomi Temperature and Humidity Sensor"
-        },
         "endpoints": [
           {
-            "id": "temperature",
             "type_id": "measurement_temperature",
             "endpoint": 1,
             "input_clusters": [
@@ -193,7 +262,6 @@
             ]
           },
           {
-            "id": "humidity",
             "type_id": "measurement_relativehumidity",
             "endpoint": 1,
             "input_clusters": [
@@ -203,14 +271,13 @@
         ]
       },
       {
-        "id": "xiaomi_lumisensorwaterleak",
+        "icon": "fas fa-droplet",
+        "iconColor": "#be5692",
         "models": [
           "lumi.sensor_wleak.aq1"
         ],
-        "image": "zigbee-leak",
         "endpoints": [
           {
-            "id": "alarm_water",
             "type_id": "ias_water",
             "endpoint": 1,
             "input_clusters": [
@@ -220,13 +287,13 @@
         ]
       },
       {
-        "id": "xiaomi_lumisensor-switch",
+        "icon": "fas fa-circle-dot",
+        "iconColor": "#B5C64E",
         "models": [
-          "lumi.sensor_switch"
+          "lumi.sensor_switch.aq1"
         ],
         "endpoints": [
           {
-            "id": "switch",
             "type_id": "switch_onoff",
             "endpoint": 1,
             "input_clusters": [
@@ -236,30 +303,15 @@
         ]
       },
       {
-        "id": "lumi.sensor_motion.aq2",
-        "image": "zigbee-motion-sensor",
-        "endpoints": [
-          {
-            "type_id": "sensor_occupancy",
-            "endpoint": 1,
-            "input_clusters": [
-              1030
-            ]
-          }
-        ]
-      },
-      {
-        "id": "xiaomi_lumisensor-switchaq2",
         "models": [
           "lumi.sensor_switch.aq2"
         ],
         "category": "WallSwitch",
-        "label": {
-          "en": "Xiaomi Wireless Mini Switch"
-        },
+        "icon": "fas fa-circle-dot",
+        "iconColor": "#B5C64E",
         "endpoints": [
           {
-            "id": "center",
+            "id": "center_button",
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -284,34 +336,57 @@
         ]
       },
       {
-        "id": "lumi.ctrl_ln2.aq1",
-        "image": "zigbee-button-double"
+        "models": [
+          "lumi.ctrl_ln2.aq1"
+        ],
+        "icon": "fas fa-square-check",
+        "iconColor": "#B5C64E",
+        "category": "WallSwitch",
+        "endpoints": [
+          {
+            "id": "left_button",
+            "type_id": "switch_onoff",
+            "endpoint": 1
+          },
+          {
+            "id": "right_button",
+            "type_id": "switch_onoff",
+            "endpoint": 2
+          }
+        ]
       },
       {
-        "id": "lumi.sensor_cube.aqgl01",
+        "icon": "fas fa-cube",
+        "iconColor": "#878fc9",
         "models": [
-          "lumi.sensor_cube"
+          "lumi.sensor_cube.aqgl01"
         ],
-        "image": "zigbee-cube"
+        "endpoints": [
+          {
+            "id": "turn_shake",
+            "type_id": "multistate_input",
+            "endpoint": 2
+          },
+          {
+            "id": "rotate",
+            "type_id": "analog_input",
+            "endpoint": 3
+          }
+        ]
       }
     ]
   },
   "Innr": {
     "devices": [
       {
-        "id": "innr-rc-110",
-        "label": {
-          "en": "Innr RC 110 Remote Control"
-        },
+        "models": [
+          "innr-rc-110"
+        ],
+        "icon": "fas fa-gamepad",
+        "iconColor": "#878fc9",
         "endpoints": [
           {
             "id": "scenesOn",
-            "label": {
-              "en": "Button On"
-            },
-            "description": {
-              "en": "Button 'On/Off' turning On (with Scenes selected)"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -321,12 +396,6 @@
           },
           {
             "id": "scenesOff",
-            "label": {
-              "en": "Button On"
-            },
-            "description": {
-              "en": "Button 'On/Off' turning Off (with Scenes selected)"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -336,12 +405,6 @@
           },
           {
             "id": "scenesMinus",
-            "label": {
-              "en": "Button -"
-            },
-            "description": {
-              "en": "Button '-' (with Scenes selected)"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -357,12 +420,6 @@
           },
           {
             "id": "scenesPlus",
-            "label": {
-              "en": "Button +"
-            },
-            "description": {
-              "en": "Button '+' (with Scenes selected)"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -378,12 +435,6 @@
           },
           {
             "id": "scenes1",
-            "label": {
-              "en": "Button 1"
-            },
-            "description": {
-              "en": "Button 1 (with Scenes selected)"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -395,12 +446,6 @@
           },
           {
             "id": "scenes2",
-            "label": {
-              "en": "Button 2"
-            },
-            "description": {
-              "en": "Button 2 (with Scenes selected)"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -412,12 +457,6 @@
           },
           {
             "id": "scenes3",
-            "label": {
-              "en": "Button 3"
-            },
-            "description": {
-              "en": "Button 3 (with Scenes selected)"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -429,12 +468,6 @@
           },
           {
             "id": "scenes4",
-            "label": {
-              "en": "Button 4"
-            },
-            "description": {
-              "en": "Button 4 (with Scenes selected)"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -446,12 +479,6 @@
           },
           {
             "id": "scenes5",
-            "label": {
-              "en": "Button 5"
-            },
-            "description": {
-              "en": "Button 5 (with Scenes selected)"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -463,12 +490,6 @@
           },
           {
             "id": "scenes6",
-            "label": {
-              "en": "Button 6"
-            },
-            "description": {
-              "en": "Button 6 (with Scenes selected)"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -485,19 +506,14 @@
   "Bitron": {
     "devices": [
       {
-        "id": "bitron-video-902010-23",
-        "label": {
-          "en": "BitronVideo 4-button Remote Control"
-        },
+        "models": [
+          "bitron-video-902010-23"
+        ],
+        "icon": "fas fa-gamepad",
+        "iconColor": "#878fc9",
         "endpoints": [
           {
-            "id": "key1",
-            "label": {
-              "en": "Button 1"
-            },
-            "description": {
-              "en": "Button marked with one dot"
-            },
+            "id": "button1",
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -508,13 +524,7 @@
             }
           },
           {
-            "id": "key2",
-            "label": {
-              "en": "Button 2"
-            },
-            "description": {
-              "en": "Button marked with two dots"
-            },
+            "id": "button2",
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -523,13 +533,7 @@
             }
           },
           {
-            "id": "key3",
-            "label": {
-              "en": "Button 3"
-            },
-            "description": {
-              "en": "Button marked with three dots"
-            },
+            "id": "button1",
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -538,13 +542,7 @@
             }
           },
           {
-            "id": "key4",
-            "label": {
-              "en": "Button 4"
-            },
-            "description": {
-              "en": "Button marked with four dots"
-            },
+            "id": "button1",
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -557,19 +555,14 @@
         ]
       },
       {
-        "id": "bitron-video-av2010-34",
-        "label": {
-          "en": "Bitron Video Wall Switch AV2010/34"
-        },
+        "models": [
+          "bitron-video-av2010-34"
+        ],
+        "icon": "fas fa-gamepad",
+        "iconColor": "#878fc9",
         "endpoints": [
           {
             "id": "button1",
-            "label": {
-              "en": "Button 1"
-            },
-            "description": {
-              "en": "Button marked with one dot"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -581,12 +574,6 @@
           },
           {
             "id": "button2",
-            "label": {
-              "en": "Button 2"
-            },
-            "description": {
-              "en": "Button marked with two dots"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -598,12 +585,6 @@
           },
           {
             "id": "button3",
-            "label": {
-              "en": "Button 3"
-            },
-            "description": {
-              "en": "Button marked with three dots"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -615,12 +596,6 @@
           },
           {
             "id": "button4",
-            "label": {
-              "en": "Button 4"
-            },
-            "description": {
-              "en": "Button marked with four dots"
-            },
             "type_id": "button",
             "endpoint": 1,
             "meta": {
@@ -637,10 +612,11 @@
   "Philips": {
     "devices": [
       {
-        "id": "philips_rwl021",
-        "label": {
-          "en": "Hue Dimmer Switch"
-        },
+        "models": [
+          "philips_rwl021"
+        ],
+        "icon": "fas fa-up-down",
+        "iconColor": "#E4BD4C",
         "endpoints": [
           {
             "type_id": "switch_level",
@@ -649,12 +625,6 @@
           {
             "id": "buttonI",
             "type_id": "button",
-            "label": {
-              "en": "Button I"
-            },
-            "description": {
-              "en": "Top Button 'I'"
-            },
             "endpoint": 1,
             "meta": {
               "shortpress_cluster_id": 6,
@@ -664,12 +634,6 @@
           {
             "id": "buttonO",
             "type_id": "button",
-            "label": {
-              "en": "Button O"
-            },
-            "description": {
-              "en": "Bottom Button 'O'"
-            },
             "endpoint": 1,
             "meta": {
               "shortpress_cluster_id": 6,
@@ -679,12 +643,6 @@
           {
             "id": "dimUp",
             "type_id": "button",
-            "label": {
-              "en": "Button Dim Up"
-            },
-            "description": {
-              "en": "Button with the brighter light"
-            },
             "endpoint": 1,
             "meta": {
               "shortpress_cluster_id": 8,
@@ -696,12 +654,6 @@
           {
             "id": "dimDown",
             "type_id": "button",
-            "label": {
-              "en": "Button Dim Down"
-            },
-            "description": {
-              "en": "Button with the darker light"
-            },
             "endpoint": 1,
             "meta": {
               "shortpress_cluster_id": 8,
@@ -711,22 +663,21 @@
             }
           },
           {
-            "id": "batteryLevel",
             "type_id": "battery_level",
             "endpoint": 2
           },
           {
-            "id": "batteryVoltage",
             "type_id": "battery_voltage",
             "endpoint": 2
           }
         ]
       },
       {
-        "id": "philips_rwl022",
-        "label": {
-          "en": "Hue Dimmer Switch"
-        },
+        "models": [
+          "philips_rwl022"
+        ],
+        "icon": "fas fa-up-down",
+        "iconColor": "#E4BD4C",
         "endpoints": [
           {
             "type_id": "switch_level",
@@ -735,12 +686,6 @@
           {
             "id": "buttonI",
             "type_id": "button",
-            "label": {
-              "en": "Button I"
-            },
-            "description": {
-              "en": "Top Button 'I'"
-            },
             "endpoint": 1,
             "meta": {
               "shortpress_cluster_id": 6,
@@ -750,12 +695,6 @@
           {
             "id": "buttonO",
             "type_id": "button",
-            "label": {
-              "en": "Button O"
-            },
-            "description": {
-              "en": "Bottom Button 'O'"
-            },
             "endpoint": 1,
             "meta": {
               "shortpress_cluster_id": 6,
@@ -765,12 +704,6 @@
           {
             "id": "dimUp",
             "type_id": "button",
-            "label": {
-              "en": "Button Dim Up"
-            },
-            "description": {
-              "en": "Button with the brighter light"
-            },
             "endpoint": 1,
             "meta": {
               "shortpress_cluster_id": 8,
@@ -782,12 +715,6 @@
           {
             "id": "dimDown",
             "type_id": "button",
-            "label": {
-              "en": "Button Dim Down"
-            },
-            "description": {
-              "en": "Button with the darker light"
-            },
             "endpoint": 1,
             "meta": {
               "shortpress_cluster_id": 8,
@@ -797,43 +724,35 @@
             }
           },
           {
-            "id": "batteryLevel",
             "type_id": "battery_level",
             "endpoint": 1
           },
           {
-            "id": "batteryVoltage",
             "type_id": "battery_voltage",
             "endpoint": 1
           }
         ]
       },
       {
-        "id": "philips_sml001",
-        "label": {
-          "en": "Hue Motion Sensor"
-        },
-        "description": {
-          "en": "Hue Motion Illuminance and Temperature Sensor"
-        },
+        "models": [
+          "philips_sml001"
+        ],
+        "icon": "fas fa-eye",
+        "iconColor": "#56be9e",
         "endpoints": [
           {
-            "id": "motion",
             "type_id": "sensor_occupancy",
             "endpoint": 2
           },
           {
-            "id": "illuminance",
             "type_id": "measurement_illuminance",
             "endpoint": 2
           },
           {
-            "id": "temperature",
             "type_id": "measurement_temperature",
             "endpoint": 2
           },
           {
-            "id": "battery_level",
             "type_id": "battery_level",
             "endpoint": 2
           }
@@ -844,17 +763,12 @@
   "Tuya": {
     "devices": [
       {
-        "id": "tuya_ts0041",
+        "icon": "fas fa-toggle-on",
+        "iconColor": "#B5C64E",
         "category": "WallSwitch",
         "models": [
           "TS0041"
         ],
-        "label": {
-          "en": "TS0041"
-        },
-        "description": {
-          "en": "Generic Tuya 1-Button Wall Switch"
-        },
         "endpoints": [
           {
             "type_id": "battery_voltage",
@@ -869,27 +783,19 @@
             "endpoint": 1
           },
           {
-            "id": "centerButton",
+            "id": "center_button",
             "type_id": "tuya_button",
-            "label": {
-              "en": "Center Button"
-            },
             "endpoint": 1
           }
         ]
       },
       {
-        "id": "tuya_ts0042",
+        "icon": "fas fa-toggle-on",
+        "iconColor": "#B5C64E",
         "category": "WallSwitch",
         "models": [
           "TS0042"
         ],
-        "label": {
-          "en": "TS0042"
-        },
-        "description": {
-          "en": "Generic Tuya 2-Button Wall Switch"
-        },
         "endpoints": [
           {
             "type_id": "battery_voltage",
@@ -904,35 +810,24 @@
             "endpoint": 1
           },
           {
-            "id": "leftButton",
+            "id": "left_button",
             "type_id": "tuya_button",
-            "label": {
-              "en": "Left Button"
-            },
             "endpoint": 1
           },
           {
-            "id": "rightButton",
+            "id": "right_button",
             "type_id": "tuya_button",
-            "label": {
-              "en": "Right Button"
-            },
             "endpoint": 2
           }
         ]
       },
       {
-        "id": "tuya_ts0043",
+        "icon": "fas fa-toggle-on",
+        "iconColor": "#B5C64E",
         "category": "WallSwitch",
         "models": [
           "TS0043"
         ],
-        "label": {
-          "en": "TS0043"
-        },
-        "description": {
-          "en": "Generic Tuya 3-Button Wall Switch"
-        },
         "endpoints": [
           {
             "type_id": "battery_voltage",
@@ -947,46 +842,32 @@
             "endpoint": 1
           },
           {
-            "id": "leftButton",
+            "id": "left_button",
             "type_id": "tuya_button",
-            "label": {
-              "en": "Left Button"
-            },
             "endpoint": 1
           },
           {
-            "id": "centerButton",
+            "id": "center_button",
             "type_id": "tuya_button",
-            "label": {
-              "en": "Center Button"
-            },
             "endpoint": 2
           },
           {
-            "id": "rightButton",
+            "id": "right_button",
             "type_id": "tuya_button",
-            "label": {
-              "en": "Right Button"
-            },
             "endpoint": 3
           }
         ]
       },
       {
-        "id": "tuya_ts0044",
         "category": "WallSwitch",
+        "icon": "fas fa-toggle-on",
+        "iconColor": "#B5C64E",
         "models": [
           "TS0044"
         ],
-        "label": {
-          "en": "TS0044"
-        },
-        "description": {
-          "en": "Generic Tuya 4-Button Wall Switch"
-        },
         "endpoints": [
           {
-            "type_id": "battery_voltage",
+            "type_id": "power_voltage",
             "endpoint": 1
           },
           {
@@ -1000,33 +881,21 @@
           {
             "id": "button1",
             "type_id": "tuya_button",
-            "label": {
-              "en": "Button 1"
-            },
             "endpoint": 1
           },
           {
             "id": "button2",
             "type_id": "tuya_button",
-            "label": {
-              "en": "Button 2"
-            },
             "endpoint": 2
           },
           {
             "id": "button3",
             "type_id": "tuya_button",
-            "label": {
-              "en": "Button 3"
-            },
             "endpoint": 3
           },
           {
             "id": "button4",
             "type_id": "tuya_button",
-            "label": {
-              "en": "Button 4"
-            },
             "endpoint": 4
           }
         ]
@@ -1036,13 +905,11 @@
   "Legrand": {
     "devices": [
       {
-        "id": "legrand_dimmer_without_neutral",
-        "label": {
-          "en": "Legrand with Netatmo Dimmer"
-        },
-        "description": {
-          "en": "Legrand with Netatmo Dimmer without neutral"
-        },
+        "models": [
+          "legrand_dimmer_without_neutral"
+        ],
+        "icon": "fas fa-toggle-on",
+        "iconColor": "#B5C64E",
         "endpoints": [
           {
             "type_id": "switch_onoff",
@@ -1053,22 +920,6 @@
             "endpoint": 1
           }
         ]
-      }
-    ]
-  },
-  "Aqara": {
-    "devices": [
-      {
-        "id": "lumi.weather",
-        "image": "zigbee-weather-sensor"
-      },
-      {
-        "id": "lumi.remote.b186acn01",
-        "image": "zigbee-button-remote"
-      },
-      {
-        "id": "lumi.sensor_smoke",
-        "image": "zigbee-smoke"
       }
     ]
   }

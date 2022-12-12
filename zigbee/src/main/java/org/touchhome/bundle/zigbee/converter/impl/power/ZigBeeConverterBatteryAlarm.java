@@ -26,9 +26,9 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
  * such configuration is currently not supported.
  * </ul>
  */
-@ZigBeeConverter(name = "zigbee:battery_alarm", linkType = VariableType.Float,
-                 clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
-public class ZigBeeConverterPowerAlarm extends ZigBeeInputBaseConverter<ZclPowerConfigurationCluster> {
+@ZigBeeConverter(name = "battery_alarm", linkType = VariableType.Float,
+                 color = "#CF8B34", clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
+public class ZigBeeConverterBatteryAlarm extends ZigBeeInputBaseConverter<ZclPowerConfigurationCluster> {
 
   public static final String STATE_OPTION_BATTERY_THRESHOLD_1 = "threshold1";
   public static final String STATE_OPTION_BATTERY_THRESHOLD_2 = "threshold2";
@@ -41,7 +41,7 @@ public class ZigBeeConverterPowerAlarm extends ZigBeeInputBaseConverter<ZclPower
   private static final int THRESHOLD_2_BITMASK = 0b0100;
   private static final int THRESHOLD_3_BITMASK = 0b1000;
 
-  public ZigBeeConverterPowerAlarm() {
+  public ZigBeeConverterBatteryAlarm() {
     super(POWER_CONFIGURATION, ATTR_BATTERYALARMSTATE);
   }
 

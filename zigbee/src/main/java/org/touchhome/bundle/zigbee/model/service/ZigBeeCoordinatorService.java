@@ -14,7 +14,6 @@ import com.zsmartsystems.zigbee.ZigBeeNode;
 import com.zsmartsystems.zigbee.ZigBeeProfileType;
 import com.zsmartsystems.zigbee.ZigBeeStatus;
 import com.zsmartsystems.zigbee.app.discovery.ZigBeeDiscoveryExtension;
-import com.zsmartsystems.zigbee.app.iasclient.ZigBeeIasCieExtension;
 import com.zsmartsystems.zigbee.app.otaserver.ZigBeeOtaUpgradeExtension;
 import com.zsmartsystems.zigbee.security.MmoHash;
 import com.zsmartsystems.zigbee.security.ZigBeeKey;
@@ -30,9 +29,9 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclOtaUpgradeCluster;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import javax.annotation.Nullable;
 import lombok.Getter;
@@ -86,7 +85,7 @@ public abstract class ZigBeeCoordinatorService
   private final Object reconnectLock = new Object();
   private final String entityID;
   @Getter
-  private final Set<ZigBeeDeviceService> registeredDevices = new HashSet<>();
+  private final Set<ZigBeeDeviceService> registeredDevices = ConcurrentHashMap.newKeySet();
   @Getter
   private ZigBeeTransportTransmit zigBeeTransport;
   private ZigBeeKey linkKey;
@@ -256,8 +255,6 @@ public abstract class ZigBeeCoordinatorService
     ZigBeeDiscoveryExtension discoveryExtension = new ZigBeeDiscoveryExtension();
     discoveryExtension.setUpdateMeshPeriod(entity.getMeshUpdatePeriod());
     networkManager.addExtension(discoveryExtension);
-
-    networkManager.addExtension(new ZigBeeIasCieExtension());
     networkManager.addExtension(new ZigBeeOtaUpgradeExtension());
 
     // Add any listeners that were registered before the manager was registered
@@ -665,18 +662,21 @@ public abstract class ZigBeeCoordinatorService
           desiredStatus = null;
           entityContext.bgp().builder("zigbee-coordinator-entity-updated-" + entityID)
                        .delay(Duration.ofSeconds(1)).execute(() -> {
-                         if (updatingStatus == Status.CLOSING && initialized) {
-                           this.dispose();
-                         } else if (updatingStatus == Status.INITIALIZE || updatingStatus == Status.RESTARTING) {
-                           if (initialized) {
+                         try {
+                           if (updatingStatus == Status.CLOSING && initialized) {
                              this.dispose();
+                           } else if (updatingStatus == Status.INITIALIZE || updatingStatus == Status.RESTARTING) {
+                             if (initialized) {
+                               this.dispose();
+                             }
+                             this.initialize();
                            }
-                           this.initialize();
+                           entityContext.ui().updateItem(entity);
+                           // fire recursively if state updated since last time
+                           scheduleUpdateStatusIfRequire();
+                         } finally {
+                           this.updatingStatus = null;
                          }
-                         this.updatingStatus = null;
-                         entityContext.ui().updateItem(entity);
-                         // fire recursively if state updated since last time
-                         scheduleUpdateStatusIfRequire();
                        });
         }
       }

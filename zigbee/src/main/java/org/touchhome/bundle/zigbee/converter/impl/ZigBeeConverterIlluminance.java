@@ -7,8 +7,9 @@ import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
 
 @ZigBeeConverter(
-    name = "zigbee:measurement_illuminance",
+    name = "measurement_illuminance",
     linkType = VariableType.Float,
+    color = "#CF8E34",
     clientCluster = ZclIlluminanceMeasurementCluster.CLUSTER_ID,
     category = "Illuminance")
 public class ZigBeeConverterIlluminance extends ZigBeeInputBaseConverter<ZclIlluminanceMeasurementCluster> {

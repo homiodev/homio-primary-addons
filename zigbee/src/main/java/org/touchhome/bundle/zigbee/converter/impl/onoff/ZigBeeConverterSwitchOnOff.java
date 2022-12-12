@@ -22,6 +22,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import lombok.SneakyThrows;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.OnOffType;
@@ -37,8 +39,8 @@ import org.touchhome.bundle.zigbee.util.ZigBeeUtil;
  * This channel supports changes through attribute updates, and also through received commands. This allows a switch that is not connected to a load to send commands, or a switch that is connected to
  * a load to send status (or both!).
  */
-@ZigBeeConverter(name = "zigbee:switch_onoff", linkType = VariableType.Boolean,
-                 serverClusters = {ZclOnOffCluster.CLUSTER_ID}, clientCluster = ZclOnOffCluster.CLUSTER_ID, category = "Light")
+@ZigBeeConverter(name = "switch_onoff", linkType = VariableType.Boolean,
+                 color = "#81CF34", serverClusters = {ZclOnOffCluster.CLUSTER_ID}, clientCluster = ZclOnOffCluster.CLUSTER_ID, category = "Light")
 public class ZigBeeConverterSwitchOnOff extends ZigBeeInputBaseConverter<ZclOnOffCluster>
     implements ZclAttributeListener, ZclCommandListener {
 
@@ -52,12 +54,12 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeInputBaseConverter<ZclOnOf
   }
 
   @Override
-  public void initialize() {
+  public void initialize(Consumer<String> progressMessage) {
     if (zclCluster == null && clusterOnOffClient == null) {
       updateScheduler = Executors.newSingleThreadScheduledExecutor();
 
       if (hasInputCluster(ZclOnOffCluster.CLUSTER_ID)) {
-        super.initialize();
+        super.initialize(progressMessage);
         configOnOff = new ZclOnOffSwitchConfig(getEntity(), zclCluster, log);
       }
 
@@ -112,7 +114,7 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeInputBaseConverter<ZclOnOf
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage) {
     if (endpoint.getInputCluster(ZclOnOffCluster.CLUSTER_ID) == null
         && endpoint.getOutputCluster(ZclOnOffCluster.CLUSTER_ID) == null) {
       log.trace("[{}]: OnOff cluster not found {}", entityID, endpoint);
@@ -135,8 +137,11 @@ public class ZigBeeConverterSwitchOnOff extends ZigBeeInputBaseConverter<ZclOnOf
     }
   }
 
+  @SneakyThrows
   @Override
   protected void updateValue(Object val, ZclAttribute attribute) {
+    // sleep 1ms to avoid multiple click at same time and able to save clicks with different variable id(which is current time in milliseconds)
+    Thread.sleep(1);
     Boolean value = (Boolean) val;
     if (value != null && value) {
       updateChannelState(OnOffType.ON);

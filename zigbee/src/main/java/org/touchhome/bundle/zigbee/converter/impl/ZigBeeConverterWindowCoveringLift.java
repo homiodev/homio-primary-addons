@@ -9,14 +9,15 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclWindowCoveringCluster;
 import com.zsmartsystems.zigbee.zcl.clusters.windowcovering.WindowCoveringDownClose;
 import com.zsmartsystems.zigbee.zcl.clusters.windowcovering.WindowCoveringUpOpen;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 /**
  * Sets the window covering level - supporting open/close and up/down type commands Window Covering Lift Sets the window covering level - supporting open/close and up/down type commands
  */
-@ZigBeeConverter(name = "zigbee:windowcovering_lift", linkType = VariableType.Boolean,
-                 category = "Blinds", clientCluster = ZclWindowCoveringCluster.CLUSTER_ID)
+@ZigBeeConverter(name = "windowcovering_lift", linkType = VariableType.Boolean,
+                 color = "#CF8E34", category = "Blinds", clientCluster = ZclWindowCoveringCluster.CLUSTER_ID)
 public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter<ZclWindowCoveringCluster> {
 
   public ZigBeeConverterWindowCoveringLift() {
@@ -24,8 +25,8 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter<
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
-    if (super.acceptEndpoint(endpoint, entityID, entityContext)) {
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage) {
+    if (super.acceptEndpoint(endpoint, entityID, entityContext, progressMessage)) {
       ZclWindowCoveringCluster serverCluster = (ZclWindowCoveringCluster) endpoint
           .getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
       try {

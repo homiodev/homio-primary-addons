@@ -3,6 +3,7 @@ package org.touchhome.bundle.zigbee.converter.impl;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;
 import com.zsmartsystems.zigbee.zcl.clusters.ZclIasWdCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
+import java.util.function.Consumer;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.zigbee.converter.warningdevice.SquawkType;
@@ -11,8 +12,8 @@ import org.touchhome.bundle.zigbee.converter.warningdevice.WarningType;
 /**
  * Triggers warnings on a warning device Channel converter for warning devices, based on the IAS WD cluster.
  */
-@ZigBeeConverter(name = "zigbee:warning_device", linkType = VariableType.Float,
-                 clientCluster = ZclIasWdCluster.CLUSTER_ID, category = "Siren")
+@ZigBeeConverter(name = "warning_device", linkType = VariableType.Float,
+                 color = "#CF8E34", clientCluster = ZclIasWdCluster.CLUSTER_ID, category = "Siren")
 public class ZigBeeConverterWarningDevice extends ZigBeeInputBaseConverter<ZclIasWdCluster> {
 
   private static final String CONFIG_PREFIX = "zigbee_iaswd_";
@@ -23,7 +24,7 @@ public class ZigBeeConverterWarningDevice extends ZigBeeInputBaseConverter<ZclIa
   }
 
   @Override
-  public void initialize() {
+  public void initialize(Consumer<String> progressMessage) {
     if (zclCluster == null) {
       log.debug("[{}]: Initialising {} device cluster {}", entityID, getClass().getSimpleName(), endpoint);
       zclCluster = getInputCluster(ZclIasWdCluster.CLUSTER_ID);
@@ -31,8 +32,9 @@ public class ZigBeeConverterWarningDevice extends ZigBeeInputBaseConverter<ZclIa
   }
 
   @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext) {
-    return acceptEndpoint(endpoint, entityID, entityContext, ZclIasWdCluster.CLUSTER_ID, 0, false, false);
+  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage) {
+    return acceptEndpoint(endpoint, entityID, entityContext, ZclIasWdCluster.CLUSTER_ID,
+        0, false, false, progressMessage);
   }
 
   /*@Override

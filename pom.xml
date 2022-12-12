@@ -101,8 +101,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <artifactId>uom-se</artifactId>
-      <groupId>tec.uom</groupId>
+      <artifactId>indriya</artifactId>
+      <groupId>tech.units</groupId>
     </dependency>
     <dependency>
       <artifactId>jakarta.ws.rs-api</artifactId>

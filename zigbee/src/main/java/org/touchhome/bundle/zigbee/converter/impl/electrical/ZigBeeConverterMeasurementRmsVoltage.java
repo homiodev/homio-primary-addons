@@ -9,12 +9,12 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclMeteringCluster;
 import java.math.BigDecimal;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.QuantityType;
+import org.touchhome.bundle.api.util.Units;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
-import tec.uom.se.unit.Units;
 
-@ZigBeeConverter(name = "zigbee:electrical_rmsvoltage", linkType = VariableType.Float,
-                 clientCluster = ZclElectricalMeasurementCluster.CLUSTER_ID, category = "Energy")
+@ZigBeeConverter(name = "electrical_rmsvoltage", linkType = VariableType.Float,
+                 color = "#6134CF", clientCluster = ZclElectricalMeasurementCluster.CLUSTER_ID, category = "Energy")
 public class ZigBeeConverterMeasurementRmsVoltage extends ZigBeeInputBaseConverter<ZclElectricalMeasurementCluster> {
 
   private Integer divisor;

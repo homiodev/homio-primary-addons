@@ -6,8 +6,8 @@ import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.OnOffType;
 
-@ZigBeeConverter(name = "zigbee:sensor_occupancy", linkType = VariableType.Boolean,
-                 clientCluster = ZclOccupancySensingCluster.CLUSTER_ID, category = "Motion")
+@ZigBeeConverter(name = "sensor_occupancy", linkType = VariableType.Boolean,
+                 color = "#CF8E34", clientCluster = ZclOccupancySensingCluster.CLUSTER_ID, category = "Motion")
 public class ZigBeeConverterOccupancy extends ZigBeeInputBaseConverter<ZclOccupancySensingCluster> {
 
   public ZigBeeConverterOccupancy() {
