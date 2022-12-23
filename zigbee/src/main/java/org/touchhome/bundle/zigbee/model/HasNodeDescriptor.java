@@ -135,7 +135,7 @@ public interface HasNodeDescriptor extends HasJsonData, HasEntityIdentifier {
     return false;
   }
 
-  @UIField(hideInEdit = true, order = 2)
+  @UIField(hideInEdit = true, order = 2, hideOnEmpty = true)
   @UIFieldGroup("Power")
   default CurrentPowerModeType getCurrentPowerMode() {
     return getJsonDataEnum("pm", CurrentPowerModeType.UNKNOWN);

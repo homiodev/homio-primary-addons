@@ -5,19 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntrypoint;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.zigbee.model.ZigBeeBaseCoordinatorEntity;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity.ZigbeeCoordinator;
+import org.touchhome.bundle.zigbee.model.z2m.Z2MLocalCoordinatorEntity;
 import org.touchhome.common.util.Lang;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class ZigBeeEntrypoint implements BundleEntrypoint {
@@ -30,6 +35,7 @@ public class ZigBeeEntrypoint implements BundleEntrypoint {
     entityContext.var().createGroup("zigbee", "ZigBee", true, "fab fa-laravel", "#ED3A3A");
     // check if new stick coordinator available
     List<ZigbeeCoordinatorEntity> coordinators = entityContext.findAll(ZigbeeCoordinatorEntity.class);
+    List<Z2MLocalCoordinatorEntity> zigbee2MQTTLocalEntities = entityContext.findAll(Z2MLocalCoordinatorEntity.class);
 
     /*for (ZigbeeCoordinatorEntity coordinator : coordinators) {
       coordinator.getService().getDiscoveryService().startScan();
@@ -40,14 +46,10 @@ public class ZigBeeEntrypoint implements BundleEntrypoint {
     // listen for port changes and reinitialize coordinator if port became available
     entityContext.event().addPortChangeStatusListener("zigbee-ports", port -> {
       Map<String, SerialPort> ports = getPorts();
-      for (ZigbeeCoordinatorEntity coordinator : entityContext.findAll(ZigbeeCoordinatorEntity.class)) {
-        if (StringUtils.isNotEmpty(coordinator.getPort()) &&
-            coordinator.isStart() &&
-            coordinator.getStatus().isOffline() && ports.containsKey(coordinator.getPort())) {
-          // try re-initialize coordinator
-          coordinator.getService().entityUpdated(coordinator);
-        }
-      }
+      testCoordinators(entityContext.findAll(ZigbeeCoordinatorEntity.class), ports, coordinator ->
+          coordinator.getService().restartCoordinator());
+      testCoordinators(entityContext.findAll(Z2MLocalCoordinatorEntity.class), ports, coordinator ->
+          coordinator.getService().restartCoordinator());
       this.checkNewCoordinator(coordinators, ports);
     });
 
@@ -57,6 +59,27 @@ public class ZigBeeEntrypoint implements BundleEntrypoint {
         newValue.createOrUpdateVarGroup(entityContext);
       }
     });
+  }
+
+  private <T extends ZigBeeBaseCoordinatorEntity> void testCoordinators(List<T> entities, Map<String, SerialPort> ports,
+      Consumer<T> reInitializeCoordinatorHandler) {
+    for (T coordinator : entities) {
+      if (StringUtils.isNotEmpty(coordinator.getPort()) && coordinator.isStart() && coordinator.getStatus().isOffline()) {
+        if (ports.containsKey(coordinator.getPort())) {
+          // try re-initialize coordinator
+          reInitializeCoordinatorHandler.accept(coordinator);
+        } else {
+          // test maybe port had been changed
+          for (SerialPort serialPort : ports.values()) {
+            if (Objects.equals(serialPort.getDescriptivePortName(), coordinator.getPortD())) {
+              log.info("[{}]: Coordinator port changed from {} -> {}", coordinator.getEntityID(), coordinator.getPort(),
+                  serialPort.getSystemPortName());
+              entityContext.save(coordinator.setSerialPort(serialPort));
+            }
+          }
+        }
+      }
+    }
   }
 
   private void checkNewCoordinator(List<ZigbeeCoordinatorEntity> coordinators, Map<String, SerialPort> ports) {
@@ -84,7 +107,7 @@ public class ZigBeeEntrypoint implements BundleEntrypoint {
         Lang.getServerMessage("NEW_DEVICE.TITLE", "NAME", name),
         () -> {
           entityContext.save(new ZigbeeCoordinatorEntity()
-              .setPort(port.getSystemPortName())
+              .setSerialPort(port)
               .setCoordinatorHandler(zigbeeCoordinator)
               .setName(name));
         }, messages, "ZIGBEE_COORDINATOR." + port);

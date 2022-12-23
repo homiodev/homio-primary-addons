@@ -8,10 +8,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.measure.Unit;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
-import org.touchhome.bundle.api.util.Units;
 import org.touchhome.bundle.zigbee.util.DeviceConfiguration.EndpointDefinition;
 import org.touchhome.common.util.CommonUtils;
 
@@ -42,7 +40,7 @@ public final class DeviceConfigurations {
             endpointDefinition.setInputClusters(JsonReaderUtil.getOptIntegerArray(endpoint, "input_clusters"));
             endpointDefinition.setTypeId(endpoint.get("type_id").textValue());
             if (endpoint.has("unit")) {
-              endpointDefinition.setUnit(getUnit(endpoint.get("unit").asText()));
+              endpointDefinition.setUnit(ZigBeeUtil.getUnit(endpoint.get("unit").asText()));
             }
             endpointDefinition.setEndpoint(endpoint.get("endpoint").asInt());
             endpointDefinition.setMetadata(endpoint.get("meta"));
@@ -59,20 +57,6 @@ public final class DeviceConfigurations {
 
   private static Exception noKeyFound(JsonNode deviceNode, String key) {
     return new IllegalStateException("Unable to find key: " + key + " in device: " + deviceNode);
-  }
-
-  private static Unit<?> getUnit(String unitName) {
-    for (Unit<?> unit : Units.getInstance().getUnits()) {
-      if (unitName.equals(unit.toString())) {
-        return unit;
-      }
-    }
-    for (Unit<?> unit : tech.units.indriya.unit.Units.getInstance().getUnits()) {
-      if (unitName.equals(unit.toString())) {
-        return unit;
-      }
-    }
-    throw new IllegalArgumentException("Unable to find unit: " + unitName);
   }
 
   public static Optional<DeviceConfiguration> getDeviceDefinition(@Nullable String modelIdentifier) {

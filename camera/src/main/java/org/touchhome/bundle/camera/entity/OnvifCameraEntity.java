@@ -64,7 +64,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     return super.getTitle();
   }
 
-  @UIField(order = 1, hideInEdit = true, hideOnEmpty = true, fullWidth = true, bg = "#334842", type = UIFieldType.HTML)
+  @UIField(order = 1, hideInEdit = true, hideOnEmpty = true, fullWidth = true, bg = "#334842C2", type = UIFieldType.HTML)
   public String getDescription() {
     if (getIeeeAddress() == null) {
       return Lang.getServerMessage("ONVIF.REQ_AUTH_DESCRIPTION");
@@ -363,8 +363,8 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
 
   @Override
   public void logBuilder(EntityLogBuilder entityLogBuilder) {
-    entityLogBuilder.addTopic("org.touchhome.bundle.camera", "entityID");
-    entityLogBuilder.addTopic("org.touchhome.bundle.api.video", "entityID");
+    entityLogBuilder.addTopicFilterByEntityID("org.touchhome.bundle.camera");
+    entityLogBuilder.addTopicFilterByEntityID("org.touchhome.bundle.api.video");
   }
 
   public static class SelectCameraBrand implements DynamicOptionLoader {

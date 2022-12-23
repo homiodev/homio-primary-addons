@@ -5,6 +5,11 @@
 
   <dependencies>
     <dependency>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+    </dependency>
+
+    <dependency>
       <artifactId>com.zsmartsystems.zigbee.dongle.cc2531</artifactId>
       <groupId>com.zsmartsystems.zigbee</groupId>
       <version>${zsmartsystems.version}</version>
@@ -20,6 +25,12 @@
       <artifactId>com.zsmartsystems.zigbee</artifactId>
       <groupId>com.zsmartsystems.zigbee</groupId>
       <version>${zsmartsystems.version}</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>touchhome-bundle-mqtt</artifactId>
+      <groupId>org.touchhome.bundle</groupId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
   <modelVersion>4.0.0</modelVersion>

@@ -1,0 +1,93 @@
+[
+  {
+    "model": "lumi.relay.c2acn01",
+    "icon": "fas fa-shuffle",
+    "iconColor": "#57A4D1"
+  },
+  {
+    "model": "lumi.weather",
+    "icon": "fas fa-cloud",
+    "iconColor": "#57A4D1"
+  },
+  {
+    "model": "lumi.remote.b186acn01",
+    "icon": "fas fa-circle-dot",
+    "iconColor": "#D1C155"
+  },
+  {
+    "model": "lumi.sensor_smoke",
+    "icon": "fas fa-volcano",
+    "iconColor": "#EB6933"
+  },
+  {
+    "model": "lumi.remote.b286acn01",
+    "icon": "fas fa-circle-dot",
+    "iconColor": "#B5C64E"
+  },
+  {
+    "model": "lumi.remote.b1acn01",
+    "icon": "fas fa-square-check",
+    "iconColor": "#B5C64E"
+  },
+  {
+    "model": "lumi.sensor_magnet.aq1",
+    "icon": "fas fa-door-open",
+    "iconColor": "#A41CE2"
+  },
+  {
+    "model": "lumi.sensor_magnet.aq2",
+    "icon": "fas fa-door-open",
+    "iconColor": "#A41CE2"
+  },
+  {
+    "model": "lumi.sensor_motion.aq2",
+    "icon": "fas fa-person-circle-exclamation",
+    "iconColor": "#56be9e",
+    "options": {
+      "occupancy_timeout": {
+        "min": 0,
+        "max": 59
+      }
+    }
+  },
+  {
+    "model": "lumi.sensor_86sw2",
+    "icon": "fas fa-square-check",
+    "iconColor": "#56be9e"
+  },
+  {
+    "model": "lumi.plug",
+    "icon": "fas fa-plug-circle-bolt",
+    "iconColor": "#79BE56"
+  },
+  {
+    "icon": "fas fa-temperature-half",
+    "iconColor": "#79BE56",
+    "model": "lumi.sensor_ht"
+  },
+  {
+    "model": "lumi.sensor_wleak.aq1",
+    "icon": "fas fa-droplet",
+    "iconColor": "#be5692"
+  },
+  {
+    "model": "lumi.sensor_switch.aq1",
+    "icon": "fas fa-circle-dot",
+    "iconColor": "#B5C64E"
+  },
+  {
+    "model": "lumi.sensor_switch.aq2",
+    "icon": "fas fa-circle-dot",
+    "iconColor": "#B5C64E"
+  },
+  {
+    "model": "lumi.ctrl_ln2.aq1",
+    "icon": "fas fa-square-check",
+    "iconColor": "#B5C64E"
+  },
+  {
+    "model": "lumi.sensor_cube.aqgl01",
+    "icon": "fas fa-cube",
+    "iconColor": "#878fc9"
+  }
+]

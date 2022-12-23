@@ -35,7 +35,7 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
 
   public static final String PREFIX = "telegram_";
 
-  @UIField(order = 1, hideInEdit = true, hideOnEmpty = true, fullWidth = true, bg = "#334842", type = UIFieldType.HTML)
+  @UIField(order = 1, hideInEdit = true, hideOnEmpty = true, fullWidth = true, bg = "#334842C2", type = UIFieldType.HTML)
   public String getDescription() {
     if (StringUtils.isEmpty(getBotName()) || StringUtils.isEmpty(getBotToken())) {
       return Lang.getServerMessage("telegram.description");

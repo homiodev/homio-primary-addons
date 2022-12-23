@@ -112,8 +112,8 @@ public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity
 
   @Override
   public void logBuilder(EntityLogBuilder entityLogBuilder) {
-    entityLogBuilder.addTopic("org.touchhome.bundle.camera", "entityID");
-    entityLogBuilder.addTopic("org.touchhome.bundle.api.video", "entityID");
+    entityLogBuilder.addTopicFilterByEntityID("org.touchhome.bundle.camera");
+    entityLogBuilder.addTopicFilterByEntityID("org.touchhome.bundle.api.video");
   }
 
   public static class SelectAudioSource implements DynamicOptionLoader {
@@ -121,7 +121,7 @@ public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity
     @Override
     public List<OptionModel> loadOptions(DynamicOptionLoaderParameters parameters) {
       return OptionModel.list(parameters.getEntityContext().getBean(FfmpegInputDeviceHardwareRepository.class)
-          .getAudioDevices(FFMPEG_LOCATION));
+                                        .getAudioDevices(FFMPEG_LOCATION));
     }
   }
 }

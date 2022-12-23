@@ -28,9 +28,7 @@ import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.types.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.exception.ProhibitedExecution;
 import org.touchhome.bundle.api.model.ActionResponseModel;
-import org.touchhome.bundle.api.model.HasEntityLog;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.ui.UISidebarChildren;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
@@ -41,19 +39,16 @@ import org.touchhome.bundle.api.ui.field.color.UIFieldColorStatusMatch;
 import org.touchhome.bundle.api.ui.field.condition.UIFieldShowOnCondition;
 import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntities;
 import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntityWidth;
-import org.touchhome.bundle.api.ui.field.selection.UIFieldDevicePortSelection;
-import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectNoValue;
-import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldStaticSelection;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldTreeNodeSelection;
 import org.touchhome.bundle.zigbee.handler.CC2531Service;
-import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
+import org.touchhome.bundle.zigbee.service.ZigBeeCoordinatorService;
 
 @Log4j2
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#D46A06")
 public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoordinatorEntity>
-    implements HasEntityLog, HasNodeDescriptor, EntityService<ZigBeeCoordinatorService, ZigbeeCoordinatorEntity> {
+    implements HasNodeDescriptor, ZigBeeBaseCoordinatorEntity<ZigbeeCoordinatorEntity, ZigBeeCoordinatorService> {
 
   /**
    * Default ZigBeeAlliance09 link key
@@ -102,17 +97,6 @@ public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoo
     return PREFIX;
   }
 
-  @UIField(order = 1, inlineEdit = true)
-  @UIFieldGroup(value = "General", order = 1)
-  public boolean isStart() {
-    return getJsonData("start", false);
-  }
-
-  public ZigbeeCoordinatorEntity setStart(boolean start) {
-    setJsonData("start", start);
-    return this;
-  }
-
   @UIField(order = 2, inlineEdit = true)
   @UIFieldGroup("General")
   public boolean isLogEvents() {
@@ -131,20 +115,6 @@ public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoo
 
   public ZigbeeCoordinatorEntity setCoordinatorHandler(ZigbeeCoordinator zigbeeCoordinator) {
     setJsonDataEnum("ch", zigbeeCoordinator);
-    return this;
-  }
-
-  @UIField(order = 3, required = true)
-  @UIFieldDevicePortSelection
-  @UIFieldSelectValueOnEmpty(label = "selection.selectPort", icon = "fas fa-door-open")
-  @UIFieldSelectNoValue("error.noPortsAvailable")
-  @UIFieldGroup(value = "Port", order = 5, borderColor = "#29A397")
-  public String getPort() {
-    return getJsonData("port", "");
-  }
-
-  public ZigbeeCoordinatorEntity setPort(String value) {
-    setJsonData("port", value);
     return this;
   }
 
@@ -232,17 +202,6 @@ public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoo
 
   public void setLinkKey(String value) {
     setJsonData("lk", value);
-  }
-
-  @UIField(order = 1)
-  @UIFieldSlider(min = 60, max = 254)
-  @UIFieldGroup(value = "Discovery", order = 15, borderColor = "#663453")
-  public int getDiscoveryDuration() {
-    return getJsonData("dd", 254);
-  }
-
-  public void setDiscoveryDuration(int value) {
-    setJsonData("dd", value);
   }
 
   @UIField(order = 2)
@@ -416,7 +375,7 @@ public class ZigbeeCoordinatorEntity extends MicroControllerBaseEntity<ZigbeeCoo
 
   @Override
   public void logBuilder(EntityLogBuilder entityLogBuilder) {
-    entityLogBuilder.addTopic("org.touchhome.bundle.zigbee", "entityID");
+    entityLogBuilder.addTopicFilterByEntityID("org.touchhome.bundle.zigbee");
     entityLogBuilder.addTopic(ZigBeeNetworkManager.class);
     entityLogBuilder.addTopic(ZigBeeDiscoveryExtension.class);
     entityLogBuilder.addTopic(ZigBeeNetworkDiscoverer.class);

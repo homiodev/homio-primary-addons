@@ -1,4 +1,4 @@
-package org.touchhome.bundle.zigbee.model.service;
+package org.touchhome.bundle.zigbee.service;
 
 import com.zsmartsystems.zigbee.IeeeAddress;
 import com.zsmartsystems.zigbee.ZigBeeEndpoint;

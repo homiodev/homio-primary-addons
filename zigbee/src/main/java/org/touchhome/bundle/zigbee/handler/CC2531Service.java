@@ -13,7 +13,7 @@ import org.touchhome.bundle.api.port.PortFlowControl;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.zigbee.internal.ZigBeeSerialPort;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
-import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
+import org.touchhome.bundle.zigbee.service.ZigBeeCoordinatorService;
 
 public class CC2531Service extends ZigBeeCoordinatorService {
 
@@ -45,7 +45,7 @@ public class CC2531Service extends ZigBeeCoordinatorService {
         () -> getEntity().setStatus(Status.ERROR, "PORT_COMMUNICATION_ERROR"),
         (port -> {
           if (!getEntity().getPort().equals(port.getSystemPortName())) {
-            getEntity().setPort(port.getSystemPortName());
+            getEntity().setSerialPort(port);
             entityContext.save(getEntity(), false);
           }
         }));

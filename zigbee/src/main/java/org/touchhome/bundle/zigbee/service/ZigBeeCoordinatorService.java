@@ -1,4 +1,4 @@
-package org.touchhome.bundle.zigbee.model.service;
+package org.touchhome.bundle.zigbee.service;
 
 import com.zsmartsystems.zigbee.ExtendedPanId;
 import com.zsmartsystems.zigbee.IeeeAddress;
@@ -40,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextBGP.ThreadContext;
+import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService.ServiceInstance;
@@ -47,6 +48,7 @@ import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.zigbee.ZigBeeConsolePlugin;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.internal.ZigBeeDataStore;
+import org.touchhome.bundle.zigbee.model.ZigBeeDeviceBaseEntity;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
 import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryOnStartupSetting;
@@ -151,6 +153,14 @@ public abstract class ZigBeeCoordinatorService
     initializeNetwork = false;
 
     initializeDongle();
+    entityContext.ui().headerButtonBuilder("discover-" + entityID)
+                 .title("zigbee.action.start_scan")
+                 .icon("fas fa-search-location", "#899343", false)
+                 .availableForPage(ZigBeeDeviceBaseEntity.class)
+                 .clickAction(() -> {
+                   discoveryService.startScan();
+                   return ActionResponseModel.success();
+                 }).build();
     initialized = true;
   }
 
@@ -164,7 +174,7 @@ public abstract class ZigBeeCoordinatorService
   }
 
   public void dispose() {
-    log.warn("[{}]: Dispose coordinator");
+    log.warn("[{}]: Dispose coordinator", entityID);
     // shutdown reconnect task
     if (reconnectPollingTimer != null) {
       reconnectPollingTimer.cancel();
@@ -641,6 +651,11 @@ public abstract class ZigBeeCoordinatorService
       networkDataStore.delete();
     }
 
+  }
+
+  public void restartCoordinator() {
+    this.desiredStatus = entity.isStart() ? restartIfRequire(entity) : (initialized ? Status.CLOSING : null);
+    scheduleUpdateStatusIfRequire();
   }
 
   @Override

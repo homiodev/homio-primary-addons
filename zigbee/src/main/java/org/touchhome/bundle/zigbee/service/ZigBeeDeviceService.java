@@ -1,4 +1,4 @@
-package org.touchhome.bundle.zigbee.model.service;
+package org.touchhome.bundle.zigbee.service;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 

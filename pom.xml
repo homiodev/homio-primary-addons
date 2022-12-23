@@ -121,6 +121,7 @@
   <modules>
     <module>raspberry</module>
     <module>telegram</module>
+    <module>mqtt</module>
     <module>zigbee</module>
     <module>cloud</module>
     <module>bluetooth</module>

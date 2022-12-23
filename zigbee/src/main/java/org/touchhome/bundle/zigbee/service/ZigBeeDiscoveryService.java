@@ -1,4 +1,4 @@
-package org.touchhome.bundle.zigbee.model.service;
+package org.touchhome.bundle.zigbee.service;
 
 import com.zsmartsystems.zigbee.IeeeAddress;
 import com.zsmartsystems.zigbee.ZigBeeNetworkNodeListener;
@@ -13,6 +13,7 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeChannelConverterFactory;
 import org.touchhome.bundle.zigbee.model.ZigBeeDeviceEntity;
 import org.touchhome.bundle.zigbee.model.ZigbeeCoordinatorEntity;
+import org.touchhome.bundle.zigbee.util.ZigBeeUtil;
 
 @Log4j2
 @Getter
@@ -56,9 +57,6 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
       throw new IllegalStateException("zigbee.error.coordinator_offline");
     }
     try {
-      if (!coordinator.isStart()) {
-        throw new IllegalStateException("zigbee.error.coordinator_not_started");
-      }
       log.info("[{}]: Start scanning...", entityID);
       scanStarted = true;
 
@@ -73,17 +71,10 @@ public class ZigBeeDiscoveryService implements ZigBeeNetworkNodeListener {
       int duration = coordinator.getDiscoveryDuration();
       coordinator.getService().scanStart(duration);
 
-      entityContext.ui().headerButtonBuilder("zigbee-scan").title("zigbee.action.scan")
-                   .border(1, "#899343")
-                   .duration(duration).icon("fas fa-search-location", "#899343", false).build();
-
-      entityContext.bgp().builder("zigbee-scan-killer")
-                   .delay(Duration.ofSeconds(coordinator.getDiscoveryDuration()))
-                   .execute(() -> {
-                     log.info("[{}]: Scanning stopped", entityID);
-                     scanStarted = false;
-                     entityContext.ui().removeHeaderButton("zigbee-scan");
-                   });
+      ZigBeeUtil.zigbeeScanStarted(entityContext, entityID, duration, () -> scanStarted = false, () -> {
+        coordinator.getService().scanStart(0);
+        scanStarted = false;
+      });
     } catch (Exception ex) {
       scanStarted = false;
       throw ex;

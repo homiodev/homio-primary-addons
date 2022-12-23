@@ -48,7 +48,7 @@ import org.touchhome.bundle.zigbee.converter.config.ZclDoorLockConfig;
 import org.touchhome.bundle.zigbee.converter.config.ZclFanControlConfig;
 import org.touchhome.bundle.zigbee.converter.config.ZclLevelControlConfig;
 import org.touchhome.bundle.zigbee.converter.config.ZclOnOffSwitchConfig;
-import org.touchhome.bundle.zigbee.model.service.ZigbeeEndpointService;
+import org.touchhome.bundle.zigbee.service.ZigbeeEndpointService;
 import org.touchhome.bundle.zigbee.util.DeviceConfiguration;
 import org.touchhome.bundle.zigbee.util.DeviceConfiguration.EndpointDefinition;
 import org.touchhome.bundle.zigbee.util.DeviceConfigurations;

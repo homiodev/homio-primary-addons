@@ -45,7 +45,6 @@ import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextSetting;
 import org.touchhome.bundle.api.entity.BaseEntity;
-import org.touchhome.bundle.api.entity.DeviceBaseEntity;
 import org.touchhome.bundle.api.entity.HasJsonData;
 import org.touchhome.bundle.api.entity.HasStatusAndMsg;
 import org.touchhome.bundle.api.model.ActionResponseModel;
@@ -54,8 +53,6 @@ import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.ui.UI;
-import org.touchhome.bundle.api.ui.UISidebarButton;
-import org.touchhome.bundle.api.ui.UISidebarMenu;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
 import org.touchhome.bundle.api.ui.field.UIFieldOrder;
@@ -72,9 +69,8 @@ import org.touchhome.bundle.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
 import org.touchhome.bundle.zigbee.SelectModelIdentifierDynamicLoader;
-import org.touchhome.bundle.zigbee.ZigBeeDiscoveryHandler;
-import org.touchhome.bundle.zigbee.model.service.ZigBeeCoordinatorService;
-import org.touchhome.bundle.zigbee.model.service.ZigBeeDeviceService;
+import org.touchhome.bundle.zigbee.service.ZigBeeCoordinatorService;
+import org.touchhome.bundle.zigbee.service.ZigBeeDeviceService;
 import org.touchhome.bundle.zigbee.setting.ZigBeeDiscoveryClusterTimeoutSetting;
 import org.touchhome.bundle.zigbee.util.DeviceConfiguration;
 import org.touchhome.bundle.zigbee.util.DeviceConfigurations;
@@ -85,10 +81,7 @@ import org.touchhome.common.util.CommonUtils;
 @Getter
 @Setter
 @Entity
-@UISidebarButton(buttonIcon = "fas fa-search-location", buttonIconColor = "#899343",
-                 buttonTitle = "zigbee.action.start_scan", handlerClass = ZigBeeDiscoveryHandler.class)
-@UISidebarMenu(icon = "fas fa-bezier-curve", parent = UISidebarMenu.TopSidebarMenu.HARDWARE, bg = "#de9ed7", order = 5, overridePath = "zigbee")
-public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
+public class ZigBeeDeviceEntity extends ZigBeeDeviceBaseEntity<ZigBeeDeviceEntity>
     implements HasJsonData, HasNodeDescriptor, HasEntityLog, HasStatusAndMsg<ZigBeeDeviceEntity>,
     EntityService<ZigBeeDeviceService, ZigBeeDeviceEntity> {
 
@@ -501,7 +494,7 @@ public class ZigBeeDeviceEntity extends DeviceBaseEntity<ZigBeeDeviceEntity>
 
   @Override
   public void logBuilder(EntityLogBuilder entityLogBuilder) {
-    entityLogBuilder.addTopic("org.touchhome.bundle.zigbee", "entityID");
+    entityLogBuilder.addTopicFilterByEntityID("org.touchhome.bundle.zigbee");
     entityLogBuilder.addTopic("com.zsmartsystems.zigbee", "ieeeAddress");
   }
 
