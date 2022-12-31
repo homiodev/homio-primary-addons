@@ -14,43 +14,44 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 
 /**
- * Sets the window covering level - supporting open/close and up/down type commands Window Covering Lift Sets the window covering level - supporting open/close and up/down type commands
+ * Sets the window covering level - supporting open/close and up/down type commands Window Covering Lift Sets the window covering level - supporting open/close
+ * and up/down type commands
  */
-@ZigBeeConverter(name = "windowcovering_lift", linkType = VariableType.Boolean,
+@ZigBeeConverter(name = "windowcovering_lift", linkType = VariableType.Bool,
                  color = "#CF8E34", category = "Blinds", clientCluster = ZclWindowCoveringCluster.CLUSTER_ID)
 public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter<ZclWindowCoveringCluster> {
 
-  public ZigBeeConverterWindowCoveringLift() {
-    super(WINDOW_COVERING, ZclWindowCoveringCluster.ATTR_CURRENTPOSITIONLIFTPERCENTAGE);
-  }
-
-  @Override
-  public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage) {
-    if (super.acceptEndpoint(endpoint, entityID, entityContext, progressMessage)) {
-      ZclWindowCoveringCluster serverCluster = (ZclWindowCoveringCluster) endpoint
-          .getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
-      try {
-        if (serverCluster.discoverCommandsReceived(false).get()) {
-          if (!(serverCluster.getSupportedCommandsReceived().contains(WindowCoveringDownClose.COMMAND_ID)
-              && serverCluster.getSupportedCommandsReceived().contains(WindowCoveringUpOpen.COMMAND_ID))) {
-            log.debug("[{}]: Window covering cluster up/down commands not supported {}",
-                entityID, endpoint.getIeeeAddress());
-            return false;
-          }
-        }
-      } catch (Exception e) {
-        log.warn("[{}]: Exception discovering received commands in window covering cluster {}", entityID, endpoint, e);
-        return false;
-      }
-      return true;
+    public ZigBeeConverterWindowCoveringLift() {
+        super(WINDOW_COVERING, ZclWindowCoveringCluster.ATTR_CURRENTPOSITIONLIFTPERCENTAGE);
     }
-    return false;
-  }
 
-  @Override
-  public Future<CommandResult> handleCommand(ZigBeeCommand command) {
-    // ZclWindowCoveringCommand zclCommand = null;
-    // UpDown MoveStop Percent Refresh
+    @Override
+    public boolean acceptEndpoint(ZigBeeEndpoint endpoint, String entityID, EntityContext entityContext, Consumer<String> progressMessage) {
+        if (super.acceptEndpoint(endpoint, entityID, entityContext, progressMessage)) {
+            ZclWindowCoveringCluster serverCluster = (ZclWindowCoveringCluster) endpoint
+                .getInputCluster(ZclWindowCoveringCluster.CLUSTER_ID);
+            try {
+                if (serverCluster.discoverCommandsReceived(false).get()) {
+                    if (!(serverCluster.getSupportedCommandsReceived().contains(WindowCoveringDownClose.COMMAND_ID)
+                        && serverCluster.getSupportedCommandsReceived().contains(WindowCoveringUpOpen.COMMAND_ID))) {
+                        log.debug("[{}]: Window covering cluster up/down commands not supported {}",
+                            entityID, endpoint.getIeeeAddress());
+                        return false;
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("[{}]: Exception discovering received commands in window covering cluster {}", entityID, endpoint, e);
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Future<CommandResult> handleCommand(ZigBeeCommand command) {
+        // ZclWindowCoveringCommand zclCommand = null;
+        // UpDown MoveStop Percent Refresh
         /*if (command instanceof UpDownType) {
             switch ((UpDownType) command) {
                 case UP:
@@ -80,6 +81,6 @@ public class ZigBeeConverterWindowCoveringLift extends ZigBeeInputBaseConverter<
         }
 
         clusterServer.sendCommand(zclCommand);*/
-    return null;
-  }
+        return null;
+    }
 }

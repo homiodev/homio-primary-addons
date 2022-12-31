@@ -1,0 +1,246 @@
+[
+  {
+    "name": "smoke_density",
+    "icon": "fa-smog",
+    "iconColor": "#DD5F24"
+  },
+  {
+    "name": "click",
+    "icon": "fa-egg",
+    "iconColor": "#B0B0B0"
+  },
+  {
+    "name": "test",
+    "icon": "fa-vials",
+    "iconColor": "#A095F7"
+  },
+  {
+    "name": "smoke",
+    "icon": "fa-fire",
+    "iconColor": "#C7AC24"
+  },
+  {
+    "name": "sensitivity",
+    "icon": "fa-gauge",
+    "iconColor": "#D134AF"
+  },
+  {
+    "name": "selftest",
+    "icon": "fa-flask-vial",
+    "iconColor": "#32D1B9"
+  },
+  {
+    "name": "power_on_behavior",
+    "icon": "fa-soap",
+    "iconColor": "#A095F7"
+  },
+  {
+    "name": "effect",
+    "icon": "fa-hands-bubbles",
+    "iconColor": "#59C75C"
+  },
+  {
+    "name": "color_mode",
+    "icon": "fa-boxes-stacked",
+    "iconColor": "#5B60B4"
+  },
+  {
+    "name": "color_hs",
+    "icon": "fa-palette",
+    "iconColor": "#FF009B"
+  },
+  {
+    "name": "color_temp_startup",
+    "icon": "fa-sliders-h",
+    "iconColor": "#C26A37"
+  },
+  {
+    "name": "color_temp",
+    "icon": "fa-sliders-h",
+    "iconColor": "#7D37C2"
+  },
+  {
+    "name": "brightness",
+    "icon": "fa-sun",
+    "iconColor": "#C4B74E"
+  },
+  {
+    "name": "power_outage_memory",
+    "icon": "fa-memory",
+    "iconColor": "#248580"
+  },
+  {
+    "name": "power_outage_count",
+    "icon": "fa-plug-circle-xmark",
+    "iconColor": "#9E2929"
+  },
+  {
+    "name": "interlock",
+    "icon": "fa-arrow-down-up-lock",
+    "iconColor": "#7BBF43"
+  },
+  {
+    "name": "consumption",
+    "icon": "fa-car-battery",
+    "iconColor": "#43BDBF"
+  },
+  {
+    "name": "voltage",
+    "icon": "fa-bolt",
+    "iconColor": "#4BBF73"
+  },
+  {
+    "name": "power",
+    "icon": "fa-plug-circle-bolt",
+    "iconColor": "#9357EF"
+  },
+  {
+    "name": "current",
+    "icon": "fa-copyright",
+    "iconColor": "#E5A54B"
+  },
+  {
+    "name": "energy",
+    "icon": "fa-plug",
+    "iconColor": "#1F9BCF"
+  },
+  {
+    "name": "tamper",
+    "icon": "fa-exclamation-circle",
+    "iconColor": "#BFBFBF"
+  },
+  {
+    "name": "battery_low",
+    "icon": "fa-battery-quarter",
+    "iconColor": "#DD5F24"
+  },
+  {
+    "name": "water_leak",
+    "icon": "fa-water",
+    "iconColor": "#0C9AB7"
+  },
+  {
+    "name": "wakeup",
+    "icon": "fa-wave-square",
+    "iconColor": "#0C83B7"
+  },
+  {
+    "name": "shake",
+    "icon": "fa-cubes-stacked",
+    "iconColor": "#0C83B7"
+  },
+  {
+    "name": "tap",
+    "icon": "fa-computer-mouse",
+    "iconColor": "#0C83B7"
+  },
+  {
+    "name": "slide",
+    "icon": "fa-shekel-sign",
+    "iconColor": "#0C83B7"
+  },
+  {
+    "name": "rotate_right",
+    "icon": "fa-rotate-right",
+    "iconColor": "#0C83B7"
+  },
+  {
+    "name": "rotate_left",
+    "icon": "fa-rotate-left",
+    "iconColor": "#0C83B7"
+  },
+  {
+    "name": "fall",
+    "icon": "fa-arrow-down",
+    "iconColor": "#0C83B7"
+  },
+  {
+    "name": "flip180",
+    "icon": "fa-repeat",
+    "iconColor": "#0C83B7"
+  },
+  {
+    "name": "flip90",
+    "icon": "fa-repeat",
+    "iconColor": "#0C83B7"
+  },
+  {
+    "name": "action_from_side",
+    "icon": "fa-arrow-right-from-bracket",
+    "iconColor": "#47B70C"
+  },
+  {
+    "name": "action_to_side",
+    "icon": "fa-arrow-right-to-bracket",
+    "iconColor": "#47B70C"
+  },
+  {
+    "name": "action_side",
+    "icon": "fa-arrow-up-right-from-square",
+    "iconColor": "#0C83B7",
+    "alias": [
+      "side"
+    ]
+  },
+  {
+    "name": "action_angle",
+    "icon": "fa-arrow-up-right-dots",
+    "iconColor": "#D63673",
+    "unit": "°",
+    "alias": [
+      "angle"
+    ]
+  },
+  {
+    "name": "illuminance",
+    "icon": "fa-sun",
+    "iconColor": "#89D636",
+    "unit": "lx"
+  },
+  {
+    "name": "humidity",
+    "icon": "fa-tint",
+    "iconColor": "#4179E0",
+    "unit": "%"
+  },
+  {
+    "name": "pressure",
+    "icon": "fa-cloud-download-alt",
+    "iconColor": "#B0B0B0",
+    "unit": "Pa:HECTO"
+  },
+  {
+    "name": "power_outage_count",
+    "icon": "fa-plug-circle-xmark",
+    "iconColor": "#32D1B9"
+  },
+  {
+    "name": "linkquality",
+    "icon": "fa-signal",
+    "iconColor": "#D134AF",
+    "unit": "LQI"
+  },
+  {
+    "name": "occupancy",
+    "icon": "fa-walking",
+    "iconColor": "#89D636"
+  },
+  {
+    "name": "temperature",
+    "icon": "fa-thermometer-three-quarters",
+    "iconColor": "#36B9D6",
+    "unit": "℃"
+  },
+  {
+    "name": "battery",
+    "icon": "fa-battery-full",
+    "iconColor": "#32D1B9",
+    "unit": "%"
+  },
+  {
+    "name": "device_temperature",
+    "icon": "fa-thermometer-three-quarters",
+    "iconColor": "#36B9D6",
+    "unit": "℃"
+  }
+]

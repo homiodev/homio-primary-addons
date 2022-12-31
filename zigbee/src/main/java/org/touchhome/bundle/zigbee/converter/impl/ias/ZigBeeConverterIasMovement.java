@@ -7,17 +7,17 @@ import org.touchhome.bundle.api.EntityContextVar.VariableType;
  */
 public class ZigBeeConverterIasMovement extends ZigBeeConverterIas {
 
-  public ZigBeeConverterIasMovement() {
-    super(CIE_ALARM1);
-  }
+    public ZigBeeConverterIasMovement() {
+        super(CIE_ALARM1);
+    }
 
-  @Override
-  public String getName() {
-    return "ias_movement";
-  }
+    @Override
+    public String getName() {
+        return "ias_movement";
+    }
 
-  @Override
-  public VariableType getVariableType() {
-    return VariableType.Boolean;
-  }
+    @Override
+    public VariableType getVariableType() {
+        return VariableType.Bool;
+    }
 }

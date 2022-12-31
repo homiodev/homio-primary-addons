@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.raspberry.gpio.mode.PinMode;
 
 @Getter
@@ -12,38 +13,38 @@ import org.touchhome.bundle.raspberry.gpio.mode.PinMode;
 @NoArgsConstructor
 public class GpioPin implements Comparable<GpioPin> {
 
-  private int address;
-  private String description;
-  private String name;
-  private String color;
-  private Set<PinMode> supportModes;
+    private int address;
+    private @NotNull String description;
+    private @NotNull String name;
+    private @Nullable String color;
+    private Set<PinMode> supportModes;
 
-  @Override
-  public int compareTo(@NotNull GpioPin o) {
-    return this.address - o.address;
-  }
-
-  @Override
-  public String toString() {
-    return "[" + address + "/" + name + "']";
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
+    @Override
+    public int compareTo(@NotNull GpioPin o) {
+        return this.address - o.address;
     }
 
-    GpioPin gpioPin = (GpioPin) o;
+    @Override
+    public String toString() {
+        return "[" + address + "/" + name + "']";
+    }
 
-    return address == gpioPin.address;
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
-  @Override
-  public int hashCode() {
-    return address;
-  }
+        GpioPin gpioPin = (GpioPin) o;
+
+        return address == gpioPin.address;
+    }
+
+    @Override
+    public int hashCode() {
+        return address;
+    }
 }

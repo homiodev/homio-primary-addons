@@ -8,9 +8,9 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclPowerConfigurationCluster;
 import java.math.BigDecimal;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.QuantityType;
-import org.touchhome.bundle.api.util.Units;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
+import tech.units.indriya.unit.Units;
 
 /**
  * Battery Voltage The current battery voltage
@@ -19,14 +19,14 @@ import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
                  color = "#CF8B34", clientCluster = ZclPowerConfigurationCluster.CLUSTER_ID, category = "Energy")
 public class ZigBeeConverterBatteryMainsVoltage extends ZigBeeInputBaseConverter<ZclPowerConfigurationCluster> {
 
-  public ZigBeeConverterBatteryMainsVoltage() {
-    super(POWER_CONFIGURATION, ATTR_MAINSVOLTAGE);
-  }
+    public ZigBeeConverterBatteryMainsVoltage() {
+        super(POWER_CONFIGURATION, ATTR_MAINSVOLTAGE);
+    }
 
-  @Override
-  protected void updateValue(Object val, ZclAttribute attribute) {
-    Integer value = (Integer) val;
-    BigDecimal valueInVolt = BigDecimal.valueOf(value, 1);
-    updateChannelState(new QuantityType<>(valueInVolt, Units.VOLT));
-  }
+    @Override
+    protected void updateValue(Object val, ZclAttribute attribute) {
+        Integer value = (Integer) val;
+        BigDecimal valueInVolt = BigDecimal.valueOf(value, 1);
+        updateChannelState(new QuantityType<>(valueInVolt, Units.VOLT));
+    }
 }

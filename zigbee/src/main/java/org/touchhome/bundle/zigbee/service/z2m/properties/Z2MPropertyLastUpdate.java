@@ -1,18 +1,23 @@
 package org.touchhome.bundle.zigbee.service.z2m.properties;
 
-import org.json.JSONObject;
+import static org.touchhome.bundle.zigbee.util.Z2MDeviceDTO.NUMBER_TYPE;
+
 import org.touchhome.bundle.api.state.DecimalType;
-import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.zigbee.service.z2m.Z2MProperty;
+import org.touchhome.bundle.zigbee.service.z2m.Z2MDeviceService;
+import org.touchhome.bundle.zigbee.service.z2m.properties.dynamic.Z2MDynamicProperty;
+import org.touchhome.bundle.zigbee.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
 
-public class Z2MPropertyLastUpdate extends Z2MProperty {
+/**
+ * Extra property for every device to allow to create variable to store last device received event
+ */
+public class Z2MPropertyLastUpdate extends Z2MDynamicProperty {
 
-  public Z2MPropertyLastUpdate() {
-    super("updated", "#BA5623", "fa fa-fw fa-clock", null);
-  }
+    public static final String KEY = "updated";
 
-  @Override
-  protected State readValue(JSONObject payload) {
-    return new DecimalType(System.currentTimeMillis());
-  }
+    public Z2MPropertyLastUpdate(Z2MDeviceService deviceService) {
+        super("#BA5623", "fa fa-fw fa-clock");
+        setValue(new DecimalType(System.currentTimeMillis()));
+        init(deviceService, Options.dynamicExpose(KEY, NUMBER_TYPE));
+        dataReader = jsonObject -> new DecimalType(System.currentTimeMillis());
+    }
 }

@@ -9,16 +9,16 @@ import org.touchhome.bundle.api.console.ConsolePluginFrame;
 @RequiredArgsConstructor
 public class ZigBee2MQTTFrontendConsolePlugin implements ConsolePluginFrame {
 
-  private final EntityContext entityContext;
-  private final FrameConfiguration value;
+    private final EntityContext entityContext;
+    private final FrameConfiguration value;
 
-  @Override
-  public int order() {
-    return 500;
-  }
+    @Override
+    public int order() {
+        return 500;
+    }
 
-  @Override
-  public String getParentTab() {
-    return "zigbee";
-  }
+    @Override
+    public String getParentTab() {
+        return "zigbee";
+    }
 }

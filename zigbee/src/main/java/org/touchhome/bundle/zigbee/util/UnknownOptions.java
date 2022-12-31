@@ -8,17 +8,16 @@ import java.util.Map;
 
 public class UnknownOptions {
 
-  @JsonIgnore
-  private final Map<String, Object> unknownFields = new HashMap<>();
+    @JsonIgnore private final Map<String, Object> unknownFields = new HashMap<>();
 
-  @SuppressWarnings("unused")
-  @JsonAnyGetter
-  public Map<String, Object> otherFields() {
-    return unknownFields;
-  }
+    @SuppressWarnings("unused")
+    @JsonAnyGetter
+    public Map<String, Object> otherFields() {
+        return unknownFields;
+    }
 
-  @JsonAnySetter
-  public void setOtherField(String name, Object value) {
-    unknownFields.put(name, value);
-  }
+    @JsonAnySetter
+    public void setOtherField(String name, Object value) {
+        unknownFields.put(name, value);
+    }
 }

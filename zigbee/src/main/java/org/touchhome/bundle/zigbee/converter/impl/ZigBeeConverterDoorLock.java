@@ -8,19 +8,20 @@ import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.zigbee.converter.config.ZclDoorLockConfig;
 
 /**
- * Locks and unlocks the door and maintains the lock state This channel supports changes through attribute updates to the door lock state. ON=Locked, OFF=Unlocked.
+ * Locks and unlocks the door and maintains the lock state This channel supports changes through attribute updates to the door lock state. ON=Locked,
+ * OFF=Unlocked.
  */
-@ZigBeeConverter(name = "door_state", color = "#CF8E34", clientCluster = ZclDoorLockCluster.CLUSTER_ID, linkType = VariableType.Boolean, category = "Door")
+@ZigBeeConverter(name = "door_state", color = "#CF8E34", clientCluster = ZclDoorLockCluster.CLUSTER_ID, linkType = VariableType.Bool, category = "Door")
 public class ZigBeeConverterDoorLock extends ZigBeeInputBaseConverter<ZclDoorLockCluster> {
 
-  public ZigBeeConverterDoorLock() {
-    super(DOOR_LOCK, ATTR_LOCKSTATE);
-  }
+    public ZigBeeConverterDoorLock() {
+        super(DOOR_LOCK, ATTR_LOCKSTATE);
+    }
 
-  @Override
-  protected void afterClusterInitialized() {
-    this.configDoorLock = new ZclDoorLockConfig(getEntity(), zclCluster, log);
-  }
+    @Override
+    protected void afterClusterInitialized() {
+        this.configDoorLock = new ZclDoorLockConfig(getEntity(), zclCluster, log);
+    }
 
   /*@Override
     public void handleCommand(final ZigBeeCommand command) {

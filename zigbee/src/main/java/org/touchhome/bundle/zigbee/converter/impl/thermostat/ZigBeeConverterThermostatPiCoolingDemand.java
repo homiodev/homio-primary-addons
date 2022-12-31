@@ -5,10 +5,10 @@ import com.zsmartsystems.zigbee.zcl.clusters.ZclThermostatCluster;
 import com.zsmartsystems.zigbee.zcl.protocol.ZclClusterType;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.QuantityType;
-import org.touchhome.bundle.api.util.Units;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeConverter;
 import org.touchhome.bundle.zigbee.converter.impl.ZigBeeInputBaseConverter;
 import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
+import tech.units.indriya.unit.Units;
 
 /**
  * The level of cooling currently demanded by the thermostat
@@ -20,18 +20,18 @@ import org.touchhome.bundle.zigbee.model.ZigBeeEndpointEntity;
     category = "HVAC")
 public class ZigBeeConverterThermostatPiCoolingDemand extends ZigBeeInputBaseConverter<ZclThermostatCluster> {
 
-  public ZigBeeConverterThermostatPiCoolingDemand() {
-    super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_PICOOLINGDEMAND);
-  }
+    public ZigBeeConverterThermostatPiCoolingDemand() {
+        super(ZclClusterType.THERMOSTAT, ZclThermostatCluster.ATTR_PICOOLINGDEMAND);
+    }
 
-  @Override
-  protected void updateValue(Object val, ZclAttribute attribute) {
-    updateChannelState(new QuantityType<>((Integer) val, Units.PERCENT));
-  }
+    @Override
+    protected void updateValue(Object val, ZclAttribute attribute) {
+        updateChannelState(new QuantityType<>((Integer) val, Units.PERCENT));
+    }
 
-  @Override
-  public void configureNewEndpointEntity(ZigBeeEndpointEntity endpointEntity) {
-    super.configureNewEndpointEntity(endpointEntity);
-    endpointEntity.setAnalogue(1D, 1, 100);
-  }
+    @Override
+    public void configureNewEndpointEntity(ZigBeeEndpointEntity endpointEntity) {
+        super.configureNewEndpointEntity(endpointEntity);
+        endpointEntity.setAnalogue(1D, 1, 100);
+    }
 }

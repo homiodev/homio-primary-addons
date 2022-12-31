@@ -18,7 +18,6 @@ import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorMatch;
 import org.touchhome.bundle.api.ui.field.color.UIFieldColorRef;
-import org.touchhome.bundle.api.ui.field.color.UIFieldColorSource;
 import org.touchhome.bundle.raspberry.gpio.GpioPin;
 import org.touchhome.bundle.raspberry.gpio.GpioState;
 import org.touchhome.bundle.raspberry.gpio.mode.PinMode;
@@ -26,94 +25,93 @@ import org.touchhome.bundle.raspberry.gpio.mode.PinMode;
 @RequiredArgsConstructor
 public class GpioConsolePlugin implements ConsolePluginTable<GpioConsolePlugin.GpioPluginEntity> {
 
-  @Getter
-  private final EntityContext entityContext;
-  private final org.touchhome.bundle.raspberry.gpio.GPIOService GPIOService;
+    @Getter
+    private final EntityContext entityContext;
+    private final org.touchhome.bundle.raspberry.gpio.GPIOService GPIOService;
 
-  @Override
-  public String getParentTab() {
-    return "GPIO";
-  }
-
-  @Override
-  public Collection<GpioPluginEntity> getValue() {
-    List<GpioPluginEntity> list = new ArrayList<>();
-
-    for (GpioState gpioState : GPIOService.getState().values()) {
-      GpioPin gpioPin = gpioState.getGpioPin();
-      GpioPluginEntity gpioPluginEntity = new GpioPluginEntity();
-      gpioPluginEntity.setAddress(gpioPin.getAddress());
-      gpioPluginEntity.setName(gpioPin.getName());
-      gpioPluginEntity.setDescription(gpioPin.getDescription());
-      gpioPluginEntity.setSupportedModes(gpioPin.getSupportModes());
-      gpioPluginEntity.setMode(gpioState.getPinMode());
-      gpioPluginEntity.setColor(gpioPin.getColor());
-      gpioPluginEntity.setValue(gpioState.getLastState());
-      gpioPluginEntity.setPullResistance(gpioState.getPull());
-      list.add(gpioPluginEntity);
+    @Override
+    public String getParentTab() {
+        return "GPIO";
     }
 
-    Collections.sort(list);
-    return list;
-  }
+    @Override
+    public Collection<GpioPluginEntity> getValue() {
+        List<GpioPluginEntity> list = new ArrayList<>();
 
-  @Override
-  public int order() {
-    return 2000;
-  }
+        for (GpioState gpioState : GPIOService.getState().values()) {
+            GpioPin gpioPin = gpioState.getGpioPin();
+            GpioPluginEntity gpioPluginEntity = new GpioPluginEntity();
+            gpioPluginEntity.setAddress(gpioPin.getAddress());
+            gpioPluginEntity.setName(gpioPin.getName());
+            gpioPluginEntity.setDescription(gpioPin.getDescription());
+            gpioPluginEntity.setSupportedModes(gpioPin.getSupportModes());
+            gpioPluginEntity.setMode(gpioState.getPinMode());
+            gpioPluginEntity.setColor(gpioPin.getColor());
+            gpioPluginEntity.setValue(gpioState.getLastState());
+            gpioPluginEntity.setPullResistance(gpioState.getPull());
+            list.add(gpioPluginEntity);
+        }
 
-  @Override
-  public boolean isEnabled() {
-    return GPIOService.isGPIOAvailable();
-  }
-
-  @Override
-  public String getName() {
-    return "gpio";
-  }
-
-  @Override
-  public Class<GpioPluginEntity> getEntityClass() {
-    return GpioPluginEntity.class;
-  }
-
-  @Getter
-  @Setter
-  public static class GpioPluginEntity implements HasEntityIdentifier, Comparable<GpioPluginEntity> {
-
-    @UIField(order = 1, label = "№")
-    private int address;
-
-    @UIField(order = 2)
-    @UIFieldColorRef("color")
-    private String name;
-
-    @UIField(order = 3)
-    private String description;
-
-    @UIField(order = 6, label = "Mode")
-    private PinMode mode;
-
-    @UIField(order = 7, label = "Occupied")
-    private String occupied;
-
-    @UIField(order = 8, label = "Supported modes", type = UIFieldType.Chips)
-    private Set<PinMode> supportedModes;
-
-    @UIField(order = 9, label = "Pull Resistance")
-    private PullResistance pullResistance;
-
-    @UIField(order = 11)
-    @UIFieldColorMatch(value = "HIGH", color = "#1F8D2D")
-    @UIFieldColorMatch(value = "LOW", color = "#B22020")
-    private State value;
-
-    @UIFieldColorSource
-    private String color;
-
-    public String getEntityID() {
-      return name;
+        Collections.sort(list);
+        return list;
     }
+
+    @Override
+    public int order() {
+        return 2000;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return GPIOService.isGPIOAvailable();
+    }
+
+    @Override
+    public String getName() {
+        return "gpio";
+    }
+
+    @Override
+    public Class<GpioPluginEntity> getEntityClass() {
+        return GpioPluginEntity.class;
+    }
+
+    @Getter
+    @Setter
+    public static class GpioPluginEntity implements HasEntityIdentifier, Comparable<GpioPluginEntity> {
+
+        @UIField(order = 1, label = "№")
+        private int address;
+
+        @UIField(order = 2)
+        @UIFieldColorRef("color")
+        private String name;
+
+        @UIField(order = 3)
+        private String description;
+
+        @UIField(order = 6, label = "Mode")
+        private PinMode mode;
+
+        @UIField(order = 7, label = "Occupied")
+        private String occupied;
+
+        @UIField(order = 8, label = "Supported modes", type = UIFieldType.Chips)
+        private Set<PinMode> supportedModes;
+
+        @UIField(order = 9, label = "Pull Resistance")
+        private PullResistance pullResistance;
+
+        @UIField(order = 11)
+        @UIFieldColorMatch(value = "HIGH", color = "#1F8D2D")
+        @UIFieldColorMatch(value = "LOW", color = "#B22020")
+        private State value;
+
+        private String color;
+
+        public String getEntityID() {
+            return name;
+        }
 
     /* @UIContextMenuAction("ACTION.PULL_DOWN_RESISTOR")
     public ActionResponseModel pullDownResistor(EntityContext entityContext, GpioPluginEntity gpioPluginEntity) {
@@ -149,9 +147,9 @@ public class GpioConsolePlugin implements ConsolePluginTable<GpioConsolePlugin.G
       return ActionResponseModel.showSuccess("success");
     }*/
 
-    @Override
-    public int compareTo(@NotNull GpioPluginEntity o) {
-      return this.name.compareTo(o.name);
+        @Override
+        public int compareTo(@NotNull GpioPluginEntity o) {
+            return this.name.compareTo(o.name);
+        }
     }
-  }
 }
