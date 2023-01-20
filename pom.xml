@@ -123,10 +123,9 @@
     <module>raspberry</module>
     <module>telegram</module>
     <module>mqtt</module>
-    <module>zigbee</module>
+    <module>z2m</module>
     <module>cloud</module>
     <module>bluetooth</module>
-    <module>xaomi</module>
     <module>camera</module>
   </modules>
   <packaging>pom</packaging>
