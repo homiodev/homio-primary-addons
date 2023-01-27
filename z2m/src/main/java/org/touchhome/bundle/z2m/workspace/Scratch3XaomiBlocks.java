@@ -1,25 +1,18 @@
 package org.touchhome.bundle.z2m.workspace;
 
-import static org.touchhome.bundle.z2m.workspace.MagicCubeHandler.MagicCubeEvent;
-import static org.touchhome.bundle.z2m.workspace.Scratch3ZigBeeBlocks.ZIGBEE_MODEL_URL;
-
 import lombok.Getter;
 import org.springframework.stereotype.Component;
-import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
-import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
-import org.touchhome.bundle.z2m.ZigBeeEntrypoint;
 
 @Getter
 @Component
-public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
+public class Scratch3XaomiBlocks /*extends Scratch3ExtensionBlocks*/ {
 
-    private final MenuBlock.StaticMenuBlock<MagicCubeEvent> cubeEventMenu;
-    private final MenuBlock.ServerMenuBlock cubeSensorMenu;
+    //  private final MenuBlock.StaticMenuBlock<MagicCubeEvent> cubeEventMenu;
+    // private final MenuBlock.ServerMenuBlock cubeSensorMenu;
 
-    public Scratch3XaomiBlocks(EntityContext entityContext, ZigBeeEntrypoint zigBeeEntrypoint) {
+    /*public Scratch3XaomiBlocks(EntityContext entityContext, ZigBeeEntrypoint zigBeeEntrypoint) {
         super("#856d21", entityContext, zigBeeEntrypoint);
         setParent("zigbee");
 
@@ -39,7 +32,7 @@ public class Scratch3XaomiBlocks extends Scratch3ExtensionBlocks {
             block.addArgument(CUBE_SENSOR, this.cubeSensorMenu);
             block.addArgument(EVENT, this.cubeEventMenu);
         });
-    }
+    }*/
 
     private State cubeLastValueEvaluate(WorkspaceBlock workspaceBlock) {
         String ieeeAddress = fetchIEEEAddress(workspaceBlock);

@@ -25,7 +25,6 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.JsonType;
-import org.touchhome.bundle.api.state.ObjectType;
 import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.QuantityType;
 import org.touchhome.bundle.api.state.State;
@@ -121,12 +120,8 @@ public abstract class Z2MProperty {
         value = dataReader.apply(payload);
 
         updateUI();
+        // push value to variable. Variable engine will fire event!
         pushVariable();
-
-        ObjectType entityUpdated = new ObjectType(this);
-        // entityContext.event().fireEvent(deviceHandler.getDevice().getIeeeAddress(),
-        // entityUpdated);
-        entityContext.event().fireEvent(entityID, entityUpdated);
     }
 
     protected void updateUI() {

@@ -77,8 +77,7 @@ public class Z2MDeviceService {
     }
 
     public String getDeviceTopic(Z2MDeviceDTO device) {
-        return format(
-            "%s-%s/%s",
+        return format("%s-%s/%s",
             coordinatorService.getMqttEntity().getEntityID(),
             coordinatorService.getEntity().getBasicTopic(),
             device.getIeeeAddress());

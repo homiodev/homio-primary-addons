@@ -3,7 +3,7 @@ package org.touchhome.bundle.z2m.workspace;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.z2m.ZigBeeEntrypoint;
+import org.touchhome.bundle.z2m.Z2MEntrypoint;
 
 @Getter
 @Component
@@ -16,8 +16,8 @@ public class Scratch3ZigBeeBlocks extends Scratch3ZigBeeExtensionBlocks {
     public static final String ZIGBEE_MODEL_URL = ZIGBEE__BASE_URL + "model/";
     public static final String ZIGBEE_ALARM_URL = ZIGBEE__BASE_URL + "alarm";
 
-    public Scratch3ZigBeeBlocks(EntityContext entityContext, ZigBeeEntrypoint zigBeeEntrypoint) {
-        super("#6d4747", entityContext, zigBeeEntrypoint, null);
+    public Scratch3ZigBeeBlocks(EntityContext entityContext, Z2MEntrypoint z2MEntrypoint) {
+        super("#6d4747", entityContext, z2MEntrypoint, null);
 
         // Items
        /* blockHat(10, "when_event_received", "when got [EVENT] event", this::whenEventReceivedHandler, block -> {

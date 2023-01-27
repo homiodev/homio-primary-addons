@@ -9,7 +9,7 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.workspace.WorkspaceBlock;
 import org.touchhome.bundle.api.workspace.scratch.MenuBlock;
-import org.touchhome.bundle.z2m.ZigBeeEntrypoint;
+import org.touchhome.bundle.z2m.Z2MEntrypoint;
 
 @Getter
 @Component
@@ -22,8 +22,8 @@ final class Scratch3ZigBeeButtonsBlocks extends Scratch3ZigBeeExtensionBlocks {
     private final MenuBlock.StaticMenuBlock<ButtonEndpointGetter> buttonEndpointGetterValueMenu;
     private final EntityContext entityContext;
 
-    Scratch3ZigBeeButtonsBlocks(EntityContext entityContext, ZigBeeEntrypoint zigBeeEntrypoint) {
-        super("#A3623C", entityContext, zigBeeEntrypoint, "btn");
+    Scratch3ZigBeeButtonsBlocks(EntityContext entityContext, Z2MEntrypoint z2MEntrypoint) {
+        super("#A3623C", entityContext, z2MEntrypoint, "btn");
         this.entityContext = entityContext;
 
         this.buttonSensorMenu = menuServer("buttonSensorMenu", ZIGBEE__BASE_URL + "buttons", "Button Sensor", "-"/*,

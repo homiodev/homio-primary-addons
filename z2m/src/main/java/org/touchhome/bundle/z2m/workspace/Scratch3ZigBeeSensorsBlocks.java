@@ -3,7 +3,7 @@ package org.touchhome.bundle.z2m.workspace;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.z2m.ZigBeeEntrypoint;
+import org.touchhome.bundle.z2m.Z2MEntrypoint;
 
 @Getter
 @Component
@@ -18,8 +18,8 @@ public class Scratch3ZigBeeSensorsBlocks extends Scratch3ZigBeeExtensionBlocks {
     private final MenuBlock.ServerMenuBlock humiditySensorMenu;
     private final MenuBlock.ServerMenuBlock waterSensorMenu;*/
 
-    public Scratch3ZigBeeSensorsBlocks(EntityContext entityContext, ZigBeeEntrypoint zigBeeEntrypoint) {
-        super("#8a6854", entityContext, zigBeeEntrypoint, "sensor");
+    public Scratch3ZigBeeSensorsBlocks(EntityContext entityContext, Z2MEntrypoint z2MEntrypoint) {
+        super("#8a6854", entityContext, z2MEntrypoint, "sensor");
 
         // Menu
      /*   this.alarmSensorMenu = menuServer("alarmSensorMenu", ZIGBEE_ALARM_URL, "Alarm Sensor");

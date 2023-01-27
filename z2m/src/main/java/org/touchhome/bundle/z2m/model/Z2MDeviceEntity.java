@@ -283,8 +283,7 @@ public class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntity>
 
     @SuppressWarnings("unused")
     public void setImageIdentifier(String value) {
-        deviceService.updateConfiguration(
-            "image", Objects.equals(value, getModelIdentifier()) ? null : value);
+        deviceService.updateConfiguration("image", Objects.equals(value, getModelIdentifier()) ? null : value);
     }
 
     @UIField(order = 9999)
