@@ -9,9 +9,13 @@ import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.ENUM_TYPE;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.NUMBER_TYPE;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.SWITCH_TYPE;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.measure.Unit;
@@ -23,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
+import org.touchhome.bundle.api.entity.zigbee.ZigBeeProperty;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.JsonType;
 import org.touchhome.bundle.api.state.OnOffType;
@@ -36,10 +41,11 @@ import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options.Pr
 
 @Log4j2
 @Getter
-public abstract class Z2MProperty {
+public abstract class Z2MProperty implements ZigBeeProperty {
 
-    private final @NotNull String color;
+    private final @NotNull String iconColor;
     private final @NotNull String icon;
+    private final Map<String, Consumer<State>> changeListeners = new ConcurrentHashMap<>();
     protected Function<JSONObject, State> dataReader;
     protected Options expose;
     @Setter private @Nullable Unit<?> unit;
@@ -48,13 +54,27 @@ public abstract class Z2MProperty {
     private String entityID;
     private String variableId;
     @Getter private EntityContext entityContext;
-
     @Setter private State value = new StringType("N/A");
     private Object dbValue;
 
-    public Z2MProperty(@NotNull String color, @NotNull String icon) {
-        this.color = color;
+    public Z2MProperty(@NotNull String iconColor, @NotNull String icon) {
+        this.iconColor = iconColor;
         this.icon = icon;
+    }
+
+    @Override
+    public Duration getTimeSinceLastEvent() {
+        return Duration.ofMillis(System.currentTimeMillis() - updated);
+    }
+
+    @Override
+    public void addChangeListener(String id, Consumer<State> changeListener) {
+        changeListeners.put(id, changeListener);
+    }
+
+    @Override
+    public void removeChangeListener(String id) {
+        changeListeners.remove(id);
     }
 
     public void init(Z2MDeviceService deviceService, Options expose) {
@@ -102,7 +122,7 @@ public abstract class Z2MProperty {
                 return payload -> OnOffType.of(payload.getBoolean(getJsonKey()));
             case NUMBER_TYPE:
                 if (unit != null) {
-                    return payload -> new QuantityType<>(payload.getNumber(getJsonKey()), unit);
+                    return payload -> new QuantityType(payload.getNumber(getJsonKey()), unit);
                 } else {
                     return payload -> new DecimalType(payload.getNumber(getJsonKey()));
                 }
@@ -118,6 +138,9 @@ public abstract class Z2MProperty {
     public void mqttUpdate(JSONObject payload) {
         this.updated = System.currentTimeMillis();
         value = dataReader.apply(payload);
+        for (Consumer<State> changeListener : changeListeners.values()) {
+            changeListener.accept(value);
+        }
 
         updateUI();
         // push value to variable. Variable engine will fire event!
@@ -139,10 +162,10 @@ public abstract class Z2MProperty {
             VariableType variableType = getVariableType();
             if (variableType == VariableType.Enum) {
                 variableId = entityContext.var().createEnumVariable(deviceService.getDeviceEntity().getEntityID(),
-                    entityID, getName(), getVariableDescription(), !isWritable(), color, expose.getValues());
+                    entityID, getName(), getVariableDescription(), !isWritable(), iconColor, expose.getValues());
             } else {
                 variableId = entityContext.var().createVariable(deviceService.getDeviceEntity().getEntityID(),
-                    entityID, getName(), variableType, getVariableDescription(), !isWritable(), color, expose.getUnit());
+                    entityID, getName(), variableType, getVariableDescription(), !isWritable(), iconColor, expose.getUnit());
             }
 
             if (isWritable()) {
@@ -249,6 +272,11 @@ public abstract class Z2MProperty {
         return expose.isWritable();
     }
 
+    @Override
+    public boolean isReadable() {
+        return expose.isReadable();
+    }
+
     public boolean feedPayload(String key, JSONObject payload) {
         if (key.equals(expose.getProperty()) || key.equals(expose.getName())) {
             mqttUpdate(payload);
@@ -266,4 +294,33 @@ public abstract class Z2MProperty {
     }
 
     public abstract String getPropertyDefinition();
+
+    @Override
+    public String getKey() {
+        return expose.getProperty();
+    }
+
+    @Override
+    public String getIeeeAddress() {
+        return deviceService.getDevice().getIeeeAddress();
+    }
+
+    @Override
+    public State getLastValue() {
+        return value;
+    }
+
+    @Override
+    public void writeValue(State state) {
+        switch (expose.getType()) {
+            case NUMBER_TYPE:
+                getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value.intValue()));
+            case BINARY_TYPE:
+            case SWITCH_TYPE:
+                getDeviceService().publish("set", new JSONObject().put(expose.getProperty(),
+                    state.boolValue() ? getExpose().getValueOn() : getExpose().getValueOff()));
+            default:
+                getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value.stringValue()));
+        }
+    }
 }

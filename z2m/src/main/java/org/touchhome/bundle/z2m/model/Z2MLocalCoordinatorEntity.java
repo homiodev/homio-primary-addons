@@ -3,8 +3,12 @@ package org.touchhome.bundle.z2m.model;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.persistence.Entity;
@@ -13,13 +17,15 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.BaseEntity;
-import org.touchhome.bundle.api.entity.ZigBeeBaseCoordinatorEntity;
-import org.touchhome.bundle.api.entity.ZigBeeDeviceBaseEntity;
 import org.touchhome.bundle.api.entity.types.MicroControllerBaseEntity;
 import org.touchhome.bundle.api.entity.types.StorageEntity;
 import org.touchhome.bundle.api.entity.validation.UIFieldValidationSize;
+import org.touchhome.bundle.api.entity.zigbee.ZigBeeBaseCoordinatorEntity;
+import org.touchhome.bundle.api.entity.zigbee.ZigBeeDeviceBaseEntity;
+import org.touchhome.bundle.api.entity.zigbee.ZigBeeProperty;
 import org.touchhome.bundle.api.exception.ProhibitedExecution;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.ui.UISidebarChildren;
@@ -116,6 +122,16 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         setJsonData("bt", value);
     }
 
+    @UIField(order = 50, inlineEdit = true)
+    @UIFieldGroup("General")
+    public boolean isEnableWatchdog() {
+        return getJsonData("wd", false);
+    }
+
+    public void setEnableWatchdog(boolean value) {
+        setJsonData("wd", value);
+    }
+
     @UIContextMenuAction(
         value = "zigbee.action.start_scan",
         icon = "fas fa-search-location",
@@ -129,7 +145,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         icon = "fas fa-power-off",
         iconColor = "#AB2A0A")
     public ActionResponseModel restart() {
-        return getService().restart();
+        return getService().restartZ2M();
     }
 
     @Override
@@ -149,12 +165,36 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         entityLogBuilder.addTopic(Z2MLocalCoordinatorService.class);
     }
 
+    /**
+     * Check if need start/stop z2m service
+     */
     public boolean deepEqual(Z2MLocalCoordinatorEntity newEntity) {
         return this.getEntityID().equals(newEntity.getEntityID())
             && this.getBasicTopic().equals(newEntity.getBasicTopic())
             && this.getPort().equals(newEntity.getPort())
             && this.isStart() == newEntity.isStart()
             && Objects.equals(this.getRawMqttEntity(), newEntity.getRawMqttEntity());
+    }
+
+    @Override
+    public Map<String, Map<String, ? extends ZigBeeProperty>> getAllProperties() {
+        Map<String, Map<String, ? extends ZigBeeProperty>> map = new HashMap<>();
+        for (Entry<String, Z2MDeviceService> entry : getService().getDeviceHandlers().entrySet()) {
+            map.put(entry.getKey(), entry.getValue().getProperties());
+        }
+        return map;
+    }
+
+    @Override
+    public @NotNull Collection<ZigBeeDeviceBaseEntity> getZigBeeDevices() {
+        return getService().getDeviceHandlers().values().stream()
+                           .map(Z2MDeviceService::getDeviceEntity).collect(Collectors.toList());
+    }
+
+    @Override
+    public @Nullable ZigBeeProperty getZigBeeDeviceProperty(String ieeeAddress, String property) {
+        Z2MDeviceService service = getService().getDeviceHandlers().get(ieeeAddress);
+        return service == null ? null : service.getProperties().get(property);
     }
 
     @Getter

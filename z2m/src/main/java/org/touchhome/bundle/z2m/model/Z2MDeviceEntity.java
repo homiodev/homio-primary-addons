@@ -29,11 +29,12 @@ import org.touchhome.bundle.api.entity.DeviceBaseEntity;
 import org.touchhome.bundle.api.entity.DisableCacheEntity;
 import org.touchhome.bundle.api.entity.HasJsonData;
 import org.touchhome.bundle.api.entity.HasStatusAndMsg;
-import org.touchhome.bundle.api.entity.ZigBeeDeviceBaseEntity;
+import org.touchhome.bundle.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.optionProvider.SelectPlaceOptionLoader;
+import org.touchhome.bundle.api.ui.UI;
 import org.touchhome.bundle.api.ui.UI.Color;
 import org.touchhome.bundle.api.ui.action.UIActionHandler;
 import org.touchhome.bundle.api.ui.field.UIField;
@@ -69,7 +70,7 @@ import org.touchhome.bundle.z2m.util.ZigBeeUtil;
 @Setter
 @NoArgsConstructor
 @DisableCacheEntity
-public class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntity>
+public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntity>
     implements HasJsonData, HasStatusAndMsg<Z2MDeviceEntity>, HasDynamicContextMenuActions {
 
     public static final String PREFIX = "z2m_";
@@ -85,6 +86,11 @@ public class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntity>
 
     private static Float toFloat(Integer value) {
         return value == null ? null : value.floatValue();
+    }
+
+    @Override
+    public String getDeviceFullName() {
+        return deviceService.getDeviceFullName();
     }
 
     @Override
@@ -125,6 +131,16 @@ public class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntity>
             status = deviceService.getCoordinatorService().getEntity().getStatus();
         }
         return status;
+    }
+
+    @Override
+    public String getIcon() {
+        return ZigBeeUtil.getDeviceIcon(deviceService.getDevice().getModelId(), "fas fa-server");
+    }
+
+    @Override
+    public String getIconColor() {
+        return ZigBeeUtil.getDeviceIconColor(deviceService.getDevice().getModelId(), UI.Color.random());
     }
 
     @UIField(order = 1, hideOnEmpty = true, fullWidth = true, color = "#89AA50", inlineEdit = true)
@@ -327,7 +343,7 @@ public class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntity>
         if (definition != null) {
             for (Options option : definition.getOptions()) {
                 JsonNode deviceConfigurationOptions = deviceService.getConfiguration();
-                String flexName = format("${zigbee.setting.%s:%s}", option.getName(), option.getName());
+                String flexName = format("${z2m.setting.%s:%s}", option.getName(), option.getName());
                 switch (option.getType()) {
                     case BINARY_TYPE:
                         buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
@@ -417,7 +433,7 @@ public class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntity>
         public Z2MPropertyEntity(Z2MProperty property) {
             this.entityID = property.getEntityID();
             this.title = format("<div class=\"inline-2row_d\"><div style=\"color:%s;\"><i class=\"mr-1 %s\"></i>%s</div><span>%s</div></div>",
-                property.getColor(), property.getIcon(), property.getName(), property.getDescription());
+                property.getIconColor(), property.getIcon(), property.getName(), property.getDescription());
             this.property = property;
             this.valueTitle = property.getValue().toString();
             switch (property.getExpose().getType()) {

@@ -12,12 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.json.JSONObject;
+import org.springframework.data.util.Pair;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.ui.UI;
 import org.touchhome.bundle.z2m.model.Z2MDeviceEntity;
+import org.touchhome.bundle.z2m.service.properties.Z2MPropertyAction;
 import org.touchhome.bundle.z2m.service.properties.Z2MPropertyLastUpdate;
 import org.touchhome.bundle.z2m.service.properties.dynamic.Z2MGeneralProperty;
 import org.touchhome.bundle.z2m.service.properties.dynamic.Z2MPropertyUnknown;
@@ -46,6 +51,7 @@ public class Z2MDeviceService {
         this.deviceEntity = new Z2MDeviceEntity(this);
 
         this.deviceUpdated(device);
+        addMissingProperties(coordinatorService, device);
 
         entityContext.ui().updateItem(deviceEntity);
         entityContext.ui().sendSuccessMessage(Lang.getServerMessage("ENTITY_CREATED", "NAME", format("${%s}", this.device.getName())));
@@ -54,26 +60,11 @@ public class Z2MDeviceService {
         entityContext.event().addEventBehaviourListener(
             format("%s/availability", getDeviceTopic(this.device)),
             payload -> {
-                this.availability = payload == null ? null : payload.toString();
-                this.entityContext.ui().updateItem(this.deviceEntity);
+                availability = payload == null ? null : payload.toString();
+                entityContext.event().fireEvent(format("zigbee-%s", device.getIeeeAddress()), deviceEntity.getStatus());
+                entityContext.ui().updateItem(this.deviceEntity);
             });
-    }
-
-    private void createOrUpdateDeviceGroup() {
-        String name = null;
-        if (this.getConfiguration().has("name")) {
-            name = this.getConfiguration().get(name).asText();
-        } else if (device.getModelId() != null || device.getDefinition().getModel() != null) {
-            name = format("${zigbee.device.%s:%s}", defaultIfEmpty(device.getModelId(), device.getDefinition().getModel()),
-                device.getDefinition().getDescription());
-        } else {
-            name = device.getDefinition().getDescription();
-        }
-
-        String groupName = format("%s(%s) [${%s}]", name, this.device.getIeeeAddress(), defaultIfEmpty(this.deviceEntity.getPlace(), "PLACE_NOT_SET"));
-        entityContext.var().createGroup("z2m", this.deviceEntity.getEntityID(), groupName, true,
-            ZigBeeUtil.getDeviceIcon(this.device.getModelId(), "fas fa-server"), ZigBeeUtil.getDeviceIconColor(this.device.getModelId(), UI.Color.random()),
-            this.device.getGroupDescription());
+        entityContext.event().fireEvent(format("zigbee-%s", device.getIeeeAddress()), deviceEntity.getStatus());
     }
 
     public String getDeviceTopic(Z2MDeviceDTO device) {
@@ -99,9 +90,9 @@ public class Z2MDeviceService {
                 if (!feed && !key.equals("illuminance_lux")) {
                     log.info("[{}]: Create dynamic created property '{}'. Device: {}", coordinatorService.getEntityID(), key, device.getIeeeAddress());
                     Z2MProperty missedZ2MProperty = buildExposeProperty(Options.dynamicExpose(key, getFormatFromPayloadValue(payload, key)));
-                    properties.put(key, missedZ2MProperty);
-
                     missedZ2MProperty.mqttUpdate(payload);
+
+                    addProperty(key, s -> missedZ2MProperty);
                     entityContext.ui().updateItem(deviceEntity);
                 }
             } catch (Exception ex) {
@@ -130,10 +121,10 @@ public class Z2MDeviceService {
             if (expose.getProperty() == null) {
                 addExposeByFeatures(expose);
             } else {
-                properties.computeIfAbsent(expose.getProperty(), key -> buildExposeProperty(expose));
+                addProperty(expose.getProperty(), key -> buildExposeProperty(expose));
             }
         }
-        properties.computeIfAbsent(Z2MPropertyLastUpdate.KEY, key -> new Z2MPropertyLastUpdate(this));
+        addProperty(Z2MPropertyLastUpdate.KEY, key -> new Z2MPropertyLastUpdate(this));
     }
 
     private void removeRedundantExposes(Z2MDeviceDTO device) {
@@ -144,10 +135,90 @@ public class Z2MDeviceService {
         }
     }
 
+    @Override
+    public String toString() {
+        return device.toString();
+    }
+
+    public JsonNode getConfiguration() {
+        return coordinatorService
+            .getConfiguration()
+            .getDevices()
+            .getOrDefault(device.getIeeeAddress(), OBJECT_MAPPER.createObjectNode());
+    }
+
+    public void updateConfiguration(String key, Object value) {
+        this.coordinatorService.updateDeviceConfiguration(this, key, value);
+    }
+
+    public void publish(String topic, JSONObject payload) {
+        this.coordinatorService.publish(defaultIfEmpty(device.getFriendlyName(), device.getIeeeAddress()) + "/" + topic, payload);
+    }
+
+    public String getDeviceFullName() {
+        String name;
+        if (this.getConfiguration().has("name")) {
+            name = this.getConfiguration().get("name").asText();
+        } else if (device.getModelId() != null || device.getDefinition().getModel() != null) {
+            name = format("${zigbee.device.%s:%s}", defaultIfEmpty(device.getModelId(), device.getDefinition().getModel()),
+                device.getDefinition().getDescription());
+        } else {
+            name = device.getDefinition().getDescription();
+        }
+        return format("%s(%s) [${%s}]", name, this.device.getIeeeAddress(), defaultIfEmpty(this.deviceEntity.getPlace(), "PLACE_NOT_SET"));
+    }
+
+    public Z2MProperty addDynamicProperty(String key, Supplier<Z2MProperty> supplier) {
+        return addProperty(key, s -> {
+            Z2MProperty property = supplier.get();
+            // store missing property in file to next reload
+            coordinatorService.addMissingProperty(deviceEntity.getIeeeAddress(), property);
+            return property;
+        });
+    }
+
+    private void addMissingProperties(Z2MLocalCoordinatorService coordinatorService, Z2MDeviceDTO device) {
+        for (Pair<String, String> missingProperty : coordinatorService.getMissingProperties(device.getIeeeAddress())) {
+            switch (missingProperty.getSecond()) {
+                case "action_event":
+                    addProperty(missingProperty.getFirst(), key -> Z2MPropertyAction.createActionEvent(key, this, entityContext));
+                    break;
+            }
+        }
+    }
+
+    private Z2MProperty addProperty(String key, Function<String, Z2MProperty> propertyProducer) {
+        if (!properties.containsKey(key)) {
+            properties.put(key, propertyProducer.apply(key));
+            entityContext.event().fireEvent(format("zigbee-%s-%s", device.getIeeeAddress(), key), Status.ONLINE);
+        }
+        return properties.get(key);
+    }
+
+    private String getFormatFromPayloadValue(JSONObject payload, String key) {
+        try {
+            payload.getInt(key);
+            return NUMBER_TYPE;
+        } catch (Exception ignore) {
+        }
+        try {
+            payload.getBoolean(key);
+            return BINARY_TYPE;
+        } catch (Exception ignore) {
+        }
+        return UNKNOWN_TYPE;
+    }
+
+    // usually expose.getName() is enough but in case of color - name - 'color_xy' but property is
+    // 'color'
+    private <T> T getValueFromMap(Map<String, T> map, Options expose) {
+        return map.getOrDefault(expose.getName(), map.get(expose.getProperty()));
+    }
+
     private void addExposeByFeatures(Options expose) {
         if (expose.getFeatures() != null) {
             for (Options feature : expose.getFeatures()) {
-                properties.computeIfAbsent(feature.getProperty(), key -> buildExposeProperty(feature));
+                addProperty(feature.getProperty(), key -> buildExposeProperty(feature));
             }
         } else {
             log.error("[{}]: Device expose {} has no features", coordinatorService.getEntityID(), expose);
@@ -172,43 +243,9 @@ public class Z2MDeviceService {
         return z2MProperty;
     }
 
-    // usually expose.getName() is enough but in case of color - name - 'color_xy' but property is
-    // 'color'
-    private <T> T getValueFromMap(Map<String, T> map, Options expose) {
-        return map.getOrDefault(expose.getName(), map.get(expose.getProperty()));
-    }
-
-    @Override
-    public String toString() {
-        return device.toString();
-    }
-
-    public JsonNode getConfiguration() {
-        return coordinatorService
-            .getConfiguration()
-            .getDevices()
-            .getOrDefault(device.getIeeeAddress(), OBJECT_MAPPER.createObjectNode());
-    }
-
-    public void updateConfiguration(String key, Object value) {
-        this.coordinatorService.updateDeviceConfiguration(this, key, value);
-    }
-
-    private String getFormatFromPayloadValue(JSONObject payload, String key) {
-        try {
-            payload.getInt(key);
-            return NUMBER_TYPE;
-        } catch (Exception ignore) {
-        }
-        try {
-            payload.getBoolean(key);
-            return BINARY_TYPE;
-        } catch (Exception ignore) {
-        }
-        return UNKNOWN_TYPE;
-    }
-
-    public void publish(String topic, JSONObject payload) {
-        this.coordinatorService.publish(defaultIfEmpty(device.getFriendlyName(), device.getIeeeAddress()) + "/" + topic, payload);
+    private void createOrUpdateDeviceGroup() {
+        entityContext.var().createGroup("z2m", this.deviceEntity.getEntityID(), getDeviceFullName(), true,
+            ZigBeeUtil.getDeviceIcon(this.device.getModelId(), "fas fa-server"), ZigBeeUtil.getDeviceIconColor(this.device.getModelId(), UI.Color.random()),
+            this.device.getGroupDescription());
     }
 }

@@ -1,6 +1,5 @@
 package org.touchhome.bundle.z2m.service.properties;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.state.StringType;
@@ -15,6 +14,13 @@ public class Z2MPropertyAction extends Z2MProperty {
         super("#9636d6", "fa fa-fw fa-circle-play");
     }
 
+    public static Z2MPropertyActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {
+        Z2MPropertyDTO z2MPropertyDTO = deviceService.getCoordinatorService().getZ2mProperties().get(action);
+        Z2MPropertyActionEvent z2MPropertyActionEvent = new Z2MPropertyActionEvent(deviceService, action, z2MPropertyDTO);
+        entityContext.ui().updateItem(deviceService.getDeviceEntity());
+        return z2MPropertyActionEvent;
+    }
+
     @Override
     public void mqttUpdate(JSONObject payload) {
         String action = payload.getString("action");
@@ -24,18 +30,18 @@ public class Z2MPropertyAction extends Z2MProperty {
         updateUI();
 
         Z2MDeviceService deviceService = getDeviceService();
-        EntityContext entityContext = deviceService.getCoordinatorService().getEntityContext();
-        deviceService.getProperties().computeIfAbsent(action, s -> createActionEvent(action, deviceService, entityContext));
-        Z2MPropertyActionEvent z2MProperty = (Z2MPropertyActionEvent) deviceService.getProperties().get(action);
-        z2MProperty.mqttUpdate(payload);
-    }
+        String actionKey = "action_" + action;
+        Z2MProperty z2MProperty = deviceService.getProperties().get(actionKey);
+        if (z2MProperty == null) {
+            EntityContext entityContext = deviceService.getCoordinatorService().getEntityContext();
+            z2MProperty = deviceService.addDynamicProperty(actionKey, () ->
+                Z2MPropertyAction.createActionEvent(actionKey, deviceService, entityContext));
 
-    @NotNull
-    private Z2MPropertyActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {
-        Z2MPropertyDTO z2MPropertyDTO = deviceService.getCoordinatorService().getZ2mProperties().get(action);
-        Z2MPropertyActionEvent z2MPropertyActionEvent = new Z2MPropertyActionEvent(deviceService, action, z2MPropertyDTO);
-        entityContext.ui().updateItem(deviceService.getDeviceEntity());
-        return z2MPropertyActionEvent;
+            deviceService.addDynamicProperty("action_any", () ->
+                Z2MPropertyAction.createActionEvent("action_any", deviceService, entityContext));
+        }
+        z2MProperty.mqttUpdate(payload);
+        deviceService.getProperties().get("action_any").mqttUpdate(payload);
     }
 
     @Override

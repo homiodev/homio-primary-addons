@@ -21,8 +21,13 @@ public class Z2MPropertyActionEvent extends Z2MDynamicProperty {
         super(
             z2MPropertyDTO == null ? "#B72AD4" : z2MPropertyDTO.getIconColor(),
             z2MPropertyDTO == null ? "fa-square-check" : z2MPropertyDTO.getIcon());
-        init(deviceService, Options.dynamicExpose("action_" + property, NUMBER_TYPE));
+        init(deviceService, Options.dynamicExpose(property, NUMBER_TYPE));
         setValue(new DecimalType(0));
         dataReader = jsonObject -> new DecimalType(getValue().intValue() + 1);
+    }
+
+    @Override
+    public String getPropertyDefinition() {
+        return "action_event";
     }
 }

@@ -13,11 +13,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.BundleEntrypoint;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.entity.ZigBeeBaseCoordinatorEntity;
+import org.touchhome.bundle.api.entity.zigbee.ZigBeeBaseCoordinatorEntity;
 import org.touchhome.bundle.z2m.model.Z2MDeviceEntity;
 import org.touchhome.bundle.z2m.model.Z2MLocalCoordinatorEntity;
 import org.touchhome.bundle.z2m.setting.ZigBeeEntityCompactModeSetting;
 
+/**
+ * Available fired events:
+ * <ul>
+ * <li>'zigbee-' + ieeeAddress === Status</li>
+ * <li>'zigbee-' + ieeeAddress + '-' + propertyName === Status</li>
+ * <li>'zigbee_coordinator-' + entityID === Status</li>
+ * </ul>
+ */
 @Log4j2
 @Component
 @RequiredArgsConstructor
