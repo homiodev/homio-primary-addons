@@ -1,5 +1,178 @@
 [
   {
+    "name": "updated",
+    "icon": "fa-fa-clock",
+    "iconColor": "#BA5623",
+    "order": 3000
+  },
+  {
+    "name": "smoke",
+    "icon": "fa-fire",
+    "iconColor": "#C7AC24",
+    "order": 2995
+  },
+  {
+    "name": "water_leak",
+    "icon": "fa-water",
+    "iconColor": "#0C9AB7",
+    "order": 2990
+  },
+  {
+    "name": "battery_low",
+    "icon": "fa-battery-quarter",
+    "iconColor": "#DD5F24",
+    "order": 2985
+  },
+  {
+    "name": "illuminance",
+    "icon": "fa-sun",
+    "iconColor": "#89D636",
+    "unit": "lx",
+    "order": 2980
+  },
+  {
+    "name": "humidity",
+    "icon": "fa-tint",
+    "iconColor": "#4179E0",
+    "unit": "%",
+    "order": 2975
+  },
+  {
+    "name": "pressure",
+    "icon": "fa-cloud-download-alt",
+    "iconColor": "#B0B0B0",
+    "unit": "Pa:HECTO",
+    "order": 2970
+  },
+  {
+    "name": "occupancy",
+    "icon": "fa-walking",
+    "iconColor": "#89D636",
+    "order": 2965
+  },
+  {
+    "name": "temperature",
+    "icon": "fa-thermometer-three-quarters",
+    "iconColor": "#36B9D6",
+    "unit": "℃",
+    "order": 2960
+  },
+  {
+    "name": "voltage",
+    "icon": "fa-bolt",
+    "iconColor": "#4BBF73",
+    "order": 2955
+  },
+  {
+    "name": "consumption",
+    "icon": "fa-car-battery",
+    "iconColor": "#43BDBF",
+    "order": 2950
+  },
+  {
+    "name": "power",
+    "icon": "fa-plug-circle-bolt",
+    "iconColor": "#9357EF",
+    "order": 2945
+  },
+  {
+    "name": "current",
+    "icon": "fa-copyright",
+    "iconColor": "#E5A54B",
+    "order": 2940
+  },
+  {
+    "name": "energy",
+    "icon": "fa-plug",
+    "iconColor": "#1F9BCF",
+    "order": 2935
+  },
+  {
+    "name": "battery",
+    "icon": "fa-battery-full",
+    "iconColor": "#32D1B9",
+    "unit": "%",
+    "order": 2930
+  },
+  {
+    "name": "brightness",
+    "icon": "fa-sun",
+    "iconColor": "#C4B74E",
+    "order": 2925
+  },
+  {
+    "name": "color_temp",
+    "icon": "fa-sliders-h",
+    "iconColor": "#7D37C2",
+    "order": 2920
+  },
+  {
+    "name": "power_outage_count",
+    "icon": "fa-plug-circle-xmark",
+    "iconColor": "#32D1B9"
+  },
+  {
+    "name": "linkquality",
+    "icon": "fa-signal",
+    "iconColor": "#D134AF",
+    "unit": "LQI"
+  },
+  {
+    "name": "tamper",
+    "icon": "fa-exclamation-circle",
+    "iconColor": "#BFBFBF"
+  },
+  {
+    "name": "meter_id",
+    "icon": "fa-image-portrait",
+    "iconColor": "#8533D6"
+  },
+  {
+    "name": "clear_fault",
+    "icon": "fa-broom",
+    "iconColor": "#99371F"
+  },
+  {
+    "name": "threshold_2_protection",
+    "icon": "fa-building-shield",
+    "iconColor": "#1BA191"
+  },
+  {
+    "name": "threshold_2_value",
+    "icon": "fa-square-up-right",
+    "iconColor": "#1BA191"
+  },
+  {
+    "name": "threshold_2",
+    "icon": "fa-turn-up",
+    "iconColor": "#1BA191"
+  },
+  {
+    "name": "threshold_1_value",
+    "icon": "fa-square-up-right",
+    "iconColor": "#1FA670"
+  },
+  {
+    "name": "threshold_1_protection",
+    "icon": "fa-building-shield",
+    "iconColor": "#1FA670"
+  },
+  {
+    "name": "threshold_1",
+    "icon": "fa-turn-up",
+    "iconColor": "#1FA670"
+  },
+  {
+    "name": "clear_fault",
+    "icon": "fa-plug-circle-check",
+    "iconColor": "#74B519"
+  },
+  {
+    "name": "fault",
+    "icon": "fa-plug-circle-exclamation",
+    "iconColor": "#DD5F24"
+  },
+  {
     "name": "smoke_density",
     "icon": "fa-smog",
     "iconColor": "#DD5F24"
@@ -13,11 +186,6 @@
     "name": "test",
     "icon": "fa-vials",
     "iconColor": "#A095F7"
-  },
-  {
-    "name": "smoke",
-    "icon": "fa-fire",
-    "iconColor": "#C7AC24"
   },
   {
     "name": "sensitivity",
@@ -55,16 +223,6 @@
     "iconColor": "#C26A37"
   },
   {
-    "name": "color_temp",
-    "icon": "fa-sliders-h",
-    "iconColor": "#7D37C2"
-  },
-  {
-    "name": "brightness",
-    "icon": "fa-sun",
-    "iconColor": "#C4B74E"
-  },
-  {
     "name": "power_outage_memory",
     "icon": "fa-memory",
     "iconColor": "#248580"
@@ -78,46 +236,6 @@
     "name": "interlock",
     "icon": "fa-arrow-down-up-lock",
     "iconColor": "#7BBF43"
-  },
-  {
-    "name": "consumption",
-    "icon": "fa-car-battery",
-    "iconColor": "#43BDBF"
-  },
-  {
-    "name": "voltage",
-    "icon": "fa-bolt",
-    "iconColor": "#4BBF73"
-  },
-  {
-    "name": "power",
-    "icon": "fa-plug-circle-bolt",
-    "iconColor": "#9357EF"
-  },
-  {
-    "name": "current",
-    "icon": "fa-copyright",
-    "iconColor": "#E5A54B"
-  },
-  {
-    "name": "energy",
-    "icon": "fa-plug",
-    "iconColor": "#1F9BCF"
-  },
-  {
-    "name": "tamper",
-    "icon": "fa-exclamation-circle",
-    "iconColor": "#BFBFBF"
-  },
-  {
-    "name": "battery_low",
-    "icon": "fa-battery-quarter",
-    "iconColor": "#DD5F24"
-  },
-  {
-    "name": "water_leak",
-    "icon": "fa-water",
-    "iconColor": "#0C9AB7"
   },
   {
     "name": "wakeup",
@@ -190,52 +308,6 @@
     "alias": [
       "angle"
     ]
-  },
-  {
-    "name": "illuminance",
-    "icon": "fa-sun",
-    "iconColor": "#89D636",
-    "unit": "lx"
-  },
-  {
-    "name": "humidity",
-    "icon": "fa-tint",
-    "iconColor": "#4179E0",
-    "unit": "%"
-  },
-  {
-    "name": "pressure",
-    "icon": "fa-cloud-download-alt",
-    "iconColor": "#B0B0B0",
-    "unit": "Pa:HECTO"
-  },
-  {
-    "name": "power_outage_count",
-    "icon": "fa-plug-circle-xmark",
-    "iconColor": "#32D1B9"
-  },
-  {
-    "name": "linkquality",
-    "icon": "fa-signal",
-    "iconColor": "#D134AF",
-    "unit": "LQI"
-  },
-  {
-    "name": "occupancy",
-    "icon": "fa-walking",
-    "iconColor": "#89D636"
-  },
-  {
-    "name": "temperature",
-    "icon": "fa-thermometer-three-quarters",
-    "iconColor": "#36B9D6",
-    "unit": "℃"
-  },
-  {
-    "name": "battery",
-    "icon": "fa-battery-full",
-    "iconColor": "#32D1B9",
-    "unit": "%"
   },
   {
     "name": "device_temperature",

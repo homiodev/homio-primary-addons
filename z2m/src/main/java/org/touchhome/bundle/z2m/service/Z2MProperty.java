@@ -38,6 +38,7 @@ import org.touchhome.bundle.api.util.Units;
 import org.touchhome.bundle.z2m.model.Z2MDeviceEntity.Z2MPropertyEntity;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options.Presets;
+import org.touchhome.bundle.z2m.util.ZigBeeUtil;
 
 @Log4j2
 @Getter
@@ -98,6 +99,126 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         getOrCreateVariable();
     }
 
+    public void mqttUpdate(JSONObject payload) {
+        this.updated = System.currentTimeMillis();
+        value = dataReader.apply(payload);
+        for (Consumer<State> changeListener : changeListeners.values()) {
+            changeListener.accept(value);
+        }
+
+        updateUI();
+        // push value to variable. Variable engine will fire event!
+        pushVariable();
+    }
+
+    public String getName() {
+        String name = format("${zigbee.endpoint.name.%s:%s}", expose.getName(), ZigBeeUtil.splitNameToReadableFormat(expose.getName()));
+        if (isNotEmpty(expose.getEndpoint())) {
+            return format("%s [%s]", name, expose.getEndpoint());
+        }
+        return name;
+    }
+
+    public String getDescription() {
+        return format("${zigbee.endpoint.description.%s:%s}", expose.getName(), defaultIfEmpty(getExpose().getDescription(), expose.getProperty()));
+    }
+
+    public void fireAction(boolean value) {
+        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value ? getExpose().getValueOn() : getExpose().getValueOff()));
+    }
+
+    public void fireAction(int value) {
+        if (expose.getValueMin() != null && value < expose.getValueMin()) {
+            value = expose.getValueMin();
+        } else if (expose.getValueMax() != null && value > expose.getValueMax()) {
+            value = expose.getValueMax();
+        }
+        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value));
+    }
+
+    public void fireAction(String value) {
+        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value));
+    }
+
+    public boolean isVisible() {
+        return true;
+    }
+
+    public boolean isWritable() {
+        return expose.isWritable();
+    }
+
+    @Override
+    public boolean isReadable() {
+        return expose.isReadable();
+    }
+
+    public boolean feedPayload(String key, JSONObject payload) {
+        if (key.equals(expose.getProperty()) || key.equals(expose.getName())) {
+            mqttUpdate(payload);
+            return true;
+        }
+        return false;
+    }
+
+    public int getInteger(int defaultValue) {
+        try {
+            return value.intValue();
+        } catch (Exception ex) {
+            return defaultValue;
+        }
+    }
+
+    public abstract String getPropertyDefinition();
+
+    @Override
+    public String getKey() {
+        return expose.getProperty();
+    }
+
+    @Override
+    public String getIeeeAddress() {
+        return deviceService.getDevice().getIeeeAddress();
+    }
+
+    @Override
+    public State getLastValue() {
+        return value;
+    }
+
+    @Override
+    public void writeValue(State state) {
+        switch (expose.getType()) {
+            case NUMBER_TYPE:
+                fireAction(state.intValue());
+                break;
+            case BINARY_TYPE:
+            case SWITCH_TYPE:
+                fireAction(state.boolValue());
+                break;
+            default:
+                fireAction(state.stringValue());
+        }
+    }
+
+    @Override
+    public void readValue() {
+        getDeviceService().publish("get", new JSONObject().put(expose.getProperty(), ""));
+    }
+
+    @Override
+    public PropertyType getPropertyType() {
+        switch (expose.getType()) {
+            case NUMBER_TYPE:
+                return PropertyType.number;
+            case BINARY_TYPE:
+            case SWITCH_TYPE:
+                return PropertyType.bool;
+            default:
+                return PropertyType.string;
+        }
+    }
+
     protected String getJsonKey() {
         return expose.getName();
     }
@@ -135,18 +256,6 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         }
     }
 
-    public void mqttUpdate(JSONObject payload) {
-        this.updated = System.currentTimeMillis();
-        value = dataReader.apply(payload);
-        for (Consumer<State> changeListener : changeListeners.values()) {
-            changeListener.accept(value);
-        }
-
-        updateUI();
-        // push value to variable. Variable engine will fire event!
-        pushVariable();
-    }
-
     protected void updateUI() {
         entityContext.ui().updateInnerSetItem(deviceService.getDeviceEntity(), "endpointClusters", entityID, "value", new Z2MPropertyEntity(this).getValue());
         entityContext.ui().updateInnerSetItem(deviceService.getDeviceEntity(), "endpointClusters", entityID, "updated", updated);
@@ -172,7 +281,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
                 entityContext.var().setLinkListener(variableId, varValue -> {
                     // fire updates only if variable updates externally
                     if (!Objects.equals(dbValue, varValue)) {
-                        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), varValue));
+                        writeValue(State.of(varValue));
                     }
                 });
             }
@@ -237,90 +346,6 @@ public abstract class Z2MProperty implements ZigBeeProperty {
                     return VariableType.Bool;
                 }
                 return VariableType.Any;
-        }
-    }
-
-    public String getName() {
-        String name = format("${zigbee.endpoint.name.%s:%s}", expose.getName(), expose.getName());
-        if (isNotEmpty(expose.getEndpoint())) {
-            return format("%s [%s]", name, expose.getEndpoint());
-        }
-        return name;
-    }
-
-    public String getDescription() {
-        return format("${zigbee.endpoint.description.%s:%s}", expose.getName(), defaultIfEmpty(getExpose().getDescription(), expose.getProperty()));
-    }
-
-    public void fireAction(boolean value) {
-        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value ? getExpose().getValueOn() : getExpose().getValueOff()));
-    }
-
-    public void fireAction(int value) {
-        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value));
-    }
-
-    public void fireAction(String value) {
-        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value));
-    }
-
-    public boolean isVisible() {
-        return true;
-    }
-
-    public boolean isWritable() {
-        return expose.isWritable();
-    }
-
-    @Override
-    public boolean isReadable() {
-        return expose.isReadable();
-    }
-
-    public boolean feedPayload(String key, JSONObject payload) {
-        if (key.equals(expose.getProperty()) || key.equals(expose.getName())) {
-            mqttUpdate(payload);
-            return true;
-        }
-        return false;
-    }
-
-    public int getInteger(int defaultValue) {
-        try {
-            return value.intValue();
-        } catch (Exception ex) {
-            return defaultValue;
-        }
-    }
-
-    public abstract String getPropertyDefinition();
-
-    @Override
-    public String getKey() {
-        return expose.getProperty();
-    }
-
-    @Override
-    public String getIeeeAddress() {
-        return deviceService.getDevice().getIeeeAddress();
-    }
-
-    @Override
-    public State getLastValue() {
-        return value;
-    }
-
-    @Override
-    public void writeValue(State state) {
-        switch (expose.getType()) {
-            case NUMBER_TYPE:
-                getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value.intValue()));
-            case BINARY_TYPE:
-            case SWITCH_TYPE:
-                getDeviceService().publish("set", new JSONObject().put(expose.getProperty(),
-                    state.boolValue() ? getExpose().getValueOn() : getExpose().getValueOff()));
-            default:
-                getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value.stringValue()));
         }
     }
 }

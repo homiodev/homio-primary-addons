@@ -74,39 +74,6 @@ public class Z2MDeviceService {
             device.getIeeeAddress());
     }
 
-    private void mqttUpdate(JSONObject payload) {
-        boolean updated = false;
-        List<String> sb = new ArrayList<>();
-        for (String key : payload.keySet()) {
-            try {
-                boolean feed = false;
-                for (Z2MProperty property : properties.values()) {
-                    if (property.feedPayload(key, payload)) {
-                        feed = true;
-                        updated = true;
-                        sb.add(format("%s - %s", property.getDescription(), property.getValue().toString()));
-                    }
-                }
-                if (!feed && !key.equals("illuminance_lux")) {
-                    log.info("[{}]: Create dynamic created property '{}'. Device: {}", coordinatorService.getEntityID(), key, device.getIeeeAddress());
-                    Z2MProperty missedZ2MProperty = buildExposeProperty(Options.dynamicExpose(key, getFormatFromPayloadValue(payload, key)));
-                    missedZ2MProperty.mqttUpdate(payload);
-
-                    addProperty(key, s -> missedZ2MProperty);
-                    entityContext.ui().updateItem(deviceEntity);
-                }
-            } catch (Exception ex) {
-                log.error("Unable to handle Z2MProperty: {}. Payload: {}. Msg: {}", key, payload, CommonUtils.getErrorMessage(ex));
-            }
-        }
-        if (updated) {
-            properties.get(Z2MPropertyLastUpdate.KEY).mqttUpdate(null);
-        }
-        if (deviceEntity.isLogEvents() && !sb.isEmpty()) {
-            entityContext.ui().sendInfoMessage(device.getGroupDescription(), String.join("\n", sb));
-        }
-    }
-
     public void dispose() {
         entityContext.event().removeEvents(getDeviceTopic(device));
         entityContext.ui().updateItem(deviceEntity);
@@ -125,14 +92,6 @@ public class Z2MDeviceService {
             }
         }
         addProperty(Z2MPropertyLastUpdate.KEY, key -> new Z2MPropertyLastUpdate(this));
-    }
-
-    private void removeRedundantExposes(Z2MDeviceDTO device) {
-        // remove illuminance_lux if illuminance is present
-        if (device.getDefinition().getExposes().stream().anyMatch(e -> "illuminance_lux".equals(e.getName()))
-            && device.getDefinition().getExposes().stream().anyMatch(e -> "illuminance".equals(e.getName()))) {
-            device.getDefinition().getExposes().removeIf(e -> "illuminance_lux".equals(e.getName()));
-        }
     }
 
     @Override
@@ -175,6 +134,47 @@ public class Z2MDeviceService {
             coordinatorService.addMissingProperty(deviceEntity.getIeeeAddress(), property);
             return property;
         });
+    }
+
+    private void mqttUpdate(JSONObject payload) {
+        boolean updated = false;
+        List<String> sb = new ArrayList<>();
+        for (String key : payload.keySet()) {
+            try {
+                boolean feed = false;
+                for (Z2MProperty property : properties.values()) {
+                    if (property.feedPayload(key, payload)) {
+                        feed = true;
+                        updated = true;
+                        sb.add(format("%s - %s", property.getDescription(), property.getValue().toString()));
+                    }
+                }
+                if (!feed && !key.equals("illuminance_lux")) {
+                    log.info("[{}]: Create dynamic created property '{}'. Device: {}", coordinatorService.getEntityID(), key, device.getIeeeAddress());
+                    Z2MProperty missedZ2MProperty = buildExposeProperty(Options.dynamicExpose(key, getFormatFromPayloadValue(payload, key)));
+                    missedZ2MProperty.mqttUpdate(payload);
+
+                    addProperty(key, s -> missedZ2MProperty);
+                    entityContext.ui().updateItem(deviceEntity);
+                }
+            } catch (Exception ex) {
+                log.error("Unable to handle Z2MProperty: {}. Payload: {}. Msg: {}", key, payload, CommonUtils.getErrorMessage(ex));
+            }
+        }
+        if (updated) {
+            properties.get(Z2MPropertyLastUpdate.KEY).mqttUpdate(null);
+        }
+        if (deviceEntity.isLogEvents() && !sb.isEmpty()) {
+            entityContext.ui().sendInfoMessage(device.getGroupDescription(), String.join("\n", sb));
+        }
+    }
+
+    private void removeRedundantExposes(Z2MDeviceDTO device) {
+        // remove illuminance_lux if illuminance is present
+        if (device.getDefinition().getExposes().stream().anyMatch(e -> "illuminance_lux".equals(e.getName()))
+            && device.getDefinition().getExposes().stream().anyMatch(e -> "illuminance".equals(e.getName()))) {
+            device.getDefinition().getExposes().removeIf(e -> "illuminance_lux".equals(e.getName()));
+        }
     }
 
     private void addMissingProperties(Z2MLocalCoordinatorService coordinatorService, Z2MDeviceDTO device) {
@@ -229,7 +229,7 @@ public class Z2MDeviceService {
         Class<? extends Z2MProperty> z2mCluster = getValueFromMap(coordinatorService.getZ2mConverters(), expose);
         Z2MProperty z2MProperty;
         if (z2mCluster == null) {
-            Z2MPropertyDTO z2MPropertyDTO = getValueFromMap(coordinatorService.getZ2mProperties(), expose);
+            Z2MPropertyDTO z2MPropertyDTO = getValueFromMap(ZigBeeUtil.DEVICE_PROPERTIES, expose);
             if (z2MPropertyDTO != null) {
                 z2MProperty = new Z2MGeneralProperty(z2MPropertyDTO.getIconColor(), z2MPropertyDTO.getIcon());
                 z2MProperty.setUnit(z2MPropertyDTO.getUnit());

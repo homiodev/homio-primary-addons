@@ -16,36 +16,37 @@ import org.touchhome.bundle.cloud.setting.ConsoleCloudProviderSetting;
 @Controller
 public class BluetoothBundleEntrypoint extends BaseBluetoothCharacteristicService implements BundleEntrypoint {
 
-  private final EntityContext entityContext;
+    private final EntityContext entityContext;
 
-  public BluetoothBundleEntrypoint(EntityContext entityContext, MachineHardwareRepository machineHardwareRepository, NetworkHardwareRepository networkHardwareRepository) {
-    super(machineHardwareRepository, networkHardwareRepository);
-    this.entityContext = entityContext;
-  }
+    public BluetoothBundleEntrypoint(EntityContext entityContext, MachineHardwareRepository machineHardwareRepository,
+        NetworkHardwareRepository networkHardwareRepository) {
+        super(machineHardwareRepository, networkHardwareRepository);
+        this.entityContext = entityContext;
+    }
 
-  @Override
-  public Class<? extends SettingPluginStatus> getBundleStatusSetting() {
-    return BluetoothStatusSetting.class;
-  }
+    @Override
+    public Class<? extends SettingPluginStatus> getBundleStatusSetting() {
+        return BluetoothStatusSetting.class;
+    }
 
-  @Override
-  public int order() {
-    return Integer.MAX_VALUE;
-  }
+    @Override
+    public int order() {
+        return Integer.MAX_VALUE;
+    }
 
-  @Override
-  public String readServerConnected() {
-    return entityContext.setting().getValue(ConsoleCloudProviderSetting.class).getStatus();
-  }
+    @Override
+    public String readServerConnected() {
+        return entityContext.setting().getValue(ConsoleCloudProviderSetting.class).getStatus();
+    }
 
-  @Override
-  public String getFeatures() {
-    return entityContext.getDeviceFeatures().entrySet().stream().map(es -> es.getKey() + "~~~" + es.getValue()).collect(Collectors.joining(";"));
-  }
+    @Override
+    public String getFeatures() {
+        return entityContext.getDeviceFeatures().entrySet().stream().map(es -> es.getKey() + "~~~" + es.getValue()).collect(Collectors.joining(";"));
+    }
 
-  /**
-   * We may set password only once. If user wants update password, he need pass old password hash
-   *//*
+    /**
+     * We may set password only once. If user wants update password, he need pass old password hash
+     *//*
      TODO: need rewrite logic
     @Override
     public void writePwd(String loginUser, String pwd, String prevPwd) {
@@ -65,13 +66,14 @@ public class BluetoothBundleEntrypoint extends BaseBluetoothCharacteristicServic
             setTimeSinceLastCheckPassword(System.currentTimeMillis());
         }
     }*/
-  @Override
-  public void updateBluetoothStatus(String status) {
-    entityContext.setting().setValue(BluetoothStatusSetting.class, new SettingPluginStatus.BundleStatusInfo(Status.valueOf(status), null));
-  }
+    @Override
+    public void updateBluetoothStatus(String status) {
+        entityContext.setting().setValue(BluetoothStatusSetting.class,
+            new SettingPluginStatus.BundleStatusInfo(Status.valueOf(status), null));
+    }
 
-  @Override
-  public void setFeatureState(boolean status) {
-    entityContext.setFeatureState("Bluetooth", status);
-  }
+    @Override
+    public void setFeatureState(boolean status) {
+        entityContext.setFeatureState("Bluetooth", status);
+    }
 }

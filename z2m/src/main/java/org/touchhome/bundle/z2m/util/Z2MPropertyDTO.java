@@ -16,6 +16,7 @@ public class Z2MPropertyDTO {
     private String name;
     private String icon;
     private String iconColor;
+    private int order;
 
     @JsonDeserialize(converter = StringToUnitConverter.class)
     private Unit unit;

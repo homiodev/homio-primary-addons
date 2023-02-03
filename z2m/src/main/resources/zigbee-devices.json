@@ -1,5 +1,18 @@
 [
   {
+    "model": "TS0601_din_2",
+    "icon": "fas fa-plug-circle-bolt",
+    "iconColor": "#C28A40"
+  },
+  {
+    "model": "GL-C-007-1ID",
+    "icon": "fas fa-palette",
+    "iconColor": "#7F50AD",
+    "widgets": [
+      "color"
+    ]
+  },
+  {
     "model": "lumi.relay.c2acn01",
     "icon": "fas fa-shuffle",
     "iconColor": "#57A4D1"

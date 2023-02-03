@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.BaseEntity;
 import org.touchhome.bundle.api.entity.types.MicroControllerBaseEntity;
@@ -177,7 +176,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @Override
-    public Map<String, Map<String, ? extends ZigBeeProperty>> getAllProperties() {
+    public @NotNull Map<String, Map<String, ? extends ZigBeeProperty>> getCoordinatorTree() {
         Map<String, Map<String, ? extends ZigBeeProperty>> map = new HashMap<>();
         for (Entry<String, Z2MDeviceService> entry : getService().getDeviceHandlers().entrySet()) {
             map.put(entry.getKey(), entry.getValue().getProperties());
@@ -192,9 +191,9 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @Override
-    public @Nullable ZigBeeProperty getZigBeeDeviceProperty(String ieeeAddress, String property) {
+    public ZigBeeDeviceBaseEntity getZigBeeDevice(@NotNull String ieeeAddress) {
         Z2MDeviceService service = getService().getDeviceHandlers().get(ieeeAddress);
-        return service == null ? null : service.getProperties().get(property);
+        return service == null ? null : service.getDeviceEntity();
     }
 
     @Getter

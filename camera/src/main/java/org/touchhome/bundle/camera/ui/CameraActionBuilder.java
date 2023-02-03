@@ -60,7 +60,7 @@ public class CameraActionBuilder {
                         ? UIFieldType.Boolean : UIFieldType.String;
                 }
 
-                UIActionHandler actionHandler = (entityConetxt, params) -> {
+                UIActionHandler actionHandler = (entityContext, params) -> {
                     try {
                         method.invoke(instance, actionParameterConverter.apply(params.optString("value")));
                     } catch (Exception ex) {
@@ -79,8 +79,10 @@ public class CameraActionBuilder {
                                                       .setBorderArea(uiVideoAction.group());
                     } else {
                         UIStickyDialogItemBuilder stickyLayoutBuilder = layoutBuilder.addStickyDialogButton(
-                                                                                         uiVideoAction.group() + "_sb", uiVideoAction.subGroupIcon(), null, uiVideoAction.order())
-                                                                                     .editButton(buttonItemBuilder -> buttonItemBuilder.setText(uiVideoAction.group()));
+                                                                                         uiVideoAction.group() + "_sb", uiVideoAction.subGroupIcon(), null,
+                                                                                         uiVideoAction.order())
+                                                                                     .editButton(
+                                                                                         buttonItemBuilder -> buttonItemBuilder.setText(uiVideoAction.group()));
 
                         layoutBuilder = stickyLayoutBuilder.addFlex(uiVideoAction.subGroup(), uiVideoAction.order())
                                                            .setBorderArea(uiVideoAction.subGroup())
@@ -90,7 +92,8 @@ public class CameraActionBuilder {
                 UICameraDimmerButton[] buttons = method.getDeclaredAnnotationsByType(UICameraDimmerButton.class);
                 if (buttons.length > 0) {
                     if (uiVideoAction.type() != UIVideoAction.ActionType.Dimmer) {
-                        throw new RuntimeException("Method " + method.getName() + " annotated with @UICameraDimmerButton, but @UICameraAction has no dimmer type");
+                        throw new RuntimeException(
+                            "Method " + method.getName() + " annotated with @UICameraDimmerButton, but @UICameraAction has no dimmer type");
                     }
                     UIFlexLayoutBuilder flex = layoutBuilder.addFlex("dimmer", uiVideoAction.order());
                     UIMultiButtonItemBuilder multiButtonItemBuilder = flex.addMultiButton("dimm_btns", actionHandler, uiVideoAction.order());
@@ -106,7 +109,8 @@ public class CameraActionBuilder {
                 if (type == UIFieldType.SelectBox) {
                     if (actionParameter.getType().isEnum()) {
                         if (KeyValueEnum.class.isAssignableFrom(actionParameter.getType())) {
-                            ((UISelectBoxItemBuilder) uiEntityItemBuilder).setOptions(OptionModel.list((Class<? extends KeyValueEnum>) actionParameter.getType()));
+                            ((UISelectBoxItemBuilder) uiEntityItemBuilder).setOptions(
+                                OptionModel.list((Class<? extends KeyValueEnum>) actionParameter.getType()));
                         } else {
                             ((UISelectBoxItemBuilder) uiEntityItemBuilder).setOptions(OptionModel.enumList((Class<? extends Enum>) actionParameter.getType()));
                         }
