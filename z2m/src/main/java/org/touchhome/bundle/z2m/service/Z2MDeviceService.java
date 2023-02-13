@@ -28,7 +28,7 @@ import org.touchhome.bundle.z2m.service.properties.dynamic.Z2MGeneralProperty;
 import org.touchhome.bundle.z2m.service.properties.dynamic.Z2MPropertyUnknown;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
-import org.touchhome.bundle.z2m.util.Z2MPropertyDTO;
+import org.touchhome.bundle.z2m.util.Z2MDevicePropertiesDTO;
 import org.touchhome.bundle.z2m.util.ZigBeeUtil;
 import org.touchhome.common.util.CommonUtils;
 import org.touchhome.common.util.Lang;
@@ -229,10 +229,10 @@ public class Z2MDeviceService {
         Class<? extends Z2MProperty> z2mCluster = getValueFromMap(coordinatorService.getZ2mConverters(), expose);
         Z2MProperty z2MProperty;
         if (z2mCluster == null) {
-            Z2MPropertyDTO z2MPropertyDTO = getValueFromMap(ZigBeeUtil.DEVICE_PROPERTIES, expose);
-            if (z2MPropertyDTO != null) {
-                z2MProperty = new Z2MGeneralProperty(z2MPropertyDTO.getIconColor(), z2MPropertyDTO.getIcon());
-                z2MProperty.setUnit(z2MPropertyDTO.getUnit());
+            Z2MDevicePropertiesDTO z2MDevicePropertiesDTO = getValueFromMap(ZigBeeUtil.DEVICE_PROPERTIES, expose);
+            if (z2MDevicePropertiesDTO != null) {
+                z2MProperty = new Z2MGeneralProperty(z2MDevicePropertiesDTO.getIconColor(), z2MDevicePropertiesDTO.getIcon());
+                z2MProperty.setUnit(z2MDevicePropertiesDTO.getUnit());
             } else {
                 z2MProperty = new Z2MPropertyUnknown();
             }

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.touchhome.bundle.api.state.StringType;
 import org.touchhome.bundle.z2m.service.Z2MDeviceService;
@@ -44,7 +45,7 @@ public class Z2MPropertyColor extends Z2MProperty {
     }
 
     @Override
-    public void init(Z2MDeviceService deviceService, Options expose) {
+    public void init(@NotNull Z2MDeviceService deviceService, @NotNull Options expose) {
         switch (expose.getName()) {
             case "color_xy":
                 this.dataReader =

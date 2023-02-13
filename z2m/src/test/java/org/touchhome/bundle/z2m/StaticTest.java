@@ -6,14 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.touchhome.bundle.api.util.Units;
 import org.touchhome.bundle.z2m.util.Z2MConfiguration;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO;
-import org.touchhome.bundle.z2m.util.Z2MPropertyDTO;
+import org.touchhome.bundle.z2m.util.Z2MDeviceDefinitionDTO;
+import org.touchhome.bundle.z2m.util.Z2MDevicePropertiesDTO;
 import org.touchhome.common.util.CommonUtils;
 
 public class StaticTest {
@@ -26,12 +26,14 @@ public class StaticTest {
             new TypeReference<>() {});
         assertEquals(2, z2MDeviceDTOS.size());
 
-        ArrayNode devices = CommonUtils.OBJECT_MAPPER.readValue(getClass().getClassLoader().getResource("zigbee-devices.json"), ArrayNode.class);
+        List<Z2MDeviceDefinitionDTO> devices = CommonUtils.OBJECT_MAPPER.readValue(getClass().getClassLoader().getResource("zigbee-devices.json"),
+            new TypeReference<>() {});
         assertFalse(devices.isEmpty());
 
-        List<Z2MPropertyDTO> z2MPropertyDTOS = objectMapper.readValue(getClass().getClassLoader().getResourceAsStream("zigbee-device-properties.json"),
+        List<Z2MDevicePropertiesDTO> z2MDevicePropertiesDTOS = objectMapper.readValue(
+            getClass().getClassLoader().getResourceAsStream("zigbee-device-properties.json"),
             new TypeReference<>() {});
-        assertFalse(z2MPropertyDTOS.isEmpty());
+        assertFalse(z2MDevicePropertiesDTOS.isEmpty());
 
         CommonUtils.YAML_OBJECT_MAPPER.readValue(getClass().getClassLoader().getResource("z2m_config.yaml"), Z2MConfiguration.class);
 

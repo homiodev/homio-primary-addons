@@ -9,12 +9,12 @@ public class Z2MPropertyState extends Z2MProperty {
     }
 
     @Override
-    protected String getJsonKey() {
-        return getExpose().getProperty();
+    public String getPropertyDefinition() {
+        return "state";
     }
 
     @Override
-    public String getPropertyDefinition() {
-        return "state";
+    protected String getJsonKey() {
+        return getExpose().getProperty();
     }
 }

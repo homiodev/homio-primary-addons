@@ -10,10 +10,8 @@ import static org.touchhome.common.util.CommonUtils.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +32,7 @@ import org.touchhome.bundle.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.touchhome.bundle.z2m.service.Z2MProperty;
 import org.touchhome.bundle.z2m.service.properties.Z2MPropertyColor;
 import org.touchhome.bundle.z2m.service.properties.Z2MPropertyLastUpdate;
+import org.touchhome.bundle.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
 import org.touchhome.common.util.CommonUtils;
 
 @Log4j2
@@ -42,18 +41,22 @@ public final class ZigBeeUtil {
     /**
      * Properties market with defined color, icon, etc...
      */
-    public static final Map<String, Z2MPropertyDTO> DEVICE_PROPERTIES;
+    public static final Map<String, Z2MDevicePropertiesDTO> DEVICE_PROPERTIES;
     /**
      * Contains model/icon/iconColor/some setting config i.e. occupancy_timeout min..max values
      */
-    private static final Map<String, JsonNode> DEVICE_DEFINITIONS;
+    private static final Map<String, Z2MDeviceDefinitionDTO> DEVICE_DEFINITIONS;
 
     static {
         try {
             DEVICE_DEFINITIONS = new HashMap<>();
-            ArrayNode nodes = CommonUtils.OBJECT_MAPPER.readValue(ZigBeeUtil.class.getClassLoader().getResource("zigbee-devices.json"), ArrayNode.class);
-            for (JsonNode node : nodes) {
-                ZigBeeUtil.DEVICE_DEFINITIONS.put(node.get("model").asText(), node);
+            List<Z2MDeviceDefinitionDTO> devices = CommonUtils.OBJECT_MAPPER.readValue(
+                ZigBeeUtil.class.getClassLoader().getResource("zigbee-devices.json"),
+                new TypeReference<>() {});
+            for (Z2MDeviceDefinitionDTO node : devices) {
+                for (String model : node.getModel()) {
+                    ZigBeeUtil.DEVICE_DEFINITIONS.put(model, node);
+                }
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -62,16 +65,17 @@ public final class ZigBeeUtil {
 
     static {
         try {
-            List<Z2MPropertyDTO> z2MPropertyDTOMap = OBJECT_MAPPER.readValue(ZigBeeUtil.class.getClassLoader().getResource("zigbee-device-properties.json"),
+            List<Z2MDevicePropertiesDTO> z2MDevicePropertiesDTOMap = OBJECT_MAPPER.readValue(
+                ZigBeeUtil.class.getClassLoader().getResource("zigbee-device-properties.json"),
                 new TypeReference<>() {});
             DEVICE_PROPERTIES = new HashMap<>();
-            for (Z2MPropertyDTO z2MPropertyDTO : z2MPropertyDTOMap) {
-                DEVICE_PROPERTIES.put(z2MPropertyDTO.getName(), z2MPropertyDTO);
-                if (z2MPropertyDTO.getAlias() != null) {
-                    for (String alias : z2MPropertyDTO.getAlias()) {
-                        DEVICE_PROPERTIES.put(alias, z2MPropertyDTO);
+            for (Z2MDevicePropertiesDTO z2MDevicePropertiesDTO : z2MDevicePropertiesDTOMap) {
+                DEVICE_PROPERTIES.put(z2MDevicePropertiesDTO.getName(), z2MDevicePropertiesDTO);
+                if (z2MDevicePropertiesDTO.getAlias() != null) {
+                    for (String alias : z2MDevicePropertiesDTO.getAlias()) {
+                        DEVICE_PROPERTIES.put(alias, z2MDevicePropertiesDTO);
                     }
-                    z2MPropertyDTO.setAlias(null);
+                    z2MDevicePropertiesDTO.setAlias(null);
                 }
             }
         } catch (Exception ex) {
@@ -100,32 +104,30 @@ public final class ZigBeeUtil {
         });
     }
 
-    public static String getDeviceIcon(@NotNull String modelId, @NotNull String defaultIcon) {
-        return DEVICE_DEFINITIONS.containsKey(modelId) ? DEVICE_DEFINITIONS.get(modelId).get("icon").asText() : defaultIcon;
+    public static @NotNull String getDeviceIcon(@NotNull String modelId, @NotNull String defaultIcon) {
+        return DEVICE_DEFINITIONS.containsKey(modelId) ? DEVICE_DEFINITIONS.get(modelId).getIcon() : defaultIcon;
     }
 
-    public static String getDeviceIconColor(@NotNull String modelId, @NotNull String defaultIconColor) {
-        return DEVICE_DEFINITIONS.containsKey(modelId) ? DEVICE_DEFINITIONS.get(modelId).get("iconColor").asText() : defaultIconColor;
+    public static @NotNull String getDeviceIconColor(@NotNull String modelId, @NotNull String defaultIconColor) {
+        return DEVICE_DEFINITIONS.containsKey(modelId) ? DEVICE_DEFINITIONS.get(modelId).getIconColor() : defaultIconColor;
     }
 
-    public static List<String> getDeviceWidgets(@NotNull String modelId) {
+    public static @NotNull List<WidgetDefinition> getDeviceWidgets(@NotNull String modelId) {
+        List<WidgetDefinition> list = null;
         if (DEVICE_DEFINITIONS.containsKey(modelId)) {
-            List<String> widgets = new ArrayList<>();
-            for (JsonNode node : DEVICE_DEFINITIONS.get(modelId).withArray("widgets")) {
-                widgets.add(node.asText());
-            }
-            return widgets;
+            list = DEVICE_DEFINITIONS.get(modelId).getWidgets();
         }
-        return Collections.emptyList();
+        return list == null ? Collections.emptyList() : list;
     }
 
-    public static JsonNode getDeviceOptions(@NotNull String modelId) {
+    public static @NotNull JsonNode getDeviceOptions(@NotNull String modelId) {
+        Z2MDeviceDefinitionDTO z2MDeviceDefinitionDTO = DEVICE_DEFINITIONS.get(modelId);
+        JsonNode options = z2MDeviceDefinitionDTO == null ? null : z2MDeviceDefinitionDTO.getOptions();
         ObjectNode empty = CommonUtils.OBJECT_MAPPER.createObjectNode();
-        JsonNode options = DEVICE_DEFINITIONS.getOrDefault(modelId, empty).get("options");
         return options == null ? empty : options;
     }
 
-    public static UIInputBuilder buildZigbeeActions(@NotNull Z2MProperty property, @NotNull String entityID) {
+    public static @NotNull UIInputBuilder buildZigbeeActions(@NotNull Z2MProperty property, @NotNull String entityID) {
         UIInputBuilder uiInputBuilder = property.getDeviceService().getEntityContext().ui().inputBuilder();
         if (property.isWritable()) {
             switch (property.getExpose().getType()) {
@@ -182,7 +184,7 @@ public final class ZigBeeUtil {
 
     private static int getPropertyOrder(@NotNull String name) {
         int order = Optional.ofNullable(DEVICE_PROPERTIES.get(name))
-                            .map(Z2MPropertyDTO::getOrder)
+                            .map(Z2MDevicePropertiesDTO::getOrder)
                             .orElse(0);
         if (order == 0) {
             order = name.charAt(0) * 10 + name.charAt(1);

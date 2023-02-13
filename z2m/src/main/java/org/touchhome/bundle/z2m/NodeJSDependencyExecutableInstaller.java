@@ -52,10 +52,6 @@ public class NodeJSDependencyExecutableInstaller extends DependencyExecutableIns
     }
 
     @Override
-    protected void afterDependencyInstalled(@NotNull EntityContext entityContext, Path path) {
-    }
-
-    @Override
     public boolean checkWinDependencyInstalled(
         MachineHardwareRepository repository, @NotNull Path targetPath) {
         return !repository.executeNoErrorThrow(targetPath + " -v", 60, null).startsWith("v");
@@ -69,5 +65,9 @@ public class NodeJSDependencyExecutableInstaller extends DependencyExecutableIns
     @Override
     public Class<? extends SettingPluginButton> getInstallButton() {
         return null;
+    }
+
+    @Override
+    protected void afterDependencyInstalled(@NotNull EntityContext entityContext, Path path) {
     }
 }

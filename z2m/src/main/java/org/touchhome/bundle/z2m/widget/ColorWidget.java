@@ -2,56 +2,55 @@ package org.touchhome.bundle.z2m.widget;
 
 import java.util.Map;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.EntityContextWidget.HorizontalAlign;
+import org.touchhome.bundle.api.EntityContextWidget.VerticalAlign;
 import org.touchhome.bundle.z2m.model.Z2MDeviceEntity;
 import org.touchhome.bundle.z2m.service.Z2MProperty;
 
 public class ColorWidget implements WidgetBuilder {
 
     @Override
-    public void buildWidget(EntityContext entityContext, Z2MDeviceEntity entity, String tab) {
-        entityContext.widget().createColorWidget("clr_" + entity.getIeeeAddress(),
-            entity.getName(), builder -> {
-                builder.setBlockSize(2, 1);
-                builder.setName(entity.getModel());
-                builder.setIcon(entity.getIcon());
-                builder.setIconColor(entity.getIconColor());
-                Map<String, Z2MProperty> properties = entity.getDeviceService().getProperties();
+    public void buildWidget(WidgetRequest widgetRequest) {
+        EntityContext entityContext = widgetRequest.getEntityContext();
+        Z2MDeviceEntity entity = widgetRequest.getEntity();
 
-                Z2MProperty colorTempProperty = properties.get("color_temp");
-                if (colorTempProperty != null) {
-                    builder.setColorTemperatureValueDataSource(getSource(entityContext, colorTempProperty));
-                    if (colorTempProperty.getExpose().getValueMin() != null) {
-                        builder.setColorTemperatureMinValue(colorTempProperty.getExpose().getValueMin());
-                    }
-                    if (colorTempProperty.getExpose().getValueMax() != null) {
-                        builder.setColorTemperatureMaxValue(colorTempProperty.getExpose().getValueMax());
-                    }
-                }
+        String layoutID = "lt-clr_" + entity.getIeeeAddress();
+        Map<String, Z2MProperty> properties = entity.getDeviceService().getProperties();
+        Z2MProperty onOffProperty = properties.get("state");
+        Z2MProperty brightnessProperty = properties.get("brightness");
+        Z2MProperty colorProperty = properties.get("color");
 
-                Z2MProperty brightnessProperty = properties.get("brightness");
-                if (brightnessProperty != null) {
-                    builder.setBrightnessValueDataSource(getSource(entityContext, brightnessProperty));
-                    if (brightnessProperty.getExpose().getValueMin() != null) {
-                        builder.setBrightnessMinValue(brightnessProperty.getExpose().getValueMin());
-                    }
-                    if (brightnessProperty.getExpose().getValueMax() != null) {
-                        builder.setBrightnessMaxValue(brightnessProperty.getExpose().getValueMax());
-                    }
-                }
+        entityContext.widget().createLayoutWidget(layoutID, builder -> {
+            builder.setBlockSize(2, 1);
+            builder.setLayoutDimension(2, 6);
+        });
 
-                Z2MProperty onOffProperty = properties.get("state");
-                if (onOffProperty != null) {
-                    builder.setOnOffValueDataSource(getSource(entityContext, onOffProperty));
-                }
-
-                Z2MProperty colorProperty = properties.get("color");
-                if (colorProperty != null) {
-                    builder.setColorValueDataSource(getSource(entityContext, colorProperty));
-                }
+        if (brightnessProperty != null) {
+            entityContext.widget().createSliderWidget("sl_" + entity.getIeeeAddress(), builder -> {
+                builder.setBlockSize(5, 1);
+                builder.attachToLayout(layoutID, 0, 0);
+                builder.addSeries(entity.getModel(), seriesBuilder -> {
+                    seriesBuilder.setIcon(entity.getIcon());
+                    seriesBuilder.setIconColor(entity.getIconColor());
+                    WidgetBuilder.setValueDataSource(seriesBuilder, entityContext, brightnessProperty);
+                });
             });
-    }
+        }
 
-    private String getSource(EntityContext entityContext, Z2MProperty property) {
-        return entityContext.var().buildDataSource(property.getVariableId());
+        entityContext.widget().createSimpleColorWidget("clr_" + entity.getIeeeAddress(), builder -> {
+            builder.setBlockSize(5, 1);
+            WidgetBuilder.setValueDataSource(builder, entityContext, colorProperty);
+            builder.attachToLayout(layoutID, 1, 0);
+        });
+
+        if (onOffProperty != null) {
+            entityContext.widget().createSimpleToggleWidget("tgl-" + entity.getIeeeAddress(), builder -> {
+                WidgetBuilder.setValueDataSource(builder, entityContext, onOffProperty);
+                builder.setAlign(HorizontalAlign.right, VerticalAlign.middle);
+                builder.attachToLayout(layoutID, 0, 5);
+            });
+        }
+
+        WidgetBuilder.addLqiProperty(entityContext, layoutID, properties.get("linkquality"), 1, 5);
     }
 }

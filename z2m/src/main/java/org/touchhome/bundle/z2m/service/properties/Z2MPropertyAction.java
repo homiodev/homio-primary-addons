@@ -6,7 +6,7 @@ import org.touchhome.bundle.api.state.StringType;
 import org.touchhome.bundle.z2m.service.Z2MDeviceService;
 import org.touchhome.bundle.z2m.service.Z2MProperty;
 import org.touchhome.bundle.z2m.service.properties.dynamic.Z2MPropertyActionEvent;
-import org.touchhome.bundle.z2m.util.Z2MPropertyDTO;
+import org.touchhome.bundle.z2m.util.Z2MDevicePropertiesDTO;
 import org.touchhome.bundle.z2m.util.ZigBeeUtil;
 
 public class Z2MPropertyAction extends Z2MProperty {
@@ -16,8 +16,8 @@ public class Z2MPropertyAction extends Z2MProperty {
     }
 
     public static Z2MPropertyActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {
-        Z2MPropertyDTO z2MPropertyDTO = ZigBeeUtil.DEVICE_PROPERTIES.get(action);
-        Z2MPropertyActionEvent z2MPropertyActionEvent = new Z2MPropertyActionEvent(deviceService, action, z2MPropertyDTO);
+        Z2MDevicePropertiesDTO z2MDevicePropertiesDTO = ZigBeeUtil.DEVICE_PROPERTIES.get(action);
+        Z2MPropertyActionEvent z2MPropertyActionEvent = new Z2MPropertyActionEvent(deviceService, action, z2MDevicePropertiesDTO);
         entityContext.ui().updateItem(deviceService.getDeviceEntity());
         return z2MPropertyActionEvent;
     }

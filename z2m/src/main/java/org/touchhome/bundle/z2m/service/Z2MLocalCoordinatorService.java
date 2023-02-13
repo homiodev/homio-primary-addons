@@ -539,8 +539,11 @@ public class Z2MLocalCoordinatorService
         entity.setStatusOnline();
         setBellNotification();
 
-        entityContext.ui().headerButtonBuilder("discover-" + entityID).title("zigbee.action.start_scan").icon("fas fa-search-location", "#3E7BBD", false)
-                     .availableForPage(ZigBeeDeviceBaseEntity.class).clickAction(this::startScan).build();
+        entityContext.ui().headerButtonBuilder("discover-" + entityID)
+                     .title("zigbee.action.start_scan")
+                     .icon("fas fa-search-location", "#3E7BBD", false)
+                     .availableForPage(ZigBeeDeviceBaseEntity.class)
+                     .clickAction(this::startScan).build();
 
         // register frame console
         checkFrontendThreadContext = entityContext.bgp().builder("zigbee2mqtt-check-frontend").delay(Duration.ofSeconds(10)).execute(() ->

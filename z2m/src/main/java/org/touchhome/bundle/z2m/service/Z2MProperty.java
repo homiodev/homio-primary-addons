@@ -18,10 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.measure.Unit;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -34,7 +34,6 @@ import org.touchhome.bundle.api.state.OnOffType;
 import org.touchhome.bundle.api.state.QuantityType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.state.StringType;
-import org.touchhome.bundle.api.util.Units;
 import org.touchhome.bundle.z2m.model.Z2MDeviceEntity.Z2MPropertyEntity;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options.Presets;
@@ -49,11 +48,11 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     private final Map<String, Consumer<State>> changeListeners = new ConcurrentHashMap<>();
     protected Function<JSONObject, State> dataReader;
     protected Options expose;
-    @Setter private @Nullable Unit<?> unit;
+    @Setter private @Nullable String unit;
     private Z2MDeviceService deviceService;
     @Setter private long updated;
     private String entityID;
-    private String variableId;
+    private String variableID;
     @Getter private EntityContext entityContext;
     @Setter private State value = new StringType("N/A");
     private Object dbValue;
@@ -78,23 +77,13 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         changeListeners.remove(id);
     }
 
-    public void init(Z2MDeviceService deviceService, Options expose) {
+    public void init(@NotNull Z2MDeviceService deviceService, @NotNull Options expose) {
         this.deviceService = deviceService;
         this.entityContext = this.deviceService.getEntityContext();
         this.expose = expose;
         this.entityID = deviceService.getDevice().getIeeeAddress() + "_" + expose.getProperty();
-
-        if (this.unit == null && expose.getUnit() != null) {
-            this.unit = Units.findUnit(expose.getUnit());
-            if (this.unit == null) {
-                log.warn("[{}]: Unable to find java Unit for string representation: {}",
-                    deviceService.getCoordinatorService().getEntityID(), expose.getUnit());
-            }
-        }
-
-        if (this.dataReader == null) {
-            this.dataReader = buildDataReader();
-        }
+        this.unit = StringUtils.defaultIfEmpty(this.unit, expose.getUnit());
+        this.dataReader = this.dataReader == null ? buildDataReader() : this.dataReader;
 
         getOrCreateVariable();
     }
@@ -113,6 +102,14 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     public String getName() {
         String name = format("${zigbee.endpoint.name.%s:%s}", expose.getName(), ZigBeeUtil.splitNameToReadableFormat(expose.getName()));
+        if (isNotEmpty(expose.getEndpoint())) {
+            return format("%s [%s]", name, expose.getEndpoint());
+        }
+        return name;
+    }
+
+    public String getShortName() {
+        String name = ZigBeeUtil.splitNameToReadableFormat(expose.getName());
         if (isNotEmpty(expose.getEndpoint())) {
             return format("%s [%s]", name, expose.getEndpoint());
         }
@@ -242,11 +239,12 @@ public abstract class Z2MProperty implements ZigBeeProperty {
                 }
                 return payload -> OnOffType.of(payload.getBoolean(getJsonKey()));
             case NUMBER_TYPE:
-                if (unit != null) {
+                return payload -> new DecimalType(payload.getNumber(getJsonKey()));
+                /*if (unit != null) {
                     return payload -> new QuantityType(payload.getNumber(getJsonKey()), unit);
                 } else {
                     return payload -> new DecimalType(payload.getNumber(getJsonKey()));
-                }
+                }*/
             case COMPOSITE_TYPE:
                 return payload -> new JsonType(payload.get(getJsonKey()).toString());
             case ENUM_TYPE:
@@ -263,22 +261,26 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     protected void pushVariable() {
         getOrCreateVariable();
-        entityContext.var().set(variableId, value, dbValue -> this.dbValue = dbValue);
+        entityContext.var().set(variableID, value, dbValue -> this.dbValue = dbValue);
     }
 
     private void getOrCreateVariable() {
-        if (variableId == null) {
+        if (variableID == null) {
             VariableType variableType = getVariableType();
             if (variableType == VariableType.Enum) {
-                variableId = entityContext.var().createEnumVariable(deviceService.getDeviceEntity().getEntityID(),
+                variableID = entityContext.var().createEnumVariable(deviceService.getDeviceEntity().getEntityID(),
                     entityID, getName(), getVariableDescription(), !isWritable(), iconColor, expose.getValues());
             } else {
-                variableId = entityContext.var().createVariable(deviceService.getDeviceEntity().getEntityID(),
+                variableID = entityContext.var().createVariable(deviceService.getDeviceEntity().getEntityID(),
                     entityID, getName(), variableType, getVariableDescription(), !isWritable(), iconColor, expose.getUnit());
             }
+            entityContext.var().setVariableIcon(variableID, icon, iconColor);
 
             if (isWritable()) {
-                entityContext.var().setLinkListener(variableId, varValue -> {
+                entityContext.var().setLinkListener(variableID, varValue -> {
+                    if (!deviceService.getCoordinatorService().getEntity().getStatus().isOnline()) {
+                        throw new RuntimeException("Unable to handle action. Zigbee coordinator is offline");
+                    }
                     // fire updates only if variable updates externally
                     if (!Objects.equals(dbValue, varValue)) {
                         writeValue(State.of(varValue));

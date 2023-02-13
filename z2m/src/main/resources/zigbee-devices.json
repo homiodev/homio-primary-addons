@@ -1,59 +1,117 @@
 [
   {
-    "model": "TS0601_din_2",
+    "name": "Energy meter",
+    "model": [
+      "TS0601_din_2"
+    ],
     "icon": "fas fa-plug-circle-bolt",
     "iconColor": "#C28A40"
   },
   {
-    "model": "GL-C-007-1ID",
+    "name": "RGB controller",
+    "model": [
+      "GL-C-007-1ID"
+    ],
     "icon": "fas fa-palette",
     "iconColor": "#7F50AD",
     "widgets": [
-      "color"
+      {
+        "type": "color"
+      }
     ]
   },
   {
-    "model": "lumi.relay.c2acn01",
-    "icon": "fas fa-shuffle",
-    "iconColor": "#57A4D1"
+    "name": "Relay 1-channels",
+    "model": [
+      "BASICZBR3"
+    ],
+    "icon": "fas fa-plug",
+    "iconColor": "#85C240",
+    "widgets": [
+      {
+        "type": "button",
+        "autoDiscovery": true
+      }
+    ]
   },
   {
-    "model": "lumi.weather",
+    "name": "Relay 2-channels",
+    "model": [
+      "LLKZMK11LM"
+    ],
+    "icon": "fas fa-shuffle",
+    "iconColor": "#57A4D1",
+    "widgets": [
+      {
+        "type": "button",
+        "autoDiscovery": true
+      }
+    ]
+  },
+  {
+    "name": "Motion Sensor",
+    "model": [
+      "RTCGQ01LM"
+    ],
     "icon": "fas fa-cloud",
     "iconColor": "#57A4D1"
   },
   {
-    "model": "lumi.remote.b186acn01",
+    "name": "Temperature and Humidity Sensor",
+    "model": [
+      "WSDCGQ11LM",
+      "WSDCGQ01LM"
+    ],
+    "icon": "fas fa-cloud",
+    "iconColor": "#57A4D1",
+    "widgets": [
+      {
+        "type": "display",
+        "properties": [
+          {
+            "name": "temperature"
+          },
+          {
+            "name": "humidity"
+          },
+          {
+            "name": "pressure"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Remote 1-button",
+    "model": [
+      "WXKG03LM_rev2",
+      "WXKG01LM",
+      "WXKG11LM"
+    ],
     "icon": "fas fa-circle-dot",
     "iconColor": "#D1C155"
   },
   {
-    "model": "lumi.sensor_smoke",
+    "name": "Smoke Detector",
+    "model": [
+      "JTYJ-GD-01LM/BW"
+    ],
     "icon": "fas fa-volcano",
     "iconColor": "#EB6933"
   },
   {
-    "model": "lumi.remote.b286acn01",
-    "icon": "fas fa-circle-dot",
-    "iconColor": "#B5C64E"
-  },
-  {
-    "model": "lumi.remote.b1acn01",
-    "icon": "fas fa-square-check",
-    "iconColor": "#B5C64E"
-  },
-  {
-    "model": "lumi.sensor_magnet.aq1",
+    "name": "Door Sensor",
+    "model": [
+      "MCCGQ11LM"
+    ],
     "icon": "fas fa-door-open",
     "iconColor": "#A41CE2"
   },
   {
-    "model": "lumi.sensor_magnet.aq2",
-    "icon": "fas fa-door-open",
-    "iconColor": "#A41CE2"
-  },
-  {
-    "model": "lumi.sensor_motion.aq2",
+    "name": "Motion and illuminance sensor",
+    "model": [
+      "RTCGQ11LM"
+    ],
     "icon": "fas fa-person-circle-exclamation",
     "iconColor": "#56be9e",
     "options": {
@@ -61,45 +119,66 @@
         "min": 0,
         "max": 59
       }
-    }
+    },
+    "widgets": [
+      {
+        "type": "display",
+        "properties": [
+          {
+            "name": "occupancy"
+          },
+          {
+            "name": "illuminance"
+          }
+        ]
+      }
+    ]
   },
   {
-    "model": "lumi.sensor_86sw2",
+    "name": "Remote 2-button",
+    "model": [
+      "lumi.remote.b286acn01",
+      "WXKG02LM_rev1",
+      "WXKG02LM"
+    ],
     "icon": "fas fa-square-check",
     "iconColor": "#56be9e"
   },
   {
-    "model": "lumi.plug",
+    "name": "Socket",
+    "model": [
+      "ZNCZ02LM"
+    ],
     "icon": "fas fa-plug-circle-bolt",
     "iconColor": "#79BE56"
   },
   {
-    "icon": "fas fa-temperature-half",
-    "iconColor": "#79BE56",
-    "model": "lumi.sensor_ht"
-  },
-  {
-    "model": "lumi.sensor_wleak.aq1",
+    "name": "Leak sensor",
+    "model": [
+      "SJCGQ11LM"
+    ],
     "icon": "fas fa-droplet",
     "iconColor": "#be5692"
   },
   {
-    "model": "lumi.sensor_switch.aq1",
-    "icon": "fas fa-circle-dot",
-    "iconColor": "#B5C64E"
-  },
-  {
-    "model": "lumi.sensor_switch.aq2",
-    "icon": "fas fa-circle-dot",
-    "iconColor": "#B5C64E"
-  },
-  {
-    "model": "lumi.ctrl_ln2.aq1",
+    "name": "Wall switch (2 button)",
+    "model": [
+      "QBKG12LM"
+    ],
     "icon": "fas fa-square-check",
-    "iconColor": "#B5C64E"
+    "iconColor": "#B5C64E",
+    "widgets": [
+      {
+        "type": "button",
+        "autoDiscovery": true
+      }
+    ]
   },
   {
-    "model": "lumi.sensor_cube.aqgl01",
+    "name": "Cube",
+    "model": [
+      "MFKZQ01LM"
+    ],
     "icon": "fas fa-cube",
     "iconColor": "#878fc9"
   }

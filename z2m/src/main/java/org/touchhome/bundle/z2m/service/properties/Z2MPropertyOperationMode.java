@@ -9,12 +9,12 @@ public class Z2MPropertyOperationMode extends Z2MProperty {
     }
 
     @Override
-    protected String getJsonKey() {
-        return getExpose().getProperty();
+    public String getPropertyDefinition() {
+        return "operation_mode";
     }
 
     @Override
-    public String getPropertyDefinition() {
-        return "operation_mode";
+    protected String getJsonKey() {
+        return getExpose().getProperty();
     }
 }

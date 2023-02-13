@@ -8,6 +8,7 @@ import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.NUMBER_TYPE;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,8 +61,10 @@ import org.touchhome.bundle.z2m.service.Z2MProperty;
 import org.touchhome.bundle.z2m.setting.ZigBeeEntityCompactModeSetting;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
+import org.touchhome.bundle.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
 import org.touchhome.bundle.z2m.util.ZigBeeUtil;
 import org.touchhome.bundle.z2m.widget.WidgetBuilder;
+import org.touchhome.bundle.z2m.widget.WidgetBuilder.WidgetRequest;
 
 @Log4j2
 @Getter
@@ -371,7 +375,10 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @Override
     @UIFieldIgnore
     public Date getUpdateTime() {
-        return super.getUpdateTime();
+        return new Date(deviceService.getProperties().values()
+                                     .stream()
+                                     .max(Comparator.comparingLong(Z2MProperty::getUpdated))
+                                     .map(Z2MProperty::getUpdated).orElse(0L));
     }
 
     @Override
@@ -397,28 +404,51 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     private void createWidgetActions(UIInputBuilder uiInputBuilder) {
-        for (String widgetType : ZigBeeUtil.getDeviceWidgets(getModel())) {
-            WidgetBuilder widgetBuilder = WidgetBuilder.WIDGETS.get(widgetType);
+        for (WidgetDefinition widgetDefinition : ZigBeeUtil.getDeviceWidgets(getModel())) {
+            String type = widgetDefinition.getType();
+            WidgetBuilder widgetBuilder = WidgetBuilder.WIDGETS.get(type);
             if (widgetBuilder == null) {
-                throw new IllegalStateException("Widget creation not implemented for type: " + widgetType);
+                throw new IllegalStateException("Widget creation not implemented for type: " + type);
             }
             uiInputBuilder
-                .addOpenDialogSelectableButton("widget.create_color", "fas fa-palette", "#23AA2C",
-                    null, (entityContext, params) -> createWidget(widgetBuilder, entityContext, params))
+                .addOpenDialogSelectableButton("widget.create_" + type, "fas fa-palette", "#23AA2C",
+                    null, (entityContext, params) -> createWidget(widgetBuilder, widgetDefinition, entityContext, params))
                 .editDialog(dialogBuilder -> {
                     dialogBuilder.setTitle("widget.create_color", "fas fa-palette", "#23AA2C");
-                    dialogBuilder.addFlex("main", flex ->
+                    dialogBuilder.addFlex("main", flex -> {
                         flex.addSelectBox("selection.dashboard_tab", null)
                             .setSelected(getEntityContext().widget().getDashboardDefaultID())
-                            .addOptions(getEntityContext().widget().getDashboardTabs()));
+                            .addOptions(getEntityContext().widget().getDashboardTabs());
+                        addPropertyDefinitions(widgetDefinition, flex);
+                    });
                 });
         }
     }
 
-    @NotNull
-    private ActionResponseModel createWidget(WidgetBuilder widgetBuilder, EntityContext entityContext, JSONObject params) {
+    private void addPropertyDefinitions(WidgetDefinition widgetDefinition, UIFlexLayoutBuilder flex) {
+        val existedProperties = widgetDefinition.getProperties(this);
+        if (existedProperties.isEmpty()) {
+            return;
+        }
+
+        flex.addFlex("properties", propertyBuilder -> {
+            propertyBuilder.setBorderArea("Endpoints").setBorderColor(Color.BLUE);
+            for (ZigBeeProperty propertyDefinition : existedProperties) {
+                propertyBuilder.addCheckbox(propertyDefinition.getEntityID(), true, null)
+                               .setTitle(propertyDefinition.getName());
+            }
+        });
+    }
+
+    private ActionResponseModel createWidget(WidgetBuilder widgetBuilder, WidgetDefinition widgetDefinition,
+        EntityContext entityContext, JSONObject params) {
         String tab = params.getString("selection.dashboard_tab");
-        widgetBuilder.buildWidget(entityContext, Z2MDeviceEntity.this, tab);
+
+        val includeProperties =
+            widgetDefinition.getProperties(this).stream().filter(pd -> params.getBoolean(pd.getName()))
+                            .collect(Collectors.toList());
+
+        widgetBuilder.buildWidget(new WidgetRequest(entityContext, Z2MDeviceEntity.this, tab, widgetDefinition, includeProperties));
         return ActionResponseModel.success();
     }
 
