@@ -2,6 +2,8 @@ package org.touchhome.bundle.z2m.service;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.touchhome.bundle.z2m.service.properties.Z2MPropertyLastUpdate.UPDATED;
+import static org.touchhome.bundle.z2m.service.properties.dynamic.Z2MGeneralProperty.SIGNAL;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.BINARY_TYPE;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.NUMBER_TYPE;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.UNKNOWN_TYPE;
@@ -11,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -20,6 +23,7 @@ import org.json.JSONObject;
 import org.springframework.data.util.Pair;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.ui.UI;
 import org.touchhome.bundle.z2m.model.Z2MDeviceEntity;
 import org.touchhome.bundle.z2m.service.properties.Z2MPropertyAction;
@@ -63,6 +67,9 @@ public class Z2MDeviceService {
                 availability = payload == null ? null : payload.toString();
                 entityContext.event().fireEvent(format("zigbee-%s", device.getIeeeAddress()), deviceEntity.getStatus());
                 entityContext.ui().updateItem(this.deviceEntity);
+                if ("offline".equals(availability)) {
+                    downLinkQualityToZero();
+                }
             });
         entityContext.event().fireEvent(format("zigbee-%s", device.getIeeeAddress()), deviceEntity.getStatus());
     }
@@ -77,6 +84,7 @@ public class Z2MDeviceService {
     public void dispose() {
         entityContext.event().removeEvents(getDeviceTopic(device));
         entityContext.ui().updateItem(deviceEntity);
+        downLinkQualityToZero();
     }
 
     public void deviceUpdated(Z2MDeviceDTO device) {
@@ -91,7 +99,7 @@ public class Z2MDeviceService {
                 addProperty(expose.getProperty(), key -> buildExposeProperty(expose));
             }
         }
-        addProperty(Z2MPropertyLastUpdate.KEY, key -> new Z2MPropertyLastUpdate(this));
+        addProperty(UPDATED, key -> new Z2MPropertyLastUpdate(this));
     }
 
     @Override
@@ -162,7 +170,7 @@ public class Z2MDeviceService {
             }
         }
         if (updated) {
-            properties.get(Z2MPropertyLastUpdate.KEY).mqttUpdate(null);
+            properties.get(UPDATED).mqttUpdate(null);
         }
         if (deviceEntity.isLogEvents() && !sb.isEmpty()) {
             entityContext.ui().sendInfoMessage(device.getGroupDescription(), String.join("\n", sb));
@@ -247,5 +255,13 @@ public class Z2MDeviceService {
         entityContext.var().createGroup("z2m", this.deviceEntity.getEntityID(), getDeviceFullName(), true,
             ZigBeeUtil.getDeviceIcon(this.device.getModelId(), "fas fa-server"), ZigBeeUtil.getDeviceIconColor(this.device.getModelId(), UI.Color.random()),
             this.device.getGroupDescription());
+    }
+
+    private void downLinkQualityToZero() {
+        Optional.ofNullable(properties.get(SIGNAL)).ifPresent(z2MProperty -> {
+            if (!z2MProperty.getValue().stringValue().equals("0")) {
+                z2MProperty.setValue(new DecimalType(0));
+            }
+        });
     }
 }

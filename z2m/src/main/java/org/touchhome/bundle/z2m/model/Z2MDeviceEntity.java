@@ -62,6 +62,7 @@ import org.touchhome.bundle.z2m.setting.ZigBeeEntityCompactModeSetting;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
+import org.touchhome.bundle.z2m.util.Z2MDeviceDefinitionDTO.WidgetType;
 import org.touchhome.bundle.z2m.util.ZigBeeUtil;
 import org.touchhome.bundle.z2m.widget.WidgetBuilder;
 import org.touchhome.bundle.z2m.widget.WidgetBuilder.WidgetRequest;
@@ -405,16 +406,19 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     private void createWidgetActions(UIInputBuilder uiInputBuilder) {
         for (WidgetDefinition widgetDefinition : ZigBeeUtil.getDeviceWidgets(getModel())) {
-            String type = widgetDefinition.getType();
+            WidgetType type = widgetDefinition.getType();
             WidgetBuilder widgetBuilder = WidgetBuilder.WIDGETS.get(type);
             if (widgetBuilder == null) {
                 throw new IllegalStateException("Widget creation not implemented for type: " + type);
             }
+            String icon = widgetDefinition.getIcon();
+            String iconColor = UI.Color.random();
+            String title = "widget.create_" + widgetDefinition.getName();
             uiInputBuilder
-                .addOpenDialogSelectableButton("widget.create_" + type, "fas fa-palette", "#23AA2C",
-                    null, (entityContext, params) -> createWidget(widgetBuilder, widgetDefinition, entityContext, params))
+                .addOpenDialogSelectableButton(title, icon, iconColor, null,
+                    (entityContext, params) -> createWidget(widgetBuilder, widgetDefinition, entityContext, params))
                 .editDialog(dialogBuilder -> {
-                    dialogBuilder.setTitle("widget.create_color", "fas fa-palette", "#23AA2C");
+                    dialogBuilder.setTitle(title, icon, iconColor);
                     dialogBuilder.addFlex("main", flex -> {
                         flex.addSelectBox("selection.dashboard_tab", null)
                             .setSelected(getEntityContext().widget().getDashboardDefaultID())
@@ -426,7 +430,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     private void addPropertyDefinitions(WidgetDefinition widgetDefinition, UIFlexLayoutBuilder flex) {
-        val existedProperties = widgetDefinition.getProperties(this);
+        val existedProperties = widgetDefinition.getProps(this);
         if (existedProperties.isEmpty()) {
             return;
         }
@@ -434,8 +438,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         flex.addFlex("properties", propertyBuilder -> {
             propertyBuilder.setBorderArea("Endpoints").setBorderColor(Color.BLUE);
             for (ZigBeeProperty propertyDefinition : existedProperties) {
-                propertyBuilder.addCheckbox(propertyDefinition.getEntityID(), true, null)
-                               .setTitle(propertyDefinition.getName());
+                propertyBuilder.addCheckbox(propertyDefinition.getKey(), true, null)
+                               .setTitle(propertyDefinition.getName(false));
             }
         });
     }
@@ -445,7 +449,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         String tab = params.getString("selection.dashboard_tab");
 
         val includeProperties =
-            widgetDefinition.getProperties(this).stream().filter(pd -> params.getBoolean(pd.getName()))
+            widgetDefinition.getProps(this).stream().filter(pd -> params.getBoolean(pd.getKey()))
                             .collect(Collectors.toList());
 
         widgetBuilder.buildWidget(new WidgetRequest(entityContext, Z2MDeviceEntity.this, tab, widgetDefinition, includeProperties));
@@ -510,7 +514,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         public Z2MPropertyEntity(Z2MProperty property) {
             this.entityID = property.getEntityID();
             this.title = format("<div class=\"inline-2row_d\"><div style=\"color:%s;\"><i class=\"mr-1 %s\"></i>%s</div><span>%s</div></div>",
-                property.getIconColor(), property.getIcon(), property.getName(), property.getDescription());
+                property.getIconColor(), property.getIcon(), property.getName(false), property.getDescription());
             this.property = property;
             this.valueTitle = property.getValue().toString();
             switch (property.getExpose().getType()) {

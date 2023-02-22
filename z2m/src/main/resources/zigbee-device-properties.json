@@ -1,13 +1,31 @@
 [
   {
+    "name": "vibration",
+    "icon": "fab fa-squarespace",
+    "iconColor": "#4C61D4",
+    "order": 3015
+  },
+  {
+    "name": "strength",
+    "icon": "fa-hand-fist",
+    "iconColor": "#8A2045",
+    "order": 3010
+  },
+  {
+    "name": "contact",
+    "icon": "fa-door-open",
+    "iconColor": "#4C61D4",
+    "order": 3005
+  },
+  {
     "name": "updated",
-    "icon": "fa-fa-clock",
+    "icon": "fa-clock",
     "iconColor": "#BA5623",
     "order": 3000
   },
   {
     "name": "smoke",
-    "icon": "fa-fire",
+    "icon": "fa-mask-ventilator",
     "iconColor": "#C7AC24",
     "order": 2995
   },
@@ -27,21 +45,18 @@
     "name": "illuminance",
     "icon": "fa-sun",
     "iconColor": "#89D636",
-    "unit": "lx",
     "order": 2980
   },
   {
     "name": "humidity",
     "icon": "fa-tint",
     "iconColor": "#4179E0",
-    "unit": "%",
     "order": 2975
   },
   {
     "name": "pressure",
     "icon": "fa-cloud-download-alt",
     "iconColor": "#B0B0B0",
-    "unit": "Pa:HECTO",
     "order": 2970
   },
   {
@@ -54,7 +69,6 @@
     "name": "temperature",
     "icon": "fa-thermometer-three-quarters",
     "iconColor": "#36B9D6",
-    "unit": "℃",
     "order": 2960
   },
   {
@@ -91,7 +105,6 @@
     "name": "battery",
     "icon": "fa-battery-full",
     "iconColor": "#32D1B9",
-    "unit": "%",
     "order": 2930
   },
   {
@@ -114,8 +127,7 @@
   {
     "name": "linkquality",
     "icon": "fa-signal",
-    "iconColor": "#D134AF",
-    "unit": "LQI"
+    "iconColor": "#D134AF"
   },
   {
     "name": "tamper",
@@ -304,7 +316,6 @@
     "name": "action_angle",
     "icon": "fa-arrow-up-right-dots",
     "iconColor": "#D63673",
-    "unit": "°",
     "alias": [
       "angle"
     ]
@@ -312,7 +323,46 @@
   {
     "name": "device_temperature",
     "icon": "fa-thermometer-three-quarters",
-    "iconColor": "#36B9D6",
-    "unit": "℃"
+    "iconColor": "#36B9D6"
+  },
+  {
+    "name": "action_any",
+    "icon": "fa-location-crosshairs",
+    "iconColor": "#C24487"
+  },
+  {
+    "name": "action_tilt",
+    "icon": "fa-slash",
+    "iconColor": "#C24487"
+  },
+  {
+    "name": "action_vibration",
+    "icon": "fa-clover",
+    "iconColor": "#B63CBD"
+  },
+  {
+    "name": "angle_x",
+    "icon": "fa-hill-rockslide",
+    "iconColor": "#4EA32F"
+  },
+  {
+    "name": "angle_y",
+    "icon": "fa-hill-rockslide",
+    "iconColor": "#4EA32F"
+  },
+  {
+    "name": "angle_z",
+    "icon": "fa-hill-rockslide",
+    "iconColor": "#4EA32F"
+  },
+  {
+    "name": "angle_x_absolute",
+    "icon": "fa-hill-rockslide fa-flip-horizontal",
+    "iconColor": "#8FAB33"
+  },
+  {
+    "name": "angle_y_absolute",
+    "icon": "fa-hill-rockslide fa-flip-horizontal",
+    "iconColor": "#8FAB33"
   }
 ]

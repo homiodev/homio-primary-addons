@@ -100,16 +100,9 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         pushVariable();
     }
 
-    public String getName() {
-        String name = format("${zigbee.endpoint.name.%s:%s}", expose.getName(), ZigBeeUtil.splitNameToReadableFormat(expose.getName()));
-        if (isNotEmpty(expose.getEndpoint())) {
-            return format("%s [%s]", name, expose.getEndpoint());
-        }
-        return name;
-    }
-
-    public String getShortName() {
+    public String getName(boolean shortFormat) {
         String name = ZigBeeUtil.splitNameToReadableFormat(expose.getName());
+        name = shortFormat ? name : format("${zbe.%s:%s}", expose.getName(), name);
         if (isNotEmpty(expose.getEndpoint())) {
             return format("%s [%s]", name, expose.getEndpoint());
         }
@@ -117,7 +110,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     }
 
     public String getDescription() {
-        return format("${zigbee.endpoint.description.%s:%s}", expose.getName(), defaultIfEmpty(getExpose().getDescription(), expose.getProperty()));
+        return format("${zbd.%s:%s}", expose.getName(), defaultIfEmpty(getExpose().getDescription(), expose.getProperty()));
     }
 
     public void fireAction(boolean value) {
@@ -269,10 +262,10 @@ public abstract class Z2MProperty implements ZigBeeProperty {
             VariableType variableType = getVariableType();
             if (variableType == VariableType.Enum) {
                 variableID = entityContext.var().createEnumVariable(deviceService.getDeviceEntity().getEntityID(),
-                    entityID, getName(), getVariableDescription(), !isWritable(), iconColor, expose.getValues());
+                    entityID, getName(false), getVariableDescription(), !isWritable(), iconColor, expose.getValues());
             } else {
                 variableID = entityContext.var().createVariable(deviceService.getDeviceEntity().getEntityID(),
-                    entityID, getName(), variableType, getVariableDescription(), !isWritable(), iconColor, expose.getUnit());
+                    entityID, getName(false), variableType, getVariableDescription(), !isWritable(), iconColor, expose.getUnit());
             }
             entityContext.var().setVariableIcon(variableID, icon, iconColor);
 

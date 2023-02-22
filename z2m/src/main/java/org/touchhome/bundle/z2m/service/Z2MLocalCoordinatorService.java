@@ -103,8 +103,7 @@ public class Z2MLocalCoordinatorService
     private ThreadContext<Void> checkFrontendThreadContext;
     private URL z2mFrontendURL;
 
-    public Z2MLocalCoordinatorService(EntityContext entityContext, Z2MLocalCoordinatorEntity entity)
-        throws IOException {
+    public Z2MLocalCoordinatorService(EntityContext entityContext, Z2MLocalCoordinatorEntity entity) {
         this.entity = entity;
         this.entityID = entity.getEntityID();
         this.entityContext = entityContext;
@@ -113,6 +112,7 @@ public class Z2MLocalCoordinatorService
                 nodeProcess.destroyForcibly();
             }
         });
+
         // assemble Z2MProperty
         List<Class<? extends Z2MProperty>> z2mClusters = entityContext.getClassesWithParent(Z2MProperty.class);
         for (Class<? extends Z2MProperty> z2mCluster : z2mClusters) {

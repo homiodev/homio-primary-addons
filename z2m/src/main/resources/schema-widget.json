@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "definitions": {
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Request property name",
+          "type": "string"
+        },
+        "value": {
+          "title": "Default property value",
+          "type": [
+            "string",
+            "number"
+          ]
+        },
+        "type": {
+          "title": "Property type to render on UI",
+          "type": "string",
+          "enum": [
+            "number"
+          ]
+        },
+        "title": {
+          "title": "Property description on UI",
+          "type": "string"
+        },
+        "target": {
+          "title": "Property target to apply on",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "title",
+        "value",
+        "type",
+        "target"
+      ]
+    },
+    "prop": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "z2m property name",
+          "type": "string"
+        },
+        "valueConverter": {
+          "type": "string"
+        },
+        "valueColor": {
+          "type": "string"
+        },
+        "valueConverterRefreshInterval": {
+          "type": "integer",
+          "default": "0"
+        },
+        "iconThreshold": {
+          "$ref": "/schema-threshold.json"
+        },
+        "iconColorThreshold": {
+          "$ref": "/schema-threshold.json"
+        },
+        "iconColor": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "chart": {
+          "$ref": "/schema-chart.json"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    }
+  },
+  "properties": {
+    "type": {
+      "title": "Widget type",
+      "type": "string",
+      "enum": [
+        "color",
+        "toggle",
+        "display",
+        "compose",
+        "barTime",
+        "line"
+      ]
+    },
+    "requests": {
+      "title": "List of inputs to request on UI",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/request"
+      }
+    },
+    "props": {
+      "title": "List of z2m properties to display",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/prop"
+      }
+    },
+    "name": {
+      "title": "Title to show in context menu on UI",
+      "type": "string"
+    },
+    "icon": {
+      "title": "Icon to show in context menu on UI",
+      "type": "string"
+    },
+    "autoDiscovery": {
+      "type": "boolean"
+    },
+    "index": {
+      "type": "integer"
+    },
+    "background": {
+      "type": "string"
+    },
+    "blockHeight": {
+      "type": "integer"
+    },
+    "widgetHeight": {
+      "type": "integer"
+    },
+    "layout": {
+      "type": "string"
+    },
+    "options": {
+      "$ref": "/schema-widget-options.json"
+    },
+    "compose": {
+      "type": "array",
+      "items": {
+        "$ref": "/schema-widget.json"
+      }
+    }
+  },
+  "required": [
+    "type"
+  ]
+}

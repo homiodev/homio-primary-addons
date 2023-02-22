@@ -12,12 +12,12 @@ import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
  */
 public class Z2MPropertyLastUpdate extends Z2MDynamicProperty {
 
-    public static final String KEY = "updated";
+    public static final String UPDATED = "updated";
 
     public Z2MPropertyLastUpdate(Z2MDeviceService deviceService) {
         super("#BA5623", "fa fa-fw fa-clock");
         setValue(new DecimalType(System.currentTimeMillis()));
-        init(deviceService, Options.dynamicExpose(KEY, NUMBER_TYPE));
+        init(deviceService, Options.dynamicExpose(UPDATED, NUMBER_TYPE));
         dataReader = jsonObject -> new DecimalType(System.currentTimeMillis());
     }
 }

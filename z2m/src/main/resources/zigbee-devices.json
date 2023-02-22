@@ -5,7 +5,62 @@
       "TS0601_din_2"
     ],
     "icon": "fas fa-plug-circle-bolt",
-    "iconColor": "#C28A40"
+    "iconColor": "#C28A40",
+    "widgets": [
+      {
+        "type": "compose",
+        "name": "meter",
+        "background": "#29393F",
+        "blockHeight": 2,
+        "icon": "fas fa-bolt-lightning",
+        "compose": [
+          {
+            "type": "display",
+            "props": [
+              {
+                "name": "energy"
+              },
+              {
+                "name": "power"
+              },
+              {
+                "name": "voltage"
+              },
+              {
+                "name": "current"
+              }
+            ]
+          },
+          {
+            "type": "toggle",
+            "options": {
+              "toggleType": "Slide"
+            },
+            "autoDiscovery": true
+          },
+          {
+            "type": "line",
+            "blockHeight": 2,
+            "widgetHeight": 1,
+            "options": {
+              "pointBorderColor": "#00B0E6"
+            },
+            "props": [
+              {
+                "name": "power",
+                "chart": {
+                  "source": {
+                    "kind": "property",
+                    "value": "power"
+                  },
+                  "color": "#7F83AE"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "RGB controller",
@@ -29,7 +84,7 @@
     "iconColor": "#85C240",
     "widgets": [
       {
-        "type": "button",
+        "type": "toggle",
         "autoDiscovery": true
       }
     ]
@@ -43,7 +98,7 @@
     "iconColor": "#57A4D1",
     "widgets": [
       {
-        "type": "button",
+        "type": "toggle",
         "autoDiscovery": true
       }
     ]
@@ -67,7 +122,9 @@
     "widgets": [
       {
         "type": "display",
-        "properties": [
+        "name": "temperature_sensor",
+        "icon": "fas fa-temperature-full",
+        "props": [
           {
             "name": "temperature"
           },
@@ -77,7 +134,36 @@
           {
             "name": "pressure"
           }
-        ]
+        ],
+        "requests": [
+          {
+            "name": "min",
+            "value": 16,
+            "type": "number",
+            "title": "Minimum expected temperature",
+            "target": "options.chart.min"
+          },
+          {
+            "name": "max",
+            "value": 26,
+            "type": "number",
+            "title": "Maximum expected temperature",
+            "target": "options.chart.max"
+          }
+        ],
+        "options": {
+          "chart": {
+            "source": {
+              "kind": "property",
+              "value": "temperature"
+            },
+            "height": 100,
+            "fillEmptyValues": true,
+            "min": 16,
+            "max": 26,
+            "opacity": 25
+          }
+        }
       }
     ]
   },
@@ -89,7 +175,38 @@
       "WXKG11LM"
     ],
     "icon": "fas fa-circle-dot",
-    "iconColor": "#D1C155"
+    "iconColor": "#D1C155",
+    "widgets": [
+      {
+        "type": "compose",
+        "name": "push_button",
+        "icon": "fas fa-square-check",
+        "compose": [
+          {
+            "type": "display",
+            "index": 18,
+            "background": "#30563C",
+            "blockHeight": 2,
+            "layout": "{'c':[{'w':30},{'w':70}],'r':[{'cell':[{'ha':'right','va':'middle','v':'icon','cs':1,'rs':1,'w':30},{'ha':'left','va':'middle','v':'name','cs':1,'rs':1,'w':70}]}]}",
+            "options": {
+              "valueOnClick": 1,
+              "valueOnDoubleClick": 2,
+              "valueOnHoldClick": 3,
+              "pushSource": {
+                "kind": "variable",
+                "value": "push",
+                "variableType": "Float"
+              }
+            },
+            "props": [
+              {
+                "name": "action"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Smoke Detector",
@@ -97,7 +214,41 @@
       "JTYJ-GD-01LM/BW"
     ],
     "icon": "fas fa-volcano",
-    "iconColor": "#EB6933"
+    "iconColor": "#EB6933",
+    "widgets": [
+      {
+        "type": "compose",
+        "name": "smoke_sensor",
+        "icon": "fas fa-mask-ventilator",
+        "compose": [
+          {
+            "type": "display",
+            "index": 18,
+            "background": "#564531",
+            "blockHeight": 2,
+            "layout": "{'c':[{'w':100}],'r':[{'cell':[{'ha':'center','va':'middle','v':'icon','cs':1,'rs':1,'w':100}]},{'cell':[{'ha':'center','va':'middle','v':'name','cs':1,'rs':1,'w':100}]}]}",
+            "options": {
+              "pushSource": {
+                "kind": "broadcasts",
+                "value": "SmokeDetected"
+              },
+              "valueOnClick": 1,
+              "pushConfirmMessage": "Are you sure to fire event: 'SmokeDetected'?",
+              "animation": {
+                "op": "neq",
+                "value": 0,
+                "color": "red"
+              }
+            },
+            "props": [
+              {
+                "name": "smoke"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Door Sensor",
@@ -105,7 +256,61 @@
       "MCCGQ11LM"
     ],
     "icon": "fas fa-door-open",
-    "iconColor": "#A41CE2"
+    "iconColor": "#A41CE2",
+    "widgets": [
+      {
+        "type": "display",
+        "name": "door_sensor",
+        "icon": "fas fa-door-open",
+        "layout": "{'c':[{'w':15},{'w':45},{'w':40}],'r':[{'cell':[{'ha':'right','va':'middle','v':'icon','cs':1,'rs':1,'w':15},{'ha':'right','va':'middle','v':'name','cs':1,'rs':1,'w':45},{'ha':'center','va':'middle','v':'value','cs':1,'rs':1,'w':40}]}]}",
+        "props": [
+          {
+            "name": "contact",
+            "valueConverter": "return value == true ? 'opened' : 'closed';",
+            "iconThreshold": [
+              {
+                "op": "eq",
+                "value": true,
+                "target": "fas fa-door-open"
+              },
+              {
+                "op": "eq",
+                "value": false,
+                "target": "fas fa-door-closed"
+              }
+            ],
+            "iconColorThreshold": [
+              {
+                "op": "eq",
+                "value": true,
+                "target": "#3A75B5"
+              },
+              {
+                "op": "eq",
+                "value": false,
+                "target": "#A8A8A8"
+              }
+            ]
+          }
+        ],
+        "options": {
+          "chart": {
+            "source": {
+              "kind": "property",
+              "value": "contact"
+            },
+            "stepped": "True",
+            "fillEmptyValues": true,
+            "aggregateFunc": "Last",
+            "opacity": 25,
+            "height": 50,
+            "smoothing": false,
+            "min": 0,
+            "max": 1
+          }
+        }
+      }
+    ]
   },
   {
     "name": "Motion and illuminance sensor",
@@ -123,14 +328,24 @@
     "widgets": [
       {
         "type": "display",
-        "properties": [
+        "name": "motion_sensor",
+        "icon": "fas fa-person-walking",
+        "props": [
           {
             "name": "occupancy"
           },
           {
             "name": "illuminance"
           }
-        ]
+        ],
+        "options": {
+          "chart": {
+            "source": {
+              "kind": "property",
+              "value": "illuminance"
+            }
+          }
+        }
       }
     ]
   },
@@ -158,7 +373,41 @@
       "SJCGQ11LM"
     ],
     "icon": "fas fa-droplet",
-    "iconColor": "#be5692"
+    "iconColor": "#be5692",
+    "widgets": [
+      {
+        "type": "compose",
+        "name": "leak_sensor",
+        "icon": "fas fa-water",
+        "compose": [
+          {
+            "type": "display",
+            "index": 18,
+            "background": "#384058",
+            "blockHeight": 2,
+            "layout": "{'c':[{'w':100}],'r':[{'cell':[{'ha':'center','va':'middle','v':'icon','cs':1,'rs':1,'w':100}]},{'cell':[{'ha':'center','va':'middle','v':'name','cs':1,'rs':1,'w':100}]}]}",
+            "options": {
+              "pushSource": {
+                "kind": "broadcasts",
+                "value": "WaterLeakDetected"
+              },
+              "valueOnClick": 1,
+              "pushConfirmMessage": "Are you sure to fire event: 'WaterLeakDetected'?",
+              "animation": {
+                "op": "neq",
+                "value": 0,
+                "color": "red"
+              }
+            },
+            "props": [
+              {
+                "name": "water_leak"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Wall switch (2 button)",
@@ -169,7 +418,7 @@
     "iconColor": "#B5C64E",
     "widgets": [
       {
-        "type": "button",
+        "type": "toggle",
         "autoDiscovery": true
       }
     ]
@@ -181,5 +430,66 @@
     ],
     "icon": "fas fa-cube",
     "iconColor": "#878fc9"
+  },
+  {
+    "name": "Vibration sensor",
+    "model": [
+      "DJT11LM"
+    ],
+    "icon": "fab fa-squarespace",
+    "iconColor": "#4D9180",
+    "widgets": [
+      {
+        "type": "display",
+        "name": "vibration_sensor",
+        "icon": "fab fa-squarespace",
+        "props": [
+          {
+            "name": "vibration",
+            "iconThreshold": [
+              {
+                "op": "eq",
+                "value": true,
+                "target": "fa-flip fab fa-squarespace"
+              },
+              {
+                "op": "eq",
+                "value": false,
+                "target": "fab fa-squarespace"
+              }
+            ],
+            "iconColorThreshold": [
+              {
+                "op": "eq",
+                "value": true,
+                "target": "#C94F4F"
+              },
+              {
+                "op": "eq",
+                "value": false,
+                "target": "#3A75B5"
+              }
+            ]
+          }
+        ],
+        "options": {
+          "pointBorderColor": "",
+          "chart": {
+            "source": {
+              "kind": "property",
+              "value": "vibration"
+            },
+            "stepped": "True",
+            "fillEmptyValues": true,
+            "aggregateFunc": "Last",
+            "opacity": 25,
+            "height": 50,
+            "smoothing": false,
+            "min": 0,
+            "max": 1
+          }
+        }
+      }
+    ]
   }
 ]

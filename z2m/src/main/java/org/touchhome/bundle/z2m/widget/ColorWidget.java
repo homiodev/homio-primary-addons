@@ -1,11 +1,15 @@
 package org.touchhome.bundle.z2m.widget;
 
+import static org.touchhome.bundle.z2m.service.properties.dynamic.Z2MGeneralProperty.SIGNAL;
+
 import java.util.Map;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextWidget.HorizontalAlign;
 import org.touchhome.bundle.api.EntityContextWidget.VerticalAlign;
+import org.touchhome.bundle.api.exception.ProhibitedExecution;
 import org.touchhome.bundle.z2m.model.Z2MDeviceEntity;
 import org.touchhome.bundle.z2m.service.Z2MProperty;
+import org.touchhome.bundle.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
 
 public class ColorWidget implements WidgetBuilder {
 
@@ -13,6 +17,7 @@ public class ColorWidget implements WidgetBuilder {
     public void buildWidget(WidgetRequest widgetRequest) {
         EntityContext entityContext = widgetRequest.getEntityContext();
         Z2MDeviceEntity entity = widgetRequest.getEntity();
+        WidgetDefinition wd = widgetRequest.getWidgetDefinition();
 
         String layoutID = "lt-clr_" + entity.getIeeeAddress();
         Map<String, Z2MProperty> properties = entity.getDeviceService().getProperties();
@@ -21,13 +26,16 @@ public class ColorWidget implements WidgetBuilder {
         Z2MProperty colorProperty = properties.get("color");
 
         entityContext.widget().createLayoutWidget(layoutID, builder -> {
-            builder.setBlockSize(2, 1);
-            builder.setLayoutDimension(2, 6);
+            builder.setBlockSize(2, 1)
+                   .setZIndex(wd.getZIndex(20))
+                   .setBackground(wd.getBackground())
+                   .setLayoutDimension(2, 6);
         });
 
         if (brightnessProperty != null) {
             entityContext.widget().createSliderWidget("sl_" + entity.getIeeeAddress(), builder -> {
-                builder.setBlockSize(5, 1);
+                builder.setBlockSize(wd.getBlockWidth(5), wd.getBlockHeight(1))
+                       .setZIndex(wd.getZIndex(20));
                 builder.attachToLayout(layoutID, 0, 0);
                 builder.addSeries(entity.getModel(), seriesBuilder -> {
                     seriesBuilder.setIcon(entity.getIcon());
@@ -38,7 +46,9 @@ public class ColorWidget implements WidgetBuilder {
         }
 
         entityContext.widget().createSimpleColorWidget("clr_" + entity.getIeeeAddress(), builder -> {
-            builder.setBlockSize(5, 1);
+            builder
+                .setBlockSize(5, 1)
+                .setZIndex(wd.getZIndex(20));
             WidgetBuilder.setValueDataSource(builder, entityContext, colorProperty);
             builder.attachToLayout(layoutID, 1, 0);
         });
@@ -51,6 +61,20 @@ public class ColorWidget implements WidgetBuilder {
             });
         }
 
-        WidgetBuilder.addLqiProperty(entityContext, layoutID, properties.get("linkquality"), 1, 5);
+        WidgetBuilder.addProperty(
+            entityContext,
+            HorizontalAlign.right,
+            properties.get(SIGNAL),
+            builder -> builder.attachToLayout(layoutID, 1, 5));
+    }
+
+    @Override
+    public int getWidgetHeight(MainWidgetRequest request) {
+        throw new ProhibitedExecution();
+    }
+
+    @Override
+    public void buildMainWidget(MainWidgetRequest request) {
+        throw new ProhibitedExecution();
     }
 }

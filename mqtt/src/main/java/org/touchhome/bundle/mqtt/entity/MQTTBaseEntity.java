@@ -47,13 +47,6 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     BaseFileSystemEntity<MQTTBaseEntity, MQTTFileSystem>,
     UIFieldSelection.SelectionConfiguration {
 
-    static String normalize(String topic) {
-        if (topic.startsWith("/")) {
-            topic = topic.substring(1);
-        }
-        return topic;
-    }
-
     @Override
     public String selectionIcon() {
         return "fas fa-mattress-pillow";
@@ -156,7 +149,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     @UIFieldGroup("History")
     public UIFieldProgress.Progress getUsedHistorySize() {
         long storageCount = optService().map(service -> service.getStorage().count()).orElse(0L);
-        return getEntityID() == null ? null : new UIFieldProgress.Progress((int) storageCount, getHistorySize());
+        return getEntityID() == null ? null : UIFieldProgress.Progress.of((int) storageCount, getHistorySize());
     }
 
     @UIField(order = 3, inlineEdit = true)
@@ -234,12 +227,6 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
         return new MQTTService(this, entityContext);
     }
 
-    @Override
-    protected void beforePersist() {
-        super.beforePersist();
-        this.setMqttClientID(UUID.randomUUID().toString());
-    }
-
     public void publish(String topic, String content, int qoS, boolean retain) {
         if (StringUtils.isNotEmpty(content)) {
             try {
@@ -291,20 +278,6 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
             getTopicRequire(dynamicParameters, "queryTopic"), key, listener);
     }
 
-    private String getTopicRequire(JSONObject dynamicParameters, String fieldName) {
-        String topic = dynamicParameters.optString(fieldName);
-        if (StringUtils.isEmpty(topic)) {
-            throw new IllegalStateException("Unable to find topic from request");
-        }
-        return normalize(topic);
-    }
-
-    private void publishFromDynamicTopic(String value, JSONObject dynamicParameters) {
-        String topic = getTopicRequire(dynamicParameters, "publishTopic");
-        publish(topic, value, dynamicParameters.optInt("qos", 0),
-            dynamicParameters.optBoolean("retain", false));
-    }
-
     @Override
     public String getTimeValueSeriesDescription() {
         return "mqtt.time_series";
@@ -331,5 +304,32 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
             Objects.equals(this.getMqttPassword().asString(), mqttEntity.getMqttPassword().asString()) &&
             Objects.equals(this.getMqttClientID(), mqttEntity.getMqttClientID()) &&
             this.getMqttPort() == mqttEntity.getMqttPort();
+    }
+
+    static String normalize(String topic) {
+        if (topic.startsWith("/")) {
+            topic = topic.substring(1);
+        }
+        return topic;
+    }
+
+    @Override
+    protected void beforePersist() {
+        super.beforePersist();
+        this.setMqttClientID(UUID.randomUUID().toString());
+    }
+
+    private String getTopicRequire(JSONObject dynamicParameters, String fieldName) {
+        String topic = dynamicParameters.optString(fieldName);
+        if (StringUtils.isEmpty(topic)) {
+            throw new IllegalStateException("Unable to find topic from request");
+        }
+        return normalize(topic);
+    }
+
+    private void publishFromDynamicTopic(String value, JSONObject dynamicParameters) {
+        String topic = getTopicRequire(dynamicParameters, "publishTopic");
+        publish(topic, value, dynamicParameters.optInt("qos", 0),
+            dynamicParameters.optBoolean("retain", false));
     }
 }

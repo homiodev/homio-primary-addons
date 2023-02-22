@@ -1,6 +1,7 @@
 package org.touchhome.bundle.z2m.util;
 
 import static java.lang.String.format;
+import static org.touchhome.bundle.z2m.service.properties.Z2MPropertyLastUpdate.UPDATED;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.BINARY_TYPE;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.COMPOSITE_TYPE;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.ENUM_TYPE;
@@ -31,7 +32,6 @@ import org.touchhome.bundle.api.ui.field.action.v1.item.UISelectBoxItemBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.touchhome.bundle.z2m.service.Z2MProperty;
 import org.touchhome.bundle.z2m.service.properties.Z2MPropertyColor;
-import org.touchhome.bundle.z2m.service.properties.Z2MPropertyLastUpdate;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
 import org.touchhome.common.util.CommonUtils;
 
@@ -165,7 +165,7 @@ public final class ZigBeeUtil {
             uiInputBuilder.addInfo(format("%s <small class=\"text-muted\">%s</small>",
                 property.getValue().stringValue(), property.getUnit()), InfoType.HTML);
         }
-        if (Z2MPropertyLastUpdate.KEY.equals(property.getExpose().getProperty())) {
+        if (UPDATED.equals(property.getExpose().getProperty())) {
             uiInputBuilder.addDuration(property.getValue().longValue(), null);
         } else {
             uiInputBuilder.addInfo(property.getValue().toString(), InfoType.HTML);
