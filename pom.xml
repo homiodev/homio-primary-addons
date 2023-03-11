@@ -120,7 +120,6 @@
   <modelVersion>4.0.0</modelVersion>
 
   <modules>
-    <module>raspberry</module>
     <module>telegram</module>
     <module>mqtt</module>
     <module>z2m</module>

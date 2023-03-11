@@ -31,6 +31,14 @@
         "target": {
           "title": "Property target to apply on",
           "type": "string"
+        },
+        "min": {
+          "title": "set min value for 'number' request type",
+          "type": "number"
+        },
+        "max": {
+          "title": "set max value for 'number' request type",
+          "type": "number"
         }
       },
       "required": [
@@ -58,6 +66,11 @@
         "valueConverterRefreshInterval": {
           "type": "integer",
           "default": "0"
+        },
+        "valueSourceClickHistory": {
+          "title": "Set value as clickable to see property full history",
+          "type": "boolean",
+          "default": "true"
         },
         "iconThreshold": {
           "$ref": "/schema-threshold.json"

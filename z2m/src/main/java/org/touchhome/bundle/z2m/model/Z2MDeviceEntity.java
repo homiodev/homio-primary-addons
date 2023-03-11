@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,11 +60,7 @@ import org.touchhome.bundle.z2m.service.Z2MProperty;
 import org.touchhome.bundle.z2m.setting.ZigBeeEntityCompactModeSetting;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
-import org.touchhome.bundle.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
-import org.touchhome.bundle.z2m.util.Z2MDeviceDefinitionDTO.WidgetType;
 import org.touchhome.bundle.z2m.util.ZigBeeUtil;
-import org.touchhome.bundle.z2m.widget.WidgetBuilder;
-import org.touchhome.bundle.z2m.widget.WidgetBuilder.WidgetRequest;
 
 @Log4j2
 @Getter
@@ -171,7 +166,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     public String getCompactDescription() {
         return format("<div class=\"inline-2row_d\">"
                 + "<div>%s <span style=\"color:%s\">${%s}</span><span style=\"float:right\" class=\"color-primary\">%s</span>"
-                + "</div><div>${%s:%s}</div></div>",
+                + "</div><div>${%s~%s}</div></div>",
             getIeeeAddress(), getStatus().getColor(), getStatus(), getModel(), getName(), getDescription());
     }
 
@@ -348,13 +343,13 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @Override
     public void assembleActions(UIInputBuilder uiInputBuilder) {
-        createWidgetActions(uiInputBuilder);
+        Z2MActionsBuilder.createWidgetActions(uiInputBuilder, getEntityContext(), this);
 
         Z2MDeviceDefinition definition = deviceService.getDevice().getDefinition();
         if (definition != null) {
             for (Options option : definition.getOptions()) {
                 JsonNode deviceConfigurationOptions = deviceService.getConfiguration();
-                String flexName = format("${z2m.setting.%s:%s}", option.getName(), ZigBeeUtil.splitNameToReadableFormat(option.getName()));
+                String flexName = format("${z2m.setting.%s~%s}", option.getName(), ZigBeeUtil.splitNameToReadableFormat(option.getName()));
                 switch (option.getType()) {
                     case BINARY_TYPE:
                         buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
@@ -402,58 +397,6 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
             return ((getStatus().isOnline() ? 0 : 1) + getName()).compareTo((other.getStatus().isOnline() ? 0 : 1) + o.getName());
         }
         return super.compareTo(o);
-    }
-
-    private void createWidgetActions(UIInputBuilder uiInputBuilder) {
-        for (WidgetDefinition widgetDefinition : ZigBeeUtil.getDeviceWidgets(getModel())) {
-            WidgetType type = widgetDefinition.getType();
-            WidgetBuilder widgetBuilder = WidgetBuilder.WIDGETS.get(type);
-            if (widgetBuilder == null) {
-                throw new IllegalStateException("Widget creation not implemented for type: " + type);
-            }
-            String icon = widgetDefinition.getIcon();
-            String iconColor = UI.Color.random();
-            String title = "widget.create_" + widgetDefinition.getName();
-            uiInputBuilder
-                .addOpenDialogSelectableButton(title, icon, iconColor, null,
-                    (entityContext, params) -> createWidget(widgetBuilder, widgetDefinition, entityContext, params))
-                .editDialog(dialogBuilder -> {
-                    dialogBuilder.setTitle(title, icon, iconColor);
-                    dialogBuilder.addFlex("main", flex -> {
-                        flex.addSelectBox("selection.dashboard_tab", null)
-                            .setSelected(getEntityContext().widget().getDashboardDefaultID())
-                            .addOptions(getEntityContext().widget().getDashboardTabs());
-                        addPropertyDefinitions(widgetDefinition, flex);
-                    });
-                });
-        }
-    }
-
-    private void addPropertyDefinitions(WidgetDefinition widgetDefinition, UIFlexLayoutBuilder flex) {
-        val existedProperties = widgetDefinition.getProps(this);
-        if (existedProperties.isEmpty()) {
-            return;
-        }
-
-        flex.addFlex("properties", propertyBuilder -> {
-            propertyBuilder.setBorderArea("Endpoints").setBorderColor(Color.BLUE);
-            for (ZigBeeProperty propertyDefinition : existedProperties) {
-                propertyBuilder.addCheckbox(propertyDefinition.getKey(), true, null)
-                               .setTitle(propertyDefinition.getName(false));
-            }
-        });
-    }
-
-    private ActionResponseModel createWidget(WidgetBuilder widgetBuilder, WidgetDefinition widgetDefinition,
-        EntityContext entityContext, JSONObject params) {
-        String tab = params.getString("selection.dashboard_tab");
-
-        val includeProperties =
-            widgetDefinition.getProps(this).stream().filter(pd -> params.getBoolean(pd.getKey()))
-                            .collect(Collectors.toList());
-
-        widgetBuilder.buildWidget(new WidgetRequest(entityContext, Z2MDeviceEntity.this, tab, widgetDefinition, includeProperties));
-        return ActionResponseModel.success();
     }
 
     private static Float toFloat(Integer value) {

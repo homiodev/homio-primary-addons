@@ -127,7 +127,7 @@ public class Z2MDeviceService {
         if (this.getConfiguration().has("name")) {
             name = this.getConfiguration().get("name").asText();
         } else if (device.getModelId() != null || device.getDefinition().getModel() != null) {
-            name = format("${zigbee.device.%s:%s}", defaultIfEmpty(device.getModelId(), device.getDefinition().getModel()),
+            name = format("${zigbee.device.%s~%s}", defaultIfEmpty(device.getModelId(), device.getDefinition().getModel()),
                 device.getDefinition().getDescription());
         } else {
             name = device.getDefinition().getDescription();

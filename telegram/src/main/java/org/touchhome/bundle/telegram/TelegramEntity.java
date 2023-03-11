@@ -19,6 +19,7 @@ import org.touchhome.bundle.api.entity.types.CommunicationEntity;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.ui.UISidebarChildren;
 import org.touchhome.bundle.api.ui.field.UIField;
+import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
 import org.touchhome.bundle.api.util.SecureString;
@@ -33,103 +34,113 @@ import org.touchhome.common.util.Lang;
 @UISidebarChildren(icon = "fab fa-telegram", color = "#0088cc")
 public class TelegramEntity extends CommunicationEntity<TelegramEntity> implements HasStatusAndMsg<TelegramEntity> {
 
-  public static final String PREFIX = "telegram_";
+    public static final String PREFIX = "telegram_";
 
-  @UIField(order = 1, hideInEdit = true, hideOnEmpty = true, fullWidth = true, bg = "#334842C2", type = UIFieldType.HTML)
-  public String getDescription() {
-    if (StringUtils.isEmpty(getBotName()) || StringUtils.isEmpty(getBotToken())) {
-      return Lang.getServerMessage("telegram.description");
+    @UIField(order = 1, hideInEdit = true, hideOnEmpty = true, fullWidth = true, bg = "#334842C2", type = UIFieldType.HTML)
+    public String getDescription() {
+        if (StringUtils.isEmpty(getBotName()) || StringUtils.isEmpty(getBotToken())) {
+            return Lang.getServerMessage("telegram.description");
+        }
+        return null;
     }
-    return null;
-  }
 
-  @UIField(order = 30, required = true, inlineEditWhenEmpty = true)
-  public String getBotName() {
-    return getJsonData("botName");
-  }
-
-  public void setBotName(String value) {
-    setJsonData("botName", value);
-  }
-
-  @UIField(order = 40, required = true, inlineEditWhenEmpty = true)
-  public SecureString getBotToken() {
-    return new SecureString(getJsonData("botToken"));
-  }
-
-  public void setBotToken(String value) {
-    setJsonData("botToken", value);
-  }
-
-  @UIField(order = 50, hideInEdit = true, type = UIFieldType.Chips, label = "users")
-  public List<String> getRegisteredUsers() {
-    return getUsers().stream().map(TelegramUser::getName).collect(Collectors.toList());
-  }
-
-  @JsonIgnore
-  @SneakyThrows
-  public List<TelegramUser> getUsers() {
-    String users = getJsonData("users");
-    if (StringUtils.isNotEmpty(users)) {
-      return CommonUtils.OBJECT_MAPPER.readValue(users, new TypeReference<List<TelegramUser>>() {
-      });
+    @UIField(order = 30, required = true, inlineEditWhenEmpty = true)
+    public String getBotName() {
+        return getJsonData("botName");
     }
-    return new ArrayList<>();
-  }
 
-  @SneakyThrows
-  private void setUsers(List<TelegramUser> users) {
-    setJsonData("users", CommonUtils.OBJECT_MAPPER.writeValueAsString(users));
-  }
+    public void setBotName(String value) {
+        setJsonData("botName", value);
+    }
 
-  @Override
-  public String getDefaultName() {
-    return "TeleBot";
-  }
+    @UIField(order = 40, required = true, inlineEditWhenEmpty = true)
+    public SecureString getBotToken() {
+        return new SecureString(getJsonData("botToken"));
+    }
 
-  @Override
-  public String getEntityPrefix() {
-    return PREFIX;
-  }
+    public void setBotToken(String value) {
+        setJsonData("botToken", value);
+    }
 
-  @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off")
-  public ActionResponseModel reboot(EntityContext entityContext) {
-    entityContext.getBean(TelegramService.class).restart(this);
-    return ActionResponseModel.showSuccess("SUCCESS");
-  }
+    @UIField(order = 45)
+    @UIFieldSlider(max = 360, min = 5, step = 5)
+    public int getWaitQuestionMaxSeconds() {
+        return getJsonData("wqms", 60);
+    }
 
-  @Override
-  public void afterDelete(EntityContext entityContext) {
-    entityContext.getBean(TelegramService.class).dispose(this);
-  }
+    public void setWaitQuestionMaxSeconds(int value) {
+        setJsonData("wqms", value);
+    }
 
-  @Override
-  public void afterUpdate(EntityContext entityContext, boolean persist) {
-    entityContext.getBean(TelegramService.class).entityUpdated(this);
-  }
+    @UIField(order = 50, hideInEdit = true, type = UIFieldType.Chips, label = "users")
+    public List<String> getRegisteredUsers() {
+        return getUsers().stream().map(TelegramUser::getName).collect(Collectors.toList());
+    }
 
-  public TelegramUser getUser(long id) {
-    return getUsers().stream().filter(u -> u.id == id).findAny().orElse(null);
-  }
+    @JsonIgnore
+    @SneakyThrows
+    public List<TelegramUser> getUsers() {
+        String users = getJsonData("users");
+        if (StringUtils.isNotEmpty(users)) {
+            return CommonUtils.OBJECT_MAPPER.readValue(users, new TypeReference<List<TelegramUser>>() {
+            });
+        }
+        return new ArrayList<>();
+    }
 
-  public void removeUser(Long id) {
-    setUsers(getUsers().stream().filter(u -> u.id != id).collect(Collectors.toList()));
-  }
+    @SneakyThrows
+    private void setUsers(List<TelegramUser> users) {
+        setJsonData("users", CommonUtils.OBJECT_MAPPER.writeValueAsString(users));
+    }
 
-  public void addUser(Long id, String name, String lastName, String chatId) {
-    List<TelegramUser> users = getUsers();
-    users.add(new TelegramUser(id, name, lastName, chatId));
-    setUsers(users);
-  }
+    @Override
+    public String getDefaultName() {
+        return "TeleBot";
+    }
 
-  @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class TelegramUser {
+    @Override
+    public String getEntityPrefix() {
+        return PREFIX;
+    }
 
-    private long id;
-    private String name;
-    private String lastName;
-    private String chatId;
-  }
+    @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off")
+    public ActionResponseModel reboot(EntityContext entityContext) {
+        entityContext.getBean(TelegramService.class).restart(this);
+        return ActionResponseModel.showSuccess("SUCCESS");
+    }
+
+    @Override
+    public void afterDelete(EntityContext entityContext) {
+        entityContext.getBean(TelegramService.class).dispose(this);
+    }
+
+    @Override
+    public void afterUpdate(EntityContext entityContext, boolean persist) {
+        entityContext.getBean(TelegramService.class).entityUpdated(this);
+    }
+
+    public TelegramUser getUser(long id) {
+        return getUsers().stream().filter(u -> u.id == id).findAny().orElse(null);
+    }
+
+    public void removeUser(Long id) {
+        setUsers(getUsers().stream().filter(u -> u.id != id).collect(Collectors.toList()));
+    }
+
+    public void addUser(Long id, String name, String lastName, String chatId) {
+        List<TelegramUser> users = getUsers();
+        users.add(new TelegramUser(id, name, lastName, chatId));
+        setUsers(users);
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TelegramUser {
+
+        private long id;
+        private String name;
+        private String lastName;
+        private String chatId;
+    }
 }

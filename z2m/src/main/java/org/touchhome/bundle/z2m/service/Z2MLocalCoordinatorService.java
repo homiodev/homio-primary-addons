@@ -102,6 +102,7 @@ public class Z2MLocalCoordinatorService
     @Getter private Z2MConfiguration configuration = new Z2MConfiguration();
     private ThreadContext<Void> checkFrontendThreadContext;
     private URL z2mFrontendURL;
+    private String version;
 
     public Z2MLocalCoordinatorService(EntityContext entityContext, Z2MLocalCoordinatorEntity entity) {
         this.entity = entity;
@@ -342,6 +343,15 @@ public class Z2MLocalCoordinatorService
                 }).collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    @SneakyThrows
+    public String getVersion() {
+        if (version == null) {
+            ObjectNode packageNode = OBJECT_MAPPER.readValue(Files.readString(zigbee2mqttPath.resolve("package.json")), ObjectNode.class);
+            version = packageNode.get("version").asText();
+        }
+        return version;
     }
 
     private boolean isRequireRestartService() {

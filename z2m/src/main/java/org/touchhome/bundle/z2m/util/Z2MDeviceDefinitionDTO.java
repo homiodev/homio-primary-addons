@@ -1,6 +1,7 @@
 package org.touchhome.bundle.z2m.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -8,7 +9,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
@@ -68,6 +71,8 @@ public class Z2MDeviceDefinitionDTO {
         private @Nullable String layout;
         @Getter
         private Options options = new Options();
+        @Getter
+        private @Nullable List<Requests> requests;
 
         public @NotNull List<ZigBeeProperty> getProps(Z2MDeviceEntity z2MDeviceEntity) {
             if (this.isAutoDiscovery()) {
@@ -140,6 +145,21 @@ public class Z2MDeviceDefinitionDTO {
             return background;
         }
 
+        @SneakyThrows
+        public static void replaceField(String path, Object value, WidgetDefinition widgetDefinition) {
+            String[] split = path.split("\\.");
+            if (split.length == 1) {
+                FieldUtils.writeDeclaredField(widgetDefinition, split[0], value);
+            }
+            Object parentObject = widgetDefinition;
+            Field cursor = FieldUtils.getDeclaredField(WidgetDefinition.class, split[0], true);
+            for (int i = 1; i < split.length; i++) {
+                parentObject = FieldUtils.readField(cursor, parentObject, true);
+                cursor = FieldUtils.getDeclaredField(parentObject.getClass(), split[i], true);
+            }
+            FieldUtils.writeField(cursor, parentObject, value, true);
+        }
+
         @Getter
         @Setter
         public static class ItemDefinition {
@@ -151,8 +171,26 @@ public class Z2MDeviceDefinitionDTO {
             private JsonNode iconColorThreshold;
             private String valueConverter;
             private String valueColor;
+            private boolean valueSourceClickHistory = true;
             private int valueConverterRefreshInterval = 0;
             private Chart chart;
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class Requests {
+
+        private String name;
+        private String value;
+        private RequestType type;
+        private String title;
+        private String target;
+        private float min = 0;
+        private float max = 255;
+
+        public enum RequestType {
+            number
         }
     }
 
@@ -191,7 +229,7 @@ public class Z2MDeviceDefinitionDTO {
             private Stepped stepped = Stepped.False;
             private Fill fill = Fill.Origin;
             private int lineBorderWidth = 2;
-            private AggregationType aggregateFunc = AggregationType.Average;
+            private AggregationType aggregateFunc = AggregationType.AverageNoZero;
             private int opacity = 50;
             private int height = 30;
             private boolean smoothing = true;

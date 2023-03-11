@@ -20,12 +20,5 @@
   },
   "selection": {
     "TelegramEntity": "Telegram"
-  },
-  "telegram": {
-    "name": "Telegram",
-    "setting": {
-      "label": "Telegram settings",
-      "st_TelegramSettingMaxQuestionMaxSeconds": "Max answer wait timeout(sec)"
-    }
   }
 }

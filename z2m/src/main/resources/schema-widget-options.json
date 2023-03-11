@@ -77,9 +77,10 @@
             "Sum",
             "Count",
             "Average",
+            "AverageNoZero",
             "Median"
           ],
-          "default": "Average"
+          "default": "AverageNoZero"
         },
         "opacity": {
           "title": "Specify chart fill opacity applied to Chart color",

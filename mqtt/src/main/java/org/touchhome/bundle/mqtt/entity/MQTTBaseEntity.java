@@ -24,6 +24,8 @@ import org.touchhome.bundle.api.entity.widget.ability.HasSetStatusValue;
 import org.touchhome.bundle.api.entity.widget.ability.HasTimeValueSeries;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.service.EntityService;
+import org.touchhome.bundle.api.storage.SourceHistory;
+import org.touchhome.bundle.api.storage.SourceHistoryItem;
 import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldGroup;
 import org.touchhome.bundle.api.ui.field.UIFieldPort;
@@ -264,6 +266,18 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     public Object getStatusValue(GetStatusValueRequest request) {
         String topic = getTopicRequire(request.getDynamicParameters(), "queryTopic");
         return getService().getRawValue(topic);
+    }
+
+    @Override
+    public SourceHistory getSourceHistory(GetStatusValueRequest request) {
+        String topic = getTopicRequire(request.getDynamicParameters(), "queryTopic");
+        return getService().getSourceHistory(topic);
+    }
+
+    @Override
+    public List<SourceHistoryItem> getSourceHistoryItems(GetStatusValueRequest request, int from, int count) {
+        String topic = getTopicRequire(request.getDynamicParameters(), "queryTopic");
+        return getService().getSourceHistoryItems(topic, from, count);
     }
 
     @Override

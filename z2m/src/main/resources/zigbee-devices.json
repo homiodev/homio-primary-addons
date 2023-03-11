@@ -141,14 +141,18 @@
             "value": 16,
             "type": "number",
             "title": "Minimum expected temperature",
-            "target": "options.chart.min"
+            "target": "options.chart.min",
+            "min": -30,
+            "max": 50
           },
           {
             "name": "max",
             "value": 26,
             "type": "number",
             "title": "Maximum expected temperature",
-            "target": "options.chart.max"
+            "target": "options.chart.max",
+            "min": -30,
+            "max": 50
           }
         ],
         "options": {

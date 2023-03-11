@@ -172,13 +172,12 @@ public class DisplayWidget implements WidgetBuilder {
         switch (source.getKind()) {
             case variable:
                 String variable = entityContext.var().createVariable(request.getWidgetRequest().getEntity().getEntityID(),
-                    source.getValue(), source.getValue(), source.getVariableType(), null, false, null, null);
+                    source.getValue(), source.getValue(), source.getVariableType(), null);
                 return entityContext.var().buildDataSource(variable, true);
             case broadcasts:
                 String id = source.getValue() + "_" + request.getWidgetRequest().getEntity().getIeeeAddress();
                 String name = source.getValue() + " " + request.getWidgetRequest().getEntity().getIeeeAddress();
-                String variableID = entityContext.var().createVariable("broadcasts", id, name, VariableType.Any,
-                    null, false, null, null);
+                String variableID = entityContext.var().createVariable("broadcasts", id, name, VariableType.Any, null);
                 return entityContext.var().buildDataSource(variableID, true);
             case property:
                 ZigBeeProperty property = request.getWidgetRequest().getEntity().getProperty(source.getValue());
@@ -209,6 +208,7 @@ public class DisplayWidget implements WidgetBuilder {
                 seriesBuilder.setValueConverter(wbProperty.getValueConverter());
                 seriesBuilder.setValueConverterRefreshInterval(wbProperty.getValueConverterRefreshInterval());
                 seriesBuilder.setValueColor(wbProperty.getValueColor());
+                seriesBuilder.setValueSourceClickHistory(wbProperty.isValueSourceClickHistory());
 
                 if (isNotEmpty(wbProperty.getIcon()) || wbProperty.getIconThreshold() != null) {
                     seriesBuilder.setIcon(defaultString(wbProperty.getIcon(), property.getIcon()), thresholdBuilder -> {

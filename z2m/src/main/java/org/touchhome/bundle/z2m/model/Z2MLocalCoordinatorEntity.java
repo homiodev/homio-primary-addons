@@ -196,6 +196,11 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         return service == null ? null : service.getDeviceEntity();
     }
 
+    @UIField(order = 1, hideInEdit = true)
+    public String getVersion() {
+        return getService().getVersion();
+    }
+
     @Getter
     @NoArgsConstructor
     private static class ZigBeeCoordinatorDeviceEntity {

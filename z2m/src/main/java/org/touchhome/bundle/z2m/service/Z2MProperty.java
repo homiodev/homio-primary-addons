@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.EntityContextVar.VariableMetaBuilder;
 import org.touchhome.bundle.api.EntityContextVar.VariableType;
 import org.touchhome.bundle.api.entity.zigbee.ZigBeeProperty;
 import org.touchhome.bundle.api.state.DecimalType;
@@ -102,7 +103,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     public String getName(boolean shortFormat) {
         String name = ZigBeeUtil.splitNameToReadableFormat(expose.getName());
-        name = shortFormat ? name : format("${zbe.%s:%s}", expose.getName(), name);
+        name = shortFormat ? name : format("${zbe.%s~%s}", expose.getName(), name);
         if (isNotEmpty(expose.getEndpoint())) {
             return format("%s [%s]", name, expose.getEndpoint());
         }
@@ -110,7 +111,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     }
 
     public String getDescription() {
-        return format("${zbd.%s:%s}", expose.getName(), defaultIfEmpty(getExpose().getDescription(), expose.getProperty()));
+        return format("${zbd.%s~%s}", expose.getName(), defaultIfEmpty(getExpose().getDescription(), expose.getProperty()));
     }
 
     public void fireAction(boolean value) {
@@ -262,10 +263,10 @@ public abstract class Z2MProperty implements ZigBeeProperty {
             VariableType variableType = getVariableType();
             if (variableType == VariableType.Enum) {
                 variableID = entityContext.var().createEnumVariable(deviceService.getDeviceEntity().getEntityID(),
-                    entityID, getName(false), getVariableDescription(), !isWritable(), iconColor, expose.getValues());
+                    entityID, getName(false), expose.getValues(), getVariableMetaBuilder());
             } else {
                 variableID = entityContext.var().createVariable(deviceService.getDeviceEntity().getEntityID(),
-                    entityID, getName(false), variableType, getVariableDescription(), !isWritable(), iconColor, expose.getUnit());
+                    entityID, getName(false), variableType, getVariableMetaBuilder());
             }
             entityContext.var().setVariableIcon(variableID, icon, iconColor);
 
@@ -281,6 +282,21 @@ public abstract class Z2MProperty implements ZigBeeProperty {
                 });
             }
         }
+    }
+
+    @NotNull
+    private Consumer<VariableMetaBuilder> getVariableMetaBuilder() {
+        return builder -> {
+            builder.setDescription(getVariableDescription()).setReadOnly(!isWritable()).setColor(iconColor);
+            List<String> attributes = new ArrayList<>();
+            if (expose.getValueMin() != null) {attributes.add("min:" + expose.getValueMin());}
+            if (expose.getValueMax() != null) {attributes.add("max:" + expose.getValueMax());}
+            if (expose.getValueStep() != null) {attributes.add("step:" + expose.getValueStep());}
+            if (expose.getValueToggle() != null) {attributes.add("toggle:" + expose.getValueToggle());}
+            if (expose.getValueOn() != null) {attributes.add("on:" + expose.getValueOn());}
+            if (expose.getValueOff() != null) {attributes.add("off:" + expose.getValueOff());}
+            builder.setAttributes(attributes);
+        };
     }
 
     private String getVariableDescription() {
