@@ -14,33 +14,33 @@ import org.touchhome.bundle.telegram.service.TelegramService;
 @RequiredArgsConstructor
 public class TelegramEntrypoint implements BundleEntrypoint {
 
-  private final EntityContext entityContext;
-  private final TelegramService telegramService;
+    private final EntityContext entityContext;
+    private final TelegramService telegramService;
 
-  public void init() {
-    entityContext.event().runOnceOnInternetUp("telegram-start", () -> {
-      for (TelegramEntity telegramEntity : entityContext.findAll(TelegramEntity.class)) {
-        telegramService.restart(telegramEntity);
-      }
-    });
-    //listen for bot name/token changes and fire restart
-    entityContext.event().addEntityUpdateListener(TelegramEntity.class, "listen-telegram-to-start", (newValue, oldValue) -> {
-      if (oldValue == null || !Objects.equals(newValue.getBotName(), oldValue.getBotName()) ||
-          !Objects.equals(newValue.getBotToken(), oldValue.getBotToken())) {
-        if (StringUtils.isNotEmpty(newValue.getBotName()) && StringUtils.isNotEmpty(newValue.getBotToken().asString())) {
-          newValue.reboot(entityContext);
-        }
-      }
-    });
-  }
+    public void init() {
+        entityContext.event().runOnceOnInternetUp("telegram-start", () -> {
+            for (TelegramEntity telegramEntity : entityContext.findAll(TelegramEntity.class)) {
+                telegramService.restart(telegramEntity);
+            }
+        });
+        //listen for bot name/token changes and fire restart
+        entityContext.event().addEntityUpdateListener(TelegramEntity.class, "listen-telegram-to-start", (newValue, oldValue) -> {
+            if (oldValue == null || !Objects.equals(newValue.getBotName(), oldValue.getBotName()) ||
+                !Objects.equals(newValue.getBotToken(), oldValue.getBotToken())) {
+                if (StringUtils.isNotEmpty(newValue.getBotName()) && StringUtils.isNotEmpty(newValue.getBotToken().asString())) {
+                    newValue.reboot(entityContext);
+                }
+            }
+        });
+    }
 
-  @Override
-  public int order() {
-    return 200;
-  }
+    @Override
+    public int order() {
+        return 200;
+    }
 
-  @Override
-  public BundleImageColorIndex getBundleImageColorIndex() {
-    return BundleImageColorIndex.ONE;
-  }
+    @Override
+    public BundleImageColorIndex getBundleImageColorIndex() {
+        return BundleImageColorIndex.ONE;
+    }
 }

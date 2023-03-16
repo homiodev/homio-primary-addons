@@ -41,7 +41,7 @@ public class NodeJSDependencyExecutableInstaller extends DependencyExecutableIns
             } else {
                 targetFolder =
                     downloadAndExtract(
-                        "https://nodejs.org/dist/v18.12.1/node-v18.12.1-win-x64.zip",
+                        "https://nodejs.org/dist/v18.15.0/node-v18.15.0-win-x64.zip",
                         "nodejs.zip",
                         progressBar,
                         log);

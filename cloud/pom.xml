@@ -4,6 +4,10 @@
   <artifactId>touchhome-bundle-cloud</artifactId>
   <dependencies>
     <dependency>
+      <artifactId>jsch</artifactId>
+      <groupId>com.jcraft</groupId>
+    </dependency>
+    <dependency>
       <artifactId>netty-handler</artifactId>
       <groupId>io.netty</groupId>
       <scope>compile</scope>
@@ -14,6 +18,11 @@
       <groupId>io.netty</groupId>
       <scope>compile</scope>
       <version>${netty.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>maverick-synergy-client</artifactId>
+      <groupId>com.sshtools</groupId>
+      <version>3.0.10</version>
     </dependency>
   </dependencies>
 

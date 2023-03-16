@@ -146,6 +146,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
             mqttClient.disconnectForcibly();
             mqttClient.close(true);
         }
+        updateNotificationBlock();
     }
 
     @Override
@@ -245,6 +246,15 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         }
         MQTTMessage mqttMessage = storage.findLatestBy("topic", topic);
         return mqttMessage == null ? null : mqttMessage.getValue();
+    }
+
+    public void updateNotificationBlock() {
+        entityContext.ui().addNotificationBlock(entityID, entity.getName(), "fas fa-building", "#7E2CAC", builder -> {
+            builder.setStatus(entity);
+            if (entity instanceof MQTTLocalClientEntity) {
+                builder.setVersion(((MQTTLocalClientEntity) entity).getVersion());
+            }
+        });
     }
 
     private TreeNode removeTopic(String topic) {
@@ -373,10 +383,12 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         public void connectComplete(boolean reconnect, String serverURI) {
             try {
                 entityContext.event().fireEvent("mqtt-status", Status.ONLINE);
-                entity.setStatus(Status.ONLINE, "Connected");
+                entity.setStatusOnline();
                 entityContext.ui().sendInfoMessage("MQTT server connected");
             } catch (Exception ex) {
                 log.error("[{}]: Unexpected error", entityID, ex);
+            } finally {
+                updateNotificationBlock();
             }
         }
 
@@ -394,6 +406,8 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
                     () -> entity.getOrCreateService(entityContext));
             } catch (Exception ex) {
                 log.error("[{}]: Unexpected error", entityID, ex);
+            } finally {
+                updateNotificationBlock();
             }
         }
 
@@ -425,4 +439,5 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
 
         }
     }
+
 }

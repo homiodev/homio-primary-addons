@@ -40,6 +40,7 @@ import org.touchhome.bundle.mqtt.entity.MQTTBaseEntity;
 import org.touchhome.bundle.z2m.service.Z2MDeviceService;
 import org.touchhome.bundle.z2m.service.Z2MLocalCoordinatorService;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO;
+import org.touchhome.bundle.z2m.util.ZigBeeUtil;
 
 @Log4j2
 @Entity
@@ -198,7 +199,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
     @UIField(order = 1, hideInEdit = true)
     public String getVersion() {
-        return getService().getVersion();
+        return ZigBeeUtil.getInstalledVersion();
     }
 
     @Getter

@@ -12,6 +12,8 @@ import static org.touchhome.common.util.CommonUtils.OBJECT_MAPPER;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,32 +22,43 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.hardware.other.MachineHardwareRepository;
 import org.touchhome.bundle.api.model.OptionModel;
+import org.touchhome.bundle.api.repository.GitHubProject;
+import org.touchhome.bundle.api.repository.GitHubProject.ProjectUpdate;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.item.UIColorPickerItemBuilder.ColorType;
 import org.touchhome.bundle.api.ui.field.action.v1.item.UIInfoItemBuilder.InfoType;
 import org.touchhome.bundle.api.ui.field.action.v1.item.UISelectBoxItemBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.UILayoutBuilder;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.bundle.z2m.NodeJSDependencyExecutableInstaller;
 import org.touchhome.bundle.z2m.service.Z2MProperty;
 import org.touchhome.bundle.z2m.service.properties.Z2MPropertyColor;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
+import org.touchhome.common.model.ProgressBar;
 import org.touchhome.common.util.CommonUtils;
 
 @Log4j2
 public final class ZigBeeUtil {
 
+    public static final Path ZIGBEE_2_MQTT_PATH = TouchHomeUtils.getInstallPath().resolve("zigbee2mqtt");
+
     /**
      * Properties market with defined color, icon, etc...
      */
     public static final Map<String, Z2MDevicePropertiesDTO> DEVICE_PROPERTIES;
+    public static final GitHubProject zigbee2mqttGitHub = new GitHubProject("Koenkk", "zigbee2mqtt");
     /**
      * Contains model/icon/iconColor/some setting config i.e. occupancy_timeout min..max values
      */
     private static final Map<String, Z2MDeviceDefinitionDTO> DEVICE_DEFINITIONS;
+    public static String installedVersion;
 
     static {
         try {
@@ -86,7 +99,7 @@ public final class ZigBeeUtil {
     public static void zigbeeScanStarted(
         @NotNull EntityContext entityContext,
         @NotNull String entityID,
-        @NotNull int duration,
+        int duration,
         @NotNull Runnable onDurationTimedOutHandler,
         @NotNull Runnable stopScanHandler) {
         entityContext.ui().headerButtonBuilder("zigbee-scan-" + entityID).title("zigbee.action.stop_scan").border(1, "#899343").clickAction(() -> {
@@ -180,6 +193,64 @@ public final class ZigBeeUtil {
 
     public static int compareProperty(@NotNull String name1, @NotNull String name2) {
         return Integer.compare(getPropertyOrder(name1), getPropertyOrder(name2));
+    }
+
+    @SneakyThrows
+    public static void installOrUpdateZ2M(boolean update, ProgressBar progressBar, EntityContext entityContext, String version, ProjectUpdate projectUpdate) {
+        Path zigbee2mqttPackagePath = ZIGBEE_2_MQTT_PATH.resolve("node_modules");
+        // Path targetZipPath = TouchHomeUtils.getInstallPath().resolve("zigbee2mqtt.tar.gz");
+        boolean binaryExists = Files.exists(zigbee2mqttPackagePath);
+
+        boolean requireUpdate = update && !getInstalledVersion().equals(version);
+        if (binaryExists && !requireUpdate) {
+            return;
+        }
+        ZigBeeUtil.installedVersion = null;
+
+        // backup configuration
+        if (binaryExists) {
+            projectUpdate.backup(Path.of("data"))
+                         .deleteProject();
+            /*FileUtils.copyDirectory(ZIGBEE_2_MQTT_PATH.resolve("data").toFile(),
+                TouchHomeUtils.getInstallPath().resolve("z2m-data-backup").toFile());
+            FileUtils.deleteDirectory(ZIGBEE_2_MQTT_PATH.toFile());*/
+        }
+
+        projectUpdate.download(version);
+        /*Curl.downloadWithProgress("https://github.com/Koenkk/zigbee2mqtt/archive/" + version + ".tar.gz", targetZipPath, progressBar);
+        ArchiveUtil.unzip(targetZipPath, TouchHomeUtils.getInstallPath(), null, false, progressBar, UnzipFileIssueHandler.replace);
+        Files.delete(targetZipPath);
+        Files.move(TouchHomeUtils.getInstallPath().resolve("zigbee2mqtt-" + version), ZIGBEE_2_MQTT_PATH, StandardCopyOption.REPLACE_EXISTING);*/
+
+        NodeJSDependencyExecutableInstaller installer = entityContext.getBean(NodeJSDependencyExecutableInstaller.class);
+        if (installer.isRequireInstallDependencies(entityContext, true)) {
+            progressBar.progress(0, "install-nodejs");
+            installer.installDependency(entityContext, progressBar);
+        }
+        progressBar.progress(0, "install-zigbee2mqtt");
+        MachineHardwareRepository machineHardwareRepository = entityContext.getBean(MachineHardwareRepository.class);
+        machineHardwareRepository.execute("npm ci --prefix " + ZIGBEE_2_MQTT_PATH + " --no-audit --no-optional --no-update-notifier --unsafe-perm", 600,
+            progressBar);
+        machineHardwareRepository.execute("npm run build --prefix " + ZIGBEE_2_MQTT_PATH, 600, progressBar);
+        machineHardwareRepository.execute(
+            "npm ci --prefix " + ZIGBEE_2_MQTT_PATH + " --no-audit --no-optional --no-update-notifier --only=production --unsafe-perm", 600, progressBar);
+
+        // restore configuration
+        if (binaryExists) {
+            projectUpdate.restore(Path.of("data"));
+            /*FileUtils.deleteDirectory(ZIGBEE_2_MQTT_PATH.resolve("data").toFile());
+            FileUtils.moveDirectory(TouchHomeUtils.getInstallPath().resolve("z2m-data-backup").toFile(),
+                ZIGBEE_2_MQTT_PATH.resolve("data").toFile());*/
+        }
+    }
+
+    @SneakyThrows
+    public static String getInstalledVersion() {
+        if (installedVersion == null) {
+            ObjectNode packageNode = OBJECT_MAPPER.readValue(Files.readString(ZIGBEE_2_MQTT_PATH.resolve("package.json")), ObjectNode.class);
+            installedVersion = packageNode.get("version").asText();
+        }
+        return installedVersion;
     }
 
     private static int getPropertyOrder(@NotNull String name) {

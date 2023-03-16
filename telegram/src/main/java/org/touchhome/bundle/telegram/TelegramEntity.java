@@ -31,7 +31,7 @@ import org.touchhome.common.util.Lang;
 @Setter
 @Entity
 @Accessors(chain = true)
-@UISidebarChildren(icon = "fab fa-telegram", color = "#0088cc")
+@UISidebarChildren(icon = "fab fa-telegram", color = "#0088CC")
 public class TelegramEntity extends CommunicationEntity<TelegramEntity> implements HasStatusAndMsg<TelegramEntity> {
 
     public static final String PREFIX = "telegram_";

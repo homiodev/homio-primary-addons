@@ -285,7 +285,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
                 uiEntity.setDisabled(!this.isStart());
             }
 
-            if (StringUtils.isEmpty(getIeeeAddress()) || getStatus() == Status.REQUIRE_AUTH) {
+            if (StringUtils.isEmpty(getIeeeAddress()) || getSourceStatus() == Status.REQUIRE_AUTH) {
                 uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", "fas fa-sign-in-alt", null, 250,
                     (entityContext, params) -> {
 

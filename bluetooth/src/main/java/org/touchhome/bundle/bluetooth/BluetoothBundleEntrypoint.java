@@ -1,6 +1,5 @@
 package org.touchhome.bundle.bluetooth;
 
-import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.touchhome.bundle.api.BundleEntrypoint;
@@ -8,8 +7,6 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
 import org.touchhome.bundle.api.hardware.other.MachineHardwareRepository;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.api.setting.SettingPluginStatus;
-import org.touchhome.bundle.bluetooth.setting.BluetoothStatusSetting;
 import org.touchhome.bundle.cloud.setting.ConsoleCloudProviderSetting;
 
 @Log4j2
@@ -17,16 +14,14 @@ import org.touchhome.bundle.cloud.setting.ConsoleCloudProviderSetting;
 public class BluetoothBundleEntrypoint extends BaseBluetoothCharacteristicService implements BundleEntrypoint {
 
     private final EntityContext entityContext;
+    private Status status = Status.UNKNOWN;
+    private String errorMessage;
 
     public BluetoothBundleEntrypoint(EntityContext entityContext, MachineHardwareRepository machineHardwareRepository,
         NetworkHardwareRepository networkHardwareRepository) {
         super(machineHardwareRepository, networkHardwareRepository);
         this.entityContext = entityContext;
-    }
-
-    @Override
-    public Class<? extends SettingPluginStatus> getBundleStatusSetting() {
-        return BluetoothStatusSetting.class;
+        updateNotificationBlock();
     }
 
     @Override
@@ -37,11 +32,6 @@ public class BluetoothBundleEntrypoint extends BaseBluetoothCharacteristicServic
     @Override
     public String readServerConnected() {
         return entityContext.setting().getValue(ConsoleCloudProviderSetting.class).getStatus();
-    }
-
-    @Override
-    public String getFeatures() {
-        return entityContext.getDeviceFeatures().entrySet().stream().map(es -> es.getKey() + "~~~" + es.getValue()).collect(Collectors.joining(";"));
     }
 
     /**
@@ -67,13 +57,16 @@ public class BluetoothBundleEntrypoint extends BaseBluetoothCharacteristicServic
         }
     }*/
     @Override
-    public void updateBluetoothStatus(String status) {
-        entityContext.setting().setValue(BluetoothStatusSetting.class,
-            new SettingPluginStatus.BundleStatusInfo(Status.valueOf(status), null));
+    public void updateBluetoothStatus(String status, String message) {
+        this.status = status.startsWith("ERROR") ? Status.ERROR : Status.valueOf(status);
+        this.errorMessage = message;
+        updateNotificationBlock();
     }
 
-    @Override
-    public void setFeatureState(boolean status) {
-        entityContext.setFeatureState("Bluetooth", status);
+    public void updateNotificationBlock() {
+        entityContext.ui().addNotificationBlock("ble", "Bluetooth", "fab fa-bluetooth", "#0088CC", builder -> {
+            builder.setStatus(this.status);
+            builder.setStatusMessage(this.errorMessage);
+        });
     }
 }
