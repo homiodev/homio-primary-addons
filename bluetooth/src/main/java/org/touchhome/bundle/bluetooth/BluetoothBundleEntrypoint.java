@@ -7,7 +7,6 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
 import org.touchhome.bundle.api.hardware.other.MachineHardwareRepository;
 import org.touchhome.bundle.api.model.Status;
-import org.touchhome.bundle.cloud.setting.ConsoleCloudProviderSetting;
 
 @Log4j2
 @Controller
@@ -27,11 +26,6 @@ public class BluetoothBundleEntrypoint extends BaseBluetoothCharacteristicServic
     @Override
     public int order() {
         return Integer.MAX_VALUE;
-    }
-
-    @Override
-    public String readServerConnected() {
-        return entityContext.setting().getValue(ConsoleCloudProviderSetting.class).getStatus();
     }
 
     /**

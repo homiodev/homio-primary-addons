@@ -83,7 +83,7 @@ public class CommonVideoService extends BaseVideoService<CommonVideoStreamEntity
         entityContext.ui().addNotificationBlock(entityID, getEntity().getTitle(), "fas fa-film", "#02B05C", builder -> {
             builder.setStatus(getEntity().getSourceStatus());
             if (!getEntity().isStart()) {
-                builder.addButtonInfo("video.not_started", Color.RED, "fas fa-stop", null, "fas fa-play", "Start", (entityContext, params) -> {
+                builder.addButtonInfo("video.not_started", Color.RED, "fas fa-stop", null, "fas fa-play", "Start", null, (entityContext, params) -> {
                     entityContext.save(getEntity().setStart(true));
                     return ActionResponseModel.success();
                 });

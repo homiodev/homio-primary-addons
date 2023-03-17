@@ -723,7 +723,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
             String text = getEntity().getIp() + ":" + getEntity().getOnvifPort() + " " + brand.getName();
             builder.addInfo(text, null, "fas fa-wifi", "#0E578F");
             if (!getEntity().isStart()) {
-                builder.addButtonInfo("video.not_started", Color.RED, "fas fa-stop", null, "fas fa-play", "Start", (entityContext, params) -> {
+                builder.addButtonInfo("video.not_started", Color.RED, "fas fa-stop", null, "fas fa-play", "Start", null, (entityContext, params) -> {
                     entityContext.save(getEntity().setStart(true));
                     return ActionResponseModel.success();
                 });

@@ -123,7 +123,6 @@
     <module>telegram</module>
     <module>mqtt</module>
     <module>z2m</module>
-    <module>cloud</module>
     <module>bluetooth</module>
     <module>camera</module>
   </modules>
