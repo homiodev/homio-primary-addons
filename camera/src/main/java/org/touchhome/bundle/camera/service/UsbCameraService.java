@@ -78,7 +78,7 @@ public class UsbCameraService extends BaseVideoService<UsbCameraEntity> {
     }
 
     @Override
-    protected void initialize0() throws Exception {
+    protected void initialize0() {
         UsbCameraEntity entity = getEntity();
         String url = "video=\"" + entity.getIeeeAddress() + "\"";
         if (StringUtils.isNotEmpty(entity.getAudioSource())) {

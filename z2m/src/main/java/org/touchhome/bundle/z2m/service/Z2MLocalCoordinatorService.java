@@ -3,12 +3,13 @@ package org.touchhome.bundle.z2m.service;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
+import static org.touchhome.bundle.api.util.TouchHomeUtils.OBJECT_MAPPER;
+import static org.touchhome.bundle.api.util.TouchHomeUtils.YAML_OBJECT_MAPPER;
+import static org.touchhome.bundle.api.util.TouchHomeUtils.getErrorMessage;
 import static org.touchhome.bundle.z2m.util.ZigBeeUtil.ZIGBEE_2_MQTT_PATH;
 import static org.touchhome.bundle.z2m.util.ZigBeeUtil.getInstalledVersion;
 import static org.touchhome.bundle.z2m.util.ZigBeeUtil.installOrUpdateZ2M;
 import static org.touchhome.bundle.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
-import static org.touchhome.common.util.CommonUtils.OBJECT_MAPPER;
-import static org.touchhome.common.util.CommonUtils.YAML_OBJECT_MAPPER;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -47,14 +48,16 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.EntityContextBGP.ThreadContext;
 import org.touchhome.bundle.api.console.ConsolePluginFrame.FrameConfiguration;
 import org.touchhome.bundle.api.entity.zigbee.ZigBeeDeviceBaseEntity;
-import org.touchhome.bundle.api.hquery.LinesReader;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.model.HasEntityIdentifier;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService.ServiceInstance;
 import org.touchhome.bundle.api.service.EntityService.WatchdogService;
 import org.touchhome.bundle.api.ui.UI.Color;
+import org.touchhome.bundle.api.ui.field.ProgressBar;
+import org.touchhome.bundle.api.util.Lang;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.bundle.hquery.LinesReader;
 import org.touchhome.bundle.mqtt.entity.MQTTBaseEntity;
 import org.touchhome.bundle.z2m.ZigBee2MQTTFrontendConsolePlugin;
 import org.touchhome.bundle.z2m.model.Z2MLocalCoordinatorEntity;
@@ -63,9 +66,6 @@ import org.touchhome.bundle.z2m.util.Z2MConfiguration;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition;
 import org.touchhome.bundle.z2m.util.ZigBeeUtil;
-import org.touchhome.common.model.ProgressBar;
-import org.touchhome.common.util.CommonUtils;
-import org.touchhome.common.util.Lang;
 
 /**
  * The {@link Z2MLocalCoordinatorService} is responsible for handling commands, which are sent to one of the zigbeeRequireEndpoints.
@@ -114,7 +114,7 @@ public class Z2MLocalCoordinatorService
         List<Class<? extends Z2MProperty>> z2mClusters = entityContext.getClassesWithParent(Z2MProperty.class);
         for (Class<? extends Z2MProperty> z2mCluster : z2mClusters) {
             if (!Z2MDynamicProperty.class.isAssignableFrom(z2mCluster)) {
-                Z2MProperty z2MProperty = CommonUtils.newInstance(z2mCluster);
+                Z2MProperty z2MProperty = TouchHomeUtils.newInstance(z2mCluster);
                 z2mConverters.put(z2MProperty.getPropertyDefinition(), z2mCluster);
             }
         }
@@ -243,7 +243,7 @@ public class Z2MLocalCoordinatorService
                         entityContext.ui().removeHeaderButton("zigbee-scan-" + entityID);
                     });
             } catch (Exception ex) {
-                log.error("[{}]: Unable to send request to discover devices. {}", entityID, CommonUtils.getErrorMessage(ex));
+                log.error("[{}]: Unable to send request to discover devices. {}", entityID, getErrorMessage(ex));
                 return ActionResponseModel.showError(ex);
             }
             return ActionResponseModel.success();
@@ -447,14 +447,14 @@ public class Z2MLocalCoordinatorService
             if (!isZigbee2MqttStarted()) {
                 entityContext.bgp().builder("zigbee2mqtt-service").hideOnUIAfterCancel(false).execute(this::startZigbee2MqttService)
                              .onError(ex -> {
-                                 log.error("[{}]: Error while start zigbee2mqtt {}", entityID, CommonUtils.getErrorMessage(ex));
+                                 log.error("[{}]: Error while start zigbee2mqtt {}", entityID, getErrorMessage(ex));
                                  dispose(ex);
                              });
             } else {
                 setEntityOnline();
             }
         } catch (Exception ex) {
-            log.error("[{}]: Error while start zigbee2mqtt {}", entityID, CommonUtils.getErrorMessage(ex));
+            log.error("[{}]: Error while start zigbee2mqtt {}", entityID, getErrorMessage(ex));
             dispose(ex);
         }
         updateNotificationBlock();
@@ -505,7 +505,7 @@ public class Z2MLocalCoordinatorService
                 try {
                     z2MResponse.handler.accept(payload.toString(), this);
                 } catch (Exception ex) {
-                    log.error("Unable to handle {} mqtt payload: {}. Msg: {}", z2MResponse, payload, CommonUtils.getErrorMessage(ex));
+                    log.error("Unable to handle {} mqtt payload: {}. Msg: {}", z2MResponse, payload, getErrorMessage(ex));
                 }
             });
         }

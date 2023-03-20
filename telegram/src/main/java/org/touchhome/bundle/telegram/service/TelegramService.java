@@ -31,6 +31,7 @@ import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.api.workspace.BroadcastLock;
 import org.touchhome.bundle.telegram.TelegramEntity;
 import org.touchhome.bundle.telegram.commands.TelegramEventCommand;
@@ -38,7 +39,6 @@ import org.touchhome.bundle.telegram.commands.TelegramHelpCommand;
 import org.touchhome.bundle.telegram.commands.TelegramRegisterUserCommand;
 import org.touchhome.bundle.telegram.commands.TelegramStartCommand;
 import org.touchhome.bundle.telegram.commands.TelegramUnregisterUserCommand;
-import org.touchhome.common.util.CommonUtils;
 
 @Log4j2
 @Component
@@ -132,7 +132,7 @@ public class TelegramService {
                     "Require bot name field" : "Require bot token field");
             }
         } catch (Exception ex) {
-            String msg = "Unable to start telegram bot: " + CommonUtils.getErrorMessage(ex);
+            String msg = "Unable to start telegram bot: " + TouchHomeUtils.getErrorMessage(ex);
             if (ex.getCause() instanceof TelegramApiRequestException) {
                 Integer errorCode = ((TelegramApiRequestException) ex.getCause()).getErrorCode();
                 if (errorCode == 404) {

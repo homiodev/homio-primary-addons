@@ -32,7 +32,6 @@ import org.touchhome.bundle.api.entity.zigbee.ZigBeeProperty;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.state.JsonType;
 import org.touchhome.bundle.api.state.OnOffType;
-import org.touchhome.bundle.api.state.QuantityType;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.state.StringType;
 import org.touchhome.bundle.z2m.model.Z2MDeviceEntity.Z2MPropertyEntity;
@@ -233,12 +232,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
                 }
                 return payload -> OnOffType.of(payload.getBoolean(getJsonKey()));
             case NUMBER_TYPE:
-                return payload -> new DecimalType(payload.getNumber(getJsonKey()));
-                /*if (unit != null) {
-                    return payload -> new QuantityType(payload.getNumber(getJsonKey()), unit);
-                } else {
-                    return payload -> new DecimalType(payload.getNumber(getJsonKey()));
-                }*/
+                return payload -> new DecimalType(payload.getNumber(getJsonKey())).setUnit(unit);
             case COMPOSITE_TYPE:
                 return payload -> new JsonType(payload.get(getJsonKey()).toString());
             case ENUM_TYPE:
@@ -336,7 +330,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
                         return VariableType.Color;
                 }
                 // check if we are able to find out type from current value
-                if (value instanceof DecimalType || value instanceof QuantityType) {
+                if (value instanceof DecimalType) {
                     return VariableType.Float;
                 }
                 String valueStr = value.stringValue();

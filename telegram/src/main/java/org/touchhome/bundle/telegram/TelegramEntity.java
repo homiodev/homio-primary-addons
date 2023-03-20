@@ -1,5 +1,7 @@
 package org.touchhome.bundle.telegram;
 
+import static org.touchhome.bundle.api.util.TouchHomeUtils.OBJECT_MAPPER;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.ArrayList;
@@ -22,10 +24,9 @@ import org.touchhome.bundle.api.ui.field.UIField;
 import org.touchhome.bundle.api.ui.field.UIFieldSlider;
 import org.touchhome.bundle.api.ui.field.UIFieldType;
 import org.touchhome.bundle.api.ui.field.action.UIContextMenuAction;
+import org.touchhome.bundle.api.util.Lang;
 import org.touchhome.bundle.api.util.SecureString;
 import org.touchhome.bundle.telegram.service.TelegramService;
-import org.touchhome.common.util.CommonUtils;
-import org.touchhome.common.util.Lang;
 
 @Getter
 @Setter
@@ -82,7 +83,7 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
     public List<TelegramUser> getUsers() {
         String users = getJsonData("users");
         if (StringUtils.isNotEmpty(users)) {
-            return CommonUtils.OBJECT_MAPPER.readValue(users, new TypeReference<List<TelegramUser>>() {
+            return OBJECT_MAPPER.readValue(users, new TypeReference<List<TelegramUser>>() {
             });
         }
         return new ArrayList<>();
@@ -90,7 +91,7 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
 
     @SneakyThrows
     private void setUsers(List<TelegramUser> users) {
-        setJsonData("users", CommonUtils.OBJECT_MAPPER.writeValueAsString(users));
+        setJsonData("users", OBJECT_MAPPER.writeValueAsString(users));
     }
 
     @Override

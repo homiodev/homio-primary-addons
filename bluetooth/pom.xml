@@ -4,15 +4,9 @@
   <artifactId>touchhome-bundle-bluetooth</artifactId>
   <dependencies>
     <dependency>
-      <artifactId>touchhome-bluetooth</artifactId>
-      <groupId>org.touchhome</groupId>
+      <artifactId>dbus-java</artifactId>
+      <groupId>com.github.hypfvieh</groupId>
       <scope>provided</scope>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <artifactId>touchhome-bundle-cloud</artifactId>
-      <groupId>org.touchhome.bundle</groupId>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

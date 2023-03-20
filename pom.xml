@@ -54,12 +54,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <artifactId>touchhome-common</artifactId>
-      <groupId>org.touchhome</groupId>
-      <scope>provided</scope>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
       <artifactId>touchhome-hquery</artifactId>
       <groupId>org.touchhome</groupId>
       <scope>provided</scope>
@@ -102,10 +96,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <artifactId>indriya</artifactId>
-      <groupId>tech.units</groupId>
-    </dependency>
-    <dependency>
       <artifactId>jakarta.ws.rs-api</artifactId>
       <groupId>jakarta.ws.rs</groupId>
     </dependency>
@@ -115,10 +105,22 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+  <distributionManagement>
+    <repository>
+      <id>releases</id>
+      <!--suppress MavenModelInspection -->
+      <url>${ARTIFACTORY_HOST}/libs-release-local</url>
+    </repository>
+    <snapshotRepository>
+      <id>snapshots</id>
+      <!--suppress MavenModelInspection -->
+      <url>${ARTIFACTORY_HOST}/libs-snapshot-local</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <groupId>org.touchhome.bundle</groupId>
 
   <modelVersion>4.0.0</modelVersion>
-
   <modules>
     <module>telegram</module>
     <module>mqtt</module>
@@ -126,6 +128,7 @@
     <module>bluetooth</module>
     <module>camera</module>
   </modules>
+
   <packaging>pom</packaging>
 
   <parent>

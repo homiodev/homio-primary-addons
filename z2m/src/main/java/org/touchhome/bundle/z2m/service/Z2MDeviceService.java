@@ -2,12 +2,12 @@ package org.touchhome.bundle.z2m.service;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.touchhome.bundle.api.util.TouchHomeUtils.OBJECT_MAPPER;
 import static org.touchhome.bundle.z2m.service.properties.Z2MPropertyLastUpdate.UPDATED;
 import static org.touchhome.bundle.z2m.service.properties.dynamic.Z2MGeneralProperty.SIGNAL;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.BINARY_TYPE;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.NUMBER_TYPE;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.UNKNOWN_TYPE;
-import static org.touchhome.common.util.CommonUtils.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -25,6 +25,8 @@ import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.state.DecimalType;
 import org.touchhome.bundle.api.ui.UI;
+import org.touchhome.bundle.api.util.Lang;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.z2m.model.Z2MDeviceEntity;
 import org.touchhome.bundle.z2m.service.properties.Z2MPropertyAction;
 import org.touchhome.bundle.z2m.service.properties.Z2MPropertyLastUpdate;
@@ -34,8 +36,6 @@ import org.touchhome.bundle.z2m.util.Z2MDeviceDTO;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
 import org.touchhome.bundle.z2m.util.Z2MDevicePropertiesDTO;
 import org.touchhome.bundle.z2m.util.ZigBeeUtil;
-import org.touchhome.common.util.CommonUtils;
-import org.touchhome.common.util.Lang;
 
 @Getter
 @Log4j2
@@ -166,7 +166,8 @@ public class Z2MDeviceService {
                     entityContext.ui().updateItem(deviceEntity);
                 }
             } catch (Exception ex) {
-                log.error("Unable to handle Z2MProperty: {}. Payload: {}. Msg: {}", key, payload, CommonUtils.getErrorMessage(ex));
+                log.error("Unable to handle Z2MProperty: {}. Payload: {}. Msg: {}",
+                    key, payload, TouchHomeUtils.getErrorMessage(ex));
             }
         }
         if (updated) {
@@ -245,7 +246,7 @@ public class Z2MDeviceService {
                 z2MProperty = new Z2MPropertyUnknown();
             }
         } else {
-            z2MProperty = CommonUtils.newInstance(z2mCluster);
+            z2MProperty = TouchHomeUtils.newInstance(z2mCluster);
         }
         z2MProperty.init(this, expose);
         return z2MProperty;

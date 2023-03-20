@@ -28,10 +28,10 @@ import org.touchhome.bundle.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.dialog.UIStickyDialogItemBuilder;
 import org.touchhome.bundle.api.ui.field.selection.UIFieldSelection;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.api.video.VideoActionsContext;
 import org.touchhome.bundle.api.video.ui.UIVideoAction;
 import org.touchhome.bundle.api.video.ui.UIVideoActionGetter;
-import org.touchhome.common.util.CommonUtils;
 
 @Log4j2
 public class CameraActionBuilder {
@@ -41,7 +41,7 @@ public class CameraActionBuilder {
         for (Method method : MethodUtils.getMethodsWithAnnotation(instance.getClass(), UIVideoAction.class, true, false)) {
             UICameraActionConditional cameraActionConditional = method.getDeclaredAnnotation(UICameraActionConditional.class);
             if (handledMethods.add(method.getName()) && (cameraActionConditional == null ||
-                CommonUtils.newInstance(cameraActionConditional.value()).test(instance))) {
+                TouchHomeUtils.newInstance(cameraActionConditional.value()).test(instance))) {
 
                 UIVideoAction uiVideoAction = method.getDeclaredAnnotation(UIVideoAction.class);
                 Parameter actionParameter = method.getParameters()[0];
@@ -64,7 +64,7 @@ public class CameraActionBuilder {
                     try {
                         method.invoke(instance, actionParameterConverter.apply(params.optString("value")));
                     } catch (Exception ex) {
-                        log.error("Unable to invoke camera action: <{}>", CommonUtils.getErrorMessage(ex));
+                        log.error("Unable to invoke camera action: <{}>", TouchHomeUtils.getErrorMessage(ex));
                     }
                     return null;
                 };
@@ -78,11 +78,9 @@ public class CameraActionBuilder {
                                                       .columnFlexDirection()
                                                       .setBorderArea(uiVideoAction.group());
                     } else {
-                        UIStickyDialogItemBuilder stickyLayoutBuilder = layoutBuilder.addStickyDialogButton(
-                                                                                         uiVideoAction.group() + "_sb", uiVideoAction.subGroupIcon(), null,
-                                                                                         uiVideoAction.order())
-                                                                                     .editButton(
-                                                                                         buttonItemBuilder -> buttonItemBuilder.setText(uiVideoAction.group()));
+                        UIStickyDialogItemBuilder stickyLayoutBuilder = layoutBuilder.addStickyDialogButton(uiVideoAction.group() + "_sb",
+                            uiVideoAction.subGroupIcon(), null, uiVideoAction.order()).editButton(buttonItemBuilder ->
+                            buttonItemBuilder.setText(uiVideoAction.group()));
 
                         layoutBuilder = stickyLayoutBuilder.addFlex(uiVideoAction.subGroup(), uiVideoAction.order())
                                                            .setBorderArea(uiVideoAction.subGroup())
@@ -163,7 +161,7 @@ public class CameraActionBuilder {
                             uiEntityItemBuilder.setValue(type.getConvertToObject().apply(value));
                         } catch (Exception ex) {
                             log.error("Unable to fetch getter value for action: <{}>. Msg: <{}>",
-                                uiVideoAction.name(), CommonUtils.getErrorMessage(ex));
+                                uiVideoAction.name(), TouchHomeUtils.getErrorMessage(ex));
                         }
                     });
                 }

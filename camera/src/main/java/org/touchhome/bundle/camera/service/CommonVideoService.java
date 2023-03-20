@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.touchhome.bundle.api.EntityContext;
+import org.touchhome.bundle.api.exception.ServerException;
 import org.touchhome.bundle.api.model.ActionResponseModel;
 import org.touchhome.bundle.api.state.State;
 import org.touchhome.bundle.api.state.StringType;
@@ -16,7 +17,6 @@ import org.touchhome.bundle.api.video.BaseVideoStreamServerHandler;
 import org.touchhome.bundle.camera.entity.CommonVideoStreamEntity;
 import org.touchhome.bundle.camera.rtsp.message.sdp.SdpMessage;
 import org.touchhome.bundle.camera.scanner.RtspStreamScanner;
-import org.touchhome.common.exception.ServerException;
 
 public class CommonVideoService extends BaseVideoService<CommonVideoStreamEntity> {
 
@@ -112,7 +112,7 @@ public class CommonVideoService extends BaseVideoService<CommonVideoStreamEntity
         private final String ffmpegInputOptions;
     }
 
-    private class RtspCameraStreamHandler extends BaseVideoStreamServerHandler<CommonVideoService> {
+    private static class RtspCameraStreamHandler extends BaseVideoStreamServerHandler<CommonVideoService> {
 
         public RtspCameraStreamHandler(CommonVideoService service) {
             super(service);

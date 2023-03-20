@@ -1,13 +1,13 @@
 package org.touchhome.bundle.z2m.util;
 
 import static java.lang.String.format;
+import static org.touchhome.bundle.api.util.TouchHomeUtils.OBJECT_MAPPER;
 import static org.touchhome.bundle.z2m.service.properties.Z2MPropertyLastUpdate.UPDATED;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.BINARY_TYPE;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.COMPOSITE_TYPE;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.ENUM_TYPE;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.NUMBER_TYPE;
 import static org.touchhome.bundle.z2m.util.Z2MDeviceDTO.SWITCH_TYPE;
-import static org.touchhome.common.util.CommonUtils.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,22 +27,21 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.hardware.other.MachineHardwareRepository;
 import org.touchhome.bundle.api.model.OptionModel;
 import org.touchhome.bundle.api.repository.GitHubProject;
 import org.touchhome.bundle.api.repository.GitHubProject.ProjectUpdate;
+import org.touchhome.bundle.api.ui.field.ProgressBar;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.item.UIColorPickerItemBuilder.ColorType;
 import org.touchhome.bundle.api.ui.field.action.v1.item.UIInfoItemBuilder.InfoType;
 import org.touchhome.bundle.api.ui.field.action.v1.item.UISelectBoxItemBuilder;
 import org.touchhome.bundle.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.bundle.hquery.hardware.other.MachineHardwareRepository;
 import org.touchhome.bundle.z2m.NodeJSDependencyExecutableInstaller;
 import org.touchhome.bundle.z2m.service.Z2MProperty;
 import org.touchhome.bundle.z2m.service.properties.Z2MPropertyColor;
 import org.touchhome.bundle.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
-import org.touchhome.common.model.ProgressBar;
-import org.touchhome.common.util.CommonUtils;
 
 @Log4j2
 public final class ZigBeeUtil {
@@ -63,7 +62,7 @@ public final class ZigBeeUtil {
     static {
         try {
             DEVICE_DEFINITIONS = new HashMap<>();
-            List<Z2MDeviceDefinitionDTO> devices = CommonUtils.OBJECT_MAPPER.readValue(
+            List<Z2MDeviceDefinitionDTO> devices = OBJECT_MAPPER.readValue(
                 ZigBeeUtil.class.getClassLoader().getResource("zigbee-devices.json"),
                 new TypeReference<>() {});
             for (Z2MDeviceDefinitionDTO node : devices) {
@@ -136,7 +135,7 @@ public final class ZigBeeUtil {
     public static @NotNull JsonNode getDeviceOptions(@NotNull String modelId) {
         Z2MDeviceDefinitionDTO z2MDeviceDefinitionDTO = DEVICE_DEFINITIONS.get(modelId);
         JsonNode options = z2MDeviceDefinitionDTO == null ? null : z2MDeviceDefinitionDTO.getOptions();
-        ObjectNode empty = CommonUtils.OBJECT_MAPPER.createObjectNode();
+        ObjectNode empty = OBJECT_MAPPER.createObjectNode();
         return options == null ? empty : options;
     }
 
@@ -209,18 +208,10 @@ public final class ZigBeeUtil {
 
         // backup configuration
         if (binaryExists) {
-            projectUpdate.backup(Path.of("data"))
-                         .deleteProject();
-            /*FileUtils.copyDirectory(ZIGBEE_2_MQTT_PATH.resolve("data").toFile(),
-                TouchHomeUtils.getInstallPath().resolve("z2m-data-backup").toFile());
-            FileUtils.deleteDirectory(ZIGBEE_2_MQTT_PATH.toFile());*/
+            projectUpdate.backup(Path.of("data")).deleteProject();
         }
 
         projectUpdate.download(version);
-        /*Curl.downloadWithProgress("https://github.com/Koenkk/zigbee2mqtt/archive/" + version + ".tar.gz", targetZipPath, progressBar);
-        ArchiveUtil.unzip(targetZipPath, TouchHomeUtils.getInstallPath(), null, false, progressBar, UnzipFileIssueHandler.replace);
-        Files.delete(targetZipPath);
-        Files.move(TouchHomeUtils.getInstallPath().resolve("zigbee2mqtt-" + version), ZIGBEE_2_MQTT_PATH, StandardCopyOption.REPLACE_EXISTING);*/
 
         NodeJSDependencyExecutableInstaller installer = entityContext.getBean(NodeJSDependencyExecutableInstaller.class);
         if (installer.isRequireInstallDependencies(entityContext, true)) {
@@ -238,9 +229,6 @@ public final class ZigBeeUtil {
         // restore configuration
         if (binaryExists) {
             projectUpdate.restore(Path.of("data"));
-            /*FileUtils.deleteDirectory(ZIGBEE_2_MQTT_PATH.resolve("data").toFile());
-            FileUtils.moveDirectory(TouchHomeUtils.getInstallPath().resolve("z2m-data-backup").toFile(),
-                ZIGBEE_2_MQTT_PATH.resolve("data").toFile());*/
         }
     }
 

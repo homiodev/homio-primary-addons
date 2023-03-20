@@ -4,9 +4,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.touchhome.bundle.api.BundleEntrypoint;
 import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.hardware.network.NetworkHardwareRepository;
-import org.touchhome.bundle.api.hardware.other.MachineHardwareRepository;
 import org.touchhome.bundle.api.model.Status;
+import org.touchhome.bundle.hquery.hardware.network.NetworkHardwareRepository;
+import org.touchhome.bundle.hquery.hardware.other.MachineHardwareRepository;
 
 @Log4j2
 @Controller
@@ -29,7 +29,7 @@ public class BluetoothBundleEntrypoint extends BaseBluetoothCharacteristicServic
     }
 
     /**
-     * We may set password only once. If user wants update password, he need pass old password hash
+     * We may set password only once. If user wants update password, he needs pass old password hash
      *//*
      TODO: need rewrite logic
     @Override

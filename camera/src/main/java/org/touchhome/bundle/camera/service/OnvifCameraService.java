@@ -88,6 +88,8 @@ import org.touchhome.bundle.api.state.RawType;
 import org.touchhome.bundle.api.state.StringType;
 import org.touchhome.bundle.api.ui.UI.Color;
 import org.touchhome.bundle.api.ui.field.action.v1.UIInputBuilder;
+import org.touchhome.bundle.api.util.Curl;
+import org.touchhome.bundle.api.util.TouchHomeUtils;
 import org.touchhome.bundle.api.video.BaseVideoService;
 import org.touchhome.bundle.api.video.BaseVideoStreamServerHandler;
 import org.touchhome.bundle.api.video.VideoPlaybackStorage;
@@ -105,8 +107,6 @@ import org.touchhome.bundle.camera.onvif.util.ChannelTracking;
 import org.touchhome.bundle.camera.onvif.util.MyNettyAuthHandler;
 import org.touchhome.bundle.camera.ui.UICameraActionConditional;
 import org.touchhome.bundle.camera.ui.UICameraDimmerButton;
-import org.touchhome.common.util.CommonUtils;
-import org.touchhome.common.util.Curl;
 
 @Log4j2
 public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
@@ -380,7 +380,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
                              ch.writeAndFlush(request);
                          } else { // an error occurred
                              log.warn("[{}]: Error handle camera: <{}>. Error: <{}>", getEntityID(), entity,
-                                 CommonUtils.getErrorMessage(future.cause()));
+                                 TouchHomeUtils.getErrorMessage(future.cause()));
 
                         /*if (!this.restartingBgp) {
                             log.error("Error in camera <{}> boostrap: <{}>", cameraEntity.getTitle(),
@@ -825,7 +825,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
     }
 
     @Override
-    protected void initialize0() throws Exception {
+    protected void initialize0() {
         OnvifCameraEntity entity = getEntity();
 
         this.onvifDeviceState.initFully(entity.getOnvifMediaProfile(), brandHandler.isSupportOnvifEvents());
@@ -843,7 +843,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
                     onvifDeviceState.runOncePerMinute();
                     brandHandler.runOncePerMinute(entityContext);
                 } catch (Exception ex) {
-                    log.error("[{}]: Error during execute onvif service: {}", entityID, CommonUtils.getErrorMessage(ex));
+                    log.error("[{}]: Error during execute onvif service: {}", entityID, TouchHomeUtils.getErrorMessage(ex));
                     if (ex.getCause() instanceof ConnectException) {
                         entity.setSourceStatus(Status.ERROR, "Connection exception");
                     }
@@ -916,7 +916,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
                     onvifDeviceState.getInitialDevices().setName(getEntity().getName());
                 }
             } catch (Exception ex) {
-                log.error("[{}]: Unable to change onvif camera name: {}", getEntityID(), CommonUtils.getErrorMessage(ex));
+                log.error("[{}]: Unable to change onvif camera name: {}", getEntityID(), TouchHomeUtils.getErrorMessage(ex));
             }
         }
     }

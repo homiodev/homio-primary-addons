@@ -4,43 +4,7 @@
   <artifactId>touchhome-bundle-camera</artifactId>
   <dependencies>
     <dependency>
-      <artifactId>netty-codec-http</artifactId>
-      <groupId>io.netty</groupId>
-      <scope>provided</scope>
-      <version>${netty.version}</version>
-    </dependency>
-    <dependency>
-      <artifactId>netty-common</artifactId>
-      <groupId>io.netty</groupId>
-      <scope>provided</scope>
-      <version>${netty.version}</version>
-    </dependency>
-    <dependency>
-      <artifactId>netty-buffer</artifactId>
-      <groupId>io.netty</groupId>
-      <scope>provided</scope>
-      <version>${netty.version}</version>
-    </dependency>
-    <dependency>
-      <artifactId>netty-transport</artifactId>
-      <groupId>io.netty</groupId>
-      <scope>provided</scope>
-      <version>${netty.version}</version>
-    </dependency>
-    <dependency>
-      <artifactId>netty-codec</artifactId>
-      <groupId>io.netty</groupId>
-      <scope>provided</scope>
-      <version>${netty.version}</version>
-    </dependency>
-    <dependency>
-      <artifactId>netty-resolver</artifactId>
-      <groupId>io.netty</groupId>
-      <scope>provided</scope>
-      <version>${netty.version}</version>
-    </dependency>
-    <dependency>
-      <artifactId>netty-handler</artifactId>
+      <artifactId>netty-all</artifactId>
       <groupId>io.netty</groupId>
       <scope>provided</scope>
       <version>${netty.version}</version>

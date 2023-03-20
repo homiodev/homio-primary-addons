@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.dependency.DependencyExecutableInstaller;
-import org.touchhome.bundle.api.hardware.other.MachineHardwareRepository;
 import org.touchhome.bundle.api.setting.SettingPluginButton;
 import org.touchhome.bundle.api.setting.SettingPluginText;
+import org.touchhome.bundle.api.ui.field.ProgressBar;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.bundle.hquery.hardware.other.MachineHardwareRepository;
 import org.touchhome.bundle.mqtt.setting.MQTTPathSetting;
-import org.touchhome.common.model.ProgressBar;
 
 @Log4j2
 @Component
@@ -28,23 +28,15 @@ public class NodeJSDependencyExecutableInstaller extends DependencyExecutableIns
     public Path installDependencyInternal(
         @NotNull EntityContext entityContext, @NotNull ProgressBar progressBar) {
         if (SystemUtils.IS_OS_LINUX) {
-            MachineHardwareRepository machineHardwareRepository =
-                entityContext.getBean(MachineHardwareRepository.class);
-            machineHardwareRepository.execute(
-                "curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -");
+            MachineHardwareRepository machineHardwareRepository = entityContext.getBean(MachineHardwareRepository.class);
+            machineHardwareRepository.execute("curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -");
             machineHardwareRepository.installSoftware("nodejs", 600);
         } else {
             Path targetFolder;
-            if (Files.isRegularFile(
-                TouchHomeUtils.getInstallPath().resolve("nodejs").resolve("node.exe"))) {
+            if (Files.isRegularFile(TouchHomeUtils.getInstallPath().resolve("nodejs").resolve("node.exe"))) {
                 targetFolder = TouchHomeUtils.getInstallPath().resolve("nodejs");
             } else {
-                targetFolder =
-                    downloadAndExtract(
-                        "https://nodejs.org/dist/v18.15.0/node-v18.15.0-win-x64.zip",
-                        "nodejs.zip",
-                        progressBar,
-                        log);
+                targetFolder = downloadAndExtract("https://nodejs.org/dist/v18.15.0/node-v18.15.0-win-x64.zip", "nodejs.zip", progressBar, log);
             }
             return targetFolder.resolve("node.exe");
         }

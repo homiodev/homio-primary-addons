@@ -5,18 +5,19 @@ import java.nio.file.Path;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.dependency.DependencyExecutableInstaller;
-import org.touchhome.bundle.api.hardware.other.MachineHardwareRepository;
 import org.touchhome.bundle.api.setting.SettingPluginButton;
 import org.touchhome.bundle.api.setting.SettingPluginText;
+import org.touchhome.bundle.api.ui.field.ProgressBar;
 import org.touchhome.bundle.api.util.TouchHomeUtils;
+import org.touchhome.bundle.hquery.hardware.other.MachineHardwareRepository;
 import org.touchhome.bundle.mqtt.setting.MQTTPathSetting;
-import org.touchhome.common.model.ProgressBar;
 
 @Log4j2
 @Component
@@ -47,13 +48,15 @@ public class MQTTDependencyExecutableInstaller extends DependencyExecutableInsta
 
     public @Nullable String getVersion(EntityContext entityContext) {
         MachineHardwareRepository machineHardwareRepository = entityContext.getBean(MachineHardwareRepository.class);
-        List<String> versionList;
+        List<String> versionList = null;
         String version = null;
         if (SystemUtils.IS_OS_LINUX) {
             versionList = machineHardwareRepository.executeNoErrorThrowList("mosquitto -h", 60, null);
         } else {
             val mqttPath = entityContext.setting().getValue(MQTTPathSetting.class);
-            versionList = machineHardwareRepository.executeNoErrorThrowList(mqttPath + " -h", 10, null);
+            if (StringUtils.isNotEmpty(mqttPath)) {
+                versionList = machineHardwareRepository.executeNoErrorThrowList(mqttPath + " -h", 10, null);
+            }
         }
         if (versionList != null && !versionList.isEmpty() && versionList.get(0).startsWith("mosquitto version")) {
             version = versionList.get(0).substring("mosquitto version".length()).trim();

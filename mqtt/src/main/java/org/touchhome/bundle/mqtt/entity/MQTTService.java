@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.entity.TreeConfiguration;
+import org.touchhome.bundle.api.fs.TreeNode;
 import org.touchhome.bundle.api.model.Status;
 import org.touchhome.bundle.api.service.EntityService;
 import org.touchhome.bundle.api.setting.console.header.RemoveNodeConsoleHeaderButtonSetting;
@@ -47,8 +48,6 @@ import org.touchhome.bundle.mqtt.MQTTDependencyExecutableInstaller;
 import org.touchhome.bundle.mqtt.console.MQTTExplorerConsolePlugin;
 import org.touchhome.bundle.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
 import org.touchhome.bundle.mqtt.setting.ConsoleMQTTClearHistorySetting;
-import org.touchhome.common.fs.TreeNode;
-import org.touchhome.common.util.CommonUtils;
 
 @Log4j2
 public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity> {
@@ -396,7 +395,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         public void connectionLost(Throwable cause) {
             try {
                 entityContext.ui().sendErrorMessage("MQTT connection lost", (Exception) cause);
-                String msg = CommonUtils.getErrorMessage(cause);
+                String msg = TouchHomeUtils.getErrorMessage(cause);
                 entity.setStatus(Status.ERROR, "Connection lost: " + msg);
                 entityContext.event().fireEvent("mqtt-status", Status.OFFLINE);
                 entity.destroyService();
