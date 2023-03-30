@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.touchhome.bundle.api.EntityContext;
 import org.touchhome.bundle.api.exception.ServerException;
 import org.touchhome.bundle.api.model.ActionResponseModel;
@@ -83,10 +84,11 @@ public class CommonVideoService extends BaseVideoService<CommonVideoStreamEntity
         entityContext.ui().addNotificationBlock(entityID, getEntity().getTitle(), "fas fa-film", "#02B05C", builder -> {
             builder.setStatus(getEntity().getSourceStatus());
             if (!getEntity().isStart()) {
-                builder.addButtonInfo("video.not_started", Color.RED, "fas fa-stop", null, "fas fa-play", "Start", null, (entityContext, params) -> {
-                    entityContext.save(getEntity().setStart(true));
-                    return ActionResponseModel.success();
-                });
+                builder.addButtonInfo(StringUtils.defaultIfEmpty(getEntity().getSourceStatusMessage(), "video.not_started"), Color.RED, "fas fa-stop", null,
+                    "fas fa-play", "Start", null, (entityContext, params) -> {
+                        entityContext.save(getEntity().setStart(true));
+                        return ActionResponseModel.success();
+                    });
             } else {
                 builder.setStatusMessage(getEntity().getSourceStatusMessage());
             }

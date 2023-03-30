@@ -5,14 +5,6 @@
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <forceJavacCompilerUse>true</forceJavacCompilerUse>
-          <release>11</release>
-        </configuration>
-        <groupId>org.apache.maven.plugins</groupId>
-      </plugin>
-      <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
@@ -51,49 +43,40 @@
     <dependency>
       <artifactId>spring-security-core</artifactId>
       <groupId>org.springframework.security</groupId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>touchhome-hquery</artifactId>
       <groupId>org.touchhome</groupId>
-      <scope>provided</scope>
       <version>1.0</version>
     </dependency>
     <dependency>
       <artifactId>dbus-java</artifactId>
       <groupId>com.github.hypfvieh</groupId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>httpclient</artifactId>
       <groupId>org.apache.httpcomponents</groupId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>commons-codec</artifactId>
       <groupId>commons-codec</groupId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>throwing-function</artifactId>
       <groupId>com.pivovarit</groupId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>touchhome-bundle-api</artifactId>
       <groupId>org.touchhome</groupId>
-      <scope>provided</scope>
       <version>${bundle-api.version}</version>
     </dependency>
     <dependency>
       <artifactId>json</artifactId>
       <groupId>org.json</groupId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>jSerialComm</artifactId>
       <groupId>com.fazecast</groupId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>jakarta.ws.rs-api</artifactId>
@@ -102,21 +85,8 @@
     <dependency>
       <artifactId>commons-compress</artifactId>
       <groupId>org.apache.commons</groupId>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
-  <distributionManagement>
-    <repository>
-      <id>releases</id>
-      <!--suppress MavenModelInspection -->
-      <url>${ARTIFACTORY_HOST}/libs-release-local</url>
-    </repository>
-    <snapshotRepository>
-      <id>snapshots</id>
-      <!--suppress MavenModelInspection -->
-      <url>${ARTIFACTORY_HOST}/libs-snapshot-local</url>
-    </snapshotRepository>
-  </distributionManagement>
 
   <groupId>org.touchhome.bundle</groupId>
 
@@ -138,18 +108,8 @@
   </parent>
 
   <properties>
-    <bundle-api.version>1.2.1-SNAPSHOT</bundle-api.version>
+    <bundle-api.version>1.2.1</bundle-api.version>
   </properties>
-
-  <scm>
-    <connection>scm:git:git://github.com/github.com/touchhome/${project.artifactId}.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/touchhome/${project.artifactId}.git
-    </developerConnection>
-    <tag>HEAD</tag>
-    <url>https://github.com/touchhome/${project.artifactId}</url>
-  </scm>
-
-  <url>https://github.com/touchhome/touchhome-bundle</url>
 
   <version>1.2.1-SNAPSHOT</version>
 </project>

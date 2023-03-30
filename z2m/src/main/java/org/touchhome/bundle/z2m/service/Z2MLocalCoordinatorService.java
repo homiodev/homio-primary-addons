@@ -606,7 +606,9 @@ public class Z2MLocalCoordinatorService
             builder.setStatus(entity.getStatus());
             builder.setUpdating(zigbee2mqttGitHub.isUpdating());
             builder.setVersion(getInstalledVersion());
-            builder.setUpdatable((progressBar, version) -> updateZ2M(version, progressBar, true, true), zigbee2mqttGitHub.getTagsSince(getInstalledVersion()));
+            builder.setUpdatable((progressBar, version) ->
+                    updateZ2M(version, progressBar, true, true),
+                zigbee2mqttGitHub.getReleasesSince(getInstalledVersion()));
             builder.addInfo(entity.getStatus().isOnline() ? "" : entity.getStatusMessage(), Color.RED, "fas fa-exclamation", Color.RED);
             builder.contextMenuActionBuilder(contextAction -> {
                 if (!entity.isStart()) {

@@ -52,7 +52,7 @@ public final class ZigBeeUtil {
      * Properties market with defined color, icon, etc...
      */
     public static final Map<String, Z2MDevicePropertiesDTO> DEVICE_PROPERTIES;
-    public static final GitHubProject zigbee2mqttGitHub = new GitHubProject("Koenkk", "zigbee2mqtt");
+    public static final GitHubProject zigbee2mqttGitHub = GitHubProject.of("Koenkk", "zigbee2mqtt");
     /**
      * Contains model/icon/iconColor/some setting config i.e. occupancy_timeout min..max values
      */
@@ -211,7 +211,7 @@ public final class ZigBeeUtil {
             projectUpdate.backup(Path.of("data")).deleteProject();
         }
 
-        projectUpdate.download(version);
+        projectUpdate.downloadSource(version);
 
         NodeJSDependencyExecutableInstaller installer = entityContext.getBean(NodeJSDependencyExecutableInstaller.class);
         if (installer.isRequireInstallDependencies(entityContext, true)) {

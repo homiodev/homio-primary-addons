@@ -6,18 +6,14 @@
     <dependency>
       <artifactId>netty-all</artifactId>
       <groupId>io.netty</groupId>
-      <scope>provided</scope>
-      <version>${netty.version}</version>
     </dependency>
     <dependency>
       <artifactId>failsafe</artifactId>
       <groupId>dev.failsafe</groupId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>jakarta.xml.soap-api</artifactId>
       <groupId>jakarta.xml.soap</groupId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>kxml2</artifactId>
