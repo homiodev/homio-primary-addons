@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <artifactId>touchhome-bundle-camera</artifactId>
+  <artifactId>homio-bundle-camera</artifactId>
   <dependencies>
     <dependency>
       <artifactId>netty-all</artifactId>
@@ -20,11 +20,6 @@
       <groupId>net.sf.kxml</groupId>
       <version>2.3.0</version>
     </dependency>
-    <dependency>
-      <artifactId>onvif</artifactId>
-      <groupId>org.touchhome</groupId>
-      <version>1.1</version>
-    </dependency>
   </dependencies>
 
   <description>Camera bundle</description>
@@ -33,8 +28,8 @@
   <packaging>jar</packaging>
 
   <parent>
-    <artifactId>touchhome-bundle</artifactId>
-    <groupId>org.touchhome.bundle</groupId>
+    <artifactId>homio-bundle</artifactId>
+    <groupId>org.homio.bundle</groupId>
     <version>1.2.1-SNAPSHOT</version>
   </parent>
 </project>

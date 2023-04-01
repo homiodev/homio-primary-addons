@@ -1,7 +1,7 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <artifactId>touchhome-bundle</artifactId>
+  <artifactId>homio-bundle</artifactId>
   <build>
     <plugins>
       <plugin>
@@ -41,13 +41,19 @@
 
   <dependencies>
     <dependency>
+      <artifactId>junit-jupiter-api</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <artifactId>spring-security-core</artifactId>
       <groupId>org.springframework.security</groupId>
     </dependency>
     <dependency>
-      <artifactId>touchhome-hquery</artifactId>
-      <groupId>org.touchhome</groupId>
-      <version>1.0</version>
+      <artifactId>homio-hquery</artifactId>
+      <groupId>org.homio</groupId>
+      <version>1.0.1</version>
     </dependency>
     <dependency>
       <artifactId>dbus-java</artifactId>
@@ -66,8 +72,8 @@
       <groupId>com.pivovarit</groupId>
     </dependency>
     <dependency>
-      <artifactId>touchhome-bundle-api</artifactId>
-      <groupId>org.touchhome</groupId>
+      <artifactId>homio-bundle-api</artifactId>
+      <groupId>org.homio</groupId>
       <version>${bundle-api.version}</version>
     </dependency>
     <dependency>
@@ -88,7 +94,7 @@
     </dependency>
   </dependencies>
 
-  <groupId>org.touchhome.bundle</groupId>
+  <groupId>org.homio.bundle</groupId>
 
   <modelVersion>4.0.0</modelVersion>
   <modules>
@@ -102,13 +108,13 @@
   <packaging>pom</packaging>
 
   <parent>
-    <artifactId>touchhome-dependency</artifactId>
-    <groupId>org.touchhome</groupId>
+    <artifactId>homio-dependency</artifactId>
+    <groupId>org.homio</groupId>
     <version>2.4.4</version>
   </parent>
 
   <properties>
-    <bundle-api.version>1.2.1</bundle-api.version>
+    <bundle-api.version>1.2.2</bundle-api.version>
   </properties>
 
   <version>1.2.1-SNAPSHOT</version>
