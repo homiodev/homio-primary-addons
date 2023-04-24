@@ -43,9 +43,12 @@ import org.json.JSONObject;
 @Log4j2
 @Entity
 public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
-    implements EntityService<MQTTService, MQTTBaseEntity>, HasTimeValueSeries,
-    SelectionWithDynamicParameterFields, HasAggregateValueFromSeries,
-    HasGetStatusValue, HasSetStatusValue,
+    implements EntityService<MQTTService, MQTTBaseEntity>,
+    HasTimeValueSeries,
+    SelectionWithDynamicParameterFields,
+    HasAggregateValueFromSeries,
+    HasGetStatusValue,
+    HasSetStatusValue,
     BaseFileSystemEntity<MQTTBaseEntity, MQTTFileSystem>,
     UIFieldSelection.SelectionConfiguration {
 
@@ -95,7 +98,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     @UIField(order = 1)
-    @UIFieldGroup(order = 1, value = "Server", borderColor = "#0EBC97")
+    @UIFieldGroup(order = 1, value = "SERVER", borderColor = "#0EBC97")
     public String getHostname() {
         return getJsonData("host", "127.0.0.1");
     }
@@ -106,7 +109,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
 
     @UIField(order = 2)
     @UIFieldPort
-    @UIFieldGroup("Server")
+    @UIFieldGroup("SERVER")
     public int getMqttPort() {
         return getJsonData("port", 1883);
     }
@@ -116,7 +119,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     @UIField(order = 1)
-    @UIFieldGroup(order = 2, value = "Security", borderColor = "#23ADAB")
+    @UIFieldGroup(order = 2, value = "SECURITY", borderColor = "#23ADAB")
     public String getMqttUser() {
         return getJsonData("user", "");
     }
@@ -126,7 +129,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     @UIField(order = 2)
-    @UIFieldGroup("Security")
+    @UIFieldGroup("SECURITY")
     public SecureString getMqttPassword() {
         return getJsonSecure("pwd");
     }
@@ -137,7 +140,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
 
     @UIField(order = 1)
     @UIFieldSlider(min = 100, max = 100000, step = 100)
-    @UIFieldGroup(order = 10, value = "History")
+    @UIFieldGroup(order = 10, value = "HISTORY")
     public int getHistorySize() {
         return getJsonData("hs", 1000);
     }
@@ -148,14 +151,14 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
 
     @UIField(order = 2, hideInEdit = true)
     @UIFieldProgress
-    @UIFieldGroup("History")
+    @UIFieldGroup("HISTORY")
     public UIFieldProgress.Progress getUsedHistorySize() {
         long storageCount = optService().map(service -> service.getStorage().count()).orElse(0L);
         return getEntityID() == null ? null : UIFieldProgress.Progress.of((int) storageCount, getHistorySize());
     }
 
     @UIField(order = 3, inlineEdit = true)
-    @UIFieldGroup("History")
+    @UIFieldGroup("HISTORY")
     public boolean getIncludeSys() {
         return getJsonData("sys", false);
     }
@@ -165,7 +168,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     @UIField(order = 80)
-    @UIFieldGroup(order = 5, value = "Connection", borderColor = "#479923")
+    @UIFieldGroup(order = 5, value = "CONNECTION", borderColor = "#479923")
     public boolean getMqttCleanSessionOnConnect() {
         return getJsonData("cs", true);
     }
@@ -175,7 +178,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     @UIField(order = 90)
-    @UIFieldGroup("Connection")
+    @UIFieldGroup("CONNECTION")
     public String getMqttClientID() {
         return getJsonData("cid");
     }
@@ -196,7 +199,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
 
     @UIField(order = 110)
     @UIFieldSlider(min = 10, max = 600)
-    @UIFieldGroup("Connection")
+    @UIFieldGroup("CONNECTION")
     public int getMqttKeepAlive() {
         return getJsonData("ka", 60);
     }
@@ -212,7 +215,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
         return ActionResponseModel.success();
     }
 
-    @UIContextMenuAction("mqtt.clear_history")
+    @UIContextMenuAction("MQTT.CLEAR_HISTORY")
     public ActionResponseModel clearHistory() {
         getService().clearHistory();
         return ActionResponseModel.success();

@@ -46,7 +46,6 @@ public class TelegramService {
 
     public static final String TELEGRAM_EVENT_PREFIX = "telegram_";
     private final TelegramBotsApi botsApi;
-    private final DefaultBotOptions botOptions;
     private final Map<String, TelegramEventCommand> eventCommandMap = new HashMap<>();
 
     private final EntityContext entityContext;
@@ -56,7 +55,6 @@ public class TelegramService {
     public TelegramService(EntityContext entityContext) {
         this.entityContext = entityContext;
         this.botsApi = new TelegramBotsApi(DefaultBotSession.class);
-        this.botOptions = new DefaultBotOptions();
     }
 
     public void restart(TelegramEntity telegramEntity) {
@@ -120,6 +118,12 @@ public class TelegramService {
     private void start(TelegramEntity telegramEntity) {
         try {
             if (isNotEmpty(telegramEntity.getBotName()) && isNotEmpty(telegramEntity.getBotToken())) {
+                DefaultBotOptions botOptions = new DefaultBotOptions();
+                botOptions.setProxyType(telegramEntity.getProxyType());
+                botOptions.setProxyHost(telegramEntity.getProxyHost());
+                botOptions.setProxyPort(telegramEntity.getProxyPort());
+                botOptions.setGetUpdatesTimeout(telegramEntity.getUpdateTimeout());
+
                 TelegramBot telegramBot = new TelegramBot(botOptions, telegramEntity);
                 this.telegramBots.put(telegramEntity.getEntityID(), telegramBot);
                 log.info("Telegram bot running");

@@ -98,7 +98,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @UIField(order = 30, inlineEdit = true)
-    @UIFieldGroup("General")
+    @UIFieldGroup("GENERAL")
     public boolean isPermitJoin() {
         return getJsonData("pj", false);
     }
@@ -108,7 +108,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @UIField(order = 35, isRevert = true)
-    @UIFieldGroup("General")
+    @UIFieldGroup("GENERAL")
     @UIFieldValidationSize(min = 3, max = 100)
     public String getBasicTopic() {
         return getJsonData("bt", "zigbee2mqtt");
@@ -123,7 +123,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @UIField(order = 50, inlineEdit = true)
-    @UIFieldGroup("General")
+    @UIFieldGroup("GENERAL")
     public boolean isEnableWatchdog() {
         return getJsonData("wd", false);
     }
@@ -132,18 +132,16 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         setJsonData("wd", value);
     }
 
-    @UIContextMenuAction(
-        value = "zigbee.action.start_scan",
-        icon = "fas fa-search-location",
-        iconColor = "#899343")
+    @UIContextMenuAction(value = "ZIGBEE_START_SCAN",
+                         icon = "fas fa-search-location",
+                         iconColor = "#899343")
     public ActionResponseModel scan() {
         return getService().startScan();
     }
 
-    @UIContextMenuAction(
-        value = "ACTION.COMMUNICATOR.RESTART",
-        icon = "fas fa-power-off",
-        iconColor = "#AB2A0A")
+    @UIContextMenuAction(value = "RESTART",
+                         icon = "fas fa-power-off",
+                         iconColor = "#AB2A0A")
     public ActionResponseModel restart() {
         return getService().restartZ2M();
     }

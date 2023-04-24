@@ -27,6 +27,8 @@ import org.homio.bundle.api.ui.field.action.UIContextMenuAction;
 import org.homio.bundle.api.util.Lang;
 import org.homio.bundle.api.util.SecureString;
 import org.homio.bundle.telegram.service.TelegramService;
+import org.telegram.telegrambots.bots.DefaultBotOptions.ProxyType;
+import org.telegram.telegrambots.meta.ApiConstants;
 
 @Getter
 @Setter
@@ -73,7 +75,44 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
         setJsonData("wqms", value);
     }
 
-    @UIField(order = 50, hideInEdit = true, type = UIFieldType.Chips, label = "users")
+    @UIField(order = 50)
+    public ProxyType getProxyType() {
+        return getJsonDataEnum("pt", ProxyType.NO_PROXY);
+    }
+
+    public void setProxyType(ProxyType value) {
+        setJsonDataEnum("pt", value);
+    }
+
+    @UIField(order = 55)
+    public String getProxyHost() {
+        return getJsonData("ph");
+    }
+
+    public void setProxyHost(String value) {
+        setJsonData("ph", value);
+    }
+
+    @UIField(order = 60)
+    public int getProxyPort() {
+        return getJsonData("pp", 0);
+    }
+
+    public void setProxyPort(int value) {
+        setJsonData("pp", value);
+    }
+
+    @UIField(order = 65, isRevert = true, label = "getUpdatesTimeout")
+    @UIFieldSlider(min = 10, max = 120)
+    public int getUpdateTimeout() {
+        return getJsonData("ut", ApiConstants.GETUPDATES_TIMEOUT);
+    }
+
+    public void setUpdateTimeout(int value) {
+        setJsonData("ut", value);
+    }
+
+    @UIField(order = 100, hideInEdit = true, type = UIFieldType.Chips, label = "users")
     public List<String> getRegisteredUsers() {
         return getUsers().stream().map(TelegramUser::getName).collect(Collectors.toList());
     }

@@ -127,7 +127,7 @@ public class Z2MDeviceService {
         } else {
             name = device.getDefinition().getDescription();
         }
-        return format("%s(%s) [${%s}]", name, this.device.getIeeeAddress(), defaultIfEmpty(this.deviceEntity.getPlace(), "PLACE_NOT_SET"));
+        return format("%s(%s) [${%s}]", name, this.device.getIeeeAddress(), defaultIfEmpty(this.deviceEntity.getPlace(), "place_not_set"));
     }
 
     public Z2MProperty addDynamicProperty(String key, Supplier<Z2MProperty> supplier) {
@@ -230,7 +230,7 @@ public class Z2MDeviceService {
     }
 
     private Z2MProperty buildExposeProperty(Options expose) {
-        Class<? extends Z2MProperty> z2mCluster = getValueFromMap(coordinatorService.getZ2mConverters(), expose);
+        Class<? extends Z2MProperty> z2mCluster = getValueFromMap(ZigBeeUtil.z2mConverters, expose);
         Z2MProperty z2MProperty;
         if (z2mCluster == null) {
             Z2MDevicePropertiesDTO z2MDevicePropertiesDTO = getValueFromMap(ZigBeeUtil.DEVICE_PROPERTIES, expose);

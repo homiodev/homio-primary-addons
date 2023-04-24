@@ -42,7 +42,6 @@ import org.homio.bundle.api.storage.SourceHistory;
 import org.homio.bundle.api.storage.SourceHistoryItem;
 import org.homio.bundle.api.ui.UI;
 import org.homio.bundle.api.util.CommonUtils;
-import org.homio.bundle.mqtt.MQTTDependencyExecutableInstaller;
 import org.homio.bundle.mqtt.console.MQTTExplorerConsolePlugin;
 import org.homio.bundle.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
 import org.homio.bundle.mqtt.setting.ConsoleMQTTClearHistorySetting;
@@ -85,9 +84,8 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
             jsonObject -> entity.publish(jsonObject.getString("Topic"), jsonObject.getString("Content"),
                 jsonObject.getInt("QoS"), jsonObject.getBoolean("Retain")));
 
-        entityContext.setting()
-                     .listenValue(ConsoleMQTTClearHistorySetting.class, entityID + "-mqtt-clear-history",
-                         this::clearHistory);
+        entityContext.setting().listenValue(ConsoleMQTTClearHistorySetting.class, entityID + "-mqtt-clear-history",
+            this::clearHistory);
 
         entityContext.setting().listenValue(RemoveNodeConsoleHeaderButtonSetting.class, "mqtt-remove-node", data -> {
             if (data != null && this.entityID.equals(data.getTabID())) {
@@ -97,6 +95,14 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
                 }
             }
         });
+
+        if (entity instanceof MQTTLocalClientEntity) {
+            entityContext.event().runOnceOnInternetUp("mosquitto", () -> {
+                entityContext.install().mosquitto().requireAsync(null, () -> {
+                    log.info("Mosquitto service successfully installed");
+                });
+            });
+        }
     }
 
     public static TreeNode buildUpdateTree(TreeNode treeNode) {
@@ -150,19 +156,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
 
     @Override
     public boolean testService() throws Exception {
-        try {
-            createMQTTClient();
-        } catch (Exception ex) {
-            if (entity instanceof MQTTLocalClientEntity) {
-                MQTTDependencyExecutableInstaller mosquitoInstaller = entityContext.getBean(MQTTDependencyExecutableInstaller.class);
-                if (!mosquitoInstaller.isRequireInstallDependencies(entityContext, true)) {
-                    mosquitoInstaller.runService(entityContext, process -> {}, entityID);
-                    Thread.sleep(1000);
-                    createMQTTClient();
-                }
-            }
-        }
-
+        createMQTTClient();
         return true;
     }
 
