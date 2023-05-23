@@ -1,9 +1,10 @@
 package org.homio.bundle.mqtt.entity;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import org.homio.bundle.api.ui.UISidebarChildren;
 import org.homio.bundle.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.bundle.mqtt.workspace.Scratch3MQTTBlocks;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @UISidebarChildren(icon = "far fa-building", color = Scratch3MQTTBlocks.COLOR)

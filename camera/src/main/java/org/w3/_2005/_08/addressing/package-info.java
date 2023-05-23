@@ -6,7 +6,7 @@
 // Generiert: 2014.02.04 um 12:22:03 PM CET
 //
 
-@javax.xml.bind.annotation.XmlSchema(
+@jakarta.xml.bind.annotation.XmlSchema(
     namespace = "http://www.w3.org/2005/08/addressing",
-    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+    elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.w3._2005._08.addressing;

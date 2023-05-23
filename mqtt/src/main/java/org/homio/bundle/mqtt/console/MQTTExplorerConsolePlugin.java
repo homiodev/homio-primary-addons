@@ -1,5 +1,7 @@
 package org.homio.bundle.mqtt.console;
 
+import static org.homio.bundle.mqtt.MQTTEntrypoint.MQTT_RESOURCE;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -8,7 +10,7 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.homio.bundle.api.EntityContext;
 import org.homio.bundle.api.console.ConsolePluginTree;
-import org.homio.bundle.api.entity.TreeConfiguration;
+import org.homio.bundle.api.fs.TreeConfiguration;
 import org.homio.bundle.api.model.ActionResponseModel;
 import org.homio.bundle.api.setting.console.header.ConsoleHeaderSettingPlugin;
 import org.homio.bundle.api.setting.console.header.RemoveNodeConsoleHeaderButtonSetting;
@@ -35,6 +37,7 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
 
   @Override
   public ActionResponseModel executeAction(String entityID, JSONObject metadata, JSONObject params) {
+    entityContext.assertAccess(MQTT_RESOURCE);
     if ("history".equals(metadata.optString("type"))) {
       return ActionResponseModel.showJson("History", new ArrayList<>(mqttService.getStorage().findAllBy("topic", entityID)));
     }
@@ -43,6 +46,7 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
 
   @Override
   public List<TreeConfiguration> getValue() {
+    entityContext.assertAccess(MQTT_RESOURCE);
     return mqttService.getValue();
   }
 
@@ -53,7 +57,7 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
 
   @Override
   public boolean isEnabled() {
-    return entityContext.isAdminUserOrNone();
+    return entityContext.accessEnabled(MQTT_RESOURCE);
   }
 
   @Override

@@ -10,6 +10,11 @@ import org.json.JSONObject;
 public class ConsoleMQTTClearHistorySetting implements SettingPluginButton, ConsoleSettingPlugin<JSONObject> {
 
   @Override
+  public String getConfirmMsg() {
+    return "mqtt.confirm_clear_history";
+  }
+
+  @Override
   public String getIcon() {
     return "fas fa-brush";
   }

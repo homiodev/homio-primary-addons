@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.homio.bundle.api.EntityContext;
-import org.homio.bundle.api.entity.TreeConfiguration;
 import org.homio.bundle.api.entity.storage.BaseFileSystemEntity;
 import org.homio.bundle.api.entity.types.StorageEntity;
 import org.homio.bundle.api.entity.widget.AggregationType;
@@ -20,6 +19,7 @@ import org.homio.bundle.api.entity.widget.ability.HasAggregateValueFromSeries;
 import org.homio.bundle.api.entity.widget.ability.HasGetStatusValue;
 import org.homio.bundle.api.entity.widget.ability.HasSetStatusValue;
 import org.homio.bundle.api.entity.widget.ability.HasTimeValueSeries;
+import org.homio.bundle.api.fs.TreeConfiguration;
 import org.homio.bundle.api.model.ActionResponseModel;
 import org.homio.bundle.api.service.EntityService;
 import org.homio.bundle.api.storage.SourceHistory;
@@ -348,5 +348,15 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
         String topic = getTopicRequire(dynamicParameters, "publishTopic");
         publish(topic, value, dynamicParameters.optInt("qos", 0),
             dynamicParameters.optBoolean("retain", false));
+    }
+
+    @Override
+    public boolean isShowHiddenFiles() {
+        return true;
+    }
+
+    @Override
+    public @NotNull String getFileSystemRoot() {
+        return "";
     }
 }

@@ -1,6 +1,6 @@
 package org.homio.bundle.camera.entity;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

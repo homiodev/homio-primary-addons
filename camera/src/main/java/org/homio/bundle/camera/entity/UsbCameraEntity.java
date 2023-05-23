@@ -3,7 +3,7 @@ package org.homio.bundle.camera.entity;
 import static org.homio.bundle.api.util.CommonUtils.FFMPEG_LOCATION;
 
 import java.util.List;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import org.homio.bundle.api.EntityContext;
 import org.homio.bundle.api.entity.RestartHandlerOnChange;
 import org.homio.bundle.api.model.HasEntityLog;

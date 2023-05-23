@@ -22,6 +22,11 @@ public class ConsoleMQTTPublishButtonSetting implements ConsoleHeaderSettingPlug
   }
 
   @Override
+  public String getConfirmMsg() {
+    return null;
+  }
+
+  @Override
   public String getConfirmTitle() {
     return "mqtt.publish_title";
   }

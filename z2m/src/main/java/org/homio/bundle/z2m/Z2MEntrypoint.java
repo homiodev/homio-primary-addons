@@ -32,10 +32,12 @@ import org.springframework.stereotype.Component;
 public class Z2MEntrypoint implements BundleEntrypoint {
 
     private final EntityContext entityContext;
+    public static final String Z2M_RESOURCE = "ROLE_Z2M";
 
     @Override
     public void init() {
-        entityContext.ui().registerConsolePluginName("zigbee");
+        entityContext.registerResource(Z2M_RESOURCE);
+        entityContext.ui().registerConsolePluginName("zigbee", Z2M_RESOURCE);
         entityContext.setting().listenValue(ZigBeeEntityCompactModeSetting.class, "zigbee-compact-mode",
             (value) -> entityContext.ui().updateItems(Z2MDeviceEntity.class));
         entityContext.var().createGroup("z2m", "ZigBee2MQTT", true, "fab fa-laravel", "#ED3A3A");

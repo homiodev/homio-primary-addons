@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +19,7 @@ import org.homio.bundle.api.EntityContext;
 import org.homio.bundle.api.entity.HasStatusAndMsg;
 import org.homio.bundle.api.entity.types.CommunicationEntity;
 import org.homio.bundle.api.model.ActionResponseModel;
+import org.homio.bundle.api.ui.UI.Color;
 import org.homio.bundle.api.ui.UISidebarChildren;
 import org.homio.bundle.api.ui.field.UIField;
 import org.homio.bundle.api.ui.field.UIFieldSlider;
@@ -143,7 +144,7 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
         return PREFIX;
     }
 
-    @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off")
+    @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off", iconColor = Color.RED)
     public ActionResponseModel reboot(EntityContext entityContext) {
         entityContext.getBean(TelegramService.class).restart(this);
         return ActionResponseModel.showSuccess("SUCCESS");

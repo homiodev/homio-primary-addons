@@ -2,7 +2,6 @@
   "CAMERA": {
     "OFFLINE": "Camera is offline"
   },
-  "DISPOSE_CAMERA": "Stop camera <{{TITLE}}>. Reason: {{REASON}}",
   "VIDEO_STREAM": {
     "PORT": "Port   {{PORT}}",
     "ADDRESS": "Address: {{ADDRESS}}",

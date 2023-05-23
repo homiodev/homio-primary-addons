@@ -1,11 +1,14 @@
 package org.homio.bundle.z2m.service;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
 import static org.homio.bundle.api.util.CommonUtils.OBJECT_MAPPER;
 import static org.homio.bundle.api.util.CommonUtils.YAML_OBJECT_MAPPER;
 import static org.homio.bundle.api.util.CommonUtils.getErrorMessage;
+import static org.homio.bundle.z2m.util.ZigBeeUtil.ZIGBEE_2_MQTT_PATH;
+import static org.homio.bundle.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -29,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -57,6 +59,7 @@ import org.homio.bundle.z2m.util.Z2MDeviceDTO;
 import org.homio.bundle.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition;
 import org.homio.bundle.z2m.util.ZigBeeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 import org.springframework.data.util.Pair;
 
@@ -72,7 +75,7 @@ public class Z2MLocalCoordinatorService
     implements HasEntityIdentifier, ServiceInstance<Z2MLocalCoordinatorEntity> {
 
     @Getter protected final EntityContext entityContext;
-    private final Path zigbee2mqttConfigurationPath = ZigBeeUtil.ZIGBEE_2_MQTT_PATH.resolve("data/configuration.yaml");
+    private final Path zigbee2mqttConfigurationPath = ZIGBEE_2_MQTT_PATH.resolve("data/configuration.yaml");
 
     @Getter private final String entityID;
     private final Object updateCoordinatorSync = new Object();
@@ -99,7 +102,17 @@ public class Z2MLocalCoordinatorService
         this.entityContext.bgp().executeOnExit(this::disposeNodeProcess);
 
         ZigBeeUtil.collectZ2MConverters(entityContext);
-        ZigBeeUtil.installZ2MIfRequire(entityContext, this::restartCoordinator);
+        installZ2MIfRequire();
+    }
+
+    private void installZ2MIfRequire() {
+        if (!ZigBeeUtil.isZ2MInstalled()) {
+            entityContext.event().runOnceOnInternetUp("z2m", () ->
+                ZigBeeUtil.installZ2M(entityContext, this::restartCoordinator));
+        } else {
+            restartCoordinator();
+            entityContext.event().runOnceOnInternetUp("z2m", this::updateNotificationBlock);
+        }
     }
 
     @Override
@@ -112,7 +125,7 @@ public class Z2MLocalCoordinatorService
 
             @Override
             public boolean isRequireRestartService() {
-                return !ZigBeeUtil.zigbee2mqttGitHub.isUpdating() && entity.isEnableWatchdog() && Z2MLocalCoordinatorService.this.isRequireRestartService();
+                return !zigbee2mqttGitHub.isUpdating() && entity.isEnableWatchdog() && Z2MLocalCoordinatorService.this.isRequireRestartService();
             }
         };
     }
@@ -149,9 +162,9 @@ public class Z2MLocalCoordinatorService
         }
 
         disposeNodeProcess();
-        this.mqttEntity = null;
-        this.initialized = false;
-        this.updateNotificationBlock();
+        mqttEntity = null;
+        initialized = false;
+        updateNotificationBlock();
     }
 
     public void restartCoordinator() {
@@ -427,11 +440,13 @@ public class Z2MLocalCoordinatorService
             });
 
             if (!isZigbee2MqttStarted()) {
-                entityContext.bgp().builder("zigbee2mqtt-service").hideOnUIAfterCancel(false).execute(this::startZigbee2MqttService)
+                entityContext.bgp().builder("zigbee2mqtt-service")
+                             .hideOnUIAfterCancel(false)
                              .onError(ex -> {
                                  log.error("[{}]: Error while start zigbee2mqtt {}", entityID, getErrorMessage(ex));
                                  dispose(ex);
-                             });
+                             })
+                             .execute(this::startZigbee2MqttService);
             } else {
                 setEntityOnline();
             }
@@ -443,7 +458,7 @@ public class Z2MLocalCoordinatorService
     }
 
     private void startZigbee2MqttService() throws IOException, InterruptedException {
-        nodeProcess = Runtime.getRuntime().exec(getNpm() + " start --prefix " + ZigBeeUtil.ZIGBEE_2_MQTT_PATH);
+        nodeProcess = Runtime.getRuntime().exec(getNpm() + " start --prefix " + ZIGBEE_2_MQTT_PATH);
         initialized = nodeProcess.isAlive();
         if (initialized) {
             setEntityOnline();
@@ -471,7 +486,7 @@ public class Z2MLocalCoordinatorService
         entity.setStatusOnline();
 
         entityContext.ui().headerButtonBuilder("discover-" + entityID)
-                     .title("zigbee.action.start_scan")
+                     .title("ZIGBEE_START_SCAN")
                      .icon("fas fa-search-location", "#3E7BBD", false)
                      .availableForPage(ZigBeeDeviceBaseEntity.class)
                      .clickAction(this::startScan).build();
@@ -584,12 +599,14 @@ public class Z2MLocalCoordinatorService
     }
 
     private void updateNotificationBlock() {
-        entityContext.ui().addNotificationBlock(entityID, "zigbee2mqtt", "fas fa-bezier-curve", "#B8B535", builder -> {
+        entityContext.ui().addNotificationBlock(entityID, "ZigBee2MQTT", "fas fa-bezier-curve", "#899343", builder -> {
             builder.setStatus(entity.getStatus());
-            builder.setUpdating(ZigBeeUtil.zigbee2mqttGitHub.isUpdating());
+            builder.linkToEntity(entity);
+            builder.setUpdating(zigbee2mqttGitHub.isUpdating());
             builder.setVersion(ZigBeeUtil.getInstalledVersion());
+
             builder.setUpdatable((progressBar, version) ->
-                    ZigBeeUtil.zigbee2mqttGitHub.updating("zigbee2mqtt", ZigBeeUtil.ZIGBEE_2_MQTT_PATH, progressBar, projectUpdate -> {
+                    zigbee2mqttGitHub.updating("zigbee2mqtt", ZIGBEE_2_MQTT_PATH, progressBar, projectUpdate -> {
                         if (initialized) {
                             this.dispose(null);
                         }
@@ -599,8 +616,12 @@ public class Z2MLocalCoordinatorService
                         }
                         return ActionResponseModel.success();
                     }),
-                ZigBeeUtil.zigbee2mqttGitHub.getReleasesSince(ZigBeeUtil.getInstalledVersion()));
-            builder.addInfo(entity.getStatus().isOnline() ? "" : entity.getStatusMessage(), Color.RED, "fas fa-exclamation", Color.RED);
+                zigbee2mqttGitHub.getReleasesSince(ZigBeeUtil.getInstalledVersion(), false));
+            if (entity.getStatus().isOnline()) {
+                builder.addInfo("ACTION.SUCCESS", Color.GREEN, null, "fas fa-seedling", Color.GREEN);
+            } else {
+                builder.addInfo(defaultIfEmpty(entity.getStatusMessage(), "Unknown error"), Color.RED, "fas fa-exclamation", Color.RED);
+            }
             builder.contextMenuActionBuilder(contextAction -> {
                 if (!entity.isStart()) {
                     contextAction.addSelectableButton("field.start", "fas fa-play", "primary", (entityContext1, params) -> {
@@ -611,9 +632,9 @@ public class Z2MLocalCoordinatorService
                         return ActionResponseModel.showWarn("Z2M.COORDINATOR_ALREADY_STARTED");
                     });
                 }
-                contextAction.addSelectableButton("zigbee.action.start_scan", "fas fa-search-location", "#899343",
+                contextAction.addSelectableButton("ZIGBEE_START_SCAN", "fas fa-search-location", "#899343",
                     (entityContext1, params) -> entity.scan());
-                contextAction.addSelectableButton("action.communicator.restart", "fas fa-power-off", "#AB2A0A",
+                contextAction.addSelectableButton("RESTART", "fas fa-power-off", Color.RED,
                     (entityContext1, params) -> restartZ2M());
             });
         });

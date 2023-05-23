@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.homio.bundle.api.entity.DeviceBaseEntity;

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -26,6 +26,7 @@ import org.homio.bundle.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.bundle.api.entity.zigbee.ZigBeeProperty;
 import org.homio.bundle.api.exception.ProhibitedExecution;
 import org.homio.bundle.api.model.ActionResponseModel;
+import org.homio.bundle.api.ui.UI.Color;
 import org.homio.bundle.api.ui.UISidebarChildren;
 import org.homio.bundle.api.ui.field.UIField;
 import org.homio.bundle.api.ui.field.UIFieldGroup;
@@ -141,7 +142,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
     @UIContextMenuAction(value = "RESTART",
                          icon = "fas fa-power-off",
-                         iconColor = "#AB2A0A")
+                         iconColor = Color.RED)
     public ActionResponseModel restart() {
         return getService().restartZ2M();
     }

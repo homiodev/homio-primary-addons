@@ -16,6 +16,10 @@
       <groupId>jakarta.xml.soap</groupId>
     </dependency>
     <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
       <artifactId>kxml2</artifactId>
       <groupId>net.sf.kxml</groupId>
       <version>2.3.0</version>

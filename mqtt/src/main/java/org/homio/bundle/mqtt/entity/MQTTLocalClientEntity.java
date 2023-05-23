@@ -1,7 +1,7 @@
 package org.homio.bundle.mqtt.entity;
 
 import java.util.Objects;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import org.homio.bundle.api.model.HasEntityLog;
 import org.homio.bundle.api.ui.UISidebarChildren;
 import org.homio.bundle.api.ui.field.UIField;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class MQTTLocalClientEntity extends MQTTBaseEntity implements HasEntityLog {
 
     @Override
-    public String getEntityPrefix() {
+    public @NotNull String getEntityPrefix() {
         return "mqttl_";
     }
 
@@ -57,10 +57,7 @@ public class MQTTLocalClientEntity extends MQTTBaseEntity implements HasEntityLo
 
     @Override
     public boolean deepEqual(@NotNull MQTTBaseEntity mqttEntity) {
-        if (super.deepEqual(mqttEntity) && Objects.equals(this.getHostname(), mqttEntity.getHostname())) {
-            return true;
-        }
-        return false;
+        return super.deepEqual(mqttEntity) && Objects.equals(this.getHostname(), mqttEntity.getHostname());
     }
 
     @Override

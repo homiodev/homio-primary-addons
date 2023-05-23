@@ -1,5 +1,6 @@
 package org.homio.bundle.camera.service;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.homio.bundle.api.util.CommonUtils.MACHINE_IP_ADDRESS;
 
@@ -679,7 +680,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
     }
 
     public String getRtspUri(@Nullable String profile) {
-        return StringUtils.defaultIfEmpty(getEntity().getFfmpegInput(), onvifDeviceState.getMediaDevices().getRTSPStreamUri(profile));
+        return defaultIfEmpty(getEntity().getFfmpegInput(), onvifDeviceState.getMediaDevices().getRTSPStreamUri(profile));
     }
 
     @Override
@@ -703,23 +704,24 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
     }
 
     public void updateNotificationBlock() {
-        entityContext.ui().addNotificationBlock(entityID, getEntity().getTitle(), "fas fa-video", "#02B09F", builder -> {
+        entityContext.ui().addNotificationBlock(entityID, getEntity().getTitle(), "fas fa-video", "#4E783D", builder -> {
             builder.setStatus(getEntity().getSourceStatus());
+            builder.linkToEntity(getEntity());
             val brand = getCameraBrands(entityContext).get(getEntity().getCameraType());
             String text = getEntity().getIp() + ":" + getEntity().getOnvifPort() + " " + brand.getName();
             builder.addInfo(text, null, "fas fa-wifi", "#0E578F");
             if (!getEntity().isStart()) {
-                builder.addButtonInfo(StringUtils.defaultIfEmpty(getEntity().getSourceStatusMessage(), "video.not_started"),
+                builder.addButtonInfo("stop", defaultIfEmpty(getEntity().getSourceStatusMessage(), "video.not_started"),
                     Color.RED, "fas fa-stop", null, "fas fa-play", "Start", null, (entityContext, params) -> {
                         entityContext.save(getEntity().setStart(true));
-                        return ActionResponseModel.success();
+                        return null;
                     });
             } else {
                 builder.setStatusMessage(getEntity().getSourceStatusMessage());
             }
             builder.contextMenuActionBuilder(context -> {
                 if (getEntity().isStart()) {
-                    context.addSelectableButton("RESTART", "fas fa-power-off", null, (entityContext, params) -> {
+                    context.addSelectableButton("RESTART", "fas fa-power-off", Color.RED, (entityContext, params) -> {
                         String response = onvifDeviceState.getInitialDevices().reboot();
                         return ActionResponseModel.showSuccess(response);
                     });

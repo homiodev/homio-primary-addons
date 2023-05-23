@@ -26,6 +26,7 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.bundle.api.EntityContext;
+import org.homio.bundle.api.EntityContextHardware;
 import org.homio.bundle.api.model.OptionModel;
 import org.homio.bundle.api.repository.GitHubProject;
 import org.homio.bundle.api.repository.GitHubProject.ProjectUpdate;
@@ -36,7 +37,6 @@ import org.homio.bundle.api.ui.field.action.v1.item.UIInfoItemBuilder.InfoType;
 import org.homio.bundle.api.ui.field.action.v1.item.UISelectBoxItemBuilder;
 import org.homio.bundle.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.homio.bundle.api.util.CommonUtils;
-import org.homio.bundle.hquery.hardware.other.MachineHardwareRepository;
 import org.homio.bundle.z2m.service.Z2MProperty;
 import org.homio.bundle.z2m.service.properties.Z2MPropertyColor;
 import org.homio.bundle.z2m.service.properties.dynamic.Z2MDynamicProperty;
@@ -222,11 +222,11 @@ public final class ZigBeeUtil {
 
         String npm = entityContext.install().nodejs().requireSync(progressBar, null).getPath("npm");
         progressBar.progress(0, "install-zigbee2mqtt");
-        MachineHardwareRepository machineHardwareRepository = entityContext.getBean(MachineHardwareRepository.class);
+        EntityContextHardware hardware = entityContext.hardware();
         String npmOptions = "--no-audit --no-optional --no-update-notifier --unsafe-perm";
-        machineHardwareRepository.execute(format("%s ci --prefix %s %s", npm, ZIGBEE_2_MQTT_PATH, npmOptions), 600, progressBar);
-        machineHardwareRepository.execute(format("%s run build --prefix %s", npm, ZIGBEE_2_MQTT_PATH), 600, progressBar);
-        machineHardwareRepository.execute(format("%s ci --prefix %s --only=production %s", npm, ZIGBEE_2_MQTT_PATH, npmOptions), 600, progressBar);
+        hardware.execute(format("%s ci --prefix %s %s", npm, ZIGBEE_2_MQTT_PATH, npmOptions), 600, progressBar);
+        hardware.execute(format("%s run build --prefix %s", npm, ZIGBEE_2_MQTT_PATH), 600, progressBar);
+        hardware.execute(format("%s ci --prefix %s --only=production %s", npm, ZIGBEE_2_MQTT_PATH, npmOptions), 600, progressBar);
 
         // restore configuration
         if (binaryExists) {
@@ -260,30 +260,24 @@ public final class ZigBeeUtil {
         }
     }
 
-    public static void installZ2MIfRequire(EntityContext entityContext, Runnable onFinish) {
-        if (!ZigBeeUtil.isZ2MInstalled()) {
-            entityContext.event().runOnceOnInternetUp("install-z2m", () -> {
-                entityContext.bgp().runWithProgress("install-z2m", false, progressBar -> {
-                    String version = getZ2MVersionToInstall(entityContext);
-                    zigbee2mqttGitHub.updating("z2m", ZIGBEE_2_MQTT_PATH, progressBar, projectUpdate -> {
-                        ZigBeeUtil.installOrUpdateZ2M(false, progressBar, entityContext, version, projectUpdate);
-                        return null;
-                    });
-                    onFinish.run();
-                });
-            });
-        } else {
-            onFinish.run();
-        }
-    }
-
     @Nullable
-    private static String getZ2MVersionToInstall(EntityContext entityContext) {
+    public static String getZ2MVersionToInstall(EntityContext entityContext) {
         String version = entityContext.getEnv("zigbee2mqtt-version");
         if (StringUtils.isEmpty(version)) {
             version = zigbee2mqttGitHub.getLastReleaseVersion();
         }
         return version;
+    }
+
+    public static void installZ2M(EntityContext entityContext, Runnable runnable) {
+        entityContext.bgp().runWithProgress("install-z2m").execute(progressBar -> {
+            String version = getZ2MVersionToInstall(entityContext);
+            zigbee2mqttGitHub.updating("z2m", ZIGBEE_2_MQTT_PATH, progressBar, projectUpdate -> {
+                ZigBeeUtil.installOrUpdateZ2M(false, progressBar, entityContext, version, projectUpdate);
+                return null;
+            });
+            runnable.run();
+        });
     }
 
     private static int getPropertyOrder(@NotNull String name) {
@@ -342,13 +336,14 @@ public final class ZigBeeUtil {
                 return null;
             }).setText("");
         } else {
-            uiInputBuilder.addSelectBox(entityID, (entityContext, params) -> {
-                              property.fireAction(params.getString("value"));
-                              return null;
-                          })
-                          .addOptions(OptionModel.list(property.getExpose().getValues()))
-                          .setPlaceholder("-----------")
-                          .setSelected(property.getValue().toString());
+            uiInputBuilder
+                .addSelectBox(entityID, (entityContext, params) -> {
+                    property.fireAction(params.getString("value"));
+                    return null;
+                })
+                .addOptions(OptionModel.list(property.getExpose().getValues()))
+                .setPlaceholder("-----------")
+                .setSelected(property.getValue().toString());
         }
         return uiInputBuilder;
     }

@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -17,6 +17,7 @@ import org.homio.bundle.api.model.ActionResponseModel;
 import org.homio.bundle.api.model.HasEntityLog;
 import org.homio.bundle.api.model.OptionModel;
 import org.homio.bundle.api.model.Status;
+import org.homio.bundle.api.ui.UI.Color;
 import org.homio.bundle.api.ui.action.DynamicOptionLoader;
 import org.homio.bundle.api.ui.field.UIField;
 import org.homio.bundle.api.ui.field.UIFieldIgnore;
@@ -36,7 +37,9 @@ import org.homio.bundle.api.video.DownloadFile;
 import org.homio.bundle.api.video.VideoPlaybackStorage;
 import org.homio.bundle.camera.onvif.brand.CameraBrandHandlerDescription;
 import org.homio.bundle.camera.service.OnvifCameraService;
+import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("unused")
 @Log4j2
 @Setter
 @Getter
@@ -59,7 +62,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     }
 
     @Override
-    public String getTitle() {
+    public @NotNull String getTitle() {
         return super.getTitle();
     }
 
@@ -246,7 +249,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     }
 
     @Override
-    public String getEntityPrefix() {
+    public @NotNull String getEntityPrefix() {
         return PREFIX;
     }
 
@@ -271,7 +274,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
         }
     }
 
-    @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off")
+    @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off", iconColor = Color.RED)
     public ActionResponseModel reboot() {
         String response = getService().getOnvifDeviceState().getInitialDevices().reboot();
         return ActionResponseModel.showSuccess(response);
@@ -350,12 +353,12 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     }
 
     @Override
-    public Class<OnvifCameraService> getEntityServiceItemClass() {
+    public @NotNull Class<OnvifCameraService> getEntityServiceItemClass() {
         return OnvifCameraService.class;
     }
 
     @Override
-    public OnvifCameraService createService(EntityContext entityContext) {
+    public OnvifCameraService createService(@NotNull EntityContext entityContext) {
         return new OnvifCameraService(entityContext, this);
     }
 

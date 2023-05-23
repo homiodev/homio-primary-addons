@@ -31,8 +31,9 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.homio.bundle.api.EntityContext;
-import org.homio.bundle.api.entity.TreeConfiguration;
+import org.homio.bundle.api.fs.TreeConfiguration;
 import org.homio.bundle.api.fs.TreeNode;
+import org.homio.bundle.api.fs.TreeNodeChip;
 import org.homio.bundle.api.model.Status;
 import org.homio.bundle.api.service.EntityService;
 import org.homio.bundle.api.setting.console.header.RemoveNodeConsoleHeaderButtonSetting;
@@ -187,7 +188,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
             child.visitTree(treeNode -> {
                 List<MQTTMessage> histList = sourceMap.get(treeNode.getId());
                 if (histList != null && histList.size() > 1) {
-                    TreeNode.Chip hist = new TreeNode.Chip("fas fa-landmark",
+                    TreeNodeChip hist = new TreeNodeChip("fas fa-landmark",
                         "H[" + treeNode.getAttributes().getMeta().getInt("hs") + "]")
                         .setClickable(true).setBgColor("#83614A").setMetadata(new JSONObject().put("type", "history"));
                     treeNode.getAttributes().setChips(hist);
@@ -244,6 +245,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
     public void updateNotificationBlock() {
         entityContext.ui().addNotificationBlock(entityID, entity.getName(), "fas fa-building", "#7E2CAC", builder -> {
             builder.setStatus(entity);
+            builder.linkToEntity(entity);
             if (entity instanceof MQTTLocalClientEntity) {
                 builder.setVersion(((MQTTLocalClientEntity) entity).getVersion());
             }

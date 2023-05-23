@@ -1,5 +1,6 @@
 package org.homio.bundle.camera.service;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.homio.bundle.api.util.CommonUtils.FFMPEG_LOCATION;
 import static org.homio.bundle.api.video.ffmpeg.FFMPEGFormat.GENERAL;
 
@@ -64,10 +65,11 @@ public class UsbCameraService extends BaseVideoService<UsbCameraEntity> {
     }
 
     public void updateNotificationBlock() {
-        entityContext.ui().addNotificationBlock(entityID, getEntity().getTitle(), "fas fa-usb", "#02B07C", builder -> {
+        entityContext.ui().addNotificationBlock(entityID, getEntity().getTitle(), "fas fa-usb", "#4E783D", builder -> {
             builder.setStatus(getEntity().getSourceStatus());
+            builder.linkToEntity(getEntity());
             if (!getEntity().isStart()) {
-                builder.addButtonInfo(StringUtils.defaultIfEmpty(getEntity().getSourceStatusMessage(), "video.not_started"), Color.RED, "fas fa-stop", null,
+                builder.addButtonInfo("usb", defaultIfEmpty(getEntity().getSourceStatusMessage(), "video.not_started"), Color.RED, "fas fa-stop", null,
                     "fas fa-play", "Start", null, (entityContext, params) -> {
                         entityContext.save(getEntity().setStart(true));
                         return ActionResponseModel.success();

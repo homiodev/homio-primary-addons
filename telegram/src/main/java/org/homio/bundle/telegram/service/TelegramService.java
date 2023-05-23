@@ -107,10 +107,11 @@ public class TelegramService {
         }
     }
 
-    public void updateNotificationBlock(TelegramEntity telegramEntity) {
+    public void updateNotificationBlock(TelegramEntity entity) {
         entityContext.ui().addNotificationBlock("telegram", "Telegram", "fab fa-telegram", "#0088CC", builder -> {
-            builder.setStatus(telegramEntity);
-            builder.addInfo(StringUtils.defaultIfEmpty(telegramEntity.getBotName(), "telegram.no_bot_name"),
+            builder.setStatus(entity);
+            builder.linkToEntity(entity);
+            builder.addInfo(StringUtils.defaultIfEmpty(entity.getBotName(), "telegram.no_bot_name"),
                 null, "fas fa-robot", null);
         });
     }

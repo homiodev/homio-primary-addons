@@ -9,13 +9,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.bundle.api.EntityContext;
-import org.homio.bundle.api.model.KeyValueEnum;
+import org.homio.bundle.api.entity.EntityFieldMetadata;
 import org.homio.bundle.api.state.RawType;
+import org.homio.bundle.api.ui.UI.Color;
+import org.homio.bundle.api.ui.field.UIField;
 import org.homio.bundle.api.workspace.BroadcastLock;
 import org.homio.bundle.api.workspace.WorkspaceBlock;
 import org.homio.bundle.api.workspace.scratch.MenuBlock;
@@ -23,6 +25,7 @@ import org.homio.bundle.api.workspace.scratch.Scratch3Block;
 import org.homio.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.homio.bundle.telegram.service.TelegramAnswer;
 import org.homio.bundle.telegram.service.TelegramService;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
@@ -33,7 +36,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
 
     public static final String COMMAND = "COMMAND";
     public static final String DESCR = "DESCR";
-    private static final Pattern ESCAPE_PATTERN = Pattern.compile("[\\{\\}\\.\\+\\-\\#\\(\\)]");
+    private static final Pattern ESCAPE_PATTERN = Pattern.compile("[{}.+\\-#()]");
     private static final String USER = "USER";
     private static final String MESSAGE = "MESSAGE";
     private static final String LEVEL = "LEVEL";
@@ -42,7 +45,6 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
 
     private final MenuBlock.StaticMenuBlock<Level> levelMenu;
     private final MenuBlock.ServerMenuBlock telegramEntityUsersMenu;
-    private final MenuBlock.StaticMenuBlock<QuestionButtons> buttonsMenu;
 
     public Scratch3TelegramBlocks(TelegramService telegramService, EntityContext entityContext,
         TelegramEntrypoint telegramEntrypoint) {
@@ -53,33 +55,33 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         // Menu
         this.telegramEntityUsersMenu = menuServer("telegramEntityUsersMenu", "rest/telegram/entityUser", "Telegram");
         this.levelMenu = menuStatic("levelMenu", Level.class, Level.info);
-        this.buttonsMenu = menuStaticKV("buttonsMenu", QuestionButtons.class, QuestionButtons.YesNo);
 
-        blockHat(10, "get_msg", "On command [COMMAND] of [DEVICE] | Desc: [DESCR]",
+        blockHat(10, "get_msg", "On command [COMMAND] of [USER] | Desc: [DESCR]",
             this::whenGetMessage, block -> {
-                block.addArgument(COMMAND, "bulb4_on");
-                block.addArgument(DESCR, "Turn on bulb 4");
+                block.addArgument(USER, this.telegramEntityUsersMenu);
+                block.addArgument(COMMAND, "bulb_on");
+                block.addArgument(DESCR, "Turn on bulb");
             });
 
-        blockCommand(20, "send_msg", "Send [MESSAGE] to [USER] of [DEVICE]. [LEVEL]", this::sendMessageCommand, block -> {
-            block.addArgument(MESSAGE, "msg");
+        blockCommand(20, "send_msg", "Send [MESSAGE] to [USER]. [LEVEL]", this::sendMessageCommand, block -> {
             block.addArgument(USER, this.telegramEntityUsersMenu);
+            block.addArgument(MESSAGE, "msg");
             block.addArgument(LEVEL, this.levelMenu);
         });
 
-        blockCommand(30, "send_img", "Send media [MESSAGE] to [USER] of [DEVICE] | Caption: [CAPTION]", this::sendIVAMessageCommand, block -> {
+        blockCommand(30, "send_img", "Send media [MESSAGE] to [USER] | Caption: [CAPTION]", this::sendIVAMessageCommand, block -> {
             block.addArgument(USER, this.telegramEntityUsersMenu);
             block.addArgument("CAPTION", "caption");
         });
 
         ask(blockCommand(40, "send_question",
-            "Ask&Wait [MESSAGE] to [USER] | [BUTTONS] of [DEVICE]", this::sendQuestionNoSplitCommand));
+            "Ask&Wait [MESSAGE] to [USER] | [BUTTONS]", this::sendQuestionNoSplitCommand));
 
         ask(blockCondition(41, "send_question_if",
-            "Ask&Wait [MESSAGE] to [USER] | [BUTTONS] of [DEVICE]", this::sendQuestionSplitCommand));
+            "Ask&Wait [MESSAGE] to [USER] | [BUTTONS]", this::sendQuestionSplitCommand));
 
         ask(blockCondition(42, "send_question_if_else",
-            "Ask&Wait [MESSAGE] to [USER] | [BUTTONS] of [DEVICE]", this::sendQuestionSplitElseCommand).addBranch("else"));
+            "Ask&Wait [MESSAGE] to [USER] | [BUTTONS]", this::sendQuestionSplitElseCommand).addBranch("else"));
     }
 
     private static String escape(String text) {
@@ -93,11 +95,10 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         return noteBuffer.length() == 0 ? text : noteBuffer.toString();
     }
 
-    private Scratch3Block ask(Scratch3Block scratch3Block) {
+    private void ask(Scratch3Block scratch3Block) {
         scratch3Block.addArgument(MESSAGE, "msg");
         scratch3Block.addArgument(USER, this.telegramEntityUsersMenu);
-        scratch3Block.addArgument("BUTTONS", this.buttonsMenu);
-        return scratch3Block;
+        scratch3Block.addSetting(QuestionSettings.class);
     }
 
     private void sendIVAMessageCommand(WorkspaceBlock workspaceBlock) {
@@ -132,8 +133,9 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     }
 
     private void sendQuestionCommand(WorkspaceBlock workspaceBlock, WorkspaceBlock nextBlock, WorkspaceBlock elseBlock) {
-        String[] buttons = workspaceBlock.getMenuValue("BUTTONS", this.buttonsMenu).getValue().split("/");
+        QuestionSettings setting = workspaceBlock.getSetting(QuestionSettings.class);
         TelegramUser context = getEntityAndUsers(workspaceBlock);
+        String[] buttons = new String[]{setting.okButton, setting.noButton};
         Message message = sendTelegramMessage(workspaceBlock, buttons, Function.identity(), context);
         if (message != null) {
             BroadcastLock lock = workspaceBlock.getBroadcastLockManager().getOrCreateLock(workspaceBlock,
@@ -185,7 +187,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         });
     }
 
-    private TelegramUser getEntityAndUsers(WorkspaceBlock workspaceBlock) {
+    private @NotNull TelegramUser getEntityAndUsers(WorkspaceBlock workspaceBlock) {
         String entityUser = workspaceBlock.getMenuValue(USER, this.telegramEntityUsersMenu);
         String[] entityAndUser = entityUser.split("/");
         TelegramEntity telegramEntity = entityContext.getEntity(entityAndUser[0]);
@@ -197,21 +199,11 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         } else {
             List<TelegramEntity.TelegramUser> users = telegramEntity.getUsers();
             if (users.isEmpty()) {
-                workspaceBlock.logWarn(
+                workspaceBlock.logErrorAndThrow(
                     "Unable to find any registered users. Please open telegram bot and run command '/register'");
             }
             return new TelegramUser(telegramEntity, users);
         }
-    }
-
-    @AllArgsConstructor
-    private enum QuestionButtons implements KeyValueEnum {
-        YesNo("Yes/No"),
-        OkCancel("Ok/Cancel"),
-        ApproveDiscard("Approve/Discard");
-
-        @Getter
-        private final String value;
     }
 
     @RequiredArgsConstructor
@@ -238,10 +230,19 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         private final List<TelegramEntity.TelegramUser> users;
     }
 
-    /*@AllArgsConstructor
-    private enum ByteType {
-        Image(10 * 1024 * 1024),
-        Video(50 * 1024 * 1024);
-        private final int maxLength;
-    }*/
+    @Getter
+    @Setter
+    public static class QuestionSettings implements EntityFieldMetadata {
+
+        @UIField(order = 1, icon = "fa fa-check", color = Color.GREEN)
+        private String okButton = "Yes";
+
+        @UIField(order = 2, icon = "fa fa-xmark", color = Color.RED)
+        private String noButton = "No";
+
+        @Override
+        public @NotNull String getEntityID() {
+            return "yes_no";
+        }
+    }
 }
