@@ -6,7 +6,7 @@
 // Generiert: 2014.02.04 um 12:22:03 PM CET
 //
 
-@javax.xml.bind.annotation.XmlSchema(
+@jakarta.xml.bind.annotation.XmlSchema(
     namespace = "http://docs.oasis-open.org/wsrf/bf-2",
-    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+    elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.oasis_open.docs.wsrf.bf_2;

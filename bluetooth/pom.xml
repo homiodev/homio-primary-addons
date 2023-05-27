@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <artifactId>homio-bundle-bluetooth</artifactId>
+  <artifactId>homio-addon-bluetooth</artifactId>
   <dependencies>
     <dependency>
       <artifactId>dbus-java</artifactId>
@@ -14,8 +14,8 @@
   <packaging>jar</packaging>
 
   <parent>
-    <artifactId>homio-bundle</artifactId>
-    <groupId>org.homio.bundle</groupId>
-    <version>1.2.1-SNAPSHOT</version>
+    <artifactId>homio-addon-buildin</artifactId>
+    <groupId>org.homio.addon</groupId>
+    <version>1.3.0-SNAPSHOT</version>
   </parent>
 </project>
