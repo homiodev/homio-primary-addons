@@ -112,7 +112,7 @@ public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity
 
   @Override
   public void logBuilder(EntityLogBuilder entityLogBuilder) {
-      entityLogBuilder.addTopicFilterByEntityID("org.homio.bundle.camera");
+      entityLogBuilder.addTopicFilterByEntityID("org.homio.addon.camera");
       entityLogBuilder.addTopicFilterByEntityID("org.homio.api.video");
   }
 

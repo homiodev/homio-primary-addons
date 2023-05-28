@@ -24,7 +24,7 @@ import org.homio.api.video.ffmpeg.FFMPEG;
 
 @Log4j2
 @Entity
-@UISidebarChildren(icon = "rest/bundle/image/camera/rpi-loop-record.png", color = "#0088CC")
+@UISidebarChildren(icon = "rest/addon/image/camera/rpi-loop-record.png", color = "#0088CC")
 public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMPEGLoopRecordStorageService> {
 
     public static final String PREFIX = "ffmpeglr_";

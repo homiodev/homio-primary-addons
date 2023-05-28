@@ -6,7 +6,7 @@ import org.homio.api.entity.DeviceBaseEntity;
 import org.homio.api.entity.storage.VideoBaseStorageService;
 import org.homio.api.ui.UISidebarChildren;
 
-@UISidebarChildren(icon = "rest/bundle/image/camera/memory-card.png", color = "#AACC00")
+@UISidebarChildren(icon = "rest/addon/image/camera/memory-card.png", color = "#AACC00")
 public class IpCameraSDCardStorageService extends VideoBaseStorageService<IpCameraSDCardStorageService> {
 
   public static final String PREFIX = "ipcsd_";

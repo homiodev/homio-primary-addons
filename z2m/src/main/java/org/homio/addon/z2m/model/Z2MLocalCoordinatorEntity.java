@@ -160,7 +160,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
     @Override
     public void logBuilder(EntityLogBuilder entityLogBuilder) {
-        entityLogBuilder.addTopicFilterByEntityID("org.homio.bundle.zigbee");
+        entityLogBuilder.addTopicFilterByEntityID("org.homio.addon.zigbee");
         entityLogBuilder.addTopic(Z2MLocalCoordinatorService.class);
     }
 

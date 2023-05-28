@@ -364,7 +364,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
 
     @Override
     public void logBuilder(EntityLogBuilder entityLogBuilder) {
-        entityLogBuilder.addTopicFilterByEntityID("org.homio.bundle.camera");
+        entityLogBuilder.addTopicFilterByEntityID("org.homio.addon.camera");
         entityLogBuilder.addTopicFilterByEntityID("org.homio.api.video");
     }
 

@@ -14,8 +14,8 @@
   <packaging>jar</packaging>
 
   <parent>
-    <artifactId>homio-addon-buildin</artifactId>
-    <groupId>org.homio.addon</groupId>
+    <artifactId>homio-primary-addons</artifactId>
+  <groupId>org.homio</groupId>
     <version>1.3.0-SNAPSHOT</version>
   </parent>
 </project>

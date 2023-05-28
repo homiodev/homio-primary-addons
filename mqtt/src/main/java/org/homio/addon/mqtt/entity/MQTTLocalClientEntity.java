@@ -62,7 +62,7 @@ public class MQTTLocalClientEntity extends MQTTBaseEntity implements HasEntityLo
 
     @Override
     public void logBuilder(EntityLogBuilder logBuilder) {
-        logBuilder.addTopicFilterByEntityID("org.homio.bundle.mqtt");
+        logBuilder.addTopicFilterByEntityID("org.homio.addon.mqtt");
     }
 
     @Override
