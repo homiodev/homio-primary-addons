@@ -22,6 +22,7 @@ import org.homio.api.model.ActionResponseModel;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
+import org.homio.api.ui.field.UIFieldGroup;
 import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.UIFieldType;
 import org.homio.api.ui.field.action.UIContextMenuAction;
@@ -76,7 +77,8 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
         setJsonData("wqms", value);
     }
 
-    @UIField(order = 50)
+    @UIField(order = 1, hideInView = true)
+    @UIFieldGroup(value = "PROXY", order = 20, borderColor = "#8C324C")
     public ProxyType getProxyType() {
         return getJsonDataEnum("pt", ProxyType.NO_PROXY);
     }
@@ -85,7 +87,8 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
         setJsonDataEnum("pt", value);
     }
 
-    @UIField(order = 55)
+    @UIField(order = 2, hideInView = true)
+    @UIFieldGroup("PROXY")
     public String getProxyHost() {
         return getJsonData("ph");
     }
@@ -94,7 +97,8 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
         setJsonData("ph", value);
     }
 
-    @UIField(order = 60)
+    @UIField(order = 3, hideInView = true)
+    @UIFieldGroup("PROXY")
     public int getProxyPort() {
         return getJsonData("pp", 0);
     }

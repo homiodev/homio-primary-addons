@@ -35,11 +35,6 @@ public class TelegramEntrypoint implements AddonEntrypoint {
     }
 
     @Override
-    public int order() {
-        return 200;
-    }
-
-    @Override
     public AddonImageColorIndex getAddonImageColorIndex() {
         return AddonImageColorIndex.ONE;
     }

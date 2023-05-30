@@ -48,9 +48,4 @@ public class MQTTEntrypoint implements AddonEntrypoint {
             });
         });
     }
-
-  @Override
-  public int order() {
-    return 2000;
-  }
 }

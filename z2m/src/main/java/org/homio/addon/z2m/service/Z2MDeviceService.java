@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.tuple.Pair;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.service.properties.Z2MPropertyAction;
 import org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate;
@@ -30,7 +31,6 @@ import org.homio.api.ui.UI;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Lang;
 import org.json.JSONObject;
-import org.springframework.data.util.Pair;
 
 @Getter
 @Log4j2
@@ -53,7 +53,7 @@ public class Z2MDeviceService {
         addMissingProperties(coordinatorService, device);
 
         entityContext.ui().updateItem(deviceEntity);
-        entityContext.ui().sendSuccessMessage(Lang.getServerMessage("ENTITY_CREATED", "NAME", format("${%s}", this.device.getName())));
+        entityContext.ui().sendSuccessMessage(Lang.getServerMessage("ENTITY_CREATED", format("${%s}", this.device.getName())));
         entityContext.event().addEventBehaviourListener(getDeviceTopic(this.device), payload -> mqttUpdate(new JSONObject(payload.toString())));
 
         entityContext.event().addEventBehaviourListener(
@@ -183,9 +183,9 @@ public class Z2MDeviceService {
 
     private void addMissingProperties(Z2MLocalCoordinatorService coordinatorService, Z2MDeviceDTO device) {
         for (Pair<String, String> missingProperty : coordinatorService.getMissingProperties(device.getIeeeAddress())) {
-            switch (missingProperty.getSecond()) {
+            switch (missingProperty.getValue()) {
                 case "action_event":
-                    addProperty(missingProperty.getFirst(), key -> Z2MPropertyAction.createActionEvent(key, this, entityContext));
+                    addProperty(missingProperty.getKey(), key -> Z2MPropertyAction.createActionEvent(key, this, entityContext));
                     break;
             }
         }

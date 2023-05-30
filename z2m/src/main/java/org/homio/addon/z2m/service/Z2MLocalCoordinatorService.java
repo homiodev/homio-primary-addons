@@ -35,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 import org.homio.addon.z2m.ZigBee2MQTTFrontendConsolePlugin;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
@@ -59,7 +60,6 @@ import org.homio.addon.mqtt.entity.MQTTBaseEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
-import org.springframework.data.util.Pair;
 
 /**
  * The {@link Z2MLocalCoordinatorService} is responsible for handling commands, which are sent to one of the zigbeeRequireEndpoints.
@@ -406,16 +406,16 @@ public class Z2MLocalCoordinatorService
 
     private String validateEntity(Z2MLocalCoordinatorEntity newEntity) {
         if (isEmpty(newEntity.getPort())) {
-            return "zigbee.error.no_port";
+            return "ZIGBEE.ERROR.NO_PORT";
         } else if (CommonUtils.getSerialPort(entity.getPort()) == null) {
-            return Lang.getServerMessage("zigbee.error.port_not_found", "NAME", entity.getPort());
+            return Lang.getServerMessage("ZIGBEE.ERROR.PORT_NOT_FOUND", entity.getPort());
         }
         if (isEmpty(entity.getRawMqttEntity())) {
-            return "z2m.error.no_mqtt";
+            return "ZIGBEE.ERROR.NO_MQTT";
         }
         MQTTBaseEntity mqttEntity = entityContext.getEntity(entity.getRawMqttEntity());
         if (mqttEntity == null) {
-            return "z2m.error.mqtt_not_found";
+            return "ZIGBEE.ERROR.MQTT_NOT_FOUND";
         }
         return null;
     }

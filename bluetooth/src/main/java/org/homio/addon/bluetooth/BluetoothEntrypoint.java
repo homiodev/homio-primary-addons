@@ -24,11 +24,6 @@ public class BluetoothEntrypoint extends BaseBluetoothCharacteristicService impl
     }
 
     @Override
-    public int order() {
-        return Integer.MAX_VALUE;
-    }
-
-    @Override
     public void updateBluetoothStatus(String status, String message) {
         this.status = status.startsWith("ERROR") ? Status.ERROR : Status.valueOf(status);
         this.errorMessage = message;

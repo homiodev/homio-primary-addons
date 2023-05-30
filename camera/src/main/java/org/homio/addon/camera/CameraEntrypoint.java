@@ -20,11 +20,6 @@ public class CameraEntrypoint implements AddonEntrypoint {
 
     private final EntityContext entityContext;
 
-    @Override
-    public int order() {
-        return 300;
-    }
-
     @SneakyThrows
     public void init() {
         entityContext.bgp().registerThreadsPuller("camera-ffmpeg", threadPuller -> {

@@ -1,5 +1,5 @@
 {
-  "zigbee": {
+  "ZIGBEE": {
     "attributes": "{{NAME}} attributes",
     "new_coordinator": {
       "coordinator": "ZigBee coordinator {{NAME}}",
@@ -8,8 +8,8 @@
       "name": "Coordinator name: {{NAME}}",
       "question": "Do you want create new zigbee coordinator?"
     },
-    "error": {
-      "port_not_found": "No {{NAME}} port found"
+    "ERROR": {
+      "PORT_NOT_FOUND": "No {{VALUE}} port found"
     }
   }
 }

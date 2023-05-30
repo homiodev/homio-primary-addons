@@ -38,8 +38,8 @@ public class OnvifWsDiscoveryCameraScanner implements VideoStreamScanner {
                         "onvif-" + ipAddress,
                         brand + "/" + ipAddress, entityContext,
                         messages -> {
-                            messages.add(Lang.getServerMessage("VIDEO_STREAM.PORT", "PORT", String.valueOf(onvifPort)));
-                            messages.add(Lang.getServerMessage("VIDEO_STREAM.BRAND", "BRAND", brand.getName()));
+                            messages.add(Lang.getServerMessage("VIDEO_STREAM.PORT", String.valueOf(onvifPort)));
+                            messages.add(Lang.getServerMessage("VIDEO_STREAM.BRAND", brand.getName()));
                         },
                         () -> {
                             log.info("Confirm save onvif camera with ip address: <{}>", ipAddress);
