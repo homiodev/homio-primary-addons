@@ -1,6 +1,5 @@
 package org.homio.addon.camera.service;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.homio.api.util.CommonUtils.FFMPEG_LOCATION;
 import static org.homio.api.video.ffmpeg.FFMPEGFormat.GENERAL;
 
@@ -14,10 +13,10 @@ import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.homio.addon.camera.CameraEntrypoint;
 import org.homio.addon.camera.entity.UsbCameraEntity;
 import org.homio.api.EntityContext;
-import org.homio.api.model.ActionResponseModel;
-import org.homio.api.ui.UI.Color;
+import org.homio.api.model.Icon;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.video.BaseVideoService;
 import org.homio.api.video.BaseVideoStreamServerHandler;
@@ -65,19 +64,10 @@ public class UsbCameraService extends BaseVideoService<UsbCameraEntity> {
     }
 
     public void updateNotificationBlock() {
-        entityContext.ui().addNotificationBlock(entityID, getEntity().getTitle(), "fas fa-usb", "#4E783D", builder -> {
-            builder.setStatus(getEntity().getSourceStatus());
-            builder.linkToEntity(getEntity());
-            if (!getEntity().isStart()) {
-                builder.addButtonInfo("usb", defaultIfEmpty(getEntity().getSourceStatusMessage(), "video.not_started"), Color.RED, "fas fa-stop", null,
-                    "fas fa-play", "Start", null, (entityContext, params) -> {
-                        entityContext.save(getEntity().setStart(true));
-                        return ActionResponseModel.success();
-                    });
-            } else {
-                builder.setStatusMessage(getEntity().getSourceStatusMessage());
-            }
-        });
+        CameraEntrypoint.updateCamera(entityContext, getEntity(),
+            null,
+            new Icon("fas fa-users-viewfinder", "#669618"),
+            null);
     }
 
     @Override

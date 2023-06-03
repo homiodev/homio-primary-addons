@@ -6,11 +6,13 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.RestartHandlerOnChange;
+import org.homio.api.model.Icon;
 import org.homio.api.ui.field.UIField;
 import org.homio.api.video.AbilityToStreamHLSOverFFMPEG;
 import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
 import org.homio.api.video.BaseVideoService;
 import org.homio.addon.camera.service.CommonVideoService;
+import org.jetbrains.annotations.NotNull;
 
 @Setter
 @Getter
@@ -52,6 +54,11 @@ public class CommonVideoStreamEntity extends BaseFFMPEGVideoStreamEntity<CommonV
   protected void beforePersist() {
     setSnapshotOutOptions("-update 1~~~-frames:v 1");
     setServerPort(BaseVideoService.findFreeBootstrapServerPort());
+  }
+
+  @Override
+  public @NotNull Icon getIcon() {
+    return new Icon("fas fa-film", "#4E783D");
   }
 
   @Override

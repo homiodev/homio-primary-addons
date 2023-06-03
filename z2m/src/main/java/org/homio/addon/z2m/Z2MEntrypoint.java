@@ -17,6 +17,7 @@ import org.homio.api.entity.zigbee.ZigBeeBaseCoordinatorEntity;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.setting.ZigBeeEntityCompactModeSetting;
+import org.homio.api.model.Icon;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Component;
  * <li>'zigbee_coordinator-' + entityID === Status</li>
  * </ul>
  */
+@SuppressWarnings("rawtypes")
 @Log4j2
 @Component
 @RequiredArgsConstructor
@@ -41,7 +43,7 @@ public class Z2MEntrypoint implements AddonEntrypoint {
         entityContext.ui().registerConsolePluginName("zigbee", Z2M_RESOURCE);
         entityContext.setting().listenValue(ZigBeeEntityCompactModeSetting.class, "zigbee-compact-mode",
             (value) -> entityContext.ui().updateItems(Z2MDeviceEntity.class));
-        entityContext.var().createGroup("z2m", "ZigBee2MQTT", true, "fab fa-laravel", "#ED3A3A");
+        entityContext.var().createGroup("z2m", "ZigBee2MQTT", true, new Icon("fab fa-laravel", "#ED3A3A"));
 
         entityContext.event().addPortChangeStatusListener("zigbee-ports",
             port -> {

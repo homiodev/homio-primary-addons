@@ -1,13 +1,13 @@
 package org.homio.addon.z2m.util;
 
 import static java.lang.String.format;
-import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
 import static org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate.UPDATED;
 import static org.homio.addon.z2m.util.Z2MDeviceDTO.BINARY_TYPE;
 import static org.homio.addon.z2m.util.Z2MDeviceDTO.COMPOSITE_TYPE;
 import static org.homio.addon.z2m.util.Z2MDeviceDTO.ENUM_TYPE;
 import static org.homio.addon.z2m.util.Z2MDeviceDTO.NUMBER_TYPE;
 import static org.homio.addon.z2m.util.Z2MDeviceDTO.SWITCH_TYPE;
+import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,9 +25,13 @@ import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.homio.addon.z2m.service.Z2MProperty;
+import org.homio.addon.z2m.service.properties.Z2MPropertyColor;
+import org.homio.addon.z2m.service.properties.dynamic.Z2MDynamicProperty;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextHardware;
+import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;
 import org.homio.api.repository.GitHubProject;
 import org.homio.api.repository.GitHubProject.ProjectUpdate;
@@ -38,9 +42,6 @@ import org.homio.api.ui.field.action.v1.item.UIInfoItemBuilder.InfoType;
 import org.homio.api.ui.field.action.v1.item.UISelectBoxItemBuilder;
 import org.homio.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.homio.api.util.CommonUtils;
-import org.homio.addon.z2m.service.Z2MProperty;
-import org.homio.addon.z2m.service.properties.Z2MPropertyColor;
-import org.homio.addon.z2m.service.properties.dynamic.Z2MDynamicProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -312,7 +313,7 @@ public final class ZigBeeUtil {
                 });
                 presets.addOptions(property.getExpose().getPresets().stream().map(p ->
                            OptionModel.of(String.valueOf(p.getValue()), p.getName()).setDescription(p.getDescription())).collect(Collectors.toList()))
-                       .setAsButton("fas fa-kitchen-set", null, null);
+                       .setAsButton(new Icon("fas fa-kitchen-set"), null);
                 // set selected presets if any presets equal to current value
                 if (property.getExpose().getPresets().stream().anyMatch(p -> String.valueOf(p.getValue()).equals(property.getValue().toString()))) {
                     presets.setSelected(property.getValue().toString());
@@ -331,10 +332,11 @@ public final class ZigBeeUtil {
         @NotNull UIInputBuilder uiInputBuilder,
         @NotNull String entityID) {
         if (!property.getExpose().isReadable() && property.getExpose().getValues().size() == 1) {
-            uiInputBuilder.addButton(entityID, "fas fa-play", "#eb0000", (entityContext, params) -> {
-                property.fireAction(property.getExpose().getValues().get(0));
-                return null;
-            }).setText("");
+            uiInputBuilder.addButton(entityID, new Icon("fas fa-play", "#eb0000"),
+                (entityContext, params) -> {
+                    property.fireAction(property.getExpose().getValues().get(0));
+                    return null;
+                }).setText("");
         } else {
             uiInputBuilder
                 .addSelectBox(entityID, (entityContext, params) -> {

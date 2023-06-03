@@ -4,6 +4,7 @@ import org.homio.addon.z2m.service.properties.dynamic.Z2MPropertyActionEvent;
 import org.homio.addon.z2m.util.Z2MDevicePropertiesDTO;
 import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
+import org.homio.api.model.Icon;
 import org.homio.api.state.StringType;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MProperty;
@@ -12,7 +13,7 @@ import org.json.JSONObject;
 public class Z2MPropertyAction extends Z2MProperty {
 
     public Z2MPropertyAction() {
-        super("#9636d6", "fa fa-fw fa-circle-play");
+        super(new Icon( "fa fa-fw fa-circle-play", "#9636d6"));
     }
 
     public static Z2MPropertyActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {

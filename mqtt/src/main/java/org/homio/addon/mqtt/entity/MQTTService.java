@@ -30,11 +30,15 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.homio.addon.mqtt.console.MQTTExplorerConsolePlugin;
+import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
+import org.homio.addon.mqtt.setting.ConsoleMQTTClearHistorySetting;
 import org.homio.addon.mqtt.setting.ConsoleRemoveNodeHeaderButtonSetting;
 import org.homio.api.EntityContext;
 import org.homio.api.fs.TreeConfiguration;
 import org.homio.api.fs.TreeNode;
 import org.homio.api.fs.TreeNodeChip;
+import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.service.EntityService;
 import org.homio.api.storage.DataStorageService;
@@ -43,9 +47,6 @@ import org.homio.api.storage.SourceHistory;
 import org.homio.api.storage.SourceHistoryItem;
 import org.homio.api.ui.UI;
 import org.homio.api.util.CommonUtils;
-import org.homio.addon.mqtt.console.MQTTExplorerConsolePlugin;
-import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
-import org.homio.addon.mqtt.setting.ConsoleMQTTClearHistorySetting;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -98,11 +99,9 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         });
 
         if (entity instanceof MQTTLocalClientEntity) {
-            entityContext.event().runOnceOnInternetUp("mosquitto", () -> {
-                entityContext.install().mosquitto().requireAsync(null, () -> {
-                    log.info("Mosquitto service successfully installed");
-                });
-            });
+            entityContext.event().runOnceOnInternetUp("mosquitto", () ->
+                entityContext.install().mosquitto().requireAsync(null, () ->
+                    log.info("Mosquitto service successfully installed")));
         }
     }
 
@@ -170,7 +169,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         TreeConfiguration treeConfiguration =
             new TreeConfiguration(entityID, entity.getTitle() + " (" + entity.getHostname() + ")",
                 values).setDynamicUpdateId(entityID);
-        treeConfiguration.setIcon("fas fa-m", entity.getStatus() == Status.ONLINE ? UI.Color.GREEN : UI.Color.RED);
+        treeConfiguration.setIcon(new Icon("fas fa-m", entity.getStatus() == Status.ONLINE ? UI.Color.GREEN : UI.Color.RED));
         return Collections.singletonList(treeConfiguration);
     }
 
@@ -181,14 +180,14 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
             filter = treeNode -> Boolean.TRUE.equals(sysPath) && treeNode.getId().startsWith("$SYS") ||
                 Boolean.FALSE.equals(sysPath) && !treeNode.getId().startsWith("$SYS");
         }
-        for (TreeNode child : root.getChildren().stream().filter(filter).collect(Collectors.toList())) {
+        for (TreeNode child : root.getChildren().stream().filter(filter).toList()) {
             Map<String, List<MQTTMessage>> sourceMap = child.getId().equals("$SYS") ? sysHistoryMap :
                 storage.findByPattern("topic", child.getId() + ".*").stream()
                        .collect(Collectors.groupingBy(MQTTMessage::getTopic));
             child.visitTree(treeNode -> {
                 List<MQTTMessage> histList = sourceMap.get(treeNode.getId());
                 if (histList != null && histList.size() > 1) {
-                    TreeNodeChip hist = new TreeNodeChip("fas fa-landmark",
+                    TreeNodeChip hist = new TreeNodeChip(new Icon("fas fa-landmark"),
                         "H[" + treeNode.getAttributes().getMeta().getInt("hs") + "]")
                         .setClickable(true).setBgColor("#83614A").setMetadata(new JSONObject().put("type", "history"));
                     treeNode.getAttributes().setChips(hist);
@@ -243,13 +242,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
     }
 
     public void updateNotificationBlock() {
-        entityContext.ui().addNotificationBlock(entityID, entity.getName(), "fas fa-building", "#7E2CAC", builder -> {
-            builder.setStatus(entity);
-            builder.linkToEntity(entity);
-            if (entity instanceof MQTTLocalClientEntity) {
-                builder.setVersion(((MQTTLocalClientEntity) entity).getVersion());
-            }
-        });
+        entityContext.ui().updateNotificationBlock("MQTT", builder -> builder.addEntityInfo(entity));
     }
 
     private TreeNode removeTopic(String topic) {

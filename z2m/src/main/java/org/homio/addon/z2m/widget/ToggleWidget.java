@@ -1,15 +1,17 @@
 package org.homio.addon.z2m.widget;
 
 import static java.lang.String.format;
-import static org.homio.api.ui.field.UIFieldLayout.HorizontalAlign.left;
-import static org.homio.api.ui.field.UIFieldLayout.HorizontalAlign.right;
 import static org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate.UPDATED;
 import static org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty.SIGNAL;
+import static org.homio.api.ui.field.UIFieldLayout.HorizontalAlign.left;
+import static org.homio.api.ui.field.UIFieldLayout.HorizontalAlign.right;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
+import org.homio.addon.z2m.model.Z2MDeviceEntity;
+import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextWidget.HorizontalAlign;
@@ -17,8 +19,6 @@ import org.homio.api.EntityContextWidget.VerticalAlign;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.ui.UI;
 import org.homio.api.ui.field.UIFieldLayout;
-import org.homio.addon.z2m.model.Z2MDeviceEntity;
-import org.homio.addon.z2m.service.Z2MProperty;
 import org.jetbrains.annotations.Nullable;
 
 public class ToggleWidget implements WidgetBuilder {
@@ -32,12 +32,11 @@ public class ToggleWidget implements WidgetBuilder {
         assertPropertiesExists(widgetRequest, entity);
 
         String layoutID = "lt-btn-" + entity.getIeeeAddress();
-        entityContext.widget().createLayoutWidget(layoutID, builder -> {
+        entityContext.widget().createLayoutWidget(layoutID, builder ->
             builder.setBlockSize(wd.getBlockWidth(1), wd.getBlockHeight(1))
                    .setZIndex(wd.getZIndex(20))
                    .setBackground(wd.getBackground())
-                   .setLayoutDimension(4, 2);
-        });
+                   .setLayoutDimension(4, 2));
         Map<String, Z2MProperty> properties = entity.getDeviceService().getProperties();
 
         var request = new MainWidgetRequest(widgetRequest, wd, 2, 4, builder ->
@@ -102,8 +101,7 @@ public class ToggleWidget implements WidgetBuilder {
                        .setValueTemplate("", leftProperty.getExpose().getUnit())
                        .setValueSuffixFontSize(0.6)
                        .setValueSuffixVerticalAlign(VerticalAlign.bottom)
-                       .attachToLayout(layoutID, 3, 0)
-                       .setIconColor(leftProperty.getIconColor());
+                       .attachToLayout(layoutID, 3, 0);
                 Optional.ofNullable(PROPERTIES.get(leftProperty.getKey())).ifPresent(ib -> ib.build(builder));
             });
         }

@@ -101,15 +101,12 @@ public class Z2MDeviceDefinitionDTO {
 
         public String getIcon() {
             if (icon != null) {return icon;}
-            switch (type) {
-                case color:
-                    return "fas fa-palette";
-                case toggle:
-                    return "fas fa-toggle-on";
-                case display:
-                    return "fas fa-display";
-            }
-            return null;
+            return switch (type) {
+                case color -> "fas fa-palette";
+                case toggle -> "fas fa-toggle-on";
+                case display -> "fas fa-display";
+                default -> null;
+            };
         }
 
         public List<ZigBeeProperty> getIncludeProperties(MainWidgetRequest request) {

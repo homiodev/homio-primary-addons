@@ -1,10 +1,11 @@
 package org.homio.addon.mqtt.setting;
 
+import org.homio.addon.mqtt.console.MQTTExplorerConsolePlugin;
 import org.homio.api.console.ConsolePlugin;
+import org.homio.api.model.Icon;
 import org.homio.api.setting.SettingPluginButton;
 import org.homio.api.setting.console.ConsoleSettingPlugin;
 import org.homio.api.ui.UI;
-import org.homio.addon.mqtt.console.MQTTExplorerConsolePlugin;
 import org.json.JSONObject;
 
 public class ConsoleMQTTClearHistorySetting implements SettingPluginButton, ConsoleSettingPlugin<JSONObject> {
@@ -15,13 +16,8 @@ public class ConsoleMQTTClearHistorySetting implements SettingPluginButton, Cons
   }
 
   @Override
-  public String getIcon() {
-    return "fas fa-brush";
-  }
-
-  @Override
-  public String getIconColor() {
-    return UI.Color.RED;
+  public Icon getIcon() {
+    return new Icon("fas fa-brush", UI.Color.RED);
   }
 
   @Override

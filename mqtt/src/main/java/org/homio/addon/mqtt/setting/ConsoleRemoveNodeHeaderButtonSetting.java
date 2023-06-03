@@ -6,9 +6,9 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.mqtt.setting.ConsoleRemoveNodeHeaderButtonSetting.NodeRemoveRequest;
 import org.homio.api.EntityContext;
+import org.homio.api.model.Icon;
 import org.homio.api.setting.SettingPlugin;
 import org.homio.api.setting.console.header.ConsoleHeaderSettingPlugin;
-import org.homio.api.ui.UI;
 import org.homio.api.ui.field.UIFieldType;
 import org.homio.api.util.CommonUtils;
 import org.json.JSONObject;
@@ -21,8 +21,8 @@ public class ConsoleRemoveNodeHeaderButtonSetting implements
     SettingPlugin<NodeRemoveRequest> {
 
     @Override
-    public String getIcon() {
-        return "fas fa-trash";
+    public Icon getIcon() {
+        return new Icon("fas fa-trash");
     }
 
     @Override
@@ -33,11 +33,6 @@ public class ConsoleRemoveNodeHeaderButtonSetting implements
     @Override
     public Class<NodeRemoveRequest> getType() {
         return ConsoleRemoveNodeHeaderButtonSetting.NodeRemoveRequest.class;
-    }
-
-    @Override
-    public String getIconColor() {
-        return UI.Color.RED;
     }
 
     @Override

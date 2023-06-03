@@ -37,6 +37,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
+import org.homio.addon.mqtt.entity.MQTTBaseEntity;
 import org.homio.addon.z2m.ZigBee2MQTTFrontendConsolePlugin;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.util.Z2MConfiguration;
@@ -49,6 +50,7 @@ import org.homio.api.console.ConsolePluginFrame.FrameConfiguration;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.HasEntityIdentifier;
+import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.service.EntityService.ServiceInstance;
 import org.homio.api.service.EntityService.WatchdogService;
@@ -56,7 +58,6 @@ import org.homio.api.ui.UI.Color;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Lang;
 import org.homio.hquery.LinesReader;
-import org.homio.addon.mqtt.entity.MQTTBaseEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -340,7 +341,7 @@ public class Z2MLocalCoordinatorService
                     desiredStatus = null;
                     entityContext.bgp().builder("z2m-" + entityID).execute(() -> {
                         try {
-                            switch (updatingStatus) {
+                            switch (Objects.requireNonNull(updatingStatus)) {
                                 case CLOSING:
                                     if (initialized) {
                                         this.dispose(null);
@@ -597,7 +598,7 @@ public class Z2MLocalCoordinatorService
     }
 
     private void updateNotificationBlock() {
-        entityContext.ui().addNotificationBlock(entityID, "ZigBee2MQTT", "fas fa-bezier-curve", "#899343", builder -> {
+        entityContext.ui().addNotificationBlock(entityID, "ZigBee2MQTT", new Icon("fas fa-bezier-curve", "#899343"), builder -> {
             builder.setStatus(entity.getStatus());
             builder.linkToEntity(entity);
             builder.setUpdating(ZigBeeUtil.zigbee2mqttGitHub.isUpdating());
@@ -616,13 +617,13 @@ public class Z2MLocalCoordinatorService
                     }),
                 ZigBeeUtil.zigbee2mqttGitHub.getReleasesSince(ZigBeeUtil.getInstalledVersion(), false));
             if (entity.getStatus().isOnline()) {
-                builder.addInfo("ACTION.SUCCESS", Color.GREEN, null, "fas fa-seedling", Color.GREEN);
+                builder.addInfo("ACTION.SUCCESS", new Icon("fas fa-seedling", Color.GREEN));
             } else {
-                builder.addInfo(defaultIfEmpty(entity.getStatusMessage(), "Unknown error"), Color.RED, "fas fa-exclamation", Color.RED);
+                builder.addInfo(defaultIfEmpty(entity.getStatusMessage(), "Unknown error"), Color.RED, new Icon("fas fa-exclamation", Color.RED));
             }
             builder.contextMenuActionBuilder(contextAction -> {
                 if (!entity.isStart()) {
-                    contextAction.addSelectableButton("field.start", "fas fa-play", "primary", (entityContext1, params) -> {
+                    contextAction.addSelectableButton("field.start", new Icon("fas fa-play", Color.PRIMARY_COLOR), (ec, params) -> {
                         if (!entity.isStart()) {
                             entityContext.save(entity.setStart(true));
                             return ActionResponseModel.success();
@@ -630,9 +631,9 @@ public class Z2MLocalCoordinatorService
                         return ActionResponseModel.showWarn("Z2M.COORDINATOR_ALREADY_STARTED");
                     });
                 }
-                contextAction.addSelectableButton("ZIGBEE_START_SCAN", "fas fa-search-location", "#899343",
+                contextAction.addSelectableButton("ZIGBEE_START_SCAN", new Icon("fas fa-search-location", "#899343"),
                     (entityContext1, params) -> entity.scan());
-                contextAction.addSelectableButton("RESTART", "fas fa-power-off", Color.RED,
+                contextAction.addSelectableButton("RESTART", new Icon("fas fa-power-off", Color.RED),
                     (entityContext1, params) -> restartZ2M());
             });
         });
@@ -675,14 +676,12 @@ public class Z2MLocalCoordinatorService
             JSONObject data = jsonObject.getJSONObject("data");
             String ieeeAddress = data.optString("ieee_address");
             switch (jsonObject.getString("type")) {
-                case "device_interview":
+                case "device_interview" -> {
                     String status = data.getString("status");
                     Level level = status.equals("failed") ? Level.ERROR : Level.INFO;
                     Z2MLocalCoordinatorService.log.log(level, "[{}]: Device interview {} for device {}", service.entityID, status, ieeeAddress);
-                    break;
-                case "device_announce":
-                    Z2MLocalCoordinatorService.log.info("[{}]: Device announce {}", service.entityID, ieeeAddress);
-                    break;
+                }
+                case "device_announce" -> Z2MLocalCoordinatorService.log.info("[{}]: Device announce {}", service.entityID, ieeeAddress);
             }
         }),
         info((payload, service) -> {}),

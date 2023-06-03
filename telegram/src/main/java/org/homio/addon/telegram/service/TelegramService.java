@@ -10,17 +10,16 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.telegram.TelegramEntity;
 import org.homio.addon.telegram.commands.TelegramEventCommand;
 import org.homio.addon.telegram.commands.TelegramHelpCommand;
 import org.homio.addon.telegram.commands.TelegramRegisterUserCommand;
 import org.homio.addon.telegram.commands.TelegramStartCommand;
+import org.homio.addon.telegram.commands.TelegramUnregisterUserCommand;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Status;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.workspace.BroadcastLock;
-import org.homio.addon.telegram.commands.TelegramUnregisterUserCommand;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
@@ -108,12 +107,7 @@ public class TelegramService {
     }
 
     public void updateNotificationBlock(TelegramEntity entity) {
-        entityContext.ui().addNotificationBlock("telegram", "Telegram", "fab fa-telegram", "#0088CC", builder -> {
-            builder.setStatus(entity);
-            builder.linkToEntity(entity);
-            builder.addInfo(StringUtils.defaultIfEmpty(entity.getBotName(), "telegram.no_bot_name"),
-                null, "fas fa-robot", null);
-        });
+        entityContext.ui().updateNotificationBlock("telegram", builder -> builder.addEntityInfo(entity));
     }
 
     private void start(TelegramEntity telegramEntity) {

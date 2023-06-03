@@ -1,15 +1,16 @@
 package org.homio.addon.mqtt.entity;
 
+import jakarta.persistence.Entity;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
-import jakarta.persistence.Entity;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.homio.addon.mqtt.entity.parameters.MQTTPublishQueryParameter;
 import org.homio.addon.mqtt.entity.parameters.MQTTTopicQueryParameter;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.storage.BaseFileSystemEntity;
@@ -22,6 +23,7 @@ import org.homio.api.entity.widget.ability.HasSetStatusValue;
 import org.homio.api.entity.widget.ability.HasTimeValueSeries;
 import org.homio.api.fs.TreeConfiguration;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.Icon;
 import org.homio.api.service.EntityService;
 import org.homio.api.storage.SourceHistory;
 import org.homio.api.storage.SourceHistoryItem;
@@ -36,10 +38,10 @@ import org.homio.api.ui.field.selection.dynamic.DynamicParameterFields;
 import org.homio.api.ui.field.selection.dynamic.DynamicRequestType;
 import org.homio.api.ui.field.selection.dynamic.SelectionWithDynamicParameterFields;
 import org.homio.api.util.SecureString;
-import org.homio.addon.mqtt.entity.parameters.MQTTPublishQueryParameter;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+@SuppressWarnings("unused")
 @Log4j2
 @Entity
 public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
@@ -51,11 +53,6 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     HasSetStatusValue,
     BaseFileSystemEntity<MQTTBaseEntity, MQTTFileSystem>,
     UIFieldSelection.SelectionConfiguration {
-
-    @Override
-    public String selectionIcon() {
-        return "fas fa-mattress-pillow";
-    }
 
     @Override
     public String getFileSystemAlias() {
@@ -73,13 +70,13 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     @Override
-    public String getFileSystemIcon() {
+    public Icon getFileSystemIcon() {
         return selectionIcon();
     }
 
     @Override
-    public String getFileSystemIconColor() {
-        return selectionIconColor();
+    public @NotNull Icon getIcon() {
+        return selectionIcon();
     }
 
     @Override
@@ -222,13 +219,13 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     @Override
-    public Class<MQTTService> getEntityServiceItemClass() {
+    public @NotNull Class<MQTTService> getEntityServiceItemClass() {
         return MQTTService.class;
     }
 
     @Override
     @SneakyThrows
-    public MQTTService createService(EntityContext entityContext) {
+    public MQTTService createService(@NotNull EntityContext entityContext) {
         return new MQTTService(this, entityContext);
     }
 

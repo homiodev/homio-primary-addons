@@ -4,10 +4,12 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.NotImplementedException;
 import org.homio.api.entity.DeviceBaseEntity;
 import org.homio.api.entity.storage.VideoBaseStorageService;
+import org.homio.api.model.Icon;
 import org.homio.api.ui.UISidebarChildren;
+import org.jetbrains.annotations.NotNull;
 
 @UISidebarChildren(icon = "rest/addon/image/camera/memory-card.png", color = "#AACC00")
-public class IpCameraSDCardStorageService extends VideoBaseStorageService<IpCameraSDCardStorageService> {
+public class IpCameraSDCardStorageEntity extends VideoBaseStorageService<IpCameraSDCardStorageEntity> {
 
   public static final String PREFIX = "ipcsd_";
 
@@ -30,5 +32,10 @@ public class IpCameraSDCardStorageService extends VideoBaseStorageService<IpCame
   @Override
   public String getDefaultName() {
     return "IpCamera SD storage";
+  }
+
+  @Override
+  public @NotNull Icon getIcon() {
+    return new Icon("fas fa-video", "#AACC00");
   }
 }

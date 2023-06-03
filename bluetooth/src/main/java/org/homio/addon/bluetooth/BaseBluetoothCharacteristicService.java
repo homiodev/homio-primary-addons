@@ -20,6 +20,8 @@ import org.ble.BluetoothApplication;
 import org.dbus.InterfacesAddedSignal.InterfacesAdded;
 import org.dbus.InterfacesRomovedSignal.InterfacesRemoved;
 import org.freedesktop.dbus.Variant;
+import org.homio.api.EntityContext;
+import org.homio.api.model.Status;
 import org.homio.api.util.CommonUtils;
 import org.homio.hquery.hardware.network.Network;
 import org.homio.hquery.hardware.network.NetworkHardwareRepository;
@@ -51,8 +53,11 @@ public abstract class BaseBluetoothCharacteristicService {
     private final Map<String, Long> wifiWriteProtect = new ConcurrentHashMap<>();
     @Getter
     private final NetworkHardwareRepository networkHardwareRepository;
+    protected final EntityContext entityContext;
     private BluetoothApplication bluetoothApplication;
     private String lastError = "none";
+
+    protected BluetoothEntity entity;
 
     public String getDeviceCharacteristic(String uuid) {
         switch (uuid) {
@@ -105,7 +110,7 @@ public abstract class BaseBluetoothCharacteristicService {
 
         if (!isLinuxEnvironment()) {
             log.warn("Bluetooth skipped for non linux env. Require unix sockets");
-            updateBluetoothStatus("OFFLINE", "Non linux env");
+            updateBluetoothStatus(Status.OFFLINE, "Non linux env");
             return;
         }
 
@@ -149,14 +154,17 @@ public abstract class BaseBluetoothCharacteristicService {
         try {
             bluetoothApplication.start();
             log.info("Bluetooth successfully started");
-            updateBluetoothStatus("ONLINE", null);
+            updateBluetoothStatus(Status.ONLINE, null);
         } catch (Throwable ex) {
-            updateBluetoothStatus("ERROR#~#" + ex.getMessage(), ex.getMessage());
+            updateBluetoothStatus(Status.ERROR, ex.getMessage());
             log.error("Unable to start bluetooth service", ex);
         }
     }
 
-    public abstract void updateBluetoothStatus(String status, String message);
+    public void updateBluetoothStatus(Status status, String message) {
+        entity.setStatus(status, message);
+        entityContext.ui().sendEntityUpdated(entity);
+    }
 
     protected <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Set<Object> seen = ConcurrentHashMap.newKeySet();

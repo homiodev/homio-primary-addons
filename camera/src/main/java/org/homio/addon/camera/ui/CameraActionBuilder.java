@@ -12,6 +12,7 @@ import java.util.function.Function;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.homio.api.model.Icon;
 import org.homio.api.model.KeyValueEnum;
 import org.homio.api.model.OptionModel;
 import org.homio.api.state.JsonType;
@@ -79,7 +80,7 @@ public class CameraActionBuilder {
                                                       .setBorderArea(uiVideoAction.group());
                     } else {
                         UIStickyDialogItemBuilder stickyLayoutBuilder = layoutBuilder.addStickyDialogButton(uiVideoAction.group() + "_sb",
-                            uiVideoAction.subGroupIcon(), null, uiVideoAction.order()).editButton(buttonItemBuilder ->
+                            new Icon(uiVideoAction.subGroupIcon()), uiVideoAction.order()).editButton(buttonItemBuilder ->
                             buttonItemBuilder.setText(uiVideoAction.group()));
 
                         layoutBuilder = stickyLayoutBuilder.addFlex(uiVideoAction.subGroup(), uiVideoAction.order())
@@ -96,13 +97,13 @@ public class CameraActionBuilder {
                     UIFlexLayoutBuilder flex = layoutBuilder.addFlex("dimmer", uiVideoAction.order());
                     UIMultiButtonItemBuilder multiButtonItemBuilder = flex.addMultiButton("dimm_btns", actionHandler, uiVideoAction.order());
                     for (UICameraDimmerButton button : buttons) {
-                        multiButtonItemBuilder.addButton(button.name(), button.icon(), null);
+                        multiButtonItemBuilder.addButton(button.name(), new Icon(button.icon()));
                     }
                     layoutBuilder = flex;
                 }
 
                 uiEntityItemBuilder = (UIEntityItemBuilder) createUIEntity(uiVideoAction, type, layoutBuilder, actionHandler)
-                    .setIcon(uiVideoAction.icon(), uiVideoAction.iconColor());
+                    .setIcon(new Icon(uiVideoAction.icon(), uiVideoAction.iconColor()));
 
                 if (type == UIFieldType.SelectBox) {
                     if (actionParameter.getType().isEnum()) {

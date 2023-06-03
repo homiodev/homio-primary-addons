@@ -14,6 +14,7 @@ import lombok.extern.log4j.Log4j2;
 import org.homio.api.entity.DeviceBaseEntity;
 import org.homio.api.entity.RestartHandlerOnChange;
 import org.homio.api.entity.storage.VideoBaseStorageService;
+import org.homio.api.model.Icon;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
 import org.homio.api.ui.field.UIFieldType;
@@ -21,11 +22,12 @@ import org.homio.api.util.CommonUtils;
 import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
 import org.homio.api.video.BaseVideoService;
 import org.homio.api.video.ffmpeg.FFMPEG;
+import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 @Entity
-@UISidebarChildren(icon = "rest/addon/image/camera/rpi-loop-record.png", color = "#0088CC")
-public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMPEGLoopRecordStorageService> {
+@UISidebarChildren(icon = "rest/addon/image/camera/loop-record.png", color = "#0088CC")
+public class FFMPEGLoopRecordStorageEntity extends VideoBaseStorageService<FFMPEGLoopRecordStorageEntity> {
 
     public static final String PREFIX = "ffmpeglr_";
 
@@ -57,7 +59,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
         return getJsonDataEnum("mt", MuxerType.segments);
     }
 
-    public FFMPEGLoopRecordStorageService setMuxerType(MuxerType value) {
+    public FFMPEGLoopRecordStorageEntity setMuxerType(MuxerType value) {
         setJsonDataEnum("mt", value);
         return this;
     }
@@ -71,7 +73,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
         return getJsonData("vc", "copy");
     }
 
-    public FFMPEGLoopRecordStorageService setVideoCodec(String value) {
+    public FFMPEGLoopRecordStorageEntity setVideoCodec(String value) {
         setJsonData("vc", value);
         return this;
     }
@@ -82,7 +84,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
         return getJsonData("ac", "copy");
     }
 
-    public FFMPEGLoopRecordStorageService setAudioCodec(String value) {
+    public FFMPEGLoopRecordStorageEntity setAudioCodec(String value) {
         setJsonData("ac", value);
         return this;
     }
@@ -93,7 +95,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
         return getJsonData("map", "0");
     }
 
-    public FFMPEGLoopRecordStorageService setSelectStream(String value) {
+    public FFMPEGLoopRecordStorageEntity setSelectStream(String value) {
         setJsonData("map", value);
         return this;
     }
@@ -114,19 +116,24 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
         return getJsonData("vb", false);
     }
 
-    public FFMPEGLoopRecordStorageService setVerbose(boolean value) {
+    public FFMPEGLoopRecordStorageEntity setVerbose(boolean value) {
         setJsonData("vb", value);
         return this;
     }
 
     @Override
-    public String getEntityPrefix() {
+    public @NotNull String getEntityPrefix() {
         return PREFIX;
     }
 
     @Override
     public String getDefaultName() {
         return "FFMPEG FS loop storage (" + getMuxerType() + ")";
+    }
+
+    @Override
+    public @NotNull Icon getIcon() {
+        return new Icon("fas fa-arrows-spin", "#0088CC");
     }
 
     @SneakyThrows

@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.homio.api.AddonEntrypoint;
 import org.homio.api.EntityContext;
 import org.homio.addon.telegram.service.TelegramService;
+import org.homio.api.model.Icon;
 import org.springframework.stereotype.Component;
 
 @Log4j2
@@ -18,6 +19,7 @@ public class TelegramEntrypoint implements AddonEntrypoint {
     private final TelegramService telegramService;
 
     public void init() {
+        entityContext.ui().addNotificationBlockOptional("telegram", "Telegram", new Icon("fab fa-telegram", "#0088CC"));
         entityContext.event().runOnceOnInternetUp("telegram-start", () -> {
             for (TelegramEntity telegramEntity : entityContext.findAll(TelegramEntity.class)) {
                 telegramService.restart(telegramEntity);

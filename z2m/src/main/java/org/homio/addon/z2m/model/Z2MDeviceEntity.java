@@ -19,6 +19,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.homio.addon.z2m.service.Z2MDeviceService;
+import org.homio.addon.z2m.service.Z2MProperty;
+import org.homio.addon.z2m.setting.ZigBeeEntityCompactModeSetting;
 import org.homio.addon.z2m.util.Z2MDeviceDTO;
 import org.homio.addon.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition;
 import org.homio.addon.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
@@ -32,6 +35,7 @@ import org.homio.api.entity.HasStatusAndMsg;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.optionProvider.SelectPlaceOptionLoader;
 import org.homio.api.ui.UI;
@@ -53,13 +57,11 @@ import org.homio.api.ui.field.inline.UIFieldInlineEntities;
 import org.homio.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.homio.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.homio.api.ui.field.selection.UIFieldSelection;
-import org.homio.addon.z2m.service.Z2MDeviceService;
-import org.homio.addon.z2m.service.Z2MProperty;
-import org.homio.addon.z2m.setting.ZigBeeEntityCompactModeSetting;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+@SuppressWarnings("unused")
 @Log4j2
 @Getter
 @Setter
@@ -120,12 +122,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         Status status = Status.UNKNOWN;
         if (availability != null) {
             switch (availability) {
-                case "offline":
-                    status = Status.OFFLINE;
-                    break;
-                case "online":
-                    status = Status.ONLINE;
-                    break;
+                case "offline" -> status = Status.OFFLINE;
+                case "online" -> status = Status.ONLINE;
             }
         }
         if (deviceService.getCoordinatorService().getEntity().getStatus() != Status.ONLINE) {
@@ -135,13 +133,10 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     @Override
-    public String getIcon() {
-        return ZigBeeUtil.getDeviceIcon(deviceService.getDevice().getModelId(), "fas fa-server");
-    }
-
-    @Override
-    public String getIconColor() {
-        return ZigBeeUtil.getDeviceIconColor(deviceService.getDevice().getModelId(), UI.Color.random());
+    public @NotNull Icon getIcon() {
+        return new Icon(
+            ZigBeeUtil.getDeviceIcon(deviceService.getDevice().getModelId(), "fas fa-server"),
+            ZigBeeUtil.getDeviceIconColor(deviceService.getDevice().getModelId(), UI.Color.random()));
     }
 
     @UIField(order = 1, hideOnEmpty = true, fullWidth = true, color = "#89AA50", inlineEdit = true)
@@ -320,7 +315,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     @Override
-    public String getEntityPrefix() {
+    public @NotNull String getEntityPrefix() {
         return PREFIX;
     }
 
@@ -349,12 +344,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
                 JsonNode deviceConfigurationOptions = deviceService.getConfiguration();
                 String flexName = format("${z2m.setting.%s~%s}", option.getName(), ZigBeeUtil.splitNameToReadableFormat(option.getName()));
                 switch (option.getType()) {
-                    case Z2MDeviceDTO.BINARY_TYPE:
-                        buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
-                        break;
-                    case Z2MDeviceDTO.NUMBER_TYPE:
-                        buildNumberTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
-                        break;
+                    case Z2MDeviceDTO.BINARY_TYPE -> buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
+                    case Z2MDeviceDTO.NUMBER_TYPE -> buildNumberTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
                 }
             }
         }
@@ -362,13 +353,13 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @Override
     @UIFieldIgnore
-    public Date getCreationTime() {
+    public @NotNull Date getCreationTime() {
         return super.getCreationTime();
     }
 
     @Override
     @UIFieldIgnore
-    public Date getUpdateTime() {
+    public @NotNull Date getUpdateTime() {
         return new Date(deviceService.getProperties().values()
                                      .stream()
                                      .max(Comparator.comparingLong(Z2MProperty::getUpdated))
@@ -390,8 +381,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @Override
     public int compareTo(@NotNull BaseEntity o) {
-        if (o instanceof Z2MDeviceEntity) {
-            Z2MDeviceEntity other = (Z2MDeviceEntity) o;
+        if (o instanceof Z2MDeviceEntity other) {
             return ((getStatus().isOnline() ? 0 : 1) + getName()).compareTo((other.getStatus().isOnline() ? 0 : 1) + o.getName());
         }
         return super.compareTo(o);
@@ -455,13 +445,11 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         public Z2MPropertyEntity(Z2MProperty property) {
             this.entityID = property.getEntityID();
             this.title = format("<div class=\"inline-2row_d\"><div style=\"color:%s;\"><i class=\"mr-1 %s\"></i>%s</div><span>%s</div></div>",
-                property.getIconColor(), property.getIcon(), property.getName(false), property.getDescription());
+                property.getIcon().getColor(), property.getIcon().getIcon(), property.getName(false), property.getDescription());
             this.property = property;
             this.valueTitle = property.getValue().toString();
-            switch (property.getExpose().getType()) {
-                case Z2MDeviceDTO.ENUM_TYPE:
-                    this.valueTitle = "Values: " + String.join(", ", getProperty().getExpose().getValues());
-                    break;
+            if (Z2MDeviceDTO.ENUM_TYPE.equals(property.getExpose().getType())) {
+                this.valueTitle = "Values: " + String.join(", ", getProperty().getExpose().getValues());
             }
         }
 

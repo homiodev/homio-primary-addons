@@ -1,9 +1,10 @@
 package org.homio.addon.mqtt.entity;
 
 import jakarta.persistence.Entity;
+import org.homio.addon.mqtt.workspace.Scratch3MQTTBlocks;
+import org.homio.api.model.Icon;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
-import org.homio.addon.mqtt.workspace.Scratch3MQTTBlocks;
 
 @Entity
 @UISidebarChildren(icon = "far fa-building", color = Scratch3MQTTBlocks.COLOR)
@@ -20,8 +21,8 @@ public class MQTTRemoteClientEntity extends MQTTBaseEntity {
   }
 
   @Override
-  public String selectionIconColor() {
-    return "#AD971A";
+  public Icon selectionIcon() {
+    return new Icon("fas fa-mattress-pillow", "#AD971A");
   }
 
   @Override

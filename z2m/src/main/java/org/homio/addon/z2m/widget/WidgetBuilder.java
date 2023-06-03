@@ -56,16 +56,14 @@ public interface WidgetBuilder {
         @Nullable ZigBeeProperty property,
         @NotNull Consumer<SimpleValueWidgetBuilder> attachHandler) {
         if (property != null) {
-            switch (property.getKey()) {
-                case UPDATED:
-                    createSimpleProperty(entityContext, horizontalAlign, property, builder -> {
-                        builder.setValueConverter("return Math.floor((new Date().getTime() - value) / 60000) + 'm';");
-                        builder.setValueConverterRefreshInterval(60);
-                        attachHandler.accept(builder);
-                    });
-                    break;
-                default:
-                    createSimpleProperty(entityContext, horizontalAlign, property, attachHandler);
+            if (UPDATED.equals(property.getKey())) {
+                createSimpleProperty(entityContext, horizontalAlign, property, builder -> {
+                    builder.setValueConverter("return Math.floor((new Date().getTime() - value) / 60000) + 'm';");
+                    builder.setValueConverterRefreshInterval(60);
+                    attachHandler.accept(builder);
+                });
+            } else {
+                createSimpleProperty(entityContext, horizontalAlign, property, attachHandler);
             }
         }
     }
@@ -97,8 +95,7 @@ public interface WidgetBuilder {
             builder.setIcon(property.getIcon())
                    .setValueDataSource(getSource(entityContext, property, false))
                    .setAlign(horizontalAlign, VerticalAlign.bottom)
-                   .setValueFontSize(0.8)
-                   .setIconColor(property.getIconColor());
+                   .setValueFontSize(0.8);
             Optional.ofNullable(PROPERTIES.get(property.getKey())).ifPresent(ib -> ib.build(builder));
             attachHandler.accept(builder);
         });

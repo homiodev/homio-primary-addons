@@ -4,11 +4,12 @@ import java.awt.Color;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.homio.addon.z2m.util.Z2MDeviceDTO;
-import org.homio.addon.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
-import org.homio.api.state.StringType;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MProperty;
+import org.homio.addon.z2m.util.Z2MDeviceDTO;
+import org.homio.addon.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
+import org.homio.api.model.Icon;
+import org.homio.api.state.StringType;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -21,7 +22,7 @@ public class Z2MPropertyColor extends Z2MProperty {
         {0.0557f, -0.2040f, 1.0570f}};
 
     public Z2MPropertyColor() {
-        super("#FF009B", "fas fa-fw fa-palette");
+        super(new Icon("fas fa-fw fa-palette", "#FF009B"));
     }
 
     public static int[] cieToRgb(double x, double y) {
@@ -48,24 +49,20 @@ public class Z2MPropertyColor extends Z2MProperty {
     @Override
     public void init(@NotNull Z2MDeviceService deviceService, @NotNull Z2MDeviceDTO.Z2MDeviceDefinition.Options expose) {
         switch (expose.getName()) {
-            case "color_xy":
-                this.dataReader =
-                    payload -> {
-                        JSONObject color = payload.getJSONObject("color");
-                        float x = color.getFloat("x");
-                        float y = color.getFloat("y");
-                        return new StringType(xyToHex(x, y));
-                    };
-                break;
-            case "color_hs":
-                this.dataReader =
-                    payload -> {
-                        JSONObject color = payload.getJSONObject("color");
-                        float hue = color.getFloat("hue");
-                        float saturation = color.getFloat("saturation");
-                        return new StringType(hsToHex(hue, saturation, getBrightness(payload)));
-                    };
-                break;
+            case "color_xy" -> this.dataReader =
+                payload -> {
+                    JSONObject color = payload.getJSONObject("color");
+                    float x = color.getFloat("x");
+                    float y = color.getFloat("y");
+                    return new StringType(xyToHex(x, y));
+                };
+            case "color_hs" -> this.dataReader =
+                payload -> {
+                    JSONObject color = payload.getJSONObject("color");
+                    float hue = color.getFloat("hue");
+                    float saturation = color.getFloat("saturation");
+                    return new StringType(hsToHex(hue, saturation, getBrightness(payload)));
+                };
         }
         super.init(deviceService, expose);
     }
@@ -124,15 +121,15 @@ public class Z2MPropertyColor extends Z2MProperty {
         Color rgbColor = Color.decode(value);
 
         switch (getExpose().getName()) {
-            case "color_xy":
+            case "color_xy" ->
                 /*float[] cie = rgbToCie(rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue());
                 color.put("x", cie[0]).put("y", cie[1]);*/
                 color.put("r", rgbColor.getRed()).put("g", rgbColor.getGreen()).put("b", rgbColor.getBlue());
-                break;
-            case "color_hs":
+            case "color_hs" -> {
                 float[] hsb = Color.RGBtoHSB(rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue(), null);
                 color.put("h", hsb[0]).put("s", hsb[1]).put("b", hsb[2]);
                 return;
+            }
         }
         getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), color));
     }

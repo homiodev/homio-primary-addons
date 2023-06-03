@@ -3,6 +3,7 @@ package org.homio.addon.z2m.model;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Entity;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,11 +12,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.homio.addon.mqtt.entity.MQTTBaseEntity;
+import org.homio.addon.z2m.service.Z2MDeviceService;
+import org.homio.addon.z2m.service.Z2MLocalCoordinatorService;
 import org.homio.addon.z2m.util.Z2MDeviceDTO;
 import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
@@ -28,6 +31,7 @@ import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.exception.ProhibitedExecution;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.Icon;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
@@ -38,11 +42,9 @@ import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.ui.field.inline.UIFieldInlineEntities;
 import org.homio.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.homio.api.ui.field.selection.UIFieldEntityByClassSelection;
-import org.homio.addon.mqtt.entity.MQTTBaseEntity;
-import org.homio.addon.z2m.service.Z2MDeviceService;
-import org.homio.addon.z2m.service.Z2MLocalCoordinatorService;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings({"unused", "rawtypes"})
 @Log4j2
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#11A4C2")
@@ -94,7 +96,12 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @Override
-    public String getEntityPrefix() {
+    public @NotNull Icon getIcon() {
+        return new Icon("fas fa-circle-nodes", "#11A4C2");
+    }
+
+    @Override
+    public @NotNull String getEntityPrefix() {
         return PREFIX;
     }
 
@@ -148,7 +155,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @Override
-    public Class<Z2MLocalCoordinatorService> getEntityServiceItemClass() {
+    public @NotNull Class<Z2MLocalCoordinatorService> getEntityServiceItemClass() {
         return Z2MLocalCoordinatorService.class;
     }
 

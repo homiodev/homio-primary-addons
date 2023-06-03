@@ -3,6 +3,7 @@ package org.homio.addon.mqtt.entity;
 import java.util.Objects;
 import jakarta.persistence.Entity;
 import org.homio.api.model.HasEntityLog;
+import org.homio.api.model.Icon;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
 import org.homio.api.ui.field.UIFieldIgnore;
@@ -46,8 +47,8 @@ public class MQTTLocalClientEntity extends MQTTBaseEntity implements HasEntityLo
     }
 
     @Override
-    public String selectionIconColor() {
-        return "#1CA6E2";
+    public Icon selectionIcon() {
+        return new Icon("fas fa-mattress-pillow", "#1CA6E2");
     }
 
     @UIField(order = 1, hideInEdit = true)

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.val;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.Requests;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.Requests.RequestType;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetType;
 import org.homio.addon.z2m.util.ZigBeeUtil;
@@ -12,6 +13,7 @@ import org.homio.addon.z2m.widget.WidgetBuilder.WidgetRequest;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.Icon;
 import org.homio.api.ui.UI;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
@@ -27,14 +29,13 @@ public class Z2MActionsBuilder {
             if (widgetBuilder == null) {
                 throw new IllegalStateException("Widget creation not implemented for type: " + type);
             }
-            String icon = widgetDefinition.getIcon();
-            String iconColor = UI.Color.random();
+            Icon icon = new Icon(widgetDefinition.getIcon(), UI.Color.random());
             String title = "widget.create_" + widgetDefinition.getName();
             uiInputBuilder
-                .addOpenDialogSelectableButton(title, icon, iconColor, null,
+                .addOpenDialogSelectableButton(title, icon, null,
                     (entityContext, params) -> createWidget(widgetBuilder, widgetDefinition, entityContext, params, entity))
                 .editDialog(dialogBuilder -> {
-                    dialogBuilder.setTitle(title, icon, iconColor);
+                    dialogBuilder.setTitle(title, icon);
                     dialogBuilder.addFlex("main", flex -> {
                         flex.addSelectBox("selection.dashboard_tab", null)
                             .setSelected(context.widget().getDashboardDefaultID())
@@ -87,11 +88,9 @@ public class Z2MActionsBuilder {
             flex.addFlex("inputs", builder -> {
                 builder.setBorderArea("Inputs").setBorderColor(Color.GREEN);
                 for (Requests request : requests) {
-                    switch (request.getType()) {
-                        case number:
-                            builder.addNumberInput(request.getName(), Float.parseFloat(request.getValue()),
-                                request.getMin(), request.getMax(), null).setTitle(request.getTitle());
-                            break;
+                    if (request.getType() == RequestType.number) {
+                        builder.addNumberInput(request.getName(), Float.parseFloat(request.getValue()),
+                            request.getMin(), request.getMax(), null).setTitle(request.getTitle());
                     }
                 }
             });

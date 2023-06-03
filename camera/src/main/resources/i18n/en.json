@@ -9,7 +9,7 @@
     "RECORD_GIF": "Record a GIF"
   },
   "selection": {
-    "FFMPEGLoopRecordStorageService": "FFMPEG Loop record storage",
+    "FFMPEGLoopRecordStorageEntity": "FFMPEG Loop record storage",
     "ReolinkBrandHandler": "Reolink Brand",
     "FoscamBrandHandler": "Foscam Brand",
     "DoorBirdBrandHandler": "DoorBird Brand",

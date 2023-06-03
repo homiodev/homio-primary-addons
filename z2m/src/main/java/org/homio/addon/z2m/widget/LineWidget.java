@@ -3,12 +3,12 @@ package org.homio.addon.z2m.widget;
 import static org.homio.addon.z2m.widget.DisplayWidget.fillHasLineChartBehaviour;
 
 import java.util.List;
+import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.Options.Chart;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition.ItemDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
-import org.homio.addon.z2m.model.Z2MDeviceEntity;
 
 public class LineWidget implements WidgetBuilder {
 
@@ -48,7 +48,7 @@ public class LineWidget implements WidgetBuilder {
                     ItemDefinition property = widgetDefinition.getProperty(series.getKey());
                     if (property != null) {
                         Chart chart = property.getChart();
-                        String color = series.getIconColor();
+                        String color = series.getIcon().getColor();
                         if (chart != null) {
                             fillHasLineChartBehaviour(builder, chart);
                             color = chart.getColor();

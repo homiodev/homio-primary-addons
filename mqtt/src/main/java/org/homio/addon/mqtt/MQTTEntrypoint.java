@@ -12,6 +12,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.homio.addon.mqtt.entity.MQTTLocalClientEntity;
 import org.homio.api.AddonEntrypoint;
 import org.homio.api.EntityContext;
+import org.homio.api.model.Icon;
 import org.homio.api.util.CommonUtils;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,7 @@ public class MQTTEntrypoint implements AddonEntrypoint {
     @SneakyThrows
     public void init() {
         entityContext.registerResource(MQTT_RESOURCE);
+        entityContext.ui().addNotificationBlockOptional("MQTT", "MQTT", new Icon("fab fa-connectdevelop", "#7E2CAC"));
         entityContext.ui().registerConsolePluginName("MQTT", MQTT_RESOURCE);
         entityContext.bgp().builder("check-mqtt").execute(() -> {
             Set<String> existIps = entityContext.findAll(MQTTLocalClientEntity.class).stream()

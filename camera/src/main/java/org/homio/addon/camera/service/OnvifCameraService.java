@@ -59,6 +59,7 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import org.homio.addon.camera.CameraEntrypoint;
 import org.homio.addon.camera.entity.OnvifCameraEntity;
 import org.homio.addon.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 import org.homio.addon.camera.onvif.brand.BrandCameraHasAudioAlarm;
@@ -74,6 +75,7 @@ import org.homio.addon.camera.ui.UICameraDimmerButton;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextBGP;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.service.EntityService;
 import org.homio.api.state.DecimalType;
@@ -81,7 +83,6 @@ import org.homio.api.state.ObjectType;
 import org.homio.api.state.OnOffType;
 import org.homio.api.state.RawType;
 import org.homio.api.state.StringType;
-import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Curl;
@@ -704,30 +705,16 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
     }
 
     public void updateNotificationBlock() {
-        entityContext.ui().addNotificationBlock(entityID, getEntity().getTitle(), "fas fa-video", "#4E783D", builder -> {
-            builder.setStatus(getEntity().getSourceStatus());
-            builder.linkToEntity(getEntity());
-            val brand = getCameraBrands(entityContext).get(getEntity().getCameraType());
-            String text = getEntity().getIp() + ":" + getEntity().getOnvifPort() + " " + brand.getName();
-            builder.addInfo(text, null, "fas fa-wifi", "#0E578F");
-            if (!getEntity().isStart()) {
-                builder.addButtonInfo("stop", defaultIfEmpty(getEntity().getSourceStatusMessage(), "video.not_started"),
-                    Color.RED, "fas fa-stop", null, "fas fa-play", "Start", null, (entityContext, params) -> {
-                        entityContext.save(getEntity().setStart(true));
-                        return null;
-                    });
-            } else {
-                builder.setStatusMessage(getEntity().getSourceStatusMessage());
-            }
-            builder.contextMenuActionBuilder(context -> {
-                if (getEntity().isStart()) {
-                    context.addSelectableButton("RESTART", "fas fa-power-off", Color.RED, (entityContext, params) -> {
-                        String response = onvifDeviceState.getInitialDevices().reboot();
-                        return ActionResponseModel.showSuccess(response);
-                    });
-                }
-            });
-        });
+        CameraEntrypoint.updateCamera(entityContext, getEntity(),
+            () -> {
+                val brand = getCameraBrands(entityContext).get(getEntity().getCameraType());
+                return getEntity().getIp() + ":" + getEntity().getOnvifPort() + " " + brand.getName();
+            }, new Icon("fas fa-wifi", "#0E578F"),
+            actionBuilder -> actionBuilder.addButton("RESTART", new Icon("fas fa-power-off"),
+                (entityContext, params) -> {
+                    String response = onvifDeviceState.getInitialDevices().reboot();
+                    return ActionResponseModel.showSuccess(response);
+                }));
     }
 
     void closeChannel(String url) {

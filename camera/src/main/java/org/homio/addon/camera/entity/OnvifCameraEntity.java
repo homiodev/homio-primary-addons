@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import jakarta.persistence.Entity;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -15,6 +16,7 @@ import org.homio.api.EntityContext;
 import org.homio.api.entity.RestartHandlerOnChange;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.HasEntityLog;
+import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;
 import org.homio.api.model.Status;
 import org.homio.api.ui.UI.Color;
@@ -249,6 +251,11 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     }
 
     @Override
+    public @NotNull Icon getIcon() {
+        return new Icon("fas fa-video", "#4E783D");
+    }
+
+    @Override
     public @NotNull String getEntityPrefix() {
         return PREFIX;
     }
@@ -260,15 +267,16 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     }
 
     public void tryUpdateData(EntityContext entityContext, String ip, Integer port, String name) {
-        if (!getIp().equals(ip) || getOnvifPort() != port || !getName().equals(name)) {
+        String prevName = Objects.requireNonNull(getName());
+        if (!getIp().equals(ip) || getOnvifPort() != port || !prevName.equals(name)) {
             if (!getIp().equals(ip)) {
                 log.info("[{}]: Onvif camera <{}> changed ip address from <{}> to <{}>", getEntityID(), this, getIp(), ip);
             }
             if (!getIp().equals(ip)) {
                 log.info("[{}]: Onvif camera <{}> changed port from <{}> to <{}>", getEntityID(), this, getOnvifPort(), port);
             }
-            if (!getName().equals(name)) {
-                log.info("[{}]: Onvif camera <{}> changed name from <{}> to <{}>", getEntityID(), this, getName(), name);
+            if (!prevName.equals(name)) {
+                log.info("[{}]: Onvif camera <{}> changed name from <{}> to <{}>", getEntityID(), this, prevName, name);
             }
             entityContext.updateDelayed(this, entity -> entity.setIp(ip).setOnvifPort(port).setName(name));
         }
@@ -289,12 +297,12 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
             }
 
             if (StringUtils.isEmpty(getIeeeAddress()) || getSourceStatus() == Status.REQUIRE_AUTH) {
-                uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", "fas fa-sign-in-alt", null, 250,
+                uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", new Icon("fas fa-sign-in-alt"), 250,
                     (entityContext, params) -> {
 
                         String user = params.getString("user");
                         String password = params.getString("pwd");
-                        OnvifCameraEntity entity = entityContext.getEntity(getEntityID());
+                        OnvifCameraEntity entity = entityContext.getEntityRequire(getEntityID());
                         OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getEntityID());
                         onvifDeviceState.updateParameters(entity.getIp(), entity.getOnvifPort(), 0, user, password);
                         try {
@@ -313,7 +321,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
                         }
                         return null;
                     }).editDialog(dialogBuilder -> {
-                    dialogBuilder.setTitle(null, "fas fa-sign-in-alt");
+                    dialogBuilder.setTitle("", new Icon("fas fa-sign-in-alt"));
                     dialogBuilder.addFlex("main", flex -> {
                         flex.addTextInput("user", getUser(), true);
                         flex.addTextInput("pwd", getPassword().asString(), false);

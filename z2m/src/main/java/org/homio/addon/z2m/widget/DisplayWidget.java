@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import org.apache.commons.lang3.StringUtils;
+import org.homio.addon.z2m.model.Z2MDeviceEntity;
+import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.Options.Chart;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.Options.Source;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
@@ -28,9 +30,8 @@ import org.homio.api.EntityContextWidget.ValueCompare;
 import org.homio.api.EntityContextWidget.VerticalAlign;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.ui.UI;
-import org.homio.addon.z2m.model.Z2MDeviceEntity;
-import org.homio.addon.z2m.service.Z2MProperty;
 
+@SuppressWarnings("rawtypes")
 public class DisplayWidget implements WidgetBuilder {
 
     @Override
@@ -47,12 +48,11 @@ public class DisplayWidget implements WidgetBuilder {
         String layoutID = "lt-dsp-" + entity.getIeeeAddress();
         Map<String, Z2MProperty> properties = entity.getDeviceService().getProperties();
 
-        entityContext.widget().createLayoutWidget(layoutID, builder -> {
+        entityContext.widget().createLayoutWidget(layoutID, builder ->
             builder.setBlockSize(wd.getBlockWidth(1), wd.getBlockHeight(1))
                    .setZIndex(wd.getZIndex(20))
                    .setBackground(wd.getBackground())
-                   .setLayoutDimension(propertiesSize + 1, 3);
-        });
+                   .setLayoutDimension(propertiesSize + 1, 3));
         var request = new MainWidgetRequest(widgetRequest, wd, 3,
             propertiesSize + 1, builder -> builder.attachToLayout(layoutID, 0, 0));
         buildMainWidget(request);
@@ -102,9 +102,8 @@ public class DisplayWidget implements WidgetBuilder {
             request.getAttachToLayoutHandler().accept(builder);
 
             for (ZigBeeProperty property : includeProperties) {
-                addProperty(entityContext, request.getItem(), builder, property, seriesBuilder -> {
-                    Optional.ofNullable(PROPERTIES.get(property.getKey())).ifPresent(ib -> ib.build(seriesBuilder));
-                });
+                addProperty(entityContext, request.getItem(), builder, property, seriesBuilder ->
+                    Optional.ofNullable(PROPERTIES.get(property.getKey())).ifPresent(ib -> ib.build(seriesBuilder)));
             }
 
             Chart chart = wd.getOptions().getChart();
@@ -170,24 +169,26 @@ public class DisplayWidget implements WidgetBuilder {
 
     private String buildDataSource(MainWidgetRequest request, EntityContext entityContext, Source source) {
         switch (source.getKind()) {
-            case variable:
+            case variable -> {
                 String variable = entityContext.var().createVariable(request.getWidgetRequest().getEntity().getEntityID(),
                     source.getValue(), source.getValue(), source.getVariableType(), null);
                 return entityContext.var().buildDataSource(variable, true);
-            case broadcasts:
+            }
+            case broadcasts -> {
                 String id = source.getValue() + "_" + request.getWidgetRequest().getEntity().getIeeeAddress();
                 String name = source.getValue() + " " + request.getWidgetRequest().getEntity().getIeeeAddress();
                 String variableID = entityContext.var().createVariable("broadcasts", id, name, VariableType.Any, null);
                 return entityContext.var().buildDataSource(variableID, true);
-            case property:
+            }
+            case property -> {
                 ZigBeeProperty property = request.getWidgetRequest().getEntity().getProperty(source.getValue());
                 if (property == null) {
                     throw new IllegalArgumentException("Unable to find z2m property: " + source.getValue() +
                         " for device: " + request.getWidgetRequest().getEntity());
                 }
                 return WidgetBuilder.getSource(entityContext, property, true);
-            default:
-                throw new IllegalArgumentException("Unable to find handler for type: " + source.getKind());
+            }
+            default -> throw new IllegalArgumentException("Unable to find handler for type: " + source.getKind());
         }
     }
 
@@ -196,7 +197,6 @@ public class DisplayWidget implements WidgetBuilder {
         builder.addSeries(property.getName(true), seriesBuilder -> {
             seriesBuilder
                 .setIcon(property.getIcon())
-                .setIconColor(property.getIconColor())
                 .setValueDataSource(WidgetBuilder.getSource(entityContext, property, false))
                 .setValueTemplate(null, property.getUnit())
                 .setValueSuffixFontSize(0.6)
@@ -211,13 +211,11 @@ public class DisplayWidget implements WidgetBuilder {
                 seriesBuilder.setValueSourceClickHistory(wbProperty.isValueSourceClickHistory());
 
                 if (isNotEmpty(wbProperty.getIcon()) || wbProperty.getIconThreshold() != null) {
-                    seriesBuilder.setIcon(defaultString(wbProperty.getIcon(), property.getIcon()), thresholdBuilder -> {
-                        buildThreshold(wbProperty.getIconThreshold(), thresholdBuilder);
-                    });
+                    seriesBuilder.setIcon(defaultString(wbProperty.getIcon(), property.getIcon().getColor()), thresholdBuilder ->
+                        buildThreshold(wbProperty.getIconThreshold(), thresholdBuilder));
                     if (isNotEmpty(wbProperty.getIconColor()) || wbProperty.getIconColorThreshold() != null) {
-                        seriesBuilder.setIconColor(defaultString(wbProperty.getIconColor(), property.getIconColor()), thresholdBuilder -> {
-                            buildThreshold(wbProperty.getIconColorThreshold(), thresholdBuilder);
-                        });
+                        seriesBuilder.setIconColor(defaultString(wbProperty.getIconColor(), property.getIcon().getColor()), thresholdBuilder ->
+                            buildThreshold(wbProperty.getIconColorThreshold(), thresholdBuilder));
                     }
                 }
             }

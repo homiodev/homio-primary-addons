@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.RestartHandlerOnChange;
 import org.homio.api.model.HasEntityLog;
+import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;
 import org.homio.api.ui.action.DynamicOptionLoader;
 import org.homio.api.ui.field.UIField;
@@ -18,9 +19,11 @@ import org.homio.api.video.AbilityToStreamHLSOverFFMPEG;
 import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
 import org.homio.api.video.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.homio.addon.camera.service.UsbCameraService;
+import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("unused")
 @Entity
-public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity, UsbCameraService>
+public final class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity, UsbCameraService>
     implements AbilityToStreamHLSOverFFMPEG<UsbCameraEntity>, HasEntityLog {
 
   public static final String PREFIX = "usbcam_";
@@ -86,7 +89,7 @@ public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity
   }
 
   @Override
-  public String getEntityPrefix() {
+  public @NotNull String getEntityPrefix() {
     return PREFIX;
   }
 
@@ -101,12 +104,17 @@ public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity
   }
 
   @Override
-  public Class<UsbCameraService> getEntityServiceItemClass() {
+  public @NotNull Icon getIcon() {
+    return new Icon("fas fa-usb", "#4E783D");
+  }
+
+  @Override
+  public @NotNull Class<UsbCameraService> getEntityServiceItemClass() {
     return UsbCameraService.class;
   }
 
   @Override
-  public UsbCameraService createService(EntityContext entityContext) {
+  public UsbCameraService createService(@NotNull EntityContext entityContext) {
     return new UsbCameraService(this, entityContext);
   }
 
@@ -115,6 +123,8 @@ public class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity
       entityLogBuilder.addTopicFilterByEntityID("org.homio.addon.camera");
       entityLogBuilder.addTopicFilterByEntityID("org.homio.api.video");
   }
+
+
 
   public static class SelectAudioSource implements DynamicOptionLoader {
 

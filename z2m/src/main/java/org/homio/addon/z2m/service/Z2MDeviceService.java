@@ -25,9 +25,10 @@ import org.homio.addon.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
 import org.homio.addon.z2m.util.Z2MDevicePropertiesDTO;
 import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
+import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.state.DecimalType;
-import org.homio.api.ui.UI;
+import org.homio.api.ui.UI.Color;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Lang;
 import org.json.JSONObject;
@@ -183,10 +184,8 @@ public class Z2MDeviceService {
 
     private void addMissingProperties(Z2MLocalCoordinatorService coordinatorService, Z2MDeviceDTO device) {
         for (Pair<String, String> missingProperty : coordinatorService.getMissingProperties(device.getIeeeAddress())) {
-            switch (missingProperty.getValue()) {
-                case "action_event":
-                    addProperty(missingProperty.getKey(), key -> Z2MPropertyAction.createActionEvent(key, this, entityContext));
-                    break;
+            if ("action_event".equals(missingProperty.getValue())) {
+                addProperty(missingProperty.getKey(), key -> Z2MPropertyAction.createActionEvent(key, this, entityContext));
             }
         }
     }
@@ -248,9 +247,12 @@ public class Z2MDeviceService {
     }
 
     private void createOrUpdateDeviceGroup() {
+        Icon icon = new Icon(
+            ZigBeeUtil.getDeviceIcon(this.device.getModelId(), "fas fa-server"),
+            ZigBeeUtil.getDeviceIconColor(this.device.getModelId(), Color.random())
+        );
         entityContext.var().createGroup("z2m", this.deviceEntity.getEntityID(), getDeviceFullName(), true,
-            ZigBeeUtil.getDeviceIcon(this.device.getModelId(), "fas fa-server"), ZigBeeUtil.getDeviceIconColor(this.device.getModelId(), UI.Color.random()),
-            this.device.getGroupDescription());
+            icon, this.device.getGroupDescription());
     }
 
     private void downLinkQualityToZero() {

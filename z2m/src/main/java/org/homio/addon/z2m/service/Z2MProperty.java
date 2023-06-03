@@ -3,6 +3,9 @@ package org.homio.addon.z2m.service;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.homio.addon.z2m.util.Z2MDeviceDTO.BINARY_TYPE;
+import static org.homio.addon.z2m.util.Z2MDeviceDTO.NUMBER_TYPE;
+import static org.homio.addon.z2m.util.Z2MDeviceDTO.SWITCH_TYPE;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +30,7 @@ import org.homio.api.EntityContext;
 import org.homio.api.EntityContextVar.VariableMetaBuilder;
 import org.homio.api.EntityContextVar.VariableType;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
+import org.homio.api.model.Icon;
 import org.homio.api.state.DecimalType;
 import org.homio.api.state.JsonType;
 import org.homio.api.state.OnOffType;
@@ -37,10 +42,10 @@ import org.json.JSONObject;
 
 @Log4j2
 @Getter
+@RequiredArgsConstructor
 public abstract class Z2MProperty implements ZigBeeProperty {
 
-    private final @NotNull String iconColor;
-    private final @NotNull String icon;
+    private final @NotNull Icon icon;
     private final Map<String, Consumer<State>> changeListeners = new ConcurrentHashMap<>();
     protected Function<JSONObject, State> dataReader;
     protected Options expose;
@@ -52,11 +57,6 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     @Getter private EntityContext entityContext;
     @Setter private State value = new StringType("N/A");
     private Object dbValue;
-
-    public Z2MProperty(@NotNull String iconColor, @NotNull String icon) {
-        this.iconColor = iconColor;
-        this.icon = icon;
-    }
 
     @Override
     public Duration getTimeSinceLastEvent() {
@@ -175,15 +175,9 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     @Override
     public void writeValue(State state) {
         switch (expose.getType()) {
-            case Z2MDeviceDTO.NUMBER_TYPE:
-                fireAction(state.intValue());
-                break;
-            case Z2MDeviceDTO.BINARY_TYPE:
-            case Z2MDeviceDTO.SWITCH_TYPE:
-                fireAction(state.boolValue());
-                break;
-            default:
-                fireAction(state.stringValue());
+            case NUMBER_TYPE -> fireAction(state.intValue());
+            case BINARY_TYPE, SWITCH_TYPE -> fireAction(state.boolValue());
+            default -> fireAction(state.stringValue());
         }
     }
 
@@ -194,15 +188,11 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     @Override
     public PropertyType getPropertyType() {
-        switch (expose.getType()) {
-            case Z2MDeviceDTO.NUMBER_TYPE:
-                return PropertyType.number;
-            case Z2MDeviceDTO.BINARY_TYPE:
-            case Z2MDeviceDTO.SWITCH_TYPE:
-                return PropertyType.bool;
-            default:
-                return PropertyType.string;
-        }
+        return switch (expose.getType()) {
+            case NUMBER_TYPE -> PropertyType.number;
+            case BINARY_TYPE, SWITCH_TYPE -> PropertyType.bool;
+            default -> PropertyType.string;
+        };
     }
 
     protected String getJsonKey() {
@@ -211,8 +201,8 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     protected Function<JSONObject, State> buildDataReader() {
         switch (expose.getType()) {
-            case Z2MDeviceDTO.SWITCH_TYPE:
-            case Z2MDeviceDTO.BINARY_TYPE:
+            case SWITCH_TYPE:
+            case BINARY_TYPE:
                 if (expose.getValueOn() != null) {
                     if (expose.getValueOn() instanceof String) {
                         return payload -> OnOffType.of(expose.getValueOn().equals(payload.getString(getJsonKey())));
@@ -227,7 +217,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
                     }
                 }
                 return payload -> OnOffType.of(payload.getBoolean(getJsonKey()));
-            case Z2MDeviceDTO.NUMBER_TYPE:
+            case NUMBER_TYPE:
                 return payload -> new DecimalType(payload.getNumber(getJsonKey())).setUnit(unit);
             case Z2MDeviceDTO.COMPOSITE_TYPE:
                 return payload -> new JsonType(payload.get(getJsonKey()).toString());
@@ -258,7 +248,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
                 variableID = entityContext.var().createVariable(deviceService.getDeviceEntity().getEntityID(),
                     entityID, getName(false), variableType, getVariableMetaBuilder());
             }
-            entityContext.var().setVariableIcon(variableID, icon, iconColor);
+            entityContext.var().setVariableIcon(variableID, icon);
 
             if (isWritable()) {
                 entityContext.var().setLinkListener(variableID, varValue -> {
@@ -277,7 +267,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     @NotNull
     private Consumer<VariableMetaBuilder> getVariableMetaBuilder() {
         return builder -> {
-            builder.setDescription(getVariableDescription()).setReadOnly(!isWritable()).setColor(iconColor);
+            builder.setDescription(getVariableDescription()).setReadOnly(!isWritable()).setColor(icon.getColor());
             List<String> attributes = new ArrayList<>();
             if (expose.getValueMin() != null) {attributes.add("min:" + expose.getValueMin());}
             if (expose.getValueMax() != null) {attributes.add("max:" + expose.getValueMax());}
@@ -315,15 +305,14 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         switch (expose.getType()) {
             case Z2MDeviceDTO.ENUM_TYPE:
                 return VariableType.Enum;
-            case Z2MDeviceDTO.NUMBER_TYPE:
+            case NUMBER_TYPE:
                 return VariableType.Float;
-            case Z2MDeviceDTO.BINARY_TYPE:
-            case Z2MDeviceDTO.SWITCH_TYPE:
+            case BINARY_TYPE:
+            case SWITCH_TYPE:
                 return VariableType.Bool;
             default:
-                switch (expose.getProperty()) {
-                    case "color":
-                        return VariableType.Color;
+                if ("color".equals(expose.getProperty())) {
+                    return VariableType.Color;
                 }
                 // check if we are able to find out type from current value
                 if (value instanceof DecimalType) {
