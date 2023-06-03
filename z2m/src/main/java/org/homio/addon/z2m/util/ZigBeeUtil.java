@@ -262,7 +262,7 @@ public final class ZigBeeUtil {
 
     @Nullable
     public static String getZ2MVersionToInstall(EntityContext entityContext) {
-        String version = entityContext.getEnv("zigbee2mqtt-version");
+        String version = entityContext.setting().getEnv("zigbee2mqtt-version");
         if (StringUtils.isEmpty(version)) {
             version = zigbee2mqttGitHub.getLastReleaseVersion();
         }

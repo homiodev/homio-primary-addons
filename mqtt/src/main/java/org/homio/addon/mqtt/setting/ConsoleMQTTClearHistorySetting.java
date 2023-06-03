@@ -11,7 +11,7 @@ public class ConsoleMQTTClearHistorySetting implements SettingPluginButton, Cons
 
   @Override
   public String getConfirmMsg() {
-    return "MQTT.CONFIRM_CLEAR_HISTORY";
+    return "W.CONFIRM.CLEAR_HISTORY";
   }
 
   @Override

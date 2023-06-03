@@ -6,7 +6,7 @@
   <dependencies>
     <dependency>
       <artifactId>addon-mqtt</artifactId>
-      <groupId>org.homio</groupId>
+      <groupId>org.homio.addon</groupId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
@@ -16,8 +16,8 @@
   <packaging>jar</packaging>
 
   <parent>
-    <artifactId>homio-primary-addons</artifactId>
-    <groupId>org.homio</groupId>
+    <artifactId>primary-addons</artifactId>
+    <groupId>org.homio.addon</groupId>
     <version>1.3.0-SNAPSHOT</version>
   </parent>
 </project>

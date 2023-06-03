@@ -8,12 +8,12 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.homio.addon.mqtt.MQTTEntrypoint;
 import org.homio.addon.mqtt.entity.MQTTService;
+import org.homio.addon.mqtt.setting.ConsoleRemoveNodeHeaderButtonSetting;
 import org.homio.api.EntityContext;
 import org.homio.api.console.ConsolePluginTree;
 import org.homio.api.fs.TreeConfiguration;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.setting.console.header.ConsoleHeaderSettingPlugin;
-import org.homio.api.setting.console.header.RemoveNodeConsoleHeaderButtonSetting;
 import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
 import org.json.JSONObject;
 
@@ -68,7 +68,7 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
   public Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> getHeaderActions() {
     Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> headerActions = new LinkedHashMap<>();
     headerActions.put("publish", ConsoleMQTTPublishButtonSetting.class);
-    headerActions.put("remove", RemoveNodeConsoleHeaderButtonSetting.class);
+    headerActions.put("remove", ConsoleRemoveNodeHeaderButtonSetting.class);
     return headerActions;
   }
 
