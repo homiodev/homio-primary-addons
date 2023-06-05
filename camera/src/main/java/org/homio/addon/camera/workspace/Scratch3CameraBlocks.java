@@ -41,6 +41,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MimeTypeUtils;
 
+@SuppressWarnings("unchecked")
 @Log4j2
 @Getter
 @Component
@@ -347,11 +348,9 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         }),
         LastPlayback("Last playback", (workspaceBlock, scratch, cameraProfile) -> {
             BaseFFMPEGVideoStreamEntity entity = cameraProfile.entity;
-            if (entity instanceof VideoPlaybackStorage) {
-                VideoPlaybackStorage videoPlaybackStorage = (VideoPlaybackStorage) entity;
+            if (entity instanceof VideoPlaybackStorage videoPlaybackStorage) {
                 String profile = cameraProfile.profile;
-                VideoPlaybackStorage.PlaybackFile playbackFile =
-                    videoPlaybackStorage.getLastPlaybackFile(workspaceBlock.getEntityContext(), profile);
+                VideoPlaybackStorage.PlaybackFile playbackFile = videoPlaybackStorage.getLastPlaybackFile(workspaceBlock.getEntityContext(), profile);
                 if (playbackFile == null) {
                     return null;
                 }
@@ -365,17 +364,16 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
                         playbackFile.id, null);
                 } else {
                     downloadFile = Failsafe
-                        .with(PLAYBACK_DOWNLOAD_FILE_RETRY_POLICY).onFailure(event -> {
+                        .with(PLAYBACK_DOWNLOAD_FILE_RETRY_POLICY).onFailure(event ->
                             log.error("Unable to download playback file: <{}>. <{}>. Msg: <{}>", entity.getTitle(), playbackFile.id,
-                                CommonUtils.getErrorMessage(event.getException()));
-                        })
+                                CommonUtils.getErrorMessage(event.getException())))
                         .get(context -> {
                             log.info("Reply <{}>. Download playback video file <{}>. <{}>", context.getAttemptCount(), entity.getTitle(),
                                 playbackFile.id);
                             return videoPlaybackStorage.downloadPlaybackFile(workspaceBlock.getEntityContext(), "main", playbackFile.id, path);
                         });
                 }
-                return new RawType(IOUtils.toByteArray(downloadFile.getStream().getInputStream()), "video/mp4", playbackFile.name);
+                return new RawType(IOUtils.toByteArray(downloadFile.stream().getInputStream()), "video/mp4", playbackFile.name);
             }
             workspaceBlock.logErrorAndThrow("Camera not support playback storage");
             return null;
@@ -392,6 +390,7 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @RequiredArgsConstructor
     private enum CameraReportCommands implements KeyValueEnum {
         IRValue("IR led value", (workspaceBlock, scratch) -> {

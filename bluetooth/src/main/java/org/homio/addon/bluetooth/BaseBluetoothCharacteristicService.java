@@ -110,7 +110,7 @@ public abstract class BaseBluetoothCharacteristicService {
 
         if (!isLinuxEnvironment()) {
             log.warn("Bluetooth skipped for non linux env. Require unix sockets");
-            updateBluetoothStatus(Status.OFFLINE, "Non linux env");
+            updateBluetoothStatus(Status.OFFLINE, "ERROR.NOT_LINUX");
             return;
         }
 
@@ -163,7 +163,9 @@ public abstract class BaseBluetoothCharacteristicService {
 
     public void updateBluetoothStatus(Status status, String message) {
         entity.setStatus(status, message);
-        entityContext.ui().sendEntityUpdated(entity);
+        entityContext.ui().updateNotificationBlock("BLE", builder ->
+            builder.setStatus(entity.getStatus())
+                   .addErrorStatusInfo(entity.getStatusMessage()));
     }
 
     protected <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {

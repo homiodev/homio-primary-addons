@@ -212,10 +212,10 @@ public class Z2MLocalCoordinatorService
     public ActionResponseModel startScan() {
         synchronized (scanStarted) {
             if (scanStarted.get()) {
-                throw new IllegalStateException("zigbee.error.scan_already_started");
+                throw new IllegalStateException("ZIGBEE.ERROR.SCAN_ALREADY_STARTED");
             }
             if (!entity.getStatus().isOnline()) {
-                throw new IllegalStateException("zigbee.error.coordinator_offline");
+                throw new IllegalStateException("ZIGBEE.ERROR.COORDINATOR_OFFLINE");
             }
             log.info("[{}]: Start scanning...", entityID);
             scanStarted.set(true);
@@ -486,7 +486,7 @@ public class Z2MLocalCoordinatorService
 
         entityContext.ui().headerButtonBuilder("discover-" + entityID)
                      .title("ZIGBEE_START_SCAN")
-                     .icon("fas fa-search-location", "#3E7BBD", false)
+                     .icon(new Icon("fas fa-search-location", "#3E7BBD"))
                      .availableForPage(ZigBeeDeviceBaseEntity.class)
                      .clickAction(this::startScan).build();
 
@@ -619,7 +619,7 @@ public class Z2MLocalCoordinatorService
             if (entity.getStatus().isOnline()) {
                 builder.addInfo("ACTION.SUCCESS", new Icon("fas fa-seedling", Color.GREEN));
             } else {
-                builder.addInfo(defaultIfEmpty(entity.getStatusMessage(), "Unknown error"), Color.RED, new Icon("fas fa-exclamation", Color.RED));
+                builder.addErrorStatusInfo(defaultIfEmpty(entity.getStatusMessage(), "Unknown error"));
             }
             builder.contextMenuActionBuilder(contextAction -> {
                 if (!entity.isStart()) {
@@ -632,9 +632,9 @@ public class Z2MLocalCoordinatorService
                     });
                 }
                 contextAction.addSelectableButton("ZIGBEE_START_SCAN", new Icon("fas fa-search-location", "#899343"),
-                    (entityContext1, params) -> entity.scan());
+                    (ec, params) -> entity.scan());
                 contextAction.addSelectableButton("RESTART", new Icon("fas fa-power-off", Color.RED),
-                    (entityContext1, params) -> restartZ2M());
+                    (ec, params) -> restartZ2M());
             });
         });
     }

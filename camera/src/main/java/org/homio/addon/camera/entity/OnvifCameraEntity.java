@@ -40,6 +40,7 @@ import org.homio.api.video.VideoPlaybackStorage;
 import org.homio.addon.camera.onvif.brand.CameraBrandHandlerDescription;
 import org.homio.addon.camera.service.OnvifCameraService;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 @Log4j2
@@ -251,7 +252,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     }
 
     @Override
-    public @NotNull Icon getIcon() {
+    public @Nullable Icon getEntityIcon() {
         return new Icon("fas fa-video", "#4E783D");
     }
 
@@ -296,7 +297,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
                 uiEntity.setDisabled(!this.isStart());
             }
 
-            if (StringUtils.isEmpty(getIeeeAddress()) || getSourceStatus() == Status.REQUIRE_AUTH) {
+            if (StringUtils.isEmpty(getIeeeAddress()) || getStatus() == Status.REQUIRE_AUTH) {
                 uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", new Icon("fas fa-sign-in-alt"), 250,
                     (entityContext, params) -> {
 

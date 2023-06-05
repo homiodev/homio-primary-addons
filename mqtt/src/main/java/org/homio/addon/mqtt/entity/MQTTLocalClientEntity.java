@@ -3,6 +3,7 @@ package org.homio.addon.mqtt.entity;
 import java.util.Objects;
 import jakarta.persistence.Entity;
 import org.homio.api.model.HasEntityLog;
+import org.homio.api.model.HasFirmwareVersion;
 import org.homio.api.model.Icon;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Entity
 @UISidebarChildren(icon = "fas fa-building", color = Scratch3MQTTBlocks.COLOR)
-public class MQTTLocalClientEntity extends MQTTBaseEntity implements HasEntityLog {
+public class MQTTLocalClientEntity extends MQTTBaseEntity implements HasEntityLog, HasFirmwareVersion {
 
     @Override
     public @NotNull String getEntityPrefix() {
@@ -47,12 +48,13 @@ public class MQTTLocalClientEntity extends MQTTBaseEntity implements HasEntityLo
     }
 
     @Override
-    public Icon selectionIcon() {
+    public @NotNull Icon selectionIcon() {
         return new Icon("fas fa-mattress-pillow", "#1CA6E2");
     }
 
+    @Override
     @UIField(order = 1, hideInEdit = true)
-    public String getVersion() {
+    public String getFirmwareVersion() {
         return getEntityContext().install().mosquitto().getVersion();
     }
 

@@ -139,8 +139,6 @@
     }
   },
   "field": {
-    "sourceStatus": "Source status",
-    "sourceStatusMessage": "Source status msg.",
     "eventSubscription": "Event subscription",
     "snapshotPollInterval": "Snapshot poll interval(sec)",
     "cameraHandler": "Last answer from camera",

@@ -107,7 +107,7 @@ public class TelegramService {
     }
 
     public void updateNotificationBlock(TelegramEntity entity) {
-        entityContext.ui().updateNotificationBlock("telegram", builder -> builder.addEntityInfo(entity));
+        entityContext.ui().updateNotificationBlock("telegram", entity);
     }
 
     private void start(TelegramEntity telegramEntity) {

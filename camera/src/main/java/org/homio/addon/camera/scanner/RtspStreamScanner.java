@@ -86,7 +86,7 @@ public class RtspStreamScanner implements VideoStreamScanner {
         public void accept(String uriStr, SdpMessage sdpMessage) {
             CommonVideoStreamEntity commonVideoStreamEntity = existsRtspStreamEntity.get(uriStr);
             if (commonVideoStreamEntity != null) {
-                entityContext.updateDelayed(commonVideoStreamEntity, e -> e.setSourceStatus(Status.WAITING, null));
+                entityContext.updateDelayed(commonVideoStreamEntity, e -> e.setStatus(Status.WAITING, null));
             }
         }
     };

@@ -242,7 +242,8 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
     }
 
     public void updateNotificationBlock() {
-        entityContext.ui().updateNotificationBlock("MQTT", builder -> builder.addEntityInfo(entity));
+        entityContext.ui().addNotificationBlockOptional("MQTT", "MQTT", new Icon("fas fa-satellite-dish", "#B65BE8"));
+        entityContext.ui().updateNotificationBlock("MQTT", entity);
     }
 
     private TreeNode removeTopic(String topic) {

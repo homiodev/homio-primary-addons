@@ -26,11 +26,6 @@ public class BluetoothEntity extends CommunicationEntity<BluetoothEntity> implem
     }
 
     @Override
-    public @NotNull Icon getIcon() {
-        return new Icon("fab fa-bluetooth", "#0088CC");
-    }
-
-    @Override
     public @NotNull String getEntityPrefix() {
         return PREFIX;
     }

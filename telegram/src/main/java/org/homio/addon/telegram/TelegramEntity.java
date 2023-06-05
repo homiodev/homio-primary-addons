@@ -151,7 +151,7 @@ public final class TelegramEntity extends CommunicationEntity<TelegramEntity> im
     }
 
     @Override
-    public @NotNull Icon getIcon() {
+    public @NotNull Icon getEntityIcon() {
         return new Icon("fas fa-robot");
     }
 

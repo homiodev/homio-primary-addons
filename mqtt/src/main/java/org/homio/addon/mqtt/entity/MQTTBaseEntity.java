@@ -75,11 +75,6 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     @Override
-    public @NotNull Icon getIcon() {
-        return selectionIcon();
-    }
-
-    @Override
     public boolean requireConfigure() {
         return false;
     }

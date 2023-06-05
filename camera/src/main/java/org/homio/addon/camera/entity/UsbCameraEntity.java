@@ -20,6 +20,7 @@ import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
 import org.homio.api.video.ffmpeg.FfmpegInputDeviceHardwareRepository;
 import org.homio.addon.camera.service.UsbCameraService;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 @Entity
@@ -104,7 +105,7 @@ public final class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCamera
   }
 
   @Override
-  public @NotNull Icon getIcon() {
+  public @Nullable Icon getEntityIcon() {
     return new Icon("fas fa-usb", "#4E783D");
   }
 
@@ -123,8 +124,6 @@ public final class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCamera
       entityLogBuilder.addTopicFilterByEntityID("org.homio.addon.camera");
       entityLogBuilder.addTopicFilterByEntityID("org.homio.api.video");
   }
-
-
 
   public static class SelectAudioSource implements DynamicOptionLoader {
 

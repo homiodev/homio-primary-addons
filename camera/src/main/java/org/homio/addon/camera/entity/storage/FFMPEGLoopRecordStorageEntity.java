@@ -23,6 +23,7 @@ import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
 import org.homio.api.video.BaseVideoService;
 import org.homio.api.video.ffmpeg.FFMPEG;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Log4j2
 @Entity
@@ -132,7 +133,7 @@ public class FFMPEGLoopRecordStorageEntity extends VideoBaseStorageService<FFMPE
     }
 
     @Override
-    public @NotNull Icon getIcon() {
+    public @Nullable Icon getEntityIcon() {
         return new Icon("fas fa-arrows-spin", "#0088CC");
     }
 

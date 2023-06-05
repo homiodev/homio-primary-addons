@@ -25,12 +25,11 @@ public class ColorWidget implements WidgetBuilder {
         Z2MProperty brightnessProperty = properties.get("brightness");
         Z2MProperty colorProperty = properties.get("color");
 
-        entityContext.widget().createLayoutWidget(layoutID, builder -> {
+        entityContext.widget().createLayoutWidget(layoutID, builder ->
             builder.setBlockSize(2, 1)
                    .setZIndex(wd.getZIndex(20))
                    .setBackground(wd.getBackground())
-                   .setLayoutDimension(2, 6);
-        });
+                   .setLayoutDimension(2, 6));
 
         if (brightnessProperty != null) {
             entityContext.widget().createSliderWidget("sl_" + entity.getIeeeAddress(), builder -> {
@@ -38,7 +37,7 @@ public class ColorWidget implements WidgetBuilder {
                        .setZIndex(wd.getZIndex(20));
                 builder.attachToLayout(layoutID, 0, 0);
                 builder.addSeries(entity.getModel(), seriesBuilder -> {
-                    seriesBuilder.setIcon(entity.getIcon());
+                    seriesBuilder.setIcon(entity.getEntityIcon());
                     WidgetBuilder.setValueDataSource(seriesBuilder, entityContext, brightnessProperty);
                 });
             });

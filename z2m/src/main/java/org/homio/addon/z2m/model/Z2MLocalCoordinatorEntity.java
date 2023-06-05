@@ -31,7 +31,7 @@ import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.exception.ProhibitedExecution;
 import org.homio.api.model.ActionResponseModel;
-import org.homio.api.model.Icon;
+import org.homio.api.model.HasFirmwareVersion;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
@@ -49,7 +49,7 @@ import org.jetbrains.annotations.NotNull;
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#11A4C2")
 public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLocalCoordinatorEntity>
-    implements ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
+    implements HasFirmwareVersion, ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
 
     public static final String PREFIX = "zb2mqtt_";
 
@@ -93,11 +93,6 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     @Override
     public String getDefaultName() {
         return "ZigBee2MQTT";
-    }
-
-    @Override
-    public @NotNull Icon getIcon() {
-        return new Icon("fas fa-circle-nodes", "#11A4C2");
     }
 
     @Override
@@ -203,8 +198,9 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         return service == null ? null : service.getDeviceEntity();
     }
 
+    @Override
     @UIField(order = 1, hideInEdit = true)
-    public String getVersion() {
+    public String getFirmwareVersion() {
         return ZigBeeUtil.getInstalledVersion();
     }
 

@@ -133,7 +133,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     @Override
-    public @NotNull Icon getIcon() {
+    public @NotNull Icon getEntityIcon() {
         return new Icon(
             ZigBeeUtil.getDeviceIcon(deviceService.getDevice().getModelId(), "fas fa-server"),
             ZigBeeUtil.getDeviceIconColor(deviceService.getDevice().getModelId(), UI.Color.random()));

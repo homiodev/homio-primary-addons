@@ -821,7 +821,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
                 } catch (Exception ex) {
                     log.error("[{}]: Error during execute onvif service: {}", entityID, CommonUtils.getErrorMessage(ex));
                     if (ex.getCause() instanceof ConnectException) {
-                        entity.setSourceStatus(Status.ERROR, "Connection exception");
+                        entity.setStatusError("Connection exception");
                     }
                 }
             });

@@ -11,10 +11,11 @@ import org.homio.addon.camera.scanner.OnvifCameraHttpScanner;
 import org.homio.addon.camera.setting.CameraAutorunIntervalSetting;
 import org.homio.api.AddonEntrypoint;
 import org.homio.api.EntityContext;
+import org.homio.api.EntityContextUI.NotificationInfoLineBuilder;
+import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
 import org.homio.api.ui.UI.Color;
-import org.homio.api.ui.field.action.v1.item.UIInfoItemBuilder;
-import org.homio.api.ui.field.action.v1.layout.dialog.UIStickyDialogItemBuilder;
+import org.homio.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
 import org.homio.api.video.ffmpeg.FFMPEG;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +31,7 @@ public class CameraEntrypoint implements AddonEntrypoint {
 
     @SneakyThrows
     public void init() {
-        entityContext.ui().addNotificationBlockOptional("CAM", "CAM", new Icon("fas fa-video", "#367387"));
+        entityContext.ui().addNotificationBlockOptional("CAMERA", "CAMERA", new Icon("fas fa-video", "#367387"));
         entityContext.bgp().registerThreadsPuller("camera-ffmpeg", threadPuller -> {
             for (Map.Entry<String, FFMPEG> threadEntry : FFMPEG.ffmpegMap.entrySet()) {
                 FFMPEG ffmpeg = threadEntry.getValue();
@@ -75,24 +76,24 @@ public class CameraEntrypoint implements AddonEntrypoint {
         @NotNull EntityContext entityContext, BaseFFMPEGVideoStreamEntity entity,
         @Nullable Supplier<String> titleSupplier,
         @NotNull Icon icon,
-        @Nullable Consumer<UIStickyDialogItemBuilder> settingsBuilder) {
-        entityContext.ui().updateNotificationBlock("CAM", builder -> {
-            builder.addFlexAction(entity.getEntityID(), flex -> {
-                String text = titleSupplier == null ? entity.getTitle() : titleSupplier.get();
-                UIInfoItemBuilder cameraInfo = flex.addInfo(text).setIcon(icon).linkToEntity(entity);
-                if (!entity.getStatus().isOnline()) {
-                    cameraInfo.setColor(Color.RED);
-                }
-
+        @Nullable Consumer<UILayoutBuilder> settingsBuilder) {
+        entityContext.ui().updateNotificationBlock("CAMERA", builder -> {
+            String text = titleSupplier == null ? entity.getTitle() : titleSupplier.get();
+            NotificationInfoLineBuilder info = builder.addInfo(text, icon);
+            if (!entity.isStart() || !entity.getStatus().isOnline()) {
+                info.setTextColor(Color.RED);
+            }
+            info.setStatus(entity);
+            if (!entity.isStart() || settingsBuilder == null) {
                 if (!entity.isStart()) {
-                    flex.addButton("play", new Icon("fas fa-play"), (ec, params) -> {
+                    info.setRightButton(new Icon("fas fa-play"), "START", null, (ec, params) -> {
                         ec.save(entity.setStart(true));
-                        return null;
+                        return ActionResponseModel.fired();
                     });
-                } else if (settingsBuilder != null) {
-                    settingsBuilder.accept(flex.addStickyDialogButton("actions", new Icon("fas fa-ellipsis-vertical")).up());
                 }
-            });
+            } else {
+                info.setRightSettingsButton(settingsBuilder);
+            }
         });
     }
 }

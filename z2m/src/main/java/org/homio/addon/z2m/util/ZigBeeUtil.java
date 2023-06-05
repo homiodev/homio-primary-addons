@@ -110,7 +110,7 @@ public final class ZigBeeUtil {
                          return null;
                      })
                      .duration(duration)
-                     .icon("fas fa-search-location", "#899343", false)
+                     .icon(new Icon("fas fa-search-location", "#899343"))
                      .build();
 
         entityContext.bgp().builder("zigbee-scan-killer-" + entityID).delay(Duration.ofSeconds(duration)).execute(() -> {

@@ -25,7 +25,7 @@ public class BluetoothEntrypoint extends BaseBluetoothCharacteristicService impl
 
     @Override
     public void init() {
-        entityContext.ui().addNotificationBlockOptional("ble", "Bluetooth", new Icon("fab fa-bluetooth", "#0088CC"));
+        entityContext.ui().addNotificationBlockOptional("BLE", "Bluetooth", new Icon("fab fa-bluetooth", "#0088CC"));
         entity = entityContext.getEntity(DEFAULT_BLUETOOTH_ENTITY_ID);
         if (entity == null) {
             entity = entityContext.save(new BluetoothEntity().setEntityID(DEFAULT_BLUETOOTH_ENTITY_ID));

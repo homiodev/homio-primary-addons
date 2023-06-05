@@ -57,7 +57,7 @@ public class CommonVideoStreamEntity extends BaseFFMPEGVideoStreamEntity<CommonV
   }
 
   @Override
-  public @NotNull Icon getIcon() {
+  public Icon getEntityIcon() {
     return new Icon("fas fa-film", "#4E783D");
   }
 
