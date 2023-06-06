@@ -22,13 +22,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.log4j.Log4j2;
+import org.homio.addon.camera.entity.BaseVideoEntity;
 import org.homio.addon.camera.onvif.util.GroupTracker;
 import org.homio.addon.camera.onvif.util.StreamServerGroupHandler;
 import org.homio.addon.camera.service.OnvifCameraService;
 import org.homio.api.model.Status;
 import org.homio.api.state.OnOffType;
 import org.homio.api.state.State;
-import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
 
 /**
  * Not used yet or at all responsible for finding cameras that are part of this group and displaying a group picture.
@@ -194,7 +194,16 @@ public class IpCameraGroupHandler {
     log.info("Update stateType: <{}>. State: <{}>", stateType, state.toString());
   }
 
-  void addCamera(BaseFFMPEGVideoStreamEntity cameraEntity) {
+  // Event based. This is called as each camera comes online after the group handler is registered.
+  public void cameraOnline(BaseVideoEntity cameraEntity) {
+    log.debug("New camera {} came online, checking if part of this group", cameraEntity.getEntityID());
+    //widgetLiveStreamEntity.getSeries().stream().filter(s -> s.getDataSource().equals(cameraEntity.getEntityID()))
+    //      .findAny().ifPresent(WidgetVideoSeriesEntity -> {
+    //     addCamera(cameraEntity);
+    // });
+  }
+
+  void addCamera(BaseVideoEntity cameraEntity) {
     if (groupTracker.onlineCameraMap.containsKey(cameraEntity.getEntityID()) && cameraEntity.getStatus() == Status.ONLINE) {
       OnvifCameraService onvifCameraHandler = groupTracker.onlineCameraMap.get(cameraEntity.getEntityID());
       if (!cameraOrder.contains(onvifCameraHandler)) {
@@ -206,15 +215,6 @@ public class IpCameraGroupHandler {
         cameraOrder.add(onvifCameraHandler);
       }
     }
-  }
-
-  // Event based. This is called as each camera comes online after the group handler is registered.
-  public void cameraOnline(BaseFFMPEGVideoStreamEntity cameraEntity) {
-    log.debug("New camera {} came online, checking if part of this group", cameraEntity.getEntityID());
-    //widgetLiveStreamEntity.getSeries().stream().filter(s -> s.getDataSource().equals(cameraEntity.getEntityID()))
-    //      .findAny().ifPresent(WidgetVideoSeriesEntity -> {
-    //     addCamera(cameraEntity);
-    // });
   }
 
   // Event based. This is called as each camera comes online after the group handler is registered.

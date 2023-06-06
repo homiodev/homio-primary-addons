@@ -4,31 +4,29 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.homio.addon.camera.service.BaseVideoService;
+import org.homio.addon.camera.service.CommonVideoService;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.RestartHandlerOnChange;
 import org.homio.api.model.Icon;
 import org.homio.api.ui.field.UIField;
-import org.homio.api.video.AbilityToStreamHLSOverFFMPEG;
-import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
-import org.homio.api.video.BaseVideoService;
-import org.homio.addon.camera.service.CommonVideoService;
 import org.jetbrains.annotations.NotNull;
 
 @Setter
 @Getter
 @Entity
 @Accessors(chain = true)
-public class CommonVideoStreamEntity extends BaseFFMPEGVideoStreamEntity<CommonVideoStreamEntity, CommonVideoService>
+public class CommonVideoStreamEntity extends BaseVideoEntity<CommonVideoStreamEntity, CommonVideoService>
     implements AbilityToStreamHLSOverFFMPEG<CommonVideoStreamEntity> {
 
-  public static final String PREFIX = "vidc_";
+    public static final String PREFIX = "vidc_";
 
-  @Override
-  @UIField(order = 5, label = "url", inlineEdit = true, required = true)
-  @RestartHandlerOnChange
-  public String getIeeeAddress() {
-    return super.getIeeeAddress();
-  }
+    @Override
+    @UIField(order = 5, label = "url", inlineEdit = true, required = true)
+    @RestartHandlerOnChange
+    public String getIeeeAddress() {
+        return super.getIeeeAddress();
+    }
 
   @Override
   public String getFolderName() {
@@ -61,13 +59,13 @@ public class CommonVideoStreamEntity extends BaseFFMPEGVideoStreamEntity<CommonV
     return new Icon("fas fa-film", "#4E783D");
   }
 
-  @Override
-  public Class<CommonVideoService> getEntityServiceItemClass() {
-    return CommonVideoService.class;
-  }
+    @Override
+    public @NotNull Class<CommonVideoService> getEntityServiceItemClass() {
+        return CommonVideoService.class;
+    }
 
-  @Override
-  public CommonVideoService createService(EntityContext entityContext) {
-    return new CommonVideoService(entityContext, this);
-  }
+    @Override
+    public CommonVideoService createService(@NotNull EntityContext entityContext) {
+        return new CommonVideoService(entityContext, this);
+    }
 }

@@ -1,7 +1,6 @@
 package org.homio.addon.camera.service;
 
-import static org.homio.api.util.CommonUtils.FFMPEG_LOCATION;
-import static org.homio.api.video.ffmpeg.FFMPEGFormat.GENERAL;
+import static org.homio.api.EntityContextMedia.FFMPEGFormat.GENERAL;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpRequest;
@@ -16,12 +15,9 @@ import org.apache.commons.lang3.SystemUtils;
 import org.homio.addon.camera.CameraEntrypoint;
 import org.homio.addon.camera.entity.UsbCameraEntity;
 import org.homio.api.EntityContext;
+import org.homio.api.EntityContextMedia.FFMPEG;
 import org.homio.api.model.Icon;
 import org.homio.api.util.CommonUtils;
-import org.homio.api.video.BaseVideoService;
-import org.homio.api.video.BaseVideoStreamServerHandler;
-import org.homio.api.video.ffmpeg.FFMPEG;
-import org.homio.api.video.ffmpeg.FfmpegInputDeviceHardwareRepository;
 
 @Log4j2
 public class UsbCameraService extends BaseVideoService<UsbCameraEntity> {
@@ -88,7 +84,7 @@ public class UsbCameraService extends BaseVideoService<UsbCameraEntity> {
         outputs.add(CommonUtils.MACHINE_IP_ADDRESS + ":" + entity.getStreamStartPort());
         outputs.add(CommonUtils.MACHINE_IP_ADDRESS + ":" + (entity.getStreamStartPort() + 1));
 
-        ffmpegUsbStream = new FFMPEG(getEntityID(), "FFmpeg usb udp re streamer", this, log,
+        ffmpegUsbStream = entityContext.media().buildFFMPEG(getEntityID(), "FFmpeg usb udp re streamer", this, log,
             GENERAL, "-loglevel warning " + (SystemUtils.IS_OS_LINUX ? "-f v4l2" : "-f dshow"), url,
             String.join(" ", outputParams),
             outputs.stream().map(o -> "[f=mpegts]udp://" + o + "?pkt_size=1316").collect(Collectors.joining("|")),
@@ -107,8 +103,7 @@ public class UsbCameraService extends BaseVideoService<UsbCameraEntity> {
 
     @Override
     protected void testVideoOnline() {
-        FfmpegInputDeviceHardwareRepository repository = entityContext.getBean(FfmpegInputDeviceHardwareRepository.class);
-        Set<String> aliveVideoDevices = repository.getVideoDevices(FFMPEG_LOCATION);
+        Set<String> aliveVideoDevices = entityContext.media().getVideoDevices();
         if (!aliveVideoDevices.contains(getEntity().getIeeeAddress())) {
             throw new RuntimeException("Camera not available");
         }

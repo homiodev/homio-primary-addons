@@ -1,17 +1,20 @@
 package org.homio.addon.camera.entity;
 
 import de.onvif.soap.OnvifDeviceState;
+import jakarta.persistence.Entity;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
-import jakarta.persistence.Entity;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.homio.addon.camera.onvif.brand.CameraBrandHandlerDescription;
+import org.homio.addon.camera.service.BaseVideoService;
+import org.homio.addon.camera.service.OnvifCameraService;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.RestartHandlerOnChange;
 import org.homio.api.model.ActionResponseModel;
@@ -33,12 +36,6 @@ import org.homio.api.ui.field.color.UIFieldColorStatusMatch;
 import org.homio.api.ui.field.selection.UIFieldSelection;
 import org.homio.api.util.Lang;
 import org.homio.api.util.SecureString;
-import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
-import org.homio.api.video.BaseVideoService;
-import org.homio.api.video.DownloadFile;
-import org.homio.api.video.VideoPlaybackStorage;
-import org.homio.addon.camera.onvif.brand.CameraBrandHandlerDescription;
-import org.homio.addon.camera.service.OnvifCameraService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +44,7 @@ import org.jetbrains.annotations.Nullable;
 @Setter
 @Getter
 @Entity
-public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEntity, OnvifCameraService>
+public class OnvifCameraEntity extends BaseVideoEntity<OnvifCameraEntity, OnvifCameraService>
     implements HasDynamicContextMenuActions, VideoPlaybackStorage, HasEntityLog {
 
     public static final String PREFIX = "onvifcam_";

@@ -15,8 +15,6 @@ import org.homio.api.exception.ServerException;
 import org.homio.api.model.Icon;
 import org.homio.api.state.State;
 import org.homio.api.state.StringType;
-import org.homio.api.video.BaseVideoService;
-import org.homio.api.video.BaseVideoStreamServerHandler;
 
 public class CommonVideoService extends BaseVideoService<CommonVideoStreamEntity> {
 

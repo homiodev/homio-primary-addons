@@ -2,8 +2,8 @@ package org.homio.addon.camera.entity.storage;
 
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.NotImplementedException;
+import org.homio.api.EntityContext;
 import org.homio.api.entity.DeviceBaseEntity;
-import org.homio.api.entity.storage.VideoBaseStorageService;
 import org.homio.api.model.Icon;
 import org.homio.api.ui.UISidebarChildren;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +22,7 @@ public class IpCameraSDCardStorageEntity extends VideoBaseStorageService<IpCamer
 
   @SneakyThrows
   @Override
-  public void startRecord(String id, String output, String profile, DeviceBaseEntity deviceEntity) {
+  public void startRecord(String id, String output, String profile, DeviceBaseEntity deviceEntity, EntityContext entityContext) {
     throw new NotImplementedException();
   }
 

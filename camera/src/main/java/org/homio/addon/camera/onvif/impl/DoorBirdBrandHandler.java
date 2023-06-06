@@ -4,12 +4,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.homio.addon.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 import org.homio.addon.camera.onvif.util.IpCameraBindingConstants;
+import org.homio.addon.camera.service.OnvifCameraService;
+import org.homio.addon.camera.ui.UIVideoAction;
 import org.homio.api.EntityContext;
 import org.homio.api.state.OnOffType;
-import org.homio.api.video.ui.UIVideoAction;
-import org.homio.addon.camera.onvif.brand.BaseOnvifCameraBrandHandler;
-import org.homio.addon.camera.service.OnvifCameraService;
 
 /**
  * responsible for handling commands, which are sent to one of the channels.

@@ -164,7 +164,7 @@ public abstract class BaseBluetoothCharacteristicService {
     public void updateBluetoothStatus(Status status, String message) {
         entity.setStatus(status, message);
         entityContext.ui().updateNotificationBlock("BLE", builder ->
-            builder.setStatus(entity.getStatus())
+            builder.setStatus(entity.getStatus()).setBorderColor("#0088CC")
                    .addErrorStatusInfo(entity.getStatusMessage()));
     }
 

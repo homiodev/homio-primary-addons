@@ -61,6 +61,7 @@ import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.camera.CameraEntrypoint;
 import org.homio.addon.camera.entity.OnvifCameraEntity;
+import org.homio.addon.camera.entity.VideoPlaybackStorage;
 import org.homio.addon.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 import org.homio.addon.camera.onvif.brand.BrandCameraHasAudioAlarm;
 import org.homio.addon.camera.onvif.brand.BrandCameraHasMotionAlarm;
@@ -72,8 +73,11 @@ import org.homio.addon.camera.onvif.util.IpCameraBindingConstants;
 import org.homio.addon.camera.onvif.util.MyNettyAuthHandler;
 import org.homio.addon.camera.ui.UICameraActionConditional;
 import org.homio.addon.camera.ui.UICameraDimmerButton;
+import org.homio.addon.camera.ui.UIVideoAction;
+import org.homio.addon.camera.ui.UIVideoActionGetter;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextBGP;
+import org.homio.api.EntityContextMedia.FFMPEG;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
@@ -86,12 +90,6 @@ import org.homio.api.state.StringType;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Curl;
-import org.homio.api.video.BaseVideoService;
-import org.homio.api.video.BaseVideoStreamServerHandler;
-import org.homio.api.video.VideoPlaybackStorage;
-import org.homio.api.video.ffmpeg.FFMPEG;
-import org.homio.api.video.ui.UIVideoAction;
-import org.homio.api.video.ui.UIVideoActionGetter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -445,7 +443,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
                     }
                     sendHttpGET(mjpegUri);
                 }
-            } else if (ffmpegMjpeg != null) {// not first stream and we will use ffmpeg
+            } else if (getFfmpegMjpeg() != null) {// not first stream and we will use ffmpeg
                 sendMjpegFirstPacket(ctx);
                 mjpegChannelGroup.add(ctx.channel());
             } else {// not first stream and camera supplies the mjpeg source.
@@ -457,7 +455,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
             if (mjpegChannelGroup.isEmpty()) {
                 log.info("[{}]: All ipcamera.mjpeg streams have stopped.", getEntityID());
                 if (mjpegUri.equals("ffmpeg") || mjpegUri.isEmpty()) {
-                    FFMPEG localMjpeg = ffmpegMjpeg;
+                    FFMPEG localMjpeg = getFfmpegMjpeg();
                     if (localMjpeg != null) {
                         localMjpeg.stopConverting();
                     }
@@ -521,8 +519,8 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
                 inputOptions = "-rtsp_transport tcp";
             }
         }
-        if (!inputOptions.contains("stimeout")) {
-            inputOptions += " -stimeout " + TimeUnit.SECONDS.toMicros(10);
+        if (!inputOptions.contains("timeout")) {
+            inputOptions += " -timeout " + TimeUnit.SECONDS.toMicros(10);
         }
         return inputOptions;
     }
@@ -549,7 +547,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
             sendMjpegFrame(incomingSnapshot, snapshotMjpegChannelGroup);
         }
         if (streamingAutoFps) {
-            if (motionDetected) {
+            if (isMotionDetected()) {
                 sendMjpegFrame(incomingSnapshot, autoSnapshotMjpegChannelGroup);
             } else if (updateAutoFps) {
                 // only happens every 8 seconds as some browsers need a frame that often to keep stream alive.
@@ -1178,7 +1176,7 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
                     if (!snapshotPolling && !snapshotUri.equals("")) {
                         sendHttpGET(snapshotUri);
                     }
-                    if (latestSnapshot.length == 1) {
+                    if (getLatestSnapshot().length == 1) {
                         log.warn("[{}]: ipvideo.jpg was requested but there is no jpg in ram to send.", getEntityID());
                     }
                     break;

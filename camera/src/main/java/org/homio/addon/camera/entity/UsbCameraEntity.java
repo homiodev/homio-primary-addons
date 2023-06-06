@@ -1,9 +1,9 @@
 package org.homio.addon.camera.entity;
 
-import static org.homio.api.util.CommonUtils.FFMPEG_LOCATION;
-
-import java.util.List;
 import jakarta.persistence.Entity;
+import java.util.List;
+import java.util.Set;
+import org.homio.addon.camera.service.UsbCameraService;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.RestartHandlerOnChange;
 import org.homio.api.model.HasEntityLog;
@@ -15,26 +15,21 @@ import org.homio.api.ui.field.UIFieldIgnore;
 import org.homio.api.ui.field.UIFieldType;
 import org.homio.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.homio.api.ui.field.selection.UIFieldSelection;
-import org.homio.api.video.AbilityToStreamHLSOverFFMPEG;
-import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
-import org.homio.api.video.ffmpeg.FfmpegInputDeviceHardwareRepository;
-import org.homio.addon.camera.service.UsbCameraService;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 @Entity
-public final class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCameraEntity, UsbCameraService>
+public final class UsbCameraEntity extends BaseVideoEntity<UsbCameraEntity, UsbCameraService>
     implements AbilityToStreamHLSOverFFMPEG<UsbCameraEntity>, HasEntityLog {
 
-  public static final String PREFIX = "usbcam_";
+    public static final String PREFIX = "usbcam_";
 
-  @Override
-  @UIField(order = 5, label = "usb")
-  @RestartHandlerOnChange
-  public String getIeeeAddress() {
-    return super.getIeeeAddress();
-  }
+    @Override
+    @UIField(order = 5, label = "usb")
+    @RestartHandlerOnChange
+    public String getIeeeAddress() {
+        return super.getIeeeAddress();
+    }
 
   @Override
   @UIFieldIgnore
@@ -104,10 +99,10 @@ public final class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCamera
             "2.5M");
   }
 
-  @Override
-  public @Nullable Icon getEntityIcon() {
-    return new Icon("fas fa-usb", "#4E783D");
-  }
+    @Override
+    public @NotNull Icon getEntityIcon() {
+        return new Icon("fas fa-usb", "#4E783D");
+    }
 
   @Override
   public @NotNull Class<UsbCameraService> getEntityServiceItemClass() {
@@ -129,8 +124,8 @@ public final class UsbCameraEntity extends BaseFFMPEGVideoStreamEntity<UsbCamera
 
     @Override
     public List<OptionModel> loadOptions(DynamicOptionLoaderParameters parameters) {
-      return OptionModel.list(parameters.getEntityContext().getBean(FfmpegInputDeviceHardwareRepository.class)
-                                        .getAudioDevices(FFMPEG_LOCATION));
+        Set<String> audioDevices = parameters.getEntityContext().media().getAudioDevices();
+        return OptionModel.list(audioDevices);
     }
   }
 }
