@@ -1,6 +1,7 @@
 package org.homio.addon.z2m.model;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -43,6 +44,7 @@ import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.action.UIActionHandler;
 import org.homio.api.ui.field.UIField;
 import org.homio.api.ui.field.UIFieldGroup;
+import org.homio.api.ui.field.UIFieldIgnore;
 import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.UIFieldTitleRef;
 import org.homio.api.ui.field.UIFieldType;
@@ -57,6 +59,7 @@ import org.homio.api.ui.field.inline.UIFieldInlineEntities;
 import org.homio.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.homio.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.homio.api.ui.field.selection.UIFieldSelection;
+import org.homio.api.ui.field.selection.UIFieldTreeNodeSelection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -96,20 +99,14 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     @Override
-    @UIFieldShowOnCondition("return !context.get('compactMode')")
+    @JsonIgnore
+    @UIFieldIgnore
     public String getIeeeAddress() {
         return super.getIeeeAddress();
     }
 
-    @Override
-    @UIField(order = 10, inlineEdit = true)
-    @UIFieldShowOnCondition("return !context.get('compactMode')")
-    public String getName() {
-        return deviceService.getConfiguration().path("name").asText(deviceService.getDevice().getName());
-    }
-
     public Z2MDeviceEntity setName(String value) {
-        deviceService.updateConfiguration("name", value);
+        deviceService.updateConfiguration("friendly_name", value);
         return this;
     }
 
@@ -141,6 +138,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIField(order = 1, hideOnEmpty = true, fullWidth = true, color = "#89AA50", inlineEdit = true)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldColorBgRef(value = "statusColor", animate = true)
+    @UIFieldGroup(value = "NAME", order = 1, borderColor = "#CDD649")
     public String getDescription() {
         return deviceService.getDevice().getDefinition().getDescription();
     }
@@ -151,47 +149,69 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         }
     }
 
-    @UIField(order = 1, fullWidth = true, color = "#89AA50", type = UIFieldType.HTML, style = "height: 32px;")
-    @UIFieldShowOnCondition("return context.get('compactMode')")
-    @UIFieldColorBgRef(value = "statusColor", animate = true)
-    public String getCompactDescription() {
-        return format("<div class=\"inline-2row_d\">"
-                + "<div>%s <span style=\"color:%s\">${%s}</span><span style=\"float:right\" class=\"color-primary\">%s</span>"
-                + "</div><div>${%s~%s}</div></div>",
-            getIeeeAddress(), getStatus().getColor(), getStatus(), getModel(), getName(), getDescription());
+    @Override
+    @UIField(order = 2, hideOnEmpty = true, inlineEdit = true)
+    @UIFieldShowOnCondition("return !context.get('compactMode')")
+    @UIFieldGroup("NAME")
+    public String getName() {
+        return deviceService.getConfiguration().path("friendly_name").asText(deviceService.getDevice().getName());
     }
 
-    @UIField(order = 5)
+    @UIField(order = 3)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
-    public String getNetworkAddress() {
-        return "0x" + Integer.toHexString(deviceService.getDevice().getNetworkAddress()).toUpperCase();
-    }
-
-    @UIField(order = 10)
-    @UIFieldShowOnCondition("return !context.get('compactMode')")
+    @UIFieldGroup("NAME")
     public String getModel() {
         return deviceService.getDevice().getDefinition().getModel();
     }
 
+    @UIField(order = 1, fullWidth = true, color = "#89AA50", type = UIFieldType.HTML, style = "height: 32px;")
+    @UIFieldShowOnCondition("return context.get('compactMode')")
+    @UIFieldColorBgRef(value = "statusColor", animate = true)
+    @UIFieldGroup(value = "NAME", order = 1, borderColor = "#CDD649")
+    public String getCompactDescription() {
+        return format("<div class=\"inline-2row_d\">"
+                + "<div>%s <span style=\"color:%s\">${%s}</span><span style=\"float:right\" class=\"color-primary\">%s</span>"
+                + "</div><div>${%s~%s}</div></div>",
+            getIeeeAddressLabel(), getStatus().getColor(), getStatus(), getModel(), getName(), getDescription());
+    }
+
+    @UIField(order = 3, disableEdit = true, label = "ieeeAddress")
+    @UIFieldShowOnCondition("return !context.get('compactMode')")
+    @UIFieldGroup(value = "GENERAL", order = 5)
+    public String getIeeeAddressLabel() {
+        return getIeeeAddress().toUpperCase();
+    }
+
+    @UIField(order = 5)
+    @UIFieldShowOnCondition("return !context.get('compactMode')")
+    @UIFieldGroup("GENERAL")
+    public String getNetworkAddress() {
+        return "0x" + Integer.toHexString(deviceService.getDevice().getNetworkAddress()).toUpperCase();
+    }
+
     @UIField(order = 15)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
+    @UIFieldGroup("GENERAL")
     public String getModelIdentifier() {
         return deviceService.getDevice().getModelId();
     }
 
     @UIField(order = 20, hideOnEmpty = true)
+    @UIFieldGroup("GENERAL")
     public String getCurrentPowerSource() {
         return isCompactMode() ? null : deviceService.getDevice().getPowerSource();
     }
 
     @UIField(order = 25)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
+    @UIFieldGroup("GENERAL")
     public String getLogicalType() {
         return deviceService.getDevice().getType();
     }
 
     @UIField(order = 35)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
+    @UIFieldGroup("GENERAL")
     public boolean getInterviewCompleted() {
         return deviceService.getDevice().isInterviewCompleted();
     }
@@ -274,7 +294,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIField(order = 1, inlineEdit = true)
     @UIFieldSlider(min = 0, max = 10, step = 0.5)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
-    @UIFieldGroup(value = "ADVANCED", order = 70, borderColor = "#2C66A8")
+    @UIFieldGroup("ADVANCED")
     public Float getDebounce() {
         JsonNode deviceOptions = deviceService.getConfiguration();
         if (deviceOptions.has("debounce")) {
@@ -311,16 +331,14 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         deviceService.updateConfiguration("debounce_ignore", list.isEmpty() ? null : list);
     }
 
-    // @UIField(order = 60 , inlineEdit = true) // TODO: fix it later
-    // @UIFieldShowOnCondition("return !context.get('compactMode')")
-    // requires to fetch correct image for z2m device
-    public String getImageIdentifier() {
+    @Override
+    protected String getImageIdentifierImpl() {
         JsonNode deviceOptions = deviceService.getConfiguration();
         return deviceOptions.path("image").asText(getModelIdentifier());
     }
 
     public void setImageIdentifier(String value) {
-        deviceService.updateConfiguration("image", Objects.equals(value, getModelIdentifier()) ? null : value);
+        deviceService.updateConfiguration("image", trimToNull(Objects.equals(value, getModelIdentifier()) ? null : value));
     }
 
     @UIField(order = 9999)

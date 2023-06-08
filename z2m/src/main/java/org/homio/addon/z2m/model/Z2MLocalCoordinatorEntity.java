@@ -137,7 +137,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @UIField(order = 1)
-    @UIFieldGroup(value = "ADVANCED", order = 50, borderColor = "#FF1E00")
+    @UIFieldGroup("ADVANCED")
     @UIFieldSlider(min = 1, max = 60, header = "min.")
     public int getAvailabilityActiveTimeout() {
         return getJsonData("aat", 10);

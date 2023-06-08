@@ -70,10 +70,7 @@ public class Z2MDeviceModel extends UnknownOptions {
     private String firmwareVersion;
 
     public String getName() {
-        if (modelId != null || definition.getModel() != null) {
-            return "zigbee.device." + StringUtils.defaultIfEmpty(modelId, definition.getModel());
-        }
-        return StringUtils.defaultString(friendlyName, ieeeAddress);
+        return friendlyName;
     }
 
     @Override

@@ -37,6 +37,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
@@ -605,7 +606,7 @@ public class Z2MLocalCoordinatorService
     }
 
     private @NotNull String getDeviceTopic(@NotNull Z2MDeviceModel device) {
-        return format("%s/%s", entity.getBasicTopic(), device.getIeeeAddress());
+        return format("%s/%s", entity.getBasicTopic(), StringUtils.defaultIfEmpty(device.getFriendlyName(), device.getIeeeAddress()));
     }
 
     private @NotNull String getBridgeTopic(@NotNull Z2MResponse z2MResponse) {
