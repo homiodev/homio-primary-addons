@@ -47,8 +47,8 @@ public class Z2MDeviceService {
     public Z2MDeviceService(Z2MLocalCoordinatorService coordinatorService, Z2MDeviceModel device) {
         this.coordinatorService = coordinatorService;
         this.entityContext = coordinatorService.getEntityContext();
-        this.device = device;
-        this.deviceEntity = new Z2MDeviceEntity(this);
+        this.deviceEntity = new Z2MDeviceEntity(this, device.getIeeeAddress());
+        changeDeviceModel(device);
 
         this.deviceUpdated(device);
         addMissingProperties(coordinatorService, device);
@@ -76,7 +76,7 @@ public class Z2MDeviceService {
     }
 
     public void deviceUpdated(Z2MDeviceModel device) {
-        this.device = device;
+        changeDeviceModel(device);
         createOrUpdateDeviceGroup();
         removeRedundantExposes(device);
         for (Options expose : device.getDefinition().getExposes()) {
@@ -88,6 +88,17 @@ public class Z2MDeviceService {
             }
         }
         addProperty(Z2MPropertyLastUpdate.UPDATED, key -> new Z2MPropertyLastUpdate(this));
+    }
+
+    private void changeDeviceModel(Z2MDeviceModel device) {
+        this.device = device;
+        Status status = Status.UNKNOWN;
+        if (device.isDisabled()) {
+            status = Status.DISABLED;
+        } else if (device.isInterviewing()) {
+            status = Status.INITIALIZE;
+        }
+        deviceEntity.setEntityStatus(status);
     }
 
     @Override

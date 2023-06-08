@@ -24,7 +24,10 @@ public class Z2MDeviceModel extends UnknownOptions {
     public static final String LIST_TYPE = "list";
     public static final String UNKNOWN_TYPE = "unknown";
 
+    @JsonProperty("definition")
     private Z2MDeviceDefinition definition = new Z2MDeviceDefinition();
+
+    @JsonProperty("endpoints")
     private Map<String, Z2MDeviceEndpoint> endpoints;
 
     @JsonProperty("friendly_name")
@@ -36,7 +39,10 @@ public class Z2MDeviceModel extends UnknownOptions {
     @JsonProperty("interview_completed")
     private boolean interviewCompleted;
 
+    @JsonProperty("interviewing")
     private boolean interviewing;
+
+    @JsonProperty("manufacturer")
     private String manufacturer;
 
     @JsonProperty("model_id")
@@ -48,14 +54,20 @@ public class Z2MDeviceModel extends UnknownOptions {
     @JsonProperty("power_source")
     private String powerSource;
 
+    @JsonProperty("supported")
     private boolean supported;
+
+    @JsonProperty("type")
     private String type;
 
     @JsonProperty("date_code")
-    private String dateCode;
+    private String firmwareBuildDate;
+
+    @JsonProperty("disabled")
+    private boolean disabled;
 
     @JsonProperty("software_build_id")
-    private String softwareBuildId;
+    private String firmwareVersion;
 
     public String getName() {
         if (modelId != null || definition.getModel() != null) {
@@ -91,26 +103,47 @@ public class Z2MDeviceModel extends UnknownOptions {
     @Setter
     public static class Z2MDeviceDefinition extends UnknownOptions {
 
+        @JsonProperty("description")
         private String description;
+
+        @JsonProperty("exposes")
         private List<Options> exposes = Collections.emptyList();
 
-        @JsonProperty("supports_ota")
+        @JsonProperty("supportsOta")
         private boolean supportsOta;
 
+        @JsonProperty("vendor")
         private String vendor;
+
+        @JsonProperty("model")
         private String model;
+
+        @JsonProperty("options")
         private List<Options> options = Collections.emptyList();
 
         @Getter
         @Setter
         public static class Options extends UnknownOptions {
 
+            @JsonProperty("access")
             private @Nullable Integer access;
+
+            @JsonProperty("description")
             private String description;
+
+            @JsonProperty("name")
             private String name;
+
+            @JsonProperty("property")
             private @Nullable String property;
+
+            @JsonProperty("type")
             private @NotNull String type;
+
+            @JsonProperty("unit")
             private @Nullable String unit;
+
+            @JsonProperty("endpoint")
             private @Nullable String endpoint;
 
             @JsonProperty("value_max")
@@ -133,14 +166,17 @@ public class Z2MDeviceModel extends UnknownOptions {
             @JsonProperty("value_toggle")
             private @Nullable String valueToggle;
 
+            @JsonProperty("features")
             private @Nullable List<Options> features;
             /**
              * For numeric type
              */
+            @JsonProperty("presets")
             private @Nullable List<Presets> presets;
             /**
              * For enum type
              */
+            @JsonProperty("values")
             private List<String> values;
             /**
              * List type

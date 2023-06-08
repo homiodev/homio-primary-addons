@@ -30,7 +30,7 @@ public class Z2MActionsBuilder {
                 throw new IllegalStateException("Widget creation not implemented for type: " + type);
             }
             Icon icon = new Icon(widgetDefinition.getIcon(), UI.Color.random());
-            String title = "widget.create_" + widgetDefinition.getName();
+            String title = "WIDGET.CREATE_" + widgetDefinition.getName();
             uiInputBuilder
                 .addOpenDialogSelectableButton(title, icon, null,
                     (entityContext, params) -> createWidget(widgetBuilder, widgetDefinition, entityContext, params, entity))
