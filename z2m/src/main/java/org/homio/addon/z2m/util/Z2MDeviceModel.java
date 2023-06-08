@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Getter
 @Setter
-public class Z2MDeviceDTO extends UnknownOptions {
+public class Z2MDeviceModel extends UnknownOptions {
 
     public static final String COMPOSITE_TYPE = "composite";
     public static final String NUMBER_TYPE = "numeric";

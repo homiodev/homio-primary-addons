@@ -19,14 +19,14 @@ import org.homio.api.EntityContextWidget.ToggleType;
 import org.homio.api.entity.widget.AggregationType;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.Options.Chart;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options.Chart;
 import org.homio.addon.z2m.widget.WidgetBuilder.MainWidgetRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
 @Setter
-public class Z2MDeviceDefinitionDTO {
+public class Z2MDeviceDefinitionModel {
 
     // for description inside json file only
     private String name;
@@ -118,7 +118,7 @@ public class Z2MDeviceDefinitionDTO {
                                         .collect(Collectors.toList());
         }
 
-        public @Nullable Z2MDeviceDefinitionDTO.WidgetDefinition.ItemDefinition getProperty(String key) {
+        public @Nullable Z2MDeviceDefinitionModel.WidgetDefinition.ItemDefinition getProperty(String key) {
             return props == null ? null : props.stream().filter(f -> f.name.equals(key)).findAny().orElse(null);
         }
 

@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MProperty;
-import org.homio.addon.z2m.util.Z2MDeviceDTO;
-import org.homio.addon.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
+import org.homio.addon.z2m.util.Z2MDeviceModel;
+import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition.Options;
 import org.homio.api.model.Icon;
 import org.homio.api.state.StringType;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +47,7 @@ public class Z2MPropertyColor extends Z2MProperty {
     }
 
     @Override
-    public void init(@NotNull Z2MDeviceService deviceService, @NotNull Z2MDeviceDTO.Z2MDeviceDefinition.Options expose) {
+    public void init(@NotNull Z2MDeviceService deviceService, @NotNull Z2MDeviceModel.Z2MDeviceDefinition.Options expose) {
         switch (expose.getName()) {
             case "color_xy" -> this.dataReader =
                 payload -> {

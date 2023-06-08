@@ -2,16 +2,17 @@ package org.homio.addon.z2m.util;
 
 import static java.lang.String.format;
 import static org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate.UPDATED;
-import static org.homio.addon.z2m.util.Z2MDeviceDTO.BINARY_TYPE;
-import static org.homio.addon.z2m.util.Z2MDeviceDTO.COMPOSITE_TYPE;
-import static org.homio.addon.z2m.util.Z2MDeviceDTO.ENUM_TYPE;
-import static org.homio.addon.z2m.util.Z2MDeviceDTO.NUMBER_TYPE;
-import static org.homio.addon.z2m.util.Z2MDeviceDTO.SWITCH_TYPE;
+import static org.homio.addon.z2m.util.Z2MDeviceModel.BINARY_TYPE;
+import static org.homio.addon.z2m.util.Z2MDeviceModel.COMPOSITE_TYPE;
+import static org.homio.addon.z2m.util.Z2MDeviceModel.ENUM_TYPE;
+import static org.homio.addon.z2m.util.Z2MDeviceModel.NUMBER_TYPE;
+import static org.homio.addon.z2m.util.Z2MDeviceModel.SWITCH_TYPE;
 import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
+import static org.homio.api.util.CommonUtils.getErrorMessage;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -22,15 +23,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.file.PathUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.service.properties.Z2MPropertyColor;
 import org.homio.addon.z2m.service.properties.dynamic.Z2MDynamicProperty;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextHardware;
+import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;
 import org.homio.api.repository.GitHubProject;
@@ -42,6 +46,7 @@ import org.homio.api.ui.field.action.v1.item.UIInfoItemBuilder.InfoType;
 import org.homio.api.ui.field.action.v1.item.UISelectBoxItemBuilder;
 import org.homio.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.homio.api.util.CommonUtils;
+import org.homio.api.util.Curl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,54 +54,76 @@ import org.jetbrains.annotations.Nullable;
 public final class ZigBeeUtil {
 
     public static final Path ZIGBEE_2_MQTT_PATH = CommonUtils.getInstallPath().resolve("zigbee2mqtt");
+    private static final Path ZIGBEE_DEFINITION_FILE = CommonUtils.getConfigPath().resolve("zigbee-devices.json");
 
     /**
      * Properties market with defined color, icon, etc...
      */
-    public static final Map<String, Z2MDevicePropertiesDTO> DEVICE_PROPERTIES;
+    public static Map<String, Z2MDevicePropertiesModel> DEVICE_PROPERTIES;
     public static final GitHubProject zigbee2mqttGitHub = GitHubProject.of("Koenkk", "zigbee2mqtt");
     /**
      * Contains model/icon/iconColor/some setting config i.e. occupancy_timeout min..max values
      */
-    private static final Map<String, Z2MDeviceDefinitionDTO> DEVICE_DEFINITIONS;
+    private static Map<String, Z2MDeviceDefinitionModel> DEVICE_DEFINITIONS;
     public static String installedVersion;
 
     public static Map<String, Class<? extends Z2MProperty>> z2mConverters = new HashMap<>();
 
+    @Getter
+    private static long zdFileSize;
+
     static {
         try {
-            DEVICE_DEFINITIONS = new HashMap<>();
-            List<Z2MDeviceDefinitionDTO> devices = OBJECT_MAPPER.readValue(
-                ZigBeeUtil.class.getClassLoader().getResource("zigbee-devices.json"),
-                new TypeReference<>() {});
-            for (Z2MDeviceDefinitionDTO node : devices) {
-                for (String model : node.getModel()) {
-                    ZigBeeUtil.DEVICE_DEFINITIONS.put(model, node);
-                }
+            URL localZdFile = Objects.requireNonNull(ZigBeeUtil.class.getClassLoader().getResource("zigbee-devices.json"));
+            if (!Files.exists(ZIGBEE_DEFINITION_FILE)) {
+                PathUtils.copy(localZdFile::openStream, ZIGBEE_DEFINITION_FILE);
             }
+            zdFileSize = Files.size(ZIGBEE_DEFINITION_FILE);
+            readZigbeeDevices();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    static {
+    public static void reloadZdFileIfRequire(String uri) {
         try {
-            List<Z2MDevicePropertiesDTO> z2MDevicePropertiesDTOMap = OBJECT_MAPPER.readValue(
-                ZigBeeUtil.class.getClassLoader().getResource("zigbee-device-properties.json"),
-                new TypeReference<>() {});
-            DEVICE_PROPERTIES = new HashMap<>();
-            for (Z2MDevicePropertiesDTO z2MDevicePropertiesDTO : z2MDevicePropertiesDTOMap) {
-                DEVICE_PROPERTIES.put(z2MDevicePropertiesDTO.getName(), z2MDevicePropertiesDTO);
-                if (z2MDevicePropertiesDTO.getAlias() != null) {
-                    for (String alias : z2MDevicePropertiesDTO.getAlias()) {
-                        DEVICE_PROPERTIES.put(alias, z2MDevicePropertiesDTO);
-                    }
-                    z2MDevicePropertiesDTO.setAlias(null);
-                }
+            if (zdFileSize != Curl.getFileSize(uri)) {
+                log.info("Download new zb file");
+                Curl.download(uri, ZIGBEE_DEFINITION_FILE);
+                zdFileSize = Files.size(ZIGBEE_DEFINITION_FILE);
+                readZigbeeDevices();
+            } else {
+                log.info("ZB file same size");
             }
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            log.warn("Unable to reload zd file: {}", getErrorMessage(ex));
         }
+    }
+
+    @SneakyThrows
+    public static void readZigbeeDevices() {
+        Z2MDeviceDefinitionsModel deviceConfigurations = OBJECT_MAPPER.readValue(ZIGBEE_DEFINITION_FILE.toFile(), Z2MDeviceDefinitionsModel.class);
+
+        var definitions = new HashMap<String, Z2MDeviceDefinitionModel>();
+        for (Z2MDeviceDefinitionModel node : deviceConfigurations.getDevices()) {
+            for (String model : node.getModel()) {
+                definitions.put(model, node);
+            }
+        }
+
+        var properties = new HashMap<String, Z2MDevicePropertiesModel>();
+        for (Z2MDevicePropertiesModel z2MDevicePropertiesModel : deviceConfigurations.getProperties()) {
+            properties.put(z2MDevicePropertiesModel.getName(), z2MDevicePropertiesModel);
+            if (z2MDevicePropertiesModel.getAlias() != null) {
+                for (String alias : z2MDevicePropertiesModel.getAlias()) {
+                    properties.put(alias, z2MDevicePropertiesModel);
+                }
+                z2MDevicePropertiesModel.setAlias(null);
+            }
+        }
+
+        DEVICE_DEFINITIONS = definitions;
+        DEVICE_PROPERTIES = properties;
     }
 
     public static void zigbeeScanStarted(
@@ -105,19 +132,21 @@ public final class ZigBeeUtil {
         int duration,
         @NotNull Runnable onDurationTimedOutHandler,
         @NotNull Runnable stopScanHandler) {
-        entityContext.ui().headerButtonBuilder("zigbee-scan-" + entityID).title("zigbee_stop_scan").border(1, "#899343").clickAction(() -> {
+        entityContext.ui().headerButtonBuilder("zigbee-scan-" + entityID)
+                     .title("CONTEXT.ACTION.ZIGBEE_STOP_SCAN").border(1, "#899343").clickAction(() -> {
                          stopScanHandler.run();
-                         return null;
+                         return ActionResponseModel.showWarn("ZIGBEE.STOP_SCAN");
                      })
                      .duration(duration)
                      .icon(new Icon("fas fa-search-location", "#899343"))
                      .build();
 
-        entityContext.bgp().builder("zigbee-scan-killer-" + entityID).delay(Duration.ofSeconds(duration)).execute(() -> {
-            log.info("[{}]: Scanning stopped", entityID);
-            onDurationTimedOutHandler.run();
-            entityContext.ui().removeHeaderButton("zigbee-scan-" + entityID);
-        });
+        entityContext.bgp().builder("zigbee-scan-killer-" + entityID)
+                     .delay(Duration.ofSeconds(duration)).execute(() -> {
+                         log.info("[{}]: Scanning stopped", entityID);
+                         onDurationTimedOutHandler.run();
+                         entityContext.ui().removeHeaderButton("zigbee-scan-" + entityID);
+                     });
     }
 
     public static @NotNull String getDeviceIcon(@NotNull String modelId, @NotNull String defaultIcon) {
@@ -137,8 +166,8 @@ public final class ZigBeeUtil {
     }
 
     public static @NotNull JsonNode getDeviceOptions(@NotNull String modelId) {
-        Z2MDeviceDefinitionDTO z2MDeviceDefinitionDTO = DEVICE_DEFINITIONS.get(modelId);
-        JsonNode options = z2MDeviceDefinitionDTO == null ? null : z2MDeviceDefinitionDTO.getOptions();
+        Z2MDeviceDefinitionModel z2MDeviceDefinitionModel = DEVICE_DEFINITIONS.get(modelId);
+        JsonNode options = z2MDeviceDefinitionModel == null ? null : z2MDeviceDefinitionModel.getOptions();
         ObjectNode empty = OBJECT_MAPPER.createObjectNode();
         return options == null ? empty : options;
     }
@@ -283,7 +312,7 @@ public final class ZigBeeUtil {
 
     private static int getPropertyOrder(@NotNull String name) {
         int order = Optional.ofNullable(DEVICE_PROPERTIES.get(name))
-                            .map(Z2MDevicePropertiesDTO::getOrder)
+                            .map(Z2MDevicePropertiesModel::getOrder)
                             .orElse(0);
         if (order == 0) {
             order = name.charAt(0) * 10 + name.charAt(1);

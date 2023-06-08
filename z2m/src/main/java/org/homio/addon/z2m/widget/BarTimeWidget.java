@@ -2,7 +2,7 @@ package org.homio.addon.z2m.widget;
 
 import java.util.List;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 

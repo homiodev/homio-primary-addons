@@ -9,9 +9,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetType;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetType;
 import org.homio.addon.z2m.widget.properties.HumidityIconBuilder;
 import org.homio.addon.z2m.widget.properties.IconBuilder;
 import org.homio.addon.z2m.widget.properties.SignalIconBuilder;
@@ -108,7 +108,7 @@ public interface WidgetBuilder {
         private final @NotNull EntityContext entityContext;
         private final @NotNull Z2MDeviceEntity entity;
         private final @NotNull String tab;
-        private final @NotNull Z2MDeviceDefinitionDTO.WidgetDefinition widgetDefinition;
+        private final @NotNull Z2MDeviceDefinitionModel.WidgetDefinition widgetDefinition;
         private final @NotNull List<ZigBeeProperty> includeProperties;
     }
 

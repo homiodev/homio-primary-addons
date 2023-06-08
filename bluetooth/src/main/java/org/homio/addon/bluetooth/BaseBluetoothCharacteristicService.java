@@ -110,7 +110,7 @@ public abstract class BaseBluetoothCharacteristicService {
 
         if (!isLinuxEnvironment()) {
             log.warn("Bluetooth skipped for non linux env. Require unix sockets");
-            updateBluetoothStatus(Status.OFFLINE, "ERROR.NOT_LINUX");
+            updateBluetoothStatus(Status.OFFLINE, "W.ERROR.NOT_LINUX");
             return;
         }
 

@@ -33,18 +33,18 @@ public class MQTTLocalClientEntity extends MQTTBaseEntity implements HasEntityLo
     }
 
     @UIFieldIgnore
-    public int getMqttPort() {
-        return super.getMqttPort();
+    public int getPort() {
+        return super.getPort();
     }
 
     @UIFieldIgnore
-    public String getMqttUser() {
-        return super.getMqttUser();
+    public String getUser() {
+        return super.getUser();
     }
 
     @UIFieldIgnore
-    public SecureString getMqttPassword() {
-        return super.getMqttPassword();
+    public SecureString getPassword() {
+        return super.getPassword();
     }
 
     @Override

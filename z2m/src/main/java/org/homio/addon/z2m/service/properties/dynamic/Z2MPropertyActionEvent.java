@@ -1,8 +1,8 @@
 package org.homio.addon.z2m.service.properties.dynamic;
 
-import org.homio.addon.z2m.util.Z2MDeviceDTO;
-import org.homio.addon.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
-import org.homio.addon.z2m.util.Z2MDevicePropertiesDTO;
+import org.homio.addon.z2m.util.Z2MDeviceModel;
+import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition.Options;
+import org.homio.addon.z2m.util.Z2MDevicePropertiesModel;
 import org.homio.api.state.DecimalType;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.jetbrains.annotations.NotNull;
@@ -16,11 +16,11 @@ public class Z2MPropertyActionEvent extends Z2MDynamicProperty {
     public Z2MPropertyActionEvent(
         @NotNull Z2MDeviceService deviceService,
         @NotNull String property,
-        @Nullable Z2MDevicePropertiesDTO z2MDevicePropertiesDTO) {
+        @Nullable Z2MDevicePropertiesModel z2MDevicePropertiesModel) {
         super(
-            z2MDevicePropertiesDTO == null ? "#B72AD4" : z2MDevicePropertiesDTO.getIconColor(),
-            z2MDevicePropertiesDTO == null ? "fa-square-check" : z2MDevicePropertiesDTO.getIcon());
-        init(deviceService, Options.dynamicExpose(property, Z2MDeviceDTO.NUMBER_TYPE));
+            z2MDevicePropertiesModel == null ? "#B72AD4" : z2MDevicePropertiesModel.getIconColor(),
+            z2MDevicePropertiesModel == null ? "fa-square-check" : z2MDevicePropertiesModel.getIcon());
+        init(deviceService, Options.dynamicExpose(property, Z2MDeviceModel.NUMBER_TYPE));
         setValue(new DecimalType(0));
         dataReader = jsonObject -> new DecimalType(getValue().intValue() + 1);
     }

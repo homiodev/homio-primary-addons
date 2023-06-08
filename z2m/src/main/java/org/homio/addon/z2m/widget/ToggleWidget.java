@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.service.Z2MProperty;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextWidget.HorizontalAlign;
 import org.homio.api.EntityContextWidget.VerticalAlign;

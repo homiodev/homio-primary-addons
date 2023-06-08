@@ -7,8 +7,10 @@ import static org.apache.commons.lang3.StringUtils.trimToNull;
 import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
 import static org.homio.api.util.CommonUtils.YAML_OBJECT_MAPPER;
 import static org.homio.api.util.CommonUtils.getErrorMessage;
+import static org.homio.api.util.CommonUtils.updateJsonPath;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pivovarit.function.ThrowingBiConsumer;
 import java.io.IOException;
@@ -28,6 +30,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Getter;
@@ -37,15 +40,15 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
-import org.homio.addon.mqtt.entity.MQTTBaseEntity;
 import org.homio.addon.z2m.ZigBee2MQTTFrontendConsolePlugin;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.util.Z2MConfiguration;
-import org.homio.addon.z2m.util.Z2MDeviceDTO;
-import org.homio.addon.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition;
+import org.homio.addon.z2m.util.Z2MDeviceModel;
+import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition;
 import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextBGP.ThreadContext;
+import org.homio.api.EntityContextService.MQTTEntityService;
 import org.homio.api.console.ConsolePluginFrame.FrameConfiguration;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.model.ActionResponseModel;
@@ -86,11 +89,11 @@ public class Z2MLocalCoordinatorService
     @Getter private boolean initialized;
     private Status desiredStatus;
     @Getter private @Nullable Status updatingStatus;
-    @Getter private MQTTBaseEntity mqttEntity;
+    private MQTTEntityService mqttEntityService;
     private Process nodeProcess = null;
     private Thread inputThread;
     private Thread errorThread;
-    @Getter private Z2MConfiguration configuration = new Z2MConfiguration();
+    @Getter private Z2MConfiguration configuration;
     private ThreadContext<Void> checkFrontendThreadContext;
     private URL z2mFrontendURL;
 
@@ -102,6 +105,14 @@ public class Z2MLocalCoordinatorService
 
         ZigBeeUtil.collectZ2MConverters(entityContext);
         installZ2MIfRequire();
+    }
+
+    public void listenMQTT(@NotNull Z2MDeviceModel device, @NotNull String suffix, @NotNull Consumer<Object> listener) {
+        mqttEntityService.addListener(getDeviceTopic(device) + suffix, device.getIeeeAddress(), listener);
+    }
+
+    public void removeMQTTListener(@NotNull Z2MDeviceModel device) {
+        mqttEntityService.removeListener(getDeviceTopic(device), device.getIeeeAddress());
     }
 
     private void installZ2MIfRequire() {
@@ -124,7 +135,9 @@ public class Z2MLocalCoordinatorService
 
             @Override
             public boolean isRequireRestartService() {
-                return !ZigBeeUtil.zigbee2mqttGitHub.isUpdating() && entity.isEnableWatchdog() && Z2MLocalCoordinatorService.this.isRequireRestartService();
+                return !ZigBeeUtil.zigbee2mqttGitHub.isUpdating()
+                    && entity.isEnableWatchdog()
+                    && Z2MLocalCoordinatorService.this.isRequireRestartService();
             }
         };
     }
@@ -134,7 +147,7 @@ public class Z2MLocalCoordinatorService
         initialized = false;
         log.info("[{}]: Initializing ZigBee network.", entityID);
 
-        this.mqttEntity = entityContext.getEntity(entity.getRawMqttEntity());
+        mqttEntityService = entity.getMqttEntityService();
         runZigBee2MQTT();
     }
 
@@ -156,12 +169,12 @@ public class Z2MLocalCoordinatorService
         entityContext.ui().sendWarningMessage("Dispose zigBee coordinator");
         entityContext.ui().removeHeaderButton("discover-" + entityID);
         for (Z2MDeviceService deviceHandler : deviceHandlers.values()) {
-            entityContext.event().removeEvents(getDeviceTopic(deviceHandler.getDevice()));
+            removeMQTTListener(deviceHandler.getDevice());
             deviceHandler.dispose();
         }
 
         disposeNodeProcess();
-        mqttEntity = null;
+        mqttEntityService = null;
         initialized = false;
         updateNotificationBlock();
     }
@@ -195,7 +208,7 @@ public class Z2MLocalCoordinatorService
     @SneakyThrows
     public ActionResponseModel restartZ2M() {
         if (isRequireRestartService()) {
-            if (mqttEntity != null) {
+            if (mqttEntityService != null) {
                 sendRequest("restart", "");
                 // wait, maybe z2m back online?
                 Thread.sleep(5000);
@@ -234,7 +247,7 @@ public class Z2MLocalCoordinatorService
                 log.error("[{}]: Unable to send request to discover devices. {}", entityID, getErrorMessage(ex));
                 return ActionResponseModel.showError(ex);
             }
-            return ActionResponseModel.success();
+            return ActionResponseModel.showSuccess("ZIGBEE.START_SUCCESS");
         }
     }
 
@@ -251,7 +264,7 @@ public class Z2MLocalCoordinatorService
     @SneakyThrows
     public void updateDeviceConfiguration(Z2MDeviceService deviceService, String propertyName, Object value) {
         ObjectNode deviceConfiguration = this.configuration.getDevices().computeIfAbsent(deviceService.getDevice().getIeeeAddress(),
-            ieee -> OBJECT_MAPPER.createObjectNode());
+            ieee -> node());
         if (value == null) {
             deviceConfiguration.remove(propertyName);
         } else {
@@ -268,13 +281,12 @@ public class Z2MLocalCoordinatorService
 
     @SneakyThrows
     public void publish(String topic, JSONObject payload) {
-        this.mqttEntity.getService()
-                       .getMqttClient().publish(entity.getBasicTopic() + "/" + topic, payload.toString().getBytes(), 0, false);
+        mqttEntityService.publish(entity.getBasicTopic() + "/" + topic, payload.toString().getBytes(), 0, false);
     }
 
     public void addMissingProperty(String ieeeAddress, Z2MProperty property) {
-        ObjectNode deviceConfiguration = this.configuration.getDevices().computeIfAbsent(ieeeAddress,
-            ieee -> OBJECT_MAPPER.createObjectNode());
+        ObjectNode deviceConfiguration = configuration.getDevices().computeIfAbsent(ieeeAddress,
+            ieee -> node());
         String extraActions = deviceConfiguration.path("missingActions").asText("");
         for (String action : extraActions.split(";")) {
             if (action.startsWith(property.getKey() + ":")) {
@@ -301,11 +313,6 @@ public class Z2MLocalCoordinatorService
 
     private boolean isRequireRestartService() {
         return desiredStatus == null && updatingStatus == null && entity.getStatus() != Status.ONLINE && entity.isStart();
-    }
-
-    @NotNull
-    private String getBridgeTopic(Z2MResponse z2MResponse) {
-        return format("%s-%s/bridge/%s", entity.getRawMqttEntity(), entity.getBasicTopic(), z2MResponse.name());
     }
 
     private void disposeNodeProcess() {
@@ -391,7 +398,7 @@ public class Z2MLocalCoordinatorService
         // do check reinitialize only if coordinator already started
         if (initialized) {
             boolean reinitialize;
-            if (this.mqttEntity == null) {
+            if (this.mqttEntityService == null) {
                 reinitialize = true;
             } else {
                 reinitialize = !entity.deepEqual(this.entity);
@@ -414,8 +421,7 @@ public class Z2MLocalCoordinatorService
         if (isEmpty(entity.getRawMqttEntity())) {
             return "ZIGBEE.ERROR.NO_MQTT";
         }
-        MQTTBaseEntity mqttEntity = entityContext.getEntity(entity.getRawMqttEntity());
-        if (mqttEntity == null) {
+        if (entity.getMqttEntityService() == null) {
             return "ZIGBEE.ERROR.MQTT_NOT_FOUND";
         }
         return null;
@@ -485,7 +491,7 @@ public class Z2MLocalCoordinatorService
         entity.setStatusOnline();
 
         entityContext.ui().headerButtonBuilder("discover-" + entityID)
-                     .title("ZIGBEE_START_SCAN")
+                     .title("CONTEXT.ACTION.ZIGBEE_START_SCAN")
                      .icon(new Icon("fas fa-search-location", "#3E7BBD"))
                      .availableForPage(ZigBeeDeviceBaseEntity.class)
                      .clickAction(this::startScan).build();
@@ -497,7 +503,7 @@ public class Z2MLocalCoordinatorService
 
         // register mqtt event listeners
         for (Z2MResponse z2MResponse : Z2MResponse.values()) {
-            entityContext.event().addEventBehaviourListener(getBridgeTopic(z2MResponse), payload -> {
+            mqttEntityService.addListener(getBridgeTopic(z2MResponse), "z2m", payload -> {
                 try {
                     z2MResponse.handler.accept(payload.toString(), this);
                 } catch (Exception ex) {
@@ -523,7 +529,7 @@ public class Z2MLocalCoordinatorService
     @SneakyThrows
     private void sendRequest(String path, String payload) {
         String topic = format("%s/bridge/request/%s", entity.getBasicTopic(), path);
-        mqttEntity.getService().getMqttClient().publish(topic, payload.getBytes(), 0, false);
+        mqttEntityService.publish(topic, payload.getBytes(), 0, false);
     }
 
     private String getNpm() {
@@ -543,7 +549,10 @@ public class Z2MLocalCoordinatorService
         }
         this.z2mFrontendURL = new URL(format("http://localhost:%s", configuration.getFrontend().getPort()));
 
-        boolean updated = false;
+        JsonNode availability = configuration.getOrCreateObjectNode("availability");
+        boolean updated = updateJsonPath(availability, "active/timeout", entity.getAvailabilityActiveTimeout());
+        updated |= updateJsonPath(availability, "passive/timeout", entity.getAvailabilityPassiveTimeout() * 60);
+
         if (configuration.isPermitJoin() != entity.isPermitJoin()) {
             configuration.setPermitJoin(entity.isPermitJoin());
             updated = true;
@@ -553,20 +562,20 @@ public class Z2MLocalCoordinatorService
             configuration.getMqtt().setBaseTopic(trimToNull(entity.getBasicTopic()));
             updated = true;
         }
-        String server = format("mqtt://%s:%s", mqttEntity.getHostname(), mqttEntity.getMqttPort());
+        String server = format("mqtt://%s:%s", mqttEntityService.getHostname(), mqttEntityService.getPort());
         if (!Objects.equals(configuration.getMqtt().getServer(), server)) {
             configuration.getMqtt().setServer(server);
             updated = true;
         }
         if (!Objects.equals(
-            configuration.getMqtt().getUser(), trimToNull(mqttEntity.getMqttUser()))) {
-            configuration.getMqtt().setUser(trimToNull(mqttEntity.getMqttUser()));
+            configuration.getMqtt().getUser(), trimToNull(mqttEntityService.getUser()))) {
+            configuration.getMqtt().setUser(trimToNull(mqttEntityService.getUser()));
             updated = true;
         }
         if (!Objects.equals(
             configuration.getMqtt().getPassword(),
-            trimToNull(mqttEntity.getMqttPassword().asString()))) {
-            configuration.getMqtt().setPassword(trimToNull(mqttEntity.getMqttPassword().asString()));
+            trimToNull(mqttEntityService.getPassword().asString()))) {
+            configuration.getMqtt().setPassword(trimToNull(mqttEntityService.getPassword().asString()));
             updated = true;
         }
         if (!Objects.equals(configuration.getSerial().getPort(), trimToNull(entity.getPort()))) {
@@ -576,6 +585,10 @@ public class Z2MLocalCoordinatorService
         if (updated) {
             saveConfiguration();
         }
+    }
+
+    private ObjectNode node() {
+        return OBJECT_MAPPER.createObjectNode();
     }
 
     @SneakyThrows
@@ -591,10 +604,12 @@ public class Z2MLocalCoordinatorService
         deviceHandler.dispose();
     }
 
-    private String getDeviceTopic(Z2MDeviceDTO device) {
-        return format(
-            "%s-%s/%s",
-            mqttEntity.getEntityID(), entity.getBasicTopic(), device.getIeeeAddress());
+    private @NotNull String getDeviceTopic(@NotNull Z2MDeviceModel device) {
+        return format("%s/%s", entity.getBasicTopic(), device.getIeeeAddress());
+    }
+
+    private @NotNull String getBridgeTopic(@NotNull Z2MResponse z2MResponse) {
+        return format("%s/bridge/%s", entity.getBasicTopic(), z2MResponse.name());
     }
 
     private void updateNotificationBlock() {
@@ -643,9 +658,9 @@ public class Z2MLocalCoordinatorService
     private enum Z2MResponse {
         config((payload, service) -> {}),
         devices((payload, service) -> {
-            List<Z2MDeviceDTO> devices = OBJECT_MAPPER.readValue(payload, new TypeReference<>() {});
-            Map<String, Z2MDeviceDTO> deviceMap = devices.stream().filter(d -> !d.getType().equals("Coordinator"))
-                                                         .collect(Collectors.toMap(Z2MDeviceDTO::getIeeeAddress, d -> d));
+            List<Z2MDeviceModel> devices = OBJECT_MAPPER.readValue(payload, new TypeReference<>() {});
+            Map<String, Z2MDeviceModel> deviceMap = devices.stream().filter(d -> !d.getType().equals("Coordinator"))
+                                                           .collect(Collectors.toMap(Z2MDeviceModel::getIeeeAddress, d -> d));
             for (Iterator<Entry<String, Z2MDeviceService>> iterator = service.deviceHandlers.entrySet().iterator(); iterator.hasNext(); ) {
                 Entry<String, Z2MDeviceService> entry = iterator.next();
                 if (!deviceMap.containsKey(entry.getKey())) {
@@ -654,7 +669,7 @@ public class Z2MLocalCoordinatorService
                 }
             }
 
-            for (Z2MDeviceDTO newDevice : deviceMap.values()) {
+            for (Z2MDeviceModel newDevice : deviceMap.values()) {
                 if (newDevice.getDefinition() == null) {
                     newDevice.setDefinition(new Z2MDeviceDefinition());
                 }

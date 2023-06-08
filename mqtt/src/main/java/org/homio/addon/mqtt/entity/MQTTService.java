@@ -1,5 +1,6 @@
 package org.homio.addon.mqtt.entity;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.homio.addon.mqtt.entity.MQTTBaseEntity.normalize;
 
 import java.nio.file.Paths;
@@ -80,10 +81,10 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         this.entityContext.ui().registerConsolePlugin(entityID, mqttPlugin);
 
         entityContext.setting().listenValue(ConsoleMQTTPublishButtonSetting.class, entityID + "-mqtt-publish",
-            jsonObject -> entity.publish(jsonObject.getString("Topic"), jsonObject.getString("Content"),
+            jsonObject -> entity.publish(jsonObject.getString("Topic"), getContent(jsonObject),
                 jsonObject.getInt("QoS"), jsonObject.getBoolean("Retain")));
         entityContext.setting().listenValue(ConsoleMQTTPublishButtonSetting.class, entityID + "-mqtt-publish",
-            jsonObject -> entity.publish(jsonObject.getString("Topic"), jsonObject.getString("Content"),
+            jsonObject -> entity.publish(jsonObject.getString("Topic"), getContent(jsonObject),
                 jsonObject.getInt("QoS"), jsonObject.getBoolean("Retain")));
 
         entityContext.setting().listenValue(ConsoleMQTTClearHistorySetting.class, entityID + "-mqtt-clear-history",
@@ -103,6 +104,11 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
                 entityContext.install().mosquitto().requireAsync(null, () ->
                     log.info("Mosquitto service successfully installed")));
         }
+    }
+
+    private byte[] getContent(JSONObject jsonObject) {
+        String content = jsonObject.getString("Content");
+        return content == null ? new byte[0] : content.getBytes(UTF_8);
     }
 
     public static TreeNode buildUpdateTree(TreeNode treeNode) {
@@ -132,11 +138,11 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         if (!Objects.equals(this.entity.getMqttCleanSessionOnConnect(), entity.getMqttCleanSessionOnConnect()) ||
             !Objects.equals(this.entity.getConnectionTimeout(), entity.getConnectionTimeout()) ||
             !Objects.equals(this.entity.getMqttKeepAlive(), entity.getMqttKeepAlive()) ||
-            !Objects.equals(this.entity.getMqttUser(), entity.getMqttUser()) ||
-            !Objects.equals(this.entity.getMqttPassword().asString(), entity.getMqttPassword().asString()) ||
+            !Objects.equals(this.entity.getUser(), entity.getUser()) ||
+            !Objects.equals(this.entity.getPassword().asString(), entity.getPassword().asString()) ||
             !Objects.equals(this.entity.getHostname(), entity.getHostname()) ||
             !Objects.equals(this.entity.getMqttClientID(), entity.getMqttClientID()) ||
-            !Objects.equals(this.entity.getMqttPort(), entity.getMqttPort())) {
+            !Objects.equals(this.entity.getPort(), entity.getPort())) {
             this.destroy();
             updated = true;
 
@@ -328,14 +334,14 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
     }
 
     private void createMQTTClient() throws MqttException {
-        String serverURL = String.format("tcp://%s:%d", entity.getHostname(), entity.getMqttPort());
+        String serverURL = String.format("tcp://%s:%d", entity.getHostname(), entity.getPort());
         MqttConnectOptions options = new MqttConnectOptions();
         options.setAutomaticReconnect(false);
         options.setCleanSession(entity.getMqttCleanSessionOnConnect());
         options.setConnectionTimeout((int) TimeUnit.SECONDS.toMillis(entity.getConnectionTimeout()));
         options.setKeepAliveInterval(entity.getMqttKeepAlive());
-        options.setUserName(entity.getMqttUser());
-        options.setPassword(entity.getMqttPassword().asString().toCharArray());
+        options.setUserName(entity.getUser());
+        options.setPassword(entity.getPassword().asString().toCharArray());
 
         mqttClient = new MqttClient(serverURL, entity.getMqttClientID(), new MemoryPersistence());
         mqttClient.setCallback(new MqttClientCallbackExtended());
@@ -371,7 +377,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         @Override
         public void connectComplete(boolean reconnect, String serverURI) {
             try {
-                entityContext.event().fireEvent("mqtt-status", Status.ONLINE);
+                fireEvent("STATUS", Status.ONLINE);
                 entity.setStatusOnline();
                 entityContext.ui().sendInfoMessage("MQTT server connected");
             } catch (Exception ex) {
@@ -387,7 +393,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
                 entityContext.ui().sendErrorMessage("MQTT connection lost", (Exception) cause);
                 String msg = CommonUtils.getErrorMessage(cause);
                 entity.setStatus(Status.ERROR, "Connection lost: " + msg);
-                entityContext.event().fireEvent("mqtt-status", Status.OFFLINE);
+                fireEvent("STATUS", Status.OFFLINE);
                 entity.destroyService();
 
                 // retry create service
@@ -414,9 +420,9 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
 
                 MQTTService.this.messageArrived(topic, mqttMessage, convertedPayload, payload.length());
 
-                entityContext.event().fireEvent(entityID, payload).fireEvent(entityID + "-" + topic, payload);
+                fireEvent(topic, payload);
                 if (payload.contains("/")) {
-                    entityContext.event().fireEvent(entityID, payload).fireEvent(entityID + "-" + topic.substring(0, topic.indexOf("/")), payload);
+                    fireEvent(topic.substring(0, topic.indexOf("/")), payload);
                 }
             } catch (Exception ex) {
                 log.error("[{}]: Unexpected mqtt error", entityID, ex);
@@ -429,4 +435,8 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         }
     }
 
+    public void fireEvent(String prefix, Object payload) {
+        entityContext.event().fireEvent(entityID + "~~~" + prefix, payload);
+        entityContext.event().fireEvent(entityID, payload);
+    }
 }

@@ -1,7 +1,5 @@
 package org.homio.addon.z2m.model;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import java.util.Collection;
@@ -16,12 +14,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.homio.addon.mqtt.entity.MQTTBaseEntity;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MLocalCoordinatorService;
-import org.homio.addon.z2m.util.Z2MDeviceDTO;
+import org.homio.addon.z2m.util.Z2MDeviceModel;
 import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
+import org.homio.api.EntityContextService;
+import org.homio.api.EntityContextService.MQTTEntityService;
 import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.types.MicroControllerBaseEntity;
 import org.homio.api.entity.types.StorageEntity;
@@ -38,11 +37,15 @@ import org.homio.api.ui.field.UIField;
 import org.homio.api.ui.field.UIFieldGroup;
 import org.homio.api.ui.field.UIFieldIgnore;
 import org.homio.api.ui.field.UIFieldLinkToEntity;
+import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.ui.field.inline.UIFieldInlineEntities;
 import org.homio.api.ui.field.inline.UIFieldInlineEntityWidth;
-import org.homio.api.ui.field.selection.UIFieldEntityByClassSelection;
+import org.homio.api.ui.field.selection.UIFieldEntityTypeSelection;
+import org.homio.api.util.DataSourceUtil;
+import org.homio.api.util.DataSourceUtil.DataSourceContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({"unused", "rawtypes"})
 @Log4j2
@@ -61,17 +64,19 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @UIField(order = 20, required = true, inlineEditWhenEmpty = true)
-    @UIFieldEntityByClassSelection(MQTTBaseEntity.class)
+    @UIFieldEntityTypeSelection(type = EntityContextService.MQTT_SERVICE)
     @UIFieldLinkToEntity(StorageEntity.class)
     public String getMqttEntity() {
-        String value = getJsonData("mqtt");
-        if (isNotEmpty(value)) {
-            BaseEntity entity = getEntityContext().getEntity(value);
-            if (entity instanceof MQTTBaseEntity) {
-                return entity.getEntityID() + "~~~" + entity.getTitle();
-            }
+        DataSourceContext source = DataSourceUtil.getSource(getEntityContext(), getJsonData("mqtt"));
+        if (source.getSource() instanceof BaseEntity entity) {
+            return entity.getEntityID() + "~~~" + entity.getTitle();
         }
-        return value;
+        return getJsonData().has("mqtt") ? "[Not found] " + getJsonData("mqtt") : null;
+    }
+
+    @JsonIgnore
+    public @Nullable MQTTEntityService getMqttEntityService() {
+        return DataSourceUtil.getSource(getEntityContext(), getJsonData("mqtt")).getSource(MQTTEntityService.class, null);
     }
 
     public void setMqttEntity(String value) {
@@ -131,6 +136,28 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         return getJsonData("wd", false);
     }
 
+    @UIField(order = 1)
+    @UIFieldGroup(value = "ADVANCED", order = 50, borderColor = "#FF1E00")
+    @UIFieldSlider(min = 1, max = 60, header = "min.")
+    public int getAvailabilityActiveTimeout() {
+        return getJsonData("aat", 10);
+    }
+
+    public void setAvailabilityActiveTimeout(Integer value) {
+        setJsonData("aat", value, 10, 1, 60);
+    }
+
+    @UIField(order = 2)
+    @UIFieldGroup("ADVANCED")
+    @UIFieldSlider(min = 1, max = 48, header = "hours")
+    public int getAvailabilityPassiveTimeout() {
+        return getJsonData("apt", 25);
+    }
+
+    public void setAvailabilityPassiveTimeout(Integer value) {
+        setJsonData("apt", value, 25, 1, 48);
+    }
+
     public void setEnableWatchdog(boolean value) {
         setJsonData("wd", value);
     }
@@ -169,12 +196,9 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     /**
      * Check if need start/stop z2m service
      */
-    public boolean deepEqual(Z2MLocalCoordinatorEntity newEntity) {
-        return this.getEntityID().equals(newEntity.getEntityID())
-            && this.getBasicTopic().equals(newEntity.getBasicTopic())
-            && this.getPort().equals(newEntity.getPort())
-            && this.isStart() == newEntity.isStart()
-            && Objects.equals(this.getRawMqttEntity(), newEntity.getRawMqttEntity());
+    public boolean deepEqual(Z2MLocalCoordinatorEntity o) {
+        return Objects.hash(getEntityID(), getBasicTopic(), getPort(), isStart(), getRawMqttEntity()) ==
+            Objects.hash(o.getEntityID(), o.getBasicTopic(), o.getPort(), o.isStart(), o.getRawMqttEntity());
     }
 
     @Override
@@ -221,10 +245,10 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         private int endpointsCount;
 
         public ZigBeeCoordinatorDeviceEntity(Z2MDeviceService deviceHandler) {
-            Z2MDeviceDTO z2MDeviceDTO = deviceHandler.getDevice();
-            this.ieeeAddress = z2MDeviceDTO.getIeeeAddress();
-            this.name = deviceHandler.getDeviceEntity().getEntityID() + "~~~" + z2MDeviceDTO.getName();
-            this.endpointsCount = z2MDeviceDTO.getDefinition().getExposes().size();
+            Z2MDeviceModel z2MDeviceModel = deviceHandler.getDevice();
+            this.ieeeAddress = z2MDeviceModel.getIeeeAddress();
+            this.name = deviceHandler.getDeviceEntity().getEntityID() + "~~~" + z2MDeviceModel.getName();
+            this.endpointsCount = z2MDeviceModel.getDefinition().getExposes().size();
         }
     }
 }

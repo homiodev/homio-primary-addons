@@ -4,9 +4,9 @@ import static org.homio.addon.z2m.widget.DisplayWidget.fillHasLineChartBehaviour
 
 import java.util.List;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.Options.Chart;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition.ItemDefinition;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options.Chart;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition.ItemDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 

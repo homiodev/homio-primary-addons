@@ -19,8 +19,15 @@ public class Z2MConfiguration extends UnknownOptions {
     private Mqtt mqtt = new Mqtt();
     private Serial serial = new Serial();
     private Frontend frontend = new Frontend();
-    private boolean availability = true;
     private Map<String, ObjectNode> devices;
+    private Advanced advanced;
+
+    @Getter
+    @Setter
+    public static class Advanced extends UnknownOptions {
+
+        private String last_seen = "epoch";
+    }
 
     @Getter
     @Setter
@@ -28,7 +35,6 @@ public class Z2MConfiguration extends UnknownOptions {
 
         private String host = "0.0.0.0";
         private int port = 8187;
-        // private String url = "https://zigbee2mqtt.myhouse.org";
     }
 
     @Getter

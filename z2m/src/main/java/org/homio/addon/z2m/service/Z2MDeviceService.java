@@ -20,9 +20,9 @@ import org.homio.addon.z2m.service.properties.Z2MPropertyAction;
 import org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate;
 import org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty;
 import org.homio.addon.z2m.service.properties.dynamic.Z2MPropertyUnknown;
-import org.homio.addon.z2m.util.Z2MDeviceDTO;
-import org.homio.addon.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
-import org.homio.addon.z2m.util.Z2MDevicePropertiesDTO;
+import org.homio.addon.z2m.util.Z2MDeviceModel;
+import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition.Options;
+import org.homio.addon.z2m.util.Z2MDevicePropertiesModel;
 import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
@@ -42,9 +42,9 @@ public class Z2MDeviceService {
     private final Z2MDeviceEntity deviceEntity;
     private final EntityContext entityContext;
     private String availability;
-    private Z2MDeviceDTO device;
+    private Z2MDeviceModel device;
 
-    public Z2MDeviceService(Z2MLocalCoordinatorService coordinatorService, Z2MDeviceDTO device) {
+    public Z2MDeviceService(Z2MLocalCoordinatorService coordinatorService, Z2MDeviceModel device) {
         this.coordinatorService = coordinatorService;
         this.entityContext = coordinatorService.getEntityContext();
         this.device = device;
@@ -55,35 +55,27 @@ public class Z2MDeviceService {
 
         entityContext.ui().updateItem(deviceEntity);
         entityContext.ui().sendSuccessMessage(Lang.getServerMessage("ENTITY_CREATED", format("${%s}", this.device.getName())));
-        entityContext.event().addEventBehaviourListener(getDeviceTopic(this.device), payload -> mqttUpdate(new JSONObject(payload.toString())));
+        coordinatorService.listenMQTT(device, "", payload -> mqttUpdate(new JSONObject(payload.toString())));
 
-        entityContext.event().addEventBehaviourListener(
-            format("%s/availability", getDeviceTopic(this.device)),
-            payload -> {
-                availability = payload == null ? null : payload.toString();
-                entityContext.event().fireEvent(format("zigbee-%s", device.getIeeeAddress()), deviceEntity.getStatus());
-                entityContext.ui().updateItem(this.deviceEntity);
-                if ("offline".equals(availability)) {
-                    downLinkQualityToZero();
-                }
-            });
+        coordinatorService.listenMQTT(device, "/availability", payload -> {
+            availability = payload == null ? null : payload.toString();
+            entityContext.event().fireEvent(format("zigbee-%s", device.getIeeeAddress()), deviceEntity.getStatus());
+            entityContext.ui().updateItem(this.deviceEntity);
+            if ("offline".equals(availability)) {
+                downLinkQualityToZero();
+            }
+        });
+
         entityContext.event().fireEvent(format("zigbee-%s", device.getIeeeAddress()), deviceEntity.getStatus());
     }
 
-    public String getDeviceTopic(Z2MDeviceDTO device) {
-        return String.format("%s-%s/%s",
-            coordinatorService.getMqttEntity().getEntityID(),
-            coordinatorService.getEntity().getBasicTopic(),
-            device.getIeeeAddress());
-    }
-
     public void dispose() {
-        entityContext.event().removeEvents(getDeviceTopic(device));
+        coordinatorService.removeMQTTListener(device);
         entityContext.ui().updateItem(deviceEntity);
         downLinkQualityToZero();
     }
 
-    public void deviceUpdated(Z2MDeviceDTO device) {
+    public void deviceUpdated(Z2MDeviceModel device) {
         this.device = device;
         createOrUpdateDeviceGroup();
         removeRedundantExposes(device);
@@ -174,7 +166,7 @@ public class Z2MDeviceService {
         }
     }
 
-    private void removeRedundantExposes(Z2MDeviceDTO device) {
+    private void removeRedundantExposes(Z2MDeviceModel device) {
         // remove illuminance_lux if illuminance is present
         if (device.getDefinition().getExposes().stream().anyMatch(e -> "illuminance_lux".equals(e.getName()))
             && device.getDefinition().getExposes().stream().anyMatch(e -> "illuminance".equals(e.getName()))) {
@@ -182,7 +174,7 @@ public class Z2MDeviceService {
         }
     }
 
-    private void addMissingProperties(Z2MLocalCoordinatorService coordinatorService, Z2MDeviceDTO device) {
+    private void addMissingProperties(Z2MLocalCoordinatorService coordinatorService, Z2MDeviceModel device) {
         for (Pair<String, String> missingProperty : coordinatorService.getMissingProperties(device.getIeeeAddress())) {
             if ("action_event".equals(missingProperty.getValue())) {
                 addProperty(missingProperty.getKey(), key -> Z2MPropertyAction.createActionEvent(key, this, entityContext));
@@ -201,15 +193,15 @@ public class Z2MDeviceService {
     private String getFormatFromPayloadValue(JSONObject payload, String key) {
         try {
             payload.getInt(key);
-            return Z2MDeviceDTO.NUMBER_TYPE;
+            return Z2MDeviceModel.NUMBER_TYPE;
         } catch (Exception ignore) {
         }
         try {
             payload.getBoolean(key);
-            return Z2MDeviceDTO.BINARY_TYPE;
+            return Z2MDeviceModel.BINARY_TYPE;
         } catch (Exception ignore) {
         }
-        return Z2MDeviceDTO.UNKNOWN_TYPE;
+        return Z2MDeviceModel.UNKNOWN_TYPE;
     }
 
     // usually expose.getName() is enough but in case of color - name - 'color_xy' but property is
@@ -232,10 +224,10 @@ public class Z2MDeviceService {
         Class<? extends Z2MProperty> z2mCluster = getValueFromMap(ZigBeeUtil.z2mConverters, expose);
         Z2MProperty z2MProperty;
         if (z2mCluster == null) {
-            Z2MDevicePropertiesDTO z2MDevicePropertiesDTO = getValueFromMap(ZigBeeUtil.DEVICE_PROPERTIES, expose);
-            if (z2MDevicePropertiesDTO != null) {
-                z2MProperty = new Z2MGeneralProperty(z2MDevicePropertiesDTO.getIconColor(), z2MDevicePropertiesDTO.getIcon());
-                z2MProperty.setUnit(z2MDevicePropertiesDTO.getUnit());
+            Z2MDevicePropertiesModel z2MDevicePropertiesModel = getValueFromMap(ZigBeeUtil.DEVICE_PROPERTIES, expose);
+            if (z2MDevicePropertiesModel != null) {
+                z2MProperty = new Z2MGeneralProperty(z2MDevicePropertiesModel.getIconColor(), z2MDevicePropertiesModel.getIcon());
+                z2MProperty.setUnit(z2MDevicePropertiesModel.getUnit());
             } else {
                 z2MProperty = new Z2MPropertyUnknown();
             }

@@ -64,7 +64,7 @@ public class CameraEntrypoint implements AddonEntrypoint {
             } else if (entity.getStatus().isOnline()) {
                 info.setTextColor(Color.GREEN);
             }
-            info.setStatus(entity);
+            info.setStatus(entity).setAsLink(entity);
             if (!entity.isStart() || settingsBuilder == null) {
                 if (!entity.isStart()) {
                     info.setRightButton(new Icon("fas fa-play"), "START", null, (ec, params) -> {

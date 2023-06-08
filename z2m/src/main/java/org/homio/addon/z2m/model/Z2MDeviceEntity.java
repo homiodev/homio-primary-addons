@@ -22,9 +22,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.setting.ZigBeeEntityCompactModeSetting;
-import org.homio.addon.z2m.util.Z2MDeviceDTO;
-import org.homio.addon.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition;
-import org.homio.addon.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
+import org.homio.addon.z2m.util.Z2MDeviceModel;
+import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition;
+import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition.Options;
 import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.BaseEntity;
@@ -42,7 +42,6 @@ import org.homio.api.ui.UI;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.action.UIActionHandler;
 import org.homio.api.ui.field.UIField;
-import org.homio.api.ui.field.UIFieldIgnore;
 import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.UIFieldTitleRef;
 import org.homio.api.ui.field.UIFieldType;
@@ -344,21 +343,14 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
                 JsonNode deviceConfigurationOptions = deviceService.getConfiguration();
                 String flexName = format("${z2m.setting.%s~%s}", option.getName(), ZigBeeUtil.splitNameToReadableFormat(option.getName()));
                 switch (option.getType()) {
-                    case Z2MDeviceDTO.BINARY_TYPE -> buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
-                    case Z2MDeviceDTO.NUMBER_TYPE -> buildNumberTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
+                    case Z2MDeviceModel.BINARY_TYPE -> buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
+                    case Z2MDeviceModel.NUMBER_TYPE -> buildNumberTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
                 }
             }
         }
     }
 
-    @Override
-    @UIFieldIgnore
-    public @NotNull Date getCreationTime() {
-        return super.getCreationTime();
-    }
-
-    @Override
-    @UIFieldIgnore
+    @UIField(order = 20, hideInEdit = true)
     public @NotNull Date getUpdateTime() {
         return new Date(deviceService.getProperties().values()
                                      .stream()
@@ -448,7 +440,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
                 property.getIcon().getColor(), property.getIcon().getIcon(), property.getName(false), property.getDescription());
             this.property = property;
             this.valueTitle = property.getValue().toString();
-            if (Z2MDeviceDTO.ENUM_TYPE.equals(property.getExpose().getType())) {
+            if (Z2MDeviceModel.ENUM_TYPE.equals(property.getExpose().getType())) {
                 this.valueTitle = "Values: " + String.join(", ", getProperty().getExpose().getValues());
             }
         }
