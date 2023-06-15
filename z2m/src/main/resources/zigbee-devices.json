@@ -525,6 +525,12 @@
       "order": 3000
     },
     {
+      "name": "last_seen",
+      "icon": "fa-eye",
+      "iconColor": "#2D9C2C",
+      "order": 2998
+    },
+    {
       "name": "smoke",
       "icon": "fa-mask-ventilator",
       "iconColor": "#C7AC24",

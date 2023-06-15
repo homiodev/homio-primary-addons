@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -47,25 +48,26 @@ import org.homio.api.ui.field.action.v1.item.UISelectBoxItemBuilder;
 import org.homio.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Curl;
+import org.homio.api.util.Lang;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 @Log4j2
 public final class ZigBeeUtil {
 
-    public static final Path ZIGBEE_2_MQTT_PATH = CommonUtils.getInstallPath().resolve("zigbee2mqtt");
     private static final Path ZIGBEE_DEFINITION_FILE = CommonUtils.getConfigPath().resolve("zigbee-devices.json");
 
     /**
      * Properties market with defined color, icon, etc...
      */
     public static Map<String, Z2MDevicePropertiesModel> DEVICE_PROPERTIES;
-    public static final GitHubProject zigbee2mqttGitHub = GitHubProject.of("Koenkk", "zigbee2mqtt");
+
+    public static final GitHubProject zigbee2mqttGitHub = GitHubProject.of("Koenkk", "zigbee2mqtt",
+        CommonUtils.getInstallPath().resolve("zigbee2mqtt"));
     /**
      * Contains model/icon/iconColor/some setting config i.e. occupancy_timeout min..max values
      */
+
     private static Map<String, Z2MDeviceDefinitionModel> DEVICE_DEFINITIONS;
-    public static String installedVersion;
 
     public static Map<String, Class<? extends Z2MProperty>> z2mConverters = new HashMap<>();
 
@@ -228,53 +230,39 @@ public final class ZigBeeUtil {
     }
 
     public static boolean isZ2MInstalled() {
-        Path zigbee2mqttPackagePath = ZIGBEE_2_MQTT_PATH.resolve("node_modules");
+        Path zigbee2mqttPackagePath = zigbee2mqttGitHub.getLocalProjectPath().resolve("node_modules");
         return Files.exists(zigbee2mqttPackagePath);
     }
 
     @SneakyThrows
-    public static void installOrUpdateZ2M(boolean update, ProgressBar progressBar, EntityContext entityContext, String version, ProjectUpdate projectUpdate) {
-        boolean binaryExists = isZ2MInstalled();
+    public static void installOrUpdateZ2M(@NotNull EntityContext entityContext, @NotNull String version, @NotNull ProjectUpdate projectUpdate) {
+        ProgressBar progressBar = projectUpdate.getProgressBar();
 
-        boolean requireUpdate = update && !getInstalledVersion().equals(version);
-        if (binaryExists && !requireUpdate) {
-            return;
-        }
-        ZigBeeUtil.installedVersion = null;
-
-        // backup configuration
-        Path dataPath = Path.of("data");
-        if (binaryExists) {
-            projectUpdate.backup(dataPath).deleteProject();
+        try {
+            projectUpdate.getProject().deleteProject();
+        } catch (Exception ex) {
+            entityContext.ui().sendErrorMessage(
+                Lang.getServerMessage("ZIGBEE.ERROR.DELETE", projectUpdate.getProject().getLocalProjectPath().toString()));
+            throw ex;
         }
 
+        progressBar.progress(35, "Download sources");
         projectUpdate.downloadSource(version);
 
         String npm = entityContext.install().nodejs().requireSync(progressBar, null).getPath("npm");
-        progressBar.progress(0, "install-zigbee2mqtt");
+        progressBar.progress(45, "install-zigbee2mqtt");
         EntityContextHardware hardware = entityContext.hardware();
         String npmOptions = "--no-audit --no-optional --no-update-notifier --unsafe-perm";
-        hardware.execute(format("%s ci --prefix %s %s", npm, ZIGBEE_2_MQTT_PATH, npmOptions), 600, progressBar);
-        hardware.execute(format("%s run build --prefix %s", npm, ZIGBEE_2_MQTT_PATH), 600, progressBar);
-        hardware.execute(format("%s ci --prefix %s --only=production %s", npm, ZIGBEE_2_MQTT_PATH, npmOptions), 600, progressBar);
+        hardware.execute(format("%s ci --prefix %s %s", npm, zigbee2mqttGitHub.getLocalProjectPath(), npmOptions), 600, progressBar.asHQuery());
+        hardware.execute(format("%s run build --prefix %s", npm, zigbee2mqttGitHub.getLocalProjectPath()), 600, progressBar.asHQuery());
+        hardware.execute(format("%s ci --prefix %s --only=production %s", npm, zigbee2mqttGitHub.getLocalProjectPath(), npmOptions), 600,
+            progressBar.asHQuery());
 
         // restore configuration
-        if (binaryExists) {
-            projectUpdate.restore(dataPath);
+        if (projectUpdate.isHasBackup()) {
+            projectUpdate.copyFromBackup(Set.of(Path.of("data")));
         }
-    }
-
-    @SneakyThrows
-    public static String getInstalledVersion() {
-        if (installedVersion == null) {
-            try {
-                ObjectNode packageNode = OBJECT_MAPPER.readValue(Files.readString(ZIGBEE_2_MQTT_PATH.resolve("package.json")), ObjectNode.class);
-                installedVersion = packageNode.get("version").asText();
-            } catch (Exception ex) {
-                installedVersion = "-.-.-";
-            }
-        }
-        return installedVersion;
+        progressBar.progress(100, format("Zigbee2mqtt 'V%s' has been installed successfully", version));
     }
 
     public static synchronized void collectZ2MConverters(EntityContext entityContext) {
@@ -290,20 +278,22 @@ public final class ZigBeeUtil {
         }
     }
 
-    @Nullable
-    public static String getZ2MVersionToInstall(EntityContext entityContext) {
+    public static @NotNull String getZ2MVersionToInstall(EntityContext entityContext) {
         String version = entityContext.setting().getEnv("zigbee2mqtt-version");
         if (StringUtils.isEmpty(version)) {
             version = zigbee2mqttGitHub.getLastReleaseVersion();
         }
-        return version;
+        return Objects.requireNonNull(version);
     }
 
     public static void installZ2M(EntityContext entityContext, Runnable runnable) {
+        String version = getZ2MVersionToInstall(entityContext);
+        if (version.equals(zigbee2mqttGitHub.getInstalledVersion())) {
+            return;
+        }
         entityContext.bgp().runWithProgress("install-z2m").execute(progressBar -> {
-            String version = getZ2MVersionToInstall(entityContext);
-            zigbee2mqttGitHub.updating("z2m", ZIGBEE_2_MQTT_PATH, progressBar, projectUpdate -> {
-                ZigBeeUtil.installOrUpdateZ2M(false, progressBar, entityContext, version, projectUpdate);
+            zigbee2mqttGitHub.updateWithBackup("z2m", progressBar, projectUpdate -> {
+                ZigBeeUtil.installOrUpdateZ2M(entityContext, version, projectUpdate);
                 return null;
             });
             runnable.run();

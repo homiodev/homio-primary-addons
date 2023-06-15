@@ -353,11 +353,13 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
 
     @Override
     public void addListener(String topic, String discriminator, Consumer<Object> listener) {
+        log.info("[{}]: Add mqtt listener for '{}' topic", getEntityID(), topic);
         getEntityContext().event().addEventBehaviourListener(getEntityID() + "~~~" + topic, discriminator, listener);
     }
 
     @Override
     public void removeListener(String topic, String discriminator) {
+        log.info("[{}]: Remove mqtt listener from '{}' topic", getEntityID(), topic);
         getEntityContext().event().removeEventListener(discriminator, getEntityID() + "~~~" + topic);
     }
 }

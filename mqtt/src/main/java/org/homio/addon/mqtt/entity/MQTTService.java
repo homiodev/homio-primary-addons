@@ -43,7 +43,6 @@ import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.service.EntityService;
 import org.homio.api.storage.DataStorageService;
-import org.homio.api.storage.InMemoryDB;
 import org.homio.api.storage.SourceHistory;
 import org.homio.api.storage.SourceHistoryItem;
 import org.homio.api.ui.UI;
@@ -75,7 +74,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         this.entity = entity;
         this.entityID = entity.getEntityID();
         this.entityContext = entityContext;
-        this.storage = InMemoryDB.getOrCreateService(MQTTMessage.class, entityID, (long) entity.getHistorySize());
+        this.storage = entityContext.storage().getOrCreateInMemoryService(MQTTMessage.class, entityID, (long) entity.getHistorySize());
 
         MQTTExplorerConsolePlugin mqttPlugin = new MQTTExplorerConsolePlugin(entityContext, this);
         this.entityContext.ui().registerConsolePlugin(entityID, mqttPlugin);

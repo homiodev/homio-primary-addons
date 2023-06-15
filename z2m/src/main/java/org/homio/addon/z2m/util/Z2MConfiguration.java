@@ -3,6 +3,7 @@ package org.homio.addon.z2m.util;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,8 +20,8 @@ public class Z2MConfiguration extends UnknownOptions {
     private Mqtt mqtt = new Mqtt();
     private Serial serial = new Serial();
     private Frontend frontend = new Frontend();
-    private Map<String, ObjectNode> devices;
-    private Advanced advanced;
+    private Map<String, ObjectNode> devices = new HashMap<>();
+    private Advanced advanced = new Advanced();
 
     @Getter
     @Setter

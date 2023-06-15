@@ -1,5 +1,7 @@
 package org.homio.addon.z2m.model;
 
+import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import java.util.Collection;
@@ -17,7 +19,6 @@ import lombok.extern.log4j.Log4j2;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MLocalCoordinatorService;
 import org.homio.addon.z2m.util.Z2MDeviceModel;
-import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextService;
 import org.homio.api.EntityContextService.MQTTEntityService;
@@ -176,6 +177,13 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         return getService().restartZ2M();
     }
 
+    @UIContextMenuAction(value = "REINSTALL",
+                         icon = "fas fa-trash-can-arrow-up",
+                         iconColor = Color.RED)
+    public ActionResponseModel reinstall() {
+        return getService().reinstallZ2M();
+    }
+
     @Override
     public @NotNull Class<Z2MLocalCoordinatorService> getEntityServiceItemClass() {
         return Z2MLocalCoordinatorService.class;
@@ -225,7 +233,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     @Override
     @UIField(order = 1, hideInEdit = true)
     public String getFirmwareVersion() {
-        return ZigBeeUtil.getInstalledVersion();
+        return zigbee2mqttGitHub.getInstalledVersion();
     }
 
     @Getter

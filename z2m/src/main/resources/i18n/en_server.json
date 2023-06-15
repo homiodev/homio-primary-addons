@@ -9,6 +9,7 @@
       "question": "Do you want create new zigbee coordinator?"
     },
     "ERROR": {
+      "DELETE": "Unable to delete z2m directory {{VALUE}}. Please, remove directory manually and fire re-install z2m",
       "PORT_NOT_FOUND": "No {{VALUE}} port found"
     }
   }
