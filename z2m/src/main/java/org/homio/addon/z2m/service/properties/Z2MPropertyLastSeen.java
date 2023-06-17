@@ -24,9 +24,12 @@ public class Z2MPropertyLastSeen extends Z2MDynamicProperty {
     }
 
     private Number parseLastSeen(JSONObject jsonObject) {
-        String value = jsonObject.getString(LAST_SEEN);
+        Object value = jsonObject.get(LAST_SEEN);
+        if (value == null) {
+            return System.currentTimeMillis();
+        }
         try {
-            TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(value);
+            TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(value.toString());
             Instant i = Instant.from(ta);
             return i.toEpochMilli();
         } catch (Exception ex) {

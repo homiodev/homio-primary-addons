@@ -1,13 +1,12 @@
 package org.homio.addon.z2m.service.properties;
 
+import org.homio.addon.z2m.service.Z2MDeviceService;
+import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.service.properties.dynamic.Z2MPropertyActionEvent;
 import org.homio.addon.z2m.util.Z2MDevicePropertiesModel;
-import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
 import org.homio.api.state.StringType;
-import org.homio.addon.z2m.service.Z2MDeviceService;
-import org.homio.addon.z2m.service.Z2MProperty;
 import org.json.JSONObject;
 
 public class Z2MPropertyAction extends Z2MProperty {
@@ -17,7 +16,7 @@ public class Z2MPropertyAction extends Z2MProperty {
     }
 
     public static Z2MPropertyActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {
-        Z2MDevicePropertiesModel z2MDevicePropertiesModel = ZigBeeUtil.DEVICE_PROPERTIES.get(action);
+        Z2MDevicePropertiesModel z2MDevicePropertiesModel = deviceService.getConfigService().getDeviceProperties().get(action);
         Z2MPropertyActionEvent z2MPropertyActionEvent = new Z2MPropertyActionEvent(deviceService, action, z2MDevicePropertiesModel);
         entityContext.ui().updateItem(deviceService.getDeviceEntity());
         return z2MPropertyActionEvent;

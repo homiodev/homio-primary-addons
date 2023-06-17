@@ -418,13 +418,15 @@
     {
       "name": "Wall switch (2 button)",
       "model": [
-        "QBKG12LM"
+        "QBKG12LM",
+        "QBKG04LM"
       ],
       "icon": "fas fa-square-check",
       "iconColor": "#B5C64E",
       "widgets": [
         {
           "type": "toggle",
+          "name": "BUTTON",
           "autoDiscovery": true
         }
       ]
@@ -625,11 +627,6 @@
       "icon": "fa-sliders-h",
       "iconColor": "#7D37C2",
       "order": 2920
-    },
-    {
-      "name": "power_outage_count",
-      "icon": "fa-plug-circle-xmark",
-      "iconColor": "#32D1B9"
     },
     {
       "name": "linkquality",

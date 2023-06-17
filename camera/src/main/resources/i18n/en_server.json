@@ -1,4 +1,7 @@
 {
+  "ERROR": {
+    "CAMERA_PORT_BUSY": "Port already in use:  {{VALUE}}"
+  },
   "CAMERA": {
     "OFFLINE": "Camera is offline"
   },

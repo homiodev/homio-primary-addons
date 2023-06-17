@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.setting.ZigBeeEntityCompactModeSetting;
-import org.homio.addon.z2m.util.ZigBeeUtil;
+import org.homio.addon.z2m.util.Z2MPropertyConfigService;
 import org.homio.api.AddonEntrypoint;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.BaseEntity;
@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 public class Z2MEntrypoint implements AddonEntrypoint {
 
     private final EntityContext entityContext;
+    private final Z2MPropertyConfigService configService;
     public static final String Z2M_RESOURCE = "ROLE_Z2M";
 
     @Override
@@ -54,10 +55,12 @@ public class Z2MEntrypoint implements AddonEntrypoint {
                     coordinator.getService().restartCoordinator());
             });
 
-        entityContext.event().runOnceOnInternetUp("z2m-fetch-devices", () -> {
-            String uri = entityContext.setting().getEnv("zigbee2mqtt-devices-uri");
-            entityContext.bgp().builder("fetch-z2m-devices").interval(Duration.ofHours(24)).execute(() -> ZigBeeUtil.reloadZdFileIfRequire(uri));
-        });
+        entityContext.bgp().builder("z2m-config-reader")
+                     .delay(Duration.ofHours(1))
+                     .interval(Duration.ofHours(24))
+                     .execute(() -> {
+                         configService.checkConfiguration();
+                     });
     }
 
     private <T extends BaseEntity & ZigBeeBaseCoordinatorEntity> void testCoordinators(List<T> entities, Map<String, SerialPort> ports,
@@ -80,7 +83,7 @@ public class Z2MEntrypoint implements AddonEntrypoint {
                 if (Objects.equals(serialPort.getDescriptivePortName(), coordinator.getPortD())) {
                     log.info("[{}]: Coordinator port changed from {} -> {}", coordinator.getEntityID(), coordinator.getPort(),
                         serialPort.getSystemPortName());
-                    entityContext.save((T)coordinator.setSerialPort(serialPort));
+                    entityContext.save((T) coordinator.setSerialPort(serialPort));
                 }
             }
         }

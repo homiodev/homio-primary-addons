@@ -12,15 +12,15 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.homio.addon.z2m.model.Z2MDeviceEntity;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options.Chart;
+import org.homio.addon.z2m.widget.WidgetBuilder.MainWidgetRequest;
 import org.homio.api.EntityContextVar.VariableType;
 import org.homio.api.EntityContextWidget.Fill;
 import org.homio.api.EntityContextWidget.Stepped;
 import org.homio.api.EntityContextWidget.ToggleType;
 import org.homio.api.entity.widget.AggregationType;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
-import org.homio.addon.z2m.model.Z2MDeviceEntity;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options.Chart;
-import org.homio.addon.z2m.widget.WidgetBuilder.MainWidgetRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,7 +63,8 @@ public class Z2MDeviceDefinitionModel {
         @Getter
         private @Nullable String rightProperty;
         private @Nullable List<ItemDefinition> props;
-        @Getter private @Nullable List<WidgetDefinition> compose;
+        @Getter
+        private @Nullable List<WidgetDefinition> compose;
         private @Nullable String icon;
         // specify ui label(useful in case of 'compose' widget type)
         private @Nullable String name;
@@ -74,7 +75,7 @@ public class Z2MDeviceDefinitionModel {
         @Getter
         private @Nullable List<Requests> requests;
 
-        public @NotNull List<ZigBeeProperty> getProps(Z2MDeviceEntity z2MDeviceEntity) {
+        public @NotNull List<ZigBeeProperty> getProperties(Z2MDeviceEntity z2MDeviceEntity) {
             if (this.isAutoDiscovery()) {
                 if (type == WidgetType.toggle) {
                     return z2MDeviceEntity.getDeviceService().getProperties().values().stream()
@@ -90,7 +91,7 @@ public class Z2MDeviceDefinitionModel {
                 if (getCompose() == null) {
                     throw new IllegalArgumentException("compose type has to have compose array");
                 }
-                stream = getCompose().stream().flatMap(s -> s.getProps(z2MDeviceEntity).stream());
+                stream = getCompose().stream().flatMap(s -> s.getProperties(z2MDeviceEntity).stream());
             }
             return stream.filter(Objects::nonNull).collect(Collectors.toList());
         }
@@ -112,7 +113,7 @@ public class Z2MDeviceDefinitionModel {
         public List<ZigBeeProperty> getIncludeProperties(MainWidgetRequest request) {
             Set<String> topIncludeProperties = request.getWidgetRequest().getIncludeProperties().stream()
                                                       .map(ZigBeeProperty::getKey).collect(Collectors.toSet());
-            List<ZigBeeProperty> allPossibleProperties = request.getItem().getProps(request.getWidgetRequest().getEntity());
+            List<ZigBeeProperty> allPossibleProperties = request.getItem().getProperties(request.getWidgetRequest().getEntity());
             return allPossibleProperties.stream()
                                         .filter(zigBeeProperty -> topIncludeProperties.contains(zigBeeProperty.getKey()))
                                         .collect(Collectors.toList());

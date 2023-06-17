@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.service.properties.Z2MPropertyAction;
@@ -24,7 +25,7 @@ import org.homio.addon.z2m.service.properties.dynamic.Z2MPropertyUnknown;
 import org.homio.addon.z2m.util.Z2MDeviceModel;
 import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition.Options;
 import org.homio.addon.z2m.util.Z2MDevicePropertiesModel;
-import org.homio.addon.z2m.util.ZigBeeUtil;
+import org.homio.addon.z2m.util.Z2MPropertyConfigService;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
@@ -42,12 +43,14 @@ public class Z2MDeviceService {
     private final Map<String, Z2MProperty> properties = new ConcurrentHashMap<>();
     private final Z2MDeviceEntity deviceEntity;
     private final EntityContext entityContext;
+    private final Z2MPropertyConfigService configService;
     private String availability;
     private Z2MDeviceModel device;
     private boolean initialized = false;
 
     public Z2MDeviceService(Z2MLocalCoordinatorService coordinatorService, Z2MDeviceModel device) {
         this.coordinatorService = coordinatorService;
+        this.configService = coordinatorService.getConfigService();
         this.entityContext = coordinatorService.getEntityContext();
         this.deviceEntity = new Z2MDeviceEntity(this, device.getIeeeAddress());
         changeDeviceModel(device);
@@ -111,6 +114,9 @@ public class Z2MDeviceService {
             status = Status.DISABLED;
         } else if (device.isInterviewing()) {
             status = Status.INITIALIZE;
+        } else if (!device.isInterviewCompleted() || !device.isSupported() ||
+            (StringUtils.isEmpty(device.getType()) || "UNKNOWN".equalsIgnoreCase(device.getType()))) {
+            status = Status.NOT_READY;
         }
         deviceEntity.setEntityStatus(status);
     }
@@ -246,10 +252,10 @@ public class Z2MDeviceService {
     }
 
     private Z2MProperty buildExposeProperty(Options expose) {
-        Class<? extends Z2MProperty> z2mCluster = getValueFromMap(ZigBeeUtil.z2mConverters, expose);
+        Class<? extends Z2MProperty> z2mCluster = getValueFromMap(configService.getConverters(), expose);
         Z2MProperty z2MProperty;
         if (z2mCluster == null) {
-            Z2MDevicePropertiesModel z2MDevicePropertiesModel = getValueFromMap(ZigBeeUtil.DEVICE_PROPERTIES, expose);
+            Z2MDevicePropertiesModel z2MDevicePropertiesModel = getValueFromMap(configService.getDeviceProperties(), expose);
             if (z2MDevicePropertiesModel != null) {
                 z2MProperty = new Z2MGeneralProperty(z2MDevicePropertiesModel.getIconColor(), z2MDevicePropertiesModel.getIcon());
                 z2MProperty.setUnit(z2MDevicePropertiesModel.getUnit());
@@ -265,8 +271,8 @@ public class Z2MDeviceService {
 
     private void createOrUpdateDeviceGroup() {
         Icon icon = new Icon(
-            ZigBeeUtil.getDeviceIcon(this.device.getModelId(), "fas fa-server"),
-            ZigBeeUtil.getDeviceIconColor(this.device.getModelId(), Color.random())
+            configService.getDeviceIcon(this.device.getModelId(), "fas fa-server"),
+            configService.getDeviceIconColor(this.device.getModelId(), Color.random())
         );
         entityContext.var().createGroup("z2m", this.deviceEntity.getEntityID(), getDeviceFullName(), true,
             icon, this.device.getGroupDescription());

@@ -34,7 +34,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.homio.addon.mqtt.console.MQTTExplorerConsolePlugin;
 import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
 import org.homio.addon.mqtt.setting.ConsoleMQTTClearHistorySetting;
-import org.homio.addon.mqtt.setting.ConsoleRemoveNodeHeaderButtonSetting;
+import org.homio.addon.mqtt.setting.ConsoleRemoveMqttTreeNodeHeaderButtonSetting;
 import org.homio.api.EntityContext;
 import org.homio.api.fs.TreeConfiguration;
 import org.homio.api.fs.TreeNode;
@@ -89,7 +89,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         entityContext.setting().listenValue(ConsoleMQTTClearHistorySetting.class, entityID + "-mqtt-clear-history",
             this::clearHistory);
 
-        entityContext.setting().listenValue(ConsoleRemoveNodeHeaderButtonSetting.class, "mqtt-remove-node", data -> {
+        entityContext.setting().listenValue(ConsoleRemoveMqttTreeNodeHeaderButtonSetting.class, "mqtt-remove-node", data -> {
             if (data != null && this.entityID.equals(data.getTabID())) {
                 TreeNode removedTopic = this.removeTopic(data.getNodeID());
                 if (removedTopic != null) {

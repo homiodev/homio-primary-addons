@@ -7,32 +7,18 @@ import static org.homio.addon.z2m.util.Z2MDeviceModel.COMPOSITE_TYPE;
 import static org.homio.addon.z2m.util.Z2MDeviceModel.ENUM_TYPE;
 import static org.homio.addon.z2m.util.Z2MDeviceModel.NUMBER_TYPE;
 import static org.homio.addon.z2m.util.Z2MDeviceModel.SWITCH_TYPE;
-import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
-import static org.homio.api.util.CommonUtils.getErrorMessage;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.file.PathUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.service.properties.Z2MPropertyColor;
-import org.homio.addon.z2m.service.properties.dynamic.Z2MDynamicProperty;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextHardware;
 import org.homio.api.model.ActionResponseModel;
@@ -47,86 +33,15 @@ import org.homio.api.ui.field.action.v1.item.UIInfoItemBuilder.InfoType;
 import org.homio.api.ui.field.action.v1.item.UISelectBoxItemBuilder;
 import org.homio.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.homio.api.util.CommonUtils;
-import org.homio.api.util.Curl;
 import org.homio.api.util.Lang;
 import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public final class ZigBeeUtil {
 
-    private static final Path ZIGBEE_DEFINITION_FILE = CommonUtils.getConfigPath().resolve("zigbee-devices.json");
-
-    /**
-     * Properties market with defined color, icon, etc...
-     */
-    public static Map<String, Z2MDevicePropertiesModel> DEVICE_PROPERTIES;
-
-    public static final GitHubProject zigbee2mqttGitHub = GitHubProject.of("Koenkk", "zigbee2mqtt",
-        CommonUtils.getInstallPath().resolve("zigbee2mqtt"));
-    /**
-     * Contains model/icon/iconColor/some setting config i.e. occupancy_timeout min..max values
-     */
-
-    private static Map<String, Z2MDeviceDefinitionModel> DEVICE_DEFINITIONS;
-
-    public static Map<String, Class<? extends Z2MProperty>> z2mConverters = new HashMap<>();
-
-    @Getter
-    private static long zdFileSize;
-
-    static {
-        try {
-            URL localZdFile = Objects.requireNonNull(ZigBeeUtil.class.getClassLoader().getResource("zigbee-devices.json"));
-            if (!Files.exists(ZIGBEE_DEFINITION_FILE)) {
-                PathUtils.copy(localZdFile::openStream, ZIGBEE_DEFINITION_FILE);
-            }
-            zdFileSize = Files.size(ZIGBEE_DEFINITION_FILE);
-            readZigbeeDevices();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    public static void reloadZdFileIfRequire(String uri) {
-        try {
-            if (zdFileSize != Curl.getFileSize(uri)) {
-                log.info("Download new zb file");
-                Curl.download(uri, ZIGBEE_DEFINITION_FILE);
-                zdFileSize = Files.size(ZIGBEE_DEFINITION_FILE);
-                readZigbeeDevices();
-            } else {
-                log.info("ZB file same size");
-            }
-        } catch (Exception ex) {
-            log.warn("Unable to reload zd file: {}", getErrorMessage(ex));
-        }
-    }
-
-    @SneakyThrows
-    public static void readZigbeeDevices() {
-        Z2MDeviceDefinitionsModel deviceConfigurations = OBJECT_MAPPER.readValue(ZIGBEE_DEFINITION_FILE.toFile(), Z2MDeviceDefinitionsModel.class);
-
-        var definitions = new HashMap<String, Z2MDeviceDefinitionModel>();
-        for (Z2MDeviceDefinitionModel node : deviceConfigurations.getDevices()) {
-            for (String model : node.getModel()) {
-                definitions.put(model, node);
-            }
-        }
-
-        var properties = new HashMap<String, Z2MDevicePropertiesModel>();
-        for (Z2MDevicePropertiesModel z2MDevicePropertiesModel : deviceConfigurations.getProperties()) {
-            properties.put(z2MDevicePropertiesModel.getName(), z2MDevicePropertiesModel);
-            if (z2MDevicePropertiesModel.getAlias() != null) {
-                for (String alias : z2MDevicePropertiesModel.getAlias()) {
-                    properties.put(alias, z2MDevicePropertiesModel);
-                }
-                z2MDevicePropertiesModel.setAlias(null);
-            }
-        }
-
-        DEVICE_DEFINITIONS = definitions;
-        DEVICE_PROPERTIES = properties;
-    }
+    public static final GitHubProject zigbee2mqttGitHub =
+        GitHubProject.of("Koenkk", "zigbee2mqtt",
+            CommonUtils.getInstallPath().resolve("zigbee2mqtt"));
 
     public static void zigbeeScanStarted(
         @NotNull EntityContext entityContext,
@@ -149,29 +64,6 @@ public final class ZigBeeUtil {
                          onDurationTimedOutHandler.run();
                          entityContext.ui().removeHeaderButton("zigbee-scan-" + entityID);
                      });
-    }
-
-    public static @NotNull String getDeviceIcon(@NotNull String modelId, @NotNull String defaultIcon) {
-        return DEVICE_DEFINITIONS.containsKey(modelId) ? DEVICE_DEFINITIONS.get(modelId).getIcon() : defaultIcon;
-    }
-
-    public static @NotNull String getDeviceIconColor(@NotNull String modelId, @NotNull String defaultIconColor) {
-        return DEVICE_DEFINITIONS.containsKey(modelId) ? DEVICE_DEFINITIONS.get(modelId).getIconColor() : defaultIconColor;
-    }
-
-    public static @NotNull List<WidgetDefinition> getDeviceWidgets(@NotNull String modelId) {
-        List<WidgetDefinition> list = null;
-        if (DEVICE_DEFINITIONS.containsKey(modelId)) {
-            list = DEVICE_DEFINITIONS.get(modelId).getWidgets();
-        }
-        return list == null ? Collections.emptyList() : list;
-    }
-
-    public static @NotNull JsonNode getDeviceOptions(@NotNull String modelId) {
-        Z2MDeviceDefinitionModel z2MDeviceDefinitionModel = DEVICE_DEFINITIONS.get(modelId);
-        JsonNode options = z2MDeviceDefinitionModel == null ? null : z2MDeviceDefinitionModel.getOptions();
-        ObjectNode empty = OBJECT_MAPPER.createObjectNode();
-        return options == null ? empty : options;
     }
 
     public static @NotNull UIInputBuilder buildZigbeeActions(@NotNull Z2MProperty property, @NotNull String entityID) {
@@ -225,10 +117,6 @@ public final class ZigBeeUtil {
         return StringUtils.capitalize(String.join(" ", items));
     }
 
-    public static int compareProperty(@NotNull String name1, @NotNull String name2) {
-        return Integer.compare(getPropertyOrder(name1), getPropertyOrder(name2));
-    }
-
     public static boolean isZ2MInstalled() {
         Path zigbee2mqttPackagePath = zigbee2mqttGitHub.getLocalProjectPath().resolve("node_modules");
         return Files.exists(zigbee2mqttPackagePath);
@@ -265,19 +153,6 @@ public final class ZigBeeUtil {
         progressBar.progress(100, format("Zigbee2mqtt 'V%s' has been installed successfully", version));
     }
 
-    public static synchronized void collectZ2MConverters(EntityContext entityContext) {
-        if (z2mConverters == null) {
-            z2mConverters = new HashMap<>();
-            List<Class<? extends Z2MProperty>> z2mClusters = entityContext.getClassesWithParent(Z2MProperty.class);
-            for (Class<? extends Z2MProperty> z2mCluster : z2mClusters) {
-                if (!Z2MDynamicProperty.class.isAssignableFrom(z2mCluster)) {
-                    Z2MProperty z2MProperty = CommonUtils.newInstance(z2mCluster);
-                    z2mConverters.put(z2MProperty.getPropertyDefinition(), z2mCluster);
-                }
-            }
-        }
-    }
-
     public static @NotNull String getZ2MVersionToInstall(EntityContext entityContext) {
         String version = entityContext.setting().getEnv("zigbee2mqtt-version");
         if (StringUtils.isEmpty(version)) {
@@ -298,16 +173,6 @@ public final class ZigBeeUtil {
             });
             runnable.run();
         });
-    }
-
-    private static int getPropertyOrder(@NotNull String name) {
-        int order = Optional.ofNullable(DEVICE_PROPERTIES.get(name))
-                            .map(Z2MDevicePropertiesModel::getOrder)
-                            .orElse(0);
-        if (order == 0) {
-            order = name.charAt(0) * 10 + name.charAt(1);
-        }
-        return order;
     }
 
     /**

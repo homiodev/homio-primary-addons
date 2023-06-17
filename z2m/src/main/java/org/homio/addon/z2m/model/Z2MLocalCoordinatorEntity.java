@@ -4,6 +4,7 @@ import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import org.homio.api.EntityContext;
 import org.homio.api.EntityContextService;
 import org.homio.api.EntityContextService.MQTTEntityService;
 import org.homio.api.entity.BaseEntity;
+import org.homio.api.entity.HasFirmwareVersion;
 import org.homio.api.entity.types.MicroControllerBaseEntity;
 import org.homio.api.entity.types.StorageEntity;
 import org.homio.api.entity.validation.UIFieldValidationSize;
@@ -31,7 +33,6 @@ import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.exception.ProhibitedExecution;
 import org.homio.api.model.ActionResponseModel;
-import org.homio.api.model.HasFirmwareVersion;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
@@ -40,6 +41,7 @@ import org.homio.api.ui.field.UIFieldIgnore;
 import org.homio.api.ui.field.UIFieldLinkToEntity;
 import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.action.UIContextMenuAction;
+import org.homio.api.ui.field.color.UIFieldColorRef;
 import org.homio.api.ui.field.inline.UIFieldInlineEntities;
 import org.homio.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.homio.api.ui.field.selection.UIFieldEntityTypeSelection;
@@ -172,6 +174,8 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
     @UIContextMenuAction(value = "RESTART",
                          icon = "fas fa-power-off",
+                         confirmMessage = "W.CONFIRM.Z2M_RESTART",
+                         confirmMessageDialogColor = "#4E481E",
                          iconColor = Color.RED)
     public ActionResponseModel restart() {
         return getService().restartZ2M();
@@ -179,6 +183,8 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
     @UIContextMenuAction(value = "REINSTALL",
                          icon = "fas fa-trash-can-arrow-up",
+                         confirmMessage = "W.CONFIRM.Z2M_REINSTALL",
+                         confirmMessageDialogColor = "#672E18",
                          iconColor = Color.RED)
     public ActionResponseModel reinstall() {
         return getService().reinstallZ2M();
@@ -197,8 +203,13 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
     @Override
     public void logBuilder(EntityLogBuilder entityLogBuilder) {
-        entityLogBuilder.addTopicFilterByEntityID("org.homio.addon.zigbee");
+        entityLogBuilder.addTopicFilterByEntityID("org.homio");
         entityLogBuilder.addTopic(Z2MLocalCoordinatorService.class);
+    }
+
+    @Override
+    public @Nullable Path getExtraLogFile() {
+        return zigbee2mqttGitHub.getLocalProjectPath().resolve("data/log/log.txt");
     }
 
     /**
@@ -242,21 +253,29 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
         @UIField(order = 1)
         @UIFieldInlineEntityWidth(35)
+        @UIFieldLinkToEntity(ZigBeeDeviceBaseEntity.class)
         private String ieeeAddress;
 
         @UIField(order = 2)
-        @UIFieldLinkToEntity(ZigBeeDeviceBaseEntity.class)
+        @UIFieldColorRef("color")
         private String name;
 
         @UIField(order = 4)
         @UIFieldInlineEntityWidth(10)
         private int endpointsCount;
 
+        private String color;
+
         public ZigBeeCoordinatorDeviceEntity(Z2MDeviceService deviceHandler) {
             Z2MDeviceModel z2MDeviceModel = deviceHandler.getDevice();
-            this.ieeeAddress = z2MDeviceModel.getIeeeAddress();
-            this.name = deviceHandler.getDeviceEntity().getEntityID() + "~~~" + z2MDeviceModel.getName();
-            this.endpointsCount = z2MDeviceModel.getDefinition().getExposes().size();
+            ieeeAddress = z2MDeviceModel.getIeeeAddress().toUpperCase();
+            color = deviceHandler.getDeviceEntity().getStatus().getColor();
+            //String title = deviceHandler.getDeviceEntity().getTitle();
+            //  if (ieeeAddress.equals(title)) {
+            name = deviceHandler.getDeviceEntity().getCompactDescription();
+            //}
+            //  name = deviceHandler.getDeviceEntity().getEntityID() + "~~~" + title;
+            endpointsCount = z2MDeviceModel.getDefinition().getExposes().size();
         }
     }
 }

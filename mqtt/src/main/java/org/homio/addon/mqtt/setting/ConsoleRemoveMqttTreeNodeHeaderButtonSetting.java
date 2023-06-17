@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.homio.addon.mqtt.setting.ConsoleRemoveNodeHeaderButtonSetting.NodeRemoveRequest;
+import org.homio.addon.mqtt.setting.ConsoleRemoveMqttTreeNodeHeaderButtonSetting.NodeRemoveRequest;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
 import org.homio.api.setting.SettingPlugin;
@@ -16,7 +16,7 @@ import org.json.JSONObject;
 /**
  * 'Remove button' console header button for tree/table console blocks.
  */
-public class ConsoleRemoveNodeHeaderButtonSetting implements
+public class ConsoleRemoveMqttTreeNodeHeaderButtonSetting implements
     ConsoleHeaderSettingPlugin<NodeRemoveRequest>,
     SettingPlugin<NodeRemoveRequest> {
 
@@ -32,7 +32,7 @@ public class ConsoleRemoveNodeHeaderButtonSetting implements
 
     @Override
     public Class<NodeRemoveRequest> getType() {
-        return ConsoleRemoveNodeHeaderButtonSetting.NodeRemoveRequest.class;
+        return ConsoleRemoveMqttTreeNodeHeaderButtonSetting.NodeRemoveRequest.class;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ConsoleRemoveNodeHeaderButtonSetting implements
     }
 
     public String getConfirmMsg() {
-        return "REMOVE_NODE_TITLE";
+        return "W.CONFIRM.MQTT_DELETE";
     }
 
     @Override

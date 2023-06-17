@@ -1,16 +1,16 @@
 package org.homio.addon.mqtt.entity;
 
-import java.util.Objects;
 import jakarta.persistence.Entity;
-import org.homio.api.model.HasEntityLog;
-import org.homio.api.model.HasFirmwareVersion;
+import java.util.Objects;
+import org.homio.addon.mqtt.workspace.Scratch3MQTTBlocks;
+import org.homio.api.entity.HasEntityLog;
+import org.homio.api.entity.HasFirmwareVersion;
 import org.homio.api.model.Icon;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
 import org.homio.api.ui.field.UIFieldIgnore;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.util.SecureString;
-import org.homio.addon.mqtt.workspace.Scratch3MQTTBlocks;
 import org.jetbrains.annotations.NotNull;
 
 @Entity

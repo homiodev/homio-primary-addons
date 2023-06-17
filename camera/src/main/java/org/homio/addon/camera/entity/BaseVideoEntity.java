@@ -270,9 +270,9 @@ public abstract class BaseVideoEntity<T extends BaseVideoEntity, S extends BaseV
         setJsonData("audioThreshold", value);
     }
 
-    // this is parameter handles when motion/audo detects or when fires snapshot.mjpeg
+    // this is parameter handles when motion/audio detects or when fires snapshot.mjpeg
     @UIField(order = 30)
-    @UIFieldSlider(min = 1, max = 10)
+    @UIFieldSlider(min = 1, max = 30)
     @UIFieldGroup(value = "STREAMING", order = 20, borderColor = "#773FD1")
     public int getSnapshotPollInterval() {
         return getJsonData("spi", 1);

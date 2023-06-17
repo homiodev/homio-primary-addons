@@ -25,7 +25,7 @@ import org.homio.addon.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 import org.homio.addon.camera.onvif.util.IpCameraBindingConstants;
 import org.homio.addon.camera.service.BaseVideoService;
 import org.homio.api.EntityContext;
-import org.homio.api.model.KeyValueEnum;
+import org.homio.api.model.OptionModel.KeyValueEnum;
 import org.homio.api.state.DecimalType;
 import org.homio.api.state.OnOffType;
 import org.homio.api.state.RawType;

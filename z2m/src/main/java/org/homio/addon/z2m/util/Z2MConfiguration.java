@@ -28,6 +28,8 @@ public class Z2MConfiguration extends UnknownOptions {
     public static class Advanced extends UnknownOptions {
 
         private String last_seen = "epoch";
+        private String log_directory = "data/log";
+        private String log_file = "log.txt";
     }
 
     @Getter

@@ -7,14 +7,14 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.homio.addon.mqtt.MQTTEntrypoint;
+import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
 import org.homio.addon.mqtt.entity.MQTTService;
-import org.homio.addon.mqtt.setting.ConsoleRemoveNodeHeaderButtonSetting;
+import org.homio.addon.mqtt.setting.ConsoleRemoveMqttTreeNodeHeaderButtonSetting;
 import org.homio.api.EntityContext;
 import org.homio.api.console.ConsolePluginTree;
 import org.homio.api.fs.TreeConfiguration;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.setting.console.header.ConsoleHeaderSettingPlugin;
-import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
 import org.json.JSONObject;
 
 @Log4j2
@@ -67,8 +67,8 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
   @Override
   public Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> getHeaderActions() {
     Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> headerActions = new LinkedHashMap<>();
-    headerActions.put("publish", ConsoleMQTTPublishButtonSetting.class);
-    headerActions.put("remove", ConsoleRemoveNodeHeaderButtonSetting.class);
+      headerActions.put("publish", ConsoleMQTTPublishButtonSetting.class);
+      headerActions.put("remove", ConsoleRemoveMqttTreeNodeHeaderButtonSetting.class);
     return headerActions;
   }
 

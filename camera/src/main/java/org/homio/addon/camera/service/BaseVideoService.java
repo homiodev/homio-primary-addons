@@ -19,6 +19,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,6 +52,7 @@ import org.homio.api.EntityContextBGP.ThreadContext;
 import org.homio.api.EntityContextMedia.FFMPEG;
 import org.homio.api.EntityContextMedia.FFMPEGFormat;
 import org.homio.api.EntityContextMedia.FFMPEGHandler;
+import org.homio.api.exception.ServerException;
 import org.homio.api.model.Status;
 import org.homio.api.service.EntityService;
 import org.homio.api.state.DecimalType;
@@ -398,9 +400,12 @@ public abstract class BaseVideoService<T extends BaseVideoEntity>
                 serverFuture.await(4000);
                 log.info("[{}]: File server for video at {} has started on port {} for all NIC's.", getEntityID(), getEntity(),
                     serverPort);
-            } catch (Exception e) {
+            } catch (Exception ex) {
+                if (ex instanceof BindException) {
+                    throw new ServerException("ERROR.CAMERA_PORT_BUSY", serverPort);
+                }
                 throw new IllegalStateException(
-                    "Exception when starting server. Try changing the Server Port to another number.");
+                    "Exception when starting server: " + CommonUtils.getErrorMessage(ex));
             }
             this.streamServerStarted();
         }
@@ -586,16 +591,14 @@ public abstract class BaseVideoService<T extends BaseVideoEntity>
     }
 
     private void dispose() {
-        if (isHandlerInitialized) {
-            log.info("[{}]: Dispose video: <{}>", entityID, getEntity());
-            isHandlerInitialized = false;
-            disposeVideoConnectionJob();
-            disposePollVideoJob();
-            try {
-                dispose0();
-            } catch (Exception ex) {
-                log.error("[{}]: Error while dispose video: <{}>", entityID, getEntity(), ex);
-            }
+        log.info("[{}]: Dispose video: <{}>", entityID, getEntity());
+        isHandlerInitialized = false;
+        disposeVideoConnectionJob();
+        disposePollVideoJob();
+        try {
+            dispose0();
+        } catch (Exception ex) {
+            log.error("[{}]: Error while dispose video: <{}>", entityID, getEntity(), ex);
         }
     }
 

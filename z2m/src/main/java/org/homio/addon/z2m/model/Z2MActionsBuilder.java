@@ -7,7 +7,6 @@ import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Requests;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Requests.RequestType;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetType;
-import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.addon.z2m.widget.WidgetBuilder;
 import org.homio.addon.z2m.widget.WidgetBuilder.WidgetRequest;
 import org.homio.api.EntityContext;
@@ -23,7 +22,8 @@ import org.json.JSONObject;
 public class Z2MActionsBuilder {
 
     public static void createWidgetActions(UIInputBuilder uiInputBuilder, EntityContext context, Z2MDeviceEntity entity) {
-        for (WidgetDefinition widgetDefinition : ZigBeeUtil.getDeviceWidgets(entity.getModel())) {
+        List<WidgetDefinition> widgets = entity.getConfigService().getDeviceWidgets(entity.getModel());
+        for (WidgetDefinition widgetDefinition : widgets) {
             WidgetType type = widgetDefinition.getType();
             WidgetBuilder widgetBuilder = WidgetBuilder.WIDGETS.get(type);
             if (widgetBuilder == null) {
@@ -51,7 +51,7 @@ public class Z2MActionsBuilder {
         EntityContext entityContext, JSONObject params, Z2MDeviceEntity entity) {
         String tab = params.getString("selection.dashboard_tab");
 
-        val includeProperties = widgetDefinition.getProps(entity).stream()
+        val includeProperties = widgetDefinition.getProperties(entity).stream()
                                                 .filter(pd -> params.getBoolean(pd.getKey()))
                                                 .collect(Collectors.toList());
 
@@ -68,7 +68,7 @@ public class Z2MActionsBuilder {
     }
 
     private static void addPropertyDefinitions(WidgetDefinition widgetDefinition, UIFlexLayoutBuilder flex, Z2MDeviceEntity entity) {
-        val existedProperties = widgetDefinition.getProps(entity);
+        val existedProperties = widgetDefinition.getProperties(entity);
         if (existedProperties.isEmpty()) {
             return;
         }
@@ -95,7 +95,7 @@ public class Z2MActionsBuilder {
                 }
             });
         }
-        val existedProperties = widgetDefinition.getProps(entity);
+        val existedProperties = widgetDefinition.getProperties(entity);
         if (existedProperties.isEmpty()) {
             return;
         }

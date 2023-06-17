@@ -44,6 +44,7 @@ import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.util.Z2MConfiguration;
 import org.homio.addon.z2m.util.Z2MDeviceModel;
 import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition;
+import org.homio.addon.z2m.util.Z2MPropertyConfigService;
 import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextBGP.ProcessContext;
@@ -84,6 +85,7 @@ public class Z2MLocalCoordinatorService
     private final AtomicBoolean scanStarted = new AtomicBoolean(false);
     // Map ieeeAddress - Z2MDeviceService
     @Getter private final Map<String, Z2MDeviceService> deviceHandlers = new ConcurrentHashMap<>();
+    @Getter private final Z2MPropertyConfigService configService;
 
     @Getter @NotNull private Z2MLocalCoordinatorEntity entity;
     @Getter private boolean initialized;
@@ -101,8 +103,8 @@ public class Z2MLocalCoordinatorService
         this.entity = entity;
         this.entityID = entity.getEntityID();
         this.entityContext = entityContext;
+        this.configService = entityContext.getBean(Z2MPropertyConfigService.class);
 
-        ZigBeeUtil.collectZ2MConverters(entityContext);
         installZ2MIfRequire();
     }
 
@@ -111,7 +113,9 @@ public class Z2MLocalCoordinatorService
     }
 
     public void removeMQTTListener(@NotNull Z2MDeviceModel device, @NotNull String suffix) {
-        mqttEntityService.removeListener(getDeviceTopic(device) + suffix, device.getIeeeAddress());
+        if (mqttEntityService != null) { // may be NPE during dispose if device not configured yet
+            mqttEntityService.removeListener(getDeviceTopic(device) + suffix, device.getIeeeAddress());
+        }
     }
 
     @SneakyThrows
@@ -159,6 +163,7 @@ public class Z2MLocalCoordinatorService
     }
 
     public void dispose(@Nullable Exception ex) {
+        initialized = false;
         if (ex != null) {
             this.entity.setStatusError(ex);
         } else {
@@ -177,20 +182,17 @@ public class Z2MLocalCoordinatorService
             nodePC = null;
         }
 
-        if (initialized) {
-            initialized = false;
-            log.warn("[{}]: Dispose coordinator", entityID, ex);
+        log.warn("[{}]: Dispose coordinator", entityID, ex);
 
-            entityContext.ui().unRegisterConsolePlugin("zigbee2mqtt-console-" + entityID);
-            entityContext.ui().sendWarningMessage("Dispose zigBee coordinator");
-            entityContext.ui().removeHeaderButton("discover-" + entityID);
-            for (Z2MDeviceService deviceHandler : deviceHandlers.values()) {
-                deviceHandler.dispose();
-            }
-
-            mqttEntityService = null;
-            updateNotificationBlock();
+        entityContext.ui().unRegisterConsolePlugin("zigbee2mqtt-console-" + entityID);
+        entityContext.ui().sendWarningMessage("Dispose zigBee coordinator");
+        entityContext.ui().removeHeaderButton("discover-" + entityID);
+        for (Z2MDeviceService deviceHandler : deviceHandlers.values()) {
+            deviceHandler.dispose();
         }
+
+        mqttEntityService = null;
+        updateNotificationBlock();
     }
 
     public void restartCoordinator() {
@@ -449,19 +451,52 @@ public class Z2MLocalCoordinatorService
         updateNotificationBlock();
     }
 
-    private void startZ2MLocalProcess() {
-        nodePC = entityContext
-            .bgp().processBuilder(getEntityID())
-            .onStarted(t -> setEntityOnline())
-            .onFinished((ex, responseCode) -> {
-                if (ex != null) {
-                    log.error("[{}]: Error while start zigbee2mqtt {}", entityID, getErrorMessage(ex));
-                } else {
-                    log.warn("[{}]: zigbee2mqtt nodeJs finished with status: {}", entityID, responseCode);
+    public void updateNotificationBlock() {
+        entityContext.ui().addNotificationBlock(entityID, "ZigBee2MQTT", new Icon("fas fa-bezier-curve", "#899343"), builder -> {
+            builder.setStatus(entity.getStatus());
+            builder.linkToEntity(entity);
+            builder.setUpdating(zigbee2mqttGitHub.isUpdating());
+            builder.setVersion(zigbee2mqttGitHub.getInstalledVersion());
+
+            builder.setUpdatable((progressBar, version) -> {
+                    if (!version.equals(zigbee2mqttGitHub.getInstalledVersion())) {
+                        dispose(null);
+                        return zigbee2mqttGitHub.updateWithBackup("zigbee2mqtt", progressBar, projectUpdate -> {
+                            if (!version.equals(zigbee2mqttGitHub.getInstalledVersion())) {
+                                ZigBeeUtil.installOrUpdateZ2M(entityContext, version, projectUpdate);
+                                if (entity.isStart()) {
+                                    restartCoordinator();
+                                }
+                            }
+                            return ActionResponseModel.fired();
+                        });
+                    }
+                    return ActionResponseModel.showError("Z2M same version");
+                },
+                zigbee2mqttGitHub.getReleasesSince(zigbee2mqttGitHub.getInstalledVersion(), false));
+            if (entity.getStatus().isOnline()) {
+                builder.addInfo("ACTION.SUCCESS", new Icon("fas fa-seedling", Color.GREEN));
+            } else {
+                builder.addErrorStatusInfo(entity.getStatusMessage());
+            }
+            configService.addUpdateButton(builder);
+
+            builder.contextMenuActionBuilder(contextAction -> {
+                if (!entity.isStart()) {
+                    contextAction.addSelectableButton("START", new Icon("fas fa-play", Color.PRIMARY_COLOR), (ec, params) -> {
+                        if (!entity.isStart()) {
+                            entityContext.save(entity.setStart(true));
+                            return ActionResponseModel.success();
+                        }
+                        return ActionResponseModel.showWarn("Z2M.COORDINATOR_ALREADY_STARTED");
+                    });
                 }
-                dispose(ex);
-            })
-            .execute(getNpm() + " start --prefix " + zigbee2mqttGitHub.getLocalProjectPath());
+                contextAction.addSelectableButton("ZIGBEE_START_SCAN", new Icon("fas fa-search-location", "#899343"),
+                    (ec, params) -> entity.scan());
+                contextAction.addSelectableButton("RESTART", new Icon("fas fa-power-off", Color.RED),
+                    (ec, params) -> restartZ2M());
+            });
+        });
     }
 
     private void setEntityOnline() {
@@ -594,50 +629,20 @@ public class Z2MLocalCoordinatorService
         return format("%s/bridge/%s", entity.getBasicTopic(), z2MResponse.name());
     }
 
-    private void updateNotificationBlock() {
-        entityContext.ui().addNotificationBlock(entityID, "ZigBee2MQTT", new Icon("fas fa-bezier-curve", "#899343"), builder -> {
-            builder.setStatus(entity.getStatus());
-            builder.linkToEntity(entity);
-            builder.setUpdating(zigbee2mqttGitHub.isUpdating());
-            builder.setVersion(zigbee2mqttGitHub.getInstalledVersion());
-
-            builder.setUpdatable((progressBar, version) -> {
-                    if (!version.equals(zigbee2mqttGitHub.getInstalledVersion())) {
-                        dispose(null);
-                        return zigbee2mqttGitHub.updateWithBackup("zigbee2mqtt", progressBar, projectUpdate -> {
-                            if (!version.equals(zigbee2mqttGitHub.getInstalledVersion())) {
-                                ZigBeeUtil.installOrUpdateZ2M(entityContext, version, projectUpdate);
-                                if (entity.isStart()) {
-                                    restartCoordinator();
-                                }
-                            }
-                            return ActionResponseModel.fired();
-                        });
-                    }
-                    return ActionResponseModel.showError("Z2M same version");
-                },
-                zigbee2mqttGitHub.getReleasesSince(zigbee2mqttGitHub.getInstalledVersion(), false));
-            if (entity.getStatus().isOnline()) {
-                builder.addInfo("ACTION.SUCCESS", new Icon("fas fa-seedling", Color.GREEN));
-            } else {
-                builder.addErrorStatusInfo(entity.getStatusMessage());
-            }
-            builder.contextMenuActionBuilder(contextAction -> {
-                if (!entity.isStart()) {
-                    contextAction.addSelectableButton("START", new Icon("fas fa-play", Color.PRIMARY_COLOR), (ec, params) -> {
-                        if (!entity.isStart()) {
-                            entityContext.save(entity.setStart(true));
-                            return ActionResponseModel.success();
-                        }
-                        return ActionResponseModel.showWarn("Z2M.COORDINATOR_ALREADY_STARTED");
-                    });
+    private void startZ2MLocalProcess() {
+        nodePC = entityContext
+            .bgp().processBuilder(getEntityID())
+            .onStarted(t -> setEntityOnline())
+            .onFinished((ex, responseCode) -> {
+                if (ex != null) {
+                    log.error("[{}]: Error while start zigbee2mqtt {}", entityID, getErrorMessage(ex));
+                } else {
+                    log.warn("[{}]: zigbee2mqtt nodeJs finished with status: {}", entityID, responseCode);
                 }
-                contextAction.addSelectableButton("ZIGBEE_START_SCAN", new Icon("fas fa-search-location", "#899343"),
-                    (ec, params) -> entity.scan());
-                contextAction.addSelectableButton("RESTART", new Icon("fas fa-power-off", Color.RED),
-                    (ec, params) -> restartZ2M());
-            });
-        });
+                nodePC = null;
+                dispose(ex);
+            })
+            .execute(getNpm() + " start --prefix " + zigbee2mqttGitHub.getLocalProjectPath());
     }
 
     @RequiredArgsConstructor

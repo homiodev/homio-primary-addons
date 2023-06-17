@@ -159,7 +159,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     @Override
     public @NotNull String getKey() {
-        return expose.getProperty();
+        return Objects.requireNonNull(expose.getProperty());
     }
 
     @Override
@@ -229,8 +229,10 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     }
 
     protected void updateUI() {
-        entityContext.ui().updateInnerSetItem(deviceService.getDeviceEntity(), "endpointClusters", entityID, "value", new Z2MPropertyEntity(this).getValue());
-        entityContext.ui().updateInnerSetItem(deviceService.getDeviceEntity(), "endpointClusters", entityID, "updated", updated);
+        entityContext.ui().updateInnerSetItem(deviceService.getDeviceEntity(), "endpointClusters",
+            entityID, "value", new Z2MPropertyEntity(this, deviceService).getValue());
+        entityContext.ui().updateInnerSetItem(deviceService.getDeviceEntity(), "endpointClusters",
+            entityID, "updated", updated);
     }
 
     protected void pushVariable() {
