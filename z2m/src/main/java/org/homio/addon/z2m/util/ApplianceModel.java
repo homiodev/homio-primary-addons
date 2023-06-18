@@ -1,6 +1,7 @@
 package org.homio.addon.z2m.util;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
@@ -8,13 +9,12 @@ import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
 @Setter
-public class Z2MDeviceModel extends UnknownOptions {
+public class ApplianceModel extends UnknownOptions {
 
     public static final String COMPOSITE_TYPE = "composite";
     public static final String NUMBER_TYPE = "numeric";
@@ -94,6 +94,10 @@ public class Z2MDeviceModel extends UnknownOptions {
             return format("${%s} [%s]", name, ieeeAddress);
         }
         return name;
+    }
+
+    public String getMQTTTopic() {
+        return defaultIfEmpty(friendlyName, ieeeAddress);
     }
 
     @Getter

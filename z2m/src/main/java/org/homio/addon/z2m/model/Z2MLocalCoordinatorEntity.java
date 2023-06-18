@@ -1,9 +1,12 @@
 package org.homio.addon.z2m.model;
 
 import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
+import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,9 +20,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MLocalCoordinatorService;
-import org.homio.addon.z2m.util.Z2MDeviceModel;
+import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextService;
 import org.homio.api.EntityContextService.MQTTEntityService;
@@ -33,6 +37,7 @@ import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.exception.ProhibitedExecution;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.OptionModel;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
@@ -184,7 +189,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     @UIContextMenuAction(value = "REINSTALL",
                          icon = "fas fa-trash-can-arrow-up",
                          confirmMessage = "W.CONFIRM.Z2M_REINSTALL",
-                         confirmMessageDialogColor = "#672E18",
+                         confirmMessageDialogColor = ERROR_DIALOG,
                          iconColor = Color.RED)
     public ActionResponseModel reinstall() {
         return getService().reinstallZ2M();
@@ -208,8 +213,14 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @Override
-    public @Nullable Path getExtraLogFile() {
-        return zigbee2mqttGitHub.getLocalProjectPath().resolve("data/log/log.txt");
+    @SneakyThrows
+    public InputStream getSourceLogInputStream(String sourceID) {
+        return Files.newInputStream(zigbee2mqttGitHub.getLocalProjectPath().resolve("data/log/log.txt"));
+    }
+
+    @Override
+    public @Nullable List<OptionModel> getLogSources() {
+        return List.of(OptionModel.of("log", "Zigbee2mqtt Log File"));
     }
 
     /**
@@ -236,7 +247,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @Override
-    public ZigBeeDeviceBaseEntity getZigBeeDevice(@NotNull String ieeeAddress) {
+    public Z2MDeviceEntity getZigBeeDevice(@NotNull String ieeeAddress) {
         Z2MDeviceService service = getService().getDeviceHandlers().get(ieeeAddress);
         return service == null ? null : service.getDeviceEntity();
     }
@@ -267,15 +278,14 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         private String color;
 
         public ZigBeeCoordinatorDeviceEntity(Z2MDeviceService deviceHandler) {
-            Z2MDeviceModel z2MDeviceModel = deviceHandler.getDevice();
-            ieeeAddress = z2MDeviceModel.getIeeeAddress().toUpperCase();
+            ApplianceModel applianceModel = deviceHandler.getApplianceModel();
+            ieeeAddress = applianceModel.getIeeeAddress().toUpperCase();
             color = deviceHandler.getDeviceEntity().getStatus().getColor();
-            //String title = deviceHandler.getDeviceEntity().getTitle();
-            //  if (ieeeAddress.equals(title)) {
-            name = deviceHandler.getDeviceEntity().getCompactDescription();
-            //}
-            //  name = deviceHandler.getDeviceEntity().getEntityID() + "~~~" + title;
-            endpointsCount = z2MDeviceModel.getDefinition().getExposes().size();
+            name = deviceHandler.getDeviceEntity().getName();
+            if (StringUtils.isEmpty(name) || name.equalsIgnoreCase(ieeeAddress)) {
+                name = deviceHandler.getDeviceEntity().getDescription();
+            }
+            endpointsCount = applianceModel.getDefinition().getExposes().size();
         }
     }
 }

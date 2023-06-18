@@ -1,7 +1,7 @@
 package org.homio.addon.z2m.service.properties.dynamic;
 
-import org.homio.addon.z2m.util.Z2MDeviceModel;
-import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition.Options;
+import org.homio.addon.z2m.util.ApplianceModel;
+import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.homio.addon.z2m.util.Z2MDevicePropertiesModel;
 import org.homio.api.state.DecimalType;
 import org.homio.addon.z2m.service.Z2MDeviceService;
@@ -20,7 +20,7 @@ public class Z2MPropertyActionEvent extends Z2MDynamicProperty {
         super(
             z2MDevicePropertiesModel == null ? "#B72AD4" : z2MDevicePropertiesModel.getIconColor(),
             z2MDevicePropertiesModel == null ? "fa-square-check" : z2MDevicePropertiesModel.getIcon());
-        init(deviceService, Options.dynamicExpose(property, Z2MDeviceModel.NUMBER_TYPE));
+        init(deviceService, Options.dynamicExpose(property, ApplianceModel.NUMBER_TYPE));
         setValue(new DecimalType(0));
         dataReader = jsonObject -> new DecimalType(getValue().intValue() + 1);
     }

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,7 @@ public class Z2MPropertyConfigService {
         this.entityContext = entityContext;
         URL localZdFile = Objects.requireNonNull(ZigBeeUtil.class.getClassLoader().getResource("zigbee-devices.json"));
         if (!Files.exists(ZIGBEE_DEFINITION_FILE) || EntityContextSetting.isDevEnvironment()) {
-            PathUtils.copy(localZdFile::openStream, ZIGBEE_DEFINITION_FILE);
+            PathUtils.copy(localZdFile::openStream, ZIGBEE_DEFINITION_FILE, StandardCopyOption.REPLACE_EXISTING);
         }
         localConfigHash = Files.size(ZIGBEE_DEFINITION_FILE);
 

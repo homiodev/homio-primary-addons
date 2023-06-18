@@ -1,19 +1,18 @@
 package org.homio.addon.z2m.model;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
+import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,9 +22,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.setting.ZigBeeEntityCompactModeSetting;
-import org.homio.addon.z2m.util.Z2MDeviceModel;
-import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition;
-import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition.Options;
+import org.homio.addon.z2m.util.ApplianceModel;
+import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition;
+import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.homio.addon.z2m.util.Z2MPropertyConfigService;
 import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
@@ -37,7 +36,6 @@ import org.homio.api.entity.HasStatusAndMsg;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.model.ActionResponseModel;
-import org.homio.api.model.HrefModel;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.model.Status.StatusModel;
@@ -48,6 +46,7 @@ import org.homio.api.ui.action.UIActionHandler;
 import org.homio.api.ui.field.UIField;
 import org.homio.api.ui.field.UIFieldGroup;
 import org.homio.api.ui.field.UIFieldIgnore;
+import org.homio.api.ui.field.UIFieldInlineEditConfirm;
 import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.UIFieldTitleRef;
 import org.homio.api.ui.field.UIFieldType;
@@ -60,6 +59,7 @@ import org.homio.api.ui.field.color.UIFieldColorStatusMatch;
 import org.homio.api.ui.field.condition.UIFieldShowOnCondition;
 import org.homio.api.ui.field.inline.UIFieldInlineEntities;
 import org.homio.api.ui.field.inline.UIFieldInlineEntityWidth;
+import org.homio.api.ui.field.model.HrefModel;
 import org.homio.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.homio.api.ui.field.selection.UIFieldSelection;
 import org.jetbrains.annotations.NotNull;
@@ -111,7 +111,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     public Z2MDeviceEntity setName(String value) {
-        deviceService.updateConfiguration("friendly_name", value);
+        deviceService.getCoordinatorService().sendRequest(
+            "device/rename", new JSONObject().put("from", getName()).put("to", value).toString());
         return this;
     }
 
@@ -135,14 +136,24 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @Override
     public Status.@NotNull StatusModel getEntityStatus() {
-        return new StatusModel(getStatus());
+        Status status = getStatus();
+        ApplianceModel applianceModel = deviceService.getApplianceModel();
+        if (applianceModel.isDisabled()) {
+            status = Status.DISABLED;
+        } else if (applianceModel.isInterviewing()) {
+            status = Status.INITIALIZE;
+        } else if (!applianceModel.isInterviewCompleted() || !applianceModel.isSupported() ||
+            (StringUtils.isEmpty(applianceModel.getType()) || "UNKNOWN".equalsIgnoreCase(applianceModel.getType()))) {
+            status = Status.NOT_READY;
+        }
+        return new StatusModel(status);
     }
 
     @Override
     public @NotNull Icon getEntityIcon() {
         return new Icon(
-            configService.getDeviceIcon(deviceService.getDevice().getModelId(), "fas fa-server"),
-            configService.getDeviceIconColor(deviceService.getDevice().getModelId(), UI.Color.random()));
+            configService.getDeviceIcon(deviceService.getApplianceModel().getModelId(), "fas fa-server"),
+            configService.getDeviceIconColor(deviceService.getApplianceModel().getModelId(), UI.Color.random()));
     }
 
     @UIField(order = 1, hideOnEmpty = true, fullWidth = true, color = "#89AA50", inlineEdit = true)
@@ -150,7 +161,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIFieldColorBgRef(value = "statusColor", animate = true)
     @UIFieldGroup(value = "NAME", order = 1, borderColor = "#CDD649")
     public String getDescription() {
-        return deviceService.getDevice().getDefinition().getDescription();
+        return deviceService.getApplianceModel().getDefinition().getDescription();
     }
 
     public void setDescription(String value) {
@@ -159,25 +170,30 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         }
     }
 
+    // Require for @UIFieldColorBgRef("statusColor")
+    public String getStatusColor() {
+        return getStatus().isOnline() ? "" : "#FF000030";
+    }
+
     @Override
     @UIField(order = 2, hideOnEmpty = true, inlineEdit = true)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("NAME")
-    public String getName() {
-        return deviceService.getConfiguration().path("friendly_name").asText(deviceService.getDevice().getName());
+    public @NotNull String getName() {
+        return defaultIfEmpty(deviceService.getApplianceModel().getName(), "Unknown name");
     }
 
     @UIField(order = 3, label = "model")
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("NAME")
     public HrefModel getHrefModel() {
-        String model = deviceService.getDevice().getDefinition().getModel();
+        String model = deviceService.getApplianceModel().getDefinition().getModel();
         return new HrefModel(format("https://www.zigbee2mqtt.io/devices/%s.html", model), model);
     }
 
     @JsonIgnore
     public String getModel() {
-        return deviceService.getDevice().getDefinition().getModel();
+        return deviceService.getApplianceModel().getDefinition().getModel();
     }
 
     @UIField(order = 1, fullWidth = true, color = "#89AA50", type = UIFieldType.HTML, style = "height: 32px;")
@@ -202,55 +218,55 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("GENERAL")
     public String getNetworkAddress() {
-        return "0x" + Integer.toHexString(deviceService.getDevice().getNetworkAddress()).toUpperCase();
+        return "0x" + Integer.toHexString(deviceService.getApplianceModel().getNetworkAddress()).toUpperCase();
     }
 
     @UIField(order = 15)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("GENERAL")
     public String getModelIdentifier() {
-        return deviceService.getDevice().getModelId();
+        return deviceService.getApplianceModel().getModelId();
     }
 
     @UIField(order = 20, hideOnEmpty = true)
     @UIFieldGroup("GENERAL")
     public String getCurrentPowerSource() {
-        return isCompactMode() ? null : deviceService.getDevice().getPowerSource();
+        return isCompactMode() ? null : deviceService.getApplianceModel().getPowerSource();
     }
 
     @UIField(order = 25)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("GENERAL")
     public String getLogicalType() {
-        return deviceService.getDevice().getType();
+        return deviceService.getApplianceModel().getType();
     }
 
     @UIField(order = 35)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("GENERAL")
     public boolean getInterviewCompleted() {
-        return deviceService.getDevice().isInterviewCompleted();
+        return deviceService.getApplianceModel().isInterviewCompleted();
     }
 
     @UIField(order = 1, hideOnEmpty = true)
     @UIFieldGroup(value = "HARDWARE", order = 10, borderColor = Color.RED)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     public String getFirmwareVersion() {
-        return deviceService.getDevice().getFirmwareVersion();
+        return deviceService.getApplianceModel().getFirmwareVersion();
     }
 
     @UIField(order = 2, hideOnEmpty = true)
     @UIFieldGroup("HARDWARE")
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     public String getFirmwareBuildDate() {
-        return deviceService.getDevice().getFirmwareBuildDate();
+        return deviceService.getApplianceModel().getFirmwareBuildDate();
     }
 
     @UIField(order = 3)
     @UIFieldGroup("HARDWARE")
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     public HrefModel getManufacturer() {
-        String vendor = deviceService.getDevice().getDefinition().getVendor();
+        String vendor = deviceService.getApplianceModel().getDefinition().getVendor();
         return new HrefModel(format("https://www.zigbee2mqtt.io/supported-devices/#v=%s", vendor), vendor);
     }
 
@@ -283,29 +299,32 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     public void setRetainDeviceMessages(boolean value) {
-        deviceService.updateConfiguration("retain", value);
+        deviceService.getCoordinatorService().sendRequest(
+            "device/options", new JSONObject().put("id", getIeeeAddress()).put("options", new JSONObject().put("retain", value)).toString());
     }
 
     @UIField(order = 5, inlineEdit = true)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("SETTINGS")
+    @UIFieldInlineEditConfirm(value = "W.CONFIRM.Z2M_DISABLE", dialogColor = ERROR_DIALOG, showCondition = "return context.get('disabled') == true")
     public boolean isDisabled() {
-        return deviceService.getConfiguration().path("disabled").asBoolean(deviceService.getDevice().isDisabled());
+        return deviceService.getConfiguration().path("disabled").asBoolean(deviceService.getApplianceModel().isDisabled());
     }
 
     public void setDisabled(boolean value) {
-        deviceService.updateConfiguration("disabled", value);
+        deviceService.getCoordinatorService().sendRequest(
+            "device/options", new JSONObject().put("id", getIeeeAddress()).put("options", new JSONObject().put("disabled", value)).toString());
     }
 
     @UIField(order = 6, inlineEdit = true)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("SETTINGS")
     public boolean isLogEvents() {
-        return deviceService.getConfiguration().path("log").asBoolean(false);
+        return deviceService.getConfiguration().path("log_event").asBoolean(false);
     }
 
     public void setLogEvents(boolean value) {
-        deviceService.updateConfiguration("log", value);
+        deviceService.updateConfiguration("log_event", value);
     }
 
     @UIField(order = 1, inlineEdit = true)
@@ -322,11 +341,12 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     public void setDebounce(Float value) {
         if (!Objects.equals(getDebounce(), value)) {
-            deviceService.updateConfiguration("debounce", value);
+            deviceService.getCoordinatorService().sendRequest(
+                "device/options", new JSONObject().put("id", getIeeeAddress()).put("options", new JSONObject().put("debounce", value)).toString());
         }
     }
 
-    @UIField(order = 2, inlineEdit = true, type = UIFieldType.Chips)
+    /*@UIField(order = 2, inlineEdit = true, type = UIFieldType.Chips)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("ADVANCED")
     public Set<String> getDebounceIgnore() {
@@ -346,7 +366,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     public void setDebounceIgnore(List<String> list) {
         deviceService.updateConfiguration("debounce_ignore", list.isEmpty() ? null : list);
-    }
+    }*/
 
     @Override
     protected String getImageIdentifierImpl() {
@@ -392,14 +412,14 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     public void assembleActions(UIInputBuilder uiInputBuilder) {
         Z2MActionsBuilder.createWidgetActions(uiInputBuilder, getEntityContext(), this);
 
-        Z2MDeviceDefinition definition = deviceService.getDevice().getDefinition();
+        Z2MDeviceDefinition definition = deviceService.getApplianceModel().getDefinition();
         if (definition != null) {
             for (Options option : definition.getOptions()) {
                 JsonNode deviceConfigurationOptions = deviceService.getConfiguration();
                 String flexName = format("${z2m.setting.%s~%s}", option.getName(), ZigBeeUtil.splitNameToReadableFormat(option.getName()));
                 switch (option.getType()) {
-                    case Z2MDeviceModel.BINARY_TYPE -> buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
-                    case Z2MDeviceModel.NUMBER_TYPE -> buildNumberTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
+                    case ApplianceModel.BINARY_TYPE -> buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
+                    case ApplianceModel.NUMBER_TYPE -> buildNumberTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
                 }
             }
         }
@@ -438,7 +458,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     private void buildNumberTypeAction(UIInputBuilder uiInputBuilder, Options option, JsonNode deviceConfigurationOptions, String flexName) {
-        JsonNode deviceOptions = configService.getDeviceOptions(deviceService.getDevice().getModelId());
+        JsonNode deviceOptions = configService.getDeviceOptions(deviceService.getApplianceModel().getModelId());
         Integer minValue = option.getValueMin() == null ? (deviceOptions.has("min") ? deviceOptions.get("min").asInt() : null) : option.getValueMin();
         Integer maxValue = option.getValueMax() == null ? (deviceOptions.has("max") ? deviceOptions.get("max").asInt() : null) : option.getValueMax();
 
@@ -484,7 +504,9 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         @UIField(order = 2, type = UIFieldType.HTML)
         private String title;
 
-        @JsonIgnore private Z2MProperty property;
+        @JsonIgnore
+        private Z2MProperty property;
+
         private String valueTitle;
 
         @JsonIgnore
@@ -492,11 +514,14 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
         public Z2MPropertyEntity(Z2MProperty property, Z2MDeviceService deviceService) {
             this.entityID = property.getEntityID();
-            this.title = format("<div class=\"inline-2row_d\"><div style=\"color:%s;\"><i class=\"mr-1 %s\"></i>%s</div><span>%s</div></div>",
-                property.getIcon().getColor(), property.getIcon().getIcon(), property.getName(false), property.getDescription());
+            String varSource = deviceService.getEntityContext().var().buildDataSource(property.getVariableID(), false);
+            this.title = format(
+                "<div class=\"inline-2row_d\"><div class=\"clickable history-link\" data-hl=\"%s\" style=\"color:%s;\"><i class=\"mr-1 "
+                    + "%s\"></i>%s</div><span>%s</div></div>",
+                varSource, property.getIcon().getColor(), property.getIcon().getIcon(), property.getName(false), property.getDescription());
             this.property = property;
             this.valueTitle = property.getValue().toString();
-            if (Z2MDeviceModel.ENUM_TYPE.equals(property.getExpose().getType())) {
+            if (ApplianceModel.ENUM_TYPE.equals(property.getExpose().getType())) {
                 this.valueTitle = "Values: " + String.join(", ", getProperty().getExpose().getValues());
             }
             this.order = deviceService.getConfigService().getPropertyOrder(property.getExpose().getName());

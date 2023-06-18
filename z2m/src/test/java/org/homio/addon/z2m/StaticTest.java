@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import org.homio.addon.z2m.util.Z2MConfiguration;
-import org.homio.addon.z2m.util.Z2MDeviceModel;
+import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionsModel;
 import org.junit.jupiter.api.Test;
 
@@ -20,9 +20,9 @@ public class StaticTest {
     @Test
     public void startupTest() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        List<Z2MDeviceModel> z2MDeviceModels = objectMapper.readValue(getClass().getClassLoader().getResourceAsStream("z2m_devices.json"),
+        List<ApplianceModel> applianceModels = objectMapper.readValue(getClass().getClassLoader().getResourceAsStream("z2m_devices.json"),
             new TypeReference<>() {});
-        assertEquals(2, z2MDeviceModels.size());
+        assertEquals(2, applianceModels.size());
 
         Z2MDeviceDefinitionsModel deviceConfigurations = OBJECT_MAPPER.readValue(getClass()
             .getClassLoader().getResource("zigbee-devices.json"), Z2MDeviceDefinitionsModel.class);

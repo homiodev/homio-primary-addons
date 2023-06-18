@@ -2,11 +2,11 @@ package org.homio.addon.z2m.util;
 
 import static java.lang.String.format;
 import static org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate.UPDATED;
-import static org.homio.addon.z2m.util.Z2MDeviceModel.BINARY_TYPE;
-import static org.homio.addon.z2m.util.Z2MDeviceModel.COMPOSITE_TYPE;
-import static org.homio.addon.z2m.util.Z2MDeviceModel.ENUM_TYPE;
-import static org.homio.addon.z2m.util.Z2MDeviceModel.NUMBER_TYPE;
-import static org.homio.addon.z2m.util.Z2MDeviceModel.SWITCH_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.BINARY_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.COMPOSITE_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.ENUM_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.SWITCH_TYPE;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

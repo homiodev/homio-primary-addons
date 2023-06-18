@@ -3,9 +3,9 @@ package org.homio.addon.z2m.service;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.homio.addon.z2m.util.Z2MDeviceModel.BINARY_TYPE;
-import static org.homio.addon.z2m.util.Z2MDeviceModel.NUMBER_TYPE;
-import static org.homio.addon.z2m.util.Z2MDeviceModel.SWITCH_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.BINARY_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.SWITCH_TYPE;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -22,9 +22,9 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.model.Z2MDeviceEntity.Z2MPropertyEntity;
-import org.homio.addon.z2m.util.Z2MDeviceModel;
-import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition.Options;
-import org.homio.addon.z2m.util.Z2MDeviceModel.Z2MDeviceDefinition.Options.Presets;
+import org.homio.addon.z2m.util.ApplianceModel;
+import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
+import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options.Presets;
 import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextVar.VariableMetaBuilder;
@@ -77,7 +77,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         this.deviceService = deviceService;
         this.entityContext = this.deviceService.getEntityContext();
         this.expose = expose;
-        this.entityID = deviceService.getDevice().getIeeeAddress() + "_" + expose.getProperty();
+        this.entityID = deviceService.getIeeeAddress() + "_" + expose.getProperty();
         this.unit = StringUtils.defaultIfEmpty(this.unit, expose.getUnit());
         this.dataReader = this.dataReader == null ? buildDataReader() : this.dataReader;
 
@@ -164,7 +164,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     @Override
     public @NotNull String getIeeeAddress() {
-        return deviceService.getDevice().getIeeeAddress();
+        return deviceService.getIeeeAddress();
     }
 
     @Override
@@ -213,15 +213,15 @@ public abstract class Z2MProperty implements ZigBeeProperty {
                             "[{}]: Unknown property type: {} for property: {}",
                             deviceService.getCoordinatorService().getEntityID(),
                             expose.getValueOn(),
-                            deviceService.getDevice().getIeeeAddress());
+                            deviceService.getIeeeAddress());
                     }
                 }
                 return payload -> OnOffType.of(payload.getBoolean(getJsonKey()));
             case NUMBER_TYPE:
                 return payload -> new DecimalType(payload.getNumber(getJsonKey())).setUnit(unit);
-            case Z2MDeviceModel.COMPOSITE_TYPE:
+            case ApplianceModel.COMPOSITE_TYPE:
                 return payload -> new JsonType(payload.get(getJsonKey()).toString());
-            case Z2MDeviceModel.ENUM_TYPE:
+            case ApplianceModel.ENUM_TYPE:
                 return payload -> new StringType(payload.getString(getJsonKey()));
             default:
                 return payload -> new StringType(payload.get(getJsonKey()).toString());
@@ -305,7 +305,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     private VariableType getVariableType() {
         switch (expose.getType()) {
-            case Z2MDeviceModel.ENUM_TYPE:
+            case ApplianceModel.ENUM_TYPE:
                 return VariableType.Enum;
             case NUMBER_TYPE:
                 return VariableType.Float;
