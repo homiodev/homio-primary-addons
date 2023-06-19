@@ -89,7 +89,7 @@ public class Z2MPropertyColor extends Z2MProperty {
     }
 
     @Override
-    public String getPropertyDefinition() {
+    public @NotNull String getPropertyDefinition() {
         return "color";
     }
 

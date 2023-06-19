@@ -50,11 +50,6 @@ public class Z2MPropertyFirmwareUpdate extends Z2MProperty {
     }
 
     @Override
-    protected void pushVariable() {
-        // ignore
-    }
-
-    @Override
     protected void getOrCreateVariable() {
         // ignore
     }

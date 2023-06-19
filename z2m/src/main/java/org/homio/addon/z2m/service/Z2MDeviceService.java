@@ -17,10 +17,9 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.tuple.Pair;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.service.properties.Z2MPropertyAction;
-import org.homio.addon.z2m.service.properties.Z2MPropertyLastSeen;
-import org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate;
-import org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty;
-import org.homio.addon.z2m.service.properties.dynamic.Z2MPropertyUnknown;
+import org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral;
+import org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty;
+import org.homio.addon.z2m.service.properties.inline.Z2MPropertyUnknown;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.homio.addon.z2m.util.Z2MDevicePropertiesModel;
@@ -94,8 +93,7 @@ public class Z2MDeviceService {
                 addPropertyOptional(expose.getProperty(), key -> buildExposeProperty(expose));
             }
         }
-        addPropertyOptional(Z2MPropertyLastUpdate.PROPERTY_UPDATED, key -> new Z2MPropertyLastUpdate(this));
-        addPropertyOptional(Z2MPropertyLastSeen.PROPERTY_LAST_SEEN, key -> new Z2MPropertyLastSeen(this));
+        addPropertyOptional(Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED, key -> new Z2MPropertyLastUpdatedProperty(this));
     }
 
     public void setEntityOnline() {
@@ -218,7 +216,7 @@ public class Z2MDeviceService {
             }
         }
         if (updated) {
-            properties.get(Z2MPropertyLastUpdate.PROPERTY_UPDATED).mqttUpdate(null);
+            properties.get(Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED).mqttUpdate(null);
         }
         if (deviceEntity.isLogEvents() && !sb.isEmpty()) {
             entityContext.ui().sendInfoMessage(applianceModel.getGroupDescription(), String.join("\n", sb));
@@ -285,7 +283,7 @@ public class Z2MDeviceService {
         if (z2mCluster == null) {
             Z2MDevicePropertiesModel z2MDevicePropertiesModel = getValueFromMap(configService.getDeviceProperties(), expose);
             if (z2MDevicePropertiesModel != null) {
-                z2MProperty = new Z2MGeneralProperty(z2MDevicePropertiesModel.getIconColor(), z2MDevicePropertiesModel.getIcon());
+                z2MProperty = new Z2MPropertyGeneral(z2MDevicePropertiesModel.getIcon(), z2MDevicePropertiesModel.getIconColor());
                 z2MProperty.setUnit(z2MDevicePropertiesModel.getUnit());
             } else {
                 z2MProperty = new Z2MPropertyUnknown();
@@ -307,7 +305,7 @@ public class Z2MDeviceService {
     }
 
     private void downLinkQualityToZero() {
-        Optional.ofNullable(properties.get(Z2MGeneralProperty.PROPERTY_SIGNAL)).ifPresent(z2MProperty -> {
+        Optional.ofNullable(properties.get(Z2MPropertyGeneral.PROPERTY_SIGNAL)).ifPresent(z2MProperty -> {
             if (!z2MProperty.getValue().stringValue().equals("0")) {
                 z2MProperty.setValue(new DecimalType(0));
             }

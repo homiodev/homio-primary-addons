@@ -1,6 +1,6 @@
 package org.homio.addon.z2m.widget;
 
-import static org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty.PROPERTY_SIGNAL;
+import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral.PROPERTY_SIGNAL;
 
 import java.util.Map;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;

@@ -2,11 +2,12 @@ package org.homio.addon.z2m.service.properties;
 
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MProperty;
-import org.homio.addon.z2m.service.properties.dynamic.Z2MPropertyActionEvent;
+import org.homio.addon.z2m.service.properties.inline.Z2MPropertyActionEvent;
 import org.homio.addon.z2m.util.Z2MDevicePropertiesModel;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
 import org.homio.api.state.StringType;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 public class Z2MPropertyAction extends Z2MProperty {
@@ -46,7 +47,7 @@ public class Z2MPropertyAction extends Z2MProperty {
     }
 
     @Override
-    public String getPropertyDefinition() {
+    public @NotNull String getPropertyDefinition() {
         return "action";
     }
 }

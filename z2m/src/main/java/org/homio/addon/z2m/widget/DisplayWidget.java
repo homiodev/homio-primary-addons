@@ -2,8 +2,8 @@ package org.homio.addon.z2m.widget;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate.PROPERTY_UPDATED;
-import static org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty.PROPERTY_SIGNAL;
+import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED;
+import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral.PROPERTY_SIGNAL;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
@@ -66,7 +66,7 @@ public class DisplayWidget implements WidgetBuilder {
         WidgetBuilder.addProperty(
             entityContext,
             HorizontalAlign.center,
-            properties.get(PROPERTY_UPDATED),
+            properties.get(PROPERTY_LAST_UPDATED),
             builder -> builder.attachToLayout(layoutID, propertiesSize, 1));
 
         WidgetBuilder.addProperty(

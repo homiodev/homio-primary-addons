@@ -49,7 +49,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     // property name for LQI
     public static final String PROPERTY_SIGNAL = "linkquality";
-    public static final String PROPERTY_UPDATED = "updated";
+    public static final String PROPERTY_LAST_UPDATED = "last_updated";
     public static final String PROPERTY_LAST_SEEN = "last_seen";
 
     private final @NotNull Icon icon;
@@ -60,7 +60,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     private Z2MDeviceService deviceService;
     @Setter private long updated;
     private String entityID;
-    private String variableID;
+    private @Nullable String variableID;
     @Getter private EntityContext entityContext;
     @Setter private State value = new StringType("N/A");
     private Object dbValue;
@@ -164,7 +164,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         }
     }
 
-    public abstract @NotNull String getPropertyDefinition();
+    public abstract @Nullable String getPropertyDefinition();
 
     @Override
     public @NotNull String getKey() {
@@ -249,8 +249,9 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     }
 
     protected void pushVariable() {
-        getOrCreateVariable();
-        entityContext.var().set(variableID, value, dbValue -> this.dbValue = dbValue);
+        if (variableID != null) {
+            entityContext.var().set(variableID, value, dbValue -> this.dbValue = dbValue);
+        }
     }
 
     protected void getOrCreateVariable() {

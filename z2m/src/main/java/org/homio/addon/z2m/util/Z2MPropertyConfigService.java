@@ -21,7 +21,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.file.PathUtils;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.service.Z2MProperty;
-import org.homio.addon.z2m.service.properties.dynamic.Z2MDynamicProperty;
+import org.homio.addon.z2m.service.properties.inline.Z2MPropertyInline;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextSetting;
@@ -173,8 +173,8 @@ public class Z2MPropertyConfigService {
     private void initConverters() {
         List<Class<? extends Z2MProperty>> z2mClusters = entityContext.getClassesWithParent(Z2MProperty.class);
         for (Class<? extends Z2MProperty> z2mCluster : z2mClusters) {
-            if (!Z2MDynamicProperty.class.isAssignableFrom(z2mCluster)) {
-                Z2MProperty z2MProperty = CommonUtils.newInstance(z2mCluster);
+            Z2MProperty z2MProperty = CommonUtils.newInstance(z2mCluster);
+            if (!Z2MPropertyInline.class.isAssignableFrom(z2mCluster)) {
                 converters.put(z2MProperty.getPropertyDefinition(), z2mCluster);
             }
         }

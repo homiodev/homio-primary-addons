@@ -516,11 +516,19 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
         public Z2MPropertyEntity(Z2MProperty property, Z2MDeviceService deviceService) {
             this.entityID = property.getEntityID();
-            String varSource = deviceService.getEntityContext().var().buildDataSource(property.getVariableID(), false);
-            this.title = format(
-                "<div class=\"inline-2row_d\"><div class=\"clickable history-link\" data-hl=\"%s\" style=\"color:%s;\"><i class=\"mr-1 "
-                    + "%s\"></i>%s</div><span>%s</div></div>",
-                varSource, property.getIcon().getColor(), property.getIcon().getIcon(), property.getName(false), property.getDescription());
+            String variableID = property.getVariableID();
+            if (variableID != null) {
+                String varSource = deviceService.getEntityContext().var().buildDataSource(variableID, false);
+                this.title = format(
+                    "<div class=\"inline-2row_d\"><div class=\"clickable history-link\" data-hl=\"%s\" style=\"color:%s;\"><i class=\"mr-1 "
+                        + "%s\"></i>%s</div><span>%s</div></div>",
+                    varSource, property.getIcon().getColor(), property.getIcon().getIcon(), property.getName(false), property.getDescription());
+            } else {
+                this.title = format(
+                    "<div class=\"inline-2row_d\"><div style=\"color:%s;\"><i class=\"mr-1 "
+                        + "%s\"></i>%s</div><span>%s</div></div>",
+                    property.getIcon().getColor(), property.getIcon().getIcon(), property.getName(false), property.getDescription());
+            }
             this.property = property;
             this.valueTitle = property.getValue().toString();
             if (ApplianceModel.ENUM_TYPE.equals(property.getExpose().getType())) {
