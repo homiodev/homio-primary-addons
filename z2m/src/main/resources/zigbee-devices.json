@@ -868,6 +868,11 @@
       "name": "angle_y_absolute",
       "icon": "fa-hill-rockslide fa-flip-horizontal",
       "iconColor": "#8FAB33"
+    },
+    {
+      "name": "update_available",
+      "icon": "fa-hat-cowboy-side",
+      "iconColor": "#AD23BA"
     }
   ]
 }

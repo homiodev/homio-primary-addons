@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,6 +28,8 @@ import org.homio.api.EntityContextService;
 import org.homio.api.EntityContextService.MQTTEntityService;
 import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.HasFirmwareVersion;
+import org.homio.api.entity.RestartHandlerOnChange;
+import org.homio.api.entity.log.HasEntitySourceLog;
 import org.homio.api.entity.types.MicroControllerBaseEntity;
 import org.homio.api.entity.types.StorageEntity;
 import org.homio.api.entity.validation.UIFieldValidationSize;
@@ -45,6 +46,7 @@ import org.homio.api.ui.field.UIFieldGroup;
 import org.homio.api.ui.field.UIFieldIgnore;
 import org.homio.api.ui.field.UIFieldLinkToEntity;
 import org.homio.api.ui.field.UIFieldSlider;
+import org.homio.api.ui.field.UIFieldType;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.ui.field.color.UIFieldColorRef;
 import org.homio.api.ui.field.inline.UIFieldInlineEntities;
@@ -60,7 +62,7 @@ import org.jetbrains.annotations.Nullable;
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#11A4C2")
 public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLocalCoordinatorEntity>
-    implements HasFirmwareVersion, ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
+    implements HasFirmwareVersion, HasEntitySourceLog, ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
 
     public static final String PREFIX = "zb2mqtt_";
 
@@ -166,6 +168,16 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         setJsonData("apt", value, 25, 1, 48);
     }
 
+    @UIField(order = 3, type = UIFieldType.Chips)
+    @UIFieldGroup("ADVANCED")
+    public List<String> getIgnoreProperties() {
+        return getJsonDataList("ip");
+    }
+
+    public void setIgnoreProperties(String value) {
+        setJsonData("ip", value);
+    }
+
     public void setEnableWatchdog(boolean value) {
         setJsonData("wd", value);
     }
@@ -214,12 +226,12 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
     @Override
     @SneakyThrows
-    public InputStream getSourceLogInputStream(String sourceID) {
+    public @NotNull InputStream getSourceLogInputStream(@NotNull String sourceID) {
         return Files.newInputStream(zigbee2mqttGitHub.getLocalProjectPath().resolve("data/log/log.txt"));
     }
 
     @Override
-    public @Nullable List<OptionModel> getLogSources() {
+    public @NotNull List<OptionModel> getLogSources() {
         return List.of(OptionModel.of("log", "Zigbee2mqtt Log File"));
     }
 
@@ -279,13 +291,19 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
         public ZigBeeCoordinatorDeviceEntity(Z2MDeviceService deviceHandler) {
             ApplianceModel applianceModel = deviceHandler.getApplianceModel();
-            ieeeAddress = applianceModel.getIeeeAddress().toUpperCase();
+            String ieeeAddress = applianceModel.getIeeeAddress().toUpperCase();
             color = deviceHandler.getDeviceEntity().getStatus().getColor();
             name = deviceHandler.getDeviceEntity().getName();
             if (StringUtils.isEmpty(name) || name.equalsIgnoreCase(ieeeAddress)) {
                 name = deviceHandler.getDeviceEntity().getDescription();
             }
+            this.ieeeAddress = deviceHandler.getDeviceEntity().getEntityID() + "~~~" + ieeeAddress;
             endpointsCount = applianceModel.getDefinition().getExposes().size();
         }
+    }
+
+    @Override
+    protected void beforePersist() {
+        setIgnoreProperties("update_available");
     }
 }

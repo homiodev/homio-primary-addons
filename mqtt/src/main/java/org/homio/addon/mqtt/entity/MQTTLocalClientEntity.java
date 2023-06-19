@@ -3,7 +3,7 @@ package org.homio.addon.mqtt.entity;
 import jakarta.persistence.Entity;
 import java.util.Objects;
 import org.homio.addon.mqtt.workspace.Scratch3MQTTBlocks;
-import org.homio.api.entity.HasEntityLog;
+import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.HasFirmwareVersion;
 import org.homio.api.model.Icon;
 import org.homio.api.ui.UISidebarChildren;

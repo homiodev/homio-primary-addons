@@ -1,41 +1,47 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "type": "array",
-  "items": {
-    "type": "object",
-    "properties": {
-      "name": {
-        "title": "Uses only in json file to distinguish devices by functionality",
-        "type": "string"
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "version": {
+    "type": "string"
+  },
+  "devices": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Uses only in json file to distinguish devices by functionality",
+          "type": "string"
+        },
+        "model": {
+          "title": "List of device's model to have same widgets/icons/etc...",
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "icon": {
+          "type": "string"
+        },
+        "iconColor": {
+          "type": "string"
+        },
+        "widgets": {
+          "title": "Describe widgets that able to create in context menu for device",
+          "type": "array",
+          "items": [
+            {
+              "$ref": "/schema-widget.json"
+            }
+          ]
+        }
       },
-      "model": {
-        "title": "List of device's model to have same widgets/icons/etc...",
-        "type": "array",
-        "items": [
-          {
-            "type": "string"
-          }
-        ]
-      },
-      "icon": {
-        "type": "string"
-      },
-      "iconColor": {
-        "type": "string"
-      },
-      "widgets": {
-        "title": "Describe widgets that able to create in context menu for device",
-        "type": "array",
-        "items": [
-          {
-            "$ref": "/schema-widget.json"
-          }
-        ]
-      }
-    },
-    "required": [
-      "name",
-      "model"
-    ]
+      "required": [
+        "name",
+        "model"
+      ]
+    }
   }
 }

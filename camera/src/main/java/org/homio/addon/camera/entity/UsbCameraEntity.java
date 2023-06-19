@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import org.homio.addon.camera.service.UsbCameraService;
 import org.homio.api.EntityContext;
-import org.homio.api.entity.HasEntityLog;
+import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.RestartHandlerOnChange;
 import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;

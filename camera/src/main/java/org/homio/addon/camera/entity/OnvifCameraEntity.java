@@ -16,7 +16,7 @@ import org.homio.addon.camera.onvif.brand.CameraBrandHandlerDescription;
 import org.homio.addon.camera.service.BaseVideoService;
 import org.homio.addon.camera.service.OnvifCameraService;
 import org.homio.api.EntityContext;
-import org.homio.api.entity.HasEntityLog;
+import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.RestartHandlerOnChange;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;

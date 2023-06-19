@@ -294,6 +294,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIField(order = 4, inlineEdit = true)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("SETTINGS")
+    @UIFieldInlineEditConfirm(value = "W.CONFIRM.Z2M_RETAIN", dialogColor = ERROR_DIALOG)
     public boolean isRetainDeviceMessages() {
         return deviceService.getConfiguration().path("retain").asBoolean(false);
     }
@@ -331,6 +332,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIFieldSlider(min = 0, max = 10, step = 0.5)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("ADVANCED")
+    @UIFieldInlineEditConfirm(value = "W.CONFIRM.Z2M_DEBOUNCE", dialogColor = ERROR_DIALOG)
     public Float getDebounce() {
         JsonNode deviceOptions = deviceService.getConfiguration();
         if (deviceOptions.has("debounce")) {

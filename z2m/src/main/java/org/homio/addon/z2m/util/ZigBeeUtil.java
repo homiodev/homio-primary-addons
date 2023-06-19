@@ -1,7 +1,6 @@
 package org.homio.addon.z2m.util;
 
 import static java.lang.String.format;
-import static org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate.UPDATED;
 import static org.homio.addon.z2m.util.ApplianceModel.BINARY_TYPE;
 import static org.homio.addon.z2m.util.ApplianceModel.COMPOSITE_TYPE;
 import static org.homio.addon.z2m.util.ApplianceModel.ENUM_TYPE;
@@ -68,6 +67,7 @@ public final class ZigBeeUtil {
 
     public static @NotNull UIInputBuilder buildZigbeeActions(@NotNull Z2MProperty property, @NotNull String entityID) {
         UIInputBuilder uiInputBuilder = property.getDeviceService().getEntityContext().ui().inputBuilder();
+
         if (property.isWritable()) {
             switch (property.getExpose().getType()) {
                 case ENUM_TYPE:
@@ -104,11 +104,7 @@ public final class ZigBeeUtil {
             uiInputBuilder.addInfo(format("%s <small class=\"text-muted\">%s</small>",
                 property.getValue().stringValue(), property.getUnit()), InfoType.HTML);
         }
-        if (UPDATED.equals(property.getExpose().getProperty())) {
-            uiInputBuilder.addDuration(property.getValue().longValue(), null);
-        } else {
-            uiInputBuilder.addInfo(property.getValue().toString(), InfoType.HTML);
-        }
+        property.buildZigbeeAction(uiInputBuilder, entityID);
         return uiInputBuilder;
     }
 

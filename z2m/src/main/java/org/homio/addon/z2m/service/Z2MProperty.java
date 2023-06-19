@@ -36,6 +36,8 @@ import org.homio.api.state.JsonType;
 import org.homio.api.state.OnOffType;
 import org.homio.api.state.State;
 import org.homio.api.state.StringType;
+import org.homio.api.ui.field.action.v1.UIInputBuilder;
+import org.homio.api.ui.field.action.v1.item.UIInfoItemBuilder.InfoType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -110,7 +112,9 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     }
 
     public void fireAction(boolean value) {
-        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value ? getExpose().getValueOn() : getExpose().getValueOff()));
+        Object valueToFire = value ? getExpose().getValueOn() : getExpose().getValueOff();
+        JSONObject params = new JSONObject().put(expose.getProperty(), valueToFire);
+        getDeviceService().publish("set", params);
     }
 
     public void fireAction(int value) {
@@ -127,7 +131,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     }
 
     public boolean isVisible() {
-        return true;
+        return !getDeviceService().getCoordinatorService().getEntity().getIgnoreProperties().contains(getPropertyDefinition());
     }
 
     public boolean isWritable() {
@@ -195,6 +199,10 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         };
     }
 
+    public void buildZigbeeAction(UIInputBuilder uiInputBuilder, String entityID) {
+        uiInputBuilder.addInfo(value.toString(), InfoType.HTML);
+    }
+
     protected String getJsonKey() {
         return expose.getName();
     }
@@ -240,7 +248,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         entityContext.var().set(variableID, value, dbValue -> this.dbValue = dbValue);
     }
 
-    private void getOrCreateVariable() {
+    protected void getOrCreateVariable() {
         if (variableID == null) {
             VariableType variableType = getVariableType();
             if (variableType == VariableType.Enum) {
