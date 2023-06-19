@@ -1,7 +1,7 @@
 package org.homio.addon.z2m.widget;
 
-import static org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate.UPDATED;
-import static org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty.SIGNAL;
+import static org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate.PROPERTY_UPDATED;
+import static org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty.PROPERTY_SIGNAL;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 public class ComposeWidget implements WidgetBuilder {
 
     public static final String[] LEFT_PROPERTIES = new String[]{"battery", "voltage"};
-    public static final String[] CENTER_PROPERTIES = new String[]{UPDATED};
-    public static final String[] RIGHT_PROPERTIES = new String[]{SIGNAL};
+    public static final String[] CENTER_PROPERTIES = new String[]{PROPERTY_UPDATED};
+    public static final String[] RIGHT_PROPERTIES = new String[]{PROPERTY_SIGNAL};
 
     @Override
     public void buildWidget(WidgetRequest widgetRequest) {

@@ -47,6 +47,11 @@ import org.json.JSONObject;
 @RequiredArgsConstructor
 public abstract class Z2MProperty implements ZigBeeProperty {
 
+    // property name for LQI
+    public static final String PROPERTY_SIGNAL = "linkquality";
+    public static final String PROPERTY_UPDATED = "updated";
+    public static final String PROPERTY_LAST_SEEN = "last_seen";
+
     private final @NotNull Icon icon;
     private final Map<String, Consumer<State>> changeListeners = new ConcurrentHashMap<>();
     protected Function<JSONObject, State> dataReader;
@@ -159,7 +164,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         }
     }
 
-    public abstract String getPropertyDefinition();
+    public abstract @NotNull String getPropertyDefinition();
 
     @Override
     public @NotNull String getKey() {

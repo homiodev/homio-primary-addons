@@ -1,7 +1,7 @@
 package org.homio.addon.z2m.widget;
 
-import static org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate.UPDATED;
-import static org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty.SIGNAL;
+import static org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate.PROPERTY_UPDATED;
+import static org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty.PROPERTY_SIGNAL;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,7 @@ public interface WidgetBuilder {
         "temperature", new TemperatureIconBuilder(),
         "humidity", new HumidityIconBuilder(),
         "battery", new BatteryIconBuilder(),
-        SIGNAL, new SignalIconBuilder()
+        PROPERTY_SIGNAL, new SignalIconBuilder()
     );
 
     void buildWidget(WidgetRequest widgetRequest);
@@ -56,7 +56,7 @@ public interface WidgetBuilder {
         @Nullable ZigBeeProperty property,
         @NotNull Consumer<SimpleValueWidgetBuilder> attachHandler) {
         if (property != null) {
-            if (UPDATED.equals(property.getKey())) {
+            if (PROPERTY_UPDATED.equals(property.getKey())) {
                 createSimpleProperty(entityContext, horizontalAlign, property, builder -> {
                     builder.setValueConverter("return Math.floor((new Date().getTime() - value) / 60000) + 'm';");
                     builder.setValueConverterRefreshInterval(60);

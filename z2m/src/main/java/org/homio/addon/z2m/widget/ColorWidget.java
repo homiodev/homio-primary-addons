@@ -1,6 +1,6 @@
 package org.homio.addon.z2m.widget;
 
-import static org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty.SIGNAL;
+import static org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty.PROPERTY_SIGNAL;
 
 import java.util.Map;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
@@ -62,7 +62,7 @@ public class ColorWidget implements WidgetBuilder {
         WidgetBuilder.addProperty(
             entityContext,
             HorizontalAlign.right,
-            properties.get(SIGNAL),
+            properties.get(PROPERTY_SIGNAL),
             builder -> builder.attachToLayout(layoutID, 1, 5));
     }
 

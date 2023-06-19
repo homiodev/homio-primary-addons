@@ -94,8 +94,8 @@ public class Z2MDeviceService {
                 addPropertyOptional(expose.getProperty(), key -> buildExposeProperty(expose));
             }
         }
-        addPropertyOptional(Z2MPropertyLastUpdate.UPDATED, key -> new Z2MPropertyLastUpdate(this));
-        addPropertyOptional(Z2MPropertyLastSeen.LAST_SEEN, key -> new Z2MPropertyLastSeen(this));
+        addPropertyOptional(Z2MPropertyLastUpdate.PROPERTY_UPDATED, key -> new Z2MPropertyLastUpdate(this));
+        addPropertyOptional(Z2MPropertyLastSeen.PROPERTY_LAST_SEEN, key -> new Z2MPropertyLastSeen(this));
     }
 
     public void setEntityOnline() {
@@ -218,7 +218,7 @@ public class Z2MDeviceService {
             }
         }
         if (updated) {
-            properties.get(Z2MPropertyLastUpdate.UPDATED).mqttUpdate(null);
+            properties.get(Z2MPropertyLastUpdate.PROPERTY_UPDATED).mqttUpdate(null);
         }
         if (deviceEntity.isLogEvents() && !sb.isEmpty()) {
             entityContext.ui().sendInfoMessage(applianceModel.getGroupDescription(), String.join("\n", sb));
@@ -307,7 +307,7 @@ public class Z2MDeviceService {
     }
 
     private void downLinkQualityToZero() {
-        Optional.ofNullable(properties.get(Z2MGeneralProperty.SIGNAL)).ifPresent(z2MProperty -> {
+        Optional.ofNullable(properties.get(Z2MGeneralProperty.PROPERTY_SIGNAL)).ifPresent(z2MProperty -> {
             if (!z2MProperty.getValue().stringValue().equals("0")) {
                 z2MProperty.setValue(new DecimalType(0));
             }

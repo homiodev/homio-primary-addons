@@ -1,8 +1,8 @@
 package org.homio.addon.z2m.widget;
 
 import static java.lang.String.format;
-import static org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate.UPDATED;
-import static org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty.SIGNAL;
+import static org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate.PROPERTY_UPDATED;
+import static org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty.PROPERTY_SIGNAL;
 import static org.homio.api.ui.field.UIFieldLayout.HorizontalAlign.left;
 import static org.homio.api.ui.field.UIFieldLayout.HorizontalAlign.right;
 
@@ -109,12 +109,12 @@ public class ToggleWidget implements WidgetBuilder {
         WidgetBuilder.addProperty(
             entityContext,
             HorizontalAlign.right,
-            properties.get(SIGNAL),
+            properties.get(PROPERTY_SIGNAL),
             builder -> builder.attachToLayout(layoutID, 3, 1));
     }
 
     private @Nullable Z2MProperty getLeftProperty(Map<String, Z2MProperty> properties) {
-        for (String property : new String[]{"consumption", "power", "energy", "current", UPDATED}) {
+        for (String property : new String[]{"consumption", "power", "energy", "current", PROPERTY_UPDATED}) {
             if (properties.containsKey(property)) {
                 return properties.get(property);
             }

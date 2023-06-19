@@ -12,12 +12,10 @@ import org.homio.api.ui.field.action.v1.UIInputBuilder;
  */
 public class Z2MPropertyLastUpdate extends Z2MDynamicProperty {
 
-    public static final String UPDATED = "updated";
-
     public Z2MPropertyLastUpdate(Z2MDeviceService deviceService) {
         super("#BA5623", "fa fa-fw fa-clock");
         setValue(new DecimalType(System.currentTimeMillis()));
-        init(deviceService, Options.dynamicExpose(UPDATED, ApplianceModel.NUMBER_TYPE));
+        init(deviceService, Options.dynamicExpose(PROPERTY_UPDATED, ApplianceModel.NUMBER_TYPE));
         dataReader = jsonObject -> new DecimalType(System.currentTimeMillis());
     }
 
