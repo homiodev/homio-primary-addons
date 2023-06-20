@@ -19,7 +19,7 @@ public class Z2MPropertyFirmwareUpdate extends Z2MProperty {
     private boolean wasProgress;
 
     public Z2MPropertyFirmwareUpdate() {
-        super(new Icon("fa fa-fw fa-tablets", "#A3102B"));
+        super(new Icon("fa fa-fw fa-tablets", "#FF0000"));
         setValue(new JsonType("{}"));
     }
 
@@ -61,7 +61,7 @@ public class Z2MPropertyFirmwareUpdate extends Z2MProperty {
         switch (node.get("state").asText()) {
             case "available" -> {
                 String updateTitle = node.get("installed_version").asText() + "=>" + node.get("latest_version").asText();
-                uiInputBuilder.addButton("upd", new Icon("fas fa-retweet", "#A3102B"), (entityContext, params) -> {
+                uiInputBuilder.addButton(entityID, new Icon("fas fa-retweet", "#FF0000"), (entityContext, params) -> {
                                   fireAction(true);
                                   return ActionResponseModel.fired();
                               }).setText(updateTitle)
@@ -76,5 +76,10 @@ public class Z2MPropertyFirmwareUpdate extends Z2MProperty {
     public Boolean isOutdated() {
         JsonNode node = ((JsonType) getValue()).getJsonNode();
         return node.path("state").asText().equals("available");
+    }
+
+    public Boolean isUpdating() {
+        JsonNode node = ((JsonType) getValue()).getJsonNode();
+        return node.path("state").asText().equals("updating");
     }
 }

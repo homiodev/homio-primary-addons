@@ -28,7 +28,6 @@ import org.homio.api.EntityContextService;
 import org.homio.api.EntityContextService.MQTTEntityService;
 import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.HasFirmwareVersion;
-import org.homio.api.entity.RestartHandlerOnChange;
 import org.homio.api.entity.log.HasEntitySourceLog;
 import org.homio.api.entity.types.MicroControllerBaseEntity;
 import org.homio.api.entity.types.StorageEntity;
@@ -144,6 +143,15 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     @UIFieldGroup("GENERAL")
     public boolean isEnableWatchdog() {
         return getJsonData("wd", false);
+    }
+
+    @UIField(order = 60, hideInEdit = true, hideOnEmpty = true)
+    @UIFieldGroup("GENERAL")
+    public Boolean isRunLocally() {
+        if (getStatus().isOnline()) {
+            return getService().isStartLocally();
+        }
+        return null;
     }
 
     @UIField(order = 1)
@@ -291,13 +299,14 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
         public ZigBeeCoordinatorDeviceEntity(Z2MDeviceService deviceHandler) {
             ApplianceModel applianceModel = deviceHandler.getApplianceModel();
-            String ieeeAddress = applianceModel.getIeeeAddress().toUpperCase();
+            String ieeeAddress = applianceModel.getIeeeAddress();
             color = deviceHandler.getDeviceEntity().getStatus().getColor();
             name = deviceHandler.getDeviceEntity().getName();
             if (StringUtils.isEmpty(name) || name.equalsIgnoreCase(ieeeAddress)) {
                 name = deviceHandler.getDeviceEntity().getDescription();
             }
-            this.ieeeAddress = deviceHandler.getDeviceEntity().getEntityID() + "~~~" + ieeeAddress;
+            this.ieeeAddress = deviceHandler.getDeviceEntity().getEntityID() + "~~~" +
+                ieeeAddress.toUpperCase().substring(2); // cut 0X
             endpointsCount = applianceModel.getDefinition().getExposes().size();
         }
     }

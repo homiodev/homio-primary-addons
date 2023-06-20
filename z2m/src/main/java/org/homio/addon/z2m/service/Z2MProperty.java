@@ -139,7 +139,8 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     }
 
     public boolean isVisible() {
-        return !getDeviceService().getCoordinatorService().getEntity().getIgnoreProperties().contains(getPropertyDefinition());
+        return !getDeviceService().getCoordinatorService().getEntity().getIgnoreProperties()
+                                  .contains(expose.getProperty());
     }
 
     public boolean isWritable() {

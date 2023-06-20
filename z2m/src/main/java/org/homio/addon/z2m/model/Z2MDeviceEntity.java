@@ -40,7 +40,7 @@ import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
-import org.homio.api.model.Status.StatusModel;
+import org.homio.api.model.Status.EntityStatus;
 import org.homio.api.optionProvider.SelectPlaceOptionLoader;
 import org.homio.api.ui.UI;
 import org.homio.api.ui.UI.Color;
@@ -137,7 +137,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     @Override
-    public Status.@NotNull StatusModel getEntityStatus() {
+    public EntityStatus getEntityStatus() {
         Status status = getStatus();
         ApplianceModel applianceModel = deviceService.getApplianceModel();
         if (applianceModel.isDisabled()) {
@@ -147,8 +147,13 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         } else if (!applianceModel.isInterviewCompleted() || !applianceModel.isSupported() ||
             (StringUtils.isEmpty(applianceModel.getType()) || "UNKNOWN".equalsIgnoreCase(applianceModel.getType()))) {
             status = Status.NOT_READY;
+        } else {
+            ZigBeeProperty property = getProperty(PROPERTY_FIRMWARE_UPDATE);
+            if (property instanceof Z2MPropertyFirmwareUpdate firmwareUpdate && firmwareUpdate.isUpdating()) {
+                status = Status.UPDATING;
+            }
         }
-        return new StatusModel(status);
+        return new EntityStatus(status);
     }
 
     @Override
