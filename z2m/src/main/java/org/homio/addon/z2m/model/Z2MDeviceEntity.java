@@ -3,6 +3,7 @@ package org.homio.addon.z2m.model;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
+import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_FIRMWARE_UPDATE;
 import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -21,6 +22,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MProperty;
+import org.homio.addon.z2m.service.properties.Z2MPropertyFirmwareUpdate;
 import org.homio.addon.z2m.setting.ZigBeeEntityCompactModeSetting;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition;
@@ -408,6 +410,15 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @Override
     public boolean isDisableDelete() {
         return true;
+    }
+
+    @Override
+    public Boolean isOutdated() {
+        ZigBeeProperty property = getProperty(PROPERTY_FIRMWARE_UPDATE);
+        if (property instanceof Z2MPropertyFirmwareUpdate firmwareUpdate) {
+            return firmwareUpdate.isOutdated();
+        }
+        return false;
     }
 
     @Override

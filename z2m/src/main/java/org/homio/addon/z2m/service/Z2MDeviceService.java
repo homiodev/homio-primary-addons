@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -38,6 +39,7 @@ import org.json.JSONObject;
 @Log4j2
 public class Z2MDeviceService {
 
+    private final Set<String> SKIP_VARIABLE_PROPERTIES = Set.of("update_available", "update");
     private final Z2MLocalCoordinatorService coordinatorService;
     private final Map<String, Z2MProperty> properties = new ConcurrentHashMap<>();
     private final Z2MDeviceEntity deviceEntity;
@@ -291,7 +293,7 @@ public class Z2MDeviceService {
         } else {
             z2MProperty = CommonUtils.newInstance(z2mCluster);
         }
-        z2MProperty.init(this, expose);
+        z2MProperty.init(this, expose, !SKIP_VARIABLE_PROPERTIES.contains(expose.getProperty()));
         return z2MProperty;
     }
 

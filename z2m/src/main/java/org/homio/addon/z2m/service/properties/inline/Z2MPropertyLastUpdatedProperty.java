@@ -15,7 +15,7 @@ public class Z2MPropertyLastUpdatedProperty extends Z2MPropertyInline {
     public Z2MPropertyLastUpdatedProperty(Z2MDeviceService deviceService) {
         super(new Icon("fa fa-fw fa-clock", "#BA5623"));
         setValue(new DecimalType(System.currentTimeMillis()));
-        init(deviceService, Options.dynamicExpose(PROPERTY_LAST_UPDATED, ApplianceModel.NUMBER_TYPE));
+        init(deviceService, Options.dynamicExpose(PROPERTY_LAST_UPDATED, ApplianceModel.NUMBER_TYPE), true);
         dataReader = jsonObject -> new DecimalType(System.currentTimeMillis());
     }
 

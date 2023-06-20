@@ -1,5 +1,6 @@
 {
   "ZIGBEE": {
+    "UPDATING": "Updating zigbee device {{NAME}}. Remaining: {{VALUE}}sec.",
     "attributes": "{{NAME}} attributes",
     "new_coordinator": {
       "coordinator": "ZigBee coordinator {{NAME}}",

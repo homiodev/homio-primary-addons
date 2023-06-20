@@ -22,7 +22,7 @@ public class Z2MPropertyActionEvent extends Z2MPropertyInline {
             "fas fa-fw" + (z2MDevicePropertiesModel == null ? "fa-square-check" : z2MDevicePropertiesModel.getIcon()),
             z2MDevicePropertiesModel == null ? "#B72AD4" : z2MDevicePropertiesModel.getIconColor()
         ));
-        init(deviceService, Options.dynamicExpose(property, ApplianceModel.NUMBER_TYPE));
+        init(deviceService, Options.dynamicExpose(property, ApplianceModel.NUMBER_TYPE), true);
         setValue(new DecimalType(0));
         dataReader = jsonObject -> new DecimalType(getValue().intValue() + 1);
     }

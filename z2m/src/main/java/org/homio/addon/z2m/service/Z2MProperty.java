@@ -51,6 +51,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     public static final String PROPERTY_SIGNAL = "linkquality";
     public static final String PROPERTY_LAST_UPDATED = "last_updated";
     public static final String PROPERTY_LAST_SEEN = "last_seen";
+    public static final String PROPERTY_FIRMWARE_UPDATE = "update";
 
     private final @NotNull Icon icon;
     private final Map<String, Consumer<State>> changeListeners = new ConcurrentHashMap<>();
@@ -80,7 +81,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         changeListeners.remove(id);
     }
 
-    public void init(@NotNull Z2MDeviceService deviceService, @NotNull Options expose) {
+    public void init(@NotNull Z2MDeviceService deviceService, @NotNull Options expose, boolean createVariable) {
         this.deviceService = deviceService;
         this.entityContext = this.deviceService.getEntityContext();
         this.expose = expose;
@@ -88,7 +89,9 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         this.unit = StringUtils.defaultIfEmpty(this.unit, expose.getUnit());
         this.dataReader = this.dataReader == null ? buildDataReader() : this.dataReader;
 
-        getOrCreateVariable();
+        if (createVariable) {
+            getOrCreateVariable();
+        }
     }
 
     public void mqttUpdate(JSONObject payload) {

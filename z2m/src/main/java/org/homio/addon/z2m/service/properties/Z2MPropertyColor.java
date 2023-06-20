@@ -47,7 +47,7 @@ public class Z2MPropertyColor extends Z2MProperty {
     }
 
     @Override
-    public void init(@NotNull Z2MDeviceService deviceService, @NotNull ApplianceModel.Z2MDeviceDefinition.Options expose) {
+    public void init(@NotNull Z2MDeviceService deviceService, @NotNull ApplianceModel.Z2MDeviceDefinition.Options expose, boolean createVariable) {
         switch (expose.getName()) {
             case "color_xy" -> this.dataReader =
                 payload -> {
@@ -64,7 +64,7 @@ public class Z2MPropertyColor extends Z2MProperty {
                     return new StringType(hsToHex(hue, saturation, getBrightness(payload)));
                 };
         }
-        super.init(deviceService, expose);
+        super.init(deviceService, expose, createVariable);
     }
 
     @Override

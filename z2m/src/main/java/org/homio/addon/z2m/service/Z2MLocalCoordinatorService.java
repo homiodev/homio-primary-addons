@@ -40,9 +40,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 import org.homio.addon.z2m.ZigBee2MQTTFrontendConsolePlugin;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
-import org.homio.addon.z2m.util.Z2MConfiguration;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition;
+import org.homio.addon.z2m.util.Z2MConfiguration;
 import org.homio.addon.z2m.util.Z2MPropertyConfigService;
 import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
@@ -201,9 +201,9 @@ public class Z2MLocalCoordinatorService
     @Override
     @SneakyThrows
     public boolean entityUpdated(@NotNull Z2MLocalCoordinatorEntity newEntity) {
-        if (!this.entity.deepEqual(newEntity)) {
-            // TODO??? this.desiredStatus = calcEntityDesiredStatus(newEntity);
-            this.entity = newEntity;
+        boolean requireRestart = !this.entity.deepEqual(newEntity);
+        this.entity = newEntity;
+        if (requireRestart) {
             this.restartCoordinator();
         }
         return false;
