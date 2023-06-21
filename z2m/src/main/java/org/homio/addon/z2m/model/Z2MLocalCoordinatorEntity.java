@@ -199,7 +199,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
     @UIContextMenuAction(value = "RESTART",
                          icon = "fas fa-power-off",
-                         confirmMessage = "W.CONFIRM.Z2M_RESTART",
+                         confirmMessage = "W.CONFIRM.ZIGBEE_RESTART",
                          confirmMessageDialogColor = "#4E481E",
                          iconColor = Color.RED)
     public ActionResponseModel restart() {

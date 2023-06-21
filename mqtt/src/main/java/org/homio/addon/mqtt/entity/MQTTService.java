@@ -265,17 +265,24 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         return cursor;
     }
 
-    private void messageArrived(String topic, MqttMessage mqttMessage, Object payload, int payloadLength) {
+    private void messageArrived(String topic, MqttMessage mqttMessage, Object payload, String rawPayload) {
         try {
             boolean sysNode = topic.startsWith("$SYS");
             if (!entity.getIncludeSys() && sysNode) {
                 return;
             }
+
+            // fire events with raw payload
+            fireEvent(topic, rawPayload);
+            if (rawPayload.contains("/")) {
+                fireEvent(topic.substring(0, topic.indexOf("/")), rawPayload);
+            }
+
             TreeNode cursor;
             if (payload == null) {
                 cursor = this.removeTopic(topic);
             } else {
-                cursor = findTopic(topic, root, payloadLength);
+                cursor = findTopic(topic, root, rawPayload.length());
                 updateNodeHistory(topic, mqttMessage, payload, cursor, sysNode);
             }
 
@@ -417,12 +424,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
                     convertedPayload = StringUtils.isEmpty(payload) ? null : payload;
                 }
 
-                MQTTService.this.messageArrived(topic, mqttMessage, convertedPayload, payload.length());
-
-                fireEvent(topic, payload);
-                if (payload.contains("/")) {
-                    fireEvent(topic.substring(0, topic.indexOf("/")), payload);
-                }
+                MQTTService.this.messageArrived(topic, mqttMessage, convertedPayload, payload);
             } catch (Exception ex) {
                 log.error("[{}]: Unexpected mqtt error", entityID, ex);
             }

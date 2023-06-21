@@ -13,8 +13,10 @@ import org.homio.addon.mqtt.setting.ConsoleRemoveMqttTreeNodeHeaderButtonSetting
 import org.homio.api.EntityContext;
 import org.homio.api.console.ConsolePluginTree;
 import org.homio.api.fs.TreeConfiguration;
+import org.homio.api.fs.TreeNode;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.setting.console.header.ConsoleHeaderSettingPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 @Log4j2
@@ -35,9 +37,9 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
   }
 
   @Override
-  public ActionResponseModel executeAction(String entityID, JSONObject metadata, JSONObject params) {
+  public ActionResponseModel executeAction(@NotNull String entityID, JSONObject metadata, JSONObject params) {
     entityContext.assertAccess(MQTTEntrypoint.MQTT_RESOURCE);
-    if ("history".equals(metadata.optString("type"))) {
+    if (metadata != null && "history".equals(metadata.optString("type"))) {
       return ActionResponseModel.showJson("History", new ArrayList<>(mqttService.getStorage().findAllBy("topic", entityID)));
     }
     return ActionResponseModel.showWarn("Unable to handle command: " + entityID);
@@ -50,7 +52,7 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
   }
 
   @Override
-  public RenderType getRenderType() {
+  public @NotNull RenderType getRenderType() {
     return RenderType.tree;
   }
 
@@ -60,7 +62,7 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
   }
 
   @Override
-  public String getName() {
+  public @NotNull String getName() {
     return "MQTT";
   }
 

@@ -9,8 +9,10 @@ import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
 import org.homio.api.setting.SettingPlugin;
 import org.homio.api.setting.console.header.ConsoleHeaderSettingPlugin;
+import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.field.UIFieldType;
 import org.homio.api.util.CommonUtils;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 /**
@@ -31,12 +33,12 @@ public class ConsoleRemoveMqttTreeNodeHeaderButtonSetting implements
     }
 
     @Override
-    public Class<NodeRemoveRequest> getType() {
+    public @NotNull Class<NodeRemoveRequest> getType() {
         return ConsoleRemoveMqttTreeNodeHeaderButtonSetting.NodeRemoveRequest.class;
     }
 
     @Override
-    public UIFieldType getSettingType() {
+    public @NotNull UIFieldType getSettingType() {
         return UIFieldType.Button;
     }
 
@@ -48,6 +50,8 @@ public class ConsoleRemoveMqttTreeNodeHeaderButtonSetting implements
     public JSONObject getParameters(EntityContext entityContext, String value) {
         JSONObject parameters = new JSONObject();
         CommonUtils.putOpt(parameters, "confirm", getConfirmMsg());
+        CommonUtils.putOpt(parameters, "dialogColor", Color.ERROR_DIALOG);
+        CommonUtils.putOpt(parameters, "confirmInjectSelectedNode", true);
         CommonUtils.putOpt(parameters, "title", null);
         return parameters;
     }
@@ -60,7 +64,7 @@ public class ConsoleRemoveMqttTreeNodeHeaderButtonSetting implements
 
     @Override
     @SneakyThrows
-    public String writeValue(NodeRemoveRequest value) {
+    public @NotNull String writeValue(NodeRemoveRequest value) {
         return value == null ? "" : CommonUtils.OBJECT_MAPPER.writeValueAsString(value);
     }
 

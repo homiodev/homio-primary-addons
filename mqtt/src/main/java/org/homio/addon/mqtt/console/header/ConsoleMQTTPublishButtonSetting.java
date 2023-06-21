@@ -8,12 +8,13 @@ import org.homio.api.model.OptionModel;
 import org.homio.api.setting.SettingPluginButton;
 import org.homio.api.setting.console.header.ConsoleHeaderSettingPlugin;
 import org.homio.api.ui.field.action.ActionInputParameter;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 public class ConsoleMQTTPublishButtonSetting implements ConsoleHeaderSettingPlugin<JSONObject>, SettingPluginButton {
 
   @Override
-  public Icon getIcon() {
+  public @NotNull Icon getIcon() {
     return new Icon("fas fa-upload");
   }
 

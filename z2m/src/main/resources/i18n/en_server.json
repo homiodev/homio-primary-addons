@@ -1,5 +1,9 @@
 {
   "ZIGBEE": {
+    "OTA_CHECK_TRUE": "Found firmware updates for '{{VALUE}}'",
+    "OTA_CHECK_FALSE": "No update available for '{{VALUE}}'",
+    "REQUEST_UPDATE_UPDATE": "Fired updating for '{{VALUE}}'",
+    "REQUEST_UPDATE_CHECK": "Checking if update available for '{{VALUE}}'",
     "UPDATING": "Updating zigbee device {{NAME}}. Remaining: {{VALUE}}sec.",
     "attributes": "{{NAME}} attributes",
     "new_coordinator": {

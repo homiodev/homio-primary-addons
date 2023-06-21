@@ -45,12 +45,6 @@ public class Z2MPropertyFirmwareUpdate extends Z2MProperty {
     }
 
     @Override
-    public void fireAction(boolean value) {
-        getDeviceService().getCoordinatorService().publish("bridge/request/device/ota_update/update",
-            new JSONObject().put("id", getDeviceService().getIeeeAddress()));
-    }
-
-    @Override
     public String getPropertyDefinition() {
         return PROPERTY_FIRMWARE_UPDATE;
     }
@@ -61,14 +55,17 @@ public class Z2MPropertyFirmwareUpdate extends Z2MProperty {
         switch (node.get("state").asText()) {
             case "available" -> {
                 String updateTitle = node.get("installed_version").asText() + "=>" + node.get("latest_version").asText();
-                uiInputBuilder.addButton(entityID, new Icon("fas fa-retweet", "#FF0000"), (entityContext, params) -> {
-                                  fireAction(true);
-                                  return ActionResponseModel.fired();
-                              }).setText(updateTitle)
-                              .setConfirmMessage("W.CONFIRM.Z2M_UPDATE")
+                uiInputBuilder.addButton(entityID, new Icon("fas fa-retweet", "#FF0000"),
+                                  (entityContext, params) -> sendRequest(Request.update))
+                              .setText(updateTitle)
+                              .setConfirmMessage("W.CONFIRM.ZIGBEE_UPDATE")
                               .setConfirmMessageDialogColor(Color.ERROR_DIALOG);
             }
             case "updating" -> uiInputBuilder.addInfo("UPDATING");
+            case "idle" -> uiInputBuilder.addButton(entityID, new Icon("fas fa-check-to-slot", "#72A7A1"),
+                                             (entityContext, params) -> sendRequest(Request.check))
+                                         .setText("ZIGBEE.CHECK_UPDATES")
+                                         .setConfirmMessage("W.CONFIRM.ZIGBEE_CHECK_UPDATES");
             default -> uiInputBuilder.addInfo("-");
         }
     }
@@ -81,5 +78,16 @@ public class Z2MPropertyFirmwareUpdate extends Z2MProperty {
     public Boolean isUpdating() {
         JsonNode node = ((JsonType) getValue()).getJsonNode();
         return node.path("state").asText().equals("updating");
+    }
+
+    private ActionResponseModel sendRequest(Request request) {
+        getDeviceService().getCoordinatorService().publish("bridge/request/device/ota_update/" + request.name(),
+            new JSONObject().put("id", getDeviceService().getIeeeAddress()));
+        return ActionResponseModel.showSuccess(Lang.getServerMessage("ZIGBEE.REQUEST_UPDATE_" + request.name().toUpperCase(),
+            getDeviceService().getIeeeAddress()));
+    }
+
+    private enum Request {
+        update, check
     }
 }

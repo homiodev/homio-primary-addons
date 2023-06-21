@@ -314,7 +314,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIField(order = 5, inlineEdit = true)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("SETTINGS")
-    @UIFieldInlineEditConfirm(value = "W.CONFIRM.Z2M_DISABLE", dialogColor = ERROR_DIALOG, showCondition = "return context.get('disabled') == true")
+    @UIFieldInlineEditConfirm(value = "W.CONFIRM.ZIGBEE_DISABLE", dialogColor = ERROR_DIALOG, showCondition = "return context.get('disabled') == true")
     public boolean isDisabled() {
         return deviceService.getConfiguration().path("disabled").asBoolean(deviceService.getApplianceModel().isDisabled());
     }

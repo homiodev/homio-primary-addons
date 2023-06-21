@@ -507,8 +507,19 @@ public class Z2MLocalCoordinatorService
                     new ZigBee2MQTTFrontendConsolePlugin(entityContext, new FrameConfiguration(z2mFrontendURL.toString()))));
 
         // register mqtt bridge event listeners
-        for (Z2MBridgeResponse response : Z2MBridgeResponse.values()) {
+        for (Z2MBridgeTopicHandlers response : Z2MBridgeTopicHandlers.values()) {
             addMqttTopicListener(getBridgeTopic(response), payload -> response.handler.accept(payload, this));
+        }
+        for (Z2MBridgeResponseTopicHandlers response : Z2MBridgeResponseTopicHandlers.values()) {
+            addMqttTopicListener(
+                format("%s/bridge/response/%s", entity.getBasicTopic(), response.topic),
+                payload -> {
+                    if ("ok".equalsIgnoreCase(payload.get("status").asText())) {
+                        response.handler.accept(payload.get("data"), this);
+                    } else {
+                        log.error("[{}]: ZigBee2MQTT {} response status failed. {}", entityID, response.topic, payload);
+                    }
+                });
         }
     }
 
@@ -624,8 +635,8 @@ public class Z2MLocalCoordinatorService
         deviceHandlers.remove(deviceService.getIeeeAddress());
     }
 
-    private @NotNull String getBridgeTopic(@NotNull Z2MBridgeResponse z2MBridgeResponse) {
-        return format("%s/bridge/%s", entity.getBasicTopic(), z2MBridgeResponse.name());
+    private @NotNull String getBridgeTopic(@NotNull Z2MLocalCoordinatorService.Z2MBridgeTopicHandlers z2MBridgeTopicHandlers) {
+        return format("%s/bridge/%s", entity.getBasicTopic(), z2MBridgeTopicHandlers.name());
     }
 
     private void startZ2MLocalProcess() {
@@ -645,14 +656,14 @@ public class Z2MLocalCoordinatorService
     }
 
     @RequiredArgsConstructor
-    private enum Z2MBridgeResponse {
+    private enum Z2MBridgeTopicHandlers {
         config((payload, service) -> {}),
         devices((payload, service) -> {
             String value = payload.get("raw").asText();
             List<ApplianceModel> models = OBJECT_MAPPER.readValue(value, new TypeReference<>() {});
             Map<String, ApplianceModel> applianceModelMap = models.stream()
-                                                           .filter(d -> !d.getType().equals("Coordinator"))
-                                                           .collect(Collectors.toMap(ApplianceModel::getIeeeAddress, d -> d));
+                                                                  .filter(d -> !d.getType().equals("Coordinator"))
+                                                                  .collect(Collectors.toMap(ApplianceModel::getIeeeAddress, d -> d));
             for (Iterator<Entry<String, Z2MDeviceService>> iterator = service.deviceHandlers.entrySet().iterator(); iterator.hasNext(); ) {
                 Entry<String, Z2MDeviceService> entry = iterator.next();
                 if (!applianceModelMap.containsKey(entry.getKey())) {
@@ -700,6 +711,18 @@ public class Z2MLocalCoordinatorService
             service.entityContext.event().fireEvent("zigbee_coordinator-" + service.getEntityID(), service.getEntity().getStatus());
         });
 
+        private final ThrowingBiConsumer<JsonNode, Z2MLocalCoordinatorService, Exception> handler;
+    }
+
+    @RequiredArgsConstructor
+    private enum Z2MBridgeResponseTopicHandlers {
+        otaCheck("device/ota_update/check", (payload, service) -> {
+            service.entityContext.ui().sendSuccessMessage(
+                Lang.getServerMessage("ZIGBEE.OTA_CHECK_" + payload.get("updateAvailable").asText().toUpperCase(),
+                    payload.get("id").asText()));
+        });
+
+        private final String topic;
         private final ThrowingBiConsumer<JsonNode, Z2MLocalCoordinatorService, Exception> handler;
     }
 }
