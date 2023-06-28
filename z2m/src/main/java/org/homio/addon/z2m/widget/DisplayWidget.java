@@ -2,8 +2,8 @@ package org.homio.addon.z2m.widget;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED;
 import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral.PROPERTY_SIGNAL;
+import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
@@ -97,8 +97,11 @@ public class DisplayWidget implements WidgetBuilder {
             if (isNotEmpty(layout)) {
                 builder.setLayout(layout);
             }
-            builder.setBlockSize(wd.getBlockWidth(3), wd.getBlockHeight(includeProperties.size()))
+            builder.setBlockSize(
+                       wd.getBlockWidth(request.getLayoutColumnNum()),
+                       wd.getBlockHeight(includeProperties.size()))
                    .setZIndex(wd.getZIndex(20));
+
             request.getAttachToLayoutHandler().accept(builder);
 
             for (ZigBeeProperty property : includeProperties) {
@@ -210,16 +213,20 @@ public class DisplayWidget implements WidgetBuilder {
                 seriesBuilder.setValueColor(wbProperty.getValueColor());
                 seriesBuilder.setValueSourceClickHistory(wbProperty.isValueSourceClickHistory());
 
-                if (isNotEmpty(wbProperty.getIcon()) || wbProperty.getIconThreshold() != null) {
-                    seriesBuilder.setIcon(defaultString(wbProperty.getIcon(), property.getIcon().getColor()), thresholdBuilder ->
-                        buildThreshold(wbProperty.getIconThreshold(), thresholdBuilder));
-                    if (isNotEmpty(wbProperty.getIconColor()) || wbProperty.getIconColorThreshold() != null) {
-                        seriesBuilder.setIconColor(defaultString(wbProperty.getIconColor(), property.getIcon().getColor()), thresholdBuilder ->
-                            buildThreshold(wbProperty.getIconColorThreshold(), thresholdBuilder));
-                    }
+                if ((isNotEmpty(wbProperty.getIcon())) || wbProperty.getIconThreshold() != null) {
+                    applySeriesIcon(property, seriesBuilder, wbProperty);
                 }
             }
         });
+    }
+
+    private void applySeriesIcon(ZigBeeProperty property, DisplayWidgetSeriesBuilder seriesBuilder, ItemDefinition wbProperty) {
+        seriesBuilder.setIcon(defaultString(wbProperty.getIcon(), property.getIcon().getIcon()), thresholdBuilder ->
+            buildThreshold(wbProperty.getIconThreshold(), thresholdBuilder));
+        if (isNotEmpty(wbProperty.getIconColor()) || wbProperty.getIconColorThreshold() != null) {
+            seriesBuilder.setIconColor(defaultString(wbProperty.getIconColor(), property.getIcon().getColor()), thresholdBuilder ->
+                buildThreshold(wbProperty.getIconColorThreshold(), thresholdBuilder));
+        }
     }
 
     private void buildThreshold(JsonNode thresholdConfiguration, ThresholdBuilder thresholdBuilder) {

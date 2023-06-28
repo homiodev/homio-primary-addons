@@ -525,7 +525,7 @@ public class Z2MLocalCoordinatorService
 
     private void addMqttTopicListener(String topic, ThrowingConsumer<ObjectNode, Exception> handler) {
         mqttEntityService.addListener(topic, "z2m", value -> {
-            log.info("[{}]: ZigBee2MQTT {}: {}", entityID, topic, value);
+            log.log(entity.isDebugLogLevel() ? Level.DEBUG : Level.INFO, "[{}]: ZigBee2MQTT {}: {}", entityID, topic, value);
             String payload = value == null ? "" : value.toString();
             if (!payload.isEmpty()) {
                 ObjectNode node;
@@ -652,6 +652,8 @@ public class Z2MLocalCoordinatorService
                 nodePC = null;
                 dispose(ex);
             })
+            .setErrorLoggerOutput(log::error)
+            .setInputLoggerOutput(msg -> log.log(entity.isDebugLogLevel() ? Level.DEBUG : Level.INFO, "[{}]: ZigBee2MQTT: {}", entityID, msg))
             .execute(getNpm() + " start --prefix " + zigbee2mqttGitHub.getLocalProjectPath());
     }
 
@@ -661,14 +663,13 @@ public class Z2MLocalCoordinatorService
         devices((payload, service) -> {
             String value = payload.get("raw").asText();
             List<ApplianceModel> models = OBJECT_MAPPER.readValue(value, new TypeReference<>() {});
-            Map<String, ApplianceModel> applianceModelMap = models.stream()
-                                                                  .filter(d -> !d.getType().equals("Coordinator"))
-                                                                  .collect(Collectors.toMap(ApplianceModel::getIeeeAddress, d -> d));
+            Map<String, ApplianceModel> applianceModelMap = getApplianceModelMap(models);
             for (Iterator<Entry<String, Z2MDeviceService>> iterator = service.deviceHandlers.entrySet().iterator(); iterator.hasNext(); ) {
                 Entry<String, Z2MDeviceService> entry = iterator.next();
                 if (!applianceModelMap.containsKey(entry.getKey())) {
                     service.deviceRemoved(entry.getValue());
                     iterator.remove();
+                    service.entityContext.ui().removeItem(entry.getValue().getDeviceEntity());
                 }
             }
 
@@ -684,7 +685,9 @@ public class Z2MLocalCoordinatorService
                     service.deviceHandlers.put(newApplianceModel.getIeeeAddress(), new Z2MDeviceService(service, newApplianceModel));
                     service.entityContext.ui().updateItem(service.entity);
                 }
-                service.deviceHandlers.get(newApplianceModel.getIeeeAddress()).deviceUpdated(newApplianceModel);
+                Z2MDeviceService deviceService = service.deviceHandlers.get(newApplianceModel.getIeeeAddress());
+                deviceService.deviceUpdated(newApplianceModel);
+                service.entityContext.ui().updateItem(deviceService.getDeviceEntity());
             }
         }),
         extensions((payload, service) -> {}),
@@ -710,6 +713,12 @@ public class Z2MLocalCoordinatorService
             service.getEntityContext().ui().sendInfoMessage("ZigBee2MQTT coordinator status: " + payload);
             service.entityContext.event().fireEvent("zigbee_coordinator-" + service.getEntityID(), service.getEntity().getStatus());
         });
+
+        private static Map<String, ApplianceModel> getApplianceModelMap(List<ApplianceModel> models) {
+            return models.stream()
+                         .filter(d -> !d.getType().equals("Coordinator"))
+                         .collect(Collectors.toMap(ApplianceModel::getIeeeAddress, d -> d));
+        }
 
         private final ThrowingBiConsumer<JsonNode, Z2MLocalCoordinatorService, Exception> handler;
     }

@@ -5,6 +5,8 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
 import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_FIRMWARE_UPDATE;
 import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
+import static org.homio.api.ui.field.UIFieldType.HTML;
+import static org.homio.api.ui.field.UIFieldType.SelectBox;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -51,7 +53,6 @@ import org.homio.api.ui.field.UIFieldIgnore;
 import org.homio.api.ui.field.UIFieldInlineEditConfirm;
 import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.UIFieldTitleRef;
-import org.homio.api.ui.field.UIFieldType;
 import org.homio.api.ui.field.action.HasDynamicContextMenuActions;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.ui.field.action.v1.UIInputEntity;
@@ -144,6 +145,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
             status = Status.DISABLED;
         } else if (applianceModel.isInterviewing()) {
             status = Status.INITIALIZE;
+        } else if (deviceService.getApplianceModel().isInterviewFailed()) {
+            status = Status.ERROR;
         } else if (!applianceModel.isInterviewCompleted() || !applianceModel.isSupported() ||
             (StringUtils.isEmpty(applianceModel.getType()) || "UNKNOWN".equalsIgnoreCase(applianceModel.getType()))) {
             status = Status.NOT_READY;
@@ -163,11 +166,14 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
             configService.getDeviceIconColor(deviceService.getApplianceModel().getModelId(), UI.Color.random()));
     }
 
-    @UIField(order = 1, hideOnEmpty = true, fullWidth = true, color = "#89AA50", inlineEdit = true)
+    @UIField(order = 1, hideOnEmpty = true, fullWidth = true, color = "#89AA50", inlineEdit = true, type = HTML)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldColorBgRef(value = "statusColor", animate = true)
     @UIFieldGroup(value = "NAME", order = 1, borderColor = "#CDD649")
     public String getDescription() {
+        if (deviceService.getApplianceModel().isInterviewFailed()) {
+            return "ZIGBEE.INTERVIEW_FAILED";
+        }
         return deviceService.getApplianceModel().getDefinition().getDescription();
     }
 
@@ -179,7 +185,11 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     // Require for @UIFieldColorBgRef("statusColor")
     public String getStatusColor() {
-        return getStatus().isOnline() ? "" : "#FF000030";
+        EntityStatus entityStatus = getEntityStatus();
+        if (entityStatus.getValue().isOnline()) {
+            return "";
+        }
+        return entityStatus.getColor() + "30";
     }
 
     @Override
@@ -203,7 +213,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         return deviceService.getApplianceModel().getDefinition().getModel();
     }
 
-    @UIField(order = 1, fullWidth = true, color = "#89AA50", type = UIFieldType.HTML, style = "height: 32px;")
+    @UIField(order = 1, fullWidth = true, color = "#89AA50", type = HTML, style = "height: 32px;")
     @UIFieldShowOnCondition("return context.get('compactMode')")
     @UIFieldColorBgRef(value = "statusColor", animate = true)
     @UIFieldGroup(value = "NAME", order = 1, borderColor = "#CDD649")
@@ -281,7 +291,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         return getEntityContext().setting().getValue(ZigBeeEntityCompactModeSetting.class);
     }
 
-    @UIField(order = 1, type = UIFieldType.SelectBox, color = "#7FE486", inlineEdit = true)
+    @UIField(order = 1, type = SelectBox, color = "#7FE486", inlineEdit = true)
     @UIFieldSelection(SelectPlaceOptionLoader.class)
     @UIFieldSelectValueOnEmpty(label = "SELECT_PLACE")
     @UIFieldShowOnCondition("return !context.get('compactMode')")
@@ -519,7 +529,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
         private String entityID;
 
-        @UIField(order = 2, type = UIFieldType.HTML)
+        @UIField(order = 2, type = HTML)
         private String title;
 
         @JsonIgnore

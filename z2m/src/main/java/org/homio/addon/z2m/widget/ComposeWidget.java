@@ -1,8 +1,9 @@
 package org.homio.addon.z2m.widget;
 
-import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED;
 import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral.PROPERTY_SIGNAL;
+import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ComposeWidget implements WidgetBuilder {
 
-    public static final String[] LEFT_PROPERTIES = new String[]{"battery", "voltage"};
+    public static final String[] LEFT_PROPERTIES = new String[]{"battery", "voltage", "power", "consumption", "energy"};
     public static final String[] CENTER_PROPERTIES = new String[]{PROPERTY_LAST_UPDATED};
     public static final String[] RIGHT_PROPERTIES = new String[]{PROPERTY_SIGNAL};
 
@@ -28,28 +29,39 @@ public class ComposeWidget implements WidgetBuilder {
         EntityContext entityContext = widgetRequest.getEntityContext();
         Z2MDeviceEntity entity = widgetRequest.getEntity();
         WidgetDefinition wd = widgetRequest.getWidgetDefinition();
-        List<WidgetDefinition> compose = wd.getCompose();
-        if (compose == null || compose.isEmpty()) {
+        List<WidgetDefinition> composeContainer = wd.getCompose();
+        if (composeContainer == null || composeContainer.isEmpty()) {
             throw new IllegalArgumentException("Unable to create compose widget without compose properties");
         }
 
-        int layoutRows = calcLayoutRows(widgetRequest, compose);
+        // set 3 as min layout height to look better
+        List<Integer> rowHeights = calcLayoutRows(widgetRequest, composeContainer);
+        int layoutRowsCount = calcLayoutRowsCount(rowHeights);
+
+        int composeBlockHeight = adjustBlockHeightToInnerContentHeight(wd, layoutRowsCount);
+
         String layoutID = "lt-cmp-" + entity.getIeeeAddress();
+        int columns = 3;
+
         entityContext.widget().createLayoutWidget(layoutID, builder -> {
             builder
-                .setBlockSize(wd.getBlockWidth(1), wd.getBlockHeight(1))
+                .setBlockSize(wd.getBlockWidth(1), composeBlockHeight)
                 .setZIndex(wd.getZIndex(15))
                 .setBackground(wd.getBackground())
-                .setLayoutDimension(layoutRows + 1, 3);
+                .setLayoutDimension(layoutRowsCount + 1, columns);
         });
 
         AtomicInteger currentLayoutRow = new AtomicInteger(0);
-        for (WidgetDefinition item : compose) {
+        for (int i = 0; i < composeContainer.size(); i++) {
+            int wdMinRowHeight = rowHeights.get(i);
+            int rowHeight = calcAdjustRowHeight(wdMinRowHeight, layoutRowsCount);
+
+            WidgetDefinition item = composeContainer.get(i);
             WidgetBuilder innerWidgetBuilder = WidgetBuilder.WIDGETS.get(item.getType());
-            val request = new MainWidgetRequest(widgetRequest, item, 3, layoutRows, builder ->
+            val request = new MainWidgetRequest(widgetRequest, item, columns, rowHeight, builder ->
                 builder.attachToLayout(layoutID, currentLayoutRow.get(), 0));
             innerWidgetBuilder.buildMainWidget(request);
-            currentLayoutRow.addAndGet(innerWidgetBuilder.getWidgetHeight(request));
+            currentLayoutRow.addAndGet(rowHeight);
         }
 
         Map<String, ZigBeeProperty> properties = widgetRequest.getEntity().getProperties();
@@ -73,6 +85,23 @@ public class ComposeWidget implements WidgetBuilder {
             builder -> builder.attachToLayout(layoutID, currentLayoutRow.get(), 2));
     }
 
+    private int calcAdjustRowHeight(int wdMinRowHeight, int layoutRowsCount) {
+        return (int) (layoutRowsCount / (float) wdMinRowHeight);
+    }
+
+    private int calcLayoutRowsCount(List<Integer> rowHeights) {
+        int minHeight = rowHeights.stream().reduce(0, Integer::sum);
+        return minHeight == 1 ? 3 : minHeight;
+    }
+
+    private int adjustBlockHeightToInnerContentHeight(WidgetDefinition wd, int layoutRows) {
+        int composeBlockHeight = wd.getBlockHeight(1);
+        if (layoutRows > 6 && composeBlockHeight == 1) {
+            composeBlockHeight = 2;
+        }
+        return composeBlockHeight;
+    }
+
     @Override
     public int getWidgetHeight(MainWidgetRequest request) {
         throw new ProhibitedExecution();
@@ -93,12 +122,12 @@ public class ComposeWidget implements WidgetBuilder {
         return Arrays.stream(availableProperties).filter(properties::containsKey).findFirst().map(properties::get).orElse(null);
     }
 
-    private int calcLayoutRows(WidgetRequest widgetRequest, List<WidgetDefinition> compose) {
-        int layoutRows = 0;
+    private List<Integer> calcLayoutRows(WidgetRequest widgetRequest, List<WidgetDefinition> compose) {
+        List<Integer> rowHeights = new ArrayList<>(compose.size());
         for (WidgetDefinition item : compose) {
             val request = new MainWidgetRequest(widgetRequest, item, 0, 0, null);
-            layoutRows += WidgetBuilder.WIDGETS.get(item.getType()).getWidgetHeight(request);
+            rowHeights.add(WidgetBuilder.WIDGETS.get(item.getType()).getWidgetHeight(request));
         }
-        return layoutRows;
+        return rowHeights;
     }
 }

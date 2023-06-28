@@ -2,21 +2,18 @@ package org.homio.addon.z2m.widget;
 
 import static java.lang.String.format;
 import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED;
-import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral.PROPERTY_SIGNAL;
 import static org.homio.api.ui.field.UIFieldLayout.HorizontalAlign.left;
 import static org.homio.api.ui.field.UIFieldLayout.HorizontalAlign.right;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.api.EntityContext;
-import org.homio.api.EntityContextWidget.HorizontalAlign;
-import org.homio.api.EntityContextWidget.VerticalAlign;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
+import org.homio.api.exception.ProhibitedExecution;
 import org.homio.api.ui.UI;
 import org.homio.api.ui.field.UIFieldLayout;
 import org.jetbrains.annotations.Nullable;
@@ -25,24 +22,8 @@ public class ToggleWidget implements WidgetBuilder {
 
     @Override
     public void buildWidget(WidgetRequest widgetRequest) {
-        EntityContext entityContext = widgetRequest.getEntityContext();
-        Z2MDeviceEntity entity = widgetRequest.getEntity();
-        WidgetDefinition wd = widgetRequest.getWidgetDefinition();
-
-        assertPropertiesExists(widgetRequest, entity);
-
-        String layoutID = "lt-btn-" + entity.getIeeeAddress();
-        entityContext.widget().createLayoutWidget(layoutID, builder ->
-            builder.setBlockSize(wd.getBlockWidth(1), wd.getBlockHeight(1))
-                   .setZIndex(wd.getZIndex(20))
-                   .setBackground(wd.getBackground())
-                   .setLayoutDimension(4, 2));
-        Map<String, Z2MProperty> properties = entity.getDeviceService().getProperties();
-
-        var request = new MainWidgetRequest(widgetRequest, wd, 2, 4, builder ->
-            builder.attachToLayout(layoutID, 0, 0));
-        buildMainWidget(request);
-        addLastRowProperties(entityContext, layoutID, properties);
+        // Use Compose Widget instead
+        throw new ProhibitedExecution();
     }
 
     @Override
@@ -60,15 +41,18 @@ public class ToggleWidget implements WidgetBuilder {
         if (includeProperties.isEmpty()) {
             throw new IllegalArgumentException("Unable to find properties from device: " + entity);
         }
+        WidgetDefinition wd = request.getItem();
 
         entityContext.widget().createToggleWidget("tgl_" + entity.getEntityID(), builder -> {
             builder.setName(entity.getDescription()).setShowName(false);
-            builder.setDisplayType(request.getItem().getOptions().getToggleType())
+            builder.setDisplayType(wd.getOptions().getToggleType())
                    .setLayout(UIFieldLayout.LayoutBuilder.builder(50, 50).addRow(
                        rowBuilder -> rowBuilder.addCol("name", left).addCol("button", right)
                    ).build());
-            builder.setBlockSize(request.getLayoutColumnNum(), getWidgetHeight(includeProperties))
-                   .setZIndex(request.getItem().getZIndex(20));
+            builder.setBlockSize(
+                       wd.getBlockWidth(request.getLayoutColumnNum()),
+                       wd.getBlockHeight(request.getLayoutRowNum()))
+                   .setZIndex(wd.getZIndex(20));
             request.getAttachToLayoutHandler().accept(builder);
 
             for (ZigBeeProperty property : includeProperties) {
@@ -82,35 +66,6 @@ public class ToggleWidget implements WidgetBuilder {
 
     private int getWidgetHeight(List<ZigBeeProperty> properties) {
         return Math.round(properties.size() * 2F / 3);
-    }
-
-    private void assertPropertiesExists(WidgetRequest widgetRequest, Z2MDeviceEntity entity) {
-        int propertiesSize = widgetRequest.getIncludeProperties().size();
-        if (propertiesSize == 0) {
-            throw new IllegalArgumentException("Unable to find properties: " + widgetRequest.getIncludeProperties() + " from device: " + entity);
-        }
-    }
-
-    private void addLastRowProperties(EntityContext entityContext, String layoutID, Map<String, Z2MProperty> properties) {
-        Z2MProperty leftProperty = getLeftProperty(properties);
-        if (leftProperty != null) {
-            entityContext.widget().createSimpleValueWidget(leftProperty.getEntityID(), builder -> {
-                builder.setIcon(leftProperty.getIcon())
-                       .setValueDataSource(WidgetBuilder.getSource(entityContext, leftProperty, false))
-                       .setValueFontSize(0.8)
-                       .setValueTemplate("", leftProperty.getExpose().getUnit())
-                       .setValueSuffixFontSize(0.6)
-                       .setValueSuffixVerticalAlign(VerticalAlign.bottom)
-                       .attachToLayout(layoutID, 3, 0);
-                Optional.ofNullable(PROPERTIES.get(leftProperty.getKey())).ifPresent(ib -> ib.build(builder));
-            });
-        }
-
-        WidgetBuilder.addProperty(
-            entityContext,
-            HorizontalAlign.right,
-            properties.get(PROPERTY_SIGNAL),
-            builder -> builder.attachToLayout(layoutID, 3, 1));
     }
 
     private @Nullable Z2MProperty getLeftProperty(Map<String, Z2MProperty> properties) {

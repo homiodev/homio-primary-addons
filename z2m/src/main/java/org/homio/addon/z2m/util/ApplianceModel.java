@@ -100,6 +100,10 @@ public class ApplianceModel extends UnknownOptions {
         return defaultIfEmpty(friendlyName, ieeeAddress);
     }
 
+    public boolean isInterviewFailed() {
+        return !interviewCompleted && !interviewing;
+    }
+
     @Getter
     @Setter
     public static class Z2MDeviceDefinition extends UnknownOptions {

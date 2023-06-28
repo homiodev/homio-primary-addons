@@ -49,6 +49,7 @@
         "Sum",
         "Count",
         "Average",
+        "AverageNoZero",
         "Median"
       ],
       "default": "Average"

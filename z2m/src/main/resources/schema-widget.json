@@ -99,10 +99,10 @@
       "type": "string",
       "enum": [
         "color",
-        "toggle",
         "display",
         "compose",
         "barTime",
+        "toggle",
         "line"
       ]
     },
@@ -138,7 +138,8 @@
       "type": "string"
     },
     "blockHeight": {
-      "type": "integer"
+      "type": "integer",
+      "default": "1"
     },
     "widgetHeight": {
       "type": "integer"

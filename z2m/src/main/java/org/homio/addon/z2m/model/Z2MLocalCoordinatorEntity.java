@@ -38,6 +38,7 @@ import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.exception.ProhibitedExecution;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.OptionModel;
+import org.homio.api.model.Status.EntityStatus;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
@@ -180,6 +181,16 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     @UIFieldGroup("ADVANCED")
     public List<String> getIgnoreProperties() {
         return getJsonDataList("ip");
+    }
+
+    @UIField(order = 4, inlineEdit = true)
+    @UIFieldGroup("ADVANCED")
+    public boolean isDebugLogLevel() {
+        return getJsonData("dll", true);
+    }
+
+    public void setDebugLogLevel(boolean value) {
+        setJsonData("dll", value);
     }
 
     public void setIgnoreProperties(String value) {

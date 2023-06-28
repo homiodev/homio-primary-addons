@@ -26,26 +26,26 @@ public class LineWidget implements WidgetBuilder {
         EntityContext entityContext = request.getWidgetRequest().getEntityContext();
         Z2MDeviceEntity entity = request.getWidgetRequest().getEntity();
 
-        WidgetDefinition widgetDefinition = request.getItem();
-        List<ZigBeeProperty> barSeries = widgetDefinition.getIncludeProperties(request);
+        WidgetDefinition wd = request.getItem();
+        List<ZigBeeProperty> barSeries = wd.getIncludeProperties(request);
 
         entityContext.widget().createLineChartWidget("ln-" + entity.getIeeeAddress(), builder -> {
-            builder.setBlockSize(widgetDefinition.getBlockWidth(3), widgetDefinition.getBlockHeight(1))
-                   .setZIndex(widgetDefinition.getZIndex(20))
-                   .setShowAxisX(widgetDefinition.getOptions().isShowAxisX())
-                   .setShowAxisY(widgetDefinition.getOptions().isShowAxisY())
-                   .setShowChartFullScreenButton(widgetDefinition.getOptions().isShowChartFullScreenButton())
-                   .setChartPointsPerHour(widgetDefinition.getOptions().getPointsPerHour())
-                   .setPointRadius(widgetDefinition.getOptions().getPointRadius())
-                   .setShowDynamicLine(widgetDefinition.getOptions().isShowDynamicLine())
-                   .setDynamicLineColor(widgetDefinition.getOptions().getDynamicLineColor())
-                   .setPointBorderColor(widgetDefinition.getOptions().getPointBorderColor());
+            builder.setBlockSize(wd.getBlockWidth(3), wd.getBlockHeight(1))
+                   .setZIndex(wd.getZIndex(20))
+                   .setShowAxisX(wd.getOptions().isShowAxisX())
+                   .setShowAxisY(wd.getOptions().isShowAxisY())
+                   .setShowChartFullScreenButton(wd.getOptions().isShowChartFullScreenButton())
+                   .setChartPointsPerHour(wd.getOptions().getPointsPerHour())
+                   .setPointRadius(wd.getOptions().getPointRadius())
+                   .setShowDynamicLine(wd.getOptions().isShowDynamicLine())
+                   .setDynamicLineColor(wd.getOptions().getDynamicLineColor())
+                   .setPointBorderColor(wd.getOptions().getPointBorderColor());
             request.getAttachToLayoutHandler().accept(builder);
 
             for (ZigBeeProperty series : barSeries) {
                 builder.addSeries(series.getName(false), seriesBuilder -> {
                     seriesBuilder.setChartDataSource(WidgetBuilder.getSource(entityContext, series, false));
-                    ItemDefinition property = widgetDefinition.getProperty(series.getKey());
+                    ItemDefinition property = wd.getProperty(series.getKey());
                     if (property != null) {
                         Chart chart = property.getChart();
                         String color = series.getIcon().getColor();

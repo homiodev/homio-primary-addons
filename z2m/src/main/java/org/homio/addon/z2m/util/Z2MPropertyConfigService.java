@@ -73,6 +73,7 @@ public class Z2MPropertyConfigService {
             try {
                 log.info("Download new z2m configuration file");
                 Curl.download(getServerConfigurationFileURL(), ZIGBEE_DEFINITION_FILE);
+                // currently we use only hash to distinguish if file os newer
                 localConfigHash = Files.size(ZIGBEE_DEFINITION_FILE);
                 equalServerConfig = true;
                 readZigbeeDevices();

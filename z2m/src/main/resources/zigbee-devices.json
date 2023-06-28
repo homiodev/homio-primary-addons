@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": "1",
   "devices": [
     {
       "name": "Energy meter",
@@ -86,8 +86,15 @@
       "iconColor": "#85C240",
       "widgets": [
         {
-          "type": "toggle",
-          "autoDiscovery": true
+          "type": "compose",
+          "name": "BUTTON",
+          "icon": "fas fa-toggle-on",
+          "compose": [
+            {
+              "type": "toggle",
+              "autoDiscovery": true
+            }
+          ]
         }
       ]
     },
@@ -100,8 +107,15 @@
       "iconColor": "#57A4D1",
       "widgets": [
         {
-          "type": "toggle",
-          "autoDiscovery": true
+          "type": "compose",
+          "name": "BUTTON",
+          "icon": "fas fa-toggle-on",
+          "compose": [
+            {
+              "type": "toggle",
+              "autoDiscovery": true
+            }
+          ]
         }
       ]
     },
@@ -276,25 +290,15 @@
               "iconThreshold": [
                 {
                   "op": "eq",
-                  "value": true,
+                  "value": "true|1",
                   "target": "fas fa-door-open"
-                },
-                {
-                  "op": "eq",
-                  "value": false,
-                  "target": "fas fa-door-closed"
                 }
               ],
               "iconColorThreshold": [
                 {
                   "op": "eq",
-                  "value": true,
+                  "value": "true|1",
                   "target": "#3A75B5"
-                },
-                {
-                  "op": "eq",
-                  "value": false,
-                  "target": "#A8A8A8"
                 }
               ]
             }
@@ -335,20 +339,41 @@
         {
           "type": "display",
           "name": "MOTION_SENSOR",
-          "icon": "fas fa-person-walking",
+          "icon": "fas fa-person",
           "props": [
             {
               "name": "occupancy"
             },
             {
-              "name": "illuminance"
+              "name": "illuminance",
+              "iconThreshold": [
+                {
+                  "op": "eq",
+                  "value": "true|1",
+                  "target": "fas fa-person-walking fa-beat"
+                }
+              ],
+              "iconColorThreshold": [
+                {
+                  "op": "eq",
+                  "value": "true|1",
+                  "target": "#FF0000"
+                }
+              ]
             }
           ],
           "options": {
             "chart": {
               "source": {
                 "kind": "property",
-                "value": "illuminance"
+                "value": "occupancy",
+                "stepped": "True",
+                "aggregateFunc": "Last",
+                "opacity": 25,
+                "height": 50,
+                "smoothing": false,
+                "min": 0,
+                "max": 1
               }
             }
           }
@@ -416,7 +441,7 @@
       ]
     },
     {
-      "name": "Wall switch (2 button)",
+      "name": "Wall switch (1/2 button)",
       "model": [
         "QBKG12LM",
         "QBKG04LM"
@@ -425,9 +450,15 @@
       "iconColor": "#B5C64E",
       "widgets": [
         {
-          "type": "toggle",
+          "type": "compose",
           "name": "BUTTON",
-          "autoDiscovery": true
+          "icon": "fas fa-toggle-on",
+          "compose": [
+            {
+              "type": "toggle",
+              "autoDiscovery": true
+            }
+          ]
         }
       ]
     },
@@ -457,25 +488,15 @@
               "iconThreshold": [
                 {
                   "op": "eq",
-                  "value": true,
-                  "target": "fa-flip fab fa-squarespace"
-                },
-                {
-                  "op": "eq",
-                  "value": false,
-                  "target": "fab fa-squarespace"
+                  "value": "true|1",
+                  "target": "fab fa-fw fa-squarespace fa-flip"
                 }
               ],
               "iconColorThreshold": [
                 {
                   "op": "eq",
-                  "value": true,
+                  "value": "true|1",
                   "target": "#C94F4F"
-                },
-                {
-                  "op": "eq",
-                  "value": false,
-                  "target": "#3A75B5"
                 }
               ]
             }
@@ -521,7 +542,7 @@
       "order": 3005
     },
     {
-      "name": "updated",
+      "name": "last_updated",
       "icon": "fa-clock",
       "iconColor": "#BA5623",
       "order": 3000
