@@ -63,6 +63,7 @@ public class ColorWidget implements WidgetBuilder {
             entityContext,
             HorizontalAlign.right,
             properties.get(PROPERTY_SIGNAL),
+            false,
             builder -> builder.attachToLayout(layoutID, 1, 5));
     }
 

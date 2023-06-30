@@ -15,7 +15,7 @@
             "title": "Uses only in json file to distinguish devices by functionality",
             "type": "string"
           },
-          "model": {
+          "models": {
             "title": "List of device's model to have same widgets/icons/etc...",
             "type": "array",
             "items": [
@@ -23,6 +23,10 @@
                 "type": "string"
               }
             ]
+          },
+          "groupRef": {
+            "title": "Link to group reference with list of models",
+            "type": "string"
           },
           "icon": {
             "type": "string"
@@ -41,10 +45,98 @@
           }
         },
         "required": [
-          "name",
-          "model"
+          "name"
         ]
       }
+    },
+    "propertiesWithoutVariables": {
+      "title": "Set of properties that should be created but do not create variable for storing in db",
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "hiddenProperties": {
+      "title": "Set of properties that should be created but hidden from UI",
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "ignoreProperties": {
+      "title": "Set of properties that should be fully ignored",
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "properties": {
+      "type": "array",
+      "description": "Z2M properties list",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Z2M property name",
+            "type": "string"
+          },
+          "icon": {
+            "title": "Z2M property icon",
+            "type": "string"
+          },
+          "iconColor": {
+            "title": "Z2M property icon color",
+            "type": "string"
+          },
+          "order": {
+            "title": "Z2M property order",
+            "type": "number"
+          },
+          "alias": {
+            "title": "List of property aliases. App skip property aliases if property exists alongside with any alias",
+            "type": "array",
+            "items": [
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "icon",
+          "iconColor"
+        ]
+      }
+    },
+    "groups": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "List of models group name",
+              "type": "string"
+            },
+            "models": {
+              "title": "Model list",
+              "type": "array",
+              "items": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   },
   "title": "JSON schema for the zigbee devices widget configuration file",

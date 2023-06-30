@@ -3,7 +3,7 @@ package org.homio.addon.z2m.service.properties;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.service.properties.inline.Z2MPropertyActionEvent;
-import org.homio.addon.z2m.util.Z2MDevicePropertiesModel;
+import org.homio.addon.z2m.util.Z2MPropertyModel;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
 import org.homio.api.state.StringType;
@@ -17,8 +17,8 @@ public class Z2MPropertyAction extends Z2MProperty {
     }
 
     public static Z2MPropertyActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {
-        Z2MDevicePropertiesModel z2MDevicePropertiesModel = deviceService.getConfigService().getDeviceProperties().get(action);
-        Z2MPropertyActionEvent z2MPropertyActionEvent = new Z2MPropertyActionEvent(deviceService, action, z2MDevicePropertiesModel);
+        Z2MPropertyModel z2MPropertyModel = deviceService.getPropertyModel(action);
+        Z2MPropertyActionEvent z2MPropertyActionEvent = new Z2MPropertyActionEvent(deviceService, action, z2MPropertyModel);
         entityContext.ui().updateItem(deviceService.getDeviceEntity());
         return z2MPropertyActionEvent;
     }

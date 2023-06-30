@@ -6,6 +6,7 @@ import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,8 +24,8 @@ import org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedPrope
 import org.homio.addon.z2m.service.properties.inline.Z2MPropertyUnknown;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
-import org.homio.addon.z2m.util.Z2MDevicePropertiesModel;
 import org.homio.addon.z2m.util.Z2MPropertyConfigService;
+import org.homio.addon.z2m.util.Z2MPropertyModel;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextService.MQTTEntityService;
 import org.homio.api.model.Icon;
@@ -39,7 +40,6 @@ import org.json.JSONObject;
 @Log4j2
 public class Z2MDeviceService {
 
-    private final Set<String> SKIP_VARIABLE_PROPERTIES = Set.of("update_available", "update");
     private final Z2MLocalCoordinatorService coordinatorService;
     private final Map<String, Z2MProperty> properties = new ConcurrentHashMap<>();
     private final Z2MDeviceEntity deviceEntity;
@@ -77,7 +77,7 @@ public class Z2MDeviceService {
         initialized = false;
     }
 
-    public void deviceUpdated(ApplianceModel applianceModel) {
+    public synchronized void deviceUpdated(ApplianceModel applianceModel) {
         // user changed friendly name via z2m frontend or change file manually - update listeners
         if (initialized && !applianceModel.getMQTTTopic().equals(currentMQTTTopic)) {
             removeMqttListeners();
@@ -86,7 +86,7 @@ public class Z2MDeviceService {
 
         this.applianceModel = applianceModel;
         createOrUpdateDeviceGroup();
-        removeRedundantExposes(applianceModel);
+        removeRedundantExposes();
         for (Options expose : applianceModel.getDefinition().getExposes()) {
             // types like switch has no property but has 'type'/'endpoint'/'features'
             if (expose.getProperty() == null) {
@@ -95,7 +95,10 @@ public class Z2MDeviceService {
                 addPropertyOptional(expose.getProperty(), key -> buildExposeProperty(expose));
             }
         }
-        addPropertyOptional(Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED, key -> new Z2MPropertyLastUpdatedProperty(this));
+        // add last_updated property only if no z2m last_seen property exists
+        if (!properties.containsKey(Z2MProperty.PROPERTY_LAST_SEEN)) {
+            addPropertyOptional(Z2MProperty.PROPERTY_LAST_UPDATED, key -> new Z2MPropertyLastUpdatedProperty(this));
+        }
     }
 
     public void setEntityOnline() {
@@ -107,6 +110,10 @@ public class Z2MDeviceService {
         } else {
             log.debug("[{}]: Zigbee device: {} was initialized before", coordinatorService.getEntityID(), deviceEntity.getTitle());
         }
+    }
+
+    public Z2MPropertyModel getPropertyModel(String action) {
+        return configService.getFileMeta().getDeviceProperties().get(action);
     }
 
     private void addMqttListeners() {
@@ -225,12 +232,27 @@ public class Z2MDeviceService {
         }
     }
 
-    private void removeRedundantExposes(ApplianceModel applianceModel) {
-        // remove illuminance_lux if illuminance is present
-        if (applianceModel.getDefinition().getExposes().stream().anyMatch(e -> "illuminance_lux".equals(e.getName()))
-            && applianceModel.getDefinition().getExposes().stream().anyMatch(e -> "illuminance".equals(e.getName()))) {
-            applianceModel.getDefinition().getExposes().removeIf(e -> "illuminance_lux".equals(e.getName()));
+    /**
+     * Remove exposes from z2m device in such cases:
+     * <p>
+     * 1) expose exists inside file 'zigbee-devices.json' array 'ignoreProperties'
+     * <p>
+     * 2) expose exists inside 'alias' array inside another expose in file 'zigbee-devices.json'
+     */
+    private void removeRedundantExposes() {
+        if (configService.getFileMeta().getIgnoreProperties() != null) {
+            applianceModel.getDefinition().getExposes().removeIf(e ->
+                configService.getFileMeta().getIgnoreProperties().contains(e.getName()));
         }
+        Set<String> ignoreExposes = new HashSet<>();
+        for (Options expose : applianceModel.getDefinition().getExposes()) {
+            Z2MPropertyModel propertyModel = getPropertyModel(expose.getName());
+            if (propertyModel != null && propertyModel.getAlias() != null) {
+                ignoreExposes.addAll(propertyModel.getAlias());
+            }
+        }
+
+        applianceModel.getDefinition().getExposes().removeIf(e -> ignoreExposes.contains(e.getName()));
     }
 
     private void addMissingProperties(Z2MLocalCoordinatorService coordinatorService, ApplianceModel applianceModel) {
@@ -283,17 +305,18 @@ public class Z2MDeviceService {
         Class<? extends Z2MProperty> z2mCluster = getValueFromMap(configService.getConverters(), expose);
         Z2MProperty z2MProperty;
         if (z2mCluster == null) {
-            Z2MDevicePropertiesModel z2MDevicePropertiesModel = getValueFromMap(configService.getDeviceProperties(), expose);
-            if (z2MDevicePropertiesModel != null) {
-                z2MProperty = new Z2MPropertyGeneral(z2MDevicePropertiesModel.getIcon(), z2MDevicePropertiesModel.getIconColor());
-                z2MProperty.setUnit(z2MDevicePropertiesModel.getUnit());
+            Z2MPropertyModel z2MPropertyModel = getValueFromMap(configService.getFileMeta().getDeviceProperties(), expose);
+            if (z2MPropertyModel != null) {
+                z2MProperty = new Z2MPropertyGeneral(z2MPropertyModel.getIcon(), z2MPropertyModel.getIconColor());
+                z2MProperty.setUnit(z2MPropertyModel.getUnit());
             } else {
                 z2MProperty = new Z2MPropertyUnknown();
             }
         } else {
             z2MProperty = CommonUtils.newInstance(z2mCluster);
         }
-        z2MProperty.init(this, expose, !SKIP_VARIABLE_PROPERTIES.contains(expose.getProperty()));
+        boolean createVariable = !configService.getFileMeta().getPropertiesWithoutVariables().contains(expose.getProperty());
+        z2MProperty.init(this, expose, createVariable);
         return z2MProperty;
     }
 

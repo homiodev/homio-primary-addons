@@ -32,7 +32,8 @@ public class Z2MDeviceDefinitionModel {
     private String name;
     private String icon;
     private String iconColor;
-    private Set<String> model;
+    private Set<String> models;
+    private String groupRef;
     private List<WidgetDefinition> widgets;
     private JsonNode options;
 
@@ -248,5 +249,12 @@ public class Z2MDeviceDefinitionModel {
                 broadcasts, property, variable
             }
         }
+    }
+
+    @Getter
+    @Setter
+    public static class ModelGroups {
+        private String name;
+        private Set<String> models;
     }
 }

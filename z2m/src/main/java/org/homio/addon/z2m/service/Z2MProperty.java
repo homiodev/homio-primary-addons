@@ -48,6 +48,7 @@ import org.json.JSONObject;
 public abstract class Z2MProperty implements ZigBeeProperty {
 
     // property name for LQI
+    public static final String PROPERTY_BATTERY = "battery";
     public static final String PROPERTY_SIGNAL = "linkquality";
     public static final String PROPERTY_LAST_UPDATED = "last_updated";
     public static final String PROPERTY_LAST_SEEN = "last_seen";
@@ -67,7 +68,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     private Object dbValue;
 
     @Override
-    public Duration getTimeSinceLastEvent() {
+    public @NotNull Duration getTimeSinceLastEvent() {
         return Duration.ofMillis(System.currentTimeMillis() - updated);
     }
 
@@ -122,7 +123,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     public void fireAction(boolean value) {
         Object valueToFire = value ? getExpose().getValueOn() : getExpose().getValueOff();
         JSONObject params = new JSONObject().put(expose.getProperty(), valueToFire);
-        getDeviceService().publish("set", params);
+        deviceService.publish("set", params);
     }
 
     public void fireAction(int value) {
@@ -131,15 +132,18 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         } else if (expose.getValueMax() != null && value > expose.getValueMax()) {
             value = expose.getValueMax();
         }
-        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value));
+        deviceService.publish("set", new JSONObject().put(expose.getProperty(), value));
     }
 
     public void fireAction(String value) {
-        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), value));
+        deviceService.publish("set", new JSONObject().put(expose.getProperty(), value));
     }
 
     public boolean isVisible() {
-        return !getDeviceService().getCoordinatorService().getEntity().getIgnoreProperties()
+        if (deviceService.getConfigService().getFileMeta().getHiddenProperties().contains(expose.getProperty())) {
+            return false;
+        }
+        return !deviceService.getCoordinatorService().getEntity().getHiddenProperties()
                                   .contains(expose.getProperty());
     }
 
@@ -181,7 +185,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     }
 
     @Override
-    public State getLastValue() {
+    public @NotNull State getLastValue() {
         return value;
     }
 
@@ -196,11 +200,11 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     @Override
     public void readValue() {
-        getDeviceService().publish("get", new JSONObject().put(expose.getProperty(), ""));
+        deviceService.publish("get", new JSONObject().put(expose.getProperty(), ""));
     }
 
     @Override
-    public PropertyType getPropertyType() {
+    public @NotNull PropertyType getPropertyType() {
         return switch (expose.getType()) {
             case NUMBER_TYPE -> PropertyType.number;
             case BINARY_TYPE, SWITCH_TYPE -> PropertyType.bool;
@@ -218,8 +222,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     protected Function<JSONObject, State> buildDataReader() {
         switch (expose.getType()) {
-            case SWITCH_TYPE:
-            case BINARY_TYPE:
+            case SWITCH_TYPE, BINARY_TYPE -> {
                 if (expose.getValueOn() != null) {
                     if (expose.getValueOn() instanceof String) {
                         return payload -> OnOffType.of(expose.getValueOn().equals(payload.getString(getJsonKey())));
@@ -234,14 +237,19 @@ public abstract class Z2MProperty implements ZigBeeProperty {
                     }
                 }
                 return payload -> OnOffType.of(payload.getBoolean(getJsonKey()));
-            case NUMBER_TYPE:
+            }
+            case NUMBER_TYPE -> {
                 return payload -> new DecimalType(payload.getNumber(getJsonKey())).setUnit(unit);
-            case ApplianceModel.COMPOSITE_TYPE:
+            }
+            case ApplianceModel.COMPOSITE_TYPE -> {
                 return payload -> new JsonType(payload.get(getJsonKey()).toString());
-            case ApplianceModel.ENUM_TYPE:
+            }
+            case ApplianceModel.ENUM_TYPE -> {
                 return payload -> new StringType(payload.getString(getJsonKey()));
-            default:
+            }
+            default -> {
                 return payload -> new StringType(payload.get(getJsonKey()).toString());
+            }
         }
     }
 
@@ -273,7 +281,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
             if (isWritable()) {
                 entityContext.var().setLinkListener(variableID, varValue -> {
                     if (!deviceService.getCoordinatorService().getEntity().getStatus().isOnline()) {
-                        throw new RuntimeException("Unable to handle action. Zigbee coordinator is offline");
+                        throw new RuntimeException("Unable to handle z2m property " + getVariableID() + " action. Zigbee coordinator is offline");
                     }
                     // fire updates only if variable updates externally
                     if (!Objects.equals(dbValue, varValue)) {
@@ -300,37 +308,39 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     }
 
     private String getVariableDescription() {
-        List<String> descr = new ArrayList<>();
+        List<String> description = new ArrayList<>();
         if (isNotEmpty(getExpose().getDescription())) {
-            descr.add(getExpose().getDescription());
+            description.add(getExpose().getDescription());
         } else if (isNotEmpty(expose.getUnit())) {
-            descr.add(expose.getUnit());
+            description.add(expose.getUnit());
         }
         if (expose.getValueMin() != null && expose.getValueMax() != null) {
-            descr.add(format("(range:%s...%s)", expose.getValueMin(), expose.getValueMax()));
+            description.add(format("(range:%s...%s)", expose.getValueMin(), expose.getValueMax()));
         }
         if (expose.getValueOn() != null && expose.getValueOff() != null) {
-            descr.add(format("(on:%s;off:%s)", expose.getValueOn(), expose.getValueOff()));
+            description.add(format("(on:%s;off:%s)", expose.getValueOn(), expose.getValueOff()));
         }
         if (expose.getPresets() != null && !expose.getPresets().isEmpty()) {
-            descr.add(format("(presets:%s)", expose.getPresets().stream().map(Presets::getName).collect(Collectors.joining("|"))));
+            description.add(format("(presets:%s)", expose.getPresets().stream().map(Presets::getName).collect(Collectors.joining("|"))));
         }
-        if (descr.isEmpty()) {
-            descr.add(getDescription());
+        if (description.isEmpty()) {
+            description.add(getDescription());
         }
-        return String.join(" ", descr);
+        return String.join(" ", description);
     }
 
     private VariableType getVariableType() {
         switch (expose.getType()) {
-            case ApplianceModel.ENUM_TYPE:
+            case ApplianceModel.ENUM_TYPE -> {
                 return VariableType.Enum;
-            case NUMBER_TYPE:
+            }
+            case NUMBER_TYPE -> {
                 return VariableType.Float;
-            case BINARY_TYPE:
-            case SWITCH_TYPE:
+            }
+            case BINARY_TYPE, SWITCH_TYPE -> {
                 return VariableType.Bool;
-            default:
+            }
+            default -> {
                 if ("color".equals(expose.getProperty())) {
                     return VariableType.Color;
                 }
@@ -356,6 +366,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
                     return VariableType.Bool;
                 }
                 return VariableType.Any;
+            }
         }
     }
 }

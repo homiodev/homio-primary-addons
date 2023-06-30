@@ -38,7 +38,6 @@ import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.exception.ProhibitedExecution;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.OptionModel;
-import org.homio.api.model.Status.EntityStatus;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
@@ -179,8 +178,8 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
     @UIField(order = 3, type = UIFieldType.Chips)
     @UIFieldGroup("ADVANCED")
-    public List<String> getIgnoreProperties() {
-        return getJsonDataList("ip");
+    public List<String> getHiddenProperties() {
+        return getJsonDataList("hp");
     }
 
     @UIField(order = 4, inlineEdit = true)
@@ -193,7 +192,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         setJsonData("dll", value);
     }
 
-    public void setIgnoreProperties(String value) {
+    public void setHiddenProperties(String value) {
         setJsonData("ip", value);
     }
 
@@ -320,10 +319,5 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
                 ieeeAddress.toUpperCase().substring(2); // cut 0X
             endpointsCount = applianceModel.getDefinition().getExposes().size();
         }
-    }
-
-    @Override
-    protected void beforePersist() {
-        setIgnoreProperties("update_available");
     }
 }

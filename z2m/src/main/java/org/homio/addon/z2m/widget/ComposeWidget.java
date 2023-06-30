@@ -1,5 +1,7 @@
 package org.homio.addon.z2m.widget;
 
+import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_BATTERY;
+import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_LAST_SEEN;
 import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral.PROPERTY_SIGNAL;
 import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED;
 
@@ -20,8 +22,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class ComposeWidget implements WidgetBuilder {
 
-    public static final String[] LEFT_PROPERTIES = new String[]{"battery", "voltage", "power", "consumption", "energy"};
-    public static final String[] CENTER_PROPERTIES = new String[]{PROPERTY_LAST_UPDATED};
+    public static final String[] LEFT_PROPERTIES = new String[]{PROPERTY_BATTERY, "power", "consumption", "energy", "voltage"};
+    public static final String[] CENTER_PROPERTIES = new String[]{PROPERTY_LAST_SEEN, PROPERTY_LAST_UPDATED};
     public static final String[] RIGHT_PROPERTIES = new String[]{PROPERTY_SIGNAL};
 
     @Override
@@ -43,13 +45,12 @@ public class ComposeWidget implements WidgetBuilder {
         String layoutID = "lt-cmp-" + entity.getIeeeAddress();
         int columns = 3;
 
-        entityContext.widget().createLayoutWidget(layoutID, builder -> {
+        entityContext.widget().createLayoutWidget(layoutID, builder ->
             builder
                 .setBlockSize(wd.getBlockWidth(1), composeBlockHeight)
                 .setZIndex(wd.getZIndex(15))
                 .setBackground(wd.getBackground())
-                .setLayoutDimension(layoutRowsCount + 1, columns);
-        });
+                .setLayoutDimension(layoutRowsCount + 1, columns));
 
         AtomicInteger currentLayoutRow = new AtomicInteger(0);
         for (int i = 0; i < composeContainer.size(); i++) {
@@ -66,23 +67,32 @@ public class ComposeWidget implements WidgetBuilder {
 
         Map<String, ZigBeeProperty> properties = widgetRequest.getEntity().getProperties();
 
+        addBottomRow(entityContext, wd, layoutID, currentLayoutRow.get(), properties);
+    }
+
+    public static void addBottomRow(EntityContext entityContext, WidgetDefinition wd, String layoutID, int row,
+        Map<String, ZigBeeProperty> properties) {
+        ZigBeeProperty leftProperty = findCellProperty(wd.getLeftProperty(), properties, LEFT_PROPERTIES);
         WidgetBuilder.addProperty(
             entityContext,
             HorizontalAlign.left,
-            findCellProperty(wd.getLeftProperty(), properties, LEFT_PROPERTIES),
-            builder -> builder.attachToLayout(layoutID, currentLayoutRow.get(), 0));
+            leftProperty,
+            true,
+            builder -> builder.attachToLayout(layoutID, row, 0));
 
         WidgetBuilder.addProperty(
             entityContext,
             HorizontalAlign.center,
             findCellProperty(wd.getCenterProperty(), properties, CENTER_PROPERTIES),
-            builder -> builder.attachToLayout(layoutID, currentLayoutRow.get(), 1));
+            false,
+            builder -> builder.attachToLayout(layoutID, row, 1));
 
         WidgetBuilder.addProperty(
             entityContext,
             HorizontalAlign.right,
             findCellProperty(wd.getRightProperty(), properties, RIGHT_PROPERTIES),
-            builder -> builder.attachToLayout(layoutID, currentLayoutRow.get(), 2));
+            false,
+            builder -> builder.attachToLayout(layoutID, row, 2));
     }
 
     private int calcAdjustRowHeight(int wdMinRowHeight, int layoutRowsCount) {
@@ -112,7 +122,7 @@ public class ComposeWidget implements WidgetBuilder {
         throw new ProhibitedExecution();
     }
 
-    private @Nullable ZigBeeProperty findCellProperty(
+    private static @Nullable ZigBeeProperty findCellProperty(
         @Nullable String property,
         @NotNull Map<String, ZigBeeProperty> properties,
         @NotNull String[] availableProperties) {

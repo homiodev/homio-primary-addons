@@ -3,7 +3,7 @@
   "devices": [
     {
       "name": "Energy meter",
-      "model": [
+      "models": [
         "TS0601_din_2"
       ],
       "icon": "fas fa-plug-circle-bolt",
@@ -66,7 +66,7 @@
     },
     {
       "name": "RGB controller",
-      "model": [
+      "models": [
         "GL-C-007-1ID"
       ],
       "icon": "fas fa-palette",
@@ -78,37 +78,14 @@
       ]
     },
     {
-      "name": "Relay 1-channels",
-      "model": [
-        "BASICZBR3"
-      ],
+      "name": "Relay",
+      "groupRef": "relay_group",
       "icon": "fas fa-plug",
       "iconColor": "#85C240",
       "widgets": [
         {
           "type": "compose",
-          "name": "BUTTON",
-          "icon": "fas fa-toggle-on",
-          "compose": [
-            {
-              "type": "toggle",
-              "autoDiscovery": true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Relay 2-channels",
-      "model": [
-        "LLKZMK11LM"
-      ],
-      "icon": "fas fa-shuffle",
-      "iconColor": "#57A4D1",
-      "widgets": [
-        {
-          "type": "compose",
-          "name": "BUTTON",
+          "name": "RELAY",
           "icon": "fas fa-toggle-on",
           "compose": [
             {
@@ -121,7 +98,7 @@
     },
     {
       "name": "Motion Sensor",
-      "model": [
+      "models": [
         "RTCGQ01LM"
       ],
       "icon": "fas fa-cloud",
@@ -129,7 +106,7 @@
     },
     {
       "name": "Temperature and Humidity Sensor",
-      "model": [
+      "models": [
         "WSDCGQ11LM",
         "WSDCGQ01LM"
       ],
@@ -189,7 +166,7 @@
     },
     {
       "name": "Remote 1-button",
-      "model": [
+      "models": [
         "WXKG03LM_rev2",
         "WXKG01LM",
         "WXKG11LM"
@@ -230,7 +207,7 @@
     },
     {
       "name": "Smoke Detector",
-      "model": [
+      "models": [
         "JTYJ-GD-01LM/BW"
       ],
       "icon": "fas fa-volcano",
@@ -272,7 +249,7 @@
     },
     {
       "name": "Door Sensor",
-      "model": [
+      "models": [
         "MCCGQ11LM"
       ],
       "icon": "fas fa-door-open",
@@ -286,6 +263,7 @@
           "props": [
             {
               "name": "contact",
+              "icon": "fas fa-door-closed",
               "valueConverter": "return value == true ? 'opened' : 'closed';",
               "iconThreshold": [
                 {
@@ -324,7 +302,7 @@
     },
     {
       "name": "Motion and illuminance sensor",
-      "model": [
+      "models": [
         "RTCGQ11LM"
       ],
       "icon": "fas fa-person-circle-exclamation",
@@ -382,7 +360,7 @@
     },
     {
       "name": "Remote 2-button",
-      "model": [
+      "models": [
         "lumi.remote.b286acn01",
         "WXKG02LM_rev1",
         "WXKG02LM"
@@ -392,7 +370,7 @@
     },
     {
       "name": "Socket",
-      "model": [
+      "models": [
         "ZNCZ02LM"
       ],
       "icon": "fas fa-plug-circle-bolt",
@@ -400,7 +378,7 @@
     },
     {
       "name": "Leak sensor",
-      "model": [
+      "models": [
         "SJCGQ11LM"
       ],
       "icon": "fas fa-droplet",
@@ -442,7 +420,7 @@
     },
     {
       "name": "Wall switch (1/2 button)",
-      "model": [
+      "models": [
         "QBKG12LM",
         "QBKG04LM"
       ],
@@ -464,7 +442,7 @@
     },
     {
       "name": "Cube",
-      "model": [
+      "models": [
         "MFKZQ01LM"
       ],
       "icon": "fas fa-cube",
@@ -472,7 +450,7 @@
     },
     {
       "name": "Vibration sensor",
-      "model": [
+      "models": [
         "DJT11LM"
       ],
       "icon": "fab fa-squarespace",
@@ -575,7 +553,10 @@
       "name": "illuminance",
       "icon": "fa-sun",
       "iconColor": "#89D636",
-      "order": 2980
+      "order": 2980,
+      "alias": [
+        "illuminance_lux"
+      ]
     },
     {
       "name": "humidity",
@@ -700,11 +681,6 @@
       "iconColor": "#1FA670"
     },
     {
-      "name": "clear_fault",
-      "icon": "fa-plug-circle-check",
-      "iconColor": "#74B519"
-    },
-    {
       "name": "fault",
       "icon": "fa-plug-circle-exclamation",
       "iconColor": "#DD5F24"
@@ -822,12 +798,18 @@
     {
       "name": "action_from_side",
       "icon": "fa-arrow-right-from-bracket",
-      "iconColor": "#47B70C"
+      "iconColor": "#47B70C",
+      "alias": [
+        "from_side"
+      ]
     },
     {
       "name": "action_to_side",
       "icon": "fa-arrow-right-to-bracket",
-      "iconColor": "#47B70C"
+      "iconColor": "#47B70C",
+      "alias": [
+        "to_side"
+      ]
     },
     {
       "name": "action_side",
@@ -894,6 +876,54 @@
       "name": "update_available",
       "icon": "fa-hat-cowboy-side",
       "iconColor": "#AD23BA"
+    },
+    {
+      "name": "switch_type",
+      "icon": "fa-swatchbook",
+      "iconColor": "#20A86F"
+    },
+    {
+      "name": "led_disabled_night",
+      "icon": "fa-lightbulb",
+      "iconColor": "#2196F3"
+    }
+  ],
+  "propertiesWithoutVariables": [
+    "update_available",
+    "update"
+  ],
+  "hiddenProperties": [
+    "update_available"
+  ],
+  "groups": [
+    {
+      "name": "relay_group",
+      "models": [
+        "BASICZBR3",
+        "LLKZMK11LM",
+        "DLKZMK11LM",
+        "DLKZMK12LM",
+        "SSM-U01",
+        "SSM-U02",
+        "WHD02",
+        "XSH01B",
+        "TS0011_switch_module",
+        "TS0012_switch_module",
+        "TS0013_switch_module",
+        "BW-SS7_1gang",
+        "BW-SS7_2gang",
+        "QS-Zigbee-S04-2C-LN",
+        "QS-Zigbee-S05-LN",
+        "MS-104BZ",
+        "MS-104Z",
+        "TS0001_switch_module",
+        "TS0002_switch_module",
+        "TS0003_switch_module_1",
+        "TS0003_switch_module_2",
+        "TS0002_switch_module_2",
+        "TS0004_switch_module",
+        "RR620ZB"
+      ]
     }
   ]
 }

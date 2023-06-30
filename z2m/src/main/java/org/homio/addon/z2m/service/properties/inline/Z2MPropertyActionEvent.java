@@ -3,7 +3,7 @@ package org.homio.addon.z2m.service.properties.inline;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
-import org.homio.addon.z2m.util.Z2MDevicePropertiesModel;
+import org.homio.addon.z2m.util.Z2MPropertyModel;
 import org.homio.api.model.Icon;
 import org.homio.api.state.DecimalType;
 import org.jetbrains.annotations.NotNull;
@@ -17,10 +17,10 @@ public class Z2MPropertyActionEvent extends Z2MPropertyInline {
     public Z2MPropertyActionEvent(
         @NotNull Z2MDeviceService deviceService,
         @NotNull String property,
-        @Nullable Z2MDevicePropertiesModel z2MDevicePropertiesModel) {
+        @Nullable Z2MPropertyModel z2MPropertyModel) {
         super(new Icon(
-            "fas fa-fw" + (z2MDevicePropertiesModel == null ? "fa-square-check" : z2MDevicePropertiesModel.getIcon()),
-            z2MDevicePropertiesModel == null ? "#B72AD4" : z2MDevicePropertiesModel.getIconColor()
+            "fas fa-fw" + (z2MPropertyModel == null ? "fa-square-check" : z2MPropertyModel.getIcon()),
+            z2MPropertyModel == null ? "#B72AD4" : z2MPropertyModel.getIconColor()
         ));
         init(deviceService, Options.dynamicExpose(property, ApplianceModel.NUMBER_TYPE), true);
         setValue(new DecimalType(0));

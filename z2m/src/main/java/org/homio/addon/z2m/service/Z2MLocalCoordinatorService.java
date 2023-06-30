@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Getter;
@@ -272,7 +273,7 @@ public class Z2MLocalCoordinatorService
             throw new IllegalStateException("ZIGBEE.ERROR.COORDINATOR_OFFLINE");
         }
         ObjectNode deviceConfiguration = this.configuration.getDevices().computeIfAbsent(deviceService.getIeeeAddress(),
-            ieee -> node());
+            ieee -> node(deviceService.getIeeeAddress()));
         if (value == null) {
             deviceConfiguration.remove(propertyName);
         } else {
@@ -294,7 +295,7 @@ public class Z2MLocalCoordinatorService
 
     public void addMissingProperty(String ieeeAddress, Z2MProperty property) {
         ObjectNode deviceConfiguration = configuration.getDevices().computeIfAbsent(ieeeAddress,
-            ieee -> node());
+            ieee -> node(ieeeAddress));
         String extraActions = deviceConfiguration.path("missingActions").asText("");
         for (String action : extraActions.split(";")) {
             if (action.startsWith(property.getKey() + ":")) {
@@ -617,8 +618,8 @@ public class Z2MLocalCoordinatorService
         }
     }
 
-    private ObjectNode node() {
-        return OBJECT_MAPPER.createObjectNode();
+    private ObjectNode node(String ieeeAddress) {
+        return OBJECT_MAPPER.createObjectNode().put("friendly_name", ieeeAddress);
     }
 
     @SneakyThrows
@@ -640,6 +641,7 @@ public class Z2MLocalCoordinatorService
     }
 
     private void startZ2MLocalProcess() {
+        AtomicReference<Level> infoLevel = new AtomicReference<>(entity.isDebugLogLevel() ? Level.DEBUG : Level.INFO);
         nodePC = entityContext
             .bgp().processBuilder(getEntityID())
             .onStarted(t -> setEntityOnline())
@@ -653,7 +655,12 @@ public class Z2MLocalCoordinatorService
                 dispose(ex);
             })
             .setErrorLoggerOutput(log::error)
-            .setInputLoggerOutput(msg -> log.log(entity.isDebugLogLevel() ? Level.DEBUG : Level.INFO, "[{}]: ZigBee2MQTT: {}", entityID, msg))
+            .setInputLoggerOutput(msg -> {
+                if (msg.contains("!!!!!!")) {
+                    infoLevel.set(Level.ERROR);
+                }
+                log.log(infoLevel.get(), "[{}]: ZigBee2MQTT: {}", entityID, msg);
+            })
             .execute(getNpm() + " start --prefix " + zigbee2mqttGitHub.getLocalProjectPath());
     }
 

@@ -1,7 +1,6 @@
 package org.homio.addon.z2m.widget;
 
 import static java.lang.String.format;
-import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED;
 import static org.homio.api.ui.field.UIFieldLayout.HorizontalAlign.left;
 import static org.homio.api.ui.field.UIFieldLayout.HorizontalAlign.right;
 
@@ -16,7 +15,6 @@ import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.exception.ProhibitedExecution;
 import org.homio.api.ui.UI;
 import org.homio.api.ui.field.UIFieldLayout;
-import org.jetbrains.annotations.Nullable;
 
 public class ToggleWidget implements WidgetBuilder {
 
@@ -66,15 +64,6 @@ public class ToggleWidget implements WidgetBuilder {
 
     private int getWidgetHeight(List<ZigBeeProperty> properties) {
         return Math.round(properties.size() * 2F / 3);
-    }
-
-    private @Nullable Z2MProperty getLeftProperty(Map<String, Z2MProperty> properties) {
-        for (String property : new String[]{"consumption", "power", "energy", "current", PROPERTY_LAST_UPDATED}) {
-            if (properties.containsKey(property)) {
-                return properties.get(property);
-            }
-        }
-        return null;
     }
 
     private String getName(Z2MDeviceEntity entity, Z2MProperty state) {

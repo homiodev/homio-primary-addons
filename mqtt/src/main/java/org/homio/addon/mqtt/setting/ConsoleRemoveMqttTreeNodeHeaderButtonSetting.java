@@ -8,9 +8,9 @@ import org.homio.addon.mqtt.setting.ConsoleRemoveMqttTreeNodeHeaderButtonSetting
 import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
 import org.homio.api.setting.SettingPlugin;
+import org.homio.api.setting.SettingType;
 import org.homio.api.setting.console.header.ConsoleHeaderSettingPlugin;
 import org.homio.api.ui.UI.Color;
-import org.homio.api.ui.field.UIFieldType;
 import org.homio.api.util.CommonUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -38,8 +38,8 @@ public class ConsoleRemoveMqttTreeNodeHeaderButtonSetting implements
     }
 
     @Override
-    public @NotNull UIFieldType getSettingType() {
-        return UIFieldType.Button;
+    public @NotNull SettingType getSettingType() {
+        return SettingType.Button;
     }
 
     public String getConfirmMsg() {

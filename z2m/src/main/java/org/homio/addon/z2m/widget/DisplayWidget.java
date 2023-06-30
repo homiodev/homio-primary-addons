@@ -2,17 +2,16 @@ package org.homio.addon.z2m.widget;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral.PROPERTY_SIGNAL;
-import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
-import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options.Chart;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options.Source;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
@@ -24,7 +23,6 @@ import org.homio.api.EntityContextWidget.DisplayWidgetBuilder;
 import org.homio.api.EntityContextWidget.DisplayWidgetSeriesBuilder;
 import org.homio.api.EntityContextWidget.HasChartDataSource;
 import org.homio.api.EntityContextWidget.HasLineChartBehaviour;
-import org.homio.api.EntityContextWidget.HorizontalAlign;
 import org.homio.api.EntityContextWidget.ThresholdBuilder;
 import org.homio.api.EntityContextWidget.ValueCompare;
 import org.homio.api.EntityContextWidget.VerticalAlign;
@@ -46,7 +44,8 @@ public class DisplayWidget implements WidgetBuilder {
         }
 
         String layoutID = "lt-dsp-" + entity.getIeeeAddress();
-        Map<String, Z2MProperty> properties = entity.getDeviceService().getProperties();
+        Map<String, ZigBeeProperty> properties = entity.getDeviceService().getProperties().entrySet().stream()
+                                                       .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
         entityContext.widget().createLayoutWidget(layoutID, builder ->
             builder.setBlockSize(wd.getBlockWidth(1), wd.getBlockHeight(1))
@@ -57,23 +56,7 @@ public class DisplayWidget implements WidgetBuilder {
             propertiesSize + 1, builder -> builder.attachToLayout(layoutID, 0, 0));
         buildMainWidget(request);
 
-        WidgetBuilder.addProperty(
-            entityContext,
-            HorizontalAlign.left,
-            properties.get("battery"),
-            builder -> builder.attachToLayout(layoutID, propertiesSize, 0));
-
-        WidgetBuilder.addProperty(
-            entityContext,
-            HorizontalAlign.center,
-            properties.get(PROPERTY_LAST_UPDATED),
-            builder -> builder.attachToLayout(layoutID, propertiesSize, 1));
-
-        WidgetBuilder.addProperty(
-            entityContext,
-            HorizontalAlign.right,
-            properties.get(PROPERTY_SIGNAL),
-            builder -> builder.attachToLayout(layoutID, propertiesSize, 2));
+        ComposeWidget.addBottomRow(entityContext, wd, layoutID, propertiesSize, properties);
     }
 
     @Override

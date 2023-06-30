@@ -9,7 +9,7 @@
           "type": "string"
         },
         "value": {
-          "type": "boolean"
+          "type": "string"
         },
         "target": {
           "type": "string"
