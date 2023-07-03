@@ -3,8 +3,13 @@
   "devices": [
     {
       "name": "Energy meter",
+      "exposes": [
+        "switch~energy~power~voltage~current"
+      ],
       "models": [
-        "TS0601_din_2"
+        "CCB432",
+        "ZHEMI101",
+        "TS0601_bidirectional_energy meter"
       ],
       "icon": "fas fa-plug-circle-bolt",
       "iconColor": "#C28A40",
@@ -65,9 +70,9 @@
       ]
     },
     {
-      "name": "RGB controller",
-      "models": [
-        "GL-C-007-1ID"
+      "name": "RGB controller/Bulb/Led strips",
+      "exposes": [
+        "light"
       ],
       "icon": "fas fa-palette",
       "iconColor": "#7F50AD",
@@ -78,8 +83,11 @@
       ]
     },
     {
-      "name": "Relay",
-      "groupRef": "relay_group",
+      "name": "Relay/Switch",
+      "exposes": [
+        "switch",
+        "state"
+      ],
       "icon": "fas fa-plug",
       "iconColor": "#85C240",
       "widgets": [
@@ -97,18 +105,9 @@
       ]
     },
     {
-      "name": "Motion Sensor",
-      "models": [
-        "RTCGQ01LM"
-      ],
-      "icon": "fas fa-cloud",
-      "iconColor": "#57A4D1"
-    },
-    {
       "name": "Temperature and Humidity Sensor",
-      "models": [
-        "WSDCGQ11LM",
-        "WSDCGQ01LM"
+      "exposes": [
+        "temperature~humidity~battery"
       ],
       "icon": "fas fa-cloud",
       "iconColor": "#57A4D1",
@@ -207,8 +206,8 @@
     },
     {
       "name": "Smoke Detector",
-      "models": [
-        "JTYJ-GD-01LM/BW"
+      "exposes": [
+        "smoke"
       ],
       "icon": "fas fa-volcano",
       "iconColor": "#EB6933",
@@ -249,8 +248,8 @@
     },
     {
       "name": "Door Sensor",
-      "models": [
-        "MCCGQ11LM"
+      "exposes": [
+        "contact"
       ],
       "icon": "fas fa-door-open",
       "iconColor": "#A41CE2",
@@ -302,8 +301,8 @@
     },
     {
       "name": "Motion and illuminance sensor",
-      "models": [
-        "RTCGQ11LM"
+      "exposes": [
+        "occupancy"
       ],
       "icon": "fas fa-person-circle-exclamation",
       "iconColor": "#56be9e",
@@ -369,17 +368,9 @@
       "iconColor": "#56be9e"
     },
     {
-      "name": "Socket",
-      "models": [
-        "ZNCZ02LM"
-      ],
-      "icon": "fas fa-plug-circle-bolt",
-      "iconColor": "#79BE56"
-    },
-    {
-      "name": "Leak sensor",
-      "models": [
-        "SJCGQ11LM"
+      "name": "Water leak sensor",
+      "exposes": [
+        "water_leak"
       ],
       "icon": "fas fa-droplet",
       "iconColor": "#be5692",
@@ -419,39 +410,18 @@
       ]
     },
     {
-      "name": "Wall switch (1/2 button)",
-      "models": [
-        "QBKG12LM",
-        "QBKG04LM"
-      ],
-      "icon": "fas fa-square-check",
-      "iconColor": "#B5C64E",
-      "widgets": [
-        {
-          "type": "compose",
-          "name": "BUTTON",
-          "icon": "fas fa-toggle-on",
-          "compose": [
-            {
-              "type": "toggle",
-              "autoDiscovery": true
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "Cube",
       "models": [
-        "MFKZQ01LM"
+        "MFKZQ01LM",
+        "CTP-R01"
       ],
       "icon": "fas fa-cube",
       "iconColor": "#878fc9"
     },
     {
       "name": "Vibration sensor",
-      "models": [
-        "DJT11LM"
+      "exposes": [
+        "vibration"
       ],
       "icon": "fab fa-squarespace",
       "iconColor": "#4D9180",
@@ -894,36 +864,5 @@
   ],
   "hiddenProperties": [
     "update_available"
-  ],
-  "groups": [
-    {
-      "name": "relay_group",
-      "models": [
-        "BASICZBR3",
-        "LLKZMK11LM",
-        "DLKZMK11LM",
-        "DLKZMK12LM",
-        "SSM-U01",
-        "SSM-U02",
-        "WHD02",
-        "XSH01B",
-        "TS0011_switch_module",
-        "TS0012_switch_module",
-        "TS0013_switch_module",
-        "BW-SS7_1gang",
-        "BW-SS7_2gang",
-        "QS-Zigbee-S04-2C-LN",
-        "QS-Zigbee-S05-LN",
-        "MS-104BZ",
-        "MS-104Z",
-        "TS0001_switch_module",
-        "TS0002_switch_module",
-        "TS0003_switch_module_1",
-        "TS0003_switch_module_2",
-        "TS0002_switch_module_2",
-        "TS0004_switch_module",
-        "RR620ZB"
-      ]
-    }
   ]
 }

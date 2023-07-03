@@ -15,8 +15,8 @@
             "title": "Uses only in json file to distinguish devices by functionality",
             "type": "string"
           },
-          "models": {
-            "title": "List of device's model to have same widgets/icons/etc...",
+          "exposes": {
+            "title": "List of 'or' exposes to apply widget for",
             "type": "array",
             "items": [
               {
@@ -24,9 +24,14 @@
               }
             ]
           },
-          "groupRef": {
-            "title": "Link to group reference with list of models",
-            "type": "string"
+          "models": {
+            "title": "List of custom device's model to have same widgets/icons/etc...",
+            "type": "array",
+            "items": [
+              {
+                "type": "string"
+              }
+            ]
           },
           "icon": {
             "type": "string"

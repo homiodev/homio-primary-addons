@@ -7,8 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
+import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -102,6 +105,10 @@ public class ApplianceModel extends UnknownOptions {
 
     public boolean isInterviewFailed() {
         return !interviewCompleted && !interviewing;
+    }
+
+    public Set<String> getExposes() {
+        return definition.getExposes().stream().map(Options::getName).collect(Collectors.toSet());
     }
 
     @Getter

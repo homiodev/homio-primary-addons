@@ -98,8 +98,10 @@ public class Z2MLocalCoordinatorService
 
     private ThreadContext<Void> checkFrontendTC;
     private ThreadContext<Void> configurationWatchDogTC;
+    private ThreadContext<Void> internalTestStatusWatchdog;
+
     private ProcessContext nodePC;
-    @Getter private boolean startLocally;
+    @Getter private boolean isZ2MRunningLocally;
 
     public Z2MLocalCoordinatorService(EntityContext entityContext, Z2MLocalCoordinatorEntity entity) {
         this.entity = entity;
@@ -161,6 +163,10 @@ public class Z2MLocalCoordinatorService
         } else {
             this.entity.setStatus(Status.OFFLINE, null);
         }
+        if (internalTestStatusWatchdog != null) {
+            internalTestStatusWatchdog.cancel();
+            internalTestStatusWatchdog = null;
+        }
         if (configurationWatchDogTC != null) {
             configurationWatchDogTC.cancel();
             configurationWatchDogTC = null;
@@ -213,19 +219,17 @@ public class Z2MLocalCoordinatorService
 
     @SneakyThrows
     public ActionResponseModel restartZ2M() {
-        if (isRequireRestartService()) {
-            if (mqttEntityService != null) {
-                sendRequest("restart", "");
-                // wait, maybe z2m back online?
-                Thread.sleep(5000);
-            }
-            if (isRequireRestartService()) {
-                this.dispose(null);
-                this.restartCoordinator();
-
-            }
+        if (mqttEntityService != null) {
+            sendRequest("restart", "");
+            // wait, maybe z2m back online?
+            Thread.sleep(5000);
         }
-        return null;
+        if (isRequireRestartService() || !isZigbee2MqttRunning()) {
+            this.dispose(null);
+            this.restartCoordinator();
+
+        }
+        return ActionResponseModel.fired();
     }
 
     public ActionResponseModel startScan() {
@@ -347,18 +351,17 @@ public class Z2MLocalCoordinatorService
     private void executeUpdateStateIfRequire() {
         try {
             switch (Objects.requireNonNull(updatingStatus)) {
-                case CLOSING:
+                case CLOSING -> {
                     if (initialized) {
                         this.dispose(null);
                     }
-                    break;
-                case INITIALIZE:
-                case RESTARTING:
+                }
+                case INITIALIZE, RESTARTING -> {
                     if (initialized) {
                         this.dispose(null);
                     }
                     this.initialize();
-                    break;
+                }
             }
             entityContext.ui().updateItem(entity);
             // fire recursively if state updated since last time
@@ -427,10 +430,11 @@ public class Z2MLocalCoordinatorService
 
             syncConfiguration();
 
-            startLocally = !isZigbee2MqttStarted();
-            if (startLocally) {
+            isZ2MRunningLocally = !isZigbee2MqttRunning();
+            if (isZ2MRunningLocally) {
                 startZ2MLocalProcess();
             } else {
+                runInternalWatchdog();
                 setEntityOnline();
             }
         } catch (Exception ex) {
@@ -438,6 +442,19 @@ public class Z2MLocalCoordinatorService
             dispose(ex);
         }
         updateNotificationBlock();
+    }
+
+    private void runInternalWatchdog() {
+        this.internalTestStatusWatchdog = entityContext
+            .bgp()
+            .builder("z2m-internal-watchdog")
+            .delay(Duration.ofSeconds(10))
+            .interval(Duration.ofSeconds(10))
+            .execute(() -> {
+                if (entity.getStatus().isOnline() && !isZigbee2MqttRunning()) {
+                    entity.setStatusError("Z2M not responsible");
+                }
+            });
     }
 
     public void updateNotificationBlock() {
@@ -526,7 +543,7 @@ public class Z2MLocalCoordinatorService
 
     private void addMqttTopicListener(String topic, ThrowingConsumer<ObjectNode, Exception> handler) {
         mqttEntityService.addListener(topic, "z2m", value -> {
-            log.log(entity.isDebugLogLevel() ? Level.DEBUG : Level.INFO, "[{}]: ZigBee2MQTT {}: {}", entityID, topic, value);
+            log.info("[{}]: ZigBee2MQTT {}: {}", entityID, topic, value);
             String payload = value == null ? "" : value.toString();
             if (!payload.isEmpty()) {
                 ObjectNode node;
@@ -544,7 +561,7 @@ public class Z2MLocalCoordinatorService
         });
     }
 
-    private boolean isZigbee2MqttStarted() {
+    private boolean isZigbee2MqttRunning() {
         try {
             URL url = new URL(format("http://localhost:%s", configuration.getFrontend().getPort()));
             HttpURLConnection huc = (HttpURLConnection) url.openConnection();
@@ -641,10 +658,13 @@ public class Z2MLocalCoordinatorService
     }
 
     private void startZ2MLocalProcess() {
-        AtomicReference<Level> infoLevel = new AtomicReference<>(entity.isDebugLogLevel() ? Level.DEBUG : Level.INFO);
+        AtomicReference<Level> infoLevel = new AtomicReference<>(Level.INFO);
         nodePC = entityContext
             .bgp().processBuilder(getEntityID())
-            .onStarted(t -> setEntityOnline())
+            .onStarted(t -> {
+                runInternalWatchdog();
+                setEntityOnline();
+            })
             .onFinished((ex, responseCode) -> {
                 if (ex != null) {
                     log.error("[{}]: Error while start zigbee2mqtt {}", entityID, getErrorMessage(ex));
@@ -656,7 +676,7 @@ public class Z2MLocalCoordinatorService
             })
             .setErrorLoggerOutput(log::error)
             .setInputLoggerOutput(msg -> {
-                if (msg.contains("!!!!!!")) {
+                if (msg.contains("!!!!")) {
                     infoLevel.set(Level.ERROR);
                 }
                 log.log(infoLevel.get(), "[{}]: ZigBee2MQTT: {}", entityID, msg);
@@ -732,11 +752,10 @@ public class Z2MLocalCoordinatorService
 
     @RequiredArgsConstructor
     private enum Z2MBridgeResponseTopicHandlers {
-        otaCheck("device/ota_update/check", (payload, service) -> {
+        otaCheck("device/ota_update/check", (payload, service) ->
             service.entityContext.ui().sendSuccessMessage(
                 Lang.getServerMessage("ZIGBEE.OTA_CHECK_" + payload.get("updateAvailable").asText().toUpperCase(),
-                    payload.get("id").asText()));
-        });
+                    payload.get("id").asText())));
 
         private final String topic;
         private final ThrowingBiConsumer<JsonNode, Z2MLocalCoordinatorService, Exception> handler;

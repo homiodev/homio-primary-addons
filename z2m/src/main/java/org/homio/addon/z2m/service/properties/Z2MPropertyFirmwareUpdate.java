@@ -45,6 +45,21 @@ public class Z2MPropertyFirmwareUpdate extends Z2MProperty {
     }
 
     @Override
+    public String getDescription() {
+        JsonType value = (JsonType) getValue();
+        String installedVersion = value.get("installed_version").asText(null);
+        String latestVersion = value.get("latest_version").asText(null);
+        if (installedVersion != null) {
+            String text = "V" + installedVersion;
+            if (!installedVersion.equals(latestVersion)) {
+                text += "/V" + latestVersion;
+            }
+            return Lang.getServerMessage("ZIGBEE.UPDATE_DESCRIPTION", text);
+        }
+        return super.getDescription();
+    }
+
+    @Override
     public String getPropertyDefinition() {
         return PROPERTY_FIRMWARE_UPDATE;
     }
@@ -81,8 +96,8 @@ public class Z2MPropertyFirmwareUpdate extends Z2MProperty {
     }
 
     private ActionResponseModel sendRequest(Request request) {
-        getDeviceService().getCoordinatorService().publish("bridge/request/device/ota_update/" + request.name(),
-            new JSONObject().put("id", getDeviceService().getIeeeAddress()));
+        getDeviceService().publish("bridge/request/device/ota_update/" + request.name(),
+            new JSONObject().put("id", getDeviceService().getIeeeAddress()), false);
         return ActionResponseModel.showSuccess(Lang.getServerMessage("ZIGBEE.REQUEST_UPDATE_" + request.name().toUpperCase(),
             getDeviceService().getIeeeAddress()));
     }

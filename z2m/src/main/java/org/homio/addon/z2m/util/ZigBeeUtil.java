@@ -95,7 +95,7 @@ public final class ZigBeeUtil {
                     }
                 default:
                     log.error("[{}]: Z2M write handler not implemented for device: {}, property: {}",
-                        property.getDeviceService().getCoordinatorService().getEntityID(),
+                        property.getDeviceService().getCoordinatorEntity().getEntityID(),
                         property.getDeviceService().getDeviceEntity().getEntityID(),
                         property.getExpose().getProperty());
             }

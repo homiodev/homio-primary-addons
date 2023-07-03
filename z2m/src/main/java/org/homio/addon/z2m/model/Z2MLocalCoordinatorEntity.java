@@ -149,7 +149,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     @UIFieldGroup("GENERAL")
     public Boolean isRunLocally() {
         if (getStatus().isOnline()) {
-            return getService().isStartLocally();
+            return getService().isZ2MRunningLocally();
         }
         return null;
     }
@@ -180,16 +180,6 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     @UIFieldGroup("ADVANCED")
     public List<String> getHiddenProperties() {
         return getJsonDataList("hp");
-    }
-
-    @UIField(order = 4, inlineEdit = true)
-    @UIFieldGroup("ADVANCED")
-    public boolean isDebugLogLevel() {
-        return getJsonData("dll", true);
-    }
-
-    public void setDebugLogLevel(boolean value) {
-        setJsonData("dll", value);
     }
 
     public void setHiddenProperties(String value) {

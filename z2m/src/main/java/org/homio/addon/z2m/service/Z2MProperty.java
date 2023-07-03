@@ -123,7 +123,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     public void fireAction(boolean value) {
         Object valueToFire = value ? getExpose().getValueOn() : getExpose().getValueOff();
         JSONObject params = new JSONObject().put(expose.getProperty(), valueToFire);
-        deviceService.publish("set", params);
+        deviceService.publish("set", params, false);
     }
 
     public void fireAction(int value) {
@@ -132,18 +132,18 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         } else if (expose.getValueMax() != null && value > expose.getValueMax()) {
             value = expose.getValueMax();
         }
-        deviceService.publish("set", new JSONObject().put(expose.getProperty(), value));
+        deviceService.publish("set", new JSONObject().put(expose.getProperty(), value), false);
     }
 
     public void fireAction(String value) {
-        deviceService.publish("set", new JSONObject().put(expose.getProperty(), value));
+        deviceService.publish("set", new JSONObject().put(expose.getProperty(), value), false);
     }
 
     public boolean isVisible() {
         if (deviceService.getConfigService().getFileMeta().getHiddenProperties().contains(expose.getProperty())) {
             return false;
         }
-        return !deviceService.getCoordinatorService().getEntity().getHiddenProperties()
+        return !deviceService.getCoordinatorEntity().getHiddenProperties()
                                   .contains(expose.getProperty());
     }
 
@@ -200,7 +200,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     @Override
     public void readValue() {
-        deviceService.publish("get", new JSONObject().put(expose.getProperty(), ""));
+        deviceService.publish("get", new JSONObject().put(expose.getProperty(), ""), false);
     }
 
     @Override
@@ -231,7 +231,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
                     } else {
                         log.error(
                             "[{}]: Unknown property type: {} for property: {}",
-                            deviceService.getCoordinatorService().getEntityID(),
+                            deviceService.getCoordinatorEntity().getEntityID(),
                             expose.getValueOn(),
                             deviceService.getIeeeAddress());
                     }
@@ -280,7 +280,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
             if (isWritable()) {
                 entityContext.var().setLinkListener(variableID, varValue -> {
-                    if (!deviceService.getCoordinatorService().getEntity().getStatus().isOnline()) {
+                    if (!deviceService.getCoordinatorEntity().getStatus().isOnline()) {
                         throw new RuntimeException("Unable to handle z2m property " + getVariableID() + " action. Zigbee coordinator is offline");
                     }
                     // fire updates only if variable updates externally

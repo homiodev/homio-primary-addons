@@ -22,7 +22,7 @@ import org.json.JSONObject;
 public class Z2MActionsBuilder {
 
     public static void createWidgetActions(UIInputBuilder uiInputBuilder, EntityContext context, Z2MDeviceEntity entity) {
-        List<WidgetDefinition> widgets = entity.getConfigService().getDeviceWidgets(entity.getModel());
+        List<WidgetDefinition> widgets = entity.getConfigService().getDeviceWidgets(entity.getDeviceService());
         for (WidgetDefinition widgetDefinition : widgets) {
             WidgetType type = widgetDefinition.getType();
             WidgetBuilder widgetBuilder = WidgetBuilder.WIDGETS.get(type);

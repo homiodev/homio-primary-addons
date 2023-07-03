@@ -1,5 +1,6 @@
 {
   "ZIGBEE": {
+    "UPDATE_DESCRIPTION": "Update firmware. Installed: {{VALUE}}",
     "OTA_CHECK_TRUE": "Found firmware updates for '{{VALUE}}'",
     "OTA_CHECK_FALSE": "No update available for '{{VALUE}}'",
     "REQUEST_UPDATE_UPDATE": "Fired updating for '{{VALUE}}'",

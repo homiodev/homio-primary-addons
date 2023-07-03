@@ -6,7 +6,6 @@ import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,10 +13,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.tuple.Pair;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
+import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.service.properties.Z2MPropertyAction;
 import org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral;
 import org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty;
@@ -34,18 +36,24 @@ import org.homio.api.state.DecimalType;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Lang;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-@Getter
 @Log4j2
 public class Z2MDeviceService {
 
     private final Z2MLocalCoordinatorService coordinatorService;
+    @Getter
     private final Map<String, Z2MProperty> properties = new ConcurrentHashMap<>();
+    @Getter
     private final Z2MDeviceEntity deviceEntity;
+    @Getter
     private final EntityContext entityContext;
+    @Getter
     private final Z2MPropertyConfigService configService;
+    @Getter
     private String availability;
+    @Getter
     private ApplianceModel applianceModel;
     private boolean initialized = false;
     private String currentMQTTTopic;
@@ -116,6 +124,22 @@ public class Z2MDeviceService {
         return configService.getFileMeta().getDeviceProperties().get(action);
     }
 
+    public Set<String> getExposes() {
+        return properties.keySet();
+    }
+
+    public void sendRequest(String path, String payload) {
+        coordinatorService.sendRequest(path, payload);
+    }
+
+    public @NotNull Z2MLocalCoordinatorEntity getCoordinatorEntity() {
+        return coordinatorService.getEntity();
+    }
+
+    public void updateDeviceConfiguration(Z2MDeviceService deviceService, String propertyName, Object value) {
+        coordinatorService.updateDeviceConfiguration(deviceService, propertyName, value);
+    }
+
     private void addMqttListeners() {
         currentMQTTTopic = applianceModel.getMQTTTopic();
         String topic = getMqttFQDNTopic();
@@ -128,7 +152,7 @@ public class Z2MDeviceService {
                     mqttUpdate(jsonObject);
                 } catch (Exception ex) {
                     log.error("[{}]: Unable to parse json for entity: '{}' from: '{}'", coordinatorService.getEntityID(),
-                        getDeviceEntity().getTitle(), payload);
+                        deviceEntity.getTitle(), payload);
                 }
             }
         });
@@ -172,8 +196,8 @@ public class Z2MDeviceService {
         this.coordinatorService.updateDeviceConfiguration(this, key, value);
     }
 
-    public void publish(String topic, JSONObject payload) {
-        this.coordinatorService.publish(currentMQTTTopic + "/" + topic, payload);
+    public void publish(String topic, JSONObject payload, boolean relative) {
+        this.coordinatorService.publish(relative ? currentMQTTTopic + "/" + topic : topic, payload);
     }
 
     public String getDeviceFullName() {
@@ -211,13 +235,17 @@ public class Z2MDeviceService {
                         sb.add(format("%s - %s", property.getDescription(), property.getValue().toString()));
                     }
                 }
-                if (!feed && !key.equals("illuminance_lux")) {
-                    log.info("[{}]: Create dynamic created property '{}'. Device: {}", coordinatorService.getEntityID(), key, applianceModel.getIeeeAddress());
-                    Z2MProperty missedZ2MProperty = buildExposeProperty(Options.dynamicExpose(key, getFormatFromPayloadValue(payload, key)));
-                    missedZ2MProperty.mqttUpdate(payload);
+                if (!feed) {
+                    Set<String> ignoreExposes = getListOfRedundantProperties();
+                    if (!ignoreExposes.contains(key)) {
+                        log.info("[{}]: Create dynamic created property '{}'. Device: {}", coordinatorService.getEntityID(), key,
+                            applianceModel.getIeeeAddress());
+                        Z2MProperty missedZ2MProperty = buildExposeProperty(Options.dynamicExpose(key, getFormatFromPayloadValue(payload, key)));
+                        missedZ2MProperty.mqttUpdate(payload);
 
-                    addPropertyOptional(key, s -> missedZ2MProperty);
-                    entityContext.ui().updateItem(deviceEntity);
+                        addPropertyOptional(key, s -> missedZ2MProperty);
+                        entityContext.ui().updateItem(deviceEntity);
+                    }
                 }
             } catch (Exception ex) {
                 log.error("Unable to handle Z2MProperty: {}. Payload: {}. Msg: {}",
@@ -240,19 +268,28 @@ public class Z2MDeviceService {
      * 2) expose exists inside 'alias' array inside another expose in file 'zigbee-devices.json'
      */
     private void removeRedundantExposes() {
-        if (configService.getFileMeta().getIgnoreProperties() != null) {
-            applianceModel.getDefinition().getExposes().removeIf(e ->
-                configService.getFileMeta().getIgnoreProperties().contains(e.getName()));
-        }
-        Set<String> ignoreExposes = new HashSet<>();
-        for (Options expose : applianceModel.getDefinition().getExposes()) {
-            Z2MPropertyModel propertyModel = getPropertyModel(expose.getName());
-            if (propertyModel != null && propertyModel.getAlias() != null) {
-                ignoreExposes.addAll(propertyModel.getAlias());
-            }
-        }
+        Set<String> ignoreExposes = getListOfRedundantProperties();
 
-        applianceModel.getDefinition().getExposes().removeIf(e -> ignoreExposes.contains(e.getName()));
+        applianceModel.getDefinition().getExposes().removeIf(e -> {
+            if (configService.getFileMeta().getIgnoreProperties().contains(e.getName()) || ignoreExposes.contains(e.getName())) {
+                log.info("[{}]: ({}): Skip property: {}",
+                    coordinatorService.getEntityID(),
+                    applianceModel.getIeeeAddress(), e.getName());
+                return true;
+            }
+            return false;
+        });
+    }
+
+    @NotNull
+    private Set<String> getListOfRedundantProperties() {
+        return Stream.concat(
+                         properties.keySet().stream(),
+                         applianceModel.getDefinition().getExposes().stream().map(Options::getName))
+                     .map(this::getPropertyModel)
+                     .filter(p -> p != null && p.getAlias() != null)
+                     .flatMap(p -> p.getAlias().stream())
+                     .collect(Collectors.toSet());
     }
 
     private void addMissingProperties(Z2MLocalCoordinatorService coordinatorService, ApplianceModel applianceModel) {
@@ -322,8 +359,8 @@ public class Z2MDeviceService {
 
     private void createOrUpdateDeviceGroup() {
         Icon icon = new Icon(
-            configService.getDeviceIcon(this.applianceModel.getModelId(), "fas fa-server"),
-            configService.getDeviceIconColor(this.applianceModel.getModelId(), Color.random())
+            configService.getDeviceIcon(this, "fas fa-server"),
+            configService.getDeviceIconColor(this, Color.random())
         );
         entityContext.var().createGroup("z2m", this.deviceEntity.getEntityID(), getDeviceFullName(), true,
             icon, this.applianceModel.getGroupDescription());

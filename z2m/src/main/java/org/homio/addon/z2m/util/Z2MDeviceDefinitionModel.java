@@ -33,7 +33,7 @@ public class Z2MDeviceDefinitionModel {
     private String icon;
     private String iconColor;
     private Set<String> models;
-    private String groupRef;
+    private Set<String> exposes;
     private List<WidgetDefinition> widgets;
     private JsonNode options;
 

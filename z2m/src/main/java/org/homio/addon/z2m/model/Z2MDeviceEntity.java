@@ -117,7 +117,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     public Z2MDeviceEntity setName(String value) {
-        deviceService.getCoordinatorService().sendRequest(
+        deviceService.sendRequest(
             "device/rename", new JSONObject().put("from", getName()).put("to", value).toString());
         return this;
     }
@@ -135,8 +135,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
                 case "online" -> status = Status.ONLINE;
             }
         }
-        if (deviceService.getCoordinatorService().getEntity().getStatus() != Status.ONLINE) {
-            status = deviceService.getCoordinatorService().getEntity().getStatus();
+        if (deviceService.getCoordinatorEntity().getStatus() != Status.ONLINE) {
+            status = deviceService.getCoordinatorEntity().getStatus();
         }
         return status;
     }
@@ -166,8 +166,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @Override
     public @NotNull Icon getEntityIcon() {
         return new Icon(
-            configService.getDeviceIcon(deviceService.getApplianceModel().getModelId(), "fas fa-server"),
-            configService.getDeviceIconColor(deviceService.getApplianceModel().getModelId(), UI.Color.random()));
+            configService.getDeviceIcon(deviceService, "fas fa-server"),
+            configService.getDeviceIconColor(deviceService, UI.Color.random()));
     }
 
     @UIField(order = 1, hideOnEmpty = true, fullWidth = true, color = "#89AA50", type = HTML)
@@ -328,7 +328,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     public void setRetainDeviceMessages(boolean value) {
-        deviceService.getCoordinatorService().sendRequest(
+        deviceService.sendRequest(
             "device/options", new JSONObject().put("id", getIeeeAddress()).put("options", new JSONObject().put("retain", value)).toString());
     }
 
@@ -341,7 +341,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     public void setDisabled(boolean value) {
-        deviceService.getCoordinatorService().sendRequest(
+        deviceService.sendRequest(
             "device/options", new JSONObject().put("id", getIeeeAddress()).put("options", new JSONObject().put("disabled", value)).toString());
     }
 
@@ -371,7 +371,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     public void setDebounce(Float value) {
         if (!Objects.equals(getDebounce(), value)) {
-            deviceService.getCoordinatorService().sendRequest(
+            deviceService.sendRequest(
                 "device/options", new JSONObject().put("id", getIeeeAddress()).put("options", new JSONObject().put("debounce", value)).toString());
         }
     }
@@ -444,9 +444,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
             return null;
         }).editDialog(dialogBuilder -> {
             dialogBuilder.setTitle("CONTEXT.ACTION.CUSTOM_DESCRIPTION", new Icon("fas fa-comment"));
-            dialogBuilder.addFlex("main", flex -> {
-                flex.addTextInput("field.description", getCustomDescription(), false);
-            });
+            dialogBuilder.addFlex("main", flex ->
+                flex.addTextInput("field.description", getCustomDescription(), false));
         });
 
         Z2MDeviceDefinition definition = deviceService.getApplianceModel().getDefinition();
@@ -495,7 +494,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     private void buildNumberTypeAction(UIInputBuilder uiInputBuilder, Options option, JsonNode deviceConfigurationOptions, String flexName) {
-        JsonNode deviceOptions = configService.getDeviceOptions(deviceService.getApplianceModel().getModelId());
+        JsonNode deviceOptions = configService.getDeviceOptions(deviceService);
         Integer minValue = option.getValueMin() == null ? (deviceOptions.has("min") ? deviceOptions.get("min").asInt() : null) : option.getValueMin();
         Integer maxValue = option.getValueMax() == null ? (deviceOptions.has("max") ? deviceOptions.get("max").asInt() : null) : option.getValueMax();
 
@@ -503,7 +502,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         uiInputBuilder.addFlex(option.getName() + "_flex", flex -> {
                           flex.addNumberInput(option.getName(), toFloat(nValue), toFloat(minValue), toFloat(maxValue),
                               (entityContext, params) -> {
-                                  this.deviceService.getCoordinatorService().updateDeviceConfiguration(deviceService, option.getName(),
+                                  this.deviceService.updateDeviceConfiguration(deviceService, option.getName(),
                                       params.has("value") ? params.getInt("value") : null);
                                   return null;
                               });
@@ -526,7 +525,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     private void buildCheckbox(Options option, boolean bValue, UIFlexLayoutBuilder flex) {
         flex.addCheckbox(option.getName(), bValue, (entityContext, params) -> {
-            this.deviceService.getCoordinatorService().updateDeviceConfiguration(deviceService, option.getName(), params.getBoolean("value"));
+            this.deviceService.updateDeviceConfiguration(deviceService, option.getName(), params.getBoolean("value"));
             return null;
         });
         flex.addInfo(option.getDescription()).setOuterClass("context-description");

@@ -4,28 +4,31 @@ import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
 import static org.homio.api.util.CommonUtils.getErrorMessage;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.file.PathUtils;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
+import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.service.properties.inline.Z2MPropertyInline;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.ModelGroups;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextSetting;
@@ -51,6 +54,8 @@ public class Z2MPropertyConfigService {
     private boolean equalServerConfig = true;
     @Getter
     private FileMeta fileMeta = new FileMeta();
+
+    private final Map<String, List<Z2MDeviceDefinitionModel>> modelIdToDevices = new HashMap<>();
 
     @SneakyThrows
     public Z2MPropertyConfigService(EntityContext entityContext) {
@@ -100,28 +105,27 @@ public class Z2MPropertyConfigService {
         }
     }
 
-    public @NotNull String getDeviceIcon(@NotNull String modelId, @NotNull String defaultIcon) {
-        return fileMeta.deviceDefinitions.containsKey(modelId) ? fileMeta.deviceDefinitions.get(modelId).getIcon() : defaultIcon;
+    public @NotNull String getDeviceIcon(@NotNull Z2MDeviceService deviceService, @NotNull String defaultIcon) {
+        List<Z2MDeviceDefinitionModel> devices = findDevices(deviceService);
+        return devices.isEmpty() ? defaultIcon : devices.get(0).getIcon();
     }
 
-    public @NotNull String getDeviceIconColor(@NotNull String modelId, @NotNull String defaultIconColor) {
-        return fileMeta.deviceDefinitions.containsKey(modelId) ?
-            fileMeta.deviceDefinitions.get(modelId).getIconColor() : defaultIconColor;
+    public @NotNull String getDeviceIconColor(@NotNull Z2MDeviceService deviceService, @NotNull String defaultIconColor) {
+        List<Z2MDeviceDefinitionModel> devices = findDevices(deviceService);
+        return devices.isEmpty() ? defaultIconColor : devices.get(0).getIconColor();
     }
 
-    public @NotNull List<WidgetDefinition> getDeviceWidgets(@NotNull String modelId) {
-        List<WidgetDefinition> list = null;
-        if (fileMeta.deviceDefinitions.containsKey(modelId)) {
-            list = fileMeta.deviceDefinitions.get(modelId).getWidgets();
+    public @NotNull List<WidgetDefinition> getDeviceWidgets(Z2MDeviceService deviceService) {
+        return findDevices(deviceService).stream().flatMap(d -> d.getWidgets().stream()).toList();
+    }
+
+    public @NotNull JsonNode getDeviceOptions(@NotNull Z2MDeviceService deviceService) {
+        List<Z2MDeviceDefinitionModel> devices = findDevices(deviceService);
+        JsonNode jsonNode = null;
+        if (!devices.isEmpty()) {
+            jsonNode = devices.get(0).getOptions();
         }
-        return list == null ? Collections.emptyList() : list;
-    }
-
-    public @NotNull JsonNode getDeviceOptions(@NotNull String modelId) {
-        Z2MDeviceDefinitionModel z2MDeviceDefinitionModel = fileMeta.deviceDefinitions.get(modelId);
-        JsonNode options = z2MDeviceDefinitionModel == null ? null : z2MDeviceDefinitionModel.getOptions();
-        ObjectNode empty = OBJECT_MAPPER.createObjectNode();
-        return options == null ? empty : options;
+        return jsonNode == null ? OBJECT_MAPPER.createObjectNode() : jsonNode;
     }
 
     public int getPropertyOrder(@NotNull String name) {
@@ -157,25 +161,46 @@ public class Z2MPropertyConfigService {
         return entityContext.setting().getEnvRequire("zigbee2mqtt-devices-uri");
     }
 
+    private @NotNull List<Z2MDeviceDefinitionModel> findDevices(@NotNull Z2MDeviceService deviceService) {
+        Set<String> exposes = deviceService.getExposes();
+        String modelId = deviceService.getApplianceModel().getModelId();
+        modelIdToDevices.computeIfAbsent(modelId, s -> {
+            List<Z2MDeviceDefinitionModel> devices = new ArrayList<>();
+            Z2MDeviceDefinitionModel device = fileMeta.deviceDefinitions.get(modelId);
+            if (device != null) {
+                devices.add(device);
+            }
+            for (Entry<ExposeMatch, List<Z2MDeviceDefinitionModel>> item : fileMeta.exposeDeviceDefinitions.entrySet()) {
+                if (item.getKey().andExposes.containsAll(exposes)) {
+                    devices.addAll(item.getValue());
+                }
+            }
+            return devices;
+        });
+        return modelIdToDevices.get(modelId);
+    }
+
     public static class FileMeta {
 
         /**
          * Properties market with defined color, icon, etc...
          */
         @Getter
-        private Map<String, Z2MPropertyModel> deviceProperties;
+        private @NotNull Map<String, Z2MPropertyModel> deviceProperties = Collections.emptyMap();
         @Getter
-        private HashMap<String, Z2MPropertyModel> deviceAliasProperties;
+        private @NotNull Map<String, Z2MPropertyModel> deviceAliasProperties = Collections.emptyMap();
         @Getter
-        private Set<String> ignoreProperties;
+        private @NotNull Set<String> ignoreProperties = Collections.emptySet();
         @Getter
-        private Set<String> propertiesWithoutVariables;
+        private @NotNull Set<String> propertiesWithoutVariables = Collections.emptySet();
         @Getter
-        private Set<String> hiddenProperties;
+        private @NotNull Set<String> hiddenProperties = Collections.emptySet();
         /**
          * Contains model/icon/iconColor/some setting config i.e. occupancy_timeout min..max values
          */
-        private Map<String, Z2MDeviceDefinitionModel> deviceDefinitions;
+        private @NotNull Map<String, Z2MDeviceDefinitionModel> deviceDefinitions = Collections.emptyMap();
+
+        private @NotNull Map<ExposeMatch, List<Z2MDeviceDefinitionModel>> exposeDeviceDefinitions = Collections.emptyMap();
 
         @SneakyThrows
         public void readZigbeeDevices() {
@@ -188,12 +213,15 @@ public class Z2MPropertyConfigService {
                         definitions.put(model, node);
                     }
                 }
-                if (node.getGroupRef() != null) {
-                    ModelGroups modelGroups = deviceConfigurations.getGroups().stream().filter(g -> g.getName().equals(node.getGroupRef())).findAny()
-                                                                  .orElseThrow(
-                                                                      () -> new IllegalStateException("Unable to find z2m model group: " + node.getGroupRef()));
-                    for (String model : modelGroups.getModels()) {
-                        definitions.put(model, node);
+            }
+
+            var exposeDefinitions = new HashMap<ExposeMatch, List<Z2MDeviceDefinitionModel>>();
+            for (Z2MDeviceDefinitionModel node : deviceConfigurations.getDevices()) {
+                if (node.getExposes() != null) {
+                    for (String expose : node.getExposes()) {
+                        ExposeMatch exposeMatch = new ExposeMatch(Stream.of(expose.split("~")).collect(Collectors.toSet()));
+                        exposeDefinitions.putIfAbsent(exposeMatch, new ArrayList<>());
+                        exposeDefinitions.get(exposeMatch).add(node);
                     }
                 }
             }
@@ -207,15 +235,44 @@ public class Z2MPropertyConfigService {
                 }
             }
 
-            ignoreProperties = deviceConfigurations.getPropertiesWithoutVariables();
-            hiddenProperties = deviceConfigurations.getHiddenProperties();
-            propertiesWithoutVariables = deviceConfigurations.getPropertiesWithoutVariables();
+            if (deviceConfigurations.getPropertiesWithoutVariables() != null) {
+                ignoreProperties = deviceConfigurations.getPropertiesWithoutVariables();
+            }
+            if (deviceConfigurations.getHiddenProperties() != null) {
+                hiddenProperties = deviceConfigurations.getHiddenProperties();
+            }
+            if (deviceConfigurations.getPropertiesWithoutVariables() != null) {
+                propertiesWithoutVariables = deviceConfigurations.getPropertiesWithoutVariables();
+            }
 
+            exposeDeviceDefinitions = exposeDefinitions;
             deviceDefinitions = definitions;
             deviceProperties = deviceConfigurations.getProperties().stream()
                                                    .collect(Collectors.toMap(
                                                        Z2MPropertyModel::getName, Function.identity()));
             deviceAliasProperties = aliasProperties;
+        }
+    }
+
+    @RequiredArgsConstructor
+    public static final class ExposeMatch {
+
+        // minimum of exposes to match
+        private @NotNull final Set<String> andExposes;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {return true;}
+            if (o == null || getClass() != o.getClass()) {return false;}
+
+            ExposeMatch that = (ExposeMatch) o;
+
+            return andExposes.equals(that.andExposes);
+        }
+
+        @Override
+        public int hashCode() {
+            return andExposes.hashCode();
         }
     }
 }

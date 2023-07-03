@@ -14,8 +14,6 @@ public class Z2MDeviceDefinitionsModel {
     private List<Z2MDeviceDefinitionModel> devices;
     // full list of all possible properties that contains property icon/color/etc...
     private List<Z2MPropertyModel> properties;
-    // list of model grouped by common name
-    private List<Z2MDeviceDefinitionModel.ModelGroups> groups;
     // set of properties that should be created but do not create variable for storing in db
     private Set<String> propertiesWithoutVariables;
     // set of properties hide from UI

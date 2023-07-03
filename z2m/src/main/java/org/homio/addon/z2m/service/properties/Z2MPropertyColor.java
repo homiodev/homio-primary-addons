@@ -131,7 +131,7 @@ public class Z2MPropertyColor extends Z2MProperty {
                 return;
             }
         }
-        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), color));
+        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), color), false);
     }
 
     private static String xyToHex(float x, float y) {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +31,8 @@ public class Z2MConfiguration extends UnknownOptions {
         private String last_seen = "epoch";
         private String log_directory = "data/log";
         private String log_file = "log.txt";
+        private String timestamp_format = "YYYY-MM-DD HH:mm:ss";
+        private Set<String> log_output = Set.of("file");
     }
 
     @Getter
