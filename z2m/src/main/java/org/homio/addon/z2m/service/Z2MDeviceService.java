@@ -21,6 +21,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.service.properties.Z2MPropertyAction;
+import org.homio.addon.z2m.service.properties.inline.Z2MPropertyDeviceStatusProperty;
 import org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral;
 import org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty;
 import org.homio.addon.z2m.service.properties.inline.Z2MPropertyUnknown;
@@ -107,6 +108,8 @@ public class Z2MDeviceService {
         if (!properties.containsKey(Z2MProperty.PROPERTY_LAST_SEEN)) {
             addPropertyOptional(Z2MProperty.PROPERTY_LAST_UPDATED, key -> new Z2MPropertyLastUpdatedProperty(this));
         }
+        // add device status
+        addPropertyOptional(Z2MProperty.PROPERTY_DEVICE_STATUS, key -> new Z2MPropertyDeviceStatusProperty(this));
     }
 
     public void setEntityOnline() {

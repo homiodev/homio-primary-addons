@@ -63,15 +63,6 @@
         }
       ]
     },
-    "hiddenProperties": {
-      "title": "Set of properties that should be created but hidden from UI",
-      "type": "array",
-      "items": [
-        {
-          "type": "string"
-        }
-      ]
-    },
     "ignoreProperties": {
       "title": "Set of properties that should be fully ignored",
       "type": "array",

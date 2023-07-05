@@ -17,9 +17,11 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -55,7 +57,8 @@ public class Z2MPropertyConfigService {
     @Getter
     private FileMeta fileMeta = new FileMeta();
 
-    private final Map<String, List<Z2MDeviceDefinitionModel>> modelIdToDevices = new HashMap<>();
+    private final Map<String, ModelDevices> modelIdToDevices = new HashMap<>();
+    private final ReentrantLock midLock = new ReentrantLock();
 
     @SneakyThrows
     public Z2MPropertyConfigService(EntityContext entityContext) {
@@ -163,21 +166,36 @@ public class Z2MPropertyConfigService {
 
     private @NotNull List<Z2MDeviceDefinitionModel> findDevices(@NotNull Z2MDeviceService deviceService) {
         Set<String> exposes = deviceService.getExposes();
+        int exposeHash = exposes.hashCode();
         String modelId = deviceService.getApplianceModel().getModelId();
-        modelIdToDevices.computeIfAbsent(modelId, s -> {
-            List<Z2MDeviceDefinitionModel> devices = new ArrayList<>();
-            Z2MDeviceDefinitionModel device = fileMeta.deviceDefinitions.get(modelId);
-            if (device != null) {
-                devices.add(device);
-            }
-            for (Entry<ExposeMatch, List<Z2MDeviceDefinitionModel>> item : fileMeta.exposeDeviceDefinitions.entrySet()) {
-                if (item.getKey().andExposes.containsAll(exposes)) {
-                    devices.addAll(item.getValue());
+        ModelDevices modelDevices = modelIdToDevices.get(modelId);
+        if (modelDevices == null || modelDevices.hashCode != exposeHash) {
+            try {
+                midLock.lock();
+                modelDevices = modelIdToDevices.get(modelId);
+                if (modelDevices == null || modelDevices.hashCode != exposeHash) {
+                    modelDevices = new ModelDevices(exposeHash, buildListOfDevices(modelId, exposes));
+                    modelIdToDevices.put(modelId, modelDevices);
                 }
+            } finally {
+                midLock.unlock();
             }
-            return devices;
-        });
-        return modelIdToDevices.get(modelId);
+        }
+        return modelDevices.devices;
+    }
+
+    private List<Z2MDeviceDefinitionModel> buildListOfDevices(String modelId, Set<String> exposes) {
+        List<Z2MDeviceDefinitionModel> devices = new ArrayList<>();
+        Z2MDeviceDefinitionModel device = fileMeta.deviceDefinitions.get(modelId);
+        if (device != null) {
+            devices.add(device);
+        }
+        for (Entry<ExposeMatch, List<Z2MDeviceDefinitionModel>> item : fileMeta.exposeDeviceDefinitions.entrySet()) {
+            if (exposes.containsAll(item.getKey().andExposes)) {
+                devices.addAll(item.getValue());
+            }
+        }
+        return devices;
     }
 
     public static class FileMeta {
@@ -274,5 +292,12 @@ public class Z2MPropertyConfigService {
         public int hashCode() {
             return andExposes.hashCode();
         }
+    }
+
+    @AllArgsConstructor
+    private static final class ModelDevices {
+
+        private int hashCode;
+        private List<Z2MDeviceDefinitionModel> devices;
     }
 }

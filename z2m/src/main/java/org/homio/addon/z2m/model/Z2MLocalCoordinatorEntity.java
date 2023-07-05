@@ -183,7 +183,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     public void setHiddenProperties(String value) {
-        setJsonData("ip", value);
+        setJsonData("hp", value);
     }
 
     public void setEnableWatchdog(boolean value) {
@@ -270,6 +270,12 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     public Z2MDeviceEntity getZigBeeDevice(@NotNull String ieeeAddress) {
         Z2MDeviceService service = getService().getDeviceHandlers().get(ieeeAddress);
         return service == null ? null : service.getDeviceEntity();
+    }
+
+    @Override
+    protected void beforePersist() {
+        super.beforePersist();
+        setHiddenProperties("update_available~~~device_status");
     }
 
     @Override

@@ -158,6 +158,7 @@
     }
   },
   "required": [
-    "type"
+    "type",
+    "name"
   ]
 }

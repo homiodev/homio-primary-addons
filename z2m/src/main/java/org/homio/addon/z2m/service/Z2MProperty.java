@@ -53,6 +53,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     public static final String PROPERTY_LAST_UPDATED = "last_updated";
     public static final String PROPERTY_LAST_SEEN = "last_seen";
     public static final String PROPERTY_FIRMWARE_UPDATE = "update";
+    public static final String PROPERTY_DEVICE_STATUS = "device_status";
 
     private final @NotNull Icon icon;
     private final Map<String, Consumer<State>> changeListeners = new ConcurrentHashMap<>();

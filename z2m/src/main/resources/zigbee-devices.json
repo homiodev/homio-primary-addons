@@ -78,6 +78,7 @@
       "iconColor": "#7F50AD",
       "widgets": [
         {
+          "name": "COLOR",
           "type": "color"
         }
       ]
@@ -86,7 +87,9 @@
       "name": "Relay/Switch",
       "exposes": [
         "switch",
-        "state"
+        "state",
+        "state_right",
+        "state_left"
       ],
       "icon": "fas fa-plug",
       "iconColor": "#85C240",
@@ -856,13 +859,35 @@
       "name": "led_disabled_night",
       "icon": "fa-lightbulb",
       "iconColor": "#2196F3"
+    },
+    {
+      "name": "action_rotate_right",
+      "icon": "fa-rotate-right",
+      "iconColor": "#33BDAF"
+    },
+    {
+      "name": "action_rotate_left",
+      "icon": "fa-rotate-left",
+      "iconColor": "#33BDAF"
+    },
+    {
+      "name": "action_transition_time",
+      "icon": "fa-stopwatch",
+      "iconColor": "#8D9428"
+    },
+    {
+      "name": "action_rate",
+      "icon": "fa-gauge-simple-high",
+      "iconColor": "#B91D6B"
+    },
+    {
+      "name": "action_step_size",
+      "icon": "fa-stairs",
+      "iconColor": "#6042C1"
     }
   ],
   "propertiesWithoutVariables": [
     "update_available",
     "update"
-  ],
-  "hiddenProperties": [
-    "update_available"
   ]
 }

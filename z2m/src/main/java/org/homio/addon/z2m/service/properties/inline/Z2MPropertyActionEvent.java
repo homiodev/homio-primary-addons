@@ -19,7 +19,7 @@ public class Z2MPropertyActionEvent extends Z2MPropertyInline {
         @NotNull String property,
         @Nullable Z2MPropertyModel z2MPropertyModel) {
         super(new Icon(
-            "fas fa-fw" + (z2MPropertyModel == null ? "fa-square-check" : z2MPropertyModel.getIcon()),
+            "fas fa-fw " + (z2MPropertyModel == null ? "fa-square-check" : z2MPropertyModel.getIcon()),
             z2MPropertyModel == null ? "#B72AD4" : z2MPropertyModel.getIconColor()
         ));
         init(deviceService, Options.dynamicExpose(property, ApplianceModel.NUMBER_TYPE), true);
