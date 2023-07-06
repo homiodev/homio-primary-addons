@@ -1,6 +1,5 @@
 package org.homio.addon.z2m.service;
 
-import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
 import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
@@ -189,7 +188,6 @@ public class Z2MLocalCoordinatorService
             deviceHandler.dispose();
         }
 
-        mqttEntityService = null;
         updateNotificationBlock();
     }
 
@@ -219,12 +217,15 @@ public class Z2MLocalCoordinatorService
 
     @SneakyThrows
     public ActionResponseModel restartZ2M() {
+        log.info("Request restart z2m");
         if (mqttEntityService != null) {
+            log.info("Send mqtt request to restart z2m");
             sendRequest("restart", "");
             // wait, maybe z2m back online?
             Thread.sleep(5000);
         }
         if (isRequireRestartService() || !isZigbee2MqttRunning()) {
+            log.info("Force restart z2m");
             this.dispose(null);
             this.restartCoordinator();
 
@@ -307,7 +308,7 @@ public class Z2MLocalCoordinatorService
                 return;
             }
         }
-        extraActions += format("%s:%s;", property.getKey(), property.getPropertyDefinition());
+        extraActions += "%s:%s;".formatted(property.getKey(), property.getPropertyDefinition());
         deviceConfiguration.put("missingActions", extraActions);
         saveConfiguration();
     }
@@ -530,7 +531,7 @@ public class Z2MLocalCoordinatorService
         }
         for (Z2MBridgeResponseTopicHandlers response : Z2MBridgeResponseTopicHandlers.values()) {
             addMqttTopicListener(
-                format("%s/bridge/response/%s", entity.getBasicTopic(), response.topic),
+                "%s/bridge/response/%s".formatted(entity.getBasicTopic(), response.topic),
                 payload -> {
                     if ("ok".equalsIgnoreCase(payload.get("status").asText())) {
                         response.handler.accept(payload.get("data"), this);
@@ -563,7 +564,7 @@ public class Z2MLocalCoordinatorService
 
     private boolean isZigbee2MqttRunning() {
         try {
-            URL url = new URL(format("http://localhost:%s", configuration.getFrontend().getPort()));
+            URL url = new URL("http://localhost:%d".formatted(configuration.getFrontend().getPort()));
             HttpURLConnection huc = (HttpURLConnection) url.openConnection();
             huc.setRequestMethod("HEAD");
             if (HttpURLConnection.HTTP_OK == huc.getResponseCode()) {
@@ -576,7 +577,7 @@ public class Z2MLocalCoordinatorService
 
     @SneakyThrows
     public void sendRequest(String path, String payload) {
-        String topic = format("%s/bridge/request/%s", entity.getBasicTopic(), path);
+        String topic = "%s/bridge/request/%s".formatted(entity.getBasicTopic(), path);
         mqttEntityService.publish(topic, payload.getBytes(), 0, false);
     }
 
@@ -595,7 +596,7 @@ public class Z2MLocalCoordinatorService
             log.error("[{}]: Unable to read zigbee2mqtt configuration file: {}", entityID, zigbee2mqttConfigurationPath.toAbsolutePath(), ex);
             configuration = new Z2MConfiguration();
         }
-        this.z2mFrontendURL = new URL(format("http://localhost:%s", configuration.getFrontend().getPort()));
+        this.z2mFrontendURL = new URL("http://localhost:%d".formatted(configuration.getFrontend().getPort()));
 
         JsonNode availability = configuration.getOrCreateObjectNode("availability");
         boolean updated = updateJsonPath(availability, "active/timeout", entity.getAvailabilityActiveTimeout());
@@ -610,7 +611,7 @@ public class Z2MLocalCoordinatorService
             configuration.getMqtt().setBaseTopic(trimToNull(entity.getBasicTopic()));
             updated = true;
         }
-        String server = format("mqtt://%s:%s", mqttEntityService.getHostname(), mqttEntityService.getPort());
+        String server = "mqtt://%s:%d".formatted(mqttEntityService.getHostname(), mqttEntityService.getPort());
         if (!Objects.equals(configuration.getMqtt().getServer(), server)) {
             configuration.getMqtt().setServer(server);
             updated = true;
@@ -654,7 +655,7 @@ public class Z2MLocalCoordinatorService
     }
 
     private @NotNull String getBridgeTopic(@NotNull Z2MLocalCoordinatorService.Z2MBridgeTopicHandlers z2MBridgeTopicHandlers) {
-        return format("%s/bridge/%s", entity.getBasicTopic(), z2MBridgeTopicHandlers.name());
+        return "%s/bridge/%s".formatted(entity.getBasicTopic(), z2MBridgeTopicHandlers.name());
     }
 
     private void startZ2MLocalProcess() {

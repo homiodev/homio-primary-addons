@@ -1,6 +1,5 @@
 package org.homio.addon.z2m.model;
 
-import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
@@ -211,13 +210,13 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("NAME")
     public HrefModel getHrefModel() {
-        String model = deviceService.getApplianceModel().getDefinition().getModel();
-        return new HrefModel(format("https://www.zigbee2mqtt.io/devices/%s.html", model), model);
+        String model = deviceService.getModel();
+        return new HrefModel("https://www.zigbee2mqtt.io/devices/%s.html".formatted(model), model);
     }
 
     @JsonIgnore
     public String getModel() {
-        return deviceService.getApplianceModel().getDefinition().getModel();
+        return deviceService.getModel();
     }
 
     @UIField(order = 1, fullWidth = true, color = "#89AA50", type = HTML, style = "height: 32px;")
@@ -227,11 +226,11 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     public String getCompactDescription() {
         String description = getFirstLevelDescription();
         if (description == null) {
-            description = format("ZIGBEE.DESCRIPTION.%s~%s", getModel(), deviceService.getApplianceModel().getDefinition().getDescription());
+            description = "ZIGBEE.DESCRIPTION.%s~%s".formatted(getModel(), deviceService.getApplianceModel().getDefinition().getDescription());
         }
-        return format("<div class=\"inline-2row_d\">"
-                + "<div>%s <span style=\"color:%s\">${%s}</span><span style=\"float:right\" class=\"color-primary\">%s</span>"
-                + "</div><div>${%s}</div></div>",
+        return """
+            <div class="inline-2row_d"><div>%s <span style="color:%s">${%s}</span>
+            <span style="float:right" class="color-primary">%s</span></div><div>${%s}</div></div>""".formatted(
             getIeeeAddressLabel(), getStatus().getColor(), getStatus(), trimToEmpty(getModel()), description);
     }
 
@@ -295,7 +294,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     public HrefModel getManufacturer() {
         String vendor = deviceService.getApplianceModel().getDefinition().getVendor();
-        return new HrefModel(format("https://www.zigbee2mqtt.io/supported-devices/#v=%s", vendor), vendor);
+        return new HrefModel("https://www.zigbee2mqtt.io/supported-devices/#v=%s".formatted(vendor), vendor);
     }
 
     public boolean isCompactMode() {
@@ -384,7 +383,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @Override
     public @Nullable String getFallbackImageIdentifier() {
-        return format("https://www.zigbee2mqtt.io/images/devices/%s.jpg", getModel());
+        return "https://www.zigbee2mqtt.io/images/devices/%s.jpg".formatted(getModel());
     }
 
     public void setImageIdentifier(String value) {
@@ -452,7 +451,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         if (definition != null) {
             for (Options option : definition.getOptions()) {
                 JsonNode deviceConfigurationOptions = deviceService.getConfiguration();
-                String flexName = format("${z2m.setting.%s~%s}", option.getName(), ZigBeeUtil.splitNameToReadableFormat(option.getName()));
+                String flexName = "${z2m.setting.%s~%s}".formatted(option.getName(), ZigBeeUtil.splitNameToReadableFormat(option.getName()));
                 switch (option.getType()) {
                     case ApplianceModel.BINARY_TYPE -> buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
                     case ApplianceModel.NUMBER_TYPE -> buildNumberTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
@@ -571,15 +570,14 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
             String variableID = property.getVariableID();
             if (variableID != null) {
                 String varSource = deviceService.getEntityContext().var().buildDataSource(variableID, false);
-                this.title = format(
-                    "<div class=\"inline-2row_d\"><div class=\"clickable history-link\" data-hl=\"%s\" style=\"color:%s;\"><i class=\"mr-1 "
-                        + "%s\"></i>%s</div><span>%s</div></div>",
-                    varSource, property.getIcon().getColor(), property.getIcon().getIcon(), property.getName(false), property.getDescription());
+                this.title =
+                    "<div class=\"inline-2row_d\"><div class=\"clickable history-link\" data-hl=\"%s\" style=\"color:%s;\"><i class=\"mr-1 %s\"></i>%s</div><span>%s</div></div>".formatted(
+                        varSource, property.getIcon().getColor(), property.getIcon().getIcon(),
+                        property.getName(false), property.getDescription());
             } else {
-                this.title = format(
-                    "<div class=\"inline-2row_d\"><div style=\"color:%s;\"><i class=\"mr-1 "
-                        + "%s\"></i>%s</div><span>%s</div></div>",
-                    property.getIcon().getColor(), property.getIcon().getIcon(), property.getName(false), property.getDescription());
+                this.title =
+                    "<div class=\"inline-2row_d\"><div style=\"color:%s;\"><i class=\"mr-1 %s\"></i>%s</div><span>%s</div></div>".formatted(
+                        property.getIcon().getColor(), property.getIcon().getIcon(), property.getName(false), property.getDescription());
             }
             this.property = property;
             this.valueTitle = property.getValue().toString();

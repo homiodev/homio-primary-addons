@@ -110,21 +110,21 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     public @NotNull String getName(boolean shortFormat) {
         String name = ZigBeeUtil.splitNameToReadableFormat(expose.getName());
-        name = shortFormat ? name : format("${zbe.%s~%s}", expose.getName(), name);
+        name = shortFormat ? name : "${zbe.%s~%s}".formatted(expose.getName(), name);
         if (isNotEmpty(expose.getEndpoint())) {
-            return format("%s [%s]", name, expose.getEndpoint());
+            return "%s [%s]".formatted(name, expose.getEndpoint());
         }
         return name;
     }
 
     public String getDescription() {
-        return format("${zbd.%s~%s}", expose.getName(), defaultIfEmpty(getExpose().getDescription(), expose.getProperty()));
+        return "${zbd.%s~%s}".formatted(expose.getName(), defaultIfEmpty(getExpose().getDescription(), expose.getProperty()));
     }
 
     public void fireAction(boolean value) {
         Object valueToFire = value ? getExpose().getValueOn() : getExpose().getValueOff();
         JSONObject params = new JSONObject().put(expose.getProperty(), valueToFire);
-        deviceService.publish("set", params, false);
+        deviceService.publish("set", params);
     }
 
     public void fireAction(int value) {
@@ -133,11 +133,11 @@ public abstract class Z2MProperty implements ZigBeeProperty {
         } else if (expose.getValueMax() != null && value > expose.getValueMax()) {
             value = expose.getValueMax();
         }
-        deviceService.publish("set", new JSONObject().put(expose.getProperty(), value), false);
+        deviceService.publish("set", new JSONObject().put(expose.getProperty(), value));
     }
 
     public void fireAction(String value) {
-        deviceService.publish("set", new JSONObject().put(expose.getProperty(), value), false);
+        deviceService.publish("set", new JSONObject().put(expose.getProperty(), value));
     }
 
     public boolean isVisible() {
@@ -201,7 +201,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
 
     @Override
     public void readValue() {
-        deviceService.publish("get", new JSONObject().put(expose.getProperty(), ""), false);
+        deviceService.publish("get", new JSONObject().put(expose.getProperty(), ""));
     }
 
     @Override
@@ -316,13 +316,13 @@ public abstract class Z2MProperty implements ZigBeeProperty {
             description.add(expose.getUnit());
         }
         if (expose.getValueMin() != null && expose.getValueMax() != null) {
-            description.add(format("(range:%s...%s)", expose.getValueMin(), expose.getValueMax()));
+            description.add("(range:%d...%d)".formatted(expose.getValueMin(), expose.getValueMax()));
         }
         if (expose.getValueOn() != null && expose.getValueOff() != null) {
-            description.add(format("(on:%s;off:%s)", expose.getValueOn(), expose.getValueOff()));
+            description.add("(on:%s;off:%s)".formatted(expose.getValueOn(), expose.getValueOff()));
         }
         if (expose.getPresets() != null && !expose.getPresets().isEmpty()) {
-            description.add(format("(presets:%s)", expose.getPresets().stream().map(Presets::getName).collect(Collectors.joining("|"))));
+            description.add("(presets:%s)".formatted(expose.getPresets().stream().map(Presets::getName).collect(Collectors.joining("|"))));
         }
         if (description.isEmpty()) {
             description.add(getDescription());

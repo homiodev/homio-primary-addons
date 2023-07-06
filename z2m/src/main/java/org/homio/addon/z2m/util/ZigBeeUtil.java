@@ -101,8 +101,7 @@ public final class ZigBeeUtil {
             }
         }
         if (property.getUnit() != null) {
-            uiInputBuilder.addInfo(format("%s <small class=\"text-muted\">%s</small>",
-                property.getValue().stringValue(), property.getUnit()), InfoType.HTML);
+            uiInputBuilder.addInfo("%s <small class=\"text-muted\">%s</small>".formatted(property.getValue().stringValue(), property.getUnit()), InfoType.HTML);
         }
         property.buildZigbeeAction(uiInputBuilder, entityID);
         return uiInputBuilder;
@@ -137,16 +136,16 @@ public final class ZigBeeUtil {
         progressBar.progress(45, "install-zigbee2mqtt");
         EntityContextHardware hardware = entityContext.hardware();
         String npmOptions = "--no-audit --no-optional --no-update-notifier --unsafe-perm";
-        hardware.execute(format("%s ci --prefix %s %s", npm, zigbee2mqttGitHub.getLocalProjectPath(), npmOptions), 600, progressBar.asHQuery());
-        hardware.execute(format("%s run build --prefix %s", npm, zigbee2mqttGitHub.getLocalProjectPath()), 600, progressBar.asHQuery());
-        hardware.execute(format("%s ci --prefix %s --only=production %s", npm, zigbee2mqttGitHub.getLocalProjectPath(), npmOptions), 600,
+        hardware.execute("%s ci --prefix %s %s".formatted(npm, zigbee2mqttGitHub.getLocalProjectPath(), npmOptions), 600, progressBar.asHQuery());
+        hardware.execute("%s run build --prefix %s".formatted(npm, zigbee2mqttGitHub.getLocalProjectPath()), 600, progressBar.asHQuery());
+        hardware.execute("%s ci --prefix %s --only=production %s".formatted(npm, zigbee2mqttGitHub.getLocalProjectPath(), npmOptions), 600,
             progressBar.asHQuery());
 
         // restore configuration
         if (projectUpdate.isHasBackup()) {
             projectUpdate.copyFromBackup(Set.of(Path.of("data")));
         }
-        progressBar.progress(100, format("Zigbee2mqtt 'V%s' has been installed successfully", version));
+        progressBar.progress(100, "Zigbee2mqtt 'V%s' has been installed successfully".formatted(version));
     }
 
     public static @NotNull String getZ2MVersionToInstall(EntityContext entityContext) {

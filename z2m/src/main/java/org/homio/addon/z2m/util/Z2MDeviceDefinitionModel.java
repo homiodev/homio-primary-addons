@@ -29,13 +29,13 @@ import org.jetbrains.annotations.Nullable;
 public class Z2MDeviceDefinitionModel {
 
     // for description inside json file only
-    private String name;
-    private String icon;
-    private String iconColor;
-    private Set<String> models;
-    private Set<String> exposes;
-    private List<WidgetDefinition> widgets;
-    private JsonNode options;
+    private @Nullable String name;
+    private @Nullable String icon;
+    private @Nullable String iconColor;
+    private @Nullable Set<String> models;
+    private @Nullable Set<String> exposes;
+    private @Nullable List<WidgetDefinition> widgets;
+    private @Nullable JsonNode options;
 
     public enum WidgetType {
         color, toggle, display, compose, line, barTime

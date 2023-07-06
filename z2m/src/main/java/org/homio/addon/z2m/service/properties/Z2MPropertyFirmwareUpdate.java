@@ -97,7 +97,7 @@ public class Z2MPropertyFirmwareUpdate extends Z2MProperty {
 
     private ActionResponseModel sendRequest(Request request) {
         getDeviceService().publish("bridge/request/device/ota_update/" + request.name(),
-            new JSONObject().put("id", getDeviceService().getIeeeAddress()), false);
+            new JSONObject().put("id", getDeviceService().getIeeeAddress()));
         return ActionResponseModel.showSuccess(Lang.getServerMessage("ZIGBEE.REQUEST_UPDATE_" + request.name().toUpperCase(),
             getDeviceService().getIeeeAddress()));
     }

@@ -2,6 +2,37 @@
   "version": "1",
   "devices": [
     {
+      "name": "Smart knob",
+      "models": [
+        "ERS-10TZBVK-AA"
+      ],
+      "icon": "far fa-circle-dot",
+      "iconColor": "#7F50AD",
+      "widgets": [
+        {
+          "type": "compose",
+          "name": "DISPLAY",
+          "icon": "far fa-circle-dot",
+          "compose": [
+            {
+              "type": "display",
+              "props": [
+                {
+                  "name": "action_rotate_left"
+                },
+                {
+                  "name": "action_rotate_right"
+                },
+                {
+                  "name": "action"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Energy meter",
       "exposes": [
         "switch~energy~power~voltage~current"

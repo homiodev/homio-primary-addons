@@ -38,31 +38,33 @@ public class ComposeWidget implements WidgetBuilder {
 
         // set 3 as min layout height to look better
         List<Integer> rowHeights = calcLayoutRows(widgetRequest, composeContainer);
-        int layoutRowsCount = calcLayoutRowsCount(rowHeights);
-
-        int composeBlockHeight = adjustBlockHeightToInnerContentHeight(wd, layoutRowsCount);
+        // 2
+        int sumOfRowHeights = rowHeights.stream().reduce(0, Integer::sum);
+        int sumOfRowHeightsAdjusted = Math.max(3, sumOfRowHeights);
 
         String layoutID = "lt-cmp-" + entity.getIeeeAddress();
         int columns = 3;
 
         entityContext.widget().createLayoutWidget(layoutID, builder ->
             builder
-                .setBlockSize(wd.getBlockWidth(1), composeBlockHeight)
+                .setBlockSize(
+                    wd.getBlockWidth(1),
+                    adjustBlockHeightToInnerContentHeight(wd, sumOfRowHeightsAdjusted))
                 .setZIndex(wd.getZIndex(15))
                 .setBackground(wd.getBackground())
-                .setLayoutDimension(layoutRowsCount + 1, columns));
+                .setLayoutDimension(sumOfRowHeightsAdjusted + 1, columns));
 
         AtomicInteger currentLayoutRow = new AtomicInteger(0);
         for (int i = 0; i < composeContainer.size(); i++) {
             int wdMinRowHeight = rowHeights.get(i);
-            int rowHeight = calcAdjustRowHeight(wdMinRowHeight, layoutRowsCount);
+            int innerWidgetHeight = Math.round(wdMinRowHeight / (float) sumOfRowHeights * sumOfRowHeightsAdjusted);
 
             WidgetDefinition item = composeContainer.get(i);
             WidgetBuilder innerWidgetBuilder = WidgetBuilder.WIDGETS.get(item.getType());
-            val request = new MainWidgetRequest(widgetRequest, item, columns, rowHeight, builder ->
+            val request = new MainWidgetRequest(widgetRequest, item, columns, innerWidgetHeight, builder ->
                 builder.attachToLayout(layoutID, currentLayoutRow.get(), 0));
             innerWidgetBuilder.buildMainWidget(request);
-            currentLayoutRow.addAndGet(rowHeight);
+            currentLayoutRow.addAndGet(sumOfRowHeightsAdjusted);
         }
 
         Map<String, ZigBeeProperty> properties = widgetRequest.getEntity().getProperties();
@@ -93,15 +95,6 @@ public class ComposeWidget implements WidgetBuilder {
             findCellProperty(wd.getRightProperty(), properties, RIGHT_PROPERTIES),
             false,
             builder -> builder.attachToLayout(layoutID, row, 2));
-    }
-
-    private int calcAdjustRowHeight(int wdMinRowHeight, int layoutRowsCount) {
-        return (int) (layoutRowsCount / (float) wdMinRowHeight);
-    }
-
-    private int calcLayoutRowsCount(List<Integer> rowHeights) {
-        int minHeight = rowHeights.stream().reduce(0, Integer::sum);
-        return minHeight == 1 ? 3 : minHeight;
     }
 
     private int adjustBlockHeightToInnerContentHeight(WidgetDefinition wd, int layoutRows) {

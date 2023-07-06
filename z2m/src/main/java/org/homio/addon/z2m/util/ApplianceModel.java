@@ -78,23 +78,13 @@ public class ApplianceModel extends UnknownOptions {
 
     @Override
     public String toString() {
-        return "Z2MDevice{"
-            + "ieeeAddress='"
-            + ieeeAddress
-            + '\''
-            + ", manufacturer='"
-            + manufacturer
-            + '\''
-            + ", modelId='"
-            + modelId
-            + '\''
-            + '}';
+        return "Z2MDevice{ieeeAddress='%s', manufacturer='%s', model='%s'}".formatted(ieeeAddress, manufacturer, definition.model);
     }
 
     public String getGroupDescription() {
         String name = getName();
         if (!name.equals(ieeeAddress)) {
-            return format("${%s} [%s]", name, ieeeAddress);
+            return "${%s} [%s]".formatted(name, ieeeAddress);
         }
         return name;
     }

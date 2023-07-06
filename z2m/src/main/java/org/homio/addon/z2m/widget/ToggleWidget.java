@@ -1,6 +1,5 @@
 package org.homio.addon.z2m.widget;
 
-import static java.lang.String.format;
 import static org.homio.api.ui.field.UIFieldLayout.HorizontalAlign.left;
 import static org.homio.api.ui.field.UIFieldLayout.HorizontalAlign.right;
 
@@ -68,7 +67,7 @@ public class ToggleWidget implements WidgetBuilder {
 
     private String getName(Z2MDeviceEntity entity, Z2MProperty state) {
         if (StringUtils.isNotEmpty(entity.getPlace())) {
-            return entity.getPlace() + format("[%s]", state.getName(true));
+            return "%s[%s]".formatted(entity.getPlace(), state.getName(true));
         }
         return state.getName(true);
     }

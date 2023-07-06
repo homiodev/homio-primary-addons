@@ -82,7 +82,7 @@ public class DisplayWidget implements WidgetBuilder {
             }
             builder.setBlockSize(
                        wd.getBlockWidth(request.getLayoutColumnNum()),
-                       wd.getBlockHeight(includeProperties.size()))
+                       wd.getBlockHeight(request.getLayoutRowNum())) // includeProperties.size()
                    .setZIndex(wd.getZIndex(20));
 
             request.getAttachToLayoutHandler().accept(builder);

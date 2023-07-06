@@ -1,5 +1,6 @@
 package org.homio.addon.z2m.util;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
 import static org.homio.api.util.CommonUtils.getErrorMessage;
 
@@ -110,16 +111,18 @@ public class Z2MPropertyConfigService {
 
     public @NotNull String getDeviceIcon(@NotNull Z2MDeviceService deviceService, @NotNull String defaultIcon) {
         List<Z2MDeviceDefinitionModel> devices = findDevices(deviceService);
-        return devices.isEmpty() ? defaultIcon : devices.get(0).getIcon();
+        return devices.isEmpty() ? defaultIcon : defaultIfEmpty(devices.get(0).getIcon(), defaultIcon);
     }
 
     public @NotNull String getDeviceIconColor(@NotNull Z2MDeviceService deviceService, @NotNull String defaultIconColor) {
         List<Z2MDeviceDefinitionModel> devices = findDevices(deviceService);
-        return devices.isEmpty() ? defaultIconColor : devices.get(0).getIconColor();
+        return devices.isEmpty() ? defaultIconColor : defaultIfEmpty(devices.get(0).getIconColor(), defaultIconColor);
     }
 
     public @NotNull List<WidgetDefinition> getDeviceWidgets(Z2MDeviceService deviceService) {
-        return findDevices(deviceService).stream().flatMap(d -> d.getWidgets().stream()).toList();
+        return findDevices(deviceService).stream()
+                                         .filter(d -> d.getWidgets() != null)
+                                         .flatMap(d -> d.getWidgets().stream()).toList();
     }
 
     public @NotNull JsonNode getDeviceOptions(@NotNull Z2MDeviceService deviceService) {
@@ -167,15 +170,15 @@ public class Z2MPropertyConfigService {
     private @NotNull List<Z2MDeviceDefinitionModel> findDevices(@NotNull Z2MDeviceService deviceService) {
         Set<String> exposes = deviceService.getExposes();
         int exposeHash = exposes.hashCode();
-        String modelId = deviceService.getApplianceModel().getModelId();
-        ModelDevices modelDevices = modelIdToDevices.get(modelId);
+        String model = deviceService.getModel();
+        ModelDevices modelDevices = modelIdToDevices.get(model);
         if (modelDevices == null || modelDevices.hashCode != exposeHash) {
             try {
                 midLock.lock();
-                modelDevices = modelIdToDevices.get(modelId);
+                modelDevices = modelIdToDevices.get(model);
                 if (modelDevices == null || modelDevices.hashCode != exposeHash) {
-                    modelDevices = new ModelDevices(exposeHash, buildListOfDevices(modelId, exposes));
-                    modelIdToDevices.put(modelId, modelDevices);
+                    modelDevices = new ModelDevices(exposeHash, buildListOfDevices(model, exposes));
+                    modelIdToDevices.put(model, modelDevices);
                 }
             } finally {
                 midLock.unlock();

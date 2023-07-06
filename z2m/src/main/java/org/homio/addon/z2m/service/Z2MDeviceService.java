@@ -1,6 +1,5 @@
 package org.homio.addon.z2m.service;
 
-import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
 
@@ -70,7 +69,7 @@ public class Z2MDeviceService {
         addMissingProperties(coordinatorService, applianceModel);
 
         entityContext.ui().updateItem(deviceEntity);
-        entityContext.ui().sendSuccessMessage(Lang.getServerMessage("ENTITY_CREATED", format("${%s}", this.applianceModel.getName())));
+        entityContext.ui().sendSuccessMessage(Lang.getServerMessage("ENTITY_CREATED", "${%s}".formatted(this.applianceModel.getName())));
         setEntityOnline();
     }
 
@@ -116,7 +115,7 @@ public class Z2MDeviceService {
         if (!initialized) {
             log.warn("[{}]: Initialize zigbee device: {}", coordinatorService.getEntityID(), deviceEntity.getTitle());
             addMqttListeners();
-            entityContext.event().fireEvent(format("zigbee-%s", applianceModel.getIeeeAddress()), deviceEntity.getStatus());
+            entityContext.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()), deviceEntity.getStatus());
             initialized = true;
         } else {
             log.debug("[{}]: Zigbee device: {} was initialized before", coordinatorService.getEntityID(), deviceEntity.getTitle());
@@ -143,6 +142,10 @@ public class Z2MDeviceService {
         coordinatorService.updateDeviceConfiguration(deviceService, propertyName, value);
     }
 
+    public String getModel() {
+        return applianceModel.getDefinition().getModel();
+    }
+
     private void addMqttListeners() {
         currentMQTTTopic = applianceModel.getMQTTTopic();
         String topic = getMqttFQDNTopic();
@@ -162,7 +165,7 @@ public class Z2MDeviceService {
 
         coordinatorService.getMqttEntityService().addListener(topic + "/availability", applianceModel.getIeeeAddress(), payload -> {
             availability = payload == null ? null : payload.toString();
-            entityContext.event().fireEvent(format("zigbee-%s", applianceModel.getIeeeAddress()), deviceEntity.getStatus());
+            entityContext.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()), deviceEntity.getStatus());
             entityContext.ui().updateItem(this.deviceEntity);
             if ("offline".equals(availability)) {
                 downLinkQualityToZero();
@@ -171,7 +174,7 @@ public class Z2MDeviceService {
     }
 
     private String getMqttFQDNTopic() {
-        return format("%s/%s", coordinatorService.getEntity().getBasicTopic(), currentMQTTTopic);
+        return "%s/%s".formatted(coordinatorService.getEntity().getBasicTopic(), currentMQTTTopic);
     }
 
     private void removeMqttListeners() {
@@ -199,21 +202,24 @@ public class Z2MDeviceService {
         this.coordinatorService.updateDeviceConfiguration(this, key, value);
     }
 
-    public void publish(String topic, JSONObject payload, boolean relative) {
-        this.coordinatorService.publish(relative ? currentMQTTTopic + "/" + topic : topic, payload);
+    public void publish(@NotNull String topic, @NotNull JSONObject payload) {
+        if (topic.startsWith("bridge/'")) {
+            this.coordinatorService.publish(currentMQTTTopic + "/" + topic, payload);
+        } else {
+            this.coordinatorService.publish(topic, payload);
+        }
     }
 
     public String getDeviceFullName() {
         String name;
         if (this.getConfiguration().has("name")) {
             name = this.getConfiguration().get("name").asText();
-        } else if (applianceModel.getModelId() != null || applianceModel.getDefinition().getModel() != null) {
-            name = format("${zigbee.device.%s~%s}", defaultIfEmpty(applianceModel.getModelId(), applianceModel.getDefinition().getModel()),
-                applianceModel.getDefinition().getDescription());
+        } else if (getModel() != null) {
+            name = "${zigbee.device.%s~%s}".formatted(getModel(), applianceModel.getDefinition().getDescription());
         } else {
             name = applianceModel.getDefinition().getDescription();
         }
-        return format("%s(%s) [${%s}]", name, this.applianceModel.getIeeeAddress(), defaultIfEmpty(this.deviceEntity.getPlace(), "place_not_set"));
+        return "%s(%s) [${%s}]".formatted(name, this.applianceModel.getIeeeAddress(), defaultIfEmpty(this.deviceEntity.getPlace(), "place_not_set"));
     }
 
     public Z2MProperty addDynamicProperty(String key, Supplier<Z2MProperty> supplier) {
@@ -235,7 +241,7 @@ public class Z2MDeviceService {
                     if (property.feedPayload(key, payload)) {
                         feed = true;
                         updated = true;
-                        sb.add(format("%s - %s", property.getDescription(), property.getValue().toString()));
+                        sb.add("%s - %s".formatted(property.getDescription(), property.getValue().toString()));
                     }
                 }
                 if (!feed) {
@@ -306,7 +312,7 @@ public class Z2MDeviceService {
     private Z2MProperty addPropertyOptional(String key, Function<String, Z2MProperty> propertyProducer) {
         if (!properties.containsKey(key)) {
             properties.put(key, propertyProducer.apply(key));
-            entityContext.event().fireEvent(format("zigbee-%s-%s", applianceModel.getIeeeAddress(), key), Status.ONLINE);
+            entityContext.event().fireEvent("zigbee-%s-%s".formatted(applianceModel.getIeeeAddress(), key), Status.ONLINE);
         }
         return properties.get(key);
     }

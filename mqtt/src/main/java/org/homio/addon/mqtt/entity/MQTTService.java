@@ -1,5 +1,6 @@
 package org.homio.addon.mqtt.entity;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.homio.addon.mqtt.entity.MQTTBaseEntity.normalize;
 
@@ -340,7 +341,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
     }
 
     private void createMQTTClient() throws MqttException {
-        String serverURL = String.format("tcp://%s:%d", entity.getHostname(), entity.getPort());
+        String serverURL = format("tcp://%s:%d", entity.getHostname(), entity.getPort());
         MqttConnectOptions options = new MqttConnectOptions();
         options.setAutomaticReconnect(false);
         options.setCleanSession(entity.getMqttCleanSessionOnConnect());

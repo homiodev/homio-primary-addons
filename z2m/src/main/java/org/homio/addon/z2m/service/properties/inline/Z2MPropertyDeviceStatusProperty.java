@@ -22,7 +22,7 @@ public class Z2MPropertyDeviceStatusProperty extends Z2MPropertyInline {
         options.setValues(Stream.of(Status.values()).map(Enum::name).toList());
         init(deviceService, options, true);
 
-        deviceService.getEntityContext().event().addEventListener(format("zigbee-%s", deviceService.getIeeeAddress()),
+        deviceService.getEntityContext().event().addEventListener("zigbee-%s".formatted(deviceService.getIeeeAddress()),
             "z2m-prop", value -> {
                 setValue(new StringType(value.toString()));
                 updateUI();
