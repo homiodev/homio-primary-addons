@@ -1,6 +1,5 @@
 package org.homio.addon.z2m.service;
 
-import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.homio.addon.z2m.util.ApplianceModel.BINARY_TYPE;
@@ -109,8 +108,13 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     }
 
     public @NotNull String getName(boolean shortFormat) {
-        String name = ZigBeeUtil.splitNameToReadableFormat(expose.getName());
-        name = shortFormat ? name : "${zbe.%s~%s}".formatted(expose.getName(), name);
+        String l1Name = expose.getName();
+        if (expose.getProperty() != null && !expose.getProperty().equals(expose.getName())) {
+            l1Name = expose.getProperty();
+        }
+        String name = ZigBeeUtil.splitNameToReadableFormat(l1Name);
+        name = shortFormat ? name : "${zbe.%s~%s}".formatted(l1Name, name);
+
         if (isNotEmpty(expose.getEndpoint())) {
             return "%s [%s]".formatted(name, expose.getEndpoint());
         }
@@ -214,7 +218,7 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     }
 
     public void buildZigbeeAction(UIInputBuilder uiInputBuilder, String entityID) {
-        uiInputBuilder.addInfo(value.toString(), InfoType.HTML);
+        uiInputBuilder.addInfo(value.toString(), InfoType.Text);
     }
 
     protected String getJsonKey() {

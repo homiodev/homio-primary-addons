@@ -378,7 +378,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @Override
     protected String getImageIdentifierImpl() {
         JsonNode deviceOptions = deviceService.getConfiguration();
-        return deviceOptions.path("image").asText(getModelIdentifier());
+        return deviceOptions.path("image").asText(deviceService.getModel());
     }
 
     @Override

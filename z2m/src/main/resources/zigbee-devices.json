@@ -147,53 +147,58 @@
       "iconColor": "#57A4D1",
       "widgets": [
         {
-          "type": "display",
+          "type": "compose",
           "name": "TEMPERATURE_SENSOR",
           "icon": "fas fa-temperature-full",
-          "props": [
+          "compose": [
             {
-              "name": "temperature"
-            },
-            {
-              "name": "humidity"
-            },
-            {
-              "name": "pressure"
+              "type": "display",
+              "props": [
+                {
+                  "name": "temperature"
+                },
+                {
+                  "name": "humidity"
+                },
+                {
+                  "name": "pressure"
+                }
+              ],
+              "requests": [
+                {
+                  "name": "min",
+                  "value": 16,
+                  "type": "number",
+                  "title": "Minimum expected temperature",
+                  "target": "options.chart.min",
+                  "min": -30,
+                  "max": 50
+                },
+                {
+                  "name": "max",
+                  "value": 26,
+                  "type": "number",
+                  "title": "Maximum expected temperature",
+                  "target": "options.chart.max",
+                  "min": -30,
+                  "max": 50
+                }
+              ],
+              "options": {
+                "chart": {
+                  "source": {
+                    "kind": "property",
+                    "value": "temperature"
+                  },
+                  "height": 100,
+                  "fillEmptyValues": true,
+                  "min": 16,
+                  "max": 26,
+                  "opacity": 25
+                }
+              }
             }
-          ],
-          "requests": [
-            {
-              "name": "min",
-              "value": 16,
-              "type": "number",
-              "title": "Minimum expected temperature",
-              "target": "options.chart.min",
-              "min": -30,
-              "max": 50
-            },
-            {
-              "name": "max",
-              "value": 26,
-              "type": "number",
-              "title": "Maximum expected temperature",
-              "target": "options.chart.max",
-              "min": -30,
-              "max": 50
-            }
-          ],
-          "options": {
-            "chart": {
-              "source": {
-                "kind": "property",
-                "value": "temperature"
-              },
-              "height": 100,
-              "fillEmptyValues": true,
-              "min": 16,
-              "max": 26,
-              "opacity": 25
-            }
-          }
+          ]
         }
       ]
     },
@@ -289,47 +294,52 @@
       "iconColor": "#A41CE2",
       "widgets": [
         {
-          "type": "display",
+          "type": "compose",
           "name": "DOOR_SENSOR",
-          "icon": "fas fa-door-open",
-          "layout": "{'c':[{'w':15},{'w':45},{'w':40}],'r':[{'cell':[{'ha':'right','va':'middle','v':'icon','cs':1,'rs':1,'w':15},{'ha':'right','va':'middle','v':'name','cs':1,'rs':1,'w':45},{'ha':'center','va':'middle','v':'value','cs':1,'rs':1,'w':40}]}]}",
-          "props": [
+          "icon": "fas fa-square-check",
+          "compose": [
             {
-              "name": "contact",
-              "icon": "fas fa-door-closed",
-              "valueConverter": "return value == true ? 'opened' : 'closed';",
-              "iconThreshold": [
+              "type": "display",
+              "layout": "{'c':[{'w':15},{'w':45},{'w':40}],'r':[{'cell':[{'ha':'right','va':'middle','v':'icon','cs':1,'rs':1,'w':15},{'ha':'right','va':'middle','v':'name','cs':1,'rs':1,'w':45},{'ha':'center','va':'middle','v':'value','cs':1,'rs':1,'w':40}]}]}",
+              "props": [
                 {
-                  "op": "eq",
-                  "value": "true|1",
-                  "target": "fas fa-door-open"
+                  "name": "contact",
+                  "icon": "fas fa-door-closed",
+                  "valueConverter": "return value == true ? 'opened' : 'closed';",
+                  "iconThreshold": [
+                    {
+                      "op": "eq",
+                      "value": "true|1",
+                      "target": "fas fa-door-open"
+                    }
+                  ],
+                  "iconColorThreshold": [
+                    {
+                      "op": "eq",
+                      "value": "true|1",
+                      "target": "#3A75B5"
+                    }
+                  ]
                 }
               ],
-              "iconColorThreshold": [
-                {
-                  "op": "eq",
-                  "value": "true|1",
-                  "target": "#3A75B5"
+              "options": {
+                "chart": {
+                  "source": {
+                    "kind": "property",
+                    "value": "contact"
+                  },
+                  "stepped": "True",
+                  "fillEmptyValues": true,
+                  "aggregateFunc": "Last",
+                  "opacity": 25,
+                  "height": 50,
+                  "smoothing": false,
+                  "min": 0,
+                  "max": 1
                 }
-              ]
+              }
             }
-          ],
-          "options": {
-            "chart": {
-              "source": {
-                "kind": "property",
-                "value": "contact"
-              },
-              "stepped": "True",
-              "fillEmptyValues": true,
-              "aggregateFunc": "Last",
-              "opacity": 25,
-              "height": 50,
-              "smoothing": false,
-              "min": 0,
-              "max": 1
-            }
-          }
+          ]
         }
       ]
     },
@@ -348,46 +358,51 @@
       },
       "widgets": [
         {
-          "type": "display",
+          "type": "compose",
           "name": "MOTION_SENSOR",
           "icon": "fas fa-person",
-          "props": [
+          "compose": [
             {
-              "name": "occupancy"
-            },
-            {
-              "name": "illuminance",
-              "iconThreshold": [
+              "type": "display",
+              "props": [
                 {
-                  "op": "eq",
-                  "value": "true|1",
-                  "target": "fas fa-person-walking fa-beat"
+                  "name": "occupancy"
+                },
+                {
+                  "name": "illuminance",
+                  "iconThreshold": [
+                    {
+                      "op": "eq",
+                      "value": "true|1",
+                      "target": "fas fa-person-walking fa-beat"
+                    }
+                  ],
+                  "iconColorThreshold": [
+                    {
+                      "op": "eq",
+                      "value": "true|1",
+                      "target": "#FF0000"
+                    }
+                  ]
                 }
               ],
-              "iconColorThreshold": [
-                {
-                  "op": "eq",
-                  "value": "true|1",
-                  "target": "#FF0000"
+              "options": {
+                "chart": {
+                  "source": {
+                    "kind": "property",
+                    "value": "occupancy",
+                    "stepped": "True",
+                    "aggregateFunc": "Last",
+                    "opacity": 25,
+                    "height": 50,
+                    "smoothing": false,
+                    "min": 0,
+                    "max": 1
+                  }
                 }
-              ]
-            }
-          ],
-          "options": {
-            "chart": {
-              "source": {
-                "kind": "property",
-                "value": "occupancy",
-                "stepped": "True",
-                "aggregateFunc": "Last",
-                "opacity": 25,
-                "height": 50,
-                "smoothing": false,
-                "min": 0,
-                "max": 1
               }
             }
-          }
+          ]
         }
       ]
     },
@@ -461,45 +476,50 @@
       "iconColor": "#4D9180",
       "widgets": [
         {
-          "type": "display",
+          "type": "compose",
           "name": "VIBRATION_SENSOR",
           "icon": "fab fa-squarespace",
-          "props": [
+          "compose": [
             {
-              "name": "vibration",
-              "iconThreshold": [
+              "type": "display",
+              "props": [
                 {
-                  "op": "eq",
-                  "value": "true|1",
-                  "target": "fab fa-fw fa-squarespace fa-flip"
+                  "name": "vibration",
+                  "iconThreshold": [
+                    {
+                      "op": "eq",
+                      "value": "true|1",
+                      "target": "fab fa-fw fa-squarespace fa-flip"
+                    }
+                  ],
+                  "iconColorThreshold": [
+                    {
+                      "op": "eq",
+                      "value": "true|1",
+                      "target": "#C94F4F"
+                    }
+                  ]
                 }
               ],
-              "iconColorThreshold": [
-                {
-                  "op": "eq",
-                  "value": "true|1",
-                  "target": "#C94F4F"
+              "options": {
+                "pointBorderColor": "",
+                "chart": {
+                  "source": {
+                    "kind": "property",
+                    "value": "vibration"
+                  },
+                  "stepped": "True",
+                  "fillEmptyValues": true,
+                  "aggregateFunc": "Last",
+                  "opacity": 25,
+                  "height": 50,
+                  "smoothing": false,
+                  "min": 0,
+                  "max": 1
                 }
-              ]
+              }
             }
-          ],
-          "options": {
-            "pointBorderColor": "",
-            "chart": {
-              "source": {
-                "kind": "property",
-                "value": "vibration"
-              },
-              "stepped": "True",
-              "fillEmptyValues": true,
-              "aggregateFunc": "Last",
-              "opacity": 25,
-              "height": 50,
-              "smoothing": false,
-              "min": 0,
-              "max": 1
-            }
-          }
+          ]
         }
       ]
     }
@@ -915,6 +935,11 @@
       "name": "action_step_size",
       "icon": "fa-stairs",
       "iconColor": "#6042C1"
+    },
+    {
+      "name": "indicator_mode",
+      "icon": "fa-traffic-light",
+      "iconColor": "#42C1BB"
     }
   ],
   "propertiesWithoutVariables": [

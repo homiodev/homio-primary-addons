@@ -1,7 +1,5 @@
 package org.homio.addon.z2m.service.properties.inline;
 
-import static java.lang.String.format;
-
 import java.util.stream.Stream;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.util.ApplianceModel;
@@ -9,6 +7,8 @@ import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.state.StringType;
+import org.homio.api.ui.field.action.v1.UIInputBuilder;
+import org.homio.api.ui.field.action.v1.item.UIInfoItemBuilder.InfoType;
 
 /**
  * Extra property for every device to store device status
@@ -28,5 +28,12 @@ public class Z2MPropertyDeviceStatusProperty extends Z2MPropertyInline {
                 updateUI();
                 pushVariable();
             });
+    }
+
+    @Override
+    public void buildZigbeeAction(UIInputBuilder uiInputBuilder, String entityID) {
+        Status status = Status.valueOf(getValue().stringValue());
+        uiInputBuilder.addInfo(status.name(), InfoType.Text).setColor(status.getColor());
+        super.buildZigbeeAction(uiInputBuilder, entityID);
     }
 }
