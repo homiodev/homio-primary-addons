@@ -468,7 +468,7 @@ public class Z2MLocalCoordinatorService
             builder.setUpdatable((progressBar, version) -> {
                     if (!version.equals(zigbee2mqttGitHub.getInstalledVersion())) {
                         dispose(null);
-                        return zigbee2mqttGitHub.updateWithBackup("zigbee2mqtt", progressBar, projectUpdate -> {
+                        return zigbee2mqttGitHub.updateWithBackup("zigbee2mqtt", progressBar, true, projectUpdate -> {
                             if (!version.equals(zigbee2mqttGitHub.getInstalledVersion())) {
                                 ZigBeeUtil.installOrUpdateZ2M(entityContext, version, projectUpdate);
                                 if (entity.isStart()) {

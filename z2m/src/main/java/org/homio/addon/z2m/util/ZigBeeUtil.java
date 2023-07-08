@@ -1,6 +1,5 @@
 package org.homio.addon.z2m.util;
 
-import static java.lang.String.format;
 import static org.homio.addon.z2m.util.ApplianceModel.BINARY_TYPE;
 import static org.homio.addon.z2m.util.ApplianceModel.COMPOSITE_TYPE;
 import static org.homio.addon.z2m.util.ApplianceModel.ENUM_TYPE;
@@ -162,7 +161,7 @@ public final class ZigBeeUtil {
             return;
         }
         entityContext.bgp().runWithProgress("install-z2m").execute(progressBar -> {
-            zigbee2mqttGitHub.updateWithBackup("z2m", progressBar, projectUpdate -> {
+            zigbee2mqttGitHub.updateWithBackup("z2m", progressBar, true, projectUpdate -> {
                 ZigBeeUtil.installOrUpdateZ2M(entityContext, version, projectUpdate);
                 return null;
             });
