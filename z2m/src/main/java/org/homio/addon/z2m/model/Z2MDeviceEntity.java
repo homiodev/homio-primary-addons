@@ -5,7 +5,6 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
 import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_FIRMWARE_UPDATE;
 import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_LAST_SEEN;
-import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_LAST_UPDATED;
 import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
 import static org.homio.api.ui.field.UIFieldType.HTML;
 import static org.homio.api.ui.field.UIFieldType.SelectBox;
@@ -183,9 +182,6 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @Override
     public @Nullable String getUpdated() {
         ZigBeeProperty property = getProperty(PROPERTY_LAST_SEEN);
-        if (property == null) {
-            property = getProperty(PROPERTY_LAST_UPDATED);
-        }
         return property == null ? null : property.getLastValue().stringValue();
     }
 
@@ -378,7 +374,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @Override
     protected String getImageIdentifierImpl() {
         JsonNode deviceOptions = deviceService.getConfiguration();
-        return deviceOptions.path("image").asText(deviceService.getModel());
+        return deviceOptions.path("image").asText(deviceService.getModel()).replaceAll("[/ ]", "-");
     }
 
     @Override

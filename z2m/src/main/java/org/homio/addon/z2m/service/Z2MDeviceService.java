@@ -1,6 +1,7 @@
 package org.homio.addon.z2m.service;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_LAST_SEEN;
 import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,9 +21,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.service.properties.Z2MPropertyAction;
+import org.homio.addon.z2m.service.properties.Z2MPropertyLastSeen;
 import org.homio.addon.z2m.service.properties.inline.Z2MPropertyDeviceStatusProperty;
 import org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral;
-import org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty;
 import org.homio.addon.z2m.service.properties.inline.Z2MPropertyUnknown;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
@@ -103,10 +104,11 @@ public class Z2MDeviceService {
                 addPropertyOptional(expose.getProperty(), key -> buildExposeProperty(expose));
             }
         }
-        // add last_updated property only if no z2m last_seen property exists
-        if (!properties.containsKey(Z2MProperty.PROPERTY_LAST_SEEN)) {
-            addPropertyOptional(Z2MProperty.PROPERTY_LAST_UPDATED, key -> new Z2MPropertyLastUpdatedProperty(this));
-        }
+        addPropertyOptional(PROPERTY_LAST_SEEN, key -> {
+            Z2MPropertyLastSeen propertyLastSeen = new Z2MPropertyLastSeen();
+            propertyLastSeen.init(this, Options.dynamicExpose(PROPERTY_LAST_SEEN, ApplianceModel.NUMBER_TYPE), true);
+            return propertyLastSeen;
+        });
         // add device status
         addPropertyOptional(Z2MProperty.PROPERTY_DEVICE_STATUS, key -> new Z2MPropertyDeviceStatusProperty(this));
     }
@@ -204,9 +206,9 @@ public class Z2MDeviceService {
 
     public void publish(@NotNull String topic, @NotNull JSONObject payload) {
         if (topic.startsWith("bridge/'")) {
-            this.coordinatorService.publish(currentMQTTTopic + "/" + topic, payload);
-        } else {
             this.coordinatorService.publish(topic, payload);
+        } else {
+            this.coordinatorService.publish(currentMQTTTopic + "/" + topic, payload);
         }
     }
 
@@ -261,8 +263,9 @@ public class Z2MDeviceService {
                     key, payload, CommonUtils.getErrorMessage(ex));
             }
         }
-        if (updated) {
-            properties.get(Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED).mqttUpdate(null);
+        if (updated && !payload.keySet().contains(PROPERTY_LAST_SEEN)) {
+            // fire set value as current milliseconds if device has no last_seen property for some reason
+            properties.get(PROPERTY_LAST_SEEN).mqttUpdate(null);
         }
         if (deviceEntity.isLogEvents() && !sb.isEmpty()) {
             entityContext.ui().sendInfoMessage(applianceModel.getGroupDescription(), String.join("\n", sb));

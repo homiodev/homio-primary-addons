@@ -49,7 +49,6 @@ public abstract class Z2MProperty implements ZigBeeProperty {
     // property name for LQI
     public static final String PROPERTY_BATTERY = "battery";
     public static final String PROPERTY_SIGNAL = "linkquality";
-    public static final String PROPERTY_LAST_UPDATED = "last_updated";
     public static final String PROPERTY_LAST_SEEN = "last_seen";
     public static final String PROPERTY_FIRMWARE_UPDATE = "update";
     public static final String PROPERTY_DEVICE_STATUS = "device_status";

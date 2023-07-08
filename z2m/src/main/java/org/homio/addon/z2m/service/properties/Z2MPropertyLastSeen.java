@@ -13,7 +13,8 @@ public class Z2MPropertyLastSeen extends Z2MProperty {
 
     public Z2MPropertyLastSeen() {
         super(new Icon("fa fa-fw fa-eye", "#2D9C2C"));
-        dataReader = jsonObject -> new DecimalType(jsonObject.optNumber("last_seen", parseLastSeen(jsonObject)));
+        setValue(new DecimalType(System.currentTimeMillis()));
+        dataReader = jsonObject -> new DecimalType(parseLastSeen(jsonObject));
     }
 
     @Override
@@ -27,10 +28,15 @@ public class Z2MPropertyLastSeen extends Z2MProperty {
     }
 
     private Number parseLastSeen(JSONObject jsonObject) {
-        Object value = jsonObject.get(PROPERTY_LAST_SEEN);
-        if (value == null) {
+        if (jsonObject == null || !jsonObject.has(PROPERTY_LAST_SEEN)) {
             return System.currentTimeMillis();
         }
+        // long or string
+        Object value = jsonObject.get(PROPERTY_LAST_SEEN);
+        if (value instanceof Number num) {
+            return num;
+        }
+        // try parse from string
         try {
             TemporalAccessor ta = DateTimeFormatter.ISO_INSTANT.parse(value.toString());
             Instant i = Instant.from(ta);

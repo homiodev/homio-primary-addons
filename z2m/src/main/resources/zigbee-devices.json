@@ -544,16 +544,10 @@
       "order": 3005
     },
     {
-      "name": "last_updated",
-      "icon": "fa-clock",
-      "iconColor": "#BA5623",
-      "order": 3000
-    },
-    {
       "name": "last_seen",
       "icon": "fa-eye",
       "iconColor": "#2D9C2C",
-      "order": 2998
+      "order": 3000
     },
     {
       "name": "smoke",

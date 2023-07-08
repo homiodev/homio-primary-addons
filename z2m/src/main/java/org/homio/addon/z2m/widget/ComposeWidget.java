@@ -3,7 +3,6 @@ package org.homio.addon.z2m.widget;
 import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_BATTERY;
 import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_LAST_SEEN;
 import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral.PROPERTY_SIGNAL;
-import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 public class ComposeWidget implements WidgetBuilder {
 
     public static final String[] LEFT_PROPERTIES = new String[]{PROPERTY_BATTERY, "power", "consumption", "energy", "voltage"};
-    public static final String[] CENTER_PROPERTIES = new String[]{PROPERTY_LAST_SEEN, PROPERTY_LAST_UPDATED};
+    public static final String[] CENTER_PROPERTIES = new String[]{PROPERTY_LAST_SEEN};
     public static final String[] RIGHT_PROPERTIES = new String[]{PROPERTY_SIGNAL};
 
     @Override

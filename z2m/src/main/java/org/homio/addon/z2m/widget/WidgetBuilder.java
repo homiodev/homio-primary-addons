@@ -3,7 +3,6 @@ package org.homio.addon.z2m.widget;
 import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_BATTERY;
 import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_LAST_SEEN;
 import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral.PROPERTY_SIGNAL;
-import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyLastUpdatedProperty.PROPERTY_LAST_UPDATED;
 
 import java.util.List;
 import java.util.Map;
@@ -49,8 +48,7 @@ public interface WidgetBuilder {
         "humidity", new HumidityIconBuilder(),
         PROPERTY_BATTERY, new BatteryIconBuilder(),
         PROPERTY_SIGNAL, new SignalIconBuilder(),
-        PROPERTY_LAST_SEEN, new LastSeenIconBuilder(),
-        PROPERTY_LAST_UPDATED, new LastSeenIconBuilder()
+        PROPERTY_LAST_SEEN, new LastSeenIconBuilder()
     );
 
     void buildWidget(WidgetRequest widgetRequest);
@@ -62,7 +60,7 @@ public interface WidgetBuilder {
         boolean addUnit,
         @NotNull Consumer<SimpleValueWidgetBuilder> attachHandler) {
         if (property != null) {
-            if (PROPERTY_LAST_UPDATED.equals(property.getKey()) || PROPERTY_LAST_SEEN.equals(property.getKey())) {
+            if (PROPERTY_LAST_SEEN.equals(property.getKey())) {
                 createSimpleProperty(entityContext, horizontalAlign, property, builder -> {
                     builder.setValueConverter("return Math.floor((new Date().getTime() - value) / 60000);");
                     builder.setValueConverterRefreshInterval(60);
