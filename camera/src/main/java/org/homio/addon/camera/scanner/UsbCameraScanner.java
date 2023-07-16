@@ -12,8 +12,8 @@ import org.homio.api.EntityContext;
 import org.homio.api.EntityContextMedia.VideoInputDevice;
 import org.homio.api.service.scan.BaseItemsDiscovery;
 import org.homio.api.service.scan.VideoStreamScanner;
-import org.homio.api.ui.field.ProgressBar;
 import org.homio.api.util.Lang;
+import org.homio.hquery.ProgressBar;
 import org.springframework.stereotype.Component;
 
 @Log4j2

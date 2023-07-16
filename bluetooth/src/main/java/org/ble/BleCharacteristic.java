@@ -1,7 +1,5 @@
 package org.ble;
 
-import static org.homio.addon.bluetooth.BaseBluetoothCharacteristicService.MIN_WRITE_TIMEOUT;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -233,10 +231,10 @@ class BleCharacteristic implements GattCharacteristic1, Properties {
     }
 
     boolean isBanOnWrite() {
-        return System.currentTimeMillis() - lastWriteTime < MIN_WRITE_TIMEOUT;
+        return false; //System.currentTimeMillis() - lastWriteTime < MIN_WRITE_TIMEOUT;
     }
 
     int secToReleaseBan() {
-        return (int) ((MIN_WRITE_TIMEOUT - (System.currentTimeMillis() - lastWriteTime)) / 1000);
+        return -1; // return (int) ((MIN_WRITE_TIMEOUT - (System.currentTimeMillis() - lastWriteTime)) / 1000);
     }
 }

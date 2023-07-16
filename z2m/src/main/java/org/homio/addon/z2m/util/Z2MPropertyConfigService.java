@@ -39,7 +39,7 @@ import org.homio.api.EntityContextUI.NotificationBlockBuilder;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
 import org.homio.api.util.CommonUtils;
-import org.homio.api.util.Curl;
+import org.homio.hquery.Curl;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -164,7 +164,8 @@ public class Z2MPropertyConfigService {
     }
 
     private String getServerConfigurationFileURL() {
-        return entityContext.setting().getEnvRequire("zigbee2mqtt-devices-uri");
+        return entityContext.setting().getEnvRequire("zigbee2mqtt-devices-uri", String.class,
+            "https://raw.githubusercontent.com/homiodev/addon-parent/master/zigbee-devices.json", true);
     }
 
     private @NotNull List<Z2MDeviceDefinitionModel> findDevices(@NotNull Z2MDeviceService deviceService) {

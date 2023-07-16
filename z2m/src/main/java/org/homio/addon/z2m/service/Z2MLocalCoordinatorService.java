@@ -217,6 +217,9 @@ public class Z2MLocalCoordinatorService
 
     @SneakyThrows
     public ActionResponseModel restartZ2M() {
+        if (!entity.isStart()) {
+            return ActionResponseModel.showError("ERROR.NOT_STARTED", entity.getTitle());
+        }
         log.info("Request restart z2m");
         if (mqttEntityService != null) {
             log.info("Send mqtt request to restart z2m");
@@ -468,7 +471,7 @@ public class Z2MLocalCoordinatorService
             builder.setUpdatable((progressBar, version) -> {
                     if (!version.equals(zigbee2mqttGitHub.getInstalledVersion())) {
                         dispose(null);
-                        return zigbee2mqttGitHub.updateWithBackup("zigbee2mqtt", progressBar, true, projectUpdate -> {
+                        return zigbee2mqttGitHub.updateProject("zigbee2mqtt", progressBar, true, projectUpdate -> {
                             if (!version.equals(zigbee2mqttGitHub.getInstalledVersion())) {
                                 ZigBeeUtil.installOrUpdateZ2M(entityContext, version, projectUpdate);
                                 if (entity.isStart()) {
@@ -476,7 +479,7 @@ public class Z2MLocalCoordinatorService
                                 }
                             }
                             return ActionResponseModel.fired();
-                        });
+                        }, null);
                     }
                     return ActionResponseModel.showError("Z2M same version");
                 },

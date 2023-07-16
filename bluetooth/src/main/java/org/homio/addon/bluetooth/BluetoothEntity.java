@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.homio.api.entity.HasStatusAndMsg;
 import org.homio.api.entity.types.CommunicationEntity;
-import org.homio.api.model.Icon;
 import org.homio.api.ui.UISidebarChildren;
 import org.jetbrains.annotations.NotNull;
 

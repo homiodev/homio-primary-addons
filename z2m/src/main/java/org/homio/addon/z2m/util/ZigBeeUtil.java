@@ -24,7 +24,6 @@ import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;
 import org.homio.api.repository.GitHubProject;
 import org.homio.api.repository.GitHubProject.ProjectUpdate;
-import org.homio.api.ui.field.ProgressBar;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.ui.field.action.v1.item.UIColorPickerItemBuilder.ColorType;
 import org.homio.api.ui.field.action.v1.item.UIInfoItemBuilder.InfoType;
@@ -32,6 +31,7 @@ import org.homio.api.ui.field.action.v1.item.UISelectBoxItemBuilder;
 import org.homio.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Lang;
+import org.homio.hquery.ProgressBar;
 import org.jetbrains.annotations.NotNull;
 
 @Log4j2
@@ -117,7 +117,10 @@ public final class ZigBeeUtil {
     }
 
     @SneakyThrows
-    public static void installOrUpdateZ2M(@NotNull EntityContext entityContext, @NotNull String version, @NotNull ProjectUpdate projectUpdate) {
+    public static void installOrUpdateZ2M(
+        @NotNull EntityContext entityContext,
+        @NotNull String version,
+        @NotNull ProjectUpdate projectUpdate) {
         ProgressBar progressBar = projectUpdate.getProgressBar();
 
         try {
@@ -135,10 +138,9 @@ public final class ZigBeeUtil {
         progressBar.progress(45, "install-zigbee2mqtt");
         EntityContextHardware hardware = entityContext.hardware();
         String npmOptions = "--no-audit --no-optional --no-update-notifier --unsafe-perm";
-        hardware.execute("%s ci --prefix %s %s".formatted(npm, zigbee2mqttGitHub.getLocalProjectPath(), npmOptions), 600, progressBar.asHQuery());
-        hardware.execute("%s run build --prefix %s".formatted(npm, zigbee2mqttGitHub.getLocalProjectPath()), 600, progressBar.asHQuery());
-        hardware.execute("%s ci --prefix %s --only=production %s".formatted(npm, zigbee2mqttGitHub.getLocalProjectPath(), npmOptions), 600,
-            progressBar.asHQuery());
+        hardware.execute("%s ci --prefix %s %s".formatted(npm, zigbee2mqttGitHub.getLocalProjectPath(), npmOptions), 600, progressBar);
+        hardware.execute("%s run build --prefix %s".formatted(npm, zigbee2mqttGitHub.getLocalProjectPath()), 600, progressBar);
+        hardware.execute("%s ci --prefix %s --only=production %s".formatted(npm, zigbee2mqttGitHub.getLocalProjectPath(), npmOptions), 600, progressBar);
 
         // restore configuration
         if (projectUpdate.isHasBackup()) {
@@ -161,10 +163,10 @@ public final class ZigBeeUtil {
             return;
         }
         entityContext.bgp().runWithProgress("install-z2m").execute(progressBar -> {
-            zigbee2mqttGitHub.updateWithBackup("z2m", progressBar, true, projectUpdate -> {
+            zigbee2mqttGitHub.updateProject("z2m", progressBar, true, projectUpdate -> {
                 ZigBeeUtil.installOrUpdateZ2M(entityContext, version, projectUpdate);
                 return null;
-            });
+            }, null);
             runnable.run();
         });
     }

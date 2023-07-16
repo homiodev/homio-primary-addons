@@ -25,9 +25,9 @@ import org.homio.addon.camera.setting.onvif.ScanOnvifPortsSetting;
 import org.homio.api.EntityContext;
 import org.homio.api.service.scan.BaseItemsDiscovery;
 import org.homio.api.service.scan.VideoStreamScanner;
-import org.homio.api.ui.field.ProgressBar;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Lang;
+import org.homio.hquery.ProgressBar;
 import org.homio.hquery.hardware.network.NetworkHardwareRepository;
 import org.springframework.stereotype.Component;
 
@@ -73,7 +73,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
 
         Map<String, Callable<Integer>> tasks = new HashMap<>();
         for (String ipRange : ipRangeList) {
-            tasks.putAll(networkHardwareRepository.buildPingIpAddressTasks(ipRange, log, ports, pingTimeout, (ipAddress, port) ->
+            tasks.putAll(networkHardwareRepository.buildPingIpAddressTasks(ipRange, log::info, ports, pingTimeout, (ipAddress, port) ->
                 buildCameraTask(rediscoverIpAddresses, allSavedCameraEntities, existsCameraByIpPort, user, password,
                     ipAddress, port)));
         }

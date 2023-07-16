@@ -18,11 +18,11 @@ import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition.ItemDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextVar.VariableType;
-import org.homio.api.EntityContextWidget.AnimateColor;
 import org.homio.api.EntityContextWidget.DisplayWidgetBuilder;
 import org.homio.api.EntityContextWidget.DisplayWidgetSeriesBuilder;
 import org.homio.api.EntityContextWidget.HasChartDataSource;
 import org.homio.api.EntityContextWidget.HasLineChartBehaviour;
+import org.homio.api.EntityContextWidget.PulseColor;
 import org.homio.api.EntityContextWidget.ThresholdBuilder;
 import org.homio.api.EntityContextWidget.ValueCompare;
 import org.homio.api.EntityContextWidget.VerticalAlign;
@@ -131,8 +131,8 @@ public class DisplayWidget implements WidgetBuilder {
             if (animation != null) {
                 JsonNode value = animation.get("value");
                 Object rawValue = value.isNumber() ? value.numberValue() : value.isBoolean() ? value.asBoolean() : value.asText();
-                animateBuilder.setAnimate(
-                    AnimateColor.valueOf(animation.get("color").asText()),
+                animateBuilder.setPulse(
+                    PulseColor.valueOf(animation.get("color").asText()),
                     rawValue,
                     ValueCompare.valueOf(animation.get("op").asText())
                 );

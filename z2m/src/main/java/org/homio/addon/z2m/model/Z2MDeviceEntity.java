@@ -206,13 +206,13 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("NAME")
     public HrefModel getHrefModel() {
-        String model = deviceService.getModel();
+        String model = getModel();
         return new HrefModel("https://www.zigbee2mqtt.io/devices/%s.html".formatted(model), model);
     }
 
     @JsonIgnore
-    public String getModel() {
-        return deviceService.getModel();
+    public @NotNull String getModel() {
+        return StringUtils.defaultString(deviceService.getModel(), "unknown-model");
     }
 
     @UIField(order = 1, fullWidth = true, color = "#89AA50", type = HTML, style = "height: 32px;")
@@ -374,7 +374,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @Override
     protected String getImageIdentifierImpl() {
         JsonNode deviceOptions = deviceService.getConfiguration();
-        return deviceOptions.path("image").asText(deviceService.getModel()).replaceAll("[/ ]", "_");
+        return deviceOptions.path("image").asText(getModel()).replaceAll("[/ ]", "_");
     }
 
     @Override

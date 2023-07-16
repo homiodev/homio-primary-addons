@@ -76,10 +76,12 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     @UIFieldEntityTypeSelection(type = EntityContextService.MQTT_SERVICE)
     @UIFieldLinkToEntity(StorageEntity.class)
     public String getMqttEntity() {
-        DataSourceContext source = DataSourceUtil.getSource(getEntityContext(), getJsonData("mqtt"));
-        if (source.getSource() instanceof BaseEntity entity) {
-            return entity.getEntityID() + "~~~" + entity.getTitle();
-        }
+        try {
+            DataSourceContext source = DataSourceUtil.getSource(getEntityContext(), getJsonData("mqtt"));
+            if (source.getSource() instanceof BaseEntity entity) {
+                return entity.getEntityID() + "~~~" + entity.getTitle();
+            }
+        } catch (Exception ignore) {}
         return getJsonData().has("mqtt") ? "[Not found] " + getJsonData("mqtt") : null;
     }
 
