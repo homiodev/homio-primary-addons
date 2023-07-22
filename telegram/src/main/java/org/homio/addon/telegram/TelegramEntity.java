@@ -4,10 +4,10 @@ import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
+import jakarta.persistence.Entity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,19 +15,22 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
+import org.homio.addon.telegram.service.TelegramService;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.HasStatusAndMsg;
 import org.homio.api.entity.types.CommunicationEntity;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.Icon;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
+import org.homio.api.ui.field.UIFieldGroup;
 import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.UIFieldType;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.util.Lang;
 import org.homio.api.util.SecureString;
-import org.homio.addon.telegram.service.TelegramService;
+import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.bots.DefaultBotOptions.ProxyType;
 import org.telegram.telegrambots.meta.ApiConstants;
 
@@ -36,7 +39,7 @@ import org.telegram.telegrambots.meta.ApiConstants;
 @Entity
 @Accessors(chain = true)
 @UISidebarChildren(icon = "fab fa-telegram", color = "#0088CC")
-public class TelegramEntity extends CommunicationEntity<TelegramEntity> implements HasStatusAndMsg<TelegramEntity> {
+public final class TelegramEntity extends CommunicationEntity<TelegramEntity> implements HasStatusAndMsg<TelegramEntity> {
 
     public static final String PREFIX = "telegram_";
 
@@ -46,6 +49,11 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
             return Lang.getServerMessage("telegram.description");
         }
         return null;
+    }
+
+    @Override
+    public @NotNull String getTitle() {
+        return StringUtils.defaultIfEmpty(getBotName(), "telegram.no_bot_name");
     }
 
     @UIField(order = 30, required = true, inlineEditWhenEmpty = true)
@@ -76,7 +84,8 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
         setJsonData("wqms", value);
     }
 
-    @UIField(order = 50)
+    @UIField(order = 1, hideInView = true)
+    @UIFieldGroup(value = "PROXY", order = 20, borderColor = "#8C324C")
     public ProxyType getProxyType() {
         return getJsonDataEnum("pt", ProxyType.NO_PROXY);
     }
@@ -85,7 +94,8 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
         setJsonDataEnum("pt", value);
     }
 
-    @UIField(order = 55)
+    @UIField(order = 2, hideInView = true)
+    @UIFieldGroup("PROXY")
     public String getProxyHost() {
         return getJsonData("ph");
     }
@@ -94,7 +104,8 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
         setJsonData("ph", value);
     }
 
-    @UIField(order = 60)
+    @UIField(order = 3, hideInView = true)
+    @UIFieldGroup("PROXY")
     public int getProxyPort() {
         return getJsonData("pp", 0);
     }
@@ -140,7 +151,12 @@ public class TelegramEntity extends CommunicationEntity<TelegramEntity> implemen
     }
 
     @Override
-    public String getEntityPrefix() {
+    public @NotNull Icon getEntityIcon() {
+        return new Icon("fas fa-robot");
+    }
+
+    @Override
+    public @NotNull String getEntityPrefix() {
         return PREFIX;
     }
 

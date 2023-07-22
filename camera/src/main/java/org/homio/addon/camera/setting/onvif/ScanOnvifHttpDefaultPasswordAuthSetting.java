@@ -1,11 +1,12 @@
 package org.homio.addon.camera.setting.onvif;
 
-import org.homio.api.setting.SettingPluginText;
+import org.homio.api.setting.SettingPluginTextInput;
+import org.jetbrains.annotations.NotNull;
 
-public class ScanOnvifHttpDefaultPasswordAuthSetting implements SettingPluginText {
+public class ScanOnvifHttpDefaultPasswordAuthSetting implements SettingPluginTextInput {
 
   @Override
-  public String getDefaultValue() {
+  public @NotNull String getDefaultValue() {
     return "";
   }
 

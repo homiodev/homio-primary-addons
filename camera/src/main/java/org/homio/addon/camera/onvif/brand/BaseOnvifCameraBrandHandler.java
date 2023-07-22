@@ -14,13 +14,13 @@ import io.netty.handler.codec.http.HttpVersion;
 import java.nio.charset.StandardCharsets;
 import lombok.Getter;
 import org.homio.addon.camera.entity.OnvifCameraEntity;
+import org.homio.addon.camera.entity.VideoActionsContext;
+import org.homio.addon.camera.handler.BaseBrandCameraHandler;
+import org.homio.addon.camera.service.OnvifCameraService;
 import org.homio.addon.camera.ui.CameraActionBuilder;
 import org.homio.api.EntityContext;
 import org.homio.api.state.State;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
-import org.homio.api.video.VideoActionsContext;
-import org.homio.addon.camera.handler.BaseBrandCameraHandler;
-import org.homio.addon.camera.service.OnvifCameraService;
 import org.springframework.http.MediaType;
 
 public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler implements VideoActionsContext, BaseBrandCameraHandler {

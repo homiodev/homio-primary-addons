@@ -1,18 +1,35 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "array",
   "items": [
     {
       "type": "object",
       "properties": {
         "op": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "gt",
+            "lt",
+            "eq",
+            "neq",
+            "regexp"
+          ]
         },
         "value": {
-          "type": "boolean"
+          "title": "'string' type may have delimiter '|'",
+          "type": [
+            "integer",
+            "boolean",
+            "string"
+          ]
         },
         "target": {
+          "title": "Icon/Color string value",
           "type": "string"
+        },
+        "source": {
+          "title": "Variable/property source name",
+          "$ref": "/schema-source.json"
         }
       },
       "required": [

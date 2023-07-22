@@ -1,5 +1,11 @@
 {
-  "zigbee": {
+  "ZIGBEE": {
+    "UPDATE_DESCRIPTION": "Update firmware. Installed: {{VALUE}}",
+    "OTA_CHECK_TRUE": "Found firmware updates for '{{VALUE}}'",
+    "OTA_CHECK_FALSE": "No update available for '{{VALUE}}'",
+    "REQUEST_UPDATE_UPDATE": "Fired updating for '{{VALUE}}'",
+    "REQUEST_UPDATE_CHECK": "Checking if update available for '{{VALUE}}'",
+    "UPDATING": "Updating zigbee device {{NAME}}. Remaining: {{VALUE}}sec.",
     "attributes": "{{NAME}} attributes",
     "new_coordinator": {
       "coordinator": "ZigBee coordinator {{NAME}}",
@@ -8,8 +14,9 @@
       "name": "Coordinator name: {{NAME}}",
       "question": "Do you want create new zigbee coordinator?"
     },
-    "error": {
-      "port_not_found": "No {{NAME}} port found"
+    "ERROR": {
+      "DELETE": "Unable to delete z2m directory {{VALUE}}. Please, remove directory manually and fire re-install z2m",
+      "PORT_NOT_FOUND": "No {{VALUE}} port found"
     }
   }
 }

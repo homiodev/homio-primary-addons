@@ -30,7 +30,7 @@ public class Scratch3OnvifPTZBlocks extends Scratch3ExtensionBlocks {
   private final MenuBlock.StaticMenuBlock<GetPTZValueType> menuPtzValueType;
 
   public Scratch3OnvifPTZBlocks(EntityContext entityContext, CameraEntrypoint cameraEntrypoint) {
-    super("#4f4ba6", entityContext, cameraEntrypoint, "onvifptz");
+    super("#4F4BA6", entityContext, cameraEntrypoint, "onvifptz");
     setParent("media");
 
     // Menu

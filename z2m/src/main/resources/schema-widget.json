@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "definitions": {
     "request": {
@@ -72,17 +72,33 @@
           "type": "boolean",
           "default": "true"
         },
-        "iconThreshold": {
-          "$ref": "/schema-threshold.json"
-        },
-        "iconColorThreshold": {
-          "$ref": "/schema-threshold.json"
-        },
         "iconColor": {
-          "type": "string"
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "thresholds": {
+              "$ref": "/schema-threshold.json"
+            }
+          }
         },
         "icon": {
-          "type": "string"
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "thresholds": {
+              "$ref": "/schema-threshold.json"
+            }
+          }
         },
         "chart": {
           "$ref": "/schema-chart.json"
@@ -99,10 +115,10 @@
       "type": "string",
       "enum": [
         "color",
-        "toggle",
         "display",
         "compose",
         "barTime",
+        "toggle",
         "line"
       ]
     },
@@ -135,10 +151,11 @@
       "type": "integer"
     },
     "background": {
-      "type": "string"
+      "$ref": "/schema-color-picker.json"
     },
     "blockHeight": {
-      "type": "integer"
+      "type": "integer",
+      "default": "1"
     },
     "widgetHeight": {
       "type": "integer"
@@ -148,6 +165,23 @@
     },
     "options": {
       "$ref": "/schema-widget-options.json"
+    },
+    "padding": {
+      "type": "object",
+      "properties": {
+        "top": {
+          "type": "integer"
+        },
+        "right": {
+          "type": "integer"
+        },
+        "bottom": {
+          "type": "integer"
+        },
+        "left": {
+          "type": "integer"
+        }
+      }
     },
     "compose": {
       "type": "array",

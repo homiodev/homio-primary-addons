@@ -1,5 +1,6 @@
 package org.homio.addon.mqtt.workspace;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -89,8 +90,8 @@ public class Scratch3MQTTBlocks extends Scratch3ExtensionBlocks {
     PublishSettings setting = workspaceBlock.getSetting(PublishSettings.class);
     MQTTBaseEntity mqttClientEntity = workspaceBlock.getMenuValueEntityRequired("MQTT", this.mqttMenu);
     String topic = workspaceBlock.getInputStringRequired(TOPIC);
-    String payload = workspaceBlock.getInputStringRequired(PAYLOAD);
-    mqttClientEntity.publish(topic, payload, setting.qos.ordinal(), setting.retain);
+    String payload = workspaceBlock.getInputString(PAYLOAD);
+    mqttClientEntity.publish(topic, payload == null ? new byte[0] : payload.getBytes(UTF_8), setting.qos.ordinal(), setting.retain);
   }
 
   @RequiredArgsConstructor

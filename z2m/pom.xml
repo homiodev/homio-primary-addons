@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <artifactId>homio-addon-z2m</artifactId>
+  <artifactId>addon-z2m</artifactId>
 
   <dependencies>
     <dependency>
-      <artifactId>homio-addon-mqtt</artifactId>
+      <artifactId>addon-mqtt</artifactId>
       <groupId>org.homio.addon</groupId>
       <version>${project.version}</version>
     </dependency>
@@ -16,7 +16,7 @@
   <packaging>jar</packaging>
 
   <parent>
-    <artifactId>homio-addon-buildin</artifactId>
+    <artifactId>primary-addons</artifactId>
     <groupId>org.homio.addon</groupId>
     <version>1.3.0-SNAPSHOT</version>
   </parent>

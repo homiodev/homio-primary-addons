@@ -12,8 +12,10 @@ import java.util.function.Function;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.homio.api.model.KeyValueEnum;
+import org.homio.addon.camera.entity.VideoActionsContext;
+import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;
+import org.homio.api.model.OptionModel.KeyValueEnum;
 import org.homio.api.state.JsonType;
 import org.homio.api.state.State;
 import org.homio.api.ui.action.DynamicOptionLoader;
@@ -29,9 +31,6 @@ import org.homio.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.homio.api.ui.field.action.v1.layout.dialog.UIStickyDialogItemBuilder;
 import org.homio.api.ui.field.selection.UIFieldSelection;
 import org.homio.api.util.CommonUtils;
-import org.homio.api.video.VideoActionsContext;
-import org.homio.api.video.ui.UIVideoAction;
-import org.homio.api.video.ui.UIVideoActionGetter;
 
 @Log4j2
 public class CameraActionBuilder {
@@ -79,7 +78,7 @@ public class CameraActionBuilder {
                                                       .setBorderArea(uiVideoAction.group());
                     } else {
                         UIStickyDialogItemBuilder stickyLayoutBuilder = layoutBuilder.addStickyDialogButton(uiVideoAction.group() + "_sb",
-                            uiVideoAction.subGroupIcon(), null, uiVideoAction.order()).editButton(buttonItemBuilder ->
+                            new Icon(uiVideoAction.subGroupIcon()), uiVideoAction.order()).editButton(buttonItemBuilder ->
                             buttonItemBuilder.setText(uiVideoAction.group()));
 
                         layoutBuilder = stickyLayoutBuilder.addFlex(uiVideoAction.subGroup(), uiVideoAction.order())
@@ -96,13 +95,13 @@ public class CameraActionBuilder {
                     UIFlexLayoutBuilder flex = layoutBuilder.addFlex("dimmer", uiVideoAction.order());
                     UIMultiButtonItemBuilder multiButtonItemBuilder = flex.addMultiButton("dimm_btns", actionHandler, uiVideoAction.order());
                     for (UICameraDimmerButton button : buttons) {
-                        multiButtonItemBuilder.addButton(button.name(), button.icon(), null);
+                        multiButtonItemBuilder.addButton(button.name(), new Icon(button.icon()));
                     }
                     layoutBuilder = flex;
                 }
 
                 uiEntityItemBuilder = (UIEntityItemBuilder) createUIEntity(uiVideoAction, type, layoutBuilder, actionHandler)
-                    .setIcon(uiVideoAction.icon(), uiVideoAction.iconColor());
+                    .setIcon(new Icon(uiVideoAction.icon(), uiVideoAction.iconColor()));
 
                 if (type == UIFieldType.SelectBox) {
                     if (actionParameter.getType().isEnum()) {
@@ -172,23 +171,18 @@ public class CameraActionBuilder {
     private static UIEntityItemBuilder<?, ?> createUIEntity(UIVideoAction uiVideoAction, UIFieldType type,
         UILayoutBuilder flex,
         UIActionHandler handler) {
-        switch (type) {
-            case SelectBox:
-                return flex.addSelectBox(uiVideoAction.name(), handler, uiVideoAction.order()).setSelectReplacer(uiVideoAction.min(),
-                               uiVideoAction.max(), uiVideoAction.selectReplacer())
-                           .setSeparatedText("CONTEXT.ACTION." + uiVideoAction.name());
-            case Slider:
-                return flex.addSlider(uiVideoAction.name(), 0F, (float) uiVideoAction.min(),
-                               (float) uiVideoAction.max(), handler, UISliderItemBuilder.SliderType.Regular, uiVideoAction.order())
-                           .setSeparatedText("CONTEXT.ACTION." + uiVideoAction.name());
-            case Boolean:
-                return flex.addCheckbox(uiVideoAction.name(), false, handler, uiVideoAction.order())
-                           .setSeparatedText("CONTEXT.ACTION." + uiVideoAction.name());
-            case String:
-                return flex.addInfo(uiVideoAction.name(), uiVideoAction.order());
-            default:
-                throw new RuntimeException("Unknown type: " + type);
-        }
+        return switch (type) {
+            case SelectBox -> flex.addSelectBox(uiVideoAction.name(), handler, uiVideoAction.order()).setSelectReplacer(uiVideoAction.min(),
+                                      uiVideoAction.max(), uiVideoAction.selectReplacer())
+                                  .setSeparatedText("CONTEXT.ACTION." + uiVideoAction.name());
+            case Slider -> flex.addSlider(uiVideoAction.name(), 0F, (float) uiVideoAction.min(),
+                                   (float) uiVideoAction.max(), handler, UISliderItemBuilder.SliderType.Regular, uiVideoAction.order())
+                               .setSeparatedText("CONTEXT.ACTION." + uiVideoAction.name());
+            case Boolean -> flex.addCheckbox(uiVideoAction.name(), false, handler, uiVideoAction.order())
+                                .setSeparatedText("CONTEXT.ACTION." + uiVideoAction.name());
+            case String -> flex.addInfo(uiVideoAction.name(), uiVideoAction.order());
+            default -> throw new RuntimeException("Unknown type: " + type);
+        };
     }
 
     private static Method findGetter(Object instance, String name) {

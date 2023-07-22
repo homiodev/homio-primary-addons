@@ -1,5 +1,7 @@
 package org.homio.addon.mqtt.entity;
 
+import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.homio.addon.mqtt.entity.MQTTBaseEntity.normalize;
 
 import java.nio.file.Paths;
@@ -30,22 +32,22 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.homio.addon.mqtt.console.MQTTExplorerConsolePlugin;
+import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
+import org.homio.addon.mqtt.setting.ConsoleMQTTClearHistorySetting;
+import org.homio.addon.mqtt.setting.ConsoleRemoveMqttTreeNodeHeaderButtonSetting;
 import org.homio.api.EntityContext;
 import org.homio.api.fs.TreeConfiguration;
 import org.homio.api.fs.TreeNode;
 import org.homio.api.fs.TreeNodeChip;
+import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.service.EntityService;
-import org.homio.api.setting.console.header.RemoveNodeConsoleHeaderButtonSetting;
 import org.homio.api.storage.DataStorageService;
-import org.homio.api.storage.InMemoryDB;
 import org.homio.api.storage.SourceHistory;
 import org.homio.api.storage.SourceHistoryItem;
 import org.homio.api.ui.UI;
 import org.homio.api.util.CommonUtils;
-import org.homio.addon.mqtt.console.MQTTExplorerConsolePlugin;
-import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
-import org.homio.addon.mqtt.setting.ConsoleMQTTClearHistorySetting;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -73,22 +75,22 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         this.entity = entity;
         this.entityID = entity.getEntityID();
         this.entityContext = entityContext;
-        this.storage = InMemoryDB.getOrCreateService(MQTTMessage.class, entityID, (long) entity.getHistorySize());
+        this.storage = entityContext.storage().getOrCreateInMemoryService(MQTTMessage.class, entityID, (long) entity.getHistorySize());
 
         MQTTExplorerConsolePlugin mqttPlugin = new MQTTExplorerConsolePlugin(entityContext, this);
         this.entityContext.ui().registerConsolePlugin(entityID, mqttPlugin);
 
         entityContext.setting().listenValue(ConsoleMQTTPublishButtonSetting.class, entityID + "-mqtt-publish",
-            jsonObject -> entity.publish(jsonObject.getString("Topic"), jsonObject.getString("Content"),
+            jsonObject -> entity.publish(jsonObject.getString("Topic"), getContent(jsonObject),
                 jsonObject.getInt("QoS"), jsonObject.getBoolean("Retain")));
         entityContext.setting().listenValue(ConsoleMQTTPublishButtonSetting.class, entityID + "-mqtt-publish",
-            jsonObject -> entity.publish(jsonObject.getString("Topic"), jsonObject.getString("Content"),
+            jsonObject -> entity.publish(jsonObject.getString("Topic"), getContent(jsonObject),
                 jsonObject.getInt("QoS"), jsonObject.getBoolean("Retain")));
 
         entityContext.setting().listenValue(ConsoleMQTTClearHistorySetting.class, entityID + "-mqtt-clear-history",
             this::clearHistory);
 
-        entityContext.setting().listenValue(RemoveNodeConsoleHeaderButtonSetting.class, "mqtt-remove-node", data -> {
+        entityContext.setting().listenValue(ConsoleRemoveMqttTreeNodeHeaderButtonSetting.class, "mqtt-remove-node", data -> {
             if (data != null && this.entityID.equals(data.getTabID())) {
                 TreeNode removedTopic = this.removeTopic(data.getNodeID());
                 if (removedTopic != null) {
@@ -98,12 +100,15 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         });
 
         if (entity instanceof MQTTLocalClientEntity) {
-            entityContext.event().runOnceOnInternetUp("mosquitto", () -> {
-                entityContext.install().mosquitto().requireAsync(null, () -> {
-                    log.info("Mosquitto service successfully installed");
-                });
-            });
+            entityContext.event().runOnceOnInternetUp("mosquitto", () ->
+                entityContext.install().mosquitto().requireAsync(null, () ->
+                    log.info("Mosquitto service successfully installed")));
         }
+    }
+
+    private byte[] getContent(JSONObject jsonObject) {
+        String content = jsonObject.getString("Content");
+        return content == null ? new byte[0] : content.getBytes(UTF_8);
     }
 
     public static TreeNode buildUpdateTree(TreeNode treeNode) {
@@ -133,11 +138,11 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         if (!Objects.equals(this.entity.getMqttCleanSessionOnConnect(), entity.getMqttCleanSessionOnConnect()) ||
             !Objects.equals(this.entity.getConnectionTimeout(), entity.getConnectionTimeout()) ||
             !Objects.equals(this.entity.getMqttKeepAlive(), entity.getMqttKeepAlive()) ||
-            !Objects.equals(this.entity.getMqttUser(), entity.getMqttUser()) ||
-            !Objects.equals(this.entity.getMqttPassword().asString(), entity.getMqttPassword().asString()) ||
+            !Objects.equals(this.entity.getUser(), entity.getUser()) ||
+            !Objects.equals(this.entity.getPassword().asString(), entity.getPassword().asString()) ||
             !Objects.equals(this.entity.getHostname(), entity.getHostname()) ||
             !Objects.equals(this.entity.getMqttClientID(), entity.getMqttClientID()) ||
-            !Objects.equals(this.entity.getMqttPort(), entity.getMqttPort())) {
+            !Objects.equals(this.entity.getPort(), entity.getPort())) {
             this.destroy();
             updated = true;
 
@@ -170,7 +175,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         TreeConfiguration treeConfiguration =
             new TreeConfiguration(entityID, entity.getTitle() + " (" + entity.getHostname() + ")",
                 values).setDynamicUpdateId(entityID);
-        treeConfiguration.setIcon("fas fa-m", entity.getStatus() == Status.ONLINE ? UI.Color.GREEN : UI.Color.RED);
+        treeConfiguration.setIcon(new Icon("fas fa-m", entity.getStatus() == Status.ONLINE ? UI.Color.GREEN : UI.Color.RED));
         return Collections.singletonList(treeConfiguration);
     }
 
@@ -181,14 +186,14 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
             filter = treeNode -> Boolean.TRUE.equals(sysPath) && treeNode.getId().startsWith("$SYS") ||
                 Boolean.FALSE.equals(sysPath) && !treeNode.getId().startsWith("$SYS");
         }
-        for (TreeNode child : root.getChildren().stream().filter(filter).collect(Collectors.toList())) {
+        for (TreeNode child : root.getChildren().stream().filter(filter).toList()) {
             Map<String, List<MQTTMessage>> sourceMap = child.getId().equals("$SYS") ? sysHistoryMap :
                 storage.findByPattern("topic", child.getId() + ".*").stream()
                        .collect(Collectors.groupingBy(MQTTMessage::getTopic));
             child.visitTree(treeNode -> {
                 List<MQTTMessage> histList = sourceMap.get(treeNode.getId());
                 if (histList != null && histList.size() > 1) {
-                    TreeNodeChip hist = new TreeNodeChip("fas fa-landmark",
+                    TreeNodeChip hist = new TreeNodeChip(new Icon("fas fa-landmark"),
                         "H[" + treeNode.getAttributes().getMeta().getInt("hs") + "]")
                         .setClickable(true).setBgColor("#83614A").setMetadata(new JSONObject().put("type", "history"));
                     treeNode.getAttributes().setChips(hist);
@@ -243,13 +248,8 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
     }
 
     public void updateNotificationBlock() {
-        entityContext.ui().addNotificationBlock(entityID, entity.getName(), "fas fa-building", "#7E2CAC", builder -> {
-            builder.setStatus(entity);
-            builder.linkToEntity(entity);
-            if (entity instanceof MQTTLocalClientEntity) {
-                builder.setVersion(((MQTTLocalClientEntity) entity).getVersion());
-            }
-        });
+        entityContext.ui().addNotificationBlockOptional("MQTT", "MQTT", new Icon("fas fa-satellite-dish", "#B65BE8"));
+        entityContext.ui().updateNotificationBlock("MQTT", entity);
     }
 
     private TreeNode removeTopic(String topic) {
@@ -266,17 +266,24 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         return cursor;
     }
 
-    private void messageArrived(String topic, MqttMessage mqttMessage, Object payload, int payloadLength) {
+    private void messageArrived(String topic, MqttMessage mqttMessage, Object payload, String rawPayload) {
         try {
             boolean sysNode = topic.startsWith("$SYS");
             if (!entity.getIncludeSys() && sysNode) {
                 return;
             }
+
+            // fire events with raw payload
+            fireEvent(topic, rawPayload);
+            if (rawPayload.contains("/")) {
+                fireEvent(topic.substring(0, topic.indexOf("/")), rawPayload);
+            }
+
             TreeNode cursor;
             if (payload == null) {
                 cursor = this.removeTopic(topic);
             } else {
-                cursor = findTopic(topic, root, payloadLength);
+                cursor = findTopic(topic, root, rawPayload.length());
                 updateNodeHistory(topic, mqttMessage, payload, cursor, sysNode);
             }
 
@@ -334,14 +341,14 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
     }
 
     private void createMQTTClient() throws MqttException {
-        String serverURL = String.format("tcp://%s:%d", entity.getHostname(), entity.getMqttPort());
+        String serverURL = format("tcp://%s:%d", entity.getHostname(), entity.getPort());
         MqttConnectOptions options = new MqttConnectOptions();
         options.setAutomaticReconnect(false);
         options.setCleanSession(entity.getMqttCleanSessionOnConnect());
         options.setConnectionTimeout((int) TimeUnit.SECONDS.toMillis(entity.getConnectionTimeout()));
         options.setKeepAliveInterval(entity.getMqttKeepAlive());
-        options.setUserName(entity.getMqttUser());
-        options.setPassword(entity.getMqttPassword().asString().toCharArray());
+        options.setUserName(entity.getUser());
+        options.setPassword(entity.getPassword().asString().toCharArray());
 
         mqttClient = new MqttClient(serverURL, entity.getMqttClientID(), new MemoryPersistence());
         mqttClient.setCallback(new MqttClientCallbackExtended());
@@ -377,7 +384,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         @Override
         public void connectComplete(boolean reconnect, String serverURI) {
             try {
-                entityContext.event().fireEvent("mqtt-status", Status.ONLINE);
+                fireEvent("STATUS", Status.ONLINE);
                 entity.setStatusOnline();
                 entityContext.ui().sendInfoMessage("MQTT server connected");
             } catch (Exception ex) {
@@ -393,7 +400,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
                 entityContext.ui().sendErrorMessage("MQTT connection lost", (Exception) cause);
                 String msg = CommonUtils.getErrorMessage(cause);
                 entity.setStatus(Status.ERROR, "Connection lost: " + msg);
-                entityContext.event().fireEvent("mqtt-status", Status.OFFLINE);
+                fireEvent("STATUS", Status.OFFLINE);
                 entity.destroyService();
 
                 // retry create service
@@ -418,12 +425,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
                     convertedPayload = StringUtils.isEmpty(payload) ? null : payload;
                 }
 
-                MQTTService.this.messageArrived(topic, mqttMessage, convertedPayload, payload.length());
-
-                entityContext.event().fireEvent(entityID, payload).fireEvent(entityID + "-" + topic, payload);
-                if (payload.contains("/")) {
-                    entityContext.event().fireEvent(entityID, payload).fireEvent(entityID + "-" + topic.substring(0, topic.indexOf("/")), payload);
-                }
+                MQTTService.this.messageArrived(topic, mqttMessage, convertedPayload, payload);
             } catch (Exception ex) {
                 log.error("[{}]: Unexpected mqtt error", entityID, ex);
             }
@@ -435,4 +437,8 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         }
     }
 
+    public void fireEvent(String prefix, Object payload) {
+        entityContext.event().fireEvent(entityID + "~~~" + prefix, payload);
+        entityContext.event().fireEvent(entityID, payload);
+    }
 }

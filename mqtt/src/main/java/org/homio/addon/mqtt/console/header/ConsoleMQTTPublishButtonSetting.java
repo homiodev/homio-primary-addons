@@ -3,17 +3,19 @@ package org.homio.addon.mqtt.console.header;
 import java.util.Arrays;
 import java.util.List;
 import org.homio.api.EntityContext;
+import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;
 import org.homio.api.setting.SettingPluginButton;
 import org.homio.api.setting.console.header.ConsoleHeaderSettingPlugin;
 import org.homio.api.ui.field.action.ActionInputParameter;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 public class ConsoleMQTTPublishButtonSetting implements ConsoleHeaderSettingPlugin<JSONObject>, SettingPluginButton {
 
   @Override
-  public String getIcon() {
-    return "fas fa-upload";
+  public @NotNull Icon getIcon() {
+    return new Icon("fas fa-upload");
   }
 
   @Override

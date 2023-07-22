@@ -46,15 +46,15 @@ import org.homio.addon.camera.entity.CommonVideoStreamEntity;
 import org.homio.addon.camera.rtsp.message.sdp.SdpMessage;
 import org.homio.addon.camera.rtsp.message.sdp.SdpParser;
 import org.homio.addon.camera.setting.CameraScanPortRangeSetting;
+import org.homio.addon.camera.setting.rtsp.ScanRtspIpAddressMaxPingTimeoutSetting;
 import org.homio.addon.camera.setting.rtsp.ScanRtspPortsSetting;
 import org.homio.addon.camera.setting.rtsp.ScanRtspUrlsSetting;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Status;
 import org.homio.api.service.scan.BaseItemsDiscovery;
 import org.homio.api.service.scan.VideoStreamScanner;
-import org.homio.api.ui.field.ProgressBar;
 import org.homio.api.util.Lang;
-import org.homio.addon.camera.setting.rtsp.ScanRtspIpAddressMaxPingTimeoutSetting;
+import org.homio.hquery.ProgressBar;
 import org.homio.hquery.hardware.network.NetworkHardwareRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -86,7 +86,7 @@ public class RtspStreamScanner implements VideoStreamScanner {
         public void accept(String uriStr, SdpMessage sdpMessage) {
             CommonVideoStreamEntity commonVideoStreamEntity = existsRtspStreamEntity.get(uriStr);
             if (commonVideoStreamEntity != null) {
-                entityContext.updateDelayed(commonVideoStreamEntity, e -> e.setSourceStatus(Status.WAITING, null));
+                entityContext.updateDelayed(commonVideoStreamEntity, e -> e.setStatus(Status.WAITING, null));
             }
         }
     };
@@ -99,8 +99,8 @@ public class RtspStreamScanner implements VideoStreamScanner {
                 result.getNewCount().incrementAndGet();
                 handleDevice(headerConfirmButtonKey, "rtsp-" + uriStr.hashCode(), sdpMessage.getSessionName(), entityContext,
                     messages -> {
-                        messages.add(Lang.getServerMessage("NEW_DEVICE.NAME", "NAME", sdpMessage.getSessionName()));
-                        messages.add(Lang.getServerMessage("NEW_DEVICE.URL", "URL", uriStr));
+                        messages.add(Lang.getServerMessage("NEW_DEVICE.NAME", sdpMessage.getSessionName()));
+                        messages.add(Lang.getServerMessage("NEW_DEVICE.URL", uriStr));
                     },
                     () -> {
                         log.info("Confirm save rtsp stream entity: <{}>", sdpMessage.getSessionName());
@@ -161,7 +161,7 @@ public class RtspStreamScanner implements VideoStreamScanner {
         Map<String, Callable<Integer>> tasks = new HashMap<>();
         for (String ipRange : ipRangeList) {
             tasks.putAll(
-                networkHardwareRepository.buildPingIpAddressTasks(ipRange, log, ports, pingTimeout, ipAliveHandler(urls)));
+                networkHardwareRepository.buildPingIpAddressTasks(ipRange, log::info, ports, pingTimeout, ipAliveHandler(urls)));
         }
 
         List<Integer> availableRtspAddresses = entityContext.bgp().runInBatchAndGet("scan-rtsp-batch-result",

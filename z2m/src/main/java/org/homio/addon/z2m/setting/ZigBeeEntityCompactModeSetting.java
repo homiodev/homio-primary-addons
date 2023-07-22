@@ -3,6 +3,7 @@ package org.homio.addon.z2m.setting;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
+import org.homio.api.model.Icon;
 import org.homio.api.setting.SettingPluginToggle;
 
 public class ZigBeeEntityCompactModeSetting implements SettingPluginToggle {
@@ -18,13 +19,13 @@ public class ZigBeeEntityCompactModeSetting implements SettingPluginToggle {
     }
 
     @Override
-    public String getIcon() {
-        return "fas fa-minimize";
+    public Icon getIcon() {
+        return new Icon("fas fa-minimize");
     }
 
     @Override
-    public String getToggleIcon() {
-        return "fas fa-maximize";
+    public Icon getToggleIcon() {
+        return new Icon("fas fa-maximize");
     }
 
     @Override

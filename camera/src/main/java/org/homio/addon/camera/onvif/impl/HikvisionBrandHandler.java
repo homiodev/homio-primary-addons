@@ -6,18 +6,18 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.homio.addon.camera.onvif.util.IpCameraBindingConstants;
-import org.homio.api.EntityContext;
-import org.homio.api.state.OnOffType;
-import org.homio.api.state.State;
-import org.homio.api.state.StringType;
-import org.homio.api.video.ui.UIVideoAction;
-import org.homio.api.video.ui.UIVideoActionGetter;
 import org.homio.addon.camera.onvif.brand.BaseOnvifCameraBrandHandler;
 import org.homio.addon.camera.onvif.brand.BrandCameraHasMotionAlarm;
 import org.homio.addon.camera.onvif.util.ChannelTracking;
 import org.homio.addon.camera.onvif.util.Helper;
+import org.homio.addon.camera.onvif.util.IpCameraBindingConstants;
 import org.homio.addon.camera.service.OnvifCameraService;
+import org.homio.addon.camera.ui.UIVideoAction;
+import org.homio.addon.camera.ui.UIVideoActionGetter;
+import org.homio.api.EntityContext;
+import org.homio.api.state.OnOffType;
+import org.homio.api.state.State;
+import org.homio.api.state.StringType;
 import org.springframework.http.MediaType;
 
 /**

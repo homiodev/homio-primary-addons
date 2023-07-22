@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.homio.addon.camera.entity.BaseVideoEntity;
+import org.homio.addon.camera.entity.OnvifCameraEntity;
+import org.homio.addon.camera.service.OnvifCameraService;
 import org.homio.api.EntityContext;
 import org.homio.api.audio.SelfContainedAudioSourceContainer;
 import org.homio.api.model.OptionModel;
-import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
-import org.homio.addon.camera.entity.OnvifCameraEntity;
-import org.homio.addon.camera.service.OnvifCameraService;
 import org.onvif.ver10.schema.AudioSource;
 import org.springframework.stereotype.Component;
 
@@ -23,15 +23,15 @@ public class CameraSelfContainedAudioSources implements SelfContainedAudioSource
   @Override
   public Collection<OptionModel> getAudioSource() {
     Collection<OptionModel> models = new ArrayList<>();
-    for (BaseFFMPEGVideoStreamEntity cameraEntity : entityContext.findAll(BaseFFMPEGVideoStreamEntity.class)) {
-      // get sources from onvif audio streams
-      if (cameraEntity.isStart() && cameraEntity instanceof OnvifCameraEntity) {
-        OnvifCameraService service = (OnvifCameraService) cameraEntity.getService();
-        for (AudioSource audioSource : service.getOnvifDeviceState().getMediaDevices().getAudioSources()) {
-          models.add(OptionModel.of(audioSource.getToken()));
-        }
+      for (BaseVideoEntity cameraEntity : entityContext.findAll(BaseVideoEntity.class)) {
+          // get sources from onvif audio streams
+          if (cameraEntity.isStart() && cameraEntity instanceof OnvifCameraEntity) {
+              OnvifCameraService service = (OnvifCameraService) cameraEntity.getService();
+              for (AudioSource audioSource : service.getOnvifDeviceState().getMediaDevices().getAudioSources()) {
+                  models.add(OptionModel.of(audioSource.getToken()));
+              }
+          }
       }
-    }
     return models;
   }
 

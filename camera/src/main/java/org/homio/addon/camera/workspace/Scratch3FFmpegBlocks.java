@@ -1,7 +1,7 @@
 package org.homio.addon.camera.workspace;
 
+import static org.homio.api.EntityContextMedia.FFMPEGFormat.RTSP_ALARMS;
 import static org.homio.api.util.CommonUtils.addToListSafe;
-import static org.homio.api.video.ffmpeg.FFMPEGFormat.RTSP_ALARMS;
 
 import com.pivovarit.function.ThrowingBiConsumer;
 import java.util.ArrayList;
@@ -12,7 +12,8 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.homio.addon.camera.CameraEntrypoint;
 import org.homio.api.EntityContext;
-import org.homio.api.video.ffmpeg.FFMPEG;
+import org.homio.api.EntityContextMedia.FFMPEG;
+import org.homio.api.EntityContextMedia.FFMPEGHandler;
 import org.homio.api.workspace.WorkspaceBlock;
 import org.homio.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.springframework.stereotype.Component;
@@ -49,19 +50,19 @@ public class Scratch3FFmpegBlocks extends Scratch3ExtensionBlocks {
         FfmpegBuilder ffmpegBuilder = new FfmpegBuilder();
         applyParentBlocks(ffmpegBuilder, workspaceBlock.getParent());
 
-        FFMPEG ffmpeg = new FFMPEG(workspaceBlock.getId(),
-            "FFMPEG workspace", new FFMPEG.FFMPEGHandler() {
-            @Override
-            public String getEntityID() {
-                return null;
-            }
+        FFMPEG ffmpeg = entityContext.media().buildFFMPEG(workspaceBlock.getId(),
+            "FFMPEG workspace", new FFMPEGHandler() {
+                @Override
+                public String getEntityID() {
+                    return null;
+                }
 
-            @Override
-            public void motionDetected(boolean on, String key) {
+                @Override
+                public void motionDetected(boolean on, String key) {
 
-            }
+                }
 
-            @Override
+                @Override
             public void audioDetected(boolean on) {
 
             }

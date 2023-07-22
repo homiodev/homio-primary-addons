@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Z2MDevicePropertiesDTO {
+public class Z2MPropertyModel {
 
     private String name;
     private String icon;

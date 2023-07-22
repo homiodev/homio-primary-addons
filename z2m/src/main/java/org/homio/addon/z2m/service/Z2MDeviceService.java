@@ -1,7 +1,7 @@
 package org.homio.addon.z2m.service;
 
-import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_LAST_SEEN;
 import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,129 +9,223 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.tuple.Pair;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
+import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.service.properties.Z2MPropertyAction;
-import org.homio.addon.z2m.service.properties.Z2MPropertyLastUpdate;
-import org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty;
-import org.homio.addon.z2m.service.properties.dynamic.Z2MPropertyUnknown;
-import org.homio.addon.z2m.util.Z2MDeviceDTO;
-import org.homio.addon.z2m.util.Z2MDeviceDTO.Z2MDeviceDefinition.Options;
-import org.homio.addon.z2m.util.Z2MDevicePropertiesDTO;
-import org.homio.addon.z2m.util.ZigBeeUtil;
+import org.homio.addon.z2m.service.properties.Z2MPropertyLastSeen;
+import org.homio.addon.z2m.service.properties.inline.Z2MPropertyDeviceStatusProperty;
+import org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral;
+import org.homio.addon.z2m.service.properties.inline.Z2MPropertyUnknown;
+import org.homio.addon.z2m.util.ApplianceModel;
+import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
+import org.homio.addon.z2m.util.Z2MPropertyConfigService;
+import org.homio.addon.z2m.util.Z2MPropertyModel;
 import org.homio.api.EntityContext;
+import org.homio.api.EntityContextService.MQTTEntityService;
+import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.state.DecimalType;
-import org.homio.api.ui.UI;
+import org.homio.api.ui.UI.Color;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Lang;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
-import org.springframework.data.util.Pair;
 
-@Getter
 @Log4j2
 public class Z2MDeviceService {
 
     private final Z2MLocalCoordinatorService coordinatorService;
+    @Getter
     private final Map<String, Z2MProperty> properties = new ConcurrentHashMap<>();
+    @Getter
     private final Z2MDeviceEntity deviceEntity;
+    @Getter
     private final EntityContext entityContext;
+    @Getter
+    private final Z2MPropertyConfigService configService;
+    @Getter
     private String availability;
-    private Z2MDeviceDTO device;
+    @Getter
+    private ApplianceModel applianceModel;
+    private boolean initialized = false;
+    private String currentMQTTTopic;
 
-    public Z2MDeviceService(Z2MLocalCoordinatorService coordinatorService, Z2MDeviceDTO device) {
+    public Z2MDeviceService(Z2MLocalCoordinatorService coordinatorService, ApplianceModel applianceModel) {
         this.coordinatorService = coordinatorService;
+        this.configService = coordinatorService.getConfigService();
         this.entityContext = coordinatorService.getEntityContext();
-        this.device = device;
-        this.deviceEntity = new Z2MDeviceEntity(this);
+        this.deviceEntity = new Z2MDeviceEntity(this, applianceModel.getIeeeAddress());
+        this.applianceModel = applianceModel;
 
-        this.deviceUpdated(device);
-        addMissingProperties(coordinatorService, device);
+        deviceUpdated(applianceModel);
+        addMissingProperties(coordinatorService, applianceModel);
 
         entityContext.ui().updateItem(deviceEntity);
-        entityContext.ui().sendSuccessMessage(Lang.getServerMessage("ENTITY_CREATED", "NAME", format("${%s}", this.device.getName())));
-        entityContext.event().addEventBehaviourListener(getDeviceTopic(this.device), payload -> mqttUpdate(new JSONObject(payload.toString())));
-
-        entityContext.event().addEventBehaviourListener(
-            format("%s/availability", getDeviceTopic(this.device)),
-            payload -> {
-                availability = payload == null ? null : payload.toString();
-                entityContext.event().fireEvent(format("zigbee-%s", device.getIeeeAddress()), deviceEntity.getStatus());
-                entityContext.ui().updateItem(this.deviceEntity);
-                if ("offline".equals(availability)) {
-                    downLinkQualityToZero();
-                }
-            });
-        entityContext.event().fireEvent(format("zigbee-%s", device.getIeeeAddress()), deviceEntity.getStatus());
+        entityContext.ui().sendSuccessMessage(Lang.getServerMessage("ENTITY_CREATED", "${%s}".formatted(this.applianceModel.getName())));
+        setEntityOnline();
     }
 
-    public String getDeviceTopic(Z2MDeviceDTO device) {
-        return String.format("%s-%s/%s",
-            coordinatorService.getMqttEntity().getEntityID(),
-            coordinatorService.getEntity().getBasicTopic(),
-            device.getIeeeAddress());
+    public String getIeeeAddress() {
+        return deviceEntity.getIeeeAddress();
     }
 
     public void dispose() {
-        entityContext.event().removeEvents(getDeviceTopic(device));
+        log.warn("[{}]: Dispose zigbee device: {}", coordinatorService.getEntityID(), deviceEntity.getTitle());
+        removeMqttListeners();
         entityContext.ui().updateItem(deviceEntity);
         downLinkQualityToZero();
+        initialized = false;
     }
 
-    public void deviceUpdated(Z2MDeviceDTO device) {
-        this.device = device;
+    public synchronized void deviceUpdated(ApplianceModel applianceModel) {
+        // user changed friendly name via z2m frontend or change file manually - update listeners
+        if (initialized && !applianceModel.getMQTTTopic().equals(currentMQTTTopic)) {
+            removeMqttListeners();
+            addMqttListeners();
+        }
+
+        this.applianceModel = applianceModel;
         createOrUpdateDeviceGroup();
-        removeRedundantExposes(device);
-        for (Options expose : device.getDefinition().getExposes()) {
+        removeRedundantExposes();
+        for (Options expose : applianceModel.getDefinition().getExposes()) {
             // types like switch has no property but has 'type'/'endpoint'/'features'
             if (expose.getProperty() == null) {
                 addExposeByFeatures(expose);
             } else {
-                addProperty(expose.getProperty(), key -> buildExposeProperty(expose));
+                addPropertyOptional(expose.getProperty(), key -> buildExposeProperty(expose));
             }
         }
-        addProperty(Z2MPropertyLastUpdate.UPDATED, key -> new Z2MPropertyLastUpdate(this));
+        addPropertyOptional(PROPERTY_LAST_SEEN, key -> {
+            Z2MPropertyLastSeen propertyLastSeen = new Z2MPropertyLastSeen();
+            propertyLastSeen.init(this, Options.dynamicExpose(PROPERTY_LAST_SEEN, ApplianceModel.NUMBER_TYPE), true);
+            return propertyLastSeen;
+        });
+        // add device status
+        addPropertyOptional(Z2MProperty.PROPERTY_DEVICE_STATUS, key -> new Z2MPropertyDeviceStatusProperty(this));
+    }
+
+    public void setEntityOnline() {
+        if (!initialized) {
+            log.warn("[{}]: Initialize zigbee device: {}", coordinatorService.getEntityID(), deviceEntity.getTitle());
+            addMqttListeners();
+            entityContext.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()), deviceEntity.getStatus());
+            initialized = true;
+        } else {
+            log.debug("[{}]: Zigbee device: {} was initialized before", coordinatorService.getEntityID(), deviceEntity.getTitle());
+        }
+    }
+
+    public Z2MPropertyModel getPropertyModel(String action) {
+        return configService.getFileMeta().getDeviceProperties().get(action);
+    }
+
+    public Set<String> getExposes() {
+        return properties.keySet();
+    }
+
+    public void sendRequest(String path, String payload) {
+        coordinatorService.sendRequest(path, payload);
+    }
+
+    public @NotNull Z2MLocalCoordinatorEntity getCoordinatorEntity() {
+        return coordinatorService.getEntity();
+    }
+
+    public void updateDeviceConfiguration(Z2MDeviceService deviceService, String propertyName, Object value) {
+        coordinatorService.updateDeviceConfiguration(deviceService, propertyName, value);
+    }
+
+    public String getModel() {
+        return applianceModel.getDefinition().getModel();
+    }
+
+    private void addMqttListeners() {
+        currentMQTTTopic = applianceModel.getMQTTTopic();
+        String topic = getMqttFQDNTopic();
+
+        coordinatorService.getMqttEntityService().addListener(topic, applianceModel.getIeeeAddress(), value -> {
+            String payload = value == null ? "" : value.toString();
+            if (!payload.isEmpty()) {
+                try {
+                    JSONObject jsonObject = new JSONObject(payload);
+                    mqttUpdate(jsonObject);
+                } catch (Exception ex) {
+                    log.error("[{}]: Unable to parse json for entity: '{}' from: '{}'", coordinatorService.getEntityID(),
+                        deviceEntity.getTitle(), payload);
+                }
+            }
+        });
+
+        coordinatorService.getMqttEntityService().addListener(topic + "/availability", applianceModel.getIeeeAddress(), payload -> {
+            availability = payload == null ? null : payload.toString();
+            entityContext.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()), deviceEntity.getStatus());
+            entityContext.ui().updateItem(this.deviceEntity);
+            if ("offline".equals(availability)) {
+                downLinkQualityToZero();
+            }
+        });
+    }
+
+    private String getMqttFQDNTopic() {
+        return "%s/%s".formatted(coordinatorService.getEntity().getBasicTopic(), currentMQTTTopic);
+    }
+
+    private void removeMqttListeners() {
+        MQTTEntityService mqttEntityService = coordinatorService.getMqttEntityService();
+        if (mqttEntityService != null) { // may be NPE during dispose if device not configured yet
+            String topic = getMqttFQDNTopic();
+            mqttEntityService.removeListener(topic, applianceModel.getIeeeAddress());
+            mqttEntityService.removeListener(topic + "/availability", applianceModel.getIeeeAddress());
+        }
     }
 
     @Override
     public String toString() {
-        return device.toString();
+        return applianceModel.toString();
     }
 
     public JsonNode getConfiguration() {
         return coordinatorService
             .getConfiguration()
             .getDevices()
-            .getOrDefault(device.getIeeeAddress(), OBJECT_MAPPER.createObjectNode());
+            .getOrDefault(applianceModel.getIeeeAddress(), OBJECT_MAPPER.createObjectNode());
     }
 
     public void updateConfiguration(String key, Object value) {
         this.coordinatorService.updateDeviceConfiguration(this, key, value);
     }
 
-    public void publish(String topic, JSONObject payload) {
-        this.coordinatorService.publish(defaultIfEmpty(device.getFriendlyName(), device.getIeeeAddress()) + "/" + topic, payload);
+    public void publish(@NotNull String topic, @NotNull JSONObject payload) {
+        if (topic.startsWith("bridge/'")) {
+            this.coordinatorService.publish(topic, payload);
+        } else {
+            this.coordinatorService.publish(currentMQTTTopic + "/" + topic, payload);
+        }
     }
 
     public String getDeviceFullName() {
         String name;
         if (this.getConfiguration().has("name")) {
             name = this.getConfiguration().get("name").asText();
-        } else if (device.getModelId() != null || device.getDefinition().getModel() != null) {
-            name = format("${zigbee.device.%s~%s}", defaultIfEmpty(device.getModelId(), device.getDefinition().getModel()),
-                device.getDefinition().getDescription());
+        } else if (getModel() != null) {
+            name = "${zigbee.device.%s~%s}".formatted(getModel(), applianceModel.getDefinition().getDescription());
         } else {
-            name = device.getDefinition().getDescription();
+            name = applianceModel.getDefinition().getDescription();
         }
-        return format("%s(%s) [${%s}]", name, this.device.getIeeeAddress(), defaultIfEmpty(this.deviceEntity.getPlace(), "place_not_set"));
+        return "%s(%s) [${%s}]".formatted(name, this.applianceModel.getIeeeAddress(), defaultIfEmpty(this.deviceEntity.getPlace(), "place_not_set"));
     }
 
     public Z2MProperty addDynamicProperty(String key, Supplier<Z2MProperty> supplier) {
-        return addProperty(key, s -> {
+        return addPropertyOptional(key, s -> {
             Z2MProperty property = supplier.get();
             // store missing property in file to next reload
             coordinatorService.addMissingProperty(deviceEntity.getIeeeAddress(), property);
@@ -149,52 +243,79 @@ public class Z2MDeviceService {
                     if (property.feedPayload(key, payload)) {
                         feed = true;
                         updated = true;
-                        sb.add(format("%s - %s", property.getDescription(), property.getValue().toString()));
+                        sb.add("%s - %s".formatted(property.getDescription(), property.getValue().toString()));
                     }
                 }
-                if (!feed && !key.equals("illuminance_lux")) {
-                    log.info("[{}]: Create dynamic created property '{}'. Device: {}", coordinatorService.getEntityID(), key, device.getIeeeAddress());
-                    Z2MProperty missedZ2MProperty = buildExposeProperty(Options.dynamicExpose(key, getFormatFromPayloadValue(payload, key)));
-                    missedZ2MProperty.mqttUpdate(payload);
+                if (!feed) {
+                    Set<String> ignoreExposes = getListOfRedundantProperties();
+                    if (!ignoreExposes.contains(key)) {
+                        log.info("[{}]: Create dynamic created property '{}'. Device: {}", coordinatorService.getEntityID(), key,
+                            applianceModel.getIeeeAddress());
+                        Z2MProperty missedZ2MProperty = buildExposeProperty(Options.dynamicExpose(key, getFormatFromPayloadValue(payload, key)));
+                        missedZ2MProperty.mqttUpdate(payload);
 
-                    addProperty(key, s -> missedZ2MProperty);
-                    entityContext.ui().updateItem(deviceEntity);
+                        addPropertyOptional(key, s -> missedZ2MProperty);
+                        entityContext.ui().updateItem(deviceEntity);
+                    }
                 }
             } catch (Exception ex) {
                 log.error("Unable to handle Z2MProperty: {}. Payload: {}. Msg: {}",
                     key, payload, CommonUtils.getErrorMessage(ex));
             }
         }
-        if (updated) {
-            properties.get(Z2MPropertyLastUpdate.UPDATED).mqttUpdate(null);
+        if (updated && !payload.keySet().contains(PROPERTY_LAST_SEEN)) {
+            // fire set value as current milliseconds if device has no last_seen property for some reason
+            properties.get(PROPERTY_LAST_SEEN).mqttUpdate(null);
         }
         if (deviceEntity.isLogEvents() && !sb.isEmpty()) {
-            entityContext.ui().sendInfoMessage(device.getGroupDescription(), String.join("\n", sb));
+            entityContext.ui().sendInfoMessage(applianceModel.getGroupDescription(), String.join("\n", sb));
         }
     }
 
-    private void removeRedundantExposes(Z2MDeviceDTO device) {
-        // remove illuminance_lux if illuminance is present
-        if (device.getDefinition().getExposes().stream().anyMatch(e -> "illuminance_lux".equals(e.getName()))
-            && device.getDefinition().getExposes().stream().anyMatch(e -> "illuminance".equals(e.getName()))) {
-            device.getDefinition().getExposes().removeIf(e -> "illuminance_lux".equals(e.getName()));
-        }
+    /**
+     * Remove exposes from z2m device in such cases:
+     * <p>
+     * 1) expose exists inside file 'zigbee-devices.json' array 'ignoreProperties'
+     * <p>
+     * 2) expose exists inside 'alias' array inside another expose in file 'zigbee-devices.json'
+     */
+    private void removeRedundantExposes() {
+        Set<String> ignoreExposes = getListOfRedundantProperties();
+
+        applianceModel.getDefinition().getExposes().removeIf(e -> {
+            if (configService.getFileMeta().getIgnoreProperties().contains(e.getName()) || ignoreExposes.contains(e.getName())) {
+                log.info("[{}]: ({}): Skip property: {}",
+                    coordinatorService.getEntityID(),
+                    applianceModel.getIeeeAddress(), e.getName());
+                return true;
+            }
+            return false;
+        });
     }
 
-    private void addMissingProperties(Z2MLocalCoordinatorService coordinatorService, Z2MDeviceDTO device) {
-        for (Pair<String, String> missingProperty : coordinatorService.getMissingProperties(device.getIeeeAddress())) {
-            switch (missingProperty.getSecond()) {
-                case "action_event":
-                    addProperty(missingProperty.getFirst(), key -> Z2MPropertyAction.createActionEvent(key, this, entityContext));
-                    break;
+    @NotNull
+    private Set<String> getListOfRedundantProperties() {
+        return Stream.concat(
+                         properties.keySet().stream(),
+                         applianceModel.getDefinition().getExposes().stream().map(Options::getName))
+                     .map(this::getPropertyModel)
+                     .filter(p -> p != null && p.getAlias() != null)
+                     .flatMap(p -> p.getAlias().stream())
+                     .collect(Collectors.toSet());
+    }
+
+    private void addMissingProperties(Z2MLocalCoordinatorService coordinatorService, ApplianceModel applianceModel) {
+        for (Pair<String, String> missingProperty : coordinatorService.getMissingProperties(applianceModel.getIeeeAddress())) {
+            if ("action_event".equals(missingProperty.getValue())) {
+                addPropertyOptional(missingProperty.getKey(), key -> Z2MPropertyAction.createActionEvent(key, this, entityContext));
             }
         }
     }
 
-    private Z2MProperty addProperty(String key, Function<String, Z2MProperty> propertyProducer) {
+    private Z2MProperty addPropertyOptional(String key, Function<String, Z2MProperty> propertyProducer) {
         if (!properties.containsKey(key)) {
             properties.put(key, propertyProducer.apply(key));
-            entityContext.event().fireEvent(format("zigbee-%s-%s", device.getIeeeAddress(), key), Status.ONLINE);
+            entityContext.event().fireEvent("zigbee-%s-%s".formatted(applianceModel.getIeeeAddress(), key), Status.ONLINE);
         }
         return properties.get(key);
     }
@@ -202,15 +323,15 @@ public class Z2MDeviceService {
     private String getFormatFromPayloadValue(JSONObject payload, String key) {
         try {
             payload.getInt(key);
-            return Z2MDeviceDTO.NUMBER_TYPE;
+            return ApplianceModel.NUMBER_TYPE;
         } catch (Exception ignore) {
         }
         try {
             payload.getBoolean(key);
-            return Z2MDeviceDTO.BINARY_TYPE;
+            return ApplianceModel.BINARY_TYPE;
         } catch (Exception ignore) {
         }
-        return Z2MDeviceDTO.UNKNOWN_TYPE;
+        return ApplianceModel.UNKNOWN_TYPE;
     }
 
     // usually expose.getName() is enough but in case of color - name - 'color_xy' but property is
@@ -222,7 +343,7 @@ public class Z2MDeviceService {
     private void addExposeByFeatures(Options expose) {
         if (expose.getFeatures() != null) {
             for (Options feature : expose.getFeatures()) {
-                addProperty(feature.getProperty(), key -> buildExposeProperty(feature));
+                addPropertyOptional(feature.getProperty(), key -> buildExposeProperty(feature));
             }
         } else {
             log.error("[{}]: Device expose {} has no features", coordinatorService.getEntityID(), expose);
@@ -230,31 +351,35 @@ public class Z2MDeviceService {
     }
 
     private Z2MProperty buildExposeProperty(Options expose) {
-        Class<? extends Z2MProperty> z2mCluster = getValueFromMap(ZigBeeUtil.z2mConverters, expose);
+        Class<? extends Z2MProperty> z2mCluster = getValueFromMap(configService.getConverters(), expose);
         Z2MProperty z2MProperty;
         if (z2mCluster == null) {
-            Z2MDevicePropertiesDTO z2MDevicePropertiesDTO = getValueFromMap(ZigBeeUtil.DEVICE_PROPERTIES, expose);
-            if (z2MDevicePropertiesDTO != null) {
-                z2MProperty = new Z2MGeneralProperty(z2MDevicePropertiesDTO.getIconColor(), z2MDevicePropertiesDTO.getIcon());
-                z2MProperty.setUnit(z2MDevicePropertiesDTO.getUnit());
+            Z2MPropertyModel z2MPropertyModel = getValueFromMap(configService.getFileMeta().getDeviceProperties(), expose);
+            if (z2MPropertyModel != null) {
+                z2MProperty = new Z2MPropertyGeneral(z2MPropertyModel.getIcon(), z2MPropertyModel.getIconColor());
+                z2MProperty.setUnit(z2MPropertyModel.getUnit());
             } else {
                 z2MProperty = new Z2MPropertyUnknown();
             }
         } else {
             z2MProperty = CommonUtils.newInstance(z2mCluster);
         }
-        z2MProperty.init(this, expose);
+        boolean createVariable = !configService.getFileMeta().getPropertiesWithoutVariables().contains(expose.getProperty());
+        z2MProperty.init(this, expose, createVariable);
         return z2MProperty;
     }
 
     private void createOrUpdateDeviceGroup() {
+        Icon icon = new Icon(
+            configService.getDeviceIcon(this, "fas fa-server"),
+            configService.getDeviceIconColor(this, Color.random())
+        );
         entityContext.var().createGroup("z2m", this.deviceEntity.getEntityID(), getDeviceFullName(), true,
-            ZigBeeUtil.getDeviceIcon(this.device.getModelId(), "fas fa-server"), ZigBeeUtil.getDeviceIconColor(this.device.getModelId(), UI.Color.random()),
-            this.device.getGroupDescription());
+            icon, this.applianceModel.getGroupDescription());
     }
 
     private void downLinkQualityToZero() {
-        Optional.ofNullable(properties.get(Z2MGeneralProperty.SIGNAL)).ifPresent(z2MProperty -> {
+        Optional.ofNullable(properties.get(Z2MPropertyGeneral.PROPERTY_SIGNAL)).ifPresent(z2MProperty -> {
             if (!z2MProperty.getValue().stringValue().equals("0")) {
                 z2MProperty.setValue(new DecimalType(0));
             }

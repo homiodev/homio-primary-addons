@@ -1,5 +1,7 @@
 package org.homio.addon.mqtt;
 
+import static java.lang.String.format;
+
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,7 +36,7 @@ public class MQTTEntrypoint implements AddonEntrypoint {
                 if (existIps.contains(ip)) {
                     return false;
                 }
-                String serverURL = String.format("tcp://%s:%d", ip, 1883);
+                String serverURL = format("tcp://%s:%d", ip, 1883);
                 MqttConnectOptions options = new MqttConnectOptions();
                 options.setConnectionTimeout(10_000);
                 MqttClient mqttClient = new MqttClient(serverURL, UUID.randomUUID().toString(), new MemoryPersistence());
@@ -48,9 +50,4 @@ public class MQTTEntrypoint implements AddonEntrypoint {
             });
         });
     }
-
-  @Override
-  public int order() {
-    return 2000;
-  }
 }

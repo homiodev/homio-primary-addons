@@ -1,20 +1,25 @@
 package org.homio.addon.camera.entity;
 
 import de.onvif.soap.OnvifDeviceState;
+import jakarta.persistence.Entity;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
-import jakarta.persistence.Entity;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.homio.addon.camera.onvif.brand.CameraBrandHandlerDescription;
+import org.homio.addon.camera.service.BaseVideoService;
+import org.homio.addon.camera.service.OnvifCameraService;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.RestartHandlerOnChange;
+import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.model.ActionResponseModel;
-import org.homio.api.model.HasEntityLog;
+import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;
 import org.homio.api.model.Status;
 import org.homio.api.ui.UI.Color;
@@ -31,20 +36,15 @@ import org.homio.api.ui.field.color.UIFieldColorStatusMatch;
 import org.homio.api.ui.field.selection.UIFieldSelection;
 import org.homio.api.util.Lang;
 import org.homio.api.util.SecureString;
-import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
-import org.homio.api.video.BaseVideoService;
-import org.homio.api.video.DownloadFile;
-import org.homio.api.video.VideoPlaybackStorage;
-import org.homio.addon.camera.onvif.brand.CameraBrandHandlerDescription;
-import org.homio.addon.camera.service.OnvifCameraService;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
 @Log4j2
 @Setter
 @Getter
 @Entity
-public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEntity, OnvifCameraService>
+public class OnvifCameraEntity extends BaseVideoEntity<OnvifCameraEntity, OnvifCameraService>
     implements HasDynamicContextMenuActions, VideoPlaybackStorage, HasEntityLog {
 
     public static final String PREFIX = "onvifcam_";
@@ -249,6 +249,11 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     }
 
     @Override
+    public @Nullable Icon getEntityIcon() {
+        return new Icon("fas fa-video", "#4E783D");
+    }
+
+    @Override
     public @NotNull String getEntityPrefix() {
         return PREFIX;
     }
@@ -260,15 +265,16 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
     }
 
     public void tryUpdateData(EntityContext entityContext, String ip, Integer port, String name) {
-        if (!getIp().equals(ip) || getOnvifPort() != port || !getName().equals(name)) {
+        String prevName = Objects.requireNonNull(getName());
+        if (!getIp().equals(ip) || getOnvifPort() != port || !prevName.equals(name)) {
             if (!getIp().equals(ip)) {
                 log.info("[{}]: Onvif camera <{}> changed ip address from <{}> to <{}>", getEntityID(), this, getIp(), ip);
             }
             if (!getIp().equals(ip)) {
                 log.info("[{}]: Onvif camera <{}> changed port from <{}> to <{}>", getEntityID(), this, getOnvifPort(), port);
             }
-            if (!getName().equals(name)) {
-                log.info("[{}]: Onvif camera <{}> changed name from <{}> to <{}>", getEntityID(), this, getName(), name);
+            if (!prevName.equals(name)) {
+                log.info("[{}]: Onvif camera <{}> changed name from <{}> to <{}>", getEntityID(), this, prevName, name);
             }
             entityContext.updateDelayed(this, entity -> entity.setIp(ip).setOnvifPort(port).setName(name));
         }
@@ -285,16 +291,18 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
         UIInputBuilder uiInputBuilder = super.assembleActions();
         if (uiInputBuilder != null) {
             for (UIEntityItemBuilder uiEntity : uiInputBuilder.getUiEntityItemBuilders(true)) {
-                uiEntity.setDisabled(!this.isStart());
+                if (!"AUTHENTICATE".equals(uiEntity.getEntityID())) {
+                    uiEntity.setDisabled(!this.isStart());
+                }
             }
 
-            if (StringUtils.isEmpty(getIeeeAddress()) || getSourceStatus() == Status.REQUIRE_AUTH) {
-                uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", "fas fa-sign-in-alt", null, 250,
+            if (StringUtils.isEmpty(getIeeeAddress()) || !getStatus().isOnline()) {
+                uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", new Icon("fas fa-sign-in-alt"), 250,
                     (entityContext, params) -> {
 
                         String user = params.getString("user");
                         String password = params.getString("pwd");
-                        OnvifCameraEntity entity = entityContext.getEntity(getEntityID());
+                        OnvifCameraEntity entity = entityContext.getEntityRequire(getEntityID());
                         OnvifDeviceState onvifDeviceState = new OnvifDeviceState(getEntityID());
                         onvifDeviceState.updateParameters(entity.getIp(), entity.getOnvifPort(), 0, user, password);
                         try {
@@ -313,7 +321,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
                         }
                         return null;
                     }).editDialog(dialogBuilder -> {
-                    dialogBuilder.setTitle(null, "fas fa-sign-in-alt");
+                    dialogBuilder.setTitle("", new Icon("fas fa-sign-in-alt"));
                     dialogBuilder.addFlex("main", flex -> {
                         flex.addTextInput("user", getUser(), true);
                         flex.addTextInput("pwd", getPassword().asString(), false);
@@ -364,7 +372,7 @@ public class OnvifCameraEntity extends BaseFFMPEGVideoStreamEntity<OnvifCameraEn
 
     @Override
     public void logBuilder(EntityLogBuilder entityLogBuilder) {
-        entityLogBuilder.addTopicFilterByEntityID("org.homio.bundle.camera");
+        entityLogBuilder.addTopicFilterByEntityID("org.homio.addon.camera");
         entityLogBuilder.addTopicFilterByEntityID("org.homio.api.video");
     }
 

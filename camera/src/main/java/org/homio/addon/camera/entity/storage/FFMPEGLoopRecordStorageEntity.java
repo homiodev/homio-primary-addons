@@ -1,31 +1,35 @@
 package org.homio.addon.camera.entity.storage;
 
-import static org.homio.api.video.ffmpeg.FFMPEGFormat.RECORD;
+import static org.homio.api.EntityContextMedia.FFMPEGFormat.RECORD;
 
+import jakarta.persistence.Entity;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.persistence.Entity;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.homio.addon.camera.entity.BaseVideoEntity;
+import org.homio.addon.camera.service.BaseVideoService;
+import org.homio.api.EntityContext;
+import org.homio.api.EntityContextMedia.FFMPEG;
+import org.homio.api.EntityContextMedia.FFMPEGHandler;
 import org.homio.api.entity.DeviceBaseEntity;
 import org.homio.api.entity.RestartHandlerOnChange;
-import org.homio.api.entity.storage.VideoBaseStorageService;
+import org.homio.api.model.Icon;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
 import org.homio.api.ui.field.UIFieldType;
 import org.homio.api.util.CommonUtils;
-import org.homio.api.video.BaseFFMPEGVideoStreamEntity;
-import org.homio.api.video.BaseVideoService;
-import org.homio.api.video.ffmpeg.FFMPEG;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Log4j2
 @Entity
-@UISidebarChildren(icon = "rest/bundle/image/camera/rpi-loop-record.png", color = "#0088CC")
-public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMPEGLoopRecordStorageService> {
+@UISidebarChildren(icon = "rest/addon/image/camera/loop-record.png", color = "#0088CC")
+public class FFMPEGLoopRecordStorageEntity extends VideoBaseStorageService<FFMPEGLoopRecordStorageEntity> {
 
     public static final String PREFIX = "ffmpeglr_";
 
@@ -57,7 +61,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
         return getJsonDataEnum("mt", MuxerType.segments);
     }
 
-    public FFMPEGLoopRecordStorageService setMuxerType(MuxerType value) {
+    public FFMPEGLoopRecordStorageEntity setMuxerType(MuxerType value) {
         setJsonDataEnum("mt", value);
         return this;
     }
@@ -71,7 +75,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
         return getJsonData("vc", "copy");
     }
 
-    public FFMPEGLoopRecordStorageService setVideoCodec(String value) {
+    public FFMPEGLoopRecordStorageEntity setVideoCodec(String value) {
         setJsonData("vc", value);
         return this;
     }
@@ -82,7 +86,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
         return getJsonData("ac", "copy");
     }
 
-    public FFMPEGLoopRecordStorageService setAudioCodec(String value) {
+    public FFMPEGLoopRecordStorageEntity setAudioCodec(String value) {
         setJsonData("ac", value);
         return this;
     }
@@ -93,7 +97,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
         return getJsonData("map", "0");
     }
 
-    public FFMPEGLoopRecordStorageService setSelectStream(String value) {
+    public FFMPEGLoopRecordStorageEntity setSelectStream(String value) {
         setJsonData("map", value);
         return this;
     }
@@ -114,13 +118,13 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
         return getJsonData("vb", false);
     }
 
-    public FFMPEGLoopRecordStorageService setVerbose(boolean value) {
+    public FFMPEGLoopRecordStorageEntity setVerbose(boolean value) {
         setJsonData("vb", value);
         return this;
     }
 
     @Override
-    public String getEntityPrefix() {
+    public @NotNull String getEntityPrefix() {
         return PREFIX;
     }
 
@@ -129,11 +133,16 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
         return "FFMPEG FS loop storage (" + getMuxerType() + ")";
     }
 
+    @Override
+    public @Nullable Icon getEntityIcon() {
+        return new Icon("fas fa-arrows-spin", "#0088CC");
+    }
+
     @SneakyThrows
     @Override
-    public void startRecord(String id, String output, String profile, DeviceBaseEntity deviceEntity) {
+    public void startRecord(String id, String output, String profile, DeviceBaseEntity deviceEntity, EntityContext entityContext) {
         stopRecord(id, output, deviceEntity);
-        if (!(deviceEntity instanceof BaseFFMPEGVideoStreamEntity)) {
+        if (!(deviceEntity instanceof BaseVideoEntity)) {
             throw new IllegalArgumentException("Unable to start video record for non ffmpeg compatible source");
         }
 
@@ -141,10 +150,10 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
             throw new IllegalArgumentException("To record to hls output need set file extension as .m3u8");
         }
 
-        BaseFFMPEGVideoStreamEntity videoStreamEntity = (BaseFFMPEGVideoStreamEntity) deviceEntity;
+        BaseVideoEntity videoStreamEntity = (BaseVideoEntity) deviceEntity;
         BaseVideoService service = videoStreamEntity.getService();
 
-        FFMPEG.FFMPEGHandler ffmpegHandler = new FFMPEG.FFMPEGHandler() {
+        FFMPEGHandler ffmpegHandler = new FFMPEGHandler() {
             @Override
             public String getEntityID() {
                 return deviceEntity.getEntityID();
@@ -176,7 +185,7 @@ public class FFMPEGLoopRecordStorageService extends VideoBaseStorageService<FFMP
 
         String source = service.getRtspUri(profile);
         log.info("[{}]: Start ffmpeg video recording from source: <{}> to: <{}>", getEntityID(), source, path);
-        FFMPEG ffmpeg = new FFMPEG(getEntityID(), "FFMPEG loop record", ffmpegHandler, log,
+        FFMPEG ffmpeg = entityContext.media().buildFFMPEG(getEntityID(), "FFMPEG loop record", ffmpegHandler, log,
             RECORD, getVerbose() ? "" : "-hide_banner -loglevel warning", source,
             buildFFMPEGRecordCommand(folder), path.toString(),
             videoStreamEntity.getUser(), videoStreamEntity.getPassword().asString(), null);

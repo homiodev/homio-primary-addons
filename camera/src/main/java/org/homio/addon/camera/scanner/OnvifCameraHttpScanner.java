@@ -18,16 +18,16 @@ import org.homio.addon.camera.entity.OnvifCameraEntity;
 import org.homio.addon.camera.onvif.OnvifDiscovery;
 import org.homio.addon.camera.onvif.brand.CameraBrandHandlerDescription;
 import org.homio.addon.camera.setting.CameraScanPortRangeSetting;
-import org.homio.api.EntityContext;
-import org.homio.api.service.scan.BaseItemsDiscovery;
-import org.homio.api.service.scan.VideoStreamScanner;
-import org.homio.api.ui.field.ProgressBar;
-import org.homio.api.util.CommonUtils;
-import org.homio.api.util.Lang;
 import org.homio.addon.camera.setting.onvif.ScanOnvifHttpDefaultPasswordAuthSetting;
 import org.homio.addon.camera.setting.onvif.ScanOnvifHttpDefaultUserAuthSetting;
 import org.homio.addon.camera.setting.onvif.ScanOnvifHttpMaxPingTimeoutSetting;
 import org.homio.addon.camera.setting.onvif.ScanOnvifPortsSetting;
+import org.homio.api.EntityContext;
+import org.homio.api.service.scan.BaseItemsDiscovery;
+import org.homio.api.service.scan.VideoStreamScanner;
+import org.homio.api.util.CommonUtils;
+import org.homio.api.util.Lang;
+import org.homio.hquery.ProgressBar;
 import org.homio.hquery.hardware.network.NetworkHardwareRepository;
 import org.springframework.stereotype.Component;
 
@@ -73,7 +73,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
 
         Map<String, Callable<Integer>> tasks = new HashMap<>();
         for (String ipRange : ipRangeList) {
-            tasks.putAll(networkHardwareRepository.buildPingIpAddressTasks(ipRange, log, ports, pingTimeout, (ipAddress, port) ->
+            tasks.putAll(networkHardwareRepository.buildPingIpAddressTasks(ipRange, log::info, ports, pingTimeout, (ipAddress, port) ->
                 buildCameraTask(rediscoverIpAddresses, allSavedCameraEntities, existsCameraByIpPort, user, password,
                     ipAddress, port)));
         }
@@ -158,13 +158,13 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
             "onvif-http-" + onvifDeviceState.getHOST_IP(),
             onvifDeviceState.getHOST_IP(), entityContext,
             messages -> {
-                messages.add(Lang.getServerMessage("VIDEO_STREAM.ADDRESS", "ADDRESS", onvifDeviceState.getHOST_IP()));
+                messages.add(Lang.getServerMessage("VIDEO_STREAM.ADDRESS", onvifDeviceState.getHOST_IP()));
                 if (requireAuth) {
                     messages.add(Lang.getServerMessage("VIDEO_STREAM.REQUIRE_AUTH"));
                 }
-                messages.add(Lang.getServerMessage("VIDEO_STREAM.NAME", "NAME", fetchCameraName(onvifDeviceState)));
-                messages.add(Lang.getServerMessage("VIDEO_STREAM.MODEL", "MODEL", fetchCameraModel(onvifDeviceState)));
-                messages.add(Lang.getServerMessage("VIDEO_STREAM.BRAND", "BRAND", brand.getName()));
+                messages.add(Lang.getServerMessage("VIDEO_STREAM.NAME", fetchCameraName(onvifDeviceState)));
+                messages.add(Lang.getServerMessage("VIDEO_STREAM.MODEL", fetchCameraModel(onvifDeviceState)));
+                messages.add(Lang.getServerMessage("VIDEO_STREAM.BRAND", brand.getName()));
             },
             () -> {
                 log.info("Saving onvif camera with host: <{}>", onvifDeviceState.getHOST_IP());

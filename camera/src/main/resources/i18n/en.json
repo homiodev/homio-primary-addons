@@ -9,7 +9,7 @@
     "RECORD_GIF": "Record a GIF"
   },
   "selection": {
-    "FFMPEGLoopRecordStorageService": "FFMPEG Loop record storage",
+    "FFMPEGLoopRecordStorageEntity": "FFMPEG Loop record storage",
     "ReolinkBrandHandler": "Reolink Brand",
     "FoscamBrandHandler": "Foscam Brand",
     "DoorBirdBrandHandler": "DoorBird Brand",
@@ -139,8 +139,6 @@
     }
   },
   "field": {
-    "sourceStatus": "Source status",
-    "sourceStatusMessage": "Source status msg.",
     "eventSubscription": "Event subscription",
     "snapshotPollInterval": "Snapshot poll interval(sec)",
     "cameraHandler": "Last answer from camera",

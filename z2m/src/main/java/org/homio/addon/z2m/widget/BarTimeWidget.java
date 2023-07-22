@@ -2,31 +2,32 @@ package org.homio.addon.z2m.widget;
 
 import java.util.List;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
-import org.homio.api.EntityContext;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 
 public class BarTimeWidget implements WidgetBuilder {
 
     @Override
     public void buildWidget(WidgetRequest widgetRequest) {
-        WidgetDefinition widgetDefinition = widgetRequest.getWidgetDefinition();
+        WidgetDefinition wd = widgetRequest.getWidgetDefinition();
 
-        var request = new MainWidgetRequest(widgetRequest, widgetDefinition, 0,
-            0, builder -> {});
+        var request = new MainWidgetRequest(widgetRequest, wd, 0,
+            0, builder -> {
+            WidgetBuilder.buildCommon(wd, widgetRequest, builder);
+        });
         buildMainWidget(request);
     }
 
     @Override
     public void buildMainWidget(MainWidgetRequest request) {
-        EntityContext entityContext = request.getWidgetRequest().getEntityContext();
-        Z2MDeviceEntity entity = request.getWidgetRequest().getEntity();
+        WidgetRequest widgetRequest = request.getWidgetRequest();
+        Z2MDeviceEntity entity = widgetRequest.getEntity();
         WidgetDefinition wd = request.getItem();
 
         List<ZigBeeProperty> barSeries = wd.getIncludeProperties(request);
-        entityContext.widget().createBarTimeChartWidget("bt-" + entity.getIeeeAddress(), builder -> {
+        widgetRequest.getEntityContext().widget().createBarTimeChartWidget("bt-" + entity.getIeeeAddress(), builder -> {
+            WidgetBuilder.buildCommon(wd, widgetRequest, builder);
             builder.setBlockSize(wd.getBlockWidth(3), wd.getBlockHeight(1))
-                   .setZIndex(wd.getZIndex(20))
                    .setShowAxisX(wd.getOptions().isShowAxisX())
                    .setShowAxisY(wd.getOptions().isShowAxisY())
                    .setShowChartFullScreenButton(wd.getOptions().isShowChartFullScreenButton())
@@ -37,7 +38,8 @@ public class BarTimeWidget implements WidgetBuilder {
 
             for (ZigBeeProperty series : barSeries) {
                 builder.addSeries(series.getName(false), seriesBuilder ->
-                    seriesBuilder.setChartDataSource(WidgetBuilder.getSource(entityContext, series, false)));
+                    seriesBuilder.setChartDataSource(
+                        WidgetBuilder.getSource(widgetRequest.getEntityContext(), series, false)));
             }
         });
     }

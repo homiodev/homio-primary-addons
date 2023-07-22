@@ -1,17 +1,20 @@
 package org.homio.addon.mqtt.entity;
 
-import java.nio.charset.StandardCharsets;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import jakarta.persistence.Entity;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
-import jakarta.persistence.Entity;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.homio.addon.mqtt.entity.parameters.MQTTPublishQueryParameter;
 import org.homio.addon.mqtt.entity.parameters.MQTTTopicQueryParameter;
 import org.homio.api.EntityContext;
+import org.homio.api.EntityContextService;
 import org.homio.api.entity.storage.BaseFileSystemEntity;
 import org.homio.api.entity.types.StorageEntity;
 import org.homio.api.entity.widget.AggregationType;
@@ -22,6 +25,7 @@ import org.homio.api.entity.widget.ability.HasSetStatusValue;
 import org.homio.api.entity.widget.ability.HasTimeValueSeries;
 import org.homio.api.fs.TreeConfiguration;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.Icon;
 import org.homio.api.service.EntityService;
 import org.homio.api.storage.SourceHistory;
 import org.homio.api.storage.SourceHistoryItem;
@@ -33,13 +37,12 @@ import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.ui.field.selection.UIFieldSelection;
 import org.homio.api.ui.field.selection.dynamic.DynamicParameterFields;
-import org.homio.api.ui.field.selection.dynamic.DynamicRequestType;
 import org.homio.api.ui.field.selection.dynamic.SelectionWithDynamicParameterFields;
 import org.homio.api.util.SecureString;
-import org.homio.addon.mqtt.entity.parameters.MQTTPublishQueryParameter;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+@SuppressWarnings("unused")
 @Log4j2
 @Entity
 public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
@@ -49,16 +52,12 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     HasAggregateValueFromSeries,
     HasGetStatusValue,
     HasSetStatusValue,
+    EntityContextService.MQTTEntityService,
     BaseFileSystemEntity<MQTTBaseEntity, MQTTFileSystem>,
     UIFieldSelection.SelectionConfiguration {
 
     @Override
-    public String selectionIcon() {
-        return "fas fa-mattress-pillow";
-    }
-
-    @Override
-    public String getFileSystemAlias() {
+    public @NotNull String getFileSystemAlias() {
         return "MQTT";
     }
 
@@ -68,18 +67,13 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     @Override
-    public TreeConfiguration buildFileSystemConfiguration(EntityContext entityContext) {
+    public @NotNull TreeConfiguration buildFileSystemConfiguration(@NotNull EntityContext entityContext) {
         return getService().getValue().iterator().next();
     }
 
     @Override
-    public String getFileSystemIcon() {
+    public @NotNull Icon getFileSystemIcon() {
         return selectionIcon();
-    }
-
-    @Override
-    public String getFileSystemIconColor() {
-        return selectionIconColor();
     }
 
     @Override
@@ -88,7 +82,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     @Override
-    public MQTTFileSystem buildFileSystem(EntityContext entityContext) {
+    public @NotNull MQTTFileSystem buildFileSystem(@NotNull EntityContext entityContext) {
         return new MQTTFileSystem(this);
     }
 
@@ -107,30 +101,30 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
         setJsonData("host", value);
     }
 
-    @UIField(order = 2)
+    @UIField(order = 2, label = "mqttPort")
     @UIFieldPort
     @UIFieldGroup("SERVER")
-    public int getMqttPort() {
+    public int getPort() {
         return getJsonData("port", 1883);
     }
 
-    public void setMqttPort(String value) {
+    public void setPort(String value) {
         setJsonData("port", value);
     }
 
-    @UIField(order = 1)
+    @UIField(order = 1, label = "mqttUser")
     @UIFieldGroup(order = 2, value = "SECURITY", borderColor = "#23ADAB")
-    public String getMqttUser() {
+    public String getUser() {
         return getJsonData("user", "");
     }
 
-    public void setMqttUser(String value) {
+    public void setUser(String value) {
         setJsonData("user", value);
     }
 
-    @UIField(order = 2)
+    @UIField(order = 2, label = "mqttPassword")
     @UIFieldGroup("SECURITY")
-    public SecureString getMqttPassword() {
+    public SecureString getPassword() {
         return getJsonSecure("pwd");
     }
 
@@ -154,7 +148,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     @UIFieldGroup("HISTORY")
     public UIFieldProgress.Progress getUsedHistorySize() {
         long storageCount = optService().map(service -> service.getStorage().count()).orElse(0L);
-        return getEntityID() == null ? null : UIFieldProgress.Progress.of((int) storageCount, getHistorySize());
+        return UIFieldProgress.Progress.of((int) storageCount, getHistorySize());
     }
 
     @UIField(order = 3, inlineEdit = true)
@@ -222,25 +216,23 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     @Override
-    public Class<MQTTService> getEntityServiceItemClass() {
+    public @NotNull Class<MQTTService> getEntityServiceItemClass() {
         return MQTTService.class;
     }
 
     @Override
     @SneakyThrows
-    public MQTTService createService(EntityContext entityContext) {
+    public MQTTService createService(@NotNull EntityContext entityContext) {
         return new MQTTService(this, entityContext);
     }
 
-    public void publish(String topic, String content, int qoS, boolean retain) {
-        if (StringUtils.isNotEmpty(content)) {
-            try {
-                log.debug("[{}]: MQTT Name[{}]. Publish message: Topic[{}], Qos[{}], Retain[{}], Value[{}]", getEntityID(), getTitle(), topic, qoS,
-                    retain, content);
-                getService().getMqttClient().publish(topic, content.getBytes(StandardCharsets.UTF_8), qoS, retain);
-            } catch (MqttException e) {
-                throw new RuntimeException(e);
-            }
+    public void publish(@NotNull String topic, byte[] content, int qoS, boolean retain) {
+        try {
+            log.debug("[{}]: MQTT Name[{}]. Publish message: Topic[{}], Qos[{}], Retain[{}], Value[{}]", getEntityID(), getTitle(), topic, qoS,
+                retain, content);
+            getService().getMqttClient().publish(topic, content, qoS, retain);
+        } catch (MqttException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -252,10 +244,12 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
 
     @Override
     public DynamicParameterFields getDynamicParameterFields(RequestDynamicParameter request) {
-        if (request.getDynamicRequestType() == DynamicRequestType.SetValue) {
+        if (request.getMetadata().has("set")) {
             return new MQTTPublishQueryParameter().setPublishTopic("example/test");
+        } else if (request.getMetadata().has("get")) {
+            return new MQTTTopicQueryParameter().setQueryTopic("example/test");
         }
-        return new MQTTTopicQueryParameter().setQueryTopic("example/test");
+        return null;
     }
 
     @Override
@@ -291,8 +285,8 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     @Override
     public void addUpdateValueListener(EntityContext entityContext, String key, JSONObject dynamicParameters,
         Consumer<Object> listener) {
-        entityContext.event().addEventListener(getEntityID() + "_" +
-            getTopicRequire(dynamicParameters, "queryTopic"), key, listener);
+        String topic = getTopicRequire(dynamicParameters, "queryTopic");
+        entityContext.event().addEventListener(getEntityID() + "~~~" + topic, key, listener);
     }
 
     @Override
@@ -315,12 +309,9 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
         return "MQTT.SET_TOPIC";
     }
 
-    public boolean deepEqual(@NotNull MQTTBaseEntity mqttEntity) {
-        return Objects.equals(this.getEntityID(), mqttEntity.getEntityID()) &&
-            Objects.equals(this.getMqttUser(), mqttEntity.getMqttUser()) &&
-            Objects.equals(this.getMqttPassword().asString(), mqttEntity.getMqttPassword().asString()) &&
-            Objects.equals(this.getMqttClientID(), mqttEntity.getMqttClientID()) &&
-            this.getMqttPort() == mqttEntity.getMqttPort();
+    public boolean deepEqual(@NotNull MQTTBaseEntity o) {
+        return Objects.hash(getEntityID(), getUser(), getPassword().asString(), getMqttClientID(), getPort())
+            == Objects.hash(o.getEntityID(), o.getUser(), o.getPassword().asString(), o.getMqttClientID(), o.getPort());
     }
 
     static String normalize(String topic) {
@@ -346,7 +337,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
 
     private void publishFromDynamicTopic(String value, JSONObject dynamicParameters) {
         String topic = getTopicRequire(dynamicParameters, "publishTopic");
-        publish(topic, value, dynamicParameters.optInt("qos", 0),
+        publish(topic, value == null ? new byte[0] : value.getBytes(UTF_8), dynamicParameters.optInt("qos", 0),
             dynamicParameters.optBoolean("retain", false));
     }
 
@@ -358,5 +349,17 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     @Override
     public @NotNull String getFileSystemRoot() {
         return "";
+    }
+
+    @Override
+    public void addListener(String topic, String discriminator, Consumer<Object> listener) {
+        log.info("[{}]: Add mqtt listener for '{}' topic", getEntityID(), topic);
+        getEntityContext().event().addEventBehaviourListener(getEntityID() + "~~~" + topic, discriminator, listener);
+    }
+
+    @Override
+    public void removeListener(String topic, String discriminator) {
+        log.info("[{}]: Remove mqtt listener from '{}' topic", getEntityID(), topic);
+        getEntityContext().event().removeEventListener(discriminator, getEntityID() + "~~~" + topic);
     }
 }

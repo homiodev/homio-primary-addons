@@ -1,24 +1,21 @@
 package org.homio.addon.camera.service;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.homio.addon.camera.CameraEntrypoint;
 import org.homio.addon.camera.entity.CommonVideoStreamEntity;
 import org.homio.addon.camera.rtsp.message.sdp.SdpMessage;
 import org.homio.addon.camera.scanner.RtspStreamScanner;
 import org.homio.api.EntityContext;
 import org.homio.api.exception.ServerException;
-import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.Icon;
 import org.homio.api.state.State;
 import org.homio.api.state.StringType;
-import org.homio.api.ui.UI.Color;
-import org.homio.api.video.BaseVideoService;
-import org.homio.api.video.BaseVideoStreamServerHandler;
 
 public class CommonVideoService extends BaseVideoService<CommonVideoStreamEntity> {
 
@@ -64,7 +61,7 @@ public class CommonVideoService extends BaseVideoService<CommonVideoStreamEntity
     @Override
     public Map<String, State> getAttributes() {
         Map<String, State> map = new HashMap<>(super.getAttributes());
-        SdpMessage sdpMessage = RtspStreamScanner.rtspUrlToSdpMessage.get(getEntity().getIeeeAddress());
+        SdpMessage sdpMessage = RtspStreamScanner.rtspUrlToSdpMessage.get(StringUtils.defaultString(getEntity().getIeeeAddress(), "\\x0"));
         if (sdpMessage != null) {
             map.put("RTSP Description Message", new StringType(sdpMessage.toString()));
         }
@@ -82,19 +79,10 @@ public class CommonVideoService extends BaseVideoService<CommonVideoStreamEntity
     }
 
     public void updateNotificationBlock() {
-        entityContext.ui().addNotificationBlock(entityID, getEntity().getTitle(), "fas fa-film", "#4E783D", builder -> {
-            builder.setStatus(getEntity().getSourceStatus());
-            builder.linkToEntity(getEntity());
-            if (!getEntity().isStart()) {
-                builder.addButtonInfo("cmn", defaultIfEmpty(getEntity().getSourceStatusMessage(), "video.not_started"), Color.RED, "fas fa-stop", null,
-                    "fas fa-play", "Start", null, (entityContext, params) -> {
-                        entityContext.save(getEntity().setStart(true));
-                        return ActionResponseModel.success();
-                    });
-            } else {
-                builder.setStatusMessage(getEntity().getSourceStatusMessage());
-            }
-        });
+        CameraEntrypoint.updateCamera(entityContext, getEntity(),
+            null,
+            new Icon("fas fa-users-viewfinder", "#669618"),
+            null);
     }
 
     @Override

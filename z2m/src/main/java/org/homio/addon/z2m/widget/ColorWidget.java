@@ -1,15 +1,15 @@
 package org.homio.addon.z2m.widget;
 
-import static org.homio.addon.z2m.service.properties.dynamic.Z2MGeneralProperty.SIGNAL;
+import static org.homio.addon.z2m.service.properties.inline.Z2MPropertyGeneral.PROPERTY_SIGNAL;
 
 import java.util.Map;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionDTO.WidgetDefinition;
+import org.homio.addon.z2m.model.Z2MDeviceEntity;
+import org.homio.addon.z2m.service.Z2MProperty;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextWidget.HorizontalAlign;
 import org.homio.api.EntityContextWidget.VerticalAlign;
 import org.homio.api.exception.ProhibitedExecution;
-import org.homio.addon.z2m.model.Z2MDeviceEntity;
-import org.homio.addon.z2m.service.Z2MProperty;
 
 public class ColorWidget implements WidgetBuilder {
 
@@ -26,9 +26,8 @@ public class ColorWidget implements WidgetBuilder {
         Z2MProperty colorProperty = properties.get("color");
 
         entityContext.widget().createLayoutWidget(layoutID, builder -> {
+            WidgetBuilder.buildCommon(wd, widgetRequest, builder);
             builder.setBlockSize(2, 1)
-                   .setZIndex(wd.getZIndex(20))
-                   .setBackground(wd.getBackground())
                    .setLayoutDimension(2, 6);
         });
 
@@ -38,8 +37,7 @@ public class ColorWidget implements WidgetBuilder {
                        .setZIndex(wd.getZIndex(20));
                 builder.attachToLayout(layoutID, 0, 0);
                 builder.addSeries(entity.getModel(), seriesBuilder -> {
-                    seriesBuilder.setIcon(entity.getIcon());
-                    seriesBuilder.setIconColor(entity.getIconColor());
+                    seriesBuilder.setIcon(entity.getEntityIcon());
                     WidgetBuilder.setValueDataSource(seriesBuilder, entityContext, brightnessProperty);
                 });
             });
@@ -64,7 +62,8 @@ public class ColorWidget implements WidgetBuilder {
         WidgetBuilder.addProperty(
             entityContext,
             HorizontalAlign.right,
-            properties.get(SIGNAL),
+            properties.get(PROPERTY_SIGNAL),
+            false,
             builder -> builder.attachToLayout(layoutID, 1, 5));
     }
 

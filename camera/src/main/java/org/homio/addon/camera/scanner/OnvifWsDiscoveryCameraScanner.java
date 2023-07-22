@@ -10,8 +10,8 @@ import org.homio.addon.camera.onvif.OnvifDiscovery;
 import org.homio.api.EntityContext;
 import org.homio.api.service.scan.BaseItemsDiscovery;
 import org.homio.api.service.scan.VideoStreamScanner;
-import org.homio.api.ui.field.ProgressBar;
 import org.homio.api.util.Lang;
+import org.homio.hquery.ProgressBar;
 import org.springframework.stereotype.Component;
 
 @Log4j2
@@ -38,8 +38,8 @@ public class OnvifWsDiscoveryCameraScanner implements VideoStreamScanner {
                         "onvif-" + ipAddress,
                         brand + "/" + ipAddress, entityContext,
                         messages -> {
-                            messages.add(Lang.getServerMessage("VIDEO_STREAM.PORT", "PORT", String.valueOf(onvifPort)));
-                            messages.add(Lang.getServerMessage("VIDEO_STREAM.BRAND", "BRAND", brand.getName()));
+                            messages.add(Lang.getServerMessage("VIDEO_STREAM.PORT", String.valueOf(onvifPort)));
+                            messages.add(Lang.getServerMessage("VIDEO_STREAM.BRAND", brand.getName()));
                         },
                         () -> {
                             log.info("Confirm save onvif camera with ip address: <{}>", ipAddress);

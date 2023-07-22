@@ -3,7 +3,9 @@ package org.homio.addon.z2m.util;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
@@ -19,8 +21,19 @@ public class Z2MConfiguration extends UnknownOptions {
     private Mqtt mqtt = new Mqtt();
     private Serial serial = new Serial();
     private Frontend frontend = new Frontend();
-    private boolean availability = true;
-    private Map<String, ObjectNode> devices;
+    private Map<String, ObjectNode> devices = new HashMap<>();
+    private Advanced advanced = new Advanced();
+
+    @Getter
+    @Setter
+    public static class Advanced extends UnknownOptions {
+
+        private String last_seen = "epoch";
+        private String log_directory = "data/log";
+        private String log_file = "log.txt";
+        private String timestamp_format = "YYYY-MM-DD HH:mm:ss";
+        private Set<String> log_output = Set.of("file");
+    }
 
     @Getter
     @Setter
@@ -28,7 +41,6 @@ public class Z2MConfiguration extends UnknownOptions {
 
         private String host = "0.0.0.0";
         private int port = 8187;
-        // private String url = "https://zigbee2mqtt.myhouse.org";
     }
 
     @Getter
