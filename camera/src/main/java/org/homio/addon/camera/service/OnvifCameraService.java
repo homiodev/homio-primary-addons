@@ -992,22 +992,18 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
                             for (String name : response.headers().names()) {
                                 // Some cameras use first letter uppercase and others don't.
                                 switch (name.toLowerCase()) { // Possible localization issues doing this
-                                    case "content-type":
-                                        contentType = response.headers().getAsString(name);
-                                        break;
-                                    case "content-length":
-                                        bytesToReceive = Integer.parseInt(response.headers().getAsString(name));
-                                        break;
-                                    case "connection":
+                                    case "content-type" -> contentType = response.headers().getAsString(name);
+                                    case "content-length" -> bytesToReceive = Integer.parseInt(response.headers().getAsString(name));
+                                    case "connection" -> {
                                         if (response.headers().getAsString(name).contains("keep-alive")) {
                                             closeConnection = false;
                                         }
-                                        break;
-                                    case "transfer-encoding":
+                                    }
+                                    case "transfer-encoding" -> {
                                         if (response.headers().getAsString(name).contains("chunked")) {
                                             isChunked = true;
                                         }
-                                        break;
+                                    }
                                 }
                             }
                             if (contentType.contains("multipart")) {
@@ -1172,32 +1168,32 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
         @Override
         protected void handleChildrenHttpRequest(QueryStringDecoder queryStringDecoder, ChannelHandlerContext ctx) {
             switch (queryStringDecoder.path()) {
-                case "/ipvideo.jpg":
+                case "/ipvideo.jpg" -> {
                     if (!snapshotPolling && !snapshotUri.equals("")) {
                         sendHttpGET(snapshotUri);
                     }
                     if (getLatestSnapshot().length == 1) {
                         log.warn("[{}]: ipvideo.jpg was requested but there is no jpg in ram to send.", getEntityID());
                     }
-                    break;
-                case "/snapshots.mjpeg":
+                }
+                case "/snapshots.mjpeg" -> {
                     handlingSnapshotStream = true;
                     startSnapshotPolling();
                     setupSnapshotStreaming(true, ctx, false);
-                    break;
-                case "/ipvideo.mjpeg":
+                }
+                case "/ipvideo.mjpeg" -> {
                     setupMjpegStreaming(true, ctx);
                     handlingMjpeg = true;
-                    break;
-                case "/autofps.mjpeg":
+                }
+                case "/autofps.mjpeg" -> {
                     handlingSnapshotStream = true;
                     setupSnapshotStreaming(true, ctx, true);
-                    break;
-                case "/instar":
+                }
+                case "/instar" -> {
                     InstarBrandHandler instar = new InstarBrandHandler(OnvifCameraService.this);
                     instar.alarmTriggered(queryStringDecoder.uri());
                     ctx.close();
-                    break;
+                }
             }
         }
 

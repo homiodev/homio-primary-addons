@@ -148,24 +148,9 @@
     "pushConfirmMessage": {
       "type": "string"
     },
-    "animation": {
-      "type": "object",
-      "properties": {
-        "op": {
-          "type": "string"
-        },
-        "value": {
-          "type": "integer"
-        },
-        "color": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "op",
-        "value",
-        "color"
-      ]
+    "showAllButton": {
+      "title": "Is show all button for toggle widget",
+      "type": "boolean"
     }
   }
 }

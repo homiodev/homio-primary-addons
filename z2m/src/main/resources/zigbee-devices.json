@@ -48,7 +48,9 @@
         {
           "type": "compose",
           "name": "METER",
-          "background": "#29393F",
+          "background": {
+            "color": "#29393F"
+          },
           "blockHeight": 2,
           "icon": "fas fa-bolt-lightning",
           "compose": [
@@ -220,7 +222,9 @@
             {
               "type": "display",
               "index": 18,
-              "background": "#30563C",
+              "background": {
+                "color": "#30563C"
+              },
               "blockHeight": 2,
               "layout": "{'c':[{'w':30},{'w':70}],'r':[{'cell':[{'ha':'right','va':'middle','v':'icon','cs':1,'rs':1,'w':30},{'ha':'left','va':'middle','v':'name','cs':1,'rs':1,'w':70}]}]}",
               "options": {
@@ -255,11 +259,24 @@
           "type": "compose",
           "name": "SMOKE_SENSOR",
           "icon": "fas fa-mask-ventilator",
+          "background": {
+            "pulses": [
+              {
+                "op": "neq",
+                "value": 0,
+                "color": "red",
+                "source": {
+                  "kind": "property",
+                  "variableType": "Bool",
+                  "value": "smoke"
+                }
+              }
+            ]
+          },
           "compose": [
             {
               "type": "display",
               "index": 18,
-              "background": "#564531",
               "blockHeight": 2,
               "layout": "{'c':[{'w':100}],'r':[{'cell':[{'ha':'center','va':'middle','v':'icon','cs':1,'rs':1,'w':100}]},{'cell':[{'ha':'center','va':'middle','v':'name','cs':1,'rs':1,'w':100}]}]}",
               "options": {
@@ -268,12 +285,7 @@
                   "value": "SmokeDetected"
                 },
                 "valueOnClick": 1,
-                "pushConfirmMessage": "Are you sure to fire event: 'SmokeDetected'?",
-                "animation": {
-                  "op": "neq",
-                  "value": 0,
-                  "color": "red"
-                }
+                "pushConfirmMessage": "Are you sure to fire event: 'SmokeDetected'?"
               },
               "props": [
                 {
@@ -304,22 +316,26 @@
               "props": [
                 {
                   "name": "contact",
-                  "icon": "fas fa-door-closed",
+                  "icon": {
+                    "value": "fas fa-door-closed",
+                    "thresholds": [
+                      {
+                        "op": "eq",
+                        "value": "true|1",
+                        "target": "fas fa-door-open"
+                      }
+                    ]
+                  },
                   "valueConverter": "return value == true ? 'opened' : 'closed';",
-                  "iconThreshold": [
-                    {
-                      "op": "eq",
-                      "value": "true|1",
-                      "target": "fas fa-door-open"
-                    }
-                  ],
-                  "iconColorThreshold": [
-                    {
-                      "op": "eq",
-                      "value": "true|1",
-                      "target": "#3A75B5"
-                    }
-                  ]
+                  "iconColor": {
+                    "thresholds": [
+                      {
+                        "op": "eq",
+                        "value": "true|1",
+                        "target": "#3A75B5"
+                      }
+                    ]
+                  }
                 }
               ],
               "options": {
@@ -370,20 +386,24 @@
                 },
                 {
                   "name": "illuminance",
-                  "iconThreshold": [
-                    {
-                      "op": "eq",
-                      "value": "true|1",
-                      "target": "fas fa-person-walking fa-beat"
-                    }
-                  ],
-                  "iconColorThreshold": [
-                    {
-                      "op": "eq",
-                      "value": "true|1",
-                      "target": "#FF0000"
-                    }
-                  ]
+                  "icon": {
+                    "thresholds": [
+                      {
+                        "op": "eq",
+                        "value": "true|1",
+                        "target": "fas fa-person-walking fa-beat"
+                      }
+                    ]
+                  },
+                  "iconColor": {
+                    "thresholds": [
+                      {
+                        "op": "eq",
+                        "value": "true|1",
+                        "target": "#FF0000"
+                      }
+                    ]
+                  }
                 }
               ],
               "options": {
@@ -428,11 +448,24 @@
           "type": "compose",
           "name": "LEAK_SENSOR",
           "icon": "fas fa-water",
+          "background": {
+            "pulses": [
+              {
+                "op": "neq",
+                "value": 0,
+                "color": "red",
+                "source": {
+                  "kind": "property",
+                  "variableType": "Bool",
+                  "value": "water_leak"
+                }
+              }
+            ]
+          },
           "compose": [
             {
               "type": "display",
               "index": 18,
-              "background": "#384058",
               "blockHeight": 2,
               "layout": "{'c':[{'w':100}],'r':[{'cell':[{'ha':'center','va':'middle','v':'icon','cs':1,'rs':1,'w':100}]},{'cell':[{'ha':'center','va':'middle','v':'name','cs':1,'rs':1,'w':100}]}]}",
               "options": {
@@ -441,12 +474,7 @@
                   "value": "WaterLeakDetected"
                 },
                 "valueOnClick": 1,
-                "pushConfirmMessage": "Are you sure to fire event: 'WaterLeakDetected'?",
-                "animation": {
-                  "op": "neq",
-                  "value": 0,
-                  "color": "red"
-                }
+                "pushConfirmMessage": "Are you sure to fire event: 'WaterLeakDetected'?"
               },
               "props": [
                 {
@@ -485,20 +513,24 @@
               "props": [
                 {
                   "name": "vibration",
-                  "iconThreshold": [
-                    {
-                      "op": "eq",
-                      "value": "true|1",
-                      "target": "fab fa-fw fa-squarespace fa-flip"
-                    }
-                  ],
-                  "iconColorThreshold": [
-                    {
-                      "op": "eq",
-                      "value": "true|1",
-                      "target": "#C94F4F"
-                    }
-                  ]
+                  "icon": {
+                    "thresholds": [
+                      {
+                        "op": "eq",
+                        "value": "true|1",
+                        "target": "fab fa-fw fa-squarespace fa-flip"
+                      }
+                    ]
+                  },
+                  "iconColor": {
+                    "thresholds": [
+                      {
+                        "op": "eq",
+                        "value": "true|1",
+                        "target": "#C94F4F"
+                      }
+                    ]
+                  }
                 }
               ],
               "options": {

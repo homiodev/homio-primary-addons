@@ -44,14 +44,14 @@ public class ComposeWidget implements WidgetBuilder {
         String layoutID = "lt-cmp-" + entity.getIeeeAddress();
         int columns = 3;
 
-        entityContext.widget().createLayoutWidget(layoutID, builder ->
+        entityContext.widget().createLayoutWidget(layoutID, builder -> {
+            WidgetBuilder.buildCommon(wd, widgetRequest, builder, 15);
             builder
                 .setBlockSize(
                     wd.getBlockWidth(1),
                     adjustBlockHeightToInnerContentHeight(wd, sumOfRowHeightsAdjusted))
-                .setZIndex(wd.getZIndex(15))
-                .setBackground(wd.getBackground())
-                .setLayoutDimension(sumOfRowHeightsAdjusted + 1, columns));
+                .setLayoutDimension(sumOfRowHeightsAdjusted + 1, columns);
+        });
 
         AtomicInteger currentLayoutRow = new AtomicInteger(0);
         for (int i = 0; i < composeContainer.size(); i++) {

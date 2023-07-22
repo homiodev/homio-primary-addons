@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.camera.CameraEntrypoint;
 import org.homio.addon.camera.entity.CommonVideoStreamEntity;
 import org.homio.addon.camera.rtsp.message.sdp.SdpMessage;
@@ -60,7 +61,7 @@ public class CommonVideoService extends BaseVideoService<CommonVideoStreamEntity
     @Override
     public Map<String, State> getAttributes() {
         Map<String, State> map = new HashMap<>(super.getAttributes());
-        SdpMessage sdpMessage = RtspStreamScanner.rtspUrlToSdpMessage.get(getEntity().getIeeeAddress());
+        SdpMessage sdpMessage = RtspStreamScanner.rtspUrlToSdpMessage.get(StringUtils.defaultString(getEntity().getIeeeAddress(), "\\x0"));
         if (sdpMessage != null) {
             map.put("RTSP Description Message", new StringType(sdpMessage.toString()));
         }

@@ -14,11 +14,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options.Chart;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options.Pulse;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options.Threshold;
 import org.homio.addon.z2m.widget.WidgetBuilder.MainWidgetRequest;
 import org.homio.api.EntityContextVar.VariableType;
 import org.homio.api.EntityContextWidget.Fill;
+import org.homio.api.EntityContextWidget.PulseColor;
 import org.homio.api.EntityContextWidget.Stepped;
 import org.homio.api.EntityContextWidget.ToggleType;
+import org.homio.api.EntityContextWidget.ValueCompare;
 import org.homio.api.entity.widget.AggregationType;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.jetbrains.annotations.NotNull;
@@ -51,10 +55,10 @@ public class Z2MDeviceDefinitionModel {
         private Integer blockHeight;
         // widget height inside layout
         private Integer widgetHeight;
-        // Background color
-        private String background;
         @Getter
         private @NotNull WidgetType type;
+        @Getter
+        private @Nullable ColorPicker background;
         @Getter
         private boolean autoDiscovery;
         @Getter
@@ -75,6 +79,8 @@ public class Z2MDeviceDefinitionModel {
         private Options options = new Options();
         @Getter
         private @Nullable List<Requests> requests;
+        @Getter
+        private Padding padding;
 
         public @NotNull List<ZigBeeProperty> getProperties(Z2MDeviceEntity z2MDeviceEntity) {
             if (this.isAutoDiscovery()) {
@@ -140,10 +146,6 @@ public class Z2MDeviceDefinitionModel {
             return index == null ? defaultValue : index;
         }
 
-        public String getBackground() {
-            return background;
-        }
-
         @SneakyThrows
         public static void replaceField(String path, Object value, WidgetDefinition widgetDefinition) {
             String[] split = path.split("\\.");
@@ -164,16 +166,31 @@ public class Z2MDeviceDefinitionModel {
         public static class ItemDefinition {
 
             private String name;
-            private String icon;
-            private String iconColor;
-            private JsonNode iconThreshold;
-            private JsonNode iconColorThreshold;
+            private IconPicker icon;
+            private ColorPicker iconColor;
             private String valueConverter;
             private String valueColor;
             private boolean valueSourceClickHistory = true;
             private int valueConverterRefreshInterval = 0;
             private Chart chart;
         }
+    }
+
+    @Getter
+    @Setter
+    public static class IconPicker {
+
+        private String value;
+        private List<Threshold> thresholds;
+    }
+
+    @Getter
+    @Setter
+    public static class ColorPicker {
+
+        private String value;
+        private List<Threshold> thresholds;
+        private List<Pulse> pulses;
     }
 
     @Getter
@@ -191,6 +208,16 @@ public class Z2MDeviceDefinitionModel {
         public enum RequestType {
             number
         }
+    }
+
+    @Getter
+    @Setter
+    public static class Padding {
+
+        private int top;
+        private int right;
+        private int bottom;
+        private int left;
     }
 
     @Getter
@@ -216,8 +243,29 @@ public class Z2MDeviceDefinitionModel {
         private String valueOnHoldClick;
         private String valueOnHoldReleaseClick;
         private String pushConfirmMessage;
-        private JsonNode animation;
         private Chart chart;
+
+        public Boolean showAllButton;
+
+        @Getter
+        @Setter
+        public static class Pulse {
+
+            private ValueCompare op;
+            private Object value;
+            private PulseColor color;
+            private Source source;
+        }
+
+        @Getter
+        @Setter
+        public static class Threshold {
+
+            private ValueCompare op;
+            private Object value;
+            private String target;
+            private Source source;
+        }
 
         @Getter
         @Setter

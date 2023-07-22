@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
-import org.homio.api.EntityContext;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition.ItemDefinition;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.exception.ProhibitedExecution;
 import org.homio.api.ui.UI;
@@ -31,8 +31,9 @@ public class ToggleWidget implements WidgetBuilder {
 
     @Override
     public void buildMainWidget(MainWidgetRequest request) {
-        Z2MDeviceEntity entity = request.getWidgetRequest().getEntity();
-        EntityContext entityContext = request.getWidgetRequest().getEntityContext();
+        WidgetRequest widgetRequest = request.getWidgetRequest();
+        Z2MDeviceEntity entity = widgetRequest.getEntity();
+
         Map<String, Z2MProperty> properties = entity.getDeviceService().getProperties();
         List<ZigBeeProperty> includeProperties = request.getItemIncludeProperties();
         if (includeProperties.isEmpty()) {
@@ -40,23 +41,26 @@ public class ToggleWidget implements WidgetBuilder {
         }
         WidgetDefinition wd = request.getItem();
 
-        entityContext.widget().createToggleWidget("tgl_" + entity.getEntityID(), builder -> {
-            builder.setName(entity.getDescription()).setShowName(false);
+        widgetRequest.getEntityContext().widget().createToggleWidget("tgl_" + entity.getEntityID(), builder -> {
+            WidgetBuilder.buildCommon(wd, widgetRequest, builder);
             builder.setDisplayType(wd.getOptions().getToggleType())
                    .setLayout(UIFieldLayout.LayoutBuilder.builder(50, 50).addRow(
                        rowBuilder -> rowBuilder.addCol("name", left).addCol("button", right)
                    ).build());
             builder.setBlockSize(
-                       wd.getBlockWidth(request.getLayoutColumnNum()),
-                       wd.getBlockHeight(request.getLayoutRowNum()))
-                   .setZIndex(wd.getZIndex(20));
+                wd.getBlockWidth(request.getLayoutColumnNum()),
+                wd.getBlockHeight(request.getLayoutRowNum()));
+            builder.setShowAllButton(wd.getOptions().getShowAllButton());
             request.getAttachToLayoutHandler().accept(builder);
 
             for (ZigBeeProperty property : includeProperties) {
+                ItemDefinition wbProperty = wd.getProperty(property.getKey());
                 Z2MProperty z2MProperty = properties.get(property.getKey());
-                builder.addSeries(getName(entity, z2MProperty), seriesBuilder ->
-                    WidgetBuilder.setValueDataSource(seriesBuilder, entityContext, z2MProperty)
-                                 .setColor(UI.Color.random()));
+                builder.addSeries(getName(entity, z2MProperty), seriesBuilder -> {
+                    WidgetBuilder.buildIconAndColor(property, seriesBuilder, wbProperty, widgetRequest);
+                    WidgetBuilder.setValueDataSource(seriesBuilder, widgetRequest.getEntityContext(), z2MProperty)
+                                 .setColor(UI.Color.random());
+                });
             }
         });
     }

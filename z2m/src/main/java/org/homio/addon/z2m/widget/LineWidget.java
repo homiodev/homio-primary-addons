@@ -17,7 +17,8 @@ public class LineWidget implements WidgetBuilder {
         WidgetDefinition widgetDefinition = widgetRequest.getWidgetDefinition();
 
         var request = new MainWidgetRequest(widgetRequest, widgetDefinition, 0,
-            0, builder -> {});
+            0, builder ->
+            WidgetBuilder.buildCommon(widgetDefinition, widgetRequest, builder));
         buildMainWidget(request);
     }
 
@@ -30,8 +31,8 @@ public class LineWidget implements WidgetBuilder {
         List<ZigBeeProperty> barSeries = wd.getIncludeProperties(request);
 
         entityContext.widget().createLineChartWidget("ln-" + entity.getIeeeAddress(), builder -> {
+            WidgetBuilder.buildCommon(wd, request.getWidgetRequest(), builder);
             builder.setBlockSize(wd.getBlockWidth(3), wd.getBlockHeight(1))
-                   .setZIndex(wd.getZIndex(20))
                    .setShowAxisX(wd.getOptions().isShowAxisX())
                    .setShowAxisY(wd.getOptions().isShowAxisY())
                    .setShowChartFullScreenButton(wd.getOptions().isShowChartFullScreenButton())

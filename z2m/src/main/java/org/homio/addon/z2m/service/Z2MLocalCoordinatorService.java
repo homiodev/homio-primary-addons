@@ -529,8 +529,8 @@ public class Z2MLocalCoordinatorService
                     new ZigBee2MQTTFrontendConsolePlugin(entityContext, new FrameConfiguration(z2mFrontendURL.toString()))));
 
         // register mqtt bridge event listeners
-        for (Z2MBridgeTopicHandlers response : Z2MBridgeTopicHandlers.values()) {
-            addMqttTopicListener(getBridgeTopic(response), payload -> response.handler.accept(payload, this));
+        for (Z2MBridgeTopicHandlers handler : Z2MBridgeTopicHandlers.values()) {
+            addMqttTopicListener(getBridgeTopic(handler), payload -> handler.handler.accept(payload, this), handler.logLevel);
         }
         for (Z2MBridgeResponseTopicHandlers response : Z2MBridgeResponseTopicHandlers.values()) {
             addMqttTopicListener(
@@ -541,13 +541,13 @@ public class Z2MLocalCoordinatorService
                     } else {
                         log.error("[{}]: ZigBee2MQTT {} response status failed. {}", entityID, response.topic, payload);
                     }
-                });
+                }, response.logLevel);
         }
     }
 
-    private void addMqttTopicListener(String topic, ThrowingConsumer<ObjectNode, Exception> handler) {
+    private void addMqttTopicListener(String topic, ThrowingConsumer<ObjectNode, Exception> handler, Level logLevel) {
         mqttEntityService.addListener(topic, "z2m", value -> {
-            log.info("[{}]: ZigBee2MQTT {}: {}", entityID, topic, value);
+            log.log(logLevel, "[{}]: ZigBee2MQTT {}: {}", entityID, topic, value);
             String payload = value == null ? "" : value.toString();
             if (!payload.isEmpty()) {
                 ObjectNode node;
@@ -690,8 +690,8 @@ public class Z2MLocalCoordinatorService
 
     @RequiredArgsConstructor
     private enum Z2MBridgeTopicHandlers {
-        config((payload, service) -> {}),
-        devices((payload, service) -> {
+        config(Level.INFO, (payload, service) -> {}),
+        devices(Level.INFO, (payload, service) -> {
             String value = payload.get("raw").asText();
             List<ApplianceModel> models = OBJECT_MAPPER.readValue(value, new TypeReference<>() {});
             Map<String, ApplianceModel> applianceModelMap = getApplianceModelMap(models);
@@ -721,9 +721,9 @@ public class Z2MLocalCoordinatorService
                 service.entityContext.ui().updateItem(deviceService.getDeviceEntity());
             }
         }),
-        extensions((payload, service) -> {}),
-        groups((payload, service) -> {}),
-        event((payload, service) -> {
+        extensions(Level.INFO, (payload, service) -> {}),
+        groups(Level.INFO, (payload, service) -> {}),
+        event(Level.INFO, (payload, service) -> {
             JsonNode data = payload.get("data");
             String ieeeAddress = data.path("ieee_address").asText();
             switch (payload.get("type").asText()) {
@@ -735,15 +735,17 @@ public class Z2MLocalCoordinatorService
                 case "device_announce" -> Z2MLocalCoordinatorService.log.info("[{}]: ZigBee2MQTT Device announce {}", service.entityID, ieeeAddress);
             }
         }),
-        info((payload, service) -> {}),
-        log((payload, service) -> {}),
-        logging((payload, service) -> {}),
-        state((payload, service) -> {
+        info(Level.DEBUG, (payload, service) -> {}),
+        log(Level.DEBUG, (payload, service) -> {}),
+        logging(Level.DEBUG, (payload, service) -> {}),
+        state(Level.WARN, (payload, service) -> {
             String status = payload.get("raw").asText();
             service.entity.setStatus("online".equals(status) ? Status.ONLINE : "offline".equals(status) ? Status.OFFLINE : Status.ERROR);
             service.getEntityContext().ui().sendInfoMessage("ZigBee2MQTT coordinator status: " + payload);
             service.entityContext.event().fireEvent("zigbee_coordinator-" + service.getEntityID(), service.getEntity().getStatus());
         });
+
+        private final Level logLevel;
 
         private static Map<String, ApplianceModel> getApplianceModelMap(List<ApplianceModel> models) {
             return models.stream()
@@ -756,12 +758,13 @@ public class Z2MLocalCoordinatorService
 
     @RequiredArgsConstructor
     private enum Z2MBridgeResponseTopicHandlers {
-        otaCheck("device/ota_update/check", (payload, service) ->
+        otaCheck("device/ota_update/check", Level.INFO, (payload, service) ->
             service.entityContext.ui().sendSuccessMessage(
                 Lang.getServerMessage("ZIGBEE.OTA_CHECK_" + payload.get("updateAvailable").asText().toUpperCase(),
                     payload.get("id").asText())));
 
         private final String topic;
+        private final Level logLevel;
         private final ThrowingBiConsumer<JsonNode, Z2MLocalCoordinatorService, Exception> handler;
     }
 }

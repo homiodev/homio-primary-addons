@@ -1,9 +1,7 @@
 package org.homio.addon.z2m.widget;
 
-import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,19 +10,16 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
+import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options.Chart;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options.Source;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition.ItemDefinition;
 import org.homio.api.EntityContext;
-import org.homio.api.EntityContextVar.VariableType;
 import org.homio.api.EntityContextWidget.DisplayWidgetBuilder;
 import org.homio.api.EntityContextWidget.DisplayWidgetSeriesBuilder;
 import org.homio.api.EntityContextWidget.HasChartDataSource;
 import org.homio.api.EntityContextWidget.HasLineChartBehaviour;
-import org.homio.api.EntityContextWidget.PulseColor;
-import org.homio.api.EntityContextWidget.ThresholdBuilder;
-import org.homio.api.EntityContextWidget.ValueCompare;
 import org.homio.api.EntityContextWidget.VerticalAlign;
 import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.ui.UI;
@@ -47,11 +42,11 @@ public class DisplayWidget implements WidgetBuilder {
         Map<String, ZigBeeProperty> properties = entity.getDeviceService().getProperties().entrySet().stream()
                                                        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
-        entityContext.widget().createLayoutWidget(layoutID, builder ->
+        entityContext.widget().createLayoutWidget(layoutID, builder -> {
+            WidgetBuilder.buildCommon(wd, widgetRequest, builder);
             builder.setBlockSize(wd.getBlockWidth(1), wd.getBlockHeight(1))
-                   .setZIndex(wd.getZIndex(20))
-                   .setBackground(wd.getBackground())
-                   .setLayoutDimension(propertiesSize + 1, 3));
+                   .setLayoutDimension(propertiesSize + 1, 3);
+        });
         var request = new MainWidgetRequest(widgetRequest, wd, 3,
             propertiesSize + 1, builder -> builder.attachToLayout(layoutID, 0, 0));
         buildMainWidget(request);
@@ -61,40 +56,41 @@ public class DisplayWidget implements WidgetBuilder {
 
     @Override
     public void buildMainWidget(MainWidgetRequest request) {
-        EntityContext entityContext = request.getWidgetRequest().getEntityContext();
-        Z2MDeviceEntity entity = request.getWidgetRequest().getEntity();
+        WidgetRequest widgetRequest = request.getWidgetRequest();
+        EntityContext entityContext = widgetRequest.getEntityContext();
+        Z2MDeviceEntity entity = widgetRequest.getEntity();
 
         List<ZigBeeProperty> includeProperties = request.getItemIncludeProperties();
         if (includeProperties.isEmpty()) {
-            throw new IllegalArgumentException("Unable to find display properties for device: " + request.getWidgetRequest().getEntity());
+            throw new IllegalArgumentException("Unable to find display properties for device: " + entity);
         }
 
         WidgetDefinition wd = request.getItem();
         entityContext.widget().createDisplayWidget("dw-" + entity.getIeeeAddress(), builder -> {
+            WidgetBuilder.buildCommon(wd, widgetRequest, builder);
             builder.setPadding(0, 2, 0, 2);
-            buildPushValue(request, builder, entityContext);
+            buildPushValue(request.getItem().getOptions(), builder, entity, entityContext);
 
-            buildBackground(request, builder);
+            WidgetBuilder.buildBackground(wd.getBackground(), widgetRequest, builder);
 
             String layout = wd.getLayout();
             if (isNotEmpty(layout)) {
                 builder.setLayout(layout);
             }
             builder.setBlockSize(
-                       wd.getBlockWidth(request.getLayoutColumnNum()),
-                       wd.getBlockHeight(request.getLayoutRowNum())) // includeProperties.size()
-                   .setZIndex(wd.getZIndex(20));
+                wd.getBlockWidth(request.getLayoutColumnNum()),
+                wd.getBlockHeight(request.getLayoutRowNum())); // includeProperties.size()
 
             request.getAttachToLayoutHandler().accept(builder);
 
             for (ZigBeeProperty property : includeProperties) {
-                addProperty(entityContext, request.getItem(), builder, property, seriesBuilder ->
+                addProperty(widgetRequest, request.getItem(), builder, property, seriesBuilder ->
                     Optional.ofNullable(PROPERTIES.get(property.getKey())).ifPresent(ib -> ib.build(seriesBuilder)));
             }
 
             Chart chart = wd.getOptions().getChart();
             if (chart != null) {
-                builder.setChartDataSource(buildDataSource(request, entityContext, chart.getSource()));
+                builder.setChartDataSource(WidgetBuilder.buildDataSource(entity, entityContext, chart.getSource()));
                 builder.setChartHeight(chart.getHeight());
                 fillHasChartDataSource(builder, chart);
                 fillHasLineChartBehaviour(builder, chart);
@@ -123,67 +119,24 @@ public class DisplayWidget implements WidgetBuilder {
         builder.setFillEmptyValues(chart.isFillEmptyValues());
     }
 
-    private void buildBackground(MainWidgetRequest request, DisplayWidgetBuilder builder) {
-        builder.setBackground(request.getItem().getBackground(), thresholdBuilder -> {
+    private void buildPushValue(Options options, DisplayWidgetBuilder builder, Z2MDeviceEntity entity, EntityContext entityContext) {
+        builder.setValueOnClick(options.getValueOnClick());
+        builder.setValueOnDoubleClick(options.getValueOnDoubleClick());
+        builder.setValueOnHoldClick(options.getValueOnHoldClick());
+        builder.setValueOnHoldReleaseClick(options.getValueOnHoldReleaseClick());
 
-        }, animateBuilder -> {
-            JsonNode animation = request.getItem().getOptions().getAnimation();
-            if (animation != null) {
-                JsonNode value = animation.get("value");
-                Object rawValue = value.isNumber() ? value.numberValue() : value.isBoolean() ? value.asBoolean() : value.asText();
-                animateBuilder.setPulse(
-                    PulseColor.valueOf(animation.get("color").asText()),
-                    rawValue,
-                    ValueCompare.valueOf(animation.get("op").asText())
-                );
-            }
-        });
-    }
-
-    private void buildPushValue(MainWidgetRequest request, DisplayWidgetBuilder builder, EntityContext entityContext) {
-        builder.setValueOnClick(request.getItem().getOptions().getValueOnClick());
-        builder.setValueOnDoubleClick(request.getItem().getOptions().getValueOnDoubleClick());
-        builder.setValueOnHoldClick(request.getItem().getOptions().getValueOnHoldClick());
-        builder.setValueOnHoldReleaseClick(request.getItem().getOptions().getValueOnHoldReleaseClick());
-
-        builder.setValueToPushConfirmMessage(request.getItem().getOptions().getPushConfirmMessage());
-        Source pushSource = request.getItem().getOptions().getPushSource();
+        builder.setValueToPushConfirmMessage(options.getPushConfirmMessage());
+        Source pushSource = options.getPushSource();
         if (pushSource != null) {
-            builder.setValueToPushSource(buildDataSource(request, entityContext, pushSource));
+            builder.setValueToPushSource(WidgetBuilder.buildDataSource(entity, entityContext, pushSource));
         }
     }
 
-    private String buildDataSource(MainWidgetRequest request, EntityContext entityContext, Source source) {
-        switch (source.getKind()) {
-            case variable -> {
-                String variable = entityContext.var().createVariable(request.getWidgetRequest().getEntity().getEntityID(),
-                    source.getValue(), source.getValue(), source.getVariableType(), null);
-                return entityContext.var().buildDataSource(variable, true);
-            }
-            case broadcasts -> {
-                String id = source.getValue() + "_" + request.getWidgetRequest().getEntity().getIeeeAddress();
-                String name = source.getValue() + " " + request.getWidgetRequest().getEntity().getIeeeAddress();
-                String variableID = entityContext.var().createVariable("broadcasts", id, name, VariableType.Any, null);
-                return entityContext.var().buildDataSource(variableID, true);
-            }
-            case property -> {
-                ZigBeeProperty property = request.getWidgetRequest().getEntity().getProperty(source.getValue());
-                if (property == null) {
-                    throw new IllegalArgumentException("Unable to find z2m property: " + source.getValue() +
-                        " for device: " + request.getWidgetRequest().getEntity());
-                }
-                return WidgetBuilder.getSource(entityContext, property, true);
-            }
-            default -> throw new IllegalArgumentException("Unable to find handler for type: " + source.getKind());
-        }
-    }
-
-    private void addProperty(EntityContext entityContext, WidgetDefinition wb, DisplayWidgetBuilder builder, ZigBeeProperty property,
-        Consumer<DisplayWidgetSeriesBuilder> handler) {
+    private void addProperty(WidgetRequest widgetRequest, WidgetDefinition wb, DisplayWidgetBuilder builder,
+        ZigBeeProperty property, Consumer<DisplayWidgetSeriesBuilder> handler) {
         builder.addSeries(property.getName(true), seriesBuilder -> {
             seriesBuilder
-                .setIcon(property.getIcon())
-                .setValueDataSource(WidgetBuilder.getSource(entityContext, property, false))
+                .setValueDataSource(WidgetBuilder.getSource(widgetRequest.getEntityContext(), property, false))
                 .setValueTemplate(null, property.getUnit())
                 .setValueSuffixFontSize(0.6)
                 .setValueSuffixColor("#777777")
@@ -195,32 +148,8 @@ public class DisplayWidget implements WidgetBuilder {
                 seriesBuilder.setValueConverterRefreshInterval(wbProperty.getValueConverterRefreshInterval());
                 seriesBuilder.setValueColor(wbProperty.getValueColor());
                 seriesBuilder.setValueSourceClickHistory(wbProperty.isValueSourceClickHistory());
-
-                if ((isNotEmpty(wbProperty.getIcon())) || wbProperty.getIconThreshold() != null) {
-                    applySeriesIcon(property, seriesBuilder, wbProperty);
-                }
             }
+            WidgetBuilder.buildIconAndColor(property, seriesBuilder, wbProperty, widgetRequest);
         });
-    }
-
-    private void applySeriesIcon(ZigBeeProperty property, DisplayWidgetSeriesBuilder seriesBuilder, ItemDefinition wbProperty) {
-        seriesBuilder.setIcon(defaultString(wbProperty.getIcon(), property.getIcon().getIcon()), thresholdBuilder ->
-            buildThreshold(wbProperty.getIconThreshold(), thresholdBuilder));
-        if (isNotEmpty(wbProperty.getIconColor()) || wbProperty.getIconColorThreshold() != null) {
-            seriesBuilder.setIconColor(defaultString(wbProperty.getIconColor(), property.getIcon().getColor()), thresholdBuilder ->
-                buildThreshold(wbProperty.getIconColorThreshold(), thresholdBuilder));
-        }
-    }
-
-    private void buildThreshold(JsonNode thresholdConfiguration, ThresholdBuilder thresholdBuilder) {
-        if (thresholdConfiguration != null) {
-            for (JsonNode threshold : thresholdConfiguration) {
-                thresholdBuilder.setThreshold(
-                    threshold.get("target").asText(),
-                    threshold.get("value").asText(),
-                    ValueCompare.valueOf(threshold.get("op").asText()));
-
-            }
-        }
     }
 }

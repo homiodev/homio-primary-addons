@@ -16,8 +16,8 @@ import org.homio.addon.camera.onvif.brand.CameraBrandHandlerDescription;
 import org.homio.addon.camera.service.BaseVideoService;
 import org.homio.addon.camera.service.OnvifCameraService;
 import org.homio.api.EntityContext;
-import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.RestartHandlerOnChange;
+import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;
@@ -291,10 +291,12 @@ public class OnvifCameraEntity extends BaseVideoEntity<OnvifCameraEntity, OnvifC
         UIInputBuilder uiInputBuilder = super.assembleActions();
         if (uiInputBuilder != null) {
             for (UIEntityItemBuilder uiEntity : uiInputBuilder.getUiEntityItemBuilders(true)) {
-                uiEntity.setDisabled(!this.isStart());
+                if (!"AUTHENTICATE".equals(uiEntity.getEntityID())) {
+                    uiEntity.setDisabled(!this.isStart());
+                }
             }
 
-            if (StringUtils.isEmpty(getIeeeAddress()) || getStatus() == Status.REQUIRE_AUTH) {
+            if (StringUtils.isEmpty(getIeeeAddress()) || !getStatus().isOnline()) {
                 uiInputBuilder.addOpenDialogSelectableButton("AUTHENTICATE", new Icon("fas fa-sign-in-alt"), 250,
                     (entityContext, params) -> {
 

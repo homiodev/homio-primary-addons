@@ -25,11 +25,11 @@ public class ColorWidget implements WidgetBuilder {
         Z2MProperty brightnessProperty = properties.get("brightness");
         Z2MProperty colorProperty = properties.get("color");
 
-        entityContext.widget().createLayoutWidget(layoutID, builder ->
+        entityContext.widget().createLayoutWidget(layoutID, builder -> {
+            WidgetBuilder.buildCommon(wd, widgetRequest, builder);
             builder.setBlockSize(2, 1)
-                   .setZIndex(wd.getZIndex(20))
-                   .setBackground(wd.getBackground())
-                   .setLayoutDimension(2, 6));
+                   .setLayoutDimension(2, 6);
+        });
 
         if (brightnessProperty != null) {
             entityContext.widget().createSliderWidget("sl_" + entity.getIeeeAddress(), builder -> {
