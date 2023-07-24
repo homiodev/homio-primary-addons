@@ -14,8 +14,8 @@ import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextWidget.HorizontalAlign;
-import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.exception.ProhibitedExecution;
+import org.homio.api.model.DeviceProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,14 +66,14 @@ public class ComposeWidget implements WidgetBuilder {
             currentLayoutRow.addAndGet(sumOfRowHeightsAdjusted);
         }
 
-        Map<String, ZigBeeProperty> properties = widgetRequest.getEntity().getProperties();
+        Map<String, DeviceProperty> properties = widgetRequest.getEntity().getProperties();
 
         addBottomRow(entityContext, wd, layoutID, currentLayoutRow.get(), properties);
     }
 
     public static void addBottomRow(EntityContext entityContext, WidgetDefinition wd, String layoutID, int row,
-        Map<String, ZigBeeProperty> properties) {
-        ZigBeeProperty leftProperty = findCellProperty(wd.getLeftProperty(), properties, LEFT_PROPERTIES);
+        Map<String, DeviceProperty> properties) {
+        DeviceProperty leftProperty = findCellProperty(wd.getLeftProperty(), properties, LEFT_PROPERTIES);
         WidgetBuilder.addProperty(
             entityContext,
             HorizontalAlign.left,
@@ -114,9 +114,9 @@ public class ComposeWidget implements WidgetBuilder {
         throw new ProhibitedExecution();
     }
 
-    private static @Nullable ZigBeeProperty findCellProperty(
+    private static @Nullable DeviceProperty findCellProperty(
         @Nullable String property,
-        @NotNull Map<String, ZigBeeProperty> properties,
+        @NotNull Map<String, DeviceProperty> properties,
         @NotNull String[] availableProperties) {
         if ("none".equals(property)) {
             return null;

@@ -39,8 +39,8 @@ import org.homio.api.entity.DisableCacheEntity;
 import org.homio.api.entity.HasJsonData;
 import org.homio.api.entity.HasStatusAndMsg;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
-import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.DeviceProperty;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.model.Status.EntityStatus;
@@ -98,12 +98,12 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     @Override
-    public @NotNull Map<String, ZigBeeProperty> getProperties() {
+    public @NotNull Map<String, DeviceProperty> getProperties() {
         return deviceService.getProperties().entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 
     @Override
-    public @Nullable ZigBeeProperty getProperty(@NotNull String property) {
+    public @Nullable DeviceProperty getProperty(@NotNull String property) {
         return deviceService.getProperties().get(property);
     }
 
@@ -153,7 +153,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
             (StringUtils.isEmpty(applianceModel.getType()) || "UNKNOWN".equalsIgnoreCase(applianceModel.getType()))) {
             status = Status.NOT_READY;
         } else {
-            ZigBeeProperty property = getProperty(PROPERTY_FIRMWARE_UPDATE);
+            DeviceProperty property = getProperty(PROPERTY_FIRMWARE_UPDATE);
             if (property instanceof Z2MPropertyFirmwareUpdate firmwareUpdate && firmwareUpdate.isUpdating()) {
                 status = Status.UPDATING;
             }
@@ -181,7 +181,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @Override
     public @Nullable String getUpdated() {
-        ZigBeeProperty property = getProperty(PROPERTY_LAST_SEEN);
+        DeviceProperty property = getProperty(PROPERTY_LAST_SEEN);
         return property == null ? null : property.getLastValue().stringValue();
     }
 
@@ -234,7 +234,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup(value = "GENERAL", order = 5)
     public String getIeeeAddressLabel() {
-        return getIeeeAddress().toUpperCase();
+        return trimToEmpty(getIeeeAddress()).toUpperCase();
     }
 
     @UIField(order = 5)
@@ -418,7 +418,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @Override
     public Boolean isOutdated() {
-        ZigBeeProperty property = getProperty(PROPERTY_FIRMWARE_UPDATE);
+        DeviceProperty property = getProperty(PROPERTY_FIRMWARE_UPDATE);
         if (property instanceof Z2MPropertyFirmwareUpdate firmwareUpdate) {
             return firmwareUpdate.isOutdated();
         }

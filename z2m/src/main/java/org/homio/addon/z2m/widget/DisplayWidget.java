@@ -21,7 +21,7 @@ import org.homio.api.EntityContextWidget.DisplayWidgetSeriesBuilder;
 import org.homio.api.EntityContextWidget.HasChartDataSource;
 import org.homio.api.EntityContextWidget.HasLineChartBehaviour;
 import org.homio.api.EntityContextWidget.VerticalAlign;
-import org.homio.api.entity.zigbee.ZigBeeProperty;
+import org.homio.api.model.DeviceProperty;
 import org.homio.api.ui.UI;
 
 @SuppressWarnings("rawtypes")
@@ -39,7 +39,7 @@ public class DisplayWidget implements WidgetBuilder {
         }
 
         String layoutID = "lt-dsp-" + entity.getIeeeAddress();
-        Map<String, ZigBeeProperty> properties = entity.getDeviceService().getProperties().entrySet().stream()
+        Map<String, DeviceProperty> properties = entity.getDeviceService().getProperties().entrySet().stream()
                                                        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
         entityContext.widget().createLayoutWidget(layoutID, builder -> {
@@ -60,7 +60,7 @@ public class DisplayWidget implements WidgetBuilder {
         EntityContext entityContext = widgetRequest.getEntityContext();
         Z2MDeviceEntity entity = widgetRequest.getEntity();
 
-        List<ZigBeeProperty> includeProperties = request.getItemIncludeProperties();
+        List<DeviceProperty> includeProperties = request.getItemIncludeProperties();
         if (includeProperties.isEmpty()) {
             throw new IllegalArgumentException("Unable to find display properties for device: " + entity);
         }
@@ -83,7 +83,7 @@ public class DisplayWidget implements WidgetBuilder {
 
             request.getAttachToLayoutHandler().accept(builder);
 
-            for (ZigBeeProperty property : includeProperties) {
+            for (DeviceProperty property : includeProperties) {
                 addProperty(widgetRequest, request.getItem(), builder, property, seriesBuilder ->
                     Optional.ofNullable(PROPERTIES.get(property.getKey())).ifPresent(ib -> ib.build(seriesBuilder)));
             }
@@ -133,7 +133,7 @@ public class DisplayWidget implements WidgetBuilder {
     }
 
     private void addProperty(WidgetRequest widgetRequest, WidgetDefinition wb, DisplayWidgetBuilder builder,
-        ZigBeeProperty property, Consumer<DisplayWidgetSeriesBuilder> handler) {
+        DeviceProperty property, Consumer<DisplayWidgetSeriesBuilder> handler) {
         builder.addSeries(property.getName(true), seriesBuilder -> {
             seriesBuilder
                 .setValueDataSource(WidgetBuilder.getSource(widgetRequest.getEntityContext(), property, false))

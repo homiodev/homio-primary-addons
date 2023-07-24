@@ -34,9 +34,9 @@ import org.homio.api.entity.types.StorageEntity;
 import org.homio.api.entity.validation.UIFieldValidationSize;
 import org.homio.api.entity.zigbee.ZigBeeBaseCoordinatorEntity;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
-import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.exception.ProhibitedExecution;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.DeviceProperty;
 import org.homio.api.model.OptionModel;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
@@ -254,8 +254,8 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @Override
-    public @NotNull Map<String, Map<String, ? extends ZigBeeProperty>> getCoordinatorTree() {
-        Map<String, Map<String, ? extends ZigBeeProperty>> map = new HashMap<>();
+    public @NotNull Map<String, Map<String, ? extends DeviceProperty>> getCoordinatorTree() {
+        Map<String, Map<String, ? extends DeviceProperty>> map = new HashMap<>();
         for (Entry<String, Z2MDeviceService> entry : getService().getDeviceHandlers().entrySet()) {
             map.put(entry.getKey(), entry.getValue().getProperties());
         }

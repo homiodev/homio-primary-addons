@@ -10,8 +10,8 @@ import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition.ItemDefinition;
-import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.exception.ProhibitedExecution;
+import org.homio.api.model.DeviceProperty;
 import org.homio.api.ui.UI;
 import org.homio.api.ui.field.UIFieldLayout;
 
@@ -35,7 +35,7 @@ public class ToggleWidget implements WidgetBuilder {
         Z2MDeviceEntity entity = widgetRequest.getEntity();
 
         Map<String, Z2MProperty> properties = entity.getDeviceService().getProperties();
-        List<ZigBeeProperty> includeProperties = request.getItemIncludeProperties();
+        List<DeviceProperty> includeProperties = request.getItemIncludeProperties();
         if (includeProperties.isEmpty()) {
             throw new IllegalArgumentException("Unable to find properties from device: " + entity);
         }
@@ -53,7 +53,7 @@ public class ToggleWidget implements WidgetBuilder {
             builder.setShowAllButton(wd.getOptions().getShowAllButton());
             request.getAttachToLayoutHandler().accept(builder);
 
-            for (ZigBeeProperty property : includeProperties) {
+            for (DeviceProperty property : includeProperties) {
                 ItemDefinition wbProperty = wd.getProperty(property.getKey());
                 Z2MProperty z2MProperty = properties.get(property.getKey());
                 builder.addSeries(getName(entity, z2MProperty), seriesBuilder -> {
@@ -65,7 +65,7 @@ public class ToggleWidget implements WidgetBuilder {
         });
     }
 
-    private int getWidgetHeight(List<ZigBeeProperty> properties) {
+    private int getWidgetHeight(List<DeviceProperty> properties) {
         return Math.round(properties.size() * 2F / 3);
     }
 

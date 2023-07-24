@@ -43,7 +43,7 @@ import org.homio.api.EntityContextWidget.SimpleValueWidgetBuilder;
 import org.homio.api.EntityContextWidget.ThresholdBuilder;
 import org.homio.api.EntityContextWidget.VerticalAlign;
 import org.homio.api.EntityContextWidget.WidgetBaseBuilder;
-import org.homio.api.entity.zigbee.ZigBeeProperty;
+import org.homio.api.model.DeviceProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,7 +71,7 @@ public interface WidgetBuilder {
     static void addProperty(
         @NotNull EntityContext entityContext,
         @NotNull HorizontalAlign horizontalAlign,
-        @Nullable ZigBeeProperty property,
+        @Nullable DeviceProperty property,
         boolean addUnit,
         @NotNull Consumer<SimpleValueWidgetBuilder> attachHandler) {
         if (property != null) {
@@ -88,7 +88,7 @@ public interface WidgetBuilder {
         }
     }
 
-    static String getSource(EntityContext entityContext, ZigBeeProperty property, boolean forSet) {
+    static String getSource(EntityContext entityContext, DeviceProperty property, boolean forSet) {
         return entityContext.var().buildDataSource(property.getVariableID(), forSet);
     }
 
@@ -109,7 +109,7 @@ public interface WidgetBuilder {
     private static void createSimpleProperty(
         @NotNull EntityContext entityContext,
         @NotNull HorizontalAlign horizontalAlign,
-        @NotNull ZigBeeProperty property,
+        @NotNull DeviceProperty property,
         @NotNull Consumer<SimpleValueWidgetBuilder> attachHandler,
         boolean addUnit) {
         entityContext.widget().createSimpleValueWidget(property.getEntityID(), builder -> {
@@ -140,7 +140,7 @@ public interface WidgetBuilder {
         private final @NotNull Z2MDeviceEntity entity;
         private final @NotNull String tab;
         private final @NotNull Z2MDeviceDefinitionModel.WidgetDefinition widgetDefinition;
-        private final @NotNull List<ZigBeeProperty> includeProperties;
+        private final @NotNull List<DeviceProperty> includeProperties;
     }
 
     @Getter
@@ -154,7 +154,7 @@ public interface WidgetBuilder {
         private final int layoutRowNum;
         private Consumer<WidgetBaseBuilder> attachToLayoutHandler;
 
-        public List<ZigBeeProperty> getItemIncludeProperties() {
+        public List<DeviceProperty> getItemIncludeProperties() {
             return item.getIncludeProperties(this);
         }
     }
@@ -188,7 +188,7 @@ public interface WidgetBuilder {
                 buildPulseThreshold(widgetRequest, background.getPulses(), pulseBuilder));
     }
 
-    static void buildIconAndColor(ZigBeeProperty property, HasIcon iconBuilder,
+    static void buildIconAndColor(DeviceProperty property, HasIcon iconBuilder,
         ItemDefinition wbProperty, WidgetRequest widgetRequest) {
         iconBuilder.setIcon(property.getIcon());
 
@@ -248,7 +248,7 @@ public interface WidgetBuilder {
                 return entityContext.var().buildDataSource(variableID, true);
             }
             case property -> {
-                ZigBeeProperty property = entity.getProperty(source.getValue());
+                DeviceProperty property = entity.getProperty(source.getValue());
                 if (property == null) {
                     throw new IllegalArgumentException("Unable to find z2m property: " + source.getValue() +
                         " for device: " + entity);

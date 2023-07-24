@@ -28,7 +28,7 @@ import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextVar.VariableMetaBuilder;
 import org.homio.api.EntityContextVar.VariableType;
-import org.homio.api.entity.zigbee.ZigBeeProperty;
+import org.homio.api.model.DeviceProperty;
 import org.homio.api.model.Icon;
 import org.homio.api.state.DecimalType;
 import org.homio.api.state.JsonType;
@@ -44,7 +44,7 @@ import org.json.JSONObject;
 @Log4j2
 @Getter
 @RequiredArgsConstructor
-public abstract class Z2MProperty implements ZigBeeProperty {
+public abstract class Z2MProperty implements DeviceProperty {
 
     // property name for LQI
     public static final String PROPERTY_BATTERY = "battery";

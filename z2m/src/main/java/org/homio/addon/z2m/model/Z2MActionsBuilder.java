@@ -10,8 +10,8 @@ import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetType;
 import org.homio.addon.z2m.widget.WidgetBuilder;
 import org.homio.addon.z2m.widget.WidgetBuilder.WidgetRequest;
 import org.homio.api.EntityContext;
-import org.homio.api.entity.zigbee.ZigBeeProperty;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.DeviceProperty;
 import org.homio.api.model.Icon;
 import org.homio.api.ui.UI;
 import org.homio.api.ui.UI.Color;
@@ -75,7 +75,7 @@ public class Z2MActionsBuilder {
 
         flex.addFlex("properties", propertyBuilder -> {
             propertyBuilder.setBorderArea("Endpoints").setBorderColor(Color.BLUE);
-            for (ZigBeeProperty propertyDefinition : existedProperties) {
+            for (DeviceProperty propertyDefinition : existedProperties) {
                 propertyBuilder.addCheckbox(propertyDefinition.getKey(), true, null)
                                .setTitle(propertyDefinition.getName(false));
             }
@@ -102,7 +102,7 @@ public class Z2MActionsBuilder {
 
         flex.addFlex("properties", propertyBuilder -> {
             propertyBuilder.setBorderArea("Endpoints").setBorderColor(Color.BLUE);
-            for (ZigBeeProperty propertyDefinition : existedProperties) {
+            for (DeviceProperty propertyDefinition : existedProperties) {
                 propertyBuilder.addCheckbox(propertyDefinition.getKey(), true, null)
                                .setTitle(propertyDefinition.getName(false));
             }
