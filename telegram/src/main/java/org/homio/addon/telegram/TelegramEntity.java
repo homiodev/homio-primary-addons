@@ -41,8 +41,6 @@ import org.telegram.telegrambots.meta.ApiConstants;
 @UISidebarChildren(icon = "fab fa-telegram", color = "#0088CC")
 public final class TelegramEntity extends CommunicationEntity<TelegramEntity> implements HasStatusAndMsg<TelegramEntity> {
 
-    public static final String PREFIX = "telegram_";
-
     @UIField(order = 1, hideInEdit = true, hideOnEmpty = true, fullWidth = true, bg = "#334842C2", type = UIFieldType.HTML)
     public String getDescription() {
         if (StringUtils.isEmpty(getBotName()) || StringUtils.isEmpty(getBotToken())) {
@@ -156,8 +154,8 @@ public final class TelegramEntity extends CommunicationEntity<TelegramEntity> im
     }
 
     @Override
-    public @NotNull String getEntityPrefix() {
-        return PREFIX;
+    protected @NotNull String getDevicePrefix() {
+        return "telegram";
     }
 
     @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off", iconColor = Color.RED)

@@ -182,7 +182,6 @@
     "ptzContinuous": "Ptz continuous"
   },
   "help": {
-    "field": {
       "snapshotPollInterval": "Specify interval for taking snapshots for snapshots.mjpeg",
       "videoCodec": "Specify video codec (copy, libx264)",
       "audioCodec": "Specify audio codec (copy, aac)",
@@ -215,6 +214,5 @@
       "snapshotOutOptions": "Specify your own FFmpeg options to be used when creating snapshots from RTSP. Default: -an -vsync vfr -q:v 2 -update 1",
       "motionOptions": "This gives access to the FFmpeg parameters for detecting motion alarms from a RTSP stream. One possible use for this is to use the CROP feature to ignore any trees that move in the wind or a timecode stamp. Crop will not remove the trees from your picture, it only ignores the movement of the tree.",
       "ptzContinuous": "If set to false (default) the camera will move using Relative commands, If set to true the camera will instead use continuous movements and will require an OFF command to stop the movement."
-    }
   }
 }

@@ -71,16 +71,12 @@ import org.springframework.util.MimeTypeUtils;
 @SuppressWarnings({"unused", "unchecked"})
 @Log4j2
 public abstract class BaseVideoService<T extends BaseVideoEntity>
-    implements EntityService.ServiceInstance, VideoActionsContext<T>,
+    extends EntityService.ServiceInstance implements VideoActionsContext<T>,
     FFMPEGHandler {
 
     private static final Map<String, Integer> bootstrapServerPortMap = new HashMap<>();
     @Getter
-    protected final EntityContext entityContext;
-    @Getter
     protected final int serverPort;
-    @Getter
-    protected final String entityID;
     @Getter
     private final Path ffmpegGifOutputPath;
     @Getter
@@ -129,11 +125,9 @@ public abstract class BaseVideoService<T extends BaseVideoEntity>
     private String mgpegOutOptions;
 
     public BaseVideoService(T entity, EntityContext entityContext) {
+        super(entityContext, entity);
         this.entity = entity;
         this.oldEntity = null;
-
-        this.entityID = entity.getEntityID();
-        this.entityContext = entityContext;
         this.serverPort = getEntity().getServerPort();
 
         entity.setStatus(Status.UNKNOWN, null);
@@ -178,7 +172,7 @@ public abstract class BaseVideoService<T extends BaseVideoEntity>
                 if (requireRestart) {
                     dispose();
                     testVideoOnline();
-                    initialize();
+                    initializeVideo();
                 }
             } catch (BadCredentialsException ex) {
                 this.disposeAndSetStatus(Status.REQUIRE_AUTH, CommonUtils.getErrorMessage(ex));
@@ -192,18 +186,18 @@ public abstract class BaseVideoService<T extends BaseVideoEntity>
     public abstract String getRtspUri(String profile);
 
     @Override
-    public boolean entityUpdated(@NotNull EntityService entityService) {
-        this.entity = (T) entityService;
-        return true;
-    }
-
-    @Override
     public void destroy() {
         dispose();
         deleteDirectories();
     }
 
-    public final void initialize() {
+    @Override
+    @SneakyThrows
+    protected void initialize() {
+        testVideoOnline();
+    }
+
+    public final void initializeVideo() {
         log.info("[{}]: Initialize video: <{}>", entityID, getEntity());
         isHandlerInitialized = true;
         try {

@@ -31,8 +31,6 @@ import org.jetbrains.annotations.Nullable;
 @UISidebarChildren(icon = "rest/addon/image/camera/loop-record.png", color = "#0088CC")
 public class FFMPEGLoopRecordStorageEntity extends VideoBaseStorageService<FFMPEGLoopRecordStorageEntity> {
 
-    public static final String PREFIX = "ffmpeglr_";
-
     private static Map<String, FFMPEG> ffmpegServices = new HashMap<>();
 
     @UIField(order = 11)
@@ -124,8 +122,8 @@ public class FFMPEGLoopRecordStorageEntity extends VideoBaseStorageService<FFMPE
     }
 
     @Override
-    public @NotNull String getEntityPrefix() {
-        return PREFIX;
+    protected @NotNull String getDevicePrefix() {
+        return "ffmpeglr";
     }
 
     @Override

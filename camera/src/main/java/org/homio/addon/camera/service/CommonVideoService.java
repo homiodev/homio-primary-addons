@@ -14,6 +14,7 @@ import org.homio.addon.camera.scanner.RtspStreamScanner;
 import org.homio.api.EntityContext;
 import org.homio.api.exception.ServerException;
 import org.homio.api.model.Icon;
+import org.homio.api.service.EntityService;
 import org.homio.api.state.State;
 import org.homio.api.state.StringType;
 
@@ -23,12 +24,6 @@ public class CommonVideoService extends BaseVideoService<CommonVideoStreamEntity
 
     public CommonVideoService(EntityContext entityContext, CommonVideoStreamEntity entity) {
         super(entity, entityContext);
-    }
-
-    @Override
-    public boolean testService() {
-        testVideoOnline();
-        return true;
     }
 
     @Override
@@ -93,6 +88,12 @@ public class CommonVideoService extends BaseVideoService<CommonVideoStreamEntity
     @Override
     protected void streamServerStarted() {
 
+    }
+
+    @Override
+    protected long getEntityHashCode(EntityService ignore) {
+        String ieeeAddress = getEntity().getIeeeAddress();
+        return ieeeAddress == null ? 0 : ieeeAddress.hashCode();
     }
 
     @RequiredArgsConstructor

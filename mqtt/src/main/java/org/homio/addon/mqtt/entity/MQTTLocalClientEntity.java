@@ -1,10 +1,9 @@
 package org.homio.addon.mqtt.entity;
 
 import jakarta.persistence.Entity;
-import java.util.Objects;
 import org.homio.addon.mqtt.workspace.Scratch3MQTTBlocks;
-import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.HasFirmwareVersion;
+import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.model.Icon;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
@@ -18,8 +17,8 @@ import org.jetbrains.annotations.NotNull;
 public class MQTTLocalClientEntity extends MQTTBaseEntity implements HasEntityLog, HasFirmwareVersion {
 
     @Override
-    public @NotNull String getEntityPrefix() {
-        return "mqttl_";
+    protected @NotNull String getDevicePrefix() {
+        return "mqtt_local";
     }
 
     @Override
@@ -56,11 +55,6 @@ public class MQTTLocalClientEntity extends MQTTBaseEntity implements HasEntityLo
     @UIField(order = 1, hideInEdit = true)
     public String getFirmwareVersion() {
         return getEntityContext().install().mosquitto().getVersion();
-    }
-
-    @Override
-    public boolean deepEqual(@NotNull MQTTBaseEntity mqttEntity) {
-        return super.deepEqual(mqttEntity) && Objects.equals(this.getHostname(), mqttEntity.getHostname());
     }
 
     @Override

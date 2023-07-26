@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -63,8 +62,6 @@ import org.jetbrains.annotations.Nullable;
 public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLocalCoordinatorEntity>
     implements HasFirmwareVersion, HasEntitySourceLog, ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
 
-    public static final String PREFIX = "zb2mqtt_";
-
     @UIField(order = 9999, disableEdit = true, hideInEdit = true)
     @UIFieldInlineEntities(bg = "#27FF000D")
     public List<ZigBeeCoordinatorDeviceEntity> getCoordinatorDevices() {
@@ -111,9 +108,13 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
         return "ZigBee2MQTT";
     }
 
+    public long getDeepHashCode() {
+        return getJsonDataHashCode(getEntityID(), "mqtt", "bt", "port", "start");
+    }
+
     @Override
-    public @NotNull String getEntityPrefix() {
-        return PREFIX;
+    protected @NotNull String getDevicePrefix() {
+        return "zb2mqtt";
     }
 
     @UIField(order = 30, inlineEdit = true)
@@ -243,14 +244,6 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     @Override
     public @NotNull List<OptionModel> getLogSources() {
         return List.of(OptionModel.of("log", "Zigbee2mqtt Log File"));
-    }
-
-    /**
-     * Check if need start/stop z2m service
-     */
-    public boolean deepEqual(Z2MLocalCoordinatorEntity o) {
-        return Objects.hash(getEntityID(), getBasicTopic(), getPort(), isStart(), getRawMqttEntity()) ==
-            Objects.hash(o.getEntityID(), o.getBasicTopic(), o.getPort(), o.isStart(), o.getRawMqttEntity());
     }
 
     @Override

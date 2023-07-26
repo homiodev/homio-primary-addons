@@ -72,21 +72,18 @@ import org.json.JSONObject;
  * The interface coordinators are responsible for opening a ZigBeeTransport implementation and passing this to the {@link Z2MLocalCoordinatorService}.
  */
 @Log4j2
-public class Z2MLocalCoordinatorService
-    implements HasEntityIdentifier, ServiceInstance<Z2MLocalCoordinatorEntity> {
+public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordinatorEntity>
+    implements HasEntityIdentifier {
 
-    @Getter protected final EntityContext entityContext;
     private final Path zigbee2mqttConfigurationPath = zigbee2mqttGitHub
         .getLocalProjectPath().resolve("data/configuration.yaml");
 
-    @Getter private final String entityID;
     private final Object updateCoordinatorSync = new Object();
     private final AtomicBoolean scanStarted = new AtomicBoolean(false);
     // Map ieeeAddress - Z2MDeviceService
     @Getter private final Map<String, Z2MDeviceService> deviceHandlers = new ConcurrentHashMap<>();
     @Getter private final Z2MPropertyConfigService configService;
 
-    @Getter @NotNull private Z2MLocalCoordinatorEntity entity;
     @Getter private boolean initialized;
     private Status desiredStatus;
     @Getter private @Nullable Status updatingStatus;
@@ -103,11 +100,8 @@ public class Z2MLocalCoordinatorService
     @Getter private boolean isZ2MRunningLocally;
 
     public Z2MLocalCoordinatorService(EntityContext entityContext, Z2MLocalCoordinatorEntity entity) {
-        this.entity = entity;
-        this.entityID = entity.getEntityID();
-        this.entityContext = entityContext;
+        super(entityContext, entity);
         this.configService = entityContext.getBean(Z2MPropertyConfigService.class);
-
         installZ2MIfRequire();
     }
 
@@ -147,12 +141,17 @@ public class Z2MLocalCoordinatorService
     }
 
     @SneakyThrows
-    public void initialize() {
+    public void initializeZ2M() {
         initialized = false;
         log.info("[{}]: Initializing ZigBee network.", entityID);
 
         mqttEntityService = entity.getMqttEntityService();
         runZigBee2MQTT();
+    }
+
+    @Override
+    protected long getEntityHashCode(Z2MLocalCoordinatorEntity entity) {
+        return entity.getDeepHashCode();
     }
 
     public void dispose(@Nullable Exception ex) {
@@ -205,14 +204,8 @@ public class Z2MLocalCoordinatorService
     }
 
     @Override
-    @SneakyThrows
-    public boolean entityUpdated(@NotNull Z2MLocalCoordinatorEntity newEntity) {
-        boolean requireRestart = !this.entity.deepEqual(newEntity);
-        this.entity = newEntity;
-        if (requireRestart) {
-            this.restartCoordinator();
-        }
-        return false;
+    protected void initialize() {
+        this.restartCoordinator();
     }
 
     @SneakyThrows
@@ -263,11 +256,6 @@ public class Z2MLocalCoordinatorService
             }
             return ActionResponseModel.showSuccess("ZIGBEE.START_SUCCESS");
         }
-    }
-
-    @Override
-    public boolean testService() {
-        return false;
     }
 
     @Override
@@ -364,7 +352,7 @@ public class Z2MLocalCoordinatorService
                     if (initialized) {
                         this.dispose(null);
                     }
-                    this.initialize();
+                    this.initializeZ2M();
                 }
             }
             entityContext.ui().updateItem(entity);
@@ -741,8 +729,8 @@ public class Z2MLocalCoordinatorService
         state(Level.WARN, (payload, service) -> {
             String status = payload.get("raw").asText();
             service.entity.setStatus("online".equals(status) ? Status.ONLINE : "offline".equals(status) ? Status.OFFLINE : Status.ERROR);
-            service.getEntityContext().ui().sendInfoMessage("ZigBee2MQTT coordinator status: " + payload);
-            service.entityContext.event().fireEvent("zigbee_coordinator-" + service.getEntityID(), service.getEntity().getStatus());
+            service.entityContext.ui().sendInfoMessage("ZigBee2MQTT coordinator status: " + payload);
+            service.entityContext.event().fireEvent("zigbee_coordinator-" + service.getEntityID(), service.entity.getStatus());
         });
 
         private final Level logLevel;

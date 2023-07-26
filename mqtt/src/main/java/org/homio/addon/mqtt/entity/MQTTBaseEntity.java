@@ -4,7 +4,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import jakarta.persistence.Entity;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 import lombok.SneakyThrows;
@@ -128,8 +127,8 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
         return getJsonSecure("pwd");
     }
 
-    public void setMqttPassword(String value) {
-        setJsonData("pwd", value);
+    public void setPassword(String value) {
+        setJsonDataSecure("pwd", value);
     }
 
     @UIField(order = 1)
@@ -261,19 +260,31 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
 
     @Override
     public Object getStatusValue(GetStatusValueRequest request) {
-        String topic = getTopicRequire(request.getDynamicParameters(), "queryTopic");
+        JSONObject parameters = request.getDynamicParameters();
+        if (parameters == null) {
+            return null;
+        }
+        String topic = getTopicRequire(parameters, "queryTopic");
         return getService().getRawValue(topic);
     }
 
     @Override
     public SourceHistory getSourceHistory(GetStatusValueRequest request) {
-        String topic = getTopicRequire(request.getDynamicParameters(), "queryTopic");
+        JSONObject parameters = request.getDynamicParameters();
+        if (parameters == null) {
+            return null;
+        }
+        String topic = getTopicRequire(parameters, "queryTopic");
         return getService().getSourceHistory(topic);
     }
 
     @Override
     public List<SourceHistoryItem> getSourceHistoryItems(GetStatusValueRequest request, int from, int count) {
-        String topic = getTopicRequire(request.getDynamicParameters(), "queryTopic");
+        JSONObject parameters = request.getDynamicParameters();
+        if (parameters == null) {
+            return null;
+        }
+        String topic = getTopicRequire(parameters, "queryTopic");
         return getService().getSourceHistoryItems(topic, from, count);
     }
 
@@ -309,9 +320,13 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
         return "MQTT.SET_TOPIC";
     }
 
-    public boolean deepEqual(@NotNull MQTTBaseEntity o) {
-        return Objects.hash(getEntityID(), getUser(), getPassword().asString(), getMqttClientID(), getPort())
-            == Objects.hash(o.getEntityID(), o.getUser(), o.getPassword().asString(), o.getMqttClientID(), o.getPort());
+    public long getDeepHashCode() {
+        return getJsonDataHashCode(getEntityID(), "hs", "sys", "cs") + getServiceHashCode();
+    }
+
+    public long getServiceHashCode() {
+        return getJsonDataHashCode("user", "pwd", "cid", "port", "cs", "ct",
+            "ka", "host");
     }
 
     static String normalize(String topic) {

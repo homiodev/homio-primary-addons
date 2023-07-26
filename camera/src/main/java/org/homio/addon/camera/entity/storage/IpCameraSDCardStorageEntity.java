@@ -13,11 +13,9 @@ import org.jetbrains.annotations.Nullable;
 @UISidebarChildren(icon = "rest/addon/image/camera/memory-card.png", color = "#AACC00")
 public class IpCameraSDCardStorageEntity extends VideoBaseStorageService<IpCameraSDCardStorageEntity> {
 
-  public static final String PREFIX = "ipcsd_";
-
   @Override
-  public @NotNull String getEntityPrefix() {
-    return PREFIX;
+  protected @NotNull String getDevicePrefix() {
+    return "ipcsd";
   }
 
   @SneakyThrows

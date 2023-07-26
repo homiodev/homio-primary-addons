@@ -47,8 +47,6 @@ import org.jetbrains.annotations.Nullable;
 public class OnvifCameraEntity extends BaseVideoEntity<OnvifCameraEntity, OnvifCameraService>
     implements HasDynamicContextMenuActions, VideoPlaybackStorage, HasEntityLog {
 
-    public static final String PREFIX = "onvifcam_";
-
     @UIField(order = 16)
     @RestartHandlerOnChange
     @UIFieldSelection(SelectCameraBrand.class)
@@ -253,9 +251,14 @@ public class OnvifCameraEntity extends BaseVideoEntity<OnvifCameraEntity, OnvifC
         return new Icon("fas fa-video", "#4E783D");
     }
 
+    public long getDeepHashCode() {
+        return getJsonDataHashCode(getIeeeAddress(), getName(), "ip", "cameraType", "onvifPort", "restPort",
+            "onvifMediaProfile", "user", "pwd");
+    }
+
     @Override
-    public @NotNull String getEntityPrefix() {
-        return PREFIX;
+    protected @NotNull String getDevicePrefix() {
+        return "onvifcam";
     }
 
     @Override

@@ -19,8 +19,6 @@ import org.jetbrains.annotations.NotNull;
 public class CommonVideoStreamEntity extends BaseVideoEntity<CommonVideoStreamEntity, CommonVideoService>
     implements AbilityToStreamHLSOverFFMPEG<CommonVideoStreamEntity> {
 
-    public static final String PREFIX = "vidc_";
-
     @Override
     @UIField(order = 5, label = "url", inlineEdit = true, required = true)
     @RestartHandlerOnChange
@@ -28,36 +26,36 @@ public class CommonVideoStreamEntity extends BaseVideoEntity<CommonVideoStreamEn
         return super.getIeeeAddress();
     }
 
-  @Override
-  public String getFolderName() {
-    return "video";
-  }
+    @Override
+    public String getFolderName() {
+        return "video";
+    }
 
-  @Override
-  public String getDefaultName() {
-    return null;
-  }
+    @Override
+    public String getDefaultName() {
+        return null;
+    }
 
-  @Override
-  public String toString() {
-    return getIeeeAddress();
-  }
+    @Override
+    public String toString() {
+        return getIeeeAddress();
+    }
 
-  @Override
-  public String getEntityPrefix() {
-    return PREFIX;
-  }
+    @Override
+    protected @NotNull String getDevicePrefix() {
+        return "vstream";
+    }
 
-  @Override
-  protected void beforePersist() {
-    setSnapshotOutOptions("-update 1~~~-frames:v 1");
-    setServerPort(BaseVideoService.findFreeBootstrapServerPort());
-  }
+    @Override
+    protected void beforePersist() {
+        setSnapshotOutOptions("-update 1~~~-frames:v 1");
+        setServerPort(BaseVideoService.findFreeBootstrapServerPort());
+    }
 
-  @Override
-  public Icon getEntityIcon() {
-    return new Icon("fas fa-film", "#4E783D");
-  }
+    @Override
+    public Icon getEntityIcon() {
+        return new Icon("fas fa-film", "#4E783D");
+    }
 
     @Override
     public @NotNull Class<CommonVideoService> getEntityServiceItemClass() {

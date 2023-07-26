@@ -17,6 +17,7 @@ import org.homio.addon.camera.entity.UsbCameraEntity;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextMedia.FFMPEG;
 import org.homio.api.model.Icon;
+import org.homio.api.service.EntityService;
 import org.homio.api.util.CommonUtils;
 
 @Log4j2
@@ -30,13 +31,8 @@ public class UsbCameraService extends BaseVideoService<UsbCameraEntity> {
     }
 
     @Override
-    public void destroy() {
-
-    }
-
-    @Override
-    public boolean testService() {
-        return false;
+    protected long getEntityHashCode(EntityService entity) {
+        return getEntity().getDeepHashCode();
     }
 
     @Override

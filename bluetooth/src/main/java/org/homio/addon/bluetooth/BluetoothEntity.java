@@ -16,16 +16,13 @@ import org.jetbrains.annotations.NotNull;
 @UISidebarChildren(icon = "fab fa-bluetooth", color = "#0088CC", allowCreateItem = false)
 public class BluetoothEntity extends CommunicationEntity<BluetoothEntity> implements HasStatusAndMsg<BluetoothEntity> {
 
-    public static final String PREFIX = "ble_";
-    public static final String DEFAULT_BLUETOOTH_ENTITY_ID = PREFIX + "primary";
-
     @Override
     public String getDefaultName() {
         return "Bluetooth";
     }
 
     @Override
-    public @NotNull String getEntityPrefix() {
-        return PREFIX;
+    protected @NotNull String getDevicePrefix() {
+        return "ble";
     }
 }

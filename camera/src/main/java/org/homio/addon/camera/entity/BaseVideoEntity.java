@@ -180,11 +180,11 @@ public abstract class BaseVideoEntity<T extends BaseVideoEntity, S extends BaseV
 
     // not all entity has password
     public SecureString getPassword() {
-        return new SecureString(getJsonData("password", ""));
+        return getJsonSecure("pwd");
     }
 
     public void setPassword(String value) {
-        setJsonData("password", value);
+        setJsonDataSecure("pwd", value);
     }
 
     public String getAlarmInputUrl() {
@@ -330,11 +330,6 @@ public abstract class BaseVideoEntity<T extends BaseVideoEntity, S extends BaseV
             case "image.jpg" -> getImageUrl();
             default -> null;
         };
-    }
-
-    @Override
-    public void testService() {
-        // ignore because all camera create services.
     }
 
     protected void fireUpdateSnapshot(EntityContext entityContext, JSONObject params) {

@@ -35,7 +35,6 @@ import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.DeviceBaseEntity;
-import org.homio.api.entity.DisableCacheEntity;
 import org.homio.api.entity.HasJsonData;
 import org.homio.api.entity.HasStatusAndMsg;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
@@ -74,12 +73,10 @@ import org.json.JSONObject;
 @Getter
 @Setter
 @NoArgsConstructor
-@DisableCacheEntity
 @SuppressWarnings("unused")
 public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntity>
     implements HasJsonData, HasStatusAndMsg<Z2MDeviceEntity>, HasDynamicContextMenuActions {
 
-    public static final String PREFIX = "z2m_";
     @JsonIgnore private transient Z2MDeviceService deviceService;
     @JsonIgnore private transient Z2MPropertyConfigService configService;
 
@@ -88,7 +85,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         this.deviceService = deviceService;
         this.configService = deviceService.getConfigService();
 
-        setEntityID(PREFIX + ieeeAddress);
+        setEntityID(getEntityPrefix() + ieeeAddress);
         setIeeeAddress(ieeeAddress);
     }
 
@@ -124,7 +121,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIFieldColorStatusMatch
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup(value = "STATUS", order = 3, borderColor = "#7ACC2D")
-    public Status getStatus() {
+    public @NotNull Status getStatus() {
         String availability = deviceService.getAvailability();
         Status status = Status.UNKNOWN;
         if (availability != null) {
@@ -397,8 +394,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     @Override
-    public @NotNull String getEntityPrefix() {
-        return PREFIX;
+    protected @NotNull String getDevicePrefix() {
+        return "z2m";
     }
 
     @Override

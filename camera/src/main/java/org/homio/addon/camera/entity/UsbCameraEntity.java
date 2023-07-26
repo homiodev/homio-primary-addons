@@ -22,8 +22,6 @@ import org.jetbrains.annotations.NotNull;
 public final class UsbCameraEntity extends BaseVideoEntity<UsbCameraEntity, UsbCameraService>
     implements AbilityToStreamHLSOverFFMPEG<UsbCameraEntity>, HasEntityLog {
 
-    public static final String PREFIX = "usbcam_";
-
     @Override
     @UIField(order = 5, label = "usb")
     @RestartHandlerOnChange
@@ -84,9 +82,13 @@ public final class UsbCameraEntity extends BaseVideoEntity<UsbCameraEntity, UsbC
     return "Usb camera";
   }
 
-  @Override
-  public @NotNull String getEntityPrefix() {
-    return PREFIX;
+  public long getDeepHashCode() {
+    return getJsonDataHashCode(getIeeeAddress(), "asource", "stream", "streamPort");
+  }
+
+    @Override
+  protected @NotNull String getDevicePrefix() {
+    return "usbcam";
   }
 
   @Override

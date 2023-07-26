@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +41,7 @@ import org.homio.api.fs.TreeNode;
 import org.homio.api.fs.TreeNodeChip;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
-import org.homio.api.service.EntityService;
+import org.homio.api.service.EntityService.ServiceInstance;
 import org.homio.api.storage.DataStorageService;
 import org.homio.api.storage.SourceHistory;
 import org.homio.api.storage.SourceHistoryItem;
@@ -52,33 +51,25 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 @Log4j2
-public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity> {
+public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
 
     private final Map<String, List<MQTTMessage>> sysHistoryMap = new HashMap<>();
-
     @Getter
     @NotNull
     private final DataStorageService<MQTTMessage> storage;
-    @NotNull
-    private final EntityContext entityContext;
     @Getter
     private final TreeNode root = new TreeNode().setChildrenMap(new HashMap<>());
-    @NotNull
-    private final String entityID;
     @Getter
     private MqttClient mqttClient;
     @Getter
-    @NotNull
-    private MQTTBaseEntity entity;
+    private long serviceHashCode;
 
     public MQTTService(@NotNull MQTTBaseEntity entity, @NotNull EntityContext entityContext) {
-        this.entity = entity;
-        this.entityID = entity.getEntityID();
-        this.entityContext = entityContext;
+        super(entityContext, entity);
         this.storage = entityContext.storage().getOrCreateInMemoryService(MQTTMessage.class, entityID, (long) entity.getHistorySize());
 
         MQTTExplorerConsolePlugin mqttPlugin = new MQTTExplorerConsolePlugin(entityContext, this);
-        this.entityContext.ui().registerConsolePlugin(entityID, mqttPlugin);
+        entityContext.ui().registerConsolePlugin(entityID, mqttPlugin);
 
         entityContext.setting().listenValue(ConsoleMQTTPublishButtonSetting.class, entityID + "-mqtt-publish",
             jsonObject -> entity.publish(jsonObject.getString("Topic"), getContent(jsonObject),
@@ -104,6 +95,18 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
                 entityContext.install().mosquitto().requireAsync(null, () ->
                     log.info("Mosquitto service successfully installed")));
         }
+
+        fireInitialize();
+    }
+
+    public void testServiceWithSetStatus() {
+        try {
+            destroy();
+            createMQTTClient();
+            entity.setStatusOnline();
+        } catch (Exception ex) {
+            entity.setStatusError(ex);
+        }
     }
 
     private byte[] getContent(JSONObject jsonObject) {
@@ -127,43 +130,34 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
     }
 
     @Override
+    protected long getEntityHashCode(MQTTBaseEntity entity) {
+        return entity.getDeepHashCode();
+    }
+
+    @Override
     @SneakyThrows
-    public boolean entityUpdated(MQTTBaseEntity entity) {
-        boolean updated = false;
+    protected void initialize() {
         this.storage.updateQuota((long) entity.getHistorySize());
         if (!entity.getIncludeSys()) {
             sysHistoryMap.clear();
         }
 
-        if (!Objects.equals(this.entity.getMqttCleanSessionOnConnect(), entity.getMqttCleanSessionOnConnect()) ||
-            !Objects.equals(this.entity.getConnectionTimeout(), entity.getConnectionTimeout()) ||
-            !Objects.equals(this.entity.getMqttKeepAlive(), entity.getMqttKeepAlive()) ||
-            !Objects.equals(this.entity.getUser(), entity.getUser()) ||
-            !Objects.equals(this.entity.getPassword().asString(), entity.getPassword().asString()) ||
-            !Objects.equals(this.entity.getHostname(), entity.getHostname()) ||
-            !Objects.equals(this.entity.getMqttClientID(), entity.getMqttClientID()) ||
-            !Objects.equals(this.entity.getPort(), entity.getPort())) {
-            this.destroy();
-            updated = true;
-
+        long serviceHashCode = entity.getServiceHashCode();
+        if (serviceHashCode != this.serviceHashCode) {
+            this.serviceHashCode = serviceHashCode;
+            testServiceWithSetStatus();
         }
-        this.entity = entity;
-        return updated;
     }
 
     @Override
     public void destroy() throws Exception {
-        if (mqttClient.isConnected()) {
-            mqttClient.disconnectForcibly();
-            mqttClient.close(true);
+        if (mqttClient != null) {
+            if (mqttClient.isConnected()) {
+                mqttClient.disconnectForcibly();
+                mqttClient.close(true);
+            }
+            updateNotificationBlock();
         }
-        updateNotificationBlock();
-    }
-
-    @Override
-    public boolean testService() throws Exception {
-        createMQTTClient();
-        return true;
     }
 
     public List<TreeConfiguration> getValue() {
@@ -303,7 +297,7 @@ public class MQTTService implements EntityService.ServiceInstance<MQTTBaseEntity
         }
         TreeNode root = new TreeNode();
         root.addChild(treeNode);
-        this.entityContext.event().fireEvent(entityID, root);
+        entityContext.event().fireEvent(entityID, root);
     }
 
     private TreeNode findTopic(String value, TreeNode cursor, int payloadLength) {

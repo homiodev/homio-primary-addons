@@ -211,19 +211,11 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
     }
 
     @Override
-    public boolean entityUpdated(@NotNull EntityService entityService) {
-        super.entityUpdated(entityService);
-
+    protected void initialize() {
         onvifDeviceState.updateParameters(getEntity().getIp(), getEntity().getOnvifPort(),
             getEntity().getServerPort(), getEntity().getUser(), getEntity().getPassword().asString());
         // change camera name if possible
         tryChangeCameraName();
-        return false;
-    }
-
-    @Override
-    public boolean testService() {
-        return false;
     }
 
     public VideoPlaybackStorage getVideoPlaybackStorage() {
@@ -881,6 +873,11 @@ public class OnvifCameraService extends BaseVideoService<OnvifCameraEntity> {
     @Override
     protected boolean isMotionAlarmHandlesByVideo() {
         return brandHandler instanceof BrandCameraHasMotionAlarm;
+    }
+
+    @Override
+    protected long getEntityHashCode(EntityService entity) {
+        return getEntity().getDeepHashCode();
     }
 
     private void tryChangeCameraName() {
