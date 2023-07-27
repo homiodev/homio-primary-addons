@@ -4,7 +4,6 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
 import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_FIRMWARE_UPDATE;
-import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_LAST_SEEN;
 import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
 import static org.homio.api.ui.field.UIFieldType.HTML;
 import static org.homio.api.ui.field.UIFieldType.SelectBox;
@@ -12,7 +11,6 @@ import static org.homio.api.ui.field.UIFieldType.SelectBox;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -23,7 +21,6 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.service.Z2MDeviceService;
-import org.homio.addon.z2m.service.Z2MProperty;
 import org.homio.addon.z2m.service.properties.Z2MPropertyFirmwareUpdate;
 import org.homio.addon.z2m.setting.ZigBeeEntityCompactModeSetting;
 import org.homio.addon.z2m.util.ApplianceModel;
@@ -56,7 +53,6 @@ import org.homio.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
 import org.homio.api.ui.field.color.UIFieldColorBgRef;
 import org.homio.api.ui.field.color.UIFieldColorStatusMatch;
 import org.homio.api.ui.field.condition.UIFieldShowOnCondition;
-import org.homio.api.ui.field.inline.UIFieldInlineEntities;
 import org.homio.api.ui.field.model.HrefModel;
 import org.homio.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.homio.api.ui.field.selection.UIFieldSelection;
@@ -169,21 +165,6 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
             getFirstLevelDescription(),
             deviceService.getApplianceModel().getDefinition().getDescription()
         );
-    }
-
-    @Override
-    public @Nullable String getUpdated() {
-        DeviceEndpoint property = getProperty(PROPERTY_LAST_SEEN);
-        return property == null ? null : property.getLastValue().stringValue();
-    }
-
-    // Require for @UIFieldColorBgRef("statusColor")
-    public String getStatusColor() {
-        EntityStatus entityStatus = getEntityStatus();
-        if (entityStatus.getValue().isOnline()) {
-            return "";
-        }
-        return entityStatus.getColor() + "30";
     }
 
     @Override
@@ -378,12 +359,6 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         deviceService.updateConfiguration("image", trimToNull(Objects.equals(value, getModelIdentifier()) ? null : value));
     }
 
-    @UIField(order = 9999)
-    @UIFieldInlineEntities(bg = "#27FF0005")
-    public List<DeviceEndpointUI<Z2MProperty>> getEndpoints() {
-        return DeviceEndpointUI.build(deviceService.getProperties().values());
-    }
-
     @Override
     protected @NotNull String getDevicePrefix() {
         return "z2m";
@@ -450,7 +425,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @Override
     public ActionResponseModel handleAction(EntityContext entityContext, String actionID, JSONObject params) throws Exception {
-        for (DeviceEndpointUI<Z2MProperty> endpoint : getEndpoints()) {
+        for (DeviceEndpointUI endpoint : getEndpoints()) {
             if (actionID.startsWith(endpoint.getEntityID())) {
                 UIActionHandler actionHandler = endpoint.getEndpoint().createUIInputBuilder().findActionHandler(actionID);
                 if (actionHandler != null) {
@@ -458,7 +433,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
                 }
             }
         }
-        return HasDynamicContextMenuActions.super.handleAction(entityContext, actionID, params);
+        return super.handleAction(entityContext, actionID, params);
     }
 
     @Override
