@@ -2,7 +2,7 @@ package org.homio.addon.z2m.service.properties;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.homio.addon.z2m.service.Z2MDeviceService;
-import org.homio.addon.z2m.service.Z2MProperty;
+import org.homio.addon.z2m.service.Z2MEndpoint;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
@@ -14,11 +14,11 @@ import org.homio.api.util.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public class Z2MPropertyFirmwareUpdate extends Z2MProperty {
+public class Z2MEndpointFirmwareUpdate extends Z2MEndpoint {
 
     private boolean wasProgress;
 
-    public Z2MPropertyFirmwareUpdate() {
+    public Z2MEndpointFirmwareUpdate() {
         super(new Icon("fa fa-fw fa-tablets", "#FF0000"));
         setValue(new JsonType("{}"));
     }

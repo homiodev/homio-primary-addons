@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.homio.addon.z2m.service.Z2MDeviceService;
-import org.homio.addon.z2m.service.Z2MProperty;
+import org.homio.addon.z2m.service.Z2MEndpoint;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.homio.api.model.Icon;
@@ -13,7 +13,7 @@ import org.homio.api.state.StringType;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public class Z2MPropertyColor extends Z2MProperty {
+public class Z2MEndpointColor extends Z2MEndpoint {
 
     // 1931 CIE XYZ to sRGB (D65 reference white)
     private static final float[][] XY2RGB = {
@@ -21,7 +21,7 @@ public class Z2MPropertyColor extends Z2MProperty {
         {-0.9689f, 1.8758f, 0.0415f},
         {0.0557f, -0.2040f, 1.0570f}};
 
-    public Z2MPropertyColor() {
+    public Z2MEndpointColor() {
         super(new Icon("fas fa-fw fa-palette", "#FF009B"));
     }
 
@@ -206,7 +206,7 @@ public class Z2MPropertyColor extends Z2MProperty {
     private int getBrightness(JSONObject payload) {
         return payload.has("brightness")
             ? payload.getInt("brightness")
-            : getDeviceService().getProperties().get("brightness").getValue().intValue(255);
+            : getDeviceService().getEndpoints().get("brightness").getValue().intValue(255);
     }
 
     private String hsToHex(float hue, float saturation, int brightness) {

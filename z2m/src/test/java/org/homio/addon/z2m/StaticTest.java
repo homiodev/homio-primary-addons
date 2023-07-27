@@ -15,9 +15,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.Z2MConfiguration;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionsModel;
 import org.homio.addon.z2m.util.Z2MPropertyModel;
+import org.homio.api.model.DeviceDefinitionModel;
 import org.junit.jupiter.api.Test;
 
 public class StaticTest {
@@ -38,7 +38,7 @@ public class StaticTest {
                                                                         .collect(Collectors.toMap(Z2MPropertyModel::getName, Function.identity()));
         assertEquals(propertyMap.size(), deviceConfigurations.getProperties().size());
         //
-        for (Z2MDeviceDefinitionModel device : deviceConfigurations.getDevices()) {
+        for (DeviceDefinitionModel device : deviceConfigurations.getDevices()) {
             assertNotNull(device.getName());
         }
 

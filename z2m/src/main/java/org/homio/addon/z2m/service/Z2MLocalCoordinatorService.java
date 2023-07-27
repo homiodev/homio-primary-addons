@@ -289,7 +289,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         mqttEntityService.publish(entity.getBasicTopic() + "/" + topic, payload.toString().getBytes(), 0, false);
     }
 
-    public void addMissingProperty(String ieeeAddress, Z2MProperty property) {
+    public void addMissingProperty(String ieeeAddress, Z2MEndpoint property) {
         ObjectNode deviceConfiguration = configuration.getDevices().computeIfAbsent(ieeeAddress,
             ieee -> node(ieeeAddress));
         String extraActions = deviceConfiguration.path("missingActions").asText("");

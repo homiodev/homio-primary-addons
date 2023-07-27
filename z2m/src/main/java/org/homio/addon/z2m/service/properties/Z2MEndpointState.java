@@ -1,12 +1,12 @@
 package org.homio.addon.z2m.service.properties;
 
-import org.homio.addon.z2m.service.Z2MProperty;
+import org.homio.addon.z2m.service.Z2MEndpoint;
 import org.homio.api.model.Icon;
 import org.jetbrains.annotations.NotNull;
 
-public class Z2MPropertyState extends Z2MProperty {
+public class Z2MEndpointState extends Z2MEndpoint {
 
-    public Z2MPropertyState() {
+    public Z2MEndpointState() {
         super(new Icon("fas fa-fw fa-star-half-alt", "#B3EF57"));
     }
 

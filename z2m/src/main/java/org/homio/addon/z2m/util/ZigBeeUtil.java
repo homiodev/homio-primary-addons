@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.homio.addon.z2m.service.Z2MProperty;
-import org.homio.addon.z2m.service.properties.Z2MPropertyColor;
+import org.homio.addon.z2m.service.Z2MEndpoint;
+import org.homio.addon.z2m.service.properties.Z2MEndpointColor;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextHardware;
 import org.homio.api.model.ActionResponseModel;
@@ -64,7 +64,7 @@ public final class ZigBeeUtil {
                      });
     }
 
-    public static @NotNull UIInputBuilder createUIInputBuilder(@NotNull Z2MProperty property) {
+    public static @NotNull UIInputBuilder createUIInputBuilder(@NotNull Z2MEndpoint property) {
         String entityID = property.getEntityID();
         UIInputBuilder uiInputBuilder = property.getDeviceService().getEntityContext().ui().inputBuilder();
 
@@ -86,8 +86,8 @@ public final class ZigBeeUtil {
                     });
                     return uiInputBuilder;
                 case COMPOSITE_TYPE:
-                    if (property instanceof Z2MPropertyColor) {
-                        uiInputBuilder.addColorPicker(entityID, ((Z2MPropertyColor) property).getStateColor(), (entityContext, params) -> {
+                    if (property instanceof Z2MEndpointColor) {
+                        uiInputBuilder.addColorPicker(entityID, ((Z2MEndpointColor) property).getStateColor(), (entityContext, params) -> {
                             property.fireAction(params.getString("value"));
                             return null;
                         }).setColorType(ColorType.ColorSlider);
@@ -176,7 +176,7 @@ public final class ZigBeeUtil {
      * Build action for 'numeric' type.
      */
     private static boolean buildWritableNumberTypeAction(
-        @NotNull Z2MProperty property,
+        @NotNull Z2MEndpoint property,
         @NotNull UIInputBuilder uiInputBuilder,
         @NotNull String entityID) {
         if (property.getExpose().getValueMin() != null && property.getExpose().getValueMax() != null) {
@@ -209,7 +209,7 @@ public final class ZigBeeUtil {
     }
 
     private static UIInputBuilder buildWritableEnumTypeAction(
-        @NotNull Z2MProperty property,
+        @NotNull Z2MEndpoint property,
         @NotNull UIInputBuilder uiInputBuilder,
         @NotNull String entityID) {
         if (!property.getExpose().isReadable() && property.getExpose().getValues().size() == 1) {
@@ -232,7 +232,7 @@ public final class ZigBeeUtil {
     }
 
     private static void addUISlider(
-        @NotNull Z2MProperty property,
+        @NotNull Z2MEndpoint property,
         @NotNull UILayoutBuilder builder,
         @NotNull String entityID) {
         Objects.requireNonNull(property.getExpose().getValueMin());

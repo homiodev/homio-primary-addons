@@ -2,9 +2,9 @@ package org.homio.addon.z2m.service.properties.inline;
 
 import org.homio.api.model.Icon;
 
-public class Z2MPropertyGeneral extends Z2MPropertyInline {
+public class Z2MEndpointGeneral extends Z2MEndpointInline {
 
-    public Z2MPropertyGeneral(String icon, String color) {
+    public Z2MEndpointGeneral(String icon, String color) {
         super(new Icon("fa fa-fw " + icon, color));
     }
 }

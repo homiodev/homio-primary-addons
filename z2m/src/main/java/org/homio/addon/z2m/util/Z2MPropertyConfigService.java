@@ -1,10 +1,8 @@
 package org.homio.addon.z2m.util;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
 import static org.homio.api.util.CommonUtils.getErrorMessage;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,13 +28,13 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.file.PathUtils;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.service.Z2MDeviceService;
-import org.homio.addon.z2m.service.Z2MProperty;
-import org.homio.addon.z2m.service.properties.inline.Z2MPropertyInline;
-import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
+import org.homio.addon.z2m.service.Z2MEndpoint;
+import org.homio.addon.z2m.service.properties.inline.Z2MEndpointInline;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextSetting;
 import org.homio.api.EntityContextUI.NotificationBlockBuilder;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.DeviceDefinitionModel;
 import org.homio.api.model.Icon;
 import org.homio.api.util.CommonUtils;
 import org.homio.hquery.Curl;
@@ -49,7 +47,7 @@ public class Z2MPropertyConfigService {
 
     private static final Path ZIGBEE_DEFINITION_FILE = CommonUtils.getConfigPath().resolve("zigbee-devices.json");
     @Getter
-    private final Map<String, Class<? extends Z2MProperty>> converters = new HashMap<>();
+    private final Map<String, Class<? extends Z2MEndpoint>> converters = new HashMap<>();
     private final EntityContext entityContext;
 
     private long localConfigHash;
@@ -109,31 +107,6 @@ public class Z2MPropertyConfigService {
         }
     }
 
-    public @NotNull String getDeviceIcon(@NotNull Z2MDeviceService deviceService, @NotNull String defaultIcon) {
-        List<Z2MDeviceDefinitionModel> devices = findDevices(deviceService);
-        return devices.isEmpty() ? defaultIcon : defaultIfEmpty(devices.get(0).getIcon(), defaultIcon);
-    }
-
-    public @NotNull String getDeviceIconColor(@NotNull Z2MDeviceService deviceService, @NotNull String defaultIconColor) {
-        List<Z2MDeviceDefinitionModel> devices = findDevices(deviceService);
-        return devices.isEmpty() ? defaultIconColor : defaultIfEmpty(devices.get(0).getIconColor(), defaultIconColor);
-    }
-
-    public @NotNull List<WidgetDefinition> getDeviceWidgets(Z2MDeviceService deviceService) {
-        return findDevices(deviceService).stream()
-                                         .filter(d -> d.getWidgets() != null)
-                                         .flatMap(d -> d.getWidgets().stream()).toList();
-    }
-
-    public @NotNull JsonNode getDeviceOptions(@NotNull Z2MDeviceService deviceService) {
-        List<Z2MDeviceDefinitionModel> devices = findDevices(deviceService);
-        JsonNode jsonNode = null;
-        if (!devices.isEmpty()) {
-            jsonNode = devices.get(0).getOptions();
-        }
-        return jsonNode == null ? OBJECT_MAPPER.createObjectNode() : jsonNode;
-    }
-
     public int getPropertyOrder(@NotNull String name) {
         int order = Optional.ofNullable(fileMeta.deviceProperties.get(name))
                             .map(Z2MPropertyModel::getOrder)
@@ -154,11 +127,11 @@ public class Z2MPropertyConfigService {
     }
 
     private void initConverters() {
-        List<Class<? extends Z2MProperty>> z2mClusters = entityContext.getClassesWithParent(Z2MProperty.class);
-        for (Class<? extends Z2MProperty> z2mCluster : z2mClusters) {
-            if (!Z2MPropertyInline.class.isAssignableFrom(z2mCluster)) {
-                Z2MProperty z2MProperty = CommonUtils.newInstance(z2mCluster);
-                converters.put(z2MProperty.getPropertyDefinition(), z2mCluster);
+        List<Class<? extends Z2MEndpoint>> z2mClusters = entityContext.getClassesWithParent(Z2MEndpoint.class);
+        for (Class<? extends Z2MEndpoint> z2mCluster : z2mClusters) {
+            if (!Z2MEndpointInline.class.isAssignableFrom(z2mCluster)) {
+                Z2MEndpoint z2MEndpoint = CommonUtils.newInstance(z2mCluster);
+                converters.put(z2MEndpoint.getPropertyDefinition(), z2mCluster);
             }
         }
     }
@@ -168,7 +141,7 @@ public class Z2MPropertyConfigService {
             "https://raw.githubusercontent.com/homiodev/addon-parent/master/zigbee-devices.json", true);
     }
 
-    private @NotNull List<Z2MDeviceDefinitionModel> findDevices(@NotNull Z2MDeviceService deviceService) {
+    public @NotNull List<DeviceDefinitionModel> findDevices(@NotNull Z2MDeviceService deviceService) {
         Set<String> exposes = deviceService.getExposes();
         int exposeHash = exposes.hashCode();
         String model = deviceService.getModel();
@@ -188,13 +161,13 @@ public class Z2MPropertyConfigService {
         return modelDevices.devices;
     }
 
-    private List<Z2MDeviceDefinitionModel> buildListOfDevices(String modelId, Set<String> exposes) {
-        List<Z2MDeviceDefinitionModel> devices = new ArrayList<>();
-        Z2MDeviceDefinitionModel device = fileMeta.deviceDefinitions.get(modelId);
+    private List<DeviceDefinitionModel> buildListOfDevices(String modelId, Set<String> exposes) {
+        List<DeviceDefinitionModel> devices = new ArrayList<>();
+        DeviceDefinitionModel device = fileMeta.deviceDefinitions.get(modelId);
         if (device != null) {
             devices.add(device);
         }
-        for (Entry<ExposeMatch, List<Z2MDeviceDefinitionModel>> item : fileMeta.exposeDeviceDefinitions.entrySet()) {
+        for (Entry<ExposeMatch, List<DeviceDefinitionModel>> item : fileMeta.exposeDeviceDefinitions.entrySet()) {
             if (exposes.containsAll(item.getKey().andExposes)) {
                 devices.addAll(item.getValue());
             }
@@ -220,16 +193,16 @@ public class Z2MPropertyConfigService {
         /**
          * Contains model/icon/iconColor/some setting config i.e. occupancy_timeout min..max values
          */
-        private @NotNull Map<String, Z2MDeviceDefinitionModel> deviceDefinitions = Collections.emptyMap();
+        private @NotNull Map<String, DeviceDefinitionModel> deviceDefinitions = Collections.emptyMap();
 
-        private @NotNull Map<ExposeMatch, List<Z2MDeviceDefinitionModel>> exposeDeviceDefinitions = Collections.emptyMap();
+        private @NotNull Map<ExposeMatch, List<DeviceDefinitionModel>> exposeDeviceDefinitions = Collections.emptyMap();
 
         @SneakyThrows
         public void readZigbeeDevices() {
             Z2MDeviceDefinitionsModel deviceConfigurations = OBJECT_MAPPER.readValue(ZIGBEE_DEFINITION_FILE.toFile(), Z2MDeviceDefinitionsModel.class);
 
-            var definitions = new HashMap<String, Z2MDeviceDefinitionModel>();
-            for (Z2MDeviceDefinitionModel node : deviceConfigurations.getDevices()) {
+            var definitions = new HashMap<String, DeviceDefinitionModel>();
+            for (DeviceDefinitionModel node : deviceConfigurations.getDevices()) {
                 if (node.getModels() != null) {
                     for (String model : node.getModels()) {
                         definitions.put(model, node);
@@ -237,10 +210,10 @@ public class Z2MPropertyConfigService {
                 }
             }
 
-            var exposeDefinitions = new HashMap<ExposeMatch, List<Z2MDeviceDefinitionModel>>();
-            for (Z2MDeviceDefinitionModel node : deviceConfigurations.getDevices()) {
-                if (node.getExposes() != null) {
-                    for (String expose : node.getExposes()) {
+            var exposeDefinitions = new HashMap<ExposeMatch, List<DeviceDefinitionModel>>();
+            for (DeviceDefinitionModel node : deviceConfigurations.getDevices()) {
+                if (node.getEndpoints() != null) {
+                    for (String expose : node.getEndpoints()) {
                         ExposeMatch exposeMatch = new ExposeMatch(Stream.of(expose.split("~")).collect(Collectors.toSet()));
                         exposeDefinitions.putIfAbsent(exposeMatch, new ArrayList<>());
                         exposeDefinitions.get(exposeMatch).add(node);
@@ -302,6 +275,6 @@ public class Z2MPropertyConfigService {
     private static final class ModelDevices {
 
         private int hashCode;
-        private List<Z2MDeviceDefinitionModel> devices;
+        private List<DeviceDefinitionModel> devices;
     }
 }

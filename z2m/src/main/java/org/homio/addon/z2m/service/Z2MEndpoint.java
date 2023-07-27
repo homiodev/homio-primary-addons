@@ -38,20 +38,17 @@ import org.json.JSONObject;
 
 @Log4j2
 @Getter
-public abstract class Z2MProperty extends BaseDeviceEndpoint<Z2MDeviceEntity> {
+public abstract class Z2MEndpoint extends BaseDeviceEndpoint<Z2MDeviceEntity> {
 
     // property name for LQI
-    public static final String PROPERTY_BATTERY = "battery";
-    public static final String PROPERTY_SIGNAL = "linkquality";
     public static final String PROPERTY_FIRMWARE_UPDATE = "update";
-    public static final String PROPERTY_DEVICE_STATUS = "device_status";
 
     @Setter
     private Function<JSONObject, State> dataReader;
     private Options expose;
     private Z2MDeviceService deviceService;
 
-    public Z2MProperty(@NotNull Icon icon) {
+    public Z2MEndpoint(@NotNull Icon icon) {
         super(icon);
     }
 
@@ -64,6 +61,7 @@ public abstract class Z2MProperty extends BaseDeviceEndpoint<Z2MDeviceEntity> {
             expose.isReadable(),
             expose.isWritable(),
             Objects.requireNonNull(expose.getProperty()),
+            expose.getName(),
             deviceService.getConfigService().getPropertyOrder(expose.getName()),
             calcEndpointType());
         this.deviceService = deviceService;

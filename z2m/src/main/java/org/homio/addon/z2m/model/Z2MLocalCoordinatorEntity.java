@@ -250,7 +250,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     public @NotNull Map<String, Map<String, ? extends DeviceEndpoint>> getCoordinatorTree() {
         Map<String, Map<String, ? extends DeviceEndpoint>> map = new HashMap<>();
         for (Entry<String, Z2MDeviceService> entry : getService().getDeviceHandlers().entrySet()) {
-            map.put(entry.getKey(), entry.getValue().getProperties());
+            map.put(entry.getKey(), entry.getValue().getEndpoints());
         }
         return map;
     }

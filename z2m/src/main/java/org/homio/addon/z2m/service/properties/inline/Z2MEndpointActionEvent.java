@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * 'action' property contains another event(usually enum) and we want to create separate property for it
  */
-public class Z2MPropertyActionEvent extends Z2MPropertyInline {
+public class Z2MEndpointActionEvent extends Z2MEndpointInline {
 
-    public Z2MPropertyActionEvent(
+    public Z2MEndpointActionEvent(
         @NotNull Z2MDeviceService deviceService,
         @NotNull String property,
         @Nullable Z2MPropertyModel z2MPropertyModel) {

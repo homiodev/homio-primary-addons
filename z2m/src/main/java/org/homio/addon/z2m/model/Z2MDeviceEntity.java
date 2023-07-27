@@ -3,7 +3,9 @@ package org.homio.addon.z2m.model;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
-import static org.homio.addon.z2m.service.Z2MProperty.PROPERTY_FIRMWARE_UPDATE;
+import static org.homio.addon.z2m.service.Z2MEndpoint.PROPERTY_FIRMWARE_UPDATE;
+import static org.homio.api.model.DeviceDefinitionModel.getDeviceIcon;
+import static org.homio.api.model.DeviceDefinitionModel.getDeviceIconColor;
 import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
 import static org.homio.api.ui.field.UIFieldType.HTML;
 import static org.homio.api.ui.field.UIFieldType.SelectBox;
@@ -11,6 +13,7 @@ import static org.homio.api.ui.field.UIFieldType.SelectBox;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -21,7 +24,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.service.Z2MDeviceService;
-import org.homio.addon.z2m.service.properties.Z2MPropertyFirmwareUpdate;
+import org.homio.addon.z2m.service.properties.Z2MEndpointFirmwareUpdate;
 import org.homio.addon.z2m.setting.ZigBeeEntityCompactModeSetting;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition;
@@ -33,6 +36,7 @@ import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.DeviceBaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.model.ActionResponseModel;
+import org.homio.api.model.DeviceDefinitionModel;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.model.Status.EntityStatus;
@@ -56,6 +60,7 @@ import org.homio.api.ui.field.condition.UIFieldShowOnCondition;
 import org.homio.api.ui.field.model.HrefModel;
 import org.homio.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.homio.api.ui.field.selection.UIFieldSelection;
+import org.homio.api.widget.template.WidgetDefinition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -83,16 +88,6 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @Override
     public @NotNull String getDeviceFullName() {
         return deviceService.getDeviceFullName();
-    }
-
-    @Override
-    public @NotNull Map<String, DeviceEndpoint> getProperties() {
-        return deviceService.getProperties().entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-    }
-
-    @Override
-    public @Nullable DeviceEndpoint getProperty(@NotNull String property) {
-        return deviceService.getProperties().get(property);
     }
 
     @Override
@@ -141,8 +136,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
             (StringUtils.isEmpty(applianceModel.getType()) || "UNKNOWN".equalsIgnoreCase(applianceModel.getType()))) {
             status = Status.NOT_READY;
         } else {
-            DeviceEndpoint property = getProperty(PROPERTY_FIRMWARE_UPDATE);
-            if (property instanceof Z2MPropertyFirmwareUpdate firmwareUpdate && firmwareUpdate.isUpdating()) {
+            DeviceEndpoint property = getDeviceEndpoint(PROPERTY_FIRMWARE_UPDATE);
+            if (property instanceof Z2MEndpointFirmwareUpdate firmwareUpdate && firmwareUpdate.isUpdating()) {
                 status = Status.UPDATING;
             }
         }
@@ -152,8 +147,17 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @Override
     public @NotNull Icon getEntityIcon() {
         return new Icon(
-            configService.getDeviceIcon(deviceService, "fas fa-server"),
-            configService.getDeviceIconColor(deviceService, UI.Color.random()));
+            getDeviceIcon(deviceService.findDevices(), "fas fa-server"),
+            getDeviceIconColor(deviceService.findDevices(), UI.Color.random())
+        );
+    }
+
+    @Override
+    public @NotNull Map<String, DeviceEndpoint> getDeviceEndpoints() {
+        return deviceService.getEndpoints()
+                            .entrySet()
+                            .stream()
+                            .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 
     @UIField(order = 1, hideOnEmpty = true, fullWidth = true, color = "#89AA50", type = HTML)
@@ -381,8 +385,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @Override
     public Boolean isOutdated() {
-        DeviceEndpoint property = getProperty(PROPERTY_FIRMWARE_UPDATE);
-        if (property instanceof Z2MPropertyFirmwareUpdate firmwareUpdate) {
+        DeviceEndpoint property = getDeviceEndpoint(PROPERTY_FIRMWARE_UPDATE);
+        if (property instanceof Z2MEndpointFirmwareUpdate firmwareUpdate) {
             return firmwareUpdate.isOutdated();
         }
         return false;
@@ -390,7 +394,9 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @Override
     public void assembleActions(UIInputBuilder uiInputBuilder) {
-        Z2MActionsBuilder.createWidgetActions(uiInputBuilder, getEntityContext(), this);
+        List<DeviceDefinitionModel> deviceDefinitionModels = deviceService.findDevices();
+        List<WidgetDefinition> widgetDefinitions = DeviceDefinitionModel.getDeviceWidgets(deviceDefinitionModels);
+        getEntityContext().widget().createTemplateWidgetActions(uiInputBuilder, this, widgetDefinitions);
 
         uiInputBuilder.addOpenDialogSelectableButton("CUSTOM_DESCRIPTION", new Icon("fas fa-comment"), null, (entityContext, params) -> {
             String description = params.getString("field.description");
@@ -420,7 +426,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     public @NotNull Date getUpdateTime() {
-        return DeviceEndpoint.getLastUpdated(deviceService.getProperties().values());
+        return DeviceEndpoint.getLastUpdated(deviceService.getEndpoints().values());
     }
 
     @Override
@@ -449,7 +455,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     private void buildNumberTypeAction(UIInputBuilder uiInputBuilder, Options option, JsonNode deviceConfigurationOptions, String flexName) {
-        JsonNode deviceOptions = configService.getDeviceOptions(deviceService);
+        JsonNode deviceOptions = DeviceDefinitionModel.getDeviceOptions(deviceService.findDevices());
         Integer minValue = option.getValueMin() == null ? (deviceOptions.has("min") ? deviceOptions.get("min").asInt() : null) : option.getValueMin();
         Integer maxValue = option.getValueMax() == null ? (deviceOptions.has("max") ? deviceOptions.get("max").asInt() : null) : option.getValueMax();
 
