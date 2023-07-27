@@ -99,14 +99,11 @@ public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
         fireInitialize();
     }
 
-    public void testServiceWithSetStatus() {
-        try {
-            destroy();
-            createMQTTClient();
-            entity.setStatusOnline();
-        } catch (Exception ex) {
-            entity.setStatusError(ex);
-        }
+    @Override
+    @SneakyThrows
+    protected void testService() {
+        destroy();
+        createMQTTClient();
     }
 
     private byte[] getContent(JSONObject jsonObject) {

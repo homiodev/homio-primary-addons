@@ -24,7 +24,7 @@ import org.homio.api.EntityContextWidget.Stepped;
 import org.homio.api.EntityContextWidget.ToggleType;
 import org.homio.api.EntityContextWidget.ValueCompare;
 import org.homio.api.entity.widget.AggregationType;
-import org.homio.api.model.DeviceProperty;
+import org.homio.api.model.endpoint.DeviceEndpoint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,7 +82,7 @@ public class Z2MDeviceDefinitionModel {
         @Getter
         private Padding padding;
 
-        public @NotNull List<DeviceProperty> getProperties(Z2MDeviceEntity z2MDeviceEntity) {
+        public @NotNull List<DeviceEndpoint> getProperties(Z2MDeviceEntity z2MDeviceEntity) {
             if (this.isAutoDiscovery()) {
                 if (type == WidgetType.toggle) {
                     return z2MDeviceEntity.getDeviceService().getProperties().values().stream()
@@ -90,7 +90,7 @@ public class Z2MDeviceDefinitionModel {
                                           .collect(Collectors.toList());
                 }
             }
-            Stream<DeviceProperty> stream = Stream.empty();
+            Stream<DeviceEndpoint> stream = Stream.empty();
             if (props != null) {
                 stream = props.stream().map(p -> z2MDeviceEntity.getDeviceService().getProperties().get(p.getName()));
             }
@@ -117,10 +117,10 @@ public class Z2MDeviceDefinitionModel {
             };
         }
 
-        public List<DeviceProperty> getIncludeProperties(MainWidgetRequest request) {
+        public List<DeviceEndpoint> getIncludeProperties(MainWidgetRequest request) {
             Set<String> topIncludeProperties = request.getWidgetRequest().getIncludeProperties().stream()
-                                                      .map(DeviceProperty::getKey).collect(Collectors.toSet());
-            List<DeviceProperty> allPossibleProperties = request.getItem().getProperties(request.getWidgetRequest().getEntity());
+                                                      .map(DeviceEndpoint::getKey).collect(Collectors.toSet());
+            List<DeviceEndpoint> allPossibleProperties = request.getItem().getProperties(request.getWidgetRequest().getEntity());
             return allPossibleProperties.stream()
                                         .filter(zigBeeProperty -> topIncludeProperties.contains(zigBeeProperty.getKey()))
                                         .collect(Collectors.toList());

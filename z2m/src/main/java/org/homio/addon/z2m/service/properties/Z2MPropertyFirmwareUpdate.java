@@ -65,19 +65,19 @@ public class Z2MPropertyFirmwareUpdate extends Z2MProperty {
     }
 
     @Override
-    public void buildZigbeeAction(UIInputBuilder uiInputBuilder, String entityID) {
+    public void assembleUIAction(UIInputBuilder uiInputBuilder) {
         JsonNode node = ((JsonType) getValue()).getJsonNode();
         switch (node.get("state").asText()) {
             case "available" -> {
                 String updateTitle = node.get("installed_version").asText() + "=>" + node.get("latest_version").asText();
-                uiInputBuilder.addButton(entityID, new Icon("fas fa-retweet", "#FF0000"),
+                uiInputBuilder.addButton(endpointEntityID, new Icon("fas fa-retweet", "#FF0000"),
                                   (entityContext, params) -> sendRequest(Request.update))
                               .setText(updateTitle)
                               .setConfirmMessage("W.CONFIRM.ZIGBEE_UPDATE")
                               .setConfirmMessageDialogColor(Color.ERROR_DIALOG);
             }
             case "updating" -> uiInputBuilder.addInfo("UPDATING");
-            case "idle" -> uiInputBuilder.addButton(entityID, new Icon("fas fa-check-to-slot", "#72A7A1"),
+            case "idle" -> uiInputBuilder.addButton(endpointEntityID, new Icon("fas fa-check-to-slot", "#72A7A1"),
                                              (entityContext, params) -> sendRequest(Request.check))
                                          .setText("ZIGBEE.CHECK_UPDATES")
                                          .setConfirmMessage("W.CONFIRM.ZIGBEE_CHECK_UPDATES");

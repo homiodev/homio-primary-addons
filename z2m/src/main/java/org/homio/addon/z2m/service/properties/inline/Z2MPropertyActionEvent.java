@@ -24,7 +24,7 @@ public class Z2MPropertyActionEvent extends Z2MPropertyInline {
         ));
         init(deviceService, Options.dynamicExpose(property, ApplianceModel.NUMBER_TYPE), true);
         setValue(new DecimalType(0));
-        dataReader = jsonObject -> new DecimalType(getValue().intValue() + 1);
+        setDataReader(jsonObject -> new DecimalType(getValue().intValue() + 1));
     }
 
     @Override

@@ -49,20 +49,20 @@ public class Z2MPropertyColor extends Z2MProperty {
     @Override
     public void init(@NotNull Z2MDeviceService deviceService, @NotNull ApplianceModel.Z2MDeviceDefinition.Options expose, boolean createVariable) {
         switch (expose.getName()) {
-            case "color_xy" -> this.dataReader =
+            case "color_xy" -> setDataReader(
                 payload -> {
                     JSONObject color = payload.getJSONObject("color");
                     float x = color.getFloat("x");
                     float y = color.getFloat("y");
                     return new StringType(xyToHex(x, y));
-                };
-            case "color_hs" -> this.dataReader =
+                });
+            case "color_hs" -> setDataReader(
                 payload -> {
                     JSONObject color = payload.getJSONObject("color");
                     float hue = color.getFloat("hue");
                     float saturation = color.getFloat("saturation");
                     return new StringType(hsToHex(hue, saturation, getBrightness(payload)));
-                };
+                });
         }
         super.init(deviceService, expose, createVariable);
     }
@@ -112,7 +112,7 @@ public class Z2MPropertyColor extends Z2MProperty {
     }*/
 
     public String getStateColor() {
-        return getValue().stringValue().startsWith("#") ? getValue().stringValue() : "#FFFFFF";
+        return value.stringValue().startsWith("#") ? value.stringValue() : "#FFFFFF";
     }
 
     @Override
@@ -131,7 +131,7 @@ public class Z2MPropertyColor extends Z2MProperty {
                 return;
             }
         }
-        getDeviceService().publish("set", new JSONObject().put(expose.getProperty(), color));
+        getDeviceService().publish("set", new JSONObject().put(getExpose().getProperty(), color));
     }
 
     private static String xyToHex(float x, float y) {
@@ -206,7 +206,7 @@ public class Z2MPropertyColor extends Z2MProperty {
     private int getBrightness(JSONObject payload) {
         return payload.has("brightness")
             ? payload.getInt("brightness")
-            : getDeviceService().getProperties().get("brightness").getInteger(255);
+            : getDeviceService().getProperties().get("brightness").getValue().intValue(255);
     }
 
     private String hsToHex(float hue, float saturation, int brightness) {

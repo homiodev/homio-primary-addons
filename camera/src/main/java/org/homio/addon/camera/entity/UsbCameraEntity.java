@@ -2,11 +2,12 @@ package org.homio.addon.camera.entity;
 
 import jakarta.persistence.Entity;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.homio.addon.camera.service.UsbCameraService;
 import org.homio.api.EntityContext;
-import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.RestartHandlerOnChange;
+import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;
 import org.homio.api.ui.action.DynamicOptionLoader;
@@ -83,7 +84,7 @@ public final class UsbCameraEntity extends BaseVideoEntity<UsbCameraEntity, UsbC
   }
 
   public long getDeepHashCode() {
-    return getJsonDataHashCode(getIeeeAddress(), "asource", "stream", "streamPort");
+    return Objects.hashCode(getIeeeAddress()) + getJsonDataHashCode("asource", "stream", "streamPort");
   }
 
     @Override

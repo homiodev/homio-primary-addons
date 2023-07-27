@@ -63,7 +63,6 @@ import org.homio.api.state.StringType;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.FlowMap;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.util.MimeTypeUtils;
@@ -476,6 +475,12 @@ public abstract class BaseVideoService<T extends BaseVideoEntity>
             fireFfmpegSync(profile, output, snapshotInputOptions, getEntity().getSnapshotOutOptionsAsString(), 20);
         latestSnapshot = imageBytes;
         return new RawType(imageBytes, MimeTypeUtils.IMAGE_JPEG_VALUE);
+    }
+
+    @Override
+    @SneakyThrows
+    public void testService() {
+        testVideoOnline();
     }
 
     protected abstract void testVideoOnline() throws Exception;

@@ -64,7 +64,8 @@ public final class ZigBeeUtil {
                      });
     }
 
-    public static @NotNull UIInputBuilder buildZigbeeActions(@NotNull Z2MProperty property, @NotNull String entityID) {
+    public static @NotNull UIInputBuilder createUIInputBuilder(@NotNull Z2MProperty property) {
+        String entityID = property.getEntityID();
         UIInputBuilder uiInputBuilder = property.getDeviceService().getEntityContext().ui().inputBuilder();
 
         if (property.isWritable()) {
@@ -102,7 +103,7 @@ public final class ZigBeeUtil {
         if (property.getUnit() != null) {
             uiInputBuilder.addInfo("%s <small class=\"text-muted\">%s</small>".formatted(property.getValue().stringValue(), property.getUnit()), InfoType.HTML);
         }
-        property.buildZigbeeAction(uiInputBuilder, entityID);
+        property.assembleUIAction(uiInputBuilder);
         return uiInputBuilder;
     }
 

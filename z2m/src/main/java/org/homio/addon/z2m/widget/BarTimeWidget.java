@@ -3,7 +3,7 @@ package org.homio.addon.z2m.widget;
 import java.util.List;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
-import org.homio.api.model.DeviceProperty;
+import org.homio.api.model.endpoint.DeviceEndpoint;
 
 public class BarTimeWidget implements WidgetBuilder {
 
@@ -22,7 +22,7 @@ public class BarTimeWidget implements WidgetBuilder {
         Z2MDeviceEntity entity = widgetRequest.getEntity();
         WidgetDefinition wd = request.getItem();
 
-        List<DeviceProperty> barSeries = wd.getIncludeProperties(request);
+        List<DeviceEndpoint> barSeries = wd.getIncludeProperties(request);
         widgetRequest.getEntityContext().widget().createBarTimeChartWidget("bt-" + entity.getIeeeAddress(), builder -> {
             WidgetBuilder.buildCommon(wd, widgetRequest, builder);
             builder.setBlockSize(wd.getBlockWidth(3), wd.getBlockHeight(1))
@@ -34,7 +34,7 @@ public class BarTimeWidget implements WidgetBuilder {
                    .setDynamicLineColor(wd.getOptions().getDynamicLineColor());
             request.getAttachToLayoutHandler().accept(builder);
 
-            for (DeviceProperty series : barSeries) {
+            for (DeviceEndpoint series : barSeries) {
                 builder.addSeries(series.getName(false), seriesBuilder ->
                     seriesBuilder.setChartDataSource(
                         WidgetBuilder.getSource(widgetRequest.getEntityContext(), series, false)));

@@ -11,7 +11,6 @@ import static org.homio.api.ui.field.UIFieldType.SelectBox;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +34,13 @@ import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.DeviceBaseEntity;
-import org.homio.api.entity.HasJsonData;
-import org.homio.api.entity.HasStatusAndMsg;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.model.ActionResponseModel;
-import org.homio.api.model.DeviceProperty;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.model.Status.EntityStatus;
+import org.homio.api.model.endpoint.DeviceEndpoint;
+import org.homio.api.model.endpoint.DeviceEndpointUI;
 import org.homio.api.optionProvider.SelectPlaceOptionLoader;
 import org.homio.api.ui.UI;
 import org.homio.api.ui.UI.Color;
@@ -52,16 +50,13 @@ import org.homio.api.ui.field.UIFieldGroup;
 import org.homio.api.ui.field.UIFieldIgnore;
 import org.homio.api.ui.field.UIFieldInlineEditConfirm;
 import org.homio.api.ui.field.UIFieldSlider;
-import org.homio.api.ui.field.UIFieldTitleRef;
 import org.homio.api.ui.field.action.HasDynamicContextMenuActions;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
-import org.homio.api.ui.field.action.v1.UIInputEntity;
 import org.homio.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
 import org.homio.api.ui.field.color.UIFieldColorBgRef;
 import org.homio.api.ui.field.color.UIFieldColorStatusMatch;
 import org.homio.api.ui.field.condition.UIFieldShowOnCondition;
 import org.homio.api.ui.field.inline.UIFieldInlineEntities;
-import org.homio.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.homio.api.ui.field.model.HrefModel;
 import org.homio.api.ui.field.selection.UIFieldSelectValueOnEmpty;
 import org.homio.api.ui.field.selection.UIFieldSelection;
@@ -75,7 +70,7 @@ import org.json.JSONObject;
 @NoArgsConstructor
 @SuppressWarnings("unused")
 public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntity>
-    implements HasJsonData, HasStatusAndMsg<Z2MDeviceEntity>, HasDynamicContextMenuActions {
+    implements HasDynamicContextMenuActions {
 
     @JsonIgnore private transient Z2MDeviceService deviceService;
     @JsonIgnore private transient Z2MPropertyConfigService configService;
@@ -95,12 +90,12 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     @Override
-    public @NotNull Map<String, DeviceProperty> getProperties() {
+    public @NotNull Map<String, DeviceEndpoint> getProperties() {
         return deviceService.getProperties().entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 
     @Override
-    public @Nullable DeviceProperty getProperty(@NotNull String property) {
+    public @Nullable DeviceEndpoint getProperty(@NotNull String property) {
         return deviceService.getProperties().get(property);
     }
 
@@ -150,7 +145,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
             (StringUtils.isEmpty(applianceModel.getType()) || "UNKNOWN".equalsIgnoreCase(applianceModel.getType()))) {
             status = Status.NOT_READY;
         } else {
-            DeviceProperty property = getProperty(PROPERTY_FIRMWARE_UPDATE);
+            DeviceEndpoint property = getProperty(PROPERTY_FIRMWARE_UPDATE);
             if (property instanceof Z2MPropertyFirmwareUpdate firmwareUpdate && firmwareUpdate.isUpdating()) {
                 status = Status.UPDATING;
             }
@@ -178,7 +173,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @Override
     public @Nullable String getUpdated() {
-        DeviceProperty property = getProperty(PROPERTY_LAST_SEEN);
+        DeviceEndpoint property = getProperty(PROPERTY_LAST_SEEN);
         return property == null ? null : property.getLastValue().stringValue();
     }
 
@@ -385,12 +380,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @UIField(order = 9999)
     @UIFieldInlineEntities(bg = "#27FF0005")
-    public List<Z2MPropertyEntity> getEndpointClusters() {
-        return deviceService.getProperties().values().stream()
-                            .filter(Z2MProperty::isVisible)
-                            .map(z2MProperty -> new Z2MPropertyEntity(z2MProperty, getDeviceService()))
-                            .sorted()
-                            .collect(Collectors.toList());
+    public List<DeviceEndpointUI<Z2MProperty>> getEndpoints() {
+        return DeviceEndpointUI.build(deviceService.getProperties().values());
     }
 
     @Override
@@ -415,7 +406,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     @Override
     public Boolean isOutdated() {
-        DeviceProperty property = getProperty(PROPERTY_FIRMWARE_UPDATE);
+        DeviceEndpoint property = getProperty(PROPERTY_FIRMWARE_UPDATE);
         if (property instanceof Z2MPropertyFirmwareUpdate firmwareUpdate) {
             return firmwareUpdate.isOutdated();
         }
@@ -454,17 +445,14 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     }
 
     public @NotNull Date getUpdateTime() {
-        return new Date(deviceService.getProperties().values()
-                                     .stream()
-                                     .max(Comparator.comparingLong(Z2MProperty::getUpdated))
-                                     .map(Z2MProperty::getUpdated).orElse(0L));
+        return DeviceEndpoint.getLastUpdated(deviceService.getProperties().values());
     }
 
     @Override
     public ActionResponseModel handleAction(EntityContext entityContext, String actionID, JSONObject params) throws Exception {
-        for (Z2MPropertyEntity endpointCluster : getEndpointClusters()) {
-            if (actionID.startsWith(endpointCluster.getEntityID())) {
-                UIActionHandler actionHandler = endpointCluster.buildAction().findActionHandler(actionID);
+        for (DeviceEndpointUI<Z2MProperty> endpoint : getEndpoints()) {
+            if (actionID.startsWith(endpoint.getEntityID())) {
+                UIActionHandler actionHandler = endpoint.getEndpoint().createUIInputBuilder().findActionHandler(actionID);
                 if (actionHandler != null) {
                     return actionHandler.handleAction(entityContext, params);
                 }
@@ -539,61 +527,5 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
             getCustomDescription(),
             applianceModel.getDefinition().getDescription()
         );
-    }
-
-    @Getter
-    @NoArgsConstructor
-    public static class Z2MPropertyEntity implements Comparable<Z2MPropertyEntity> {
-
-        private String entityID;
-
-        @UIField(order = 2, type = HTML)
-        private String title;
-
-        @JsonIgnore
-        private Z2MProperty property;
-
-        private String valueTitle;
-
-        @JsonIgnore
-        private int order;
-
-        public Z2MPropertyEntity(Z2MProperty property, Z2MDeviceService deviceService) {
-            this.entityID = property.getEntityID();
-            String variableID = property.getVariableID();
-            if (variableID != null) {
-                String varSource = deviceService.getEntityContext().var().buildDataSource(variableID, false);
-                this.title =
-                    "<div class=\"inline-2row_d\"><div class=\"clickable history-link\" data-hl=\"%s\" style=\"color:%s;\"><i class=\"mr-1 %s\"></i>%s</div><span>%s</div></div>".formatted(
-                        varSource, property.getIcon().getColor(), property.getIcon().getIcon(),
-                        property.getName(false), property.getDescription());
-            } else {
-                this.title =
-                    "<div class=\"inline-2row_d\"><div style=\"color:%s;\"><i class=\"mr-1 %s\"></i>%s</div><span>%s</div></div>".formatted(
-                        property.getIcon().getColor(), property.getIcon().getIcon(), property.getName(false), property.getDescription());
-            }
-            this.property = property;
-            this.valueTitle = property.getValue().toString();
-            if (ApplianceModel.ENUM_TYPE.equals(property.getExpose().getType())) {
-                this.valueTitle = "Values: " + String.join(", ", getProperty().getExpose().getValues());
-            }
-            this.order = deviceService.getConfigService().getPropertyOrder(property.getExpose().getName());
-        }
-
-        @UIField(order = 4, style = "margin-left: auto; margin-right: 8px;")
-        @UIFieldInlineEntityWidth(30)
-        @UIFieldTitleRef("valueTitle")
-        public UIInputEntity getValue() {
-            return buildAction().buildAll().iterator().next();
-        }
-
-        @Override
-        public int compareTo(@NotNull Z2MDeviceEntity.Z2MPropertyEntity o) {
-            return Integer.compare(this.order, o.order);
-        }
-
-        private @NotNull UIInputBuilder buildAction() {
-            return ZigBeeUtil.buildZigbeeActions(property, entityID);
-        }
     }
 }

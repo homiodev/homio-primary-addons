@@ -31,9 +31,9 @@ public class Z2MPropertyDeviceStatusProperty extends Z2MPropertyInline {
     }
 
     @Override
-    public void buildZigbeeAction(UIInputBuilder uiInputBuilder, String entityID) {
+    public void assembleUIAction(UIInputBuilder uiInputBuilder) {
         Status status = Status.valueOf(getValue().stringValue());
         uiInputBuilder.addInfo(status.name(), InfoType.Text).setColor(status.getColor());
-        super.buildZigbeeAction(uiInputBuilder, entityID);
+        super.assembleUIAction(uiInputBuilder);
     }
 }

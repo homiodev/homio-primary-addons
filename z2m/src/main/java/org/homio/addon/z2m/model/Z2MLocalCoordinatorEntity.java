@@ -35,8 +35,8 @@ import org.homio.api.entity.zigbee.ZigBeeBaseCoordinatorEntity;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.exception.ProhibitedExecution;
 import org.homio.api.model.ActionResponseModel;
-import org.homio.api.model.DeviceProperty;
 import org.homio.api.model.OptionModel;
+import org.homio.api.model.endpoint.DeviceEndpoint;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
@@ -109,7 +109,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     public long getDeepHashCode() {
-        return getJsonDataHashCode(getEntityID(), "mqtt", "bt", "port", "start");
+        return getEntityID().hashCode() + getJsonDataHashCode("mqtt", "bt", "port", "start");
     }
 
     @Override
@@ -247,8 +247,8 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     }
 
     @Override
-    public @NotNull Map<String, Map<String, ? extends DeviceProperty>> getCoordinatorTree() {
-        Map<String, Map<String, ? extends DeviceProperty>> map = new HashMap<>();
+    public @NotNull Map<String, Map<String, ? extends DeviceEndpoint>> getCoordinatorTree() {
+        Map<String, Map<String, ? extends DeviceEndpoint>> map = new HashMap<>();
         for (Entry<String, Z2MDeviceService> entry : getService().getDeviceHandlers().entrySet()) {
             map.put(entry.getKey(), entry.getValue().getProperties());
         }

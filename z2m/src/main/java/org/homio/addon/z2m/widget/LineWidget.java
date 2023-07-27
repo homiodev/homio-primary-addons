@@ -8,7 +8,7 @@ import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.Options.Chart;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition;
 import org.homio.addon.z2m.util.Z2MDeviceDefinitionModel.WidgetDefinition.ItemDefinition;
 import org.homio.api.EntityContext;
-import org.homio.api.model.DeviceProperty;
+import org.homio.api.model.endpoint.DeviceEndpoint;
 
 public class LineWidget implements WidgetBuilder {
 
@@ -28,7 +28,7 @@ public class LineWidget implements WidgetBuilder {
         Z2MDeviceEntity entity = request.getWidgetRequest().getEntity();
 
         WidgetDefinition wd = request.getItem();
-        List<DeviceProperty> barSeries = wd.getIncludeProperties(request);
+        List<DeviceEndpoint> barSeries = wd.getIncludeProperties(request);
 
         entityContext.widget().createLineChartWidget("ln-" + entity.getIeeeAddress(), builder -> {
             WidgetBuilder.buildCommon(wd, request.getWidgetRequest(), builder);
@@ -43,7 +43,7 @@ public class LineWidget implements WidgetBuilder {
                    .setPointBorderColor(wd.getOptions().getPointBorderColor());
             request.getAttachToLayoutHandler().accept(builder);
 
-            for (DeviceProperty series : barSeries) {
+            for (DeviceEndpoint series : barSeries) {
                 builder.addSeries(series.getName(false), seriesBuilder -> {
                     seriesBuilder.setChartDataSource(WidgetBuilder.getSource(entityContext, series, false));
                     ItemDefinition property = wd.getProperty(series.getKey());

@@ -321,7 +321,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     public long getDeepHashCode() {
-        return getJsonDataHashCode(getEntityID(), "hs", "sys", "cs") + getServiceHashCode();
+        return getEntityID().hashCode() + getJsonDataHashCode("hs", "sys", "cs") + getServiceHashCode();
     }
 
     public long getServiceHashCode() {

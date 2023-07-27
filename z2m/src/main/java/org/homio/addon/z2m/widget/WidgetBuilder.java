@@ -43,7 +43,7 @@ import org.homio.api.EntityContextWidget.SimpleValueWidgetBuilder;
 import org.homio.api.EntityContextWidget.ThresholdBuilder;
 import org.homio.api.EntityContextWidget.VerticalAlign;
 import org.homio.api.EntityContextWidget.WidgetBaseBuilder;
-import org.homio.api.model.DeviceProperty;
+import org.homio.api.model.endpoint.DeviceEndpoint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,7 +71,7 @@ public interface WidgetBuilder {
     static void addProperty(
         @NotNull EntityContext entityContext,
         @NotNull HorizontalAlign horizontalAlign,
-        @Nullable DeviceProperty property,
+        @Nullable DeviceEndpoint property,
         boolean addUnit,
         @NotNull Consumer<SimpleValueWidgetBuilder> attachHandler) {
         if (property != null) {
@@ -88,7 +88,7 @@ public interface WidgetBuilder {
         }
     }
 
-    static String getSource(EntityContext entityContext, DeviceProperty property, boolean forSet) {
+    static String getSource(EntityContext entityContext, DeviceEndpoint property, boolean forSet) {
         return entityContext.var().buildDataSource(property.getVariableID(), forSet);
     }
 
@@ -106,10 +106,64 @@ public interface WidgetBuilder {
 
     void buildMainWidget(MainWidgetRequest request);
 
+    static void buildIconAndColor(DeviceEndpoint property, HasIcon iconBuilder,
+        ItemDefinition wbProperty, WidgetRequest widgetRequest) {
+        iconBuilder.setIcon(property.getIcon());
+
+        if (wbProperty == null) {
+            return;
+        }
+        IconPicker icon = wbProperty.getIcon();
+        if (icon != null) {
+            iconBuilder.setIcon(defaultString(icon.getValue(), property.getIcon().getIcon()),
+                (Consumer<ThresholdBuilder>) iconThresholdBuilder ->
+                    WidgetBuilder.buildThreshold(widgetRequest, icon.getThresholds(), iconThresholdBuilder));
+            ColorPicker color = wbProperty.getIconColor();
+            if (color == null || (isEmpty(color.getValue()) && color.getThresholds() == null)) {
+                return;
+            }
+            iconBuilder.setIconColor(defaultString(color.getValue(), property.getIcon().getColor()),
+                (Consumer<ThresholdBuilder>) thresholdBuilder ->
+                    WidgetBuilder.buildThreshold(widgetRequest, color.getThresholds(), thresholdBuilder));
+        }
+    }
+
+    private static void buildValueSuffix(SimpleValueWidgetBuilder builder, @Nullable String value) {
+        builder.setValueTemplate(null, value)
+               .setValueSuffixFontSize(0.6)
+               .setValueSuffixColor("#777777")
+               .setValueSuffixVerticalAlign(VerticalAlign.bottom);
+    }
+
+    static String buildDataSource(Z2MDeviceEntity entity, EntityContext entityContext, Source source) {
+        switch (source.getKind()) {
+            case variable -> {
+                String variable = entityContext.var().createVariable(entity.getEntityID(),
+                    source.getValue(), source.getValue(), source.getVariableType(), null);
+                return entityContext.var().buildDataSource(variable, true);
+            }
+            case broadcasts -> {
+                String id = source.getValue() + "_" + entity.getIeeeAddress();
+                String name = source.getValue() + " " + entity.getIeeeAddress();
+                String variableID = entityContext.var().createVariable("broadcasts", id, name, VariableType.Any, null);
+                return entityContext.var().buildDataSource(variableID, true);
+            }
+            case property -> {
+                DeviceEndpoint property = entity.getProperty(source.getValue());
+                if (property == null) {
+                    throw new IllegalArgumentException("Unable to find z2m property: " + source.getValue() +
+                        " for device: " + entity);
+                }
+                return WidgetBuilder.getSource(entityContext, property, true);
+            }
+            default -> throw new IllegalArgumentException("Unable to find handler for type: " + source.getKind());
+        }
+    }
+
     private static void createSimpleProperty(
         @NotNull EntityContext entityContext,
         @NotNull HorizontalAlign horizontalAlign,
-        @NotNull DeviceProperty property,
+        @NotNull DeviceEndpoint property,
         @NotNull Consumer<SimpleValueWidgetBuilder> attachHandler,
         boolean addUnit) {
         entityContext.widget().createSimpleValueWidget(property.getEntityID(), builder -> {
@@ -123,40 +177,6 @@ public interface WidgetBuilder {
             Optional.ofNullable(PROPERTIES.get(property.getKey())).ifPresent(ib -> ib.build(builder));
             attachHandler.accept(builder);
         });
-    }
-
-    private static void buildValueSuffix(SimpleValueWidgetBuilder builder, @Nullable String value) {
-        builder.setValueTemplate(null, value)
-               .setValueSuffixFontSize(0.6)
-               .setValueSuffixColor("#777777")
-               .setValueSuffixVerticalAlign(VerticalAlign.bottom);
-    }
-
-    @Getter
-    @AllArgsConstructor
-    class WidgetRequest {
-
-        private final @NotNull EntityContext entityContext;
-        private final @NotNull Z2MDeviceEntity entity;
-        private final @NotNull String tab;
-        private final @NotNull Z2MDeviceDefinitionModel.WidgetDefinition widgetDefinition;
-        private final @NotNull List<DeviceProperty> includeProperties;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    class MainWidgetRequest {
-
-        private final WidgetRequest widgetRequest;
-        private final WidgetDefinition item;
-        // total number of columns in layout
-        private final int layoutColumnNum;
-        private final int layoutRowNum;
-        private Consumer<WidgetBaseBuilder> attachToLayoutHandler;
-
-        public List<DeviceProperty> getItemIncludeProperties() {
-            return item.getIncludeProperties(this);
-        }
     }
 
     static void buildCommon(WidgetDefinition wd, WidgetRequest widgetRequest, WidgetBaseBuilder builder) {
@@ -188,26 +208,15 @@ public interface WidgetBuilder {
                 buildPulseThreshold(widgetRequest, background.getPulses(), pulseBuilder));
     }
 
-    static void buildIconAndColor(DeviceProperty property, HasIcon iconBuilder,
-        ItemDefinition wbProperty, WidgetRequest widgetRequest) {
-        iconBuilder.setIcon(property.getIcon());
+    @Getter
+    @AllArgsConstructor
+    class WidgetRequest {
 
-        if (wbProperty == null) {
-            return;
-        }
-        IconPicker icon = wbProperty.getIcon();
-        if (icon != null) {
-            iconBuilder.setIcon(defaultString(icon.getValue(), property.getIcon().getIcon()),
-                (Consumer<ThresholdBuilder>) iconThresholdBuilder ->
-                    WidgetBuilder.buildThreshold(widgetRequest, icon.getThresholds(), iconThresholdBuilder));
-            ColorPicker color = wbProperty.getIconColor();
-            if (color == null || (isEmpty(color.getValue()) && color.getThresholds() == null)) {
-                return;
-            }
-            iconBuilder.setIconColor(defaultString(color.getValue(), property.getIcon().getColor()),
-                (Consumer<ThresholdBuilder>) thresholdBuilder ->
-                    WidgetBuilder.buildThreshold(widgetRequest, color.getThresholds(), thresholdBuilder));
-        }
+        private final @NotNull EntityContext entityContext;
+        private final @NotNull Z2MDeviceEntity entity;
+        private final @NotNull String tab;
+        private final @NotNull Z2MDeviceDefinitionModel.WidgetDefinition widgetDefinition;
+        private final @NotNull List<DeviceEndpoint> includeProperties;
     }
 
     static void buildThreshold(WidgetRequest widgetRequest, List<Threshold> thresholds, ThresholdBuilder thresholdBuilder) {
@@ -234,28 +243,19 @@ public interface WidgetBuilder {
         }
     }
 
-    static String buildDataSource(Z2MDeviceEntity entity, EntityContext entityContext, Source source) {
-        switch (source.getKind()) {
-            case variable -> {
-                String variable = entityContext.var().createVariable(entity.getEntityID(),
-                    source.getValue(), source.getValue(), source.getVariableType(), null);
-                return entityContext.var().buildDataSource(variable, true);
-            }
-            case broadcasts -> {
-                String id = source.getValue() + "_" + entity.getIeeeAddress();
-                String name = source.getValue() + " " + entity.getIeeeAddress();
-                String variableID = entityContext.var().createVariable("broadcasts", id, name, VariableType.Any, null);
-                return entityContext.var().buildDataSource(variableID, true);
-            }
-            case property -> {
-                DeviceProperty property = entity.getProperty(source.getValue());
-                if (property == null) {
-                    throw new IllegalArgumentException("Unable to find z2m property: " + source.getValue() +
-                        " for device: " + entity);
-                }
-                return WidgetBuilder.getSource(entityContext, property, true);
-            }
-            default -> throw new IllegalArgumentException("Unable to find handler for type: " + source.getKind());
+    @Getter
+    @AllArgsConstructor
+    class MainWidgetRequest {
+
+        private final WidgetRequest widgetRequest;
+        private final WidgetDefinition item;
+        // total number of columns in layout
+        private final int layoutColumnNum;
+        private final int layoutRowNum;
+        private Consumer<WidgetBaseBuilder> attachToLayoutHandler;
+
+        public List<DeviceEndpoint> getItemIncludeProperties() {
+            return item.getIncludeProperties(this);
         }
     }
 }

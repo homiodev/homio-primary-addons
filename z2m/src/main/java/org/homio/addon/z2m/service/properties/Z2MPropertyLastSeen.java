@@ -14,11 +14,11 @@ public class Z2MPropertyLastSeen extends Z2MProperty {
     public Z2MPropertyLastSeen() {
         super(new Icon("fa fa-fw fa-eye", "#2D9C2C"));
         setValue(new DecimalType(System.currentTimeMillis()));
-        dataReader = jsonObject -> new DecimalType(parseLastSeen(jsonObject));
+        setDataReader(jsonObject -> new DecimalType(parseLastSeen(jsonObject)));
     }
 
     @Override
-    public void buildZigbeeAction(UIInputBuilder uiInputBuilder, String entityID) {
+    public void assembleUIAction(UIInputBuilder uiInputBuilder) {
         uiInputBuilder.addDuration(getValue().longValue(), null);
     }
 
