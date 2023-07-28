@@ -556,7 +556,7 @@
       ]
     }
   ],
-  "properties": [
+  "endpoints": [
     {
       "name": "vibration",
       "icon": "fab fa-squarespace",
@@ -968,7 +968,7 @@
       "iconColor": "#42C1BB"
     }
   ],
-  "propertiesWithoutVariables": [
+  "endpointsWithoutVariables": [
     "update_available",
     "update"
   ]
