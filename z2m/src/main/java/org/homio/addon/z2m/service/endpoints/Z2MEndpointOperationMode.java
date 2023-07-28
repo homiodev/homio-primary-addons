@@ -1,4 +1,4 @@
-package org.homio.addon.z2m.service.properties;
+package org.homio.addon.z2m.service.endpoints;
 
 import org.homio.addon.z2m.service.Z2MEndpoint;
 import org.homio.api.model.Icon;
@@ -11,7 +11,7 @@ public class Z2MEndpointOperationMode extends Z2MEndpoint {
     }
 
     @Override
-    public @NotNull String getPropertyDefinition() {
+    public @NotNull String getEndpointDefinition() {
         return "operation_mode";
     }
 

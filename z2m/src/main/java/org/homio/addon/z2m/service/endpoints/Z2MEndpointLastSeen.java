@@ -1,13 +1,14 @@
-package org.homio.addon.z2m.service.properties;
+package org.homio.addon.z2m.service.endpoints;
 
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import org.homio.addon.z2m.service.Z2MEndpoint;
 import org.homio.api.model.Icon;
 import org.homio.api.state.DecimalType;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.json.JSONObject;
+
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 
 public class Z2MEndpointLastSeen extends Z2MEndpoint {
 
@@ -23,7 +24,7 @@ public class Z2MEndpointLastSeen extends Z2MEndpoint {
     }
 
     @Override
-    public String getPropertyDefinition() {
+    public String getEndpointDefinition() {
         return ENDPOINT_LAST_SEEN;
     }
 

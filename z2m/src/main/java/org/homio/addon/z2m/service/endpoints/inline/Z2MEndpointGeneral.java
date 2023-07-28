@@ -1,4 +1,4 @@
-package org.homio.addon.z2m.service.properties.inline;
+package org.homio.addon.z2m.service.endpoints.inline;
 
 import org.homio.api.model.Icon;
 

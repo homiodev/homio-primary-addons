@@ -1,20 +1,23 @@
 package org.homio.addon.z2m.util;
 
-import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+
+/**
+ * Do not change file names. It read from mqtt
+ */
 @Getter
 @Setter
 public class ApplianceModel extends UnknownOptions {
@@ -186,10 +189,10 @@ public class ApplianceModel extends UnknownOptions {
             @JsonProperty("item_type")
             private @Nullable Options itemType;
 
-            public static Options dynamicExpose(String property, String type) {
+            public static Options dynamicEndpoint(String endpoint, String type) {
                 Options options = new Options();
-                options.setProperty(property);
-                options.setName(property);
+                options.setProperty(endpoint);
+                options.setName(endpoint);
                 options.setType(type);
                 return options;
             }

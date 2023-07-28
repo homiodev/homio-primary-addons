@@ -1,11 +1,11 @@
-package org.homio.addon.z2m.service.properties.inline;
+package org.homio.addon.z2m.service.endpoints.inline;
 
 import org.homio.addon.z2m.service.Z2MEndpoint;
 import org.homio.api.model.Icon;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Properties that creates in code programmatically. Properties that implement Z2MProperty must hav NoArgConstructor
+ * Endpoints that creates in code programmatically. Endpoints that implement Z2MEndpoint must hav NoArgConstructor
  */
 public abstract class Z2MEndpointInline extends Z2MEndpoint {
 
@@ -14,7 +14,7 @@ public abstract class Z2MEndpointInline extends Z2MEndpoint {
     }
 
     @Override
-    public @Nullable String getPropertyDefinition() {
+    public @Nullable String getEndpointDefinition() {
         return null;
     }
 }

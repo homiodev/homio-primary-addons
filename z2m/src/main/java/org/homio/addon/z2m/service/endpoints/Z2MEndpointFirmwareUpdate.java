@@ -1,4 +1,4 @@
-package org.homio.addon.z2m.service.properties;
+package org.homio.addon.z2m.service.endpoints;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.homio.addon.z2m.service.Z2MDeviceService;
@@ -60,8 +60,8 @@ public class Z2MEndpointFirmwareUpdate extends Z2MEndpoint {
     }
 
     @Override
-    public String getPropertyDefinition() {
-        return PROPERTY_FIRMWARE_UPDATE;
+    public String getEndpointDefinition() {
+        return ENDPOINT_FIRMWARE_UPDATE;
     }
 
     @Override

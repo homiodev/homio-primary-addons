@@ -1,18 +1,5 @@
 package org.homio.addon.z2m.service;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.homio.addon.z2m.util.ApplianceModel.BINARY_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.ENUM_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.SWITCH_TYPE;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -26,22 +13,28 @@ import org.homio.api.EntityContextVar.VariableMetaBuilder;
 import org.homio.api.EntityContextVar.VariableType;
 import org.homio.api.model.Icon;
 import org.homio.api.model.endpoint.BaseDeviceEndpoint;
-import org.homio.api.state.DecimalType;
-import org.homio.api.state.JsonType;
-import org.homio.api.state.OnOffType;
-import org.homio.api.state.State;
-import org.homio.api.state.StringType;
+import org.homio.api.state.*;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
+import static org.homio.addon.z2m.util.ApplianceModel.*;
+
 @Log4j2
 @Getter
 public abstract class Z2MEndpoint extends BaseDeviceEndpoint<Z2MDeviceEntity> {
 
-    // property name for LQI
-    public static final String PROPERTY_FIRMWARE_UPDATE = "update";
+    public static final String ENDPOINT_FIRMWARE_UPDATE = "update";
 
     @Setter
     private Function<JSONObject, State> dataReader;
@@ -53,17 +46,16 @@ public abstract class Z2MEndpoint extends BaseDeviceEndpoint<Z2MDeviceEntity> {
     }
 
     public void init(@NotNull Z2MDeviceService deviceService, @NotNull Options expose, boolean createVariable) {
-        super.init(
-            deviceService.getIeeeAddress() + "_" + expose.getProperty(),
-            deviceService.getDeviceEntity(),
-            deviceService.getEntityContext(),
-            StringUtils.defaultIfEmpty(this.unit, expose.getUnit()),
-            expose.isReadable(),
-            expose.isWritable(),
-            Objects.requireNonNull(expose.getProperty()),
-            expose.getName(),
-            deviceService.getConfigService().getPropertyOrder(expose.getName()),
-            calcEndpointType());
+        init(
+                StringUtils.defaultString(expose.getProperty(), expose.getEndpoint()),
+                deviceService.getDeviceEntity(),
+                deviceService.getEntityContext(),
+                StringUtils.defaultIfEmpty(this.unit, expose.getUnit()),
+                expose.isReadable(),
+                expose.isWritable(),
+                expose.getName(),
+                CONFIG_DEVICE_SERVICE.getEndpointOrder(expose.getName()),
+                calcEndpointType());
         this.deviceService = deviceService;
         this.expose = expose;
         this.dataReader = this.dataReader == null ? buildDataReader() : this.dataReader;
@@ -126,10 +118,10 @@ public abstract class Z2MEndpoint extends BaseDeviceEndpoint<Z2MDeviceEntity> {
 
     @Override
     public boolean isVisible() {
-        if (deviceService.getConfigService().getFileMeta().getHiddenProperties().contains(expose.getProperty())) {
+        if (CONFIG_DEVICE_SERVICE.isHideEndpoint(expose.getProperty())) {
             return false;
         }
-        return !deviceService.getCoordinatorEntity().getHiddenProperties().contains(expose.getProperty());
+        return !deviceService.getCoordinatorEntity().getHiddenEndpoints().contains(expose.getProperty());
     }
 
     public boolean feedPayload(String key, JSONObject payload) {
@@ -140,7 +132,7 @@ public abstract class Z2MEndpoint extends BaseDeviceEndpoint<Z2MDeviceEntity> {
         return false;
     }
 
-    public abstract @Nullable String getPropertyDefinition();
+    public abstract @Nullable String getEndpointDefinition();
 
     @Override
     public void writeValue(@NotNull State state) {
@@ -175,10 +167,10 @@ public abstract class Z2MEndpoint extends BaseDeviceEndpoint<Z2MDeviceEntity> {
                         return payload -> OnOffType.of(expose.getValueOn().equals(payload.getBoolean(getJsonKey())));
                     } else {
                         log.error(
-                            "[{}]: Unknown property type: {} for property: {}",
-                            deviceService.getCoordinatorEntity().getEntityID(),
-                            expose.getValueOn(),
-                            deviceService.getIeeeAddress());
+                                "[{}]: Unknown type: {} for endpoint: {}",
+                                deviceService.getCoordinatorEntity().getEntityID(),
+                                expose.getValueOn(),
+                                deviceService.getIeeeAddress());
                     }
                 }
                 return payload -> OnOffType.of(payload.getBoolean(getJsonKey()));
@@ -226,12 +218,24 @@ public abstract class Z2MEndpoint extends BaseDeviceEndpoint<Z2MDeviceEntity> {
         return builder -> {
             builder.setDescription(getVariableDescription()).setReadOnly(!isWritable()).setColor(getIcon().getColor());
             List<String> attributes = new ArrayList<>();
-            if (expose.getValueMin() != null) {attributes.add("min:" + expose.getValueMin());}
-            if (expose.getValueMax() != null) {attributes.add("max:" + expose.getValueMax());}
-            if (expose.getValueStep() != null) {attributes.add("step:" + expose.getValueStep());}
-            if (expose.getValueToggle() != null) {attributes.add("toggle:" + expose.getValueToggle());}
-            if (expose.getValueOn() != null) {attributes.add("on:" + expose.getValueOn());}
-            if (expose.getValueOff() != null) {attributes.add("off:" + expose.getValueOff());}
+            if (expose.getValueMin() != null) {
+                attributes.add("min:" + expose.getValueMin());
+            }
+            if (expose.getValueMax() != null) {
+                attributes.add("max:" + expose.getValueMax());
+            }
+            if (expose.getValueStep() != null) {
+                attributes.add("step:" + expose.getValueStep());
+            }
+            if (expose.getValueToggle() != null) {
+                attributes.add("toggle:" + expose.getValueToggle());
+            }
+            if (expose.getValueOn() != null) {
+                attributes.add("on:" + expose.getValueOn());
+            }
+            if (expose.getValueOff() != null) {
+                attributes.add("off:" + expose.getValueOff());
+            }
             builder.setAttributes(attributes);
         };
     }
@@ -266,11 +270,11 @@ public abstract class Z2MEndpoint extends BaseDeviceEndpoint<Z2MDeviceEntity> {
                     return VariableType.Bool;
                 }
                 if (valueStr.equals("1")
-                    || valueStr.equals("0")
-                    || valueStr.equals("true")
-                    || valueStr.equals("false")
-                    || valueStr.equalsIgnoreCase("ON")
-                    || valueStr.equalsIgnoreCase("OFF")) {
+                        || valueStr.equals("0")
+                        || valueStr.equals("true")
+                        || valueStr.equals("false")
+                        || valueStr.equalsIgnoreCase("ON")
+                        || valueStr.equalsIgnoreCase("OFF")) {
                     return VariableType.Bool;
                 }
                 return VariableType.Any;

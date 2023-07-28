@@ -1,22 +1,10 @@
 package org.homio.addon.z2m.util;
 
-import static org.homio.addon.z2m.util.ApplianceModel.BINARY_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.COMPOSITE_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.ENUM_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.SWITCH_TYPE;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.service.Z2MEndpoint;
-import org.homio.addon.z2m.service.properties.Z2MEndpointColor;
+import org.homio.addon.z2m.service.endpoints.Z2MEndpointColor;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextHardware;
 import org.homio.api.model.ActionResponseModel;
@@ -34,76 +22,85 @@ import org.homio.api.util.Lang;
 import org.homio.hquery.ProgressBar;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.homio.addon.z2m.util.ApplianceModel.*;
+
 @Log4j2
 public final class ZigBeeUtil {
 
     public static final GitHubProject zigbee2mqttGitHub =
-        GitHubProject.of("Koenkk", "zigbee2mqtt",
-            CommonUtils.getInstallPath().resolve("zigbee2mqtt"));
+            GitHubProject.of("Koenkk", "zigbee2mqtt",
+                    CommonUtils.getInstallPath().resolve("zigbee2mqtt"));
 
     public static void zigbeeScanStarted(
-        @NotNull EntityContext entityContext,
+            @NotNull EntityContext entityContext,
         @NotNull String entityID,
         int duration,
         @NotNull Runnable onDurationTimedOutHandler,
         @NotNull Runnable stopScanHandler) {
         entityContext.ui().headerButtonBuilder("zigbee-scan-" + entityID)
-                     .title("CONTEXT.ACTION.ZIGBEE_STOP_SCAN").border(1, "#899343").clickAction(() -> {
-                         stopScanHandler.run();
-                         return ActionResponseModel.showWarn("ZIGBEE.STOP_SCAN");
-                     })
-                     .duration(duration)
-                     .icon(new Icon("fas fa-search-location", "#899343"))
-                     .build();
+                .title("CONTEXT.ACTION.ZIGBEE_STOP_SCAN").border(1, "#899343").clickAction(() -> {
+                    stopScanHandler.run();
+                    return ActionResponseModel.showWarn("ZIGBEE.STOP_SCAN");
+                })
+                .duration(duration)
+                .icon(new Icon("fas fa-search-location", "#899343"))
+                .build();
 
         entityContext.bgp().builder("zigbee-scan-killer-" + entityID)
-                     .delay(Duration.ofSeconds(duration)).execute(() -> {
-                         log.info("[{}]: Scanning stopped", entityID);
-                         onDurationTimedOutHandler.run();
-                         entityContext.ui().removeHeaderButton("zigbee-scan-" + entityID);
-                     });
+                .delay(Duration.ofSeconds(duration)).execute(() -> {
+                    log.info("[{}]: Scanning stopped", entityID);
+                    onDurationTimedOutHandler.run();
+                    entityContext.ui().removeHeaderButton("zigbee-scan-" + entityID);
+                });
     }
 
-    public static @NotNull UIInputBuilder createUIInputBuilder(@NotNull Z2MEndpoint property) {
-        String entityID = property.getEntityID();
-        UIInputBuilder uiInputBuilder = property.getDeviceService().getEntityContext().ui().inputBuilder();
+    public static @NotNull UIInputBuilder createUIInputBuilder(@NotNull Z2MEndpoint endpoint) {
+        String entityID = endpoint.getEntityID();
+        UIInputBuilder uiInputBuilder = endpoint.getDeviceService().getEntityContext().ui().inputBuilder();
 
-        if (property.isWritable()) {
-            switch (property.getExpose().getType()) {
+        if (endpoint.isWritable()) {
+            switch (endpoint.getExpose().getType()) {
                 case ENUM_TYPE:
                     // corner case for smoke sensor, access=2 send selftest with empty string,
-                    return buildWritableEnumTypeAction(property, uiInputBuilder, entityID);
+                    return buildWritableEnumTypeAction(endpoint, uiInputBuilder);
                 case NUMBER_TYPE:
-                    if (buildWritableNumberTypeAction(property, uiInputBuilder, entityID)) {
+                    if (buildWritableNumberTypeAction(endpoint, uiInputBuilder)) {
                         return uiInputBuilder;
                     }
                     break;
                 case SWITCH_TYPE:
                 case BINARY_TYPE:
-                    uiInputBuilder.addCheckbox(entityID, property.getValue().boolValue(), (entityContext, params) -> {
-                        property.fireAction(params.getBoolean("value"));
+                    uiInputBuilder.addCheckbox(entityID, endpoint.getValue().boolValue(), (entityContext, params) -> {
+                        endpoint.fireAction(params.getBoolean("value"));
                         return null;
                     });
                     return uiInputBuilder;
                 case COMPOSITE_TYPE:
-                    if (property instanceof Z2MEndpointColor) {
-                        uiInputBuilder.addColorPicker(entityID, ((Z2MEndpointColor) property).getStateColor(), (entityContext, params) -> {
-                            property.fireAction(params.getString("value"));
+                    if (endpoint instanceof Z2MEndpointColor) {
+                        uiInputBuilder.addColorPicker(entityID, ((Z2MEndpointColor) endpoint).getStateColor(), (entityContext, params) -> {
+                            endpoint.fireAction(params.getString("value"));
                             return null;
                         }).setColorType(ColorType.ColorSlider);
                         return uiInputBuilder;
                     }
                 default:
-                    log.error("[{}]: Z2M write handler not implemented for device: {}, property: {}",
-                        property.getDeviceService().getCoordinatorEntity().getEntityID(),
-                        property.getDeviceService().getDeviceEntity().getEntityID(),
-                        property.getExpose().getProperty());
+                    log.error("[{}]: Z2M write handler not implemented for device: {}, endpoint: {}",
+                            endpoint.getDeviceService().getCoordinatorEntity().getEntityID(),
+                            endpoint.getDeviceEntityID(),
+                            endpoint.getEndpointEntityID());
             }
         }
-        if (property.getUnit() != null) {
-            uiInputBuilder.addInfo("%s <small class=\"text-muted\">%s</small>".formatted(property.getValue().stringValue(), property.getUnit()), InfoType.HTML);
+        if (endpoint.getUnit() != null) {
+            uiInputBuilder.addInfo("%s <small class=\"text-muted\">%s</small>".formatted(endpoint.getValue().stringValue(), endpoint.getUnit()), InfoType.HTML);
         }
-        property.assembleUIAction(uiInputBuilder);
+        endpoint.assembleUIAction(uiInputBuilder);
         return uiInputBuilder;
     }
 
@@ -176,31 +173,32 @@ public final class ZigBeeUtil {
      * Build action for 'numeric' type.
      */
     private static boolean buildWritableNumberTypeAction(
-        @NotNull Z2MEndpoint property,
-        @NotNull UIInputBuilder uiInputBuilder,
-        @NotNull String entityID) {
-        if (property.getExpose().getValueMin() != null && property.getExpose().getValueMax() != null) {
+            @NotNull Z2MEndpoint endpoint,
+            @NotNull UIInputBuilder uiInputBuilder) {
+
+        String entityID = endpoint.getEntityID();
+        if (endpoint.getExpose().getValueMin() != null && endpoint.getExpose().getValueMax() != null) {
             // create only slider if expose has only valueMin and valueMax
-            if (property.getExpose().getPresets() == null || property.getExpose().getPresets().isEmpty()) {
-                addUISlider(property, uiInputBuilder, entityID);
+            if (endpoint.getExpose().getPresets() == null || endpoint.getExpose().getPresets().isEmpty()) {
+                addUISlider(endpoint, uiInputBuilder, entityID);
                 return true;
             }
 
             // build flex(selectBox,slider)
             uiInputBuilder.addFlex(entityID + "_compose", flex -> {
                 UISelectBoxItemBuilder presets = flex.addSelectBox(entityID + "_presets", (entityContext, params) -> {
-                    property.fireAction(params.getInt("value"));
+                    endpoint.fireAction(params.getInt("value"));
                     return null;
                 });
-                presets.addOptions(property.getExpose().getPresets().stream().map(p ->
-                           OptionModel.of(String.valueOf(p.getValue()), p.getName()).setDescription(p.getDescription())).collect(Collectors.toList()))
-                       .setAsButton(new Icon("fas fa-kitchen-set"), null);
+                presets.addOptions(endpoint.getExpose().getPresets().stream().map(p ->
+                                OptionModel.of(String.valueOf(p.getValue()), p.getName()).setDescription(p.getDescription())).collect(Collectors.toList()))
+                        .setAsButton(new Icon("fas fa-kitchen-set"), null);
                 // set selected presets if any presets equal to current value
-                if (property.getExpose().getPresets().stream().anyMatch(p -> String.valueOf(p.getValue()).equals(property.getValue().toString()))) {
-                    presets.setSelected(property.getValue().toString());
+                if (endpoint.getExpose().getPresets().stream().anyMatch(p -> String.valueOf(p.getValue()).equals(endpoint.getValue().toString()))) {
+                    presets.setSelected(endpoint.getValue().toString());
                 }
 
-                addUISlider(property, flex, entityID);
+                addUISlider(endpoint, flex, entityID);
             });
 
             return true;
@@ -209,42 +207,41 @@ public final class ZigBeeUtil {
     }
 
     private static UIInputBuilder buildWritableEnumTypeAction(
-        @NotNull Z2MEndpoint property,
-        @NotNull UIInputBuilder uiInputBuilder,
-        @NotNull String entityID) {
-        if (!property.getExpose().isReadable() && property.getExpose().getValues().size() == 1) {
-            uiInputBuilder.addButton(entityID, new Icon("fas fa-play", "#eb0000"),
-                (entityContext, params) -> {
-                    property.fireAction(property.getExpose().getValues().get(0));
-                    return null;
-                }).setText("");
+            @NotNull Z2MEndpoint endpoint,
+            @NotNull UIInputBuilder uiInputBuilder) {
+        if (!endpoint.getExpose().isReadable() && endpoint.getExpose().getValues().size() == 1) {
+            uiInputBuilder.addButton(endpoint.getEntityID(), new Icon("fas fa-play", "#eb0000"),
+                    (entityContext, params) -> {
+                        endpoint.fireAction(endpoint.getExpose().getValues().get(0));
+                        return null;
+                    }).setText("");
         } else {
             uiInputBuilder
-                .addSelectBox(entityID, (entityContext, params) -> {
-                    property.fireAction(params.getString("value"));
-                    return null;
-                })
-                .addOptions(OptionModel.list(property.getExpose().getValues()))
-                .setPlaceholder("-----------")
-                .setSelected(property.getValue().toString());
+                    .addSelectBox(endpoint.getEntityID(), (entityContext, params) -> {
+                        endpoint.fireAction(params.getString("value"));
+                        return null;
+                    })
+                    .addOptions(OptionModel.list(endpoint.getExpose().getValues()))
+                    .setPlaceholder("-----------")
+                    .setSelected(endpoint.getValue().toString());
         }
         return uiInputBuilder;
     }
 
     private static void addUISlider(
-        @NotNull Z2MEndpoint property,
-        @NotNull UILayoutBuilder builder,
-        @NotNull String entityID) {
-        Objects.requireNonNull(property.getExpose().getValueMin());
-        Objects.requireNonNull(property.getExpose().getValueMax());
+            @NotNull Z2MEndpoint endpoint,
+            @NotNull UILayoutBuilder builder,
+            @NotNull String entityID) {
+        Objects.requireNonNull(endpoint.getExpose().getValueMin());
+        Objects.requireNonNull(endpoint.getExpose().getValueMax());
 
         builder.addSlider(entityID,
-            property.getValue().floatValue(0),
-            property.getExpose().getValueMin().floatValue(),
-            property.getExpose().getValueMax().floatValue(),
-            (entityContext, params) -> {
-                property.fireAction(params.getInt("value"));
-                return null;
-            });
+                endpoint.getValue().floatValue(0),
+                endpoint.getExpose().getValueMin().floatValue(),
+                endpoint.getExpose().getValueMax().floatValue(),
+                (entityContext, params) -> {
+                    endpoint.fireAction(params.getInt("value"));
+                    return null;
+                });
     }
 }

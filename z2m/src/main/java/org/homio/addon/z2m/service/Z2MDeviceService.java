@@ -1,42 +1,25 @@
 package org.homio.addon.z2m.service;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.homio.api.model.DeviceDefinitionModel.getDeviceIcon;
-import static org.homio.api.model.DeviceDefinitionModel.getDeviceIconColor;
-import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_DEVICE_STATUS;
-import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_LAST_SEEN;
-import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
-
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.tuple.Pair;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
-import org.homio.addon.z2m.service.properties.Z2MEndpointAction;
-import org.homio.addon.z2m.service.properties.Z2MEndpointLastSeen;
-import org.homio.addon.z2m.service.properties.inline.Z2MEndpointGeneral;
-import org.homio.addon.z2m.service.properties.inline.Z2MEndpointUnknown;
-import org.homio.addon.z2m.service.properties.inline.Z2MPropertyDeviceStatusEndpoint;
+import org.homio.addon.z2m.service.endpoints.Z2MEndpointAction;
+import org.homio.addon.z2m.service.endpoints.Z2MEndpointLastSeen;
+import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceStatusEndpoint;
+import org.homio.addon.z2m.service.endpoints.inline.Z2MEndpointGeneral;
+import org.homio.addon.z2m.service.endpoints.inline.Z2MEndpointUnknown;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
-import org.homio.addon.z2m.util.Z2MPropertyConfigService;
-import org.homio.addon.z2m.util.Z2MPropertyModel;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextService.MQTTEntityService;
-import org.homio.api.model.DeviceDefinitionModel;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
+import org.homio.api.model.device.ConfigDeviceDefinition;
+import org.homio.api.model.device.ConfigDeviceDefinitionService;
+import org.homio.api.model.device.ConfigDeviceEndpoint;
 import org.homio.api.state.DecimalType;
 import org.homio.api.ui.UI;
 import org.homio.api.util.CommonUtils;
@@ -44,8 +27,23 @@ import org.homio.api.util.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_DEVICE_STATUS;
+import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_LAST_SEEN;
+import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
+
 @Log4j2
 public class Z2MDeviceService {
+
+    public static final ConfigDeviceDefinitionService CONFIG_DEVICE_SERVICE =
+            new ConfigDeviceDefinitionService("zigbee-devices.json");
 
     private final Z2MLocalCoordinatorService coordinatorService;
     @Getter
@@ -55,23 +53,21 @@ public class Z2MDeviceService {
     @Getter
     private final EntityContext entityContext;
     @Getter
-    private final Z2MPropertyConfigService configService;
-    @Getter
     private String availability;
     @Getter
     private ApplianceModel applianceModel;
     private boolean initialized = false;
     private String currentMQTTTopic;
+    private List<ConfigDeviceDefinition> models;
 
     public Z2MDeviceService(Z2MLocalCoordinatorService coordinatorService, ApplianceModel applianceModel) {
         this.coordinatorService = coordinatorService;
-        this.configService = coordinatorService.getConfigService();
         this.entityContext = coordinatorService.getEntityContext();
+
         this.deviceEntity = new Z2MDeviceEntity(this, applianceModel.getIeeeAddress());
-        this.applianceModel = applianceModel;
 
         deviceUpdated(applianceModel);
-        addMissingProperties(coordinatorService, applianceModel);
+        addMissingEndpoints();
 
         entityContext.ui().updateItem(deviceEntity);
         entityContext.ui().sendSuccessMessage(Lang.getServerMessage("ENTITY_CREATED", "${%s}".formatted(this.applianceModel.getName())));
@@ -101,20 +97,20 @@ public class Z2MDeviceService {
         createOrUpdateDeviceGroup();
         removeRedundantExposes();
         for (Options expose : applianceModel.getDefinition().getExposes()) {
-            // types like switch has no property but has 'type'/'endpoint'/'features'
+            // types like switch has no endpoint but has 'type'/'endpoint'/'features'
             if (expose.getProperty() == null) {
                 addExposeByFeatures(expose);
             } else {
-                addPropertyOptional(expose.getProperty(), key -> buildExposeProperty(expose));
+                addEndpointOptional(expose.getProperty(), key -> buildExposeEndpoint(expose));
             }
         }
-        addPropertyOptional(ENDPOINT_LAST_SEEN, key -> {
-            Z2MEndpointLastSeen propertyLastSeen = new Z2MEndpointLastSeen();
-            propertyLastSeen.init(this, Options.dynamicExpose(ENDPOINT_LAST_SEEN, ApplianceModel.NUMBER_TYPE), true);
-            return propertyLastSeen;
+        addEndpointOptional(ENDPOINT_LAST_SEEN, key -> {
+            Z2MEndpointLastSeen lastSeenEndpoint = new Z2MEndpointLastSeen();
+            lastSeenEndpoint.init(this, Options.dynamicEndpoint(ENDPOINT_LAST_SEEN, ApplianceModel.NUMBER_TYPE), true);
+            return lastSeenEndpoint;
         });
         // add device status
-        addPropertyOptional(ENDPOINT_DEVICE_STATUS, key -> new Z2MPropertyDeviceStatusEndpoint(this));
+        addEndpointOptional(ENDPOINT_DEVICE_STATUS, key -> new Z2MDeviceStatusEndpoint(this));
     }
 
     public void setEntityOnline() {
@@ -128,8 +124,8 @@ public class Z2MDeviceService {
         }
     }
 
-    public Z2MPropertyModel getPropertyModel(String action) {
-        return configService.getFileMeta().getDeviceProperties().get(action);
+    public ConfigDeviceEndpoint getConfigDeviceEndpoint(String action) {
+        return CONFIG_DEVICE_SERVICE.getDeviceEndpoints().get(action);
     }
 
     public Set<String> getExposes() {
@@ -144,8 +140,8 @@ public class Z2MDeviceService {
         return coordinatorService.getEntity();
     }
 
-    public void updateDeviceConfiguration(Z2MDeviceService deviceService, String propertyName, Object value) {
-        coordinatorService.updateDeviceConfiguration(deviceService, propertyName, value);
+    public void updateDeviceConfiguration(Z2MDeviceService deviceService, String endpointName, Object value) {
+        coordinatorService.updateDeviceConfiguration(deviceService, endpointName, value);
     }
 
     public String getModel() {
@@ -228,12 +224,12 @@ public class Z2MDeviceService {
         return "%s(%s) [${%s}]".formatted(name, this.applianceModel.getIeeeAddress(), defaultIfEmpty(this.deviceEntity.getPlace(), "place_not_set"));
     }
 
-    public Z2MEndpoint addDynamicProperty(String key, Supplier<Z2MEndpoint> supplier) {
-        return addPropertyOptional(key, s -> {
-            Z2MEndpoint property = supplier.get();
-            // store missing property in file to next reload
-            coordinatorService.addMissingProperty(deviceEntity.getIeeeAddress(), property);
-            return property;
+    public Z2MEndpoint addDynamicEndpoint(String key, Supplier<Z2MEndpoint> supplier) {
+        return addEndpointOptional(key, s -> {
+            Z2MEndpoint endpoint = supplier.get();
+            // store missing endpoint in file to next reload
+            coordinatorService.addMissingEndpoints(deviceEntity.getIeeeAddress(), endpoint);
+            return endpoint;
         });
     }
 
@@ -243,32 +239,32 @@ public class Z2MDeviceService {
         for (String key : payload.keySet()) {
             try {
                 boolean feed = false;
-                for (Z2MEndpoint property : endpoints.values()) {
-                    if (property.feedPayload(key, payload)) {
+                for (Z2MEndpoint endpoint : endpoints.values()) {
+                    if (endpoint.feedPayload(key, payload)) {
                         feed = true;
                         updated = true;
-                        sb.add("%s - %s".formatted(property.getDescription(), property.getValue().toString()));
+                        sb.add("%s - %s".formatted(endpoint.getDescription(), endpoint.getValue().toString()));
                     }
                 }
                 if (!feed) {
-                    Set<String> ignoreExposes = getListOfRedundantProperties();
+                    Set<String> ignoreExposes = getListOfRedundantEndpoints();
                     if (!ignoreExposes.contains(key)) {
-                        log.info("[{}]: Create dynamic created property '{}'. Device: {}", coordinatorService.getEntityID(), key,
-                            applianceModel.getIeeeAddress());
-                        Z2MEndpoint missedZ2MEndpoint = buildExposeProperty(Options.dynamicExpose(key, getFormatFromPayloadValue(payload, key)));
+                        log.info("[{}]: Create dynamic created endpoint '{}'. Device: {}", coordinatorService.getEntityID(), key,
+                                applianceModel.getIeeeAddress());
+                        Z2MEndpoint missedZ2MEndpoint = buildExposeEndpoint(Options.dynamicEndpoint(key, getFormatFromPayloadValue(payload, key)));
                         missedZ2MEndpoint.mqttUpdate(payload);
 
-                        addPropertyOptional(key, s -> missedZ2MEndpoint);
+                        addEndpointOptional(key, s -> missedZ2MEndpoint);
                         entityContext.ui().updateItem(deviceEntity);
                     }
                 }
             } catch (Exception ex) {
-                log.error("Unable to handle Z2MProperty: {}. Payload: {}. Msg: {}",
-                    key, payload, CommonUtils.getErrorMessage(ex));
+                log.error("Unable to handle Z2MEndpoint: {}. Payload: {}. Msg: {}",
+                        key, payload, CommonUtils.getErrorMessage(ex));
             }
         }
         if (updated && !payload.keySet().contains(ENDPOINT_LAST_SEEN)) {
-            // fire set value as current milliseconds if device has no last_seen property for some reason
+            // fire set value as current milliseconds if device has no last_seen endpoint for some reason
             endpoints.get(ENDPOINT_LAST_SEEN).mqttUpdate(null);
         }
         if (deviceEntity.isLogEvents() && !sb.isEmpty()) {
@@ -279,18 +275,18 @@ public class Z2MDeviceService {
     /**
      * Remove exposes from z2m device in such cases:
      * <p>
-     * 1) expose exists inside file 'zigbee-devices.json' array 'ignoreProperties'
+     * 1) expose exists inside file 'zigbee-devices.json' array 'ignoreEndpoints'
      * <p>
      * 2) expose exists inside 'alias' array inside another expose in file 'zigbee-devices.json'
      */
     private void removeRedundantExposes() {
-        Set<String> ignoreExposes = getListOfRedundantProperties();
+        Set<String> ignoreExposes = getListOfRedundantEndpoints();
 
         applianceModel.getDefinition().getExposes().removeIf(e -> {
-            if (configService.getFileMeta().getIgnoreProperties().contains(e.getName()) || ignoreExposes.contains(e.getName())) {
-                log.info("[{}]: ({}): Skip property: {}",
-                    coordinatorService.getEntityID(),
-                    applianceModel.getIeeeAddress(), e.getName());
+            if (CONFIG_DEVICE_SERVICE.isIgnoreEndpoint(e.getName()) || ignoreExposes.contains(e.getName())) {
+                log.info("[{}]: ({}): Skip endpoint: {}",
+                        coordinatorService.getEntityID(),
+                        applianceModel.getIeeeAddress(), e.getName());
                 return true;
             }
             return false;
@@ -298,27 +294,27 @@ public class Z2MDeviceService {
     }
 
     @NotNull
-    private Set<String> getListOfRedundantProperties() {
+    private Set<String> getListOfRedundantEndpoints() {
         return Stream.concat(
-                         endpoints.keySet().stream(),
-                         applianceModel.getDefinition().getExposes().stream().map(Options::getName))
-                     .map(this::getPropertyModel)
-                     .filter(p -> p != null && p.getAlias() != null)
-                     .flatMap(p -> p.getAlias().stream())
-                     .collect(Collectors.toSet());
+                        endpoints.keySet().stream(),
+                        applianceModel.getDefinition().getExposes().stream().map(Options::getName))
+                .map(this::getConfigDeviceEndpoint)
+                .filter(p -> p != null && p.getAlias() != null)
+                .flatMap(p -> p.getAlias().stream())
+                .collect(Collectors.toSet());
     }
 
-    private void addMissingProperties(Z2MLocalCoordinatorService coordinatorService, ApplianceModel applianceModel) {
-        for (Pair<String, String> missingProperty : coordinatorService.getMissingProperties(applianceModel.getIeeeAddress())) {
-            if ("action_event".equals(missingProperty.getValue())) {
-                addPropertyOptional(missingProperty.getKey(), key -> Z2MEndpointAction.createActionEvent(key, this, entityContext));
+    private void addMissingEndpoints() {
+        for (Pair<String, String> missingEndpoints : coordinatorService.getMissingEndpoints(applianceModel.getIeeeAddress())) {
+            if ("action_event".equals(missingEndpoints.getValue())) {
+                addEndpointOptional(missingEndpoints.getKey(), key -> Z2MEndpointAction.createActionEvent(key, this, entityContext));
             }
         }
     }
 
-    private Z2MEndpoint addPropertyOptional(String key, Function<String, Z2MEndpoint> propertyProducer) {
+    private Z2MEndpoint addEndpointOptional(String key, Function<String, Z2MEndpoint> endpointProducer) {
         if (!endpoints.containsKey(key)) {
-            endpoints.put(key, propertyProducer.apply(key));
+            endpoints.put(key, endpointProducer.apply(key));
             entityContext.event().fireEvent("zigbee-%s-%s".formatted(applianceModel.getIeeeAddress(), key), Status.ONLINE);
         }
         return endpoints.get(key);
@@ -338,7 +334,7 @@ public class Z2MDeviceService {
         return ApplianceModel.UNKNOWN_TYPE;
     }
 
-    // usually expose.getName() is enough but in case of color - name - 'color_xy' but property is
+    // usually expose.getName() is enough but in case of color - name - 'color_xy' but endpoint is
     // 'color'
     private <T> T getValueFromMap(Map<String, T> map, Options expose) {
         return map.getOrDefault(expose.getName(), map.get(expose.getProperty()));
@@ -347,49 +343,52 @@ public class Z2MDeviceService {
     private void addExposeByFeatures(Options expose) {
         if (expose.getFeatures() != null) {
             for (Options feature : expose.getFeatures()) {
-                addPropertyOptional(feature.getProperty(), key -> buildExposeProperty(feature));
+                addEndpointOptional(feature.getProperty(), key -> buildExposeEndpoint(feature));
             }
         } else {
             log.error("[{}]: Device expose {} has no features", coordinatorService.getEntityID(), expose);
         }
     }
 
-    private Z2MEndpoint buildExposeProperty(Options expose) {
-        Class<? extends Z2MEndpoint> z2mCluster = getValueFromMap(configService.getConverters(), expose);
+    private Z2MEndpoint buildExposeEndpoint(Options expose) {
+        Class<? extends Z2MEndpoint> z2mCluster = getValueFromMap(coordinatorService.getAllEndpoints(), expose);
         Z2MEndpoint z2MEndpoint;
         if (z2mCluster == null) {
-            Z2MPropertyModel z2MPropertyModel = getValueFromMap(configService.getFileMeta().getDeviceProperties(), expose);
-            if (z2MPropertyModel != null) {
-                z2MEndpoint = new Z2MEndpointGeneral(z2MPropertyModel.getIcon(), z2MPropertyModel.getIconColor());
-                z2MEndpoint.setUnit(z2MPropertyModel.getUnit());
+            ConfigDeviceEndpoint configDeviceEndpoint = getValueFromMap(CONFIG_DEVICE_SERVICE.getDeviceEndpoints(), expose);
+            if (configDeviceEndpoint != null) {
+                z2MEndpoint = new Z2MEndpointGeneral(configDeviceEndpoint.getIcon(), configDeviceEndpoint.getIconColor());
+                z2MEndpoint.setUnit(configDeviceEndpoint.getUnit());
             } else {
                 z2MEndpoint = new Z2MEndpointUnknown();
             }
         } else {
             z2MEndpoint = CommonUtils.newInstance(z2mCluster);
         }
-        boolean createVariable = !configService.getFileMeta().getPropertiesWithoutVariables().contains(expose.getProperty());
+        boolean createVariable = CONFIG_DEVICE_SERVICE.isEndpointHasVariable(expose.getProperty());
         z2MEndpoint.init(this, expose, createVariable);
         return z2MEndpoint;
     }
 
     private void createOrUpdateDeviceGroup() {
         Icon icon = new Icon(
-            getDeviceIcon(findDevices(), "fas fa-server"),
-            getDeviceIconColor(findDevices(), UI.Color.random())
+                CONFIG_DEVICE_SERVICE.getDeviceIcon(findDevices(), "fas fa-server"),
+                CONFIG_DEVICE_SERVICE.getDeviceIconColor(findDevices(), UI.Color.random())
         );
         entityContext.var().createGroup("z2m", this.deviceEntity.getEntityID(), getDeviceFullName(), true,
-            icon, this.applianceModel.getGroupDescription());
+                icon, this.applianceModel.getGroupDescription());
     }
 
-    public @NotNull List<DeviceDefinitionModel> findDevices() {
-        return configService.findDevices(this);
+    public @NotNull List<ConfigDeviceDefinition> findDevices() {
+        if (this.models == null) {
+            this.models = CONFIG_DEVICE_SERVICE.findDeviceDefinitionModels(getModel(), getExposes());
+        }
+        return this.models;
     }
 
     private void downLinkQualityToZero() {
-        Optional.ofNullable(endpoints.get(Z2MEndpointGeneral.ENDPOINT_SIGNAL)).ifPresent(z2MProperty -> {
-            if (!z2MProperty.getValue().stringValue().equals("0")) {
-                z2MProperty.setValue(new DecimalType(0));
+        Optional.ofNullable(endpoints.get(Z2MEndpointGeneral.ENDPOINT_SIGNAL)).ifPresent(endpoint -> {
+            if (!endpoint.getValue().stringValue().equals("0")) {
+                endpoint.setValue(new DecimalType(0));
             }
         });
     }

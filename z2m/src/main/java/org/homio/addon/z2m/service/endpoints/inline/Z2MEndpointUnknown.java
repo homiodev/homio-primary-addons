@@ -1,9 +1,9 @@
-package org.homio.addon.z2m.service.properties.inline;
+package org.homio.addon.z2m.service.endpoints.inline;
 
 import org.homio.api.model.Icon;
 
 /**
- * This is a property that wasn't found in org.homio.addon.zigbee.service.z2m.properties.xxx and in file zigbee-devices.json...properties
+ * This is a endpoint that wasn't found in org.homio.addon.zigbee.service.z2m.endpoints.xxx and in file zigbee-devices.json...endpoints
  */
 public class Z2MEndpointUnknown extends Z2MEndpointInline {
 

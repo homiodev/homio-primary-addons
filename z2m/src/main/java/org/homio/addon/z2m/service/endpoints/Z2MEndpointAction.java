@@ -1,9 +1,9 @@
-package org.homio.addon.z2m.service.properties;
+package org.homio.addon.z2m.service.endpoints;
 
+import lombok.val;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MEndpoint;
-import org.homio.addon.z2m.service.properties.inline.Z2MEndpointActionEvent;
-import org.homio.addon.z2m.util.Z2MPropertyModel;
+import org.homio.addon.z2m.service.endpoints.inline.Z2MEndpointActionEvent;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
 import org.jetbrains.annotations.NotNull;
@@ -16,10 +16,10 @@ public class Z2MEndpointAction extends Z2MEndpoint {
     }
 
     public static Z2MEndpointActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {
-        Z2MPropertyModel z2MPropertyModel = deviceService.getPropertyModel(action);
-        Z2MEndpointActionEvent z2MPropertyActionEvent = new Z2MEndpointActionEvent(deviceService, action, z2MPropertyModel);
+        val configDeviceEndpoint = deviceService.getConfigDeviceEndpoint(action);
+        val ActionEventEndpoint = new Z2MEndpointActionEvent(deviceService, action, configDeviceEndpoint);
         entityContext.ui().updateItem(deviceService.getDeviceEntity());
-        return z2MPropertyActionEvent;
+        return ActionEventEndpoint;
     }
 
     @Override
@@ -32,11 +32,11 @@ public class Z2MEndpointAction extends Z2MEndpoint {
         Z2MEndpoint z2MEndpoint = deviceService.getEndpoints().get(actionKey);
         if (z2MEndpoint == null) {
             EntityContext entityContext = deviceService.getEntityContext();
-            z2MEndpoint = deviceService.addDynamicProperty(actionKey, () ->
-                Z2MEndpointAction.createActionEvent(actionKey, deviceService, entityContext));
+            z2MEndpoint = deviceService.addDynamicEndpoint(actionKey, () ->
+                    Z2MEndpointAction.createActionEvent(actionKey, deviceService, entityContext));
 
-            deviceService.addDynamicProperty("action_any", () ->
-                Z2MEndpointAction.createActionEvent("action_any", deviceService, entityContext));
+            deviceService.addDynamicEndpoint("action_any", () ->
+                    Z2MEndpointAction.createActionEvent("action_any", deviceService, entityContext));
         }
         z2MEndpoint.mqttUpdate(payload);
         // 'action' counter
@@ -44,7 +44,7 @@ public class Z2MEndpointAction extends Z2MEndpoint {
     }
 
     @Override
-    public @NotNull String getPropertyDefinition() {
+    public @NotNull String getEndpointDefinition() {
         return "action";
     }
 }

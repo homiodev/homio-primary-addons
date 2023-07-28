@@ -1,36 +1,10 @@
 package org.homio.addon.z2m.service;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.trimToNull;
-import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
-import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
-import static org.homio.api.util.CommonUtils.YAML_OBJECT_MAPPER;
-import static org.homio.api.util.CommonUtils.getErrorMessage;
-import static org.homio.api.util.CommonUtils.updateJsonPath;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pivovarit.function.ThrowingBiConsumer;
 import com.pivovarit.function.ThrowingConsumer;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -40,15 +14,16 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 import org.homio.addon.z2m.ZigBee2MQTTFrontendConsolePlugin;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
+import org.homio.addon.z2m.service.endpoints.inline.Z2MEndpointInline;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition;
 import org.homio.addon.z2m.util.Z2MConfiguration;
-import org.homio.addon.z2m.util.Z2MPropertyConfigService;
 import org.homio.addon.z2m.util.ZigBeeUtil;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextBGP.ProcessContext;
 import org.homio.api.EntityContextBGP.ThreadContext;
 import org.homio.api.EntityContextService.MQTTEntityService;
+import org.homio.api.EntityContextUI;
 import org.homio.api.console.ConsolePluginFrame.FrameConfiguration;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.model.ActionResponseModel;
@@ -63,6 +38,27 @@ import org.homio.api.util.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.time.Duration;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
+import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
+import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
+import static org.homio.api.util.CommonUtils.*;
 
 /**
  * The {@link Z2MLocalCoordinatorService} is responsible for handling commands, which are sent to one of the zigbeeRequireEndpoints.
@@ -82,14 +78,14 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     private final AtomicBoolean scanStarted = new AtomicBoolean(false);
     // Map ieeeAddress - Z2MDeviceService
     @Getter private final Map<String, Z2MDeviceService> deviceHandlers = new ConcurrentHashMap<>();
-    @Getter private final Z2MPropertyConfigService configService;
 
     @Getter private boolean initialized;
     private Status desiredStatus;
     @Getter private @Nullable Status updatingStatus;
     @Getter
     private MQTTEntityService mqttEntityService;
-    @Getter private Z2MConfiguration configuration;
+    @Getter
+    public final Map<String, Class<? extends Z2MEndpoint>> allEndpoints = new HashMap<>();
     private URL z2mFrontendURL;
 
     private ThreadContext<Void> checkFrontendTC;
@@ -97,11 +93,14 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     private ThreadContext<Void> internalTestStatusWatchdog;
 
     private ProcessContext nodePC;
-    @Getter private boolean isZ2MRunningLocally;
+    @Getter
+    private Z2MConfiguration configuration;
+    @Getter
+    private boolean isZ2MRunningLocally;
 
-    public Z2MLocalCoordinatorService(EntityContext entityContext, Z2MLocalCoordinatorEntity entity) {
+    public Z2MLocalCoordinatorService(@NotNull EntityContext entityContext, @NotNull Z2MLocalCoordinatorEntity entity) {
         super(entityContext, entity);
-        this.configService = entityContext.getBean(Z2MPropertyConfigService.class);
+        assembleAllEndpoints(entityContext);
         installZ2MIfRequire();
     }
 
@@ -264,24 +263,24 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     }
 
     @SneakyThrows
-    public void updateDeviceConfiguration(Z2MDeviceService deviceService, String propertyName, Object value) {
+    public void updateDeviceConfiguration(Z2MDeviceService deviceService, String endpointName, Object value) {
         if (!this.initialized) {
             throw new IllegalStateException("ZIGBEE.ERROR.COORDINATOR_OFFLINE");
         }
         ObjectNode deviceConfiguration = this.configuration.getDevices().computeIfAbsent(deviceService.getIeeeAddress(),
-            ieee -> node(deviceService.getIeeeAddress()));
+                ieee -> node(deviceService.getIeeeAddress()));
         if (value == null) {
-            deviceConfiguration.remove(propertyName);
+            deviceConfiguration.remove(endpointName);
         } else {
-            deviceConfiguration.putPOJO(propertyName, value);
+            deviceConfiguration.putPOJO(endpointName, value);
         }
         saveConfiguration();
         // update value in runtime
         publish(
-            "bridge/config/device_options",
-            new JSONObject()
-                .put("friendly_name", deviceService.getIeeeAddress())
-                .put("options", new JSONObject().put(propertyName, value)));
+                "bridge/config/device_options",
+                new JSONObject()
+                        .put("friendly_name", deviceService.getIeeeAddress())
+                        .put("options", new JSONObject().put(endpointName, value)));
     }
 
     @SneakyThrows
@@ -289,29 +288,30 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         mqttEntityService.publish(entity.getBasicTopic() + "/" + topic, payload.toString().getBytes(), 0, false);
     }
 
-    public void addMissingProperty(String ieeeAddress, Z2MEndpoint property) {
+    public void addMissingEndpoints(String ieeeAddress, Z2MEndpoint endpoint) {
         ObjectNode deviceConfiguration = configuration.getDevices().computeIfAbsent(ieeeAddress,
-            ieee -> node(ieeeAddress));
+                ieee -> node(ieeeAddress));
         String extraActions = deviceConfiguration.path("missingActions").asText("");
         for (String action : extraActions.split(";")) {
-            if (action.startsWith(property.getKey() + ":")) {
-                log.warn("Property '{}' already exists in configuration for device: '{}'", property.getKey(), ieeeAddress);
+            if (action.startsWith(endpoint.getEndpointEntityID() + ":")) {
+                log.warn("Endpoint '{}' already exists in configuration for device: '{}'",
+                        endpoint.getEndpointEntityID(), ieeeAddress);
                 return;
             }
         }
-        extraActions += "%s:%s;".formatted(property.getKey(), property.getPropertyDefinition());
+        extraActions += "%s:%s;".formatted(endpoint.getEndpointEntityID(), endpoint.getEndpointDefinition());
         deviceConfiguration.put("missingActions", extraActions);
         saveConfiguration();
     }
 
-    public List<Pair<String, String>> getMissingProperties(String ieeeAddress) {
+    public List<Pair<String, String>> getMissingEndpoints(String ieeeAddress) {
         ObjectNode device = configuration.getDevices().get(ieeeAddress);
         if (device != null) {
             return Stream.of(device.path("missingActions").asText("").split(";"))
-                         .filter(s -> !s.isEmpty()).map(s -> {
-                    String[] actionItems = s.split(":");
-                    return Pair.of(actionItems[0], actionItems[1]);
-                }).collect(Collectors.toList());
+                    .filter(s -> !s.isEmpty()).map(s -> {
+                        String[] actionItems = s.split(":");
+                        return Pair.of(actionItems[0], actionItems[1]);
+                    }).collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
@@ -477,7 +477,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
             } else {
                 builder.addErrorStatusInfo(entity.getStatusMessage());
             }
-            configService.addUpdateButton(builder);
+            addUpdateButton(builder);
 
             builder.contextMenuActionBuilder(contextAction -> {
                 if (!entity.isStart()) {
@@ -666,22 +666,46 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
                 nodePC = null;
                 dispose(ex);
             })
-            .setErrorLoggerOutput(log::error)
-            .setInputLoggerOutput(msg -> {
-                if (msg.contains("!!!!")) {
-                    infoLevel.set(Level.ERROR);
+                .setErrorLoggerOutput(log::error)
+                .setInputLoggerOutput(msg -> {
+                    if (msg.contains("!!!!")) {
+                        infoLevel.set(Level.ERROR);
+                    }
+                    log.log(infoLevel.get(), "[{}]: ZigBee2MQTT: {}", entityID, msg);
+                })
+                .execute(getNpm() + " start --prefix " + zigbee2mqttGitHub.getLocalProjectPath());
+    }
+
+    private void assembleAllEndpoints(EntityContext entityContext) {
+        if (allEndpoints.isEmpty()) {
+            List<Class<? extends Z2MEndpoint>> z2mClusters = entityContext.getClassesWithParent(Z2MEndpoint.class);
+            for (Class<? extends Z2MEndpoint> z2mCluster : z2mClusters) {
+                if (!Z2MEndpointInline.class.isAssignableFrom(z2mCluster)) {
+                    Z2MEndpoint z2MEndpoint = CommonUtils.newInstance(z2mCluster);
+                    allEndpoints.put(z2MEndpoint.getEndpointDefinition(), z2mCluster);
                 }
-                log.log(infoLevel.get(), "[{}]: ZigBee2MQTT: {}", entityID, msg);
-            })
-            .execute(getNpm() + " start --prefix " + zigbee2mqttGitHub.getLocalProjectPath());
+            }
+        }
+    }
+
+    private void addUpdateButton(EntityContextUI.NotificationBlockBuilder builder) {
+        if (!CONFIG_DEVICE_SERVICE.isEqualServerConfig()) {
+            builder.addInfo("ZIGBEE.CONFIG_OUTDATED", null).setRightButton(new Icon("fas fa-download"), "UPDATE",
+                    "W.CONFIRM.Z2M_DOWNLOAD_CONFIG", (ec, params) -> {
+                        CONFIG_DEVICE_SERVICE.syncConfigurationFile();
+                        return ActionResponseModel.fired();
+                    });
+        }
     }
 
     @RequiredArgsConstructor
     private enum Z2MBridgeTopicHandlers {
-        config(Level.INFO, (payload, service) -> {}),
+        config(Level.INFO, (payload, service) -> {
+        }),
         devices(Level.INFO, (payload, service) -> {
             String value = payload.get("raw").asText();
-            List<ApplianceModel> models = OBJECT_MAPPER.readValue(value, new TypeReference<>() {});
+            List<ApplianceModel> models = OBJECT_MAPPER.readValue(value, new TypeReference<>() {
+            });
             Map<String, ApplianceModel> applianceModelMap = getApplianceModelMap(models);
             for (Iterator<Entry<String, Z2MDeviceService>> iterator = service.deviceHandlers.entrySet().iterator(); iterator.hasNext(); ) {
                 Entry<String, Z2MDeviceService> entry = iterator.next();
@@ -737,8 +761,8 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
 
         private static Map<String, ApplianceModel> getApplianceModelMap(List<ApplianceModel> models) {
             return models.stream()
-                         .filter(d -> !d.getType().equals("Coordinator"))
-                         .collect(Collectors.toMap(ApplianceModel::getIeeeAddress, d -> d));
+                    .filter(d -> !d.getType().equals("Coordinator"))
+                    .collect(Collectors.toMap(ApplianceModel::getIeeeAddress, d -> d));
         }
 
         private final ThrowingBiConsumer<JsonNode, Z2MLocalCoordinatorService, Exception> handler;
@@ -747,9 +771,9 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     @RequiredArgsConstructor
     private enum Z2MBridgeResponseTopicHandlers {
         otaCheck("device/ota_update/check", Level.INFO, (payload, service) ->
-            service.entityContext.ui().sendSuccessMessage(
-                Lang.getServerMessage("ZIGBEE.OTA_CHECK_" + payload.get("updateAvailable").asText().toUpperCase(),
-                    payload.get("id").asText())));
+                service.entityContext.ui().sendSuccessMessage(
+                        Lang.getServerMessage("ZIGBEE.OTA_CHECK_" + payload.get("updateAvailable").asText().toUpperCase(),
+                                payload.get("id").asText())));
 
         private final String topic;
         private final Level logLevel;
