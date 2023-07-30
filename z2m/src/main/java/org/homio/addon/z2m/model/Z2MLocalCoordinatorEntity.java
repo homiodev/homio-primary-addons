@@ -218,7 +218,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     @Override
     @SneakyThrows
     public @NotNull Z2MLocalCoordinatorService createService(@NotNull EntityContext entityContext) {
-        return new Z2MLocalCoordinatorService(entityContext, this);
+        return new Z2MLocalCoordinatorService(entityContext);
     }
 
     @Override

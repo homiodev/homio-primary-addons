@@ -85,7 +85,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     @Getter
     private MQTTEntityService mqttEntityService;
     @Getter
-    public final Map<String, Class<? extends Z2MEndpoint>> allEndpoints = new HashMap<>();
+    public static final Map<String, Class<? extends Z2MEndpoint>> allEndpoints = new HashMap<>();
     private URL z2mFrontendURL;
 
     private ThreadContext<Void> checkFrontendTC;
@@ -98,24 +98,22 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     @Getter
     private boolean isZ2MRunningLocally;
 
-    public Z2MLocalCoordinatorService(@NotNull EntityContext entityContext, @NotNull Z2MLocalCoordinatorEntity entity) {
-        super(entityContext, entity);
-        assembleAllEndpoints(entityContext);
-        installZ2MIfRequire();
+    public Z2MLocalCoordinatorService(@NotNull EntityContext entityContext) {
+        super(entityContext);
     }
 
     @SneakyThrows
     public ActionResponseModel reinstallZ2M() {
         this.dispose(null);
         zigbee2mqttGitHub.deleteProject();
-        installZ2MIfRequire();
+        installZ2MOrRestartCoordinator();
         return ActionResponseModel.fired();
     }
 
-    private void installZ2MIfRequire() {
+    private void installZ2MOrRestartCoordinator() {
         if (!ZigBeeUtil.isZ2MInstalled()) {
             entityContext.event().runOnceOnInternetUp("z2m", () ->
-                ZigBeeUtil.installZ2M(entityContext, this::restartCoordinator));
+                    ZigBeeUtil.installZ2M(entityContext, this::restartCoordinator));
         } else {
             restartCoordinator();
             entityContext.event().runOnceOnInternetUp("z2m", this::updateNotificationBlock);
@@ -203,8 +201,14 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     }
 
     @Override
+    protected void firstInitialize() {
+        assembleAllEndpoints(entityContext);
+        initialize();
+    }
+
+    @Override
     protected void initialize() {
-        this.restartCoordinator();
+        installZ2MOrRestartCoordinator();
     }
 
     @SneakyThrows

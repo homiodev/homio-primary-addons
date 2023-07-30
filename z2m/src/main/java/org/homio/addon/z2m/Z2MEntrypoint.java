@@ -47,7 +47,6 @@ public class Z2MEntrypoint implements AddonEntrypoint {
         entityContext.ui().registerConsolePluginName("zigbee", Z2M_RESOURCE);
         entityContext.setting().listenValue(ZigBeeEntityCompactModeSetting.class, "zigbee-compact-mode",
             (value) -> entityContext.ui().updateItems(Z2MDeviceEntity.class));
-        entityContext.var().createGroup("z2m", "ZigBee2MQTT", true, new Icon("fab fa-laravel", "#ED3A3A"));
 
         entityContext.event().addPortChangeStatusListener("zigbee-ports",
             port -> {

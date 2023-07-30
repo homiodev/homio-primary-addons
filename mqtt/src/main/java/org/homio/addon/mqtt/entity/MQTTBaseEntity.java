@@ -1,11 +1,6 @@
 package org.homio.addon.mqtt.entity;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import jakarta.persistence.Entity;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -28,11 +23,7 @@ import org.homio.api.model.Icon;
 import org.homio.api.service.EntityService;
 import org.homio.api.storage.SourceHistory;
 import org.homio.api.storage.SourceHistoryItem;
-import org.homio.api.ui.field.UIField;
-import org.homio.api.ui.field.UIFieldGroup;
-import org.homio.api.ui.field.UIFieldPort;
-import org.homio.api.ui.field.UIFieldProgress;
-import org.homio.api.ui.field.UIFieldSlider;
+import org.homio.api.ui.field.*;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.ui.field.selection.UIFieldSelection;
 import org.homio.api.ui.field.selection.dynamic.DynamicParameterFields;
@@ -40,6 +31,12 @@ import org.homio.api.ui.field.selection.dynamic.SelectionWithDynamicParameterFie
 import org.homio.api.util.SecureString;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @SuppressWarnings("unused")
 @Log4j2
@@ -222,7 +219,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     @Override
     @SneakyThrows
     public MQTTService createService(@NotNull EntityContext entityContext) {
-        return new MQTTService(this, entityContext);
+        return new MQTTService(entityContext);
     }
 
     public void publish(@NotNull String topic, byte[] content, int qoS, boolean retain) {
@@ -325,8 +322,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     }
 
     public long getServiceHashCode() {
-        return getJsonDataHashCode("user", "pwd", "cid", "port", "cs", "ct",
-            "ka", "host");
+        return getJsonDataHashCode("user", "pwd", "cid", "port", "cs", "ct", "ka", "host");
     }
 
     static String normalize(String topic) {

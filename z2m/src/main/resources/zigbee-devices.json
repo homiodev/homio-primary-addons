@@ -924,6 +924,7 @@
     },
     {
       "name": "update_available",
+      "stateless": true,
       "icon": "fa-hat-cowboy-side",
       "iconColor": "#AD23BA"
     },
@@ -966,10 +967,12 @@
       "name": "indicator_mode",
       "icon": "fa-traffic-light",
       "iconColor": "#42C1BB"
+    },
+    {
+      "name": "update",
+      "stateless": true,
+      "icon": "",
+      "iconColor": ""
     }
-  ],
-  "endpointsWithoutVariables": [
-    "update_available",
-    "update"
   ]
 }

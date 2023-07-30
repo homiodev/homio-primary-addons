@@ -57,6 +57,7 @@ import static org.homio.addon.z2m.service.Z2MEndpoint.ENDPOINT_FIRMWARE_UPDATE;
 import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
 import static org.homio.api.ui.field.UIFieldType.HTML;
 import static org.homio.api.ui.field.UIFieldType.SelectBox;
+import static org.homio.api.util.CommonUtils.splitNameToReadableFormat;
 
 @Log4j2
 @Getter
@@ -407,7 +408,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         if (definition != null) {
             for (Options option : definition.getOptions()) {
                 JsonNode deviceConfigurationOptions = deviceService.getConfiguration();
-                String flexName = "${z2m.setting.%s~%s}".formatted(option.getName(), ZigBeeUtil.splitNameToReadableFormat(option.getName()));
+                String flexName = "${z2m.setting.%s~%s}".formatted(option.getName(), splitNameToReadableFormat(option.getName()));
                 switch (option.getType()) {
                     case ApplianceModel.BINARY_TYPE -> buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
                     case ApplianceModel.NUMBER_TYPE -> buildNumberTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
@@ -454,7 +455,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
         uiInputBuilder.addFlex(option.getName() + "_flex", flex -> {
                           flex.addNumberInput(option.getName(), toFloat(nValue), toFloat(minValue), toFloat(maxValue),
                               (entityContext, params) -> {
-                                  this.deviceService.updateDeviceConfiguration(deviceService, option.getName(),
+                                  deviceService.updateDeviceConfiguration(deviceService, option.getName(),
                                       params.has("value") ? params.getInt("value") : null);
                                   return null;
                               });
@@ -477,7 +478,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
 
     private void buildCheckbox(Options option, boolean bValue, UIFlexLayoutBuilder flex) {
         flex.addCheckbox(option.getName(), bValue, (entityContext, params) -> {
-            this.deviceService.updateDeviceConfiguration(deviceService, option.getName(), params.getBoolean("value"));
+            deviceService.updateDeviceConfiguration(deviceService, option.getName(), params.getBoolean("value"));
             return null;
         });
         flex.addInfo(option.getDescription()).setOuterClass("context-description");

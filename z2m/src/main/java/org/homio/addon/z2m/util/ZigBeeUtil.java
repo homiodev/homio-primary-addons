@@ -104,11 +104,6 @@ public final class ZigBeeUtil {
         return uiInputBuilder;
     }
 
-    public static String splitNameToReadableFormat(@NotNull String name) {
-        String[] items = name.split("_");
-        return StringUtils.capitalize(String.join(" ", items));
-    }
-
     public static boolean isZ2MInstalled() {
         Path zigbee2mqttPackagePath = zigbee2mqttGitHub.getLocalProjectPath().resolve("node_modules");
         return Files.exists(zigbee2mqttPackagePath);

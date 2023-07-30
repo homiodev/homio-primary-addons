@@ -29,6 +29,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
 import static org.homio.addon.z2m.util.ApplianceModel.*;
+import static org.homio.api.util.CommonUtils.splitNameToReadableFormat;
 
 @Log4j2
 @Getter
@@ -83,7 +84,7 @@ public abstract class Z2MEndpoint extends BaseDeviceEndpoint<Z2MDeviceEntity> {
         if (expose.getProperty() != null && !expose.getProperty().equals(expose.getName())) {
             l1Name = expose.getProperty();
         }
-        String name = ZigBeeUtil.splitNameToReadableFormat(l1Name);
+        String name = splitNameToReadableFormat(l1Name);
         name = shortFormat ? name : "${zbe.%s~%s}".formatted(l1Name, name);
 
         if (isNotEmpty(expose.getEndpoint())) {

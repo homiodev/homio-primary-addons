@@ -75,15 +75,15 @@ public abstract class BaseVideoService<T extends BaseVideoEntity>
 
     private static final Map<String, Integer> bootstrapServerPortMap = new HashMap<>();
     @Getter
-    protected final int serverPort;
+    protected int serverPort;
     @Getter
-    private final Path ffmpegGifOutputPath;
+    private Path ffmpegGifOutputPath;
     @Getter
-    private final Path ffmpegMP4OutputPath;
+    private Path ffmpegMP4OutputPath;
     @Getter
-    private final Path ffmpegHLSOutputPath;
+    private Path ffmpegHLSOutputPath;
     @Getter
-    private final Path ffmpegImageOutputPath;
+    private Path ffmpegImageOutputPath;
     @Getter
     private final Map<String, State> attributes = new ConcurrentHashMap<>();
     @Getter
@@ -124,30 +124,7 @@ public abstract class BaseVideoService<T extends BaseVideoEntity>
     private String mgpegOutOptions;
 
     public BaseVideoService(T entity, EntityContext entityContext) {
-        super(entityContext, entity);
-        this.entity = entity;
-        this.oldEntity = null;
-        this.serverPort = getEntity().getServerPort();
-
-        entity.setStatus(Status.UNKNOWN, null);
-
-        Path ffmpegOutputPath = CommonUtils.getMediaPath().resolve(getEntity().getFolderName()).resolve(entityID);
-        ffmpegImageOutputPath = CommonUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("images"));
-        ffmpegGifOutputPath = CommonUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("gif"));
-        ffmpegMP4OutputPath = CommonUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("mp4"));
-        ffmpegHLSOutputPath = CommonUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("hls"));
-        try {
-            FileUtils.cleanDirectory(ffmpegHLSOutputPath.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to clean path: " + ffmpegHLSOutputPath);
-        }
-
-        bootstrapServerPortMap.remove(entityID);
-        if (bootstrapServerPortMap.containsValue(serverPort)) {
-            entity.setStatusError("Server port already in use");
-            return;
-        }
-        bootstrapServerPortMap.put(entityID, serverPort);
+        super(entityContext);
     }
 
     public static int findFreeBootstrapServerPort() {
@@ -188,6 +165,30 @@ public abstract class BaseVideoService<T extends BaseVideoEntity>
     public void destroy() {
         dispose();
         deleteDirectories();
+    }
+
+    @Override
+    protected void firstInitialize() {
+        serverPort = getEntity().getServerPort();
+
+        Path ffmpegOutputPath = CommonUtils.getMediaPath().resolve(getEntity().getFolderName()).resolve(entityID);
+        ffmpegImageOutputPath = CommonUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("images"));
+        ffmpegGifOutputPath = CommonUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("gif"));
+        ffmpegMP4OutputPath = CommonUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("mp4"));
+        ffmpegHLSOutputPath = CommonUtils.createDirectoriesIfNotExists(ffmpegOutputPath.resolve("hls"));
+        try {
+            FileUtils.cleanDirectory(ffmpegHLSOutputPath.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to clean path: " + ffmpegHLSOutputPath);
+        }
+
+        bootstrapServerPortMap.remove(entityID);
+        if (bootstrapServerPortMap.containsValue(serverPort)) {
+            entity.setStatusError("Server port already in use");
+            return;
+        }
+        bootstrapServerPortMap.put(entityID, serverPort);
+        initialize();
     }
 
     @Override

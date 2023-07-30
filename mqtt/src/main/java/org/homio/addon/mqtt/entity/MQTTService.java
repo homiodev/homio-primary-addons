@@ -1,35 +1,12 @@
 package org.homio.addon.mqtt.entity;
 
-import static java.lang.String.format;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.homio.addon.mqtt.entity.MQTTBaseEntity.normalize;
-
-import java.nio.file.Paths;
-import java.text.NumberFormat;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.homio.addon.mqtt.console.MQTTExplorerConsolePlugin;
 import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
@@ -50,13 +27,25 @@ import org.homio.api.util.CommonUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import java.nio.file.Paths;
+import java.text.NumberFormat;
+import java.time.Duration;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.homio.addon.mqtt.entity.MQTTBaseEntity.normalize;
+
 @Log4j2
 public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
 
     private final Map<String, List<MQTTMessage>> sysHistoryMap = new HashMap<>();
     @Getter
-    @NotNull
-    private final DataStorageService<MQTTMessage> storage;
+    private DataStorageService<MQTTMessage> storage;
     @Getter
     private final TreeNode root = new TreeNode().setChildrenMap(new HashMap<>());
     @Getter
@@ -64,39 +53,8 @@ public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
     @Getter
     private long serviceHashCode;
 
-    public MQTTService(@NotNull MQTTBaseEntity entity, @NotNull EntityContext entityContext) {
-        super(entityContext, entity);
-        this.storage = entityContext.storage().getOrCreateInMemoryService(MQTTMessage.class, entityID, (long) entity.getHistorySize());
-
-        MQTTExplorerConsolePlugin mqttPlugin = new MQTTExplorerConsolePlugin(entityContext, this);
-        entityContext.ui().registerConsolePlugin(entityID, mqttPlugin);
-
-        entityContext.setting().listenValue(ConsoleMQTTPublishButtonSetting.class, entityID + "-mqtt-publish",
-            jsonObject -> entity.publish(jsonObject.getString("Topic"), getContent(jsonObject),
-                jsonObject.getInt("QoS"), jsonObject.getBoolean("Retain")));
-        entityContext.setting().listenValue(ConsoleMQTTPublishButtonSetting.class, entityID + "-mqtt-publish",
-            jsonObject -> entity.publish(jsonObject.getString("Topic"), getContent(jsonObject),
-                jsonObject.getInt("QoS"), jsonObject.getBoolean("Retain")));
-
-        entityContext.setting().listenValue(ConsoleMQTTClearHistorySetting.class, entityID + "-mqtt-clear-history",
-            this::clearHistory);
-
-        entityContext.setting().listenValue(ConsoleRemoveMqttTreeNodeHeaderButtonSetting.class, "mqtt-remove-node", data -> {
-            if (data != null && this.entityID.equals(data.getTabID())) {
-                TreeNode removedTopic = this.removeTopic(data.getNodeID());
-                if (removedTopic != null) {
-                    sendUpdatesToUI(data.getNodeID(), removedTopic);
-                }
-            }
-        });
-
-        if (entity instanceof MQTTLocalClientEntity) {
-            entityContext.event().runOnceOnInternetUp("mosquitto", () ->
-                entityContext.install().mosquitto().requireAsync(null, () ->
-                    log.info("Mosquitto service successfully installed")));
-        }
-
-        fireInitialize();
+    public MQTTService(@NotNull EntityContext entityContext) {
+        super(entityContext);
     }
 
     @Override
@@ -129,6 +87,41 @@ public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
     @Override
     protected long getEntityHashCode(MQTTBaseEntity entity) {
         return entity.getDeepHashCode();
+    }
+
+    @Override
+    protected void firstInitialize() {
+        this.storage = entityContext.storage().getOrCreateInMemoryService(MQTTMessage.class, entityID, (long) entity.getHistorySize());
+
+        MQTTExplorerConsolePlugin mqttPlugin = new MQTTExplorerConsolePlugin(entityContext, this);
+        entityContext.ui().registerConsolePlugin(entityID, mqttPlugin);
+
+        entityContext.setting().listenValue(ConsoleMQTTPublishButtonSetting.class, entityID + "-mqtt-publish",
+                jsonObject -> entity.publish(jsonObject.getString("Topic"), getContent(jsonObject),
+                        jsonObject.getInt("QoS"), jsonObject.getBoolean("Retain")));
+        entityContext.setting().listenValue(ConsoleMQTTPublishButtonSetting.class, entityID + "-mqtt-publish",
+                jsonObject -> entity.publish(jsonObject.getString("Topic"), getContent(jsonObject),
+                        jsonObject.getInt("QoS"), jsonObject.getBoolean("Retain")));
+
+        entityContext.setting().listenValue(ConsoleMQTTClearHistorySetting.class, entityID + "-mqtt-clear-history",
+                this::clearHistory);
+
+        entityContext.setting().listenValue(ConsoleRemoveMqttTreeNodeHeaderButtonSetting.class, "mqtt-remove-node", data -> {
+            if (data != null && this.entityID.equals(data.getTabID())) {
+                TreeNode removedTopic = this.removeTopic(data.getNodeID());
+                if (removedTopic != null) {
+                    sendUpdatesToUI(data.getNodeID(), removedTopic);
+                }
+            }
+        });
+
+        if (entity instanceof MQTTLocalClientEntity) {
+            entityContext.event().runOnceOnInternetUp("mosquitto", () ->
+                    entityContext.install().mosquitto().requireAsync(null, () ->
+                            log.info("Mosquitto service successfully installed")));
+        }
+
+        initialize();
     }
 
     @Override
