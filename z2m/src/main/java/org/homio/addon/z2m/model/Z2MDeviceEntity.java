@@ -1,35 +1,48 @@
 package org.homio.addon.z2m.model;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
+import static org.homio.addon.z2m.service.Z2MDeviceEndpoint.ENDPOINT_FIRMWARE_UPDATE;
+import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
+import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
+import static org.homio.api.ui.field.UIFieldType.HTML;
+import static org.homio.api.ui.field.UIFieldType.SelectBox;
+import static org.homio.api.util.CommonUtils.splitNameToReadableFormat;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.service.Z2MDeviceService;
-import org.homio.addon.z2m.service.endpoints.Z2MEndpointFirmwareUpdate;
+import org.homio.addon.z2m.service.endpoints.Z2MDeviceEndpointFirmwareUpdate;
 import org.homio.addon.z2m.setting.ZigBeeEntityCompactModeSetting;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
-import org.homio.addon.z2m.util.ZigBeeUtil;
-import org.homio.api.EntityContext;
-import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.DeviceBaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
-import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.model.Status.EntityStatus;
 import org.homio.api.model.device.ConfigDeviceDefinition;
 import org.homio.api.model.endpoint.DeviceEndpoint;
-import org.homio.api.model.endpoint.DeviceEndpointUI;
 import org.homio.api.optionProvider.SelectPlaceOptionLoader;
 import org.homio.api.ui.UI;
 import org.homio.api.ui.UI.Color;
-import org.homio.api.ui.action.UIActionHandler;
-import org.homio.api.ui.field.*;
+import org.homio.api.ui.field.UIField;
+import org.homio.api.ui.field.UIFieldGroup;
+import org.homio.api.ui.field.UIFieldIgnore;
+import org.homio.api.ui.field.UIFieldInlineEditConfirm;
+import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.action.HasDynamicContextMenuActions;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
@@ -43,21 +56,6 @@ import org.homio.api.widget.template.WidgetDefinition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.StringUtils.*;
-import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
-import static org.homio.addon.z2m.service.Z2MEndpoint.ENDPOINT_FIRMWARE_UPDATE;
-import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
-import static org.homio.api.ui.field.UIFieldType.HTML;
-import static org.homio.api.ui.field.UIFieldType.SelectBox;
-import static org.homio.api.util.CommonUtils.splitNameToReadableFormat;
 
 @Log4j2
 @Getter
@@ -80,13 +78,6 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @Override
     public @NotNull String getDeviceFullName() {
         return deviceService.getDeviceFullName();
-    }
-
-    @Override
-    @JsonIgnore
-    @UIFieldIgnore
-    public String getIeeeAddress() {
-        return super.getIeeeAddress();
     }
 
     public Z2MDeviceEntity setName(String value) {
@@ -129,7 +120,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
             status = Status.NOT_READY;
         } else {
             DeviceEndpoint endpoint = getDeviceEndpoint(ENDPOINT_FIRMWARE_UPDATE);
-            if (endpoint instanceof Z2MEndpointFirmwareUpdate firmwareUpdate && firmwareUpdate.isUpdating()) {
+            if (endpoint instanceof Z2MDeviceEndpointFirmwareUpdate firmwareUpdate && firmwareUpdate.isUpdating()) {
                 status = Status.UPDATING;
             }
         }
@@ -204,6 +195,13 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @UIFieldGroup(value = "GENERAL", order = 5)
     public String getIeeeAddressLabel() {
         return trimToEmpty(getIeeeAddress()).toUpperCase();
+    }
+
+    @Override
+    @JsonIgnore
+    @UIFieldIgnore
+    public String getIeeeAddress() {
+        return super.getIeeeAddress();
     }
 
     @UIField(order = 5)
@@ -378,7 +376,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
     @Override
     public Boolean isOutdated() {
         DeviceEndpoint endpoint = getDeviceEndpoint(ENDPOINT_FIRMWARE_UPDATE);
-        if (endpoint instanceof Z2MEndpointFirmwareUpdate firmwareUpdate) {
+        if (endpoint instanceof Z2MDeviceEndpointFirmwareUpdate firmwareUpdate) {
             return firmwareUpdate.isOutdated();
         }
         return false;
@@ -415,31 +413,6 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity<Z2MDeviceEntit
                 }
             }
         }
-    }
-
-    public @NotNull Date getUpdateTime() {
-        return DeviceEndpoint.getLastUpdated(deviceService.getEndpoints().values());
-    }
-
-    @Override
-    public ActionResponseModel handleAction(EntityContext entityContext, String actionID, JSONObject params) throws Exception {
-        for (DeviceEndpointUI endpoint : getEndpoints()) {
-            if (actionID.startsWith(endpoint.getEntityID())) {
-                UIActionHandler actionHandler = endpoint.getEndpoint().createUIInputBuilder().findActionHandler(actionID);
-                if (actionHandler != null) {
-                    return actionHandler.handleAction(entityContext, params);
-                }
-            }
-        }
-        return super.handleAction(entityContext, actionID, params);
-    }
-
-    @Override
-    public int compareTo(@NotNull BaseEntity o) {
-        if (o instanceof Z2MDeviceEntity other) {
-            return ((getStatus().isOnline() ? 0 : 1) + getName()).compareTo((other.getStatus().isOnline() ? 0 : 1) + o.getName());
-        }
-        return super.compareTo(o);
     }
 
     private static Float toFloat(Integer value) {

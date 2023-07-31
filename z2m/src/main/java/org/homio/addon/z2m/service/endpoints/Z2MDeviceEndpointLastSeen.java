@@ -1,6 +1,6 @@
 package org.homio.addon.z2m.service.endpoints;
 
-import org.homio.addon.z2m.service.Z2MEndpoint;
+import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
 import org.homio.api.model.Icon;
 import org.homio.api.state.DecimalType;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
@@ -10,9 +10,9 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 
-public class Z2MEndpointLastSeen extends Z2MEndpoint {
+public class Z2MDeviceEndpointLastSeen extends Z2MDeviceEndpoint {
 
-    public Z2MEndpointLastSeen() {
+    public Z2MDeviceEndpointLastSeen() {
         super(new Icon("fa fa-fw fa-eye", "#2D9C2C"));
         setValue(new DecimalType(System.currentTimeMillis()));
         setDataReader(jsonObject -> new DecimalType(parseLastSeen(jsonObject)));

@@ -2,9 +2,9 @@ package org.homio.addon.z2m.service.endpoints.inline;
 
 import org.homio.api.model.Icon;
 
-public class Z2MEndpointGeneral extends Z2MEndpointInline {
+public class Z2MDeviceEndpointGeneral extends Z2MDeviceEndpointInline {
 
-    public Z2MEndpointGeneral(String icon, String color) {
+    public Z2MDeviceEndpointGeneral(String icon, String color) {
         super(new Icon("fa fa-fw " + icon, color));
     }
 }

@@ -14,7 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 import org.homio.addon.z2m.ZigBee2MQTTFrontendConsolePlugin;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
-import org.homio.addon.z2m.service.endpoints.inline.Z2MEndpointInline;
+import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceEndpointInline;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition;
 import org.homio.addon.z2m.util.Z2MConfiguration;
@@ -85,7 +85,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     @Getter
     private MQTTEntityService mqttEntityService;
     @Getter
-    public static final Map<String, Class<? extends Z2MEndpoint>> allEndpoints = new HashMap<>();
+    public static final Map<String, Class<? extends Z2MDeviceEndpoint>> allEndpoints = new HashMap<>();
     private URL z2mFrontendURL;
 
     private ThreadContext<Void> checkFrontendTC;
@@ -292,7 +292,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         mqttEntityService.publish(entity.getBasicTopic() + "/" + topic, payload.toString().getBytes(), 0, false);
     }
 
-    public void addMissingEndpoints(String ieeeAddress, Z2MEndpoint endpoint) {
+    public void addMissingEndpoints(String ieeeAddress, Z2MDeviceEndpoint endpoint) {
         ObjectNode deviceConfiguration = configuration.getDevices().computeIfAbsent(ieeeAddress,
                 ieee -> node(ieeeAddress));
         String extraActions = deviceConfiguration.path("missingActions").asText("");
@@ -682,11 +682,11 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
 
     private void assembleAllEndpoints(EntityContext entityContext) {
         if (allEndpoints.isEmpty()) {
-            List<Class<? extends Z2MEndpoint>> z2mClusters = entityContext.getClassesWithParent(Z2MEndpoint.class);
-            for (Class<? extends Z2MEndpoint> z2mCluster : z2mClusters) {
-                if (!Z2MEndpointInline.class.isAssignableFrom(z2mCluster)) {
-                    Z2MEndpoint z2MEndpoint = CommonUtils.newInstance(z2mCluster);
-                    allEndpoints.put(z2MEndpoint.getEndpointDefinition(), z2mCluster);
+            List<Class<? extends Z2MDeviceEndpoint>> z2mClusters = entityContext.getClassesWithParent(Z2MDeviceEndpoint.class);
+            for (Class<? extends Z2MDeviceEndpoint> z2mCluster : z2mClusters) {
+                if (!Z2MDeviceEndpointInline.class.isAssignableFrom(z2mCluster)) {
+                    Z2MDeviceEndpoint endpoint = CommonUtils.newInstance(z2mCluster);
+                    allEndpoints.put(endpoint.getEndpointDefinition(), z2mCluster);
                 }
             }
         }

@@ -1,16 +1,32 @@
 package org.homio.addon.z2m.service;
 
+import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_DEVICE_STATUS;
+import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_LAST_SEEN;
+import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
+
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.tuple.Pair;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
-import org.homio.addon.z2m.service.endpoints.Z2MEndpointAction;
-import org.homio.addon.z2m.service.endpoints.Z2MEndpointLastSeen;
-import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceStatusEndpoint;
-import org.homio.addon.z2m.service.endpoints.inline.Z2MEndpointGeneral;
-import org.homio.addon.z2m.service.endpoints.inline.Z2MEndpointUnknown;
+import org.homio.addon.z2m.service.endpoints.Z2MDeviceEndpointAction;
+import org.homio.addon.z2m.service.endpoints.Z2MDeviceEndpointLastSeen;
+import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceStatusDeviceEndpoint;
+import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceEndpointGeneral;
+import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceEndpointUnknown;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.homio.api.EntityContext;
@@ -27,18 +43,6 @@ import org.homio.api.util.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_DEVICE_STATUS;
-import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_LAST_SEEN;
-import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
-
 @Log4j2
 public class Z2MDeviceService {
 
@@ -47,7 +51,7 @@ public class Z2MDeviceService {
 
     private final Z2MLocalCoordinatorService coordinatorService;
     @Getter
-    private final Map<String, Z2MEndpoint> endpoints = new ConcurrentHashMap<>();
+    private final Map<String, Z2MDeviceEndpoint> endpoints = new ConcurrentHashMap<>();
     @Getter
     private final Z2MDeviceEntity deviceEntity;
     @Getter
@@ -105,17 +109,17 @@ public class Z2MDeviceService {
             }
         }
         addEndpointOptional(ENDPOINT_LAST_SEEN, key -> {
-            Z2MEndpointLastSeen lastSeenEndpoint = new Z2MEndpointLastSeen();
+            Z2MDeviceEndpointLastSeen lastSeenEndpoint = new Z2MDeviceEndpointLastSeen();
             lastSeenEndpoint.init(this, Options.dynamicEndpoint(ENDPOINT_LAST_SEEN, ApplianceModel.NUMBER_TYPE), true);
             return lastSeenEndpoint;
         });
         // add device status
-        addEndpointOptional(ENDPOINT_DEVICE_STATUS, key -> new Z2MDeviceStatusEndpoint(this));
+        addEndpointOptional(ENDPOINT_DEVICE_STATUS, key -> new Z2MDeviceStatusDeviceEndpoint(this));
     }
 
     public void setEntityOnline() {
         if (!initialized) {
-            log.warn("[{}]: Initialize zigbee device: {}", coordinatorService.getEntityID(), deviceEntity.getTitle());
+            log.info("[{}]: Initialize zigbee device: {}", coordinatorService.getEntityID(), deviceEntity.getTitle());
             addMqttListeners();
             entityContext.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()), deviceEntity.getStatus());
             initialized = true;
@@ -224,9 +228,9 @@ public class Z2MDeviceService {
         return "%s(%s) [${%s}]".formatted(name, applianceModel.getIeeeAddress(), defaultIfEmpty(deviceEntity.getPlace(), "place_not_set"));
     }
 
-    public Z2MEndpoint addDynamicEndpoint(String key, Supplier<Z2MEndpoint> supplier) {
+    public Z2MDeviceEndpoint addDynamicEndpoint(String key, Supplier<Z2MDeviceEndpoint> supplier) {
         return addEndpointOptional(key, s -> {
-            Z2MEndpoint endpoint = supplier.get();
+            Z2MDeviceEndpoint endpoint = supplier.get();
             // store missing endpoint in file to next reload
             coordinatorService.addMissingEndpoints(deviceEntity.getIeeeAddress(), endpoint);
             return endpoint;
@@ -239,7 +243,7 @@ public class Z2MDeviceService {
         for (String key : payload.keySet()) {
             try {
                 boolean feed = false;
-                for (Z2MEndpoint endpoint : endpoints.values()) {
+                for (Z2MDeviceEndpoint endpoint : endpoints.values()) {
                     if (endpoint.feedPayload(key, payload)) {
                         feed = true;
                         updated = true;
@@ -251,15 +255,15 @@ public class Z2MDeviceService {
                     if (!ignoreExposes.contains(key)) {
                         log.info("[{}]: Create dynamic created endpoint '{}'. Device: {}", coordinatorService.getEntityID(), key,
                                 applianceModel.getIeeeAddress());
-                        Z2MEndpoint missedZ2MEndpoint = buildExposeEndpoint(Options.dynamicEndpoint(key, getFormatFromPayloadValue(payload, key)));
-                        missedZ2MEndpoint.mqttUpdate(payload);
+                        Z2MDeviceEndpoint missedEndpoint = buildExposeEndpoint(Options.dynamicEndpoint(key, getFormatFromPayloadValue(payload, key)));
+                        missedEndpoint.mqttUpdate(payload);
 
-                        addEndpointOptional(key, s -> missedZ2MEndpoint);
+                        addEndpointOptional(key, s -> missedEndpoint);
                         entityContext.ui().updateItem(deviceEntity);
                     }
                 }
             } catch (Exception ex) {
-                log.error("Unable to handle Z2MEndpoint: {}. Payload: {}. Msg: {}",
+                log.error("Unable to handle Z2MDeviceEndpoint: {}. Payload: {}. Msg: {}",
                         key, payload, CommonUtils.getErrorMessage(ex));
             }
         }
@@ -307,12 +311,12 @@ public class Z2MDeviceService {
     private void addMissingEndpoints() {
         for (Pair<String, String> missingEndpoints : coordinatorService.getMissingEndpoints(applianceModel.getIeeeAddress())) {
             if ("action_event".equals(missingEndpoints.getValue())) {
-                addEndpointOptional(missingEndpoints.getKey(), key -> Z2MEndpointAction.createActionEvent(key, this, entityContext));
+                addEndpointOptional(missingEndpoints.getKey(), key -> Z2MDeviceEndpointAction.createActionEvent(key, this, entityContext));
             }
         }
     }
 
-    private Z2MEndpoint addEndpointOptional(String key, Function<String, Z2MEndpoint> endpointProducer) {
+    private Z2MDeviceEndpoint addEndpointOptional(String key, Function<String, Z2MDeviceEndpoint> endpointProducer) {
         if (!endpoints.containsKey(key)) {
             endpoints.put(key, endpointProducer.apply(key));
             entityContext.event().fireEvent("zigbee-%s-%s".formatted(applianceModel.getIeeeAddress(), key), Status.ONLINE);
@@ -350,23 +354,23 @@ public class Z2MDeviceService {
         }
     }
 
-    private Z2MEndpoint buildExposeEndpoint(Options expose) {
-        Class<? extends Z2MEndpoint> z2mCluster = getValueFromMap(Z2MLocalCoordinatorService.getAllEndpoints(), expose);
-        Z2MEndpoint z2MEndpoint;
+    private Z2MDeviceEndpoint buildExposeEndpoint(Options expose) {
+        Class<? extends Z2MDeviceEndpoint> z2mCluster = getValueFromMap(Z2MLocalCoordinatorService.getAllEndpoints(), expose);
+        Z2MDeviceEndpoint endpoint;
         if (z2mCluster == null) {
             ConfigDeviceEndpoint configDeviceEndpoint = getValueFromMap(CONFIG_DEVICE_SERVICE.getDeviceEndpoints(), expose);
             if (configDeviceEndpoint != null) {
-                z2MEndpoint = new Z2MEndpointGeneral(configDeviceEndpoint.getIcon(), configDeviceEndpoint.getIconColor());
-                z2MEndpoint.setUnit(configDeviceEndpoint.getUnit());
+                endpoint = new Z2MDeviceEndpointGeneral(configDeviceEndpoint.getIcon(), configDeviceEndpoint.getIconColor());
+                endpoint.setUnit(configDeviceEndpoint.getUnit());
             } else {
-                z2MEndpoint = new Z2MEndpointUnknown();
+                endpoint = new Z2MDeviceEndpointUnknown();
             }
         } else {
-            z2MEndpoint = CommonUtils.newInstance(z2mCluster);
+            endpoint = CommonUtils.newInstance(z2mCluster);
         }
         boolean createVariable = CONFIG_DEVICE_SERVICE.isEndpointHasVariable(expose.getProperty());
-        z2MEndpoint.init(this, expose, createVariable);
-        return z2MEndpoint;
+        endpoint.init(this, expose, createVariable);
+        return endpoint;
     }
 
     private void createOrUpdateDeviceGroup() {
@@ -376,8 +380,8 @@ public class Z2MDeviceService {
                 CONFIG_DEVICE_SERVICE.getDeviceIcon(findDevices(), "fas fa-server"),
                 CONFIG_DEVICE_SERVICE.getDeviceIconColor(findDevices(), UI.Color.random())
         );
-        entityContext.var().createGroup("z2m", deviceEntity.getEntityID(), getDeviceFullName(), true,
-                icon, applianceModel.getGroupDescription());
+        entityContext.var().createGroup("z2m", requireNonNull(deviceEntity.getIeeeAddress()), getDeviceFullName(), true,
+            icon, applianceModel.getGroupDescription());
     }
 
     public @NotNull List<ConfigDeviceDefinition> findDevices() {
@@ -388,7 +392,7 @@ public class Z2MDeviceService {
     }
 
     private void downLinkQualityToZero() {
-        Optional.ofNullable(endpoints.get(Z2MEndpointGeneral.ENDPOINT_SIGNAL)).ifPresent(endpoint -> {
+        Optional.ofNullable(endpoints.get(Z2MDeviceEndpointGeneral.ENDPOINT_SIGNAL)).ifPresent(endpoint -> {
             if (!endpoint.getValue().stringValue().equals("0")) {
                 endpoint.setValue(new DecimalType(0));
             }

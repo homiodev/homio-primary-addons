@@ -2,7 +2,7 @@ package org.homio.addon.z2m.service.endpoints;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.homio.addon.z2m.service.Z2MDeviceService;
-import org.homio.addon.z2m.service.Z2MEndpoint;
+import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
@@ -14,11 +14,11 @@ import org.homio.api.util.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public class Z2MEndpointFirmwareUpdate extends Z2MEndpoint {
+public class Z2MDeviceEndpointFirmwareUpdate extends Z2MDeviceEndpoint {
 
     private boolean wasProgress;
 
-    public Z2MEndpointFirmwareUpdate() {
+    public Z2MDeviceEndpointFirmwareUpdate() {
         super(new Icon("fa fa-fw fa-tablets", "#FF0000"));
         setValue(new JsonType("{}"));
     }
@@ -65,19 +65,19 @@ public class Z2MEndpointFirmwareUpdate extends Z2MEndpoint {
     }
 
     @Override
-    public void assembleUIAction(UIInputBuilder uiInputBuilder) {
+    public void assembleUIAction(@NotNull UIInputBuilder uiInputBuilder) {
         JsonNode node = ((JsonType) getValue()).getJsonNode();
         switch (node.get("state").asText()) {
             case "available" -> {
                 String updateTitle = node.get("installed_version").asText() + "=>" + node.get("latest_version").asText();
-                uiInputBuilder.addButton(endpointEntityID, new Icon("fas fa-retweet", "#FF0000"),
+                uiInputBuilder.addButton(getEntityID(), new Icon("fas fa-retweet", "#FF0000"),
                                   (entityContext, params) -> sendRequest(Request.update))
                               .setText(updateTitle)
                               .setConfirmMessage("W.CONFIRM.ZIGBEE_UPDATE")
                               .setConfirmMessageDialogColor(Color.ERROR_DIALOG);
             }
             case "updating" -> uiInputBuilder.addInfo("UPDATING");
-            case "idle" -> uiInputBuilder.addButton(endpointEntityID, new Icon("fas fa-check-to-slot", "#72A7A1"),
+            case "idle" -> uiInputBuilder.addButton(getEntityID(), new Icon("fas fa-check-to-slot", "#72A7A1"),
                                              (entityContext, params) -> sendRequest(Request.check))
                                          .setText("ZIGBEE.CHECK_UPDATES")
                                          .setConfirmMessage("W.CONFIRM.ZIGBEE_CHECK_UPDATES");

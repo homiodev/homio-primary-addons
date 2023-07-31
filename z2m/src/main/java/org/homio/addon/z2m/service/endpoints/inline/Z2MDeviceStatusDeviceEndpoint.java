@@ -14,9 +14,9 @@ import java.util.stream.Stream;
 /**
  * Extra endpoint for every device to store device status
  */
-public class Z2MDeviceStatusEndpoint extends Z2MEndpointInline {
+public class Z2MDeviceStatusDeviceEndpoint extends Z2MDeviceEndpointInline {
 
-    public Z2MDeviceStatusEndpoint(Z2MDeviceService deviceService) {
+    public Z2MDeviceStatusDeviceEndpoint(Z2MDeviceService deviceService) {
         super(new Icon("fa fa-fw fa-globe", "#42B52D"));
         setValue(new StringType(Status.UNKNOWN.name()));
         Options options = Options.dynamicEndpoint(ENDPOINT_DEVICE_STATUS, ApplianceModel.ENUM_TYPE);

@@ -3,8 +3,8 @@ package org.homio.addon.z2m.util;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.homio.addon.z2m.service.Z2MEndpoint;
-import org.homio.addon.z2m.service.endpoints.Z2MEndpointColor;
+import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
+import org.homio.addon.z2m.service.endpoints.Z2MDeviceEndpointColor;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextHardware;
 import org.homio.api.model.ActionResponseModel;
@@ -61,7 +61,7 @@ public final class ZigBeeUtil {
                 });
     }
 
-    public static @NotNull UIInputBuilder createUIInputBuilder(@NotNull Z2MEndpoint endpoint) {
+    public static @NotNull UIInputBuilder createUIInputBuilder(@NotNull Z2MDeviceEndpoint endpoint) {
         String entityID = endpoint.getEntityID();
         UIInputBuilder uiInputBuilder = endpoint.getDeviceService().getEntityContext().ui().inputBuilder();
 
@@ -83,8 +83,8 @@ public final class ZigBeeUtil {
                     });
                     return uiInputBuilder;
                 case COMPOSITE_TYPE:
-                    if (endpoint instanceof Z2MEndpointColor) {
-                        uiInputBuilder.addColorPicker(entityID, ((Z2MEndpointColor) endpoint).getStateColor(), (entityContext, params) -> {
+                    if (endpoint instanceof Z2MDeviceEndpointColor) {
+                        uiInputBuilder.addColorPicker(entityID, ((Z2MDeviceEndpointColor) endpoint).getStateColor(), (entityContext, params) -> {
                             endpoint.fireAction(params.getString("value"));
                             return null;
                         }).setColorType(ColorType.ColorSlider);
@@ -93,7 +93,7 @@ public final class ZigBeeUtil {
                 default:
                     log.error("[{}]: Z2M write handler not implemented for device: {}, endpoint: {}",
                             endpoint.getDeviceService().getCoordinatorEntity().getEntityID(),
-                            endpoint.getDeviceEntityID(),
+                            endpoint.getDeviceID(),
                             endpoint.getEndpointEntityID());
             }
         }
@@ -168,7 +168,7 @@ public final class ZigBeeUtil {
      * Build action for 'numeric' type.
      */
     private static boolean buildWritableNumberTypeAction(
-            @NotNull Z2MEndpoint endpoint,
+            @NotNull Z2MDeviceEndpoint endpoint,
             @NotNull UIInputBuilder uiInputBuilder) {
 
         String entityID = endpoint.getEntityID();
@@ -202,7 +202,7 @@ public final class ZigBeeUtil {
     }
 
     private static UIInputBuilder buildWritableEnumTypeAction(
-            @NotNull Z2MEndpoint endpoint,
+            @NotNull Z2MDeviceEndpoint endpoint,
             @NotNull UIInputBuilder uiInputBuilder) {
         if (!endpoint.getExpose().isReadable() && endpoint.getExpose().getValues().size() == 1) {
             uiInputBuilder.addButton(endpoint.getEntityID(), new Icon("fas fa-play", "#eb0000"),
@@ -224,7 +224,7 @@ public final class ZigBeeUtil {
     }
 
     private static void addUISlider(
-            @NotNull Z2MEndpoint endpoint,
+            @NotNull Z2MDeviceEndpoint endpoint,
             @NotNull UILayoutBuilder builder,
             @NotNull String entityID) {
         Objects.requireNonNull(endpoint.getExpose().getValueMin());

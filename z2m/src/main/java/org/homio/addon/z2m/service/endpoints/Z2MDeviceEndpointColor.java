@@ -1,7 +1,7 @@
 package org.homio.addon.z2m.service.endpoints;
 
 import org.homio.addon.z2m.service.Z2MDeviceService;
-import org.homio.addon.z2m.service.Z2MEndpoint;
+import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.homio.api.model.Icon;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Z2MEndpointColor extends Z2MEndpoint {
+public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
 
     // 1931 CIE XYZ to sRGB (D65 reference white)
     private static final float[][] XY2RGB = {
@@ -22,7 +22,7 @@ public class Z2MEndpointColor extends Z2MEndpoint {
         {-0.9689f, 1.8758f, 0.0415f},
         {0.0557f, -0.2040f, 1.0570f}};
 
-    public Z2MEndpointColor() {
+    public Z2MDeviceEndpointColor() {
         super(new Icon("fas fa-fw fa-palette", "#FF009B"));
     }
 
@@ -113,7 +113,7 @@ public class Z2MEndpointColor extends Z2MEndpoint {
     }*/
 
     public String getStateColor() {
-        return value.stringValue().startsWith("#") ? value.stringValue() : "#FFFFFF";
+        return getValue().stringValue().startsWith("#") ? getValue().stringValue() : "#FFFFFF";
     }
 
     @Override

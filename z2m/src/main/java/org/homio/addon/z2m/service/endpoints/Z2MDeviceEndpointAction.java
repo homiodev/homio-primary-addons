@@ -2,22 +2,22 @@ package org.homio.addon.z2m.service.endpoints;
 
 import lombok.val;
 import org.homio.addon.z2m.service.Z2MDeviceService;
-import org.homio.addon.z2m.service.Z2MEndpoint;
-import org.homio.addon.z2m.service.endpoints.inline.Z2MEndpointActionEvent;
+import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
+import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceEndpointActionEvent;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-public class Z2MEndpointAction extends Z2MEndpoint {
+public class Z2MDeviceEndpointAction extends Z2MDeviceEndpoint {
 
-    public Z2MEndpointAction() {
+    public Z2MDeviceEndpointAction() {
         super(new Icon( "fa fa-fw fa-circle-play", "#9636d6"));
     }
 
-    public static Z2MEndpointActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {
+    public static Z2MDeviceEndpointActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {
         val configDeviceEndpoint = deviceService.getConfigDeviceEndpoint(action);
-        val ActionEventEndpoint = new Z2MEndpointActionEvent(deviceService, action, configDeviceEndpoint);
+        val ActionEventEndpoint = new Z2MDeviceEndpointActionEvent(deviceService, action, configDeviceEndpoint);
         entityContext.ui().updateItem(deviceService.getDeviceEntity());
         return ActionEventEndpoint;
     }
@@ -29,16 +29,16 @@ public class Z2MEndpointAction extends Z2MEndpoint {
 
         Z2MDeviceService deviceService = getDeviceService();
         String actionKey = "action_" + action;
-        Z2MEndpoint z2MEndpoint = deviceService.getEndpoints().get(actionKey);
-        if (z2MEndpoint == null) {
+        Z2MDeviceEndpoint endpoint = deviceService.getEndpoints().get(actionKey);
+        if (endpoint == null) {
             EntityContext entityContext = deviceService.getEntityContext();
-            z2MEndpoint = deviceService.addDynamicEndpoint(actionKey, () ->
-                    Z2MEndpointAction.createActionEvent(actionKey, deviceService, entityContext));
+            endpoint = deviceService.addDynamicEndpoint(actionKey, () ->
+                    Z2MDeviceEndpointAction.createActionEvent(actionKey, deviceService, entityContext));
 
             deviceService.addDynamicEndpoint("action_any", () ->
-                    Z2MEndpointAction.createActionEvent("action_any", deviceService, entityContext));
+                    Z2MDeviceEndpointAction.createActionEvent("action_any", deviceService, entityContext));
         }
-        z2MEndpoint.mqttUpdate(payload);
+        endpoint.mqttUpdate(payload);
         // 'action' counter
         deviceService.getEndpoints().get("action_any").mqttUpdate(payload);
     }

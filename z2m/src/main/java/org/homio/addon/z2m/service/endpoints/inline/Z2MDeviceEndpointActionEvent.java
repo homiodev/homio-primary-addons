@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * 'action' endpoint contains another event(usually enum) and we want to create separate endpoint for it
  */
-public class Z2MEndpointActionEvent extends Z2MEndpointInline {
+public class Z2MDeviceEndpointActionEvent extends Z2MDeviceEndpointInline {
 
-    public Z2MEndpointActionEvent(
+    public Z2MDeviceEndpointActionEvent(
             @NotNull Z2MDeviceService deviceService,
             @NotNull String endpoint,
             @Nullable ConfigDeviceEndpoint configDeviceEndpoint) {
