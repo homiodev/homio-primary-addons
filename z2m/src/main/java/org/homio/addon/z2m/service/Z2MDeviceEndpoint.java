@@ -115,14 +115,6 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
         deviceService.publish("set", new JSONObject().put(getEndpointEntityID(), value));
     }
 
-    @Override
-    public boolean isVisible() {
-        if (CONFIG_DEVICE_SERVICE.isHideEndpoint(getEndpointEntityID())) {
-            return false;
-        }
-        return !deviceService.getCoordinatorEntity().getHiddenEndpoints().contains(getEndpointEntityID());
-    }
-
     public boolean feedPayload(String key, JSONObject payload) {
         if (key.equals(expose.getProperty()) || key.equals(expose.getName())) {
             mqttUpdate(payload);
@@ -293,5 +285,10 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
             case ENUM_TYPE -> EndpointType.select;
             default -> EndpointType.string;
         };
+    }
+
+    @Override
+    protected @Nullable BaseDeviceEndpoint getEndpoint(@NotNull String endpoint) {
+        return deviceService.getEndpoints().get(endpoint);
     }
 }
