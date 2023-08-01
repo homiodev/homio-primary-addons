@@ -51,7 +51,7 @@ public final class TelegramEntity extends CommunicationEntity<TelegramEntity> im
 
     @Override
     public @NotNull String getTitle() {
-        return StringUtils.defaultIfEmpty(getBotName(), "telegram.no_bot_name");
+        return StringUtils.defaultIfEmpty(getBotName(), "W.ERROR.NO_TG_BOT_NAME");
     }
 
     @UIField(order = 30, required = true, inlineEditWhenEmpty = true)

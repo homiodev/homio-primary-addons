@@ -1,18 +1,17 @@
 package org.homio.addon.z2m.service.endpoints;
 
-import org.homio.addon.z2m.service.Z2MDeviceService;
+import java.awt.Color;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
+import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.homio.api.model.Icon;
 import org.homio.api.state.StringType;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
-
-import java.awt.*;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
 
@@ -48,7 +47,7 @@ public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
     }
 
     @Override
-    public void init(@NotNull Z2MDeviceService deviceService, @NotNull ApplianceModel.Z2MDeviceDefinition.Options expose, boolean createVariable) {
+    public void init(@NotNull Z2MDeviceService deviceService, @NotNull ApplianceModel.Z2MDeviceDefinition.Options expose) {
         switch (expose.getName()) {
             case "color_xy" -> setDataReader(
                 payload -> {
@@ -65,7 +64,7 @@ public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
                     return new StringType(hsToHex(hue, saturation, getBrightness(payload)));
                 });
         }
-        super.init(deviceService, expose, createVariable);
+        super.init(deviceService, expose);
     }
 
     @Override
@@ -74,16 +73,18 @@ public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
         if (features != null && !features.isEmpty()) {
             Map<String, Options> name2feature = features.stream().collect(Collectors.toMap(Options::getProperty, f -> f));
             switch (getExpose().getName()) {
-                case "color_xy":
+                case "color_xy" -> {
                     return name2feature.containsKey("x")
                         && name2feature.get("x").isWritable()
                         && name2feature.containsKey("y")
                         && name2feature.get("y").isWritable();
-                case "color_hs":
+                }
+                case "color_hs" -> {
                     return name2feature.containsKey("hue")
                         && name2feature.get("hue").isWritable()
                         && name2feature.containsKey("saturation")
                         && name2feature.get("saturation").isWritable();
+                }
             }
         }
         return false;

@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
@@ -41,8 +40,6 @@ import org.json.JSONObject;
 @Getter
 public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEntity> {
 
-    public static final String ENDPOINT_FIRMWARE_UPDATE = "update";
-
     @Setter
     private Function<JSONObject, State> dataReader;
     private Options expose;
@@ -52,36 +49,31 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
         super(icon);
     }
 
-    public void init(@NotNull Z2MDeviceService deviceService, @NotNull Options expose, boolean createVariable) {
+    public void init(@NotNull Z2MDeviceService deviceService, @NotNull Options expose) {
         this.deviceService = deviceService;
         this.expose = expose;
         this.dataReader = this.dataReader == null ? buildDataReader() : this.dataReader;
+        setAlternateEndpoints(expose.getName(), expose.getEndpoint());
         init(
-            StringUtils.defaultString(expose.getProperty(), expose.getEndpoint()),
+            CONFIG_DEVICE_SERVICE,
+            expose.getProperty(),
             deviceService.getDeviceEntity(),
             deviceService.getEntityContext(),
-            StringUtils.defaultIfEmpty(getUnit(), expose.getUnit()),
+            expose.getUnit(),
             expose.isReadable(),
             expose.isWritable(),
             expose.getName(),
-            CONFIG_DEVICE_SERVICE.getEndpointOrder(expose.getName()),
-            calcEndpointType());
+            calcEndpointType()
+        );
+    }
 
-        if (createVariable) {
-            getOrCreateVariable();
-        }
+    @Override
+    public @NotNull List<String> getHiddenEndpoints() {
+        return deviceService.getCoordinatorEntity().getHiddenEndpoints();
     }
 
     public void mqttUpdate(JSONObject payload) {
-        this.setUpdated(System.currentTimeMillis());
-        this.setValue(dataReader.apply(payload));
-        for (Consumer<State> changeListener : getChangeListeners().values()) {
-            changeListener.accept(getValue());
-        }
-
-        updateUI();
-        // push value to variable. Variable engine will fire event!
-        pushVariable();
+        this.setValue(dataReader.apply(payload), true);
     }
 
     @Override
@@ -101,12 +93,12 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
 
     @Override
     public String getDescription() {
-        return "${zbd.%s~%s}".formatted(expose.getName(), defaultIfEmpty(getExpose().getDescription(), expose.getProperty()));
+        return "${zbd.%s~%s}".formatted(expose.getName(), defaultIfEmpty(getExpose().getDescription(), getEndpointEntityID()));
     }
 
     public void fireAction(boolean value) {
         Object valueToFire = value ? getExpose().getValueOn() : getExpose().getValueOff();
-        JSONObject params = new JSONObject().put(expose.getProperty(), valueToFire);
+        JSONObject params = new JSONObject().put(getEndpointEntityID(), valueToFire);
         deviceService.publish("set", params);
     }
 
@@ -116,19 +108,19 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
         } else if (expose.getValueMax() != null && value > expose.getValueMax()) {
             value = expose.getValueMax();
         }
-        deviceService.publish("set", new JSONObject().put(expose.getProperty(), value));
+        deviceService.publish("set", new JSONObject().put(getEndpointEntityID(), value));
     }
 
     public void fireAction(String value) {
-        deviceService.publish("set", new JSONObject().put(expose.getProperty(), value));
+        deviceService.publish("set", new JSONObject().put(getEndpointEntityID(), value));
     }
 
     @Override
     public boolean isVisible() {
-        if (CONFIG_DEVICE_SERVICE.isHideEndpoint(expose.getProperty())) {
+        if (CONFIG_DEVICE_SERVICE.isHideEndpoint(getEndpointEntityID())) {
             return false;
         }
-        return !deviceService.getCoordinatorEntity().getHiddenEndpoints().contains(expose.getProperty());
+        return !deviceService.getCoordinatorEntity().getHiddenEndpoints().contains(getEndpointEntityID());
     }
 
     public boolean feedPayload(String key, JSONObject payload) {
@@ -152,7 +144,7 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
 
     @Override
     public void readValue() {
-        deviceService.publish("get", new JSONObject().put(expose.getProperty(), ""));
+        deviceService.publish("get", new JSONObject().put(getEndpointEntityID(), ""));
     }
 
     @Override
@@ -260,7 +252,7 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
                 return VariableType.Bool;
             }
             default -> {
-                if ("color".equals(expose.getProperty())) {
+                if ("color".equals(getEndpointEntityID())) {
                     return VariableType.Color;
                 }
                 // check if we are able to find out type from current value

@@ -14,7 +14,7 @@ public class Z2MDeviceEndpointLastSeen extends Z2MDeviceEndpoint {
 
     public Z2MDeviceEndpointLastSeen() {
         super(new Icon("fa fa-fw fa-eye", "#2D9C2C"));
-        setValue(new DecimalType(System.currentTimeMillis()));
+        setValue(new DecimalType(System.currentTimeMillis()), false);
         setDataReader(jsonObject -> new DecimalType(parseLastSeen(jsonObject)));
     }
 

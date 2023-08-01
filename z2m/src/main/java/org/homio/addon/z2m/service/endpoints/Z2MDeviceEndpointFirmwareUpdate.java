@@ -16,17 +16,19 @@ import org.json.JSONObject;
 
 public class Z2MDeviceEndpointFirmwareUpdate extends Z2MDeviceEndpoint {
 
+    public static final String ENDPOINT_FIRMWARE_UPDATE = "update";
+
     private boolean wasProgress;
 
     public Z2MDeviceEndpointFirmwareUpdate() {
         super(new Icon("fa fa-fw fa-tablets", "#FF0000"));
-        setValue(new JsonType("{}"));
+        setValue(new JsonType("{}"), false);
     }
 
     @Override
-    public void init(@NotNull Z2MDeviceService deviceService, @NotNull ApplianceModel.Z2MDeviceDefinition.Options expose, boolean createVariable) {
+    public void init(@NotNull Z2MDeviceService deviceService, @NotNull ApplianceModel.Z2MDeviceDefinition.Options expose) {
         expose.setType(ApplianceModel.COMPOSITE_TYPE);
-        super.init(deviceService, expose, createVariable);
+        super.init(deviceService, expose);
 
         // listen for changes
         addChangeListener("internal", ignore -> {
@@ -36,10 +38,10 @@ public class Z2MDeviceEndpointFirmwareUpdate extends Z2MDeviceEndpoint {
                 wasProgress = true;
                 String message = Lang.getServerMessage("ZIGBEE.UPDATING",
                     FlowMap.of("NAME", getDeviceService().getDeviceEntity().getTitle(), "VALUE", node.get("remaining").asInt()));
-                getEntityContext().ui().progress("upd-" + getDeviceService().getIeeeAddress(),
+                entityContext.ui().progress("upd-" + getDeviceService().getIeeeAddress(),
                     node.get("progress").asDouble(), message, false);
             } else if (wasProgress) {
-                getEntityContext().ui().progressDone("upd-" + getDeviceService().getIeeeAddress());
+                entityContext.ui().progressDone("upd-" + getDeviceService().getIeeeAddress());
             }
         });
     }

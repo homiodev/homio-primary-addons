@@ -31,7 +31,6 @@ public class Z2MDeviceEndpointAction extends Z2MDeviceEndpoint {
         String actionKey = "action_" + action;
         Z2MDeviceEndpoint endpoint = deviceService.getEndpoints().get(actionKey);
         if (endpoint == null) {
-            EntityContext entityContext = deviceService.getEntityContext();
             endpoint = deviceService.addDynamicEndpoint(actionKey, () ->
                     Z2MDeviceEndpointAction.createActionEvent(actionKey, deviceService, entityContext));
 

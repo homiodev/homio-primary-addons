@@ -18,14 +18,14 @@ public class Z2MDeviceStatusDeviceEndpoint extends Z2MDeviceEndpointInline {
 
     public Z2MDeviceStatusDeviceEndpoint(Z2MDeviceService deviceService) {
         super(new Icon("fa fa-fw fa-globe", "#42B52D"));
-        setValue(new StringType(Status.UNKNOWN.name()));
+        setValue(new StringType(Status.UNKNOWN.name()), false);
         Options options = Options.dynamicEndpoint(ENDPOINT_DEVICE_STATUS, ApplianceModel.ENUM_TYPE);
         options.setValues(Stream.of(Status.values()).map(Enum::name).toList());
-        init(deviceService, options, true);
+        init(deviceService, options);
 
-        deviceService.getEntityContext().event().addEventListener("zigbee-%s".formatted(deviceService.getIeeeAddress()),
+        entityContext.event().addEventListener("zigbee-%s".formatted(deviceService.getIeeeAddress()),
                 "z2m-endpoint", value -> {
-                    setValue(new StringType(value.toString()));
+                    setValue(new StringType(value.toString()), false);
                     updateUI();
                     pushVariable();
                 });

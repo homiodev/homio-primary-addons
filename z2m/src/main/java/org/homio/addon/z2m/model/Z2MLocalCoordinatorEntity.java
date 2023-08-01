@@ -1,7 +1,19 @@
 package org.homio.addon.z2m.model;
 
+import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
+import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -27,7 +39,12 @@ import org.homio.api.model.OptionModel;
 import org.homio.api.model.endpoint.DeviceEndpoint;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
-import org.homio.api.ui.field.*;
+import org.homio.api.ui.field.UIField;
+import org.homio.api.ui.field.UIFieldGroup;
+import org.homio.api.ui.field.UIFieldIgnore;
+import org.homio.api.ui.field.UIFieldLinkToEntity;
+import org.homio.api.ui.field.UIFieldSlider;
+import org.homio.api.ui.field.UIFieldType;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.ui.field.color.UIFieldColorRef;
 import org.homio.api.ui.field.inline.UIFieldInlineEntities;
@@ -37,15 +54,6 @@ import org.homio.api.util.DataSourceUtil;
 import org.homio.api.util.DataSourceUtil.DataSourceContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
-import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
 
 @SuppressWarnings({"unused", "rawtypes"})
 @Log4j2
@@ -57,8 +65,14 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     @UIField(order = 9999, disableEdit = true, hideInEdit = true)
     @UIFieldInlineEntities(bg = "#27FF000D")
     public List<ZigBeeCoordinatorDeviceEntity> getCoordinatorDevices() {
-        return optService().map(service -> service.getDeviceHandlers().values().stream().map(ZigBeeCoordinatorDeviceEntity::new).collect(Collectors.toList()))
-                           .orElse(Collections.emptyList());
+        return optService()
+            .map(service ->
+                service.getDeviceHandlers().values()
+                       .stream()
+                       .sorted()
+                       .map(ZigBeeCoordinatorDeviceEntity::new)
+                       .collect(Collectors.toList()))
+            .orElse(Collections.emptyList());
     }
 
     @UIField(order = 20, required = true, inlineEditWhenEmpty = true)

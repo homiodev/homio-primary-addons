@@ -2,6 +2,8 @@ package org.homio.addon.z2m.service;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options.dynamicEndpoint;
 import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_DEVICE_STATUS;
 import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_LAST_SEEN;
 import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
@@ -24,9 +26,9 @@ import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.service.endpoints.Z2MDeviceEndpointAction;
 import org.homio.addon.z2m.service.endpoints.Z2MDeviceEndpointLastSeen;
-import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceStatusDeviceEndpoint;
 import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceEndpointGeneral;
 import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceEndpointUnknown;
+import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceStatusDeviceEndpoint;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.homio.api.EntityContext;
@@ -110,7 +112,7 @@ public class Z2MDeviceService {
         }
         addEndpointOptional(ENDPOINT_LAST_SEEN, key -> {
             Z2MDeviceEndpointLastSeen lastSeenEndpoint = new Z2MDeviceEndpointLastSeen();
-            lastSeenEndpoint.init(this, Options.dynamicEndpoint(ENDPOINT_LAST_SEEN, ApplianceModel.NUMBER_TYPE), true);
+            lastSeenEndpoint.init(this, dynamicEndpoint(ENDPOINT_LAST_SEEN, NUMBER_TYPE));
             return lastSeenEndpoint;
         });
         // add device status
@@ -255,7 +257,7 @@ public class Z2MDeviceService {
                     if (!ignoreExposes.contains(key)) {
                         log.info("[{}]: Create dynamic created endpoint '{}'. Device: {}", coordinatorService.getEntityID(), key,
                                 applianceModel.getIeeeAddress());
-                        Z2MDeviceEndpoint missedEndpoint = buildExposeEndpoint(Options.dynamicEndpoint(key, getFormatFromPayloadValue(payload, key)));
+                        Z2MDeviceEndpoint missedEndpoint = buildExposeEndpoint(dynamicEndpoint(key, getFormatFromPayloadValue(payload, key)));
                         missedEndpoint.mqttUpdate(payload);
 
                         addEndpointOptional(key, s -> missedEndpoint);
@@ -327,7 +329,7 @@ public class Z2MDeviceService {
     private String getFormatFromPayloadValue(JSONObject payload, String key) {
         try {
             payload.getInt(key);
-            return ApplianceModel.NUMBER_TYPE;
+            return NUMBER_TYPE;
         } catch (Exception ignore) {
         }
         try {
@@ -361,15 +363,13 @@ public class Z2MDeviceService {
             ConfigDeviceEndpoint configDeviceEndpoint = getValueFromMap(CONFIG_DEVICE_SERVICE.getDeviceEndpoints(), expose);
             if (configDeviceEndpoint != null) {
                 endpoint = new Z2MDeviceEndpointGeneral(configDeviceEndpoint.getIcon(), configDeviceEndpoint.getIconColor());
-                endpoint.setUnit(configDeviceEndpoint.getUnit());
             } else {
                 endpoint = new Z2MDeviceEndpointUnknown();
             }
         } else {
             endpoint = CommonUtils.newInstance(z2mCluster);
         }
-        boolean createVariable = CONFIG_DEVICE_SERVICE.isEndpointHasVariable(expose.getProperty());
-        endpoint.init(this, expose, createVariable);
+        endpoint.init(this, expose);
         return endpoint;
     }
 
@@ -394,7 +394,7 @@ public class Z2MDeviceService {
     private void downLinkQualityToZero() {
         Optional.ofNullable(endpoints.get(Z2MDeviceEndpointGeneral.ENDPOINT_SIGNAL)).ifPresent(endpoint -> {
             if (!endpoint.getValue().stringValue().equals("0")) {
-                endpoint.setValue(new DecimalType(0));
+                endpoint.setValue(new DecimalType(0), false);
             }
         });
     }

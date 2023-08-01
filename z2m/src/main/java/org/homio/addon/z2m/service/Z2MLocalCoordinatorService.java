@@ -490,7 +490,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
                             entityContext.save(entity.setStart(true));
                             return ActionResponseModel.success();
                         }
-                        return ActionResponseModel.showWarn("Z2M.COORDINATOR_ALREADY_STARTED");
+                        return ActionResponseModel.showWarn("W.ERROR.COORDINATOR_ALREADY_STARTED");
                     });
                 }
                 contextAction.addSelectableButton("ZIGBEE_START_SCAN", new Icon("fas fa-search-location", "#899343"),

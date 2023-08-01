@@ -8,7 +8,8 @@
     "RECORD_MP4": "Record a MP4",
     "RECORD_GIF": "Record a GIF"
   },
-  "selection": {
+  "SELECTION": {
+    "CommonVideoStreamEntity": "Video url stream",
     "FFMPEGLoopRecordStorageEntity": "FFMPEG Loop record storage",
     "ReolinkBrandHandler": "Reolink Brand",
     "FoscamBrandHandler": "Foscam Brand",
@@ -22,7 +23,7 @@
     "OnvifCameraEntity": "Onvif Camera",
     "UsbCameraEntity": "Usb Camera"
   },
-  "workspace": {
+  "WORKSPACE": {
     "camera": "Camera",
     "camera-onvifalarm": "Camera ONVIF alarms",
     "camera-onvifptz": "Camera onvif PTZ",
@@ -48,16 +49,16 @@
     "camera-onvifptz_zoom_cmd": "Set PTZ Zoom command",
     "camera-onvifptz_to_preset": "Set Preset scene"
   },
-  "placeholder": {
+  "PLACEHOLDER": {
     "st_ScanRtspPortsSetting": "Type RTSP ports to scan",
     "st_ScanOnvifPortsSetting": "Type port",
     "st_ScanRtspUrlsSetting": "Type url",
     "st_CameraScanPortRangeSetting": "Scan port range i.e.: 192.168.0.0-255"
   },
-  "camera": {
-    "name": "Camera",
-    "setting": {
-      "label": "Camera settings",
+  "CAMERA": {
+    "NAME": "Camera",
+    "SETTING": {
+      "LABEL": "Camera settings",
       "st_CameraAutorunIntervalSetting": "AutoRun interval",
       "st_CameraAutorunIntervalSetting_description": "Interval to check if camera is offline and 'AutoRun' is on and try rerun camera",
       "st_CameraScanPortRangeSetting": "Scan port range",
