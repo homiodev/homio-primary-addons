@@ -76,13 +76,15 @@ public class Z2MDeviceEndpointFirmwareUpdate extends Z2MDeviceEndpoint {
                                   (entityContext, params) -> sendRequest(Request.update))
                               .setText(updateTitle)
                               .setConfirmMessage("W.CONFIRM.ZIGBEE_UPDATE")
-                              .setConfirmMessageDialogColor(Color.ERROR_DIALOG);
+                              .setConfirmMessageDialogColor(Color.ERROR_DIALOG)
+                              .setDisabled(!getDevice().getStatus().isOnline());
             }
             case "updating" -> uiInputBuilder.addInfo("UPDATING");
             case "idle" -> uiInputBuilder.addButton(getEntityID(), new Icon("fas fa-check-to-slot", "#72A7A1"),
                                              (entityContext, params) -> sendRequest(Request.check))
                                          .setText("ZIGBEE.CHECK_UPDATES")
-                                         .setConfirmMessage("W.CONFIRM.ZIGBEE_CHECK_UPDATES");
+                                         .setConfirmMessage("W.CONFIRM.ZIGBEE_CHECK_UPDATES")
+                                         .setDisabled(!getDevice().getStatus().isOnline());
             default -> uiInputBuilder.addInfo("-");
         }
     }

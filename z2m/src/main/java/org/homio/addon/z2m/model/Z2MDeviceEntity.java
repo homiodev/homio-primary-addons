@@ -14,9 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -137,17 +135,14 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     }
 
     @Override
-    public @NotNull Map<String, DeviceEndpoint> getDeviceEndpoints() {
-        return deviceService.getEndpoints()
-                            .entrySet()
-                            .stream()
-                            .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    public @NotNull Map<String, ? extends DeviceEndpoint> getDeviceEndpoints() {
+        return deviceService.getEndpoints();
     }
 
     @UIField(order = 1, hideOnEmpty = true, fullWidth = true, color = "#89AA50", type = HTML)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldColorBgRef(value = "statusColor", animate = true)
-    @UIFieldGroup(value = "NAME", order = 1, borderColor = "#CDD649")
+    @UIFieldGroup(value = "GENERAL", order = 1, borderColor = "#CDD649")
     public String getDescription() {
         return defaultIfEmpty(
             getFirstLevelDescription(),
@@ -158,37 +153,31 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     @Override
     @UIField(order = 2, hideOnEmpty = true, inlineEdit = true)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
-    @UIFieldGroup("NAME")
+    @UIFieldGroup("GENERAL")
     public @NotNull String getName() {
         return defaultIfEmpty(deviceService.getApplianceModel().getName(), "UNKNOWN");
     }
 
     @UIField(order = 3, label = "model")
     @UIFieldShowOnCondition("return !context.get('compactMode')")
-    @UIFieldGroup("NAME")
+    @UIFieldGroup("GENERAL")
     public HrefModel getHrefModel() {
         String model = getModel();
         return new HrefModel("https://www.zigbee2mqtt.io/devices/%s.html".formatted(model), model);
     }
 
-    @JsonIgnore
-    public @NotNull String getModel() {
-        return StringUtils.defaultString(deviceService.getModel(), "unknown-model");
+    @Override
+    public @Nullable String getModel() {
+        return deviceService.getModel();
     }
 
-    @UIField(order = 1, fullWidth = true, color = "#89AA50", type = HTML, style = "height: 32px;")
-    @UIFieldShowOnCondition("return context.get('compactMode')")
-    @UIFieldColorBgRef(value = "statusColor", animate = true)
-    @UIFieldGroup(value = "NAME", order = 1, borderColor = "#CDD649")
-    public String getCompactDescription() {
+    @Override
+    public String getCompactDescriptionImpl() {
         String description = getFirstLevelDescription();
         if (description == null) {
             description = "ZIGBEE.DESCRIPTION.%s~%s".formatted(getModel(), deviceService.getApplianceModel().getDefinition().getDescription());
         }
-        return """
-            <div class="inline-2row_d"><div>%s <span style="color:%s">${%s}</span>
-            <span style="float:right" class="color-primary">%s</span></div><div>${%s}</div></div>""".formatted(
-            getIeeeAddressLabel(), getStatus().getColor(), getStatus(), trimToEmpty(getModel()), description);
+        return description;
     }
 
     @UIField(order = 3, disableEdit = true, label = "ieeeAddress")

@@ -140,8 +140,8 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
     }
 
     @Override
-    public @NotNull UIInputBuilder createUIInputBuilder() {
-        return ZigBeeUtil.createUIInputBuilder(this);
+    public @Nullable UIInputBuilder createActionBuilder() {
+        return ZigBeeUtil.createActionBuilder(this);
     }
 
     protected String getJsonKey() {
@@ -285,10 +285,5 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
             case ENUM_TYPE -> EndpointType.select;
             default -> EndpointType.string;
         };
-    }
-
-    @Override
-    protected @Nullable BaseDeviceEndpoint getEndpoint(@NotNull String endpoint) {
-        return deviceService.getEndpoints().get(endpoint);
     }
 }

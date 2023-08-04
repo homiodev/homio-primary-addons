@@ -321,7 +321,7 @@ public class Z2MDeviceService {
     private Z2MDeviceEndpoint addEndpointOptional(String key, Function<String, Z2MDeviceEndpoint> endpointProducer) {
         if (!endpoints.containsKey(key)) {
             endpoints.put(key, endpointProducer.apply(key));
-            entityContext.event().fireEvent("zigbee-%s-%s".formatted(applianceModel.getIeeeAddress(), key), Status.ONLINE);
+            entityContext.event().fireEvent("endpoint-%s-%s".formatted(applianceModel.getIeeeAddress(), key), Status.ONLINE);
         }
         return endpoints.get(key);
     }
