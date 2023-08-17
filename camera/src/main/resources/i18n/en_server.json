@@ -1,10 +1,4 @@
 {
-  "ERROR": {
-    "CAMERA_PORT_BUSY": "Port already in use:  {{VALUE}}"
-  },
-  "CAMERA": {
-    "OFFLINE": "Camera is offline"
-  },
   "VIDEO_STREAM": {
     "PORT": "Port   {{VALUE}}",
     "ADDRESS": "Address: {{VALUE}}",
@@ -13,8 +7,5 @@
     "BRAND": "Brand: {{VALUE}}",
     "REQUIRE_AUTH": "<span style=\"color:red;\">Require authentication to work with camera<span>",
     "NEW_DEVICE_QUESTION": "Do you want create new video stream?"
-  },
-  "ONVIF": {
-    "REQ_AUTH_DESCRIPTION": "Requires authentication to fetch camera model. Fire authenticate action from context menu"
   }
 }

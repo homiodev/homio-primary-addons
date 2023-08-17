@@ -11,6 +11,7 @@ import static org.homio.api.util.CommonUtils.splitNameToReadableFormat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,7 +47,7 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
     private Z2MDeviceService deviceService;
 
     public Z2MDeviceEndpoint(@NotNull Icon icon) {
-        super(icon);
+        super(icon, "z2m");
     }
 
     public void init(@NotNull Z2MDeviceService deviceService, @NotNull Options expose) {
@@ -68,7 +69,7 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
     }
 
     @Override
-    public @NotNull List<String> getHiddenEndpoints() {
+    public @NotNull Set<String> getHiddenEndpoints() {
         return deviceService.getCoordinatorEntity().getHiddenEndpoints();
     }
 
@@ -179,11 +180,12 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
     }
 
     @Override
-    public @NotNull List<String> getSelectValues() {
+    public @NotNull Set<String> getSelectValues() {
         return expose.getValues();
     }
 
-    private String getVariableDescription() {
+    @Override
+    protected String getVariableDescription() {
         List<String> description = new ArrayList<>();
         if (isNotEmpty(getExpose().getDescription())) {
             description.add(getExpose().getDescription());
@@ -274,7 +276,7 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
     }
 
     @Override
-    protected @NotNull List<String> getVariableEnumValues() {
+    protected @NotNull Set<String> getVariableEnumValues() {
         return expose.getValues();
     }
 

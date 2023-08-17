@@ -1,10 +1,14 @@
 package de.onvif.soap.devices;
 
+import static org.homio.api.EntityContextSetting.SERVER_PORT;
+
 import de.onvif.soap.OnvifDeviceState;
 import de.onvif.soap.SOAP;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.oasis_open.docs.wsn.b_2.Renew;
 import org.oasis_open.docs.wsn.b_2.RenewResponse;
@@ -25,31 +29,29 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @Log4j2
+@RequiredArgsConstructor
 public class EventDevices {
 
     private final Map<String, EventHandler> eventHandlers = new HashMap<>();
 
+    private final String entityID;
     private final OnvifDeviceState onvifDeviceState;
     private final SOAP soap;
-    private final String entityID;
 
     private GetEventPropertiesResponse eventProperties;
     private long lastTimeRenewResponse;
+    private long lastTimeResubscribeRequest;
 
-    public EventDevices(String entityID, OnvifDeviceState onvifDeviceState, SOAP soap) {
-        this.onvifDeviceState = onvifDeviceState;
-        this.soap = soap;
-        this.entityID = entityID;
-    }
-
-    public void runOncePerMinute() {
+    public void pollCameraRunnable() {
         // send renew to onvif camera if no response more than one min
         if (lastTimeRenewResponse != 0 && System.currentTimeMillis() - lastTimeRenewResponse > 60000) {
             log.warn("[{}]: Resend 'Renew' message to onvif device", entityID);
             soap.sendSOAPSubscribeRequestAsync(new Renew());
         }
         // try reinitialize if Subscription not initialized
-        if (onvifDeviceState.getSubscriptionIpLessUri() == null) {
+        if (onvifDeviceState.getSubscriptionIpLessUri() == null &&
+            System.currentTimeMillis() - lastTimeResubscribeRequest > 60000) {
+            lastTimeResubscribeRequest = System.currentTimeMillis();
             fetchSubscriptionUrlAndSendPullMessages();
         }
     }
@@ -63,11 +65,8 @@ public class EventDevices {
 
     public void initFully() {
         // first listen for events
-        soap.addAsyncListener(
-            PullMessagesResponse.class, "listen-PullMessagesResponse", this::handleEventReceived);
-        soap.addAsyncListener(
-            RenewResponse.class,
-            "listen-RenewResponse",
+        soap.addAsyncListener(PullMessagesResponse.class, "listen-PullMessagesResponse", this::handleEventReceived);
+        soap.addAsyncListener(RenewResponse.class, "listen-RenewResponse",
             response -> {
                 log.debug("[{}]: Pulling messages from onvif", entityID);
                 this.lastTimeRenewResponse = System.currentTimeMillis();
@@ -80,27 +79,24 @@ public class EventDevices {
 
         fetchSubscriptionUrlAndSendPullMessages();
 
-        GetServiceCapabilitiesResponse serviceCapabilities =
-            soap.createSOAPDeviceRequestType(
-                new GetServiceCapabilities(), GetServiceCapabilitiesResponse.class);
-        if (serviceCapabilities != null
-            && serviceCapabilities.getCapabilities().getWsSubscriptionPolicySupport()) {
-            Subscribe subscribe =
-                new Subscribe()
-                    .setConsumerReference(
-                        new EndpointReferenceType()
-                            .setAddress(
-                                new AttributedURIType()
-                                    .setValue(
-                                        onvifDeviceState.getIp()
-                                            + ":"
-                                            + onvifDeviceState.getServerPort())));
+        GetServiceCapabilitiesResponse serviceCapabilities = soap.createSOAPDeviceRequestType(new GetServiceCapabilities(),
+            GetServiceCapabilitiesResponse.class);
+        if (serviceCapabilities != null && serviceCapabilities.getCapabilities().getWsSubscriptionPolicySupport()) {
+            Subscribe subscribe = createSubscribe();
             SubscribeResponse subscribeResponse =
                 soap.createSOAPDeviceRequestType(subscribe, SubscribeResponse.class);
             if (subscribeResponse != null) {
                 log.info("[{}]: Onvif Subscribe appears to be working for Alarms/Events.", entityID);
             }
         }
+    }
+
+    private Subscribe createSubscribe() {
+        String url = "%s:%s/rest/camera/%s".formatted(onvifDeviceState.getIp(), SERVER_PORT,
+            onvifDeviceState.getEntityID());
+        val address = new AttributedURIType().setValue(url);
+        val consumerReference = new EndpointReferenceType().setAddress(address);
+        return new Subscribe().setConsumerReference(consumerReference);
     }
 
     public void fireEvent(String message) {
@@ -121,7 +117,7 @@ public class EventDevices {
         log.info(
             "[{}]: Trying fetch onvif message subscription for ip address <{}>...",
             entityID,
-            this.onvifDeviceState.getIp());
+            onvifDeviceState.getIp());
         try {
             CreatePullPointSubscriptionResponse pullPointResponse =
                 soap.createSOAPDeviceRequestTypeThrowError(

@@ -26,8 +26,6 @@ import org.homio.addon.z2m.setting.ZigBeeEntityCompactModeSetting;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
-import org.homio.api.entity.DeviceBaseEntity;
-import org.homio.api.entity.DeviceEndpointsBaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
@@ -77,10 +75,9 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
         return deviceService.getDeviceFullName();
     }
 
-    public Z2MDeviceEntity setName(String value) {
+    public void setName(String value) {
         deviceService.sendRequest(
             "device/rename", new JSONObject().put("from", getName()).put("to", value).toString());
-        return this;
     }
 
     @UIField(order = 10, disableEdit = true, hideInEdit = true, hideOnEmpty = true)
@@ -256,7 +253,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
 
     @UIField(order = 1, type = SelectBox, color = "#7FE486", inlineEdit = true)
     @UIFieldSelection(SelectPlaceOptionLoader.class)
-    @UIFieldSelectValueOnEmpty(label = "SELECT_PLACE")
+    @UIFieldSelectValueOnEmpty(label = "PLACEHOLDER.SELECT_PLACE")
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup(value = "SETTINGS", order = 30, borderColor = "#22AB84")
     public String getPlace() {
@@ -264,17 +261,16 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     }
 
     @Override
-    public DeviceBaseEntity<DeviceEndpointsBaseEntity> setPlace(String value) {
+    public void setPlace(String value) {
         if (!Objects.equals(getPlace(), value)) {
             deviceService.updateConfiguration("place", value);
         }
-        return this;
     }
 
     @UIField(order = 4, inlineEdit = true)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("SETTINGS")
-    @UIFieldInlineEditConfirm(value = "W.CONFIRM.Z2M_RETAIN", dialogColor = ERROR_DIALOG)
+    @UIFieldInlineEditConfirm(value = "Z2M_RETAIN", dialogColor = ERROR_DIALOG)
     public boolean isRetainDeviceMessages() {
         return deviceService.getConfiguration().path("retain").asBoolean(false);
     }
@@ -287,7 +283,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     @UIField(order = 5, inlineEdit = true)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("SETTINGS")
-    @UIFieldInlineEditConfirm(value = "W.CONFIRM.ZIGBEE_DISABLE", dialogColor = ERROR_DIALOG, showCondition = "return context.get('disabled') == true")
+    @UIFieldInlineEditConfirm(value = "ZIGBEE_DISABLE", dialogColor = ERROR_DIALOG, showCondition = "return context.get('disabled') == true")
     public boolean isDisabled() {
         return deviceService.getConfiguration().path("disabled").asBoolean(deviceService.getApplianceModel().isDisabled());
     }
@@ -312,7 +308,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     @UIFieldSlider(min = 0, max = 10, step = 0.5)
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("ADVANCED")
-    @UIFieldInlineEditConfirm(value = "W.CONFIRM.Z2M_DEBOUNCE", dialogColor = ERROR_DIALOG)
+    @UIFieldInlineEditConfirm(value = "Z2M_DEBOUNCE", dialogColor = ERROR_DIALOG)
     public Float getDebounce() {
         JsonNode deviceOptions = deviceService.getConfiguration();
         if (deviceOptions.has("debounce")) {
@@ -329,7 +325,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     }
 
     @Override
-    protected String getImageIdentifierImpl() {
+    public String getImageIdentifierImpl() {
         JsonNode deviceOptions = deviceService.getConfiguration();
         return deviceOptions.path("image").asText(getModel()).replaceAll("[/ ]", "_");
     }
@@ -389,7 +385,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
         }).editDialog(dialogBuilder -> {
             dialogBuilder.setTitle("CONTEXT.ACTION.CUSTOM_DESCRIPTION", new Icon("fas fa-comment"));
             dialogBuilder.addFlex("main", flex ->
-                flex.addTextInput("field.description", getCustomDescription(), false));
+                flex.addTextInput("description", getCustomDescription(), false));
         });
 
         Z2MDeviceDefinition definition = deviceService.getApplianceModel().getDefinition();

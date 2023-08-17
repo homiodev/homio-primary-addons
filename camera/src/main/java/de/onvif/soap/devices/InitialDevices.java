@@ -85,12 +85,11 @@ public class InitialDevices {
     }
 
     public GetDeviceInformationResponse getDeviceInformation() {
-        if (this.deviceInformation == null) {
+        if (deviceInformation == null) {
             GetDeviceInformation getHostname = new GetDeviceInformation();
-            this.deviceInformation =
-                soap.createSOAPDeviceRequestType(getHostname, GetDeviceInformationResponse.class);
+            deviceInformation = soap.createSOAPDeviceRequestType(getHostname, GetDeviceInformationResponse.class);
         }
-        return this.deviceInformation;
+        return deviceInformation;
     }
 
     public String getHostname() {

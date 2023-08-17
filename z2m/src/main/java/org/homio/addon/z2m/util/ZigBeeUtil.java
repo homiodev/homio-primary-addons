@@ -214,7 +214,7 @@ public final class ZigBeeUtil {
         if (!endpoint.getExpose().isReadable() && endpoint.getExpose().getValues().size() == 1) {
             uiInputBuilder.addButton(endpoint.getEntityID(), new Icon("fas fa-play", "#eb0000"),
                 (entityContext, params) -> {
-                    endpoint.fireAction(endpoint.getExpose().getValues().get(0));
+                    endpoint.fireAction(endpoint.getExpose().getValues().iterator().next());
                     return null;
                 }).setText("").setDisabled(!endpoint.getDevice().getStatus().isOnline());
         } else {

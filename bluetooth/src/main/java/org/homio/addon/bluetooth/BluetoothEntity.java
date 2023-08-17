@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 @Entity
 @Accessors(chain = true)
 @UISidebarChildren(icon = "fab fa-bluetooth", color = "#0088CC", allowCreateItem = false)
-public class BluetoothEntity extends CommunicationEntity<BluetoothEntity> implements HasStatusAndMsg<BluetoothEntity> {
+public class BluetoothEntity extends CommunicationEntity implements HasStatusAndMsg {
 
     @Override
     public String getDefaultName() {

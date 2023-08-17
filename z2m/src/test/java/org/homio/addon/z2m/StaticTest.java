@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.homio.api.util.CommonUtils.YAML_OBJECT_MAPPER;
+import static org.homio.api.util.JsonUtils.YAML_OBJECT_MAPPER;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class StaticTest {

@@ -1,6 +1,10 @@
 package org.homio.addon.z2m.service.endpoints.inline;
 
-import java.util.stream.Stream;
+import static org.homio.api.model.Status.ERROR;
+import static org.homio.api.model.Status.OFFLINE;
+import static org.homio.api.model.Status.ONLINE;
+import static org.homio.api.model.Status.UNKNOWN;
+
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
@@ -17,9 +21,9 @@ public class Z2MDeviceStatusDeviceEndpoint extends Z2MDeviceEndpointInline {
 
     public Z2MDeviceStatusDeviceEndpoint(Z2MDeviceService deviceService) {
         super(new Icon("fa fa-fw fa-globe", "#42B52D"));
-        setValue(new StringType(Status.UNKNOWN.name()), false);
+        setValue(new StringType(UNKNOWN.name()), false);
         Options options = Options.dynamicEndpoint(ENDPOINT_DEVICE_STATUS, ApplianceModel.ENUM_TYPE);
-        options.setValues(Stream.of(Status.values()).map(Enum::name).toList());
+        options.setValues(Status.set(UNKNOWN, ONLINE, OFFLINE, UNKNOWN, ERROR));
         init(deviceService, options);
 
         entityContext.event().addEventListener("zigbee-%s".formatted(deviceService.getIeeeAddress()),

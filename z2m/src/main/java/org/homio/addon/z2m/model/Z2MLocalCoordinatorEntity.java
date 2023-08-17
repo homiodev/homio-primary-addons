@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -59,7 +60,7 @@ import org.jetbrains.annotations.Nullable;
 @Log4j2
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#11A4C2")
-public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLocalCoordinatorEntity>
+public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     implements HasFirmwareVersion, HasEntitySourceLog, ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
 
     @UIField(order = 9999, disableEdit = true, hideInEdit = true)
@@ -187,8 +188,8 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
 
     @UIField(order = 3, type = UIFieldType.Chips)
     @UIFieldGroup("ADVANCED")
-    public List<String> getHiddenEndpoints() {
-        return getJsonDataList("he");
+    public Set<String> getHiddenEndpoints() {
+        return getJsonDataSet("he");
     }
 
     public void setHiddenEndpoints(String value) {
@@ -232,7 +233,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity<Z2MLoca
     @Override
     @SneakyThrows
     public @NotNull Z2MLocalCoordinatorService createService(@NotNull EntityContext entityContext) {
-        return new Z2MLocalCoordinatorService(entityContext);
+        return new Z2MLocalCoordinatorService(entityContext, this);
     }
 
     @Override

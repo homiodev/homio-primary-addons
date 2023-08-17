@@ -4,9 +4,10 @@ import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
 import static org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options.dynamicEndpoint;
+import static org.homio.api.model.Status.ONLINE;
 import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_DEVICE_STATUS;
 import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_LAST_SEEN;
-import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
+import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -34,7 +35,6 @@ import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextService.MQTTEntityService;
 import org.homio.api.model.Icon;
-import org.homio.api.model.Status;
 import org.homio.api.model.device.ConfigDeviceDefinition;
 import org.homio.api.model.device.ConfigDeviceDefinitionService;
 import org.homio.api.model.device.ConfigDeviceEndpoint;
@@ -227,7 +227,7 @@ public class Z2MDeviceService {
         } else {
             name = applianceModel.getDefinition().getDescription();
         }
-        return "%s(%s) [${%s}]".formatted(name, applianceModel.getIeeeAddress(), defaultIfEmpty(deviceEntity.getPlace(), "place_not_set"));
+        return "%s(%s) [${%s}]".formatted(name, applianceModel.getIeeeAddress(), defaultIfEmpty(deviceEntity.getPlace(), "W.ERROR.PLACE_NOT_SET"));
     }
 
     public Z2MDeviceEndpoint addDynamicEndpoint(String key, Supplier<Z2MDeviceEndpoint> supplier) {
@@ -321,7 +321,7 @@ public class Z2MDeviceService {
     private Z2MDeviceEndpoint addEndpointOptional(String key, Function<String, Z2MDeviceEndpoint> endpointProducer) {
         if (!endpoints.containsKey(key)) {
             endpoints.put(key, endpointProducer.apply(key));
-            entityContext.event().fireEvent("endpoint-%s-%s".formatted(applianceModel.getIeeeAddress(), key), Status.ONLINE);
+            entityContext.event().fireEvent("endpoint-%s-%s".formatted(applianceModel.getIeeeAddress(), key), ONLINE);
         }
         return endpoints.get(key);
     }

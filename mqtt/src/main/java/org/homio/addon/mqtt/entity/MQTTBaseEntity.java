@@ -41,7 +41,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @SuppressWarnings("unused")
 @Log4j2
 @Entity
-public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
+public abstract class MQTTBaseEntity extends StorageEntity
     implements EntityService<MQTTService, MQTTBaseEntity>,
     HasTimeValueSeries,
     SelectionWithDynamicParameterFields,
@@ -219,7 +219,7 @@ public abstract class MQTTBaseEntity extends StorageEntity<MQTTBaseEntity>
     @Override
     @SneakyThrows
     public MQTTService createService(@NotNull EntityContext entityContext) {
-        return new MQTTService(entityContext);
+        return new MQTTService(entityContext, this);
     }
 
     public void publish(@NotNull String topic, byte[] content, int qoS, boolean retain) {

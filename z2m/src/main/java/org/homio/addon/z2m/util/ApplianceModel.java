@@ -182,7 +182,7 @@ public class ApplianceModel extends UnknownOptions {
              * For enum type
              */
             @JsonProperty("values")
-            private List<String> values;
+            private Set<String> values;
             /**
              * List type
              */

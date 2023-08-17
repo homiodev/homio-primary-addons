@@ -24,6 +24,7 @@ import org.homio.api.storage.SourceHistory;
 import org.homio.api.storage.SourceHistoryItem;
 import org.homio.api.ui.UI;
 import org.homio.api.util.CommonUtils;
+import org.homio.api.util.JsonUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -53,8 +54,8 @@ public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
     @Getter
     private long serviceHashCode;
 
-    public MQTTService(@NotNull EntityContext entityContext) {
-        super(entityContext);
+    public MQTTService(@NotNull EntityContext entityContext, @NotNull MQTTBaseEntity entity) {
+        super(entityContext, entity, true);
     }
 
     @Override
@@ -353,7 +354,7 @@ public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
     }
 
     private String getTextColor(String payload) {
-        if (CommonUtils.isValidJson(payload)) {
+        if (JsonUtils.isValidJson(payload)) {
             return "#06B2D4";
         }
         if (NumberUtils.isCreatable(payload)) {

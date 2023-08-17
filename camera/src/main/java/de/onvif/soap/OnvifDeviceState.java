@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
@@ -30,6 +31,7 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Base64;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.onvif.ver10.device.wsdl.GetDeviceInformationResponse;
 import org.onvif.ver10.schema.Capabilities;
 import org.onvif.ver10.schema.Profile;
@@ -39,13 +41,13 @@ import org.onvif.ver10.schema.VideoResolution;
 @Log4j2
 public class OnvifDeviceState {
 
-    private final SOAP soap;
-    private final InitialDevices initialDevices;
-    private final PtzDevices ptzDevices;
-    private final MediaDevices mediaDevices;
-    private final ImagingDevices imagingDevices;
-    private final EventDevices eventDevices;
-    private final String entityID;
+    private final @NotNull SOAP soap;
+    private final @NotNull InitialDevices initialDevices;
+    private final @NotNull PtzDevices ptzDevices;
+    private final @NotNull MediaDevices mediaDevices;
+    private final @NotNull ImagingDevices imagingDevices;
+    private final @NotNull EventDevices eventDevices;
+    private final @NotNull String entityID;
     private String HOST_IP;
     private String originalIp;
     private boolean isProxy;
@@ -66,14 +68,16 @@ public class OnvifDeviceState {
     private TreeMap<VideoEncodeResolution, Profile> resolutionProfiles;
     private String ip;
     private int onvifPort;
-    private int serverPort;
     private String profileToken;
     @Setter private Consumer<String> unreachableHandler;
     private Capabilities capabilities;
     private String subscriptionError;
+    private boolean initialized;
+
+    @Setter private @Nullable Runnable updateListener;
 
     @SneakyThrows
-    public OnvifDeviceState(String entityID) {
+    public OnvifDeviceState(@NotNull String entityID) {
         this.entityID = entityID;
         this.soap = new SOAP(this);
         this.initialDevices = new InitialDevices(this, soap);
@@ -85,59 +89,29 @@ public class OnvifDeviceState {
 
     public void setSubscriptionError(String subscriptionError) {
         this.subscriptionError = subscriptionError;
+        if (updateListener != null) {
+            updateListener.run();
+        }
     }
 
-    public void updateParameters(
-        String ip, int onvifPort, int serverPort, String user, String password) {
+    public void updateParameters(String ip, int onvifPort, String user, String password) {
         this.ip = ip;
         this.onvifPort = onvifPort;
-        this.serverPort = serverPort;
         this.HOST_IP = ip + ":" + onvifPort;
-        this.serverDeviceUri = "http://" + HOST_IP + "/onvif/device_service";
+        this.serverDeviceUri = "http://%s/onvif/device_service".formatted(HOST_IP);
         this.serverDeviceIpLessUri = "/onvif/device_service";
         this.username = user;
         this.password = password;
     }
 
-    /**
-     * Internal function to check, if device is available and answers to ping requests.
-     */
-    public boolean isOnline() {
-        String port = HOST_IP.contains(":") ? HOST_IP.substring(HOST_IP.indexOf(':') + 1) : "80";
-        String ip = HOST_IP.contains(":") ? HOST_IP.substring(0, HOST_IP.indexOf(':')) : HOST_IP;
-
-        Socket socket = null;
-        try {
-            SocketAddress sockaddr = new InetSocketAddress(ip, Integer.parseInt(port));
-            socket = new Socket();
-
-            socket.connect(sockaddr, 5000);
-        } catch (Exception e) {
-            return false;
-        } finally {
-            try {
-                if (socket != null) {
-                    socket.close();
-                }
-            } catch (IOException ignored) {
-            }
-        }
-        return true;
-    }
-
     @SneakyThrows
     public void initFully(int onvifMediaProfile, boolean supportOnvifEvents) {
+        if (initialized) {
+            return;
+        }
         this.init();
         this.profiles = initialDevices.getProfiles();
-        this.resolutionProfiles =
-            new TreeMap<>(
-                this.profiles.stream()
-                             .collect(
-                                 Collectors.toMap(
-                                     profile ->
-                                         new VideoEncodeResolution(
-                                             profile.getVideoEncoderConfiguration().getResolution()),
-                                     Function.identity())));
+        this.resolutionProfiles = new TreeMap<>(buildResolutionProfiles());
 
         int activeProfileIndex = onvifMediaProfile >= this.profiles.size() ? 0 : onvifMediaProfile;
         Profile profile =
@@ -153,6 +127,13 @@ public class OnvifDeviceState {
         if (supportOnvifEvents) {
             eventDevices.initFully();
         }
+        initialized = true;
+    }
+
+    private Map<VideoEncodeResolution, Profile> buildResolutionProfiles() {
+        return profiles.stream().collect(Collectors.toMap(profile ->
+                new VideoEncodeResolution(profile.getVideoEncoderConfiguration().getResolution()),
+            Function.identity()));
     }
 
     public void dispose() {
@@ -211,7 +192,7 @@ public class OnvifDeviceState {
 
     public void createNonce() {
         Random generator = new Random();
-        nonce = "" + generator.nextInt();
+        nonce = String.valueOf(generator.nextInt());
     }
 
     public String getLastUTCTime() {
@@ -241,15 +222,6 @@ public class OnvifDeviceState {
         }
     }
 
-    public void checkForErrors() {
-        if (!isOnline()) {
-            throw new RuntimeException("No connection to onvif camera");
-        }
-        this.init();
-        // check for Authentication validation
-        initialDevices.getDeviceInformation();
-    }
-
     public void cameraUnreachable(String errorMessage) {
         log.error("[{}]: Camera unreachable: <{}>", entityID, errorMessage);
         if (unreachableHandler != null) {
@@ -274,10 +246,6 @@ public class OnvifDeviceState {
         return highResolution
             ? resolutionProfiles.firstEntry().getValue().getName()
             : resolutionProfiles.lastEntry().getValue().getName();
-    }
-
-    public void runOncePerMinute() {
-        this.eventDevices.runOncePerMinute();
     }
 
     private static byte[] sha1(String s) throws NoSuchAlgorithmException {

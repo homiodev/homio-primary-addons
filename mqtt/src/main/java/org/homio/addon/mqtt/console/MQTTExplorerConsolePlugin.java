@@ -13,7 +13,6 @@ import org.homio.addon.mqtt.setting.ConsoleRemoveMqttTreeNodeHeaderButtonSetting
 import org.homio.api.EntityContext;
 import org.homio.api.console.ConsolePluginTree;
 import org.homio.api.fs.TreeConfiguration;
-import org.homio.api.fs.TreeNode;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.setting.console.header.ConsoleHeaderSettingPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -37,9 +36,9 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
   }
 
   @Override
-  public ActionResponseModel executeAction(@NotNull String entityID, JSONObject metadata, JSONObject params) {
+  public ActionResponseModel executeAction(@NotNull String entityID, @NotNull JSONObject metadata) {
     entityContext.assertAccess(MQTTEntrypoint.MQTT_RESOURCE);
-    if (metadata != null && "history".equals(metadata.optString("type"))) {
+    if ("history".equals(metadata.optString("type"))) {
       return ActionResponseModel.showJson("History", new ArrayList<>(mqttService.getStorage().findAllBy("topic", entityID)));
     }
     return ActionResponseModel.showWarn("Unable to handle command: " + entityID);
@@ -49,11 +48,6 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
   public List<TreeConfiguration> getValue() {
     entityContext.assertAccess(MQTTEntrypoint.MQTT_RESOURCE);
     return mqttService.getValue();
-  }
-
-  @Override
-  public @NotNull RenderType getRenderType() {
-    return RenderType.tree;
   }
 
   @Override

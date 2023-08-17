@@ -1,6 +1,6 @@
 package org.homio.addon.telegram;
 
-import static org.homio.api.util.CommonUtils.OBJECT_MAPPER;
+import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -39,7 +39,7 @@ import org.telegram.telegrambots.meta.ApiConstants;
 @Entity
 @Accessors(chain = true)
 @UISidebarChildren(icon = "fab fa-telegram", color = "#0088CC")
-public final class TelegramEntity extends CommunicationEntity<TelegramEntity> implements HasStatusAndMsg<TelegramEntity> {
+public final class TelegramEntity extends CommunicationEntity implements HasStatusAndMsg {
 
     @UIField(order = 1, hideInEdit = true, hideOnEmpty = true, fullWidth = true, bg = "#334842C2", type = UIFieldType.HTML)
     public String getDescription() {
