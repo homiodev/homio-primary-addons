@@ -1,25 +1,21 @@
 package org.onvif.ver10.events.wsdl;
 
-import java.util.ArrayList;
-import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.datatype.Duration;
+import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+
+import javax.xml.datatype.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @Accessors(chain = true)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"maxTimeout", "maxMessageLimit", "any"})
+        name = "",
+        propOrder = {"maxTimeout", "maxMessageLimit", "any"})
 @XmlRootElement(name = "PullMessagesFaultResponse")
 public class PullMessagesFaultResponse {
 

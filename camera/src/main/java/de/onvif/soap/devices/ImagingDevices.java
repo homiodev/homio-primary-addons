@@ -7,14 +7,7 @@ import org.onvif.ver10.schema.AbsoluteFocus;
 import org.onvif.ver10.schema.FocusMove;
 import org.onvif.ver10.schema.ImagingOptions20;
 import org.onvif.ver10.schema.ImagingSettings20;
-import org.onvif.ver20.imaging.wsdl.GetImagingSettings;
-import org.onvif.ver20.imaging.wsdl.GetImagingSettingsResponse;
-import org.onvif.ver20.imaging.wsdl.GetOptions;
-import org.onvif.ver20.imaging.wsdl.GetOptionsResponse;
-import org.onvif.ver20.imaging.wsdl.Move;
-import org.onvif.ver20.imaging.wsdl.MoveResponse;
-import org.onvif.ver20.imaging.wsdl.SetImagingSettings;
-import org.onvif.ver20.imaging.wsdl.SetImagingSettingsResponse;
+import org.onvif.ver20.imaging.wsdl.*;
 
 @RequiredArgsConstructor
 public class ImagingDevices {
@@ -63,7 +56,7 @@ public class ImagingDevices {
         request.setVideoSourceToken(videoSourceToken);
 
         GetImagingSettingsResponse response =
-            soap.createSOAPImagingRequest(request, GetImagingSettingsResponse.class);
+                soap.createSOAPImagingRequest(request, GetImagingSettingsResponse.class);
         return response == null ? null : response.getImagingSettings();
     }
 
@@ -77,7 +70,7 @@ public class ImagingDevices {
         request.setImagingSettings(imagingSettings);
 
         SetImagingSettingsResponse response =
-            soap.createSOAPImagingRequest(request, SetImagingSettingsResponse.class);
+                soap.createSOAPImagingRequest(request, SetImagingSettingsResponse.class);
         return response != null;
     }
 

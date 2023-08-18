@@ -16,4 +16,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "SystemReboot")
-public class SystemReboot {}
+public class SystemReboot {
+}

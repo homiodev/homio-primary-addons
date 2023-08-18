@@ -1,16 +1,17 @@
 package org.onvif.ver10.schema;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "ClassDescriptor",
-    propOrder = {"classCandidate", "extension"})
+        name = "ClassDescriptor",
+        propOrder = {"classCandidate", "extension"})
 public class ClassDescriptor {
 
     @XmlElement(name = "ClassCandidate")
@@ -81,8 +82,8 @@ public class ClassDescriptor {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(
-        name = "",
-        propOrder = {"type", "likelihood"})
+            name = "",
+            propOrder = {"type", "likelihood"})
     public static class ClassCandidate {
 
         @XmlElement(name = "Type", required = true)

@@ -42,15 +42,22 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @Log4j2
 @Entity
 public abstract class MQTTBaseEntity extends StorageEntity
-    implements EntityService<MQTTService, MQTTBaseEntity>,
-    HasTimeValueSeries,
-    SelectionWithDynamicParameterFields,
-    HasAggregateValueFromSeries,
-    HasGetStatusValue,
-    HasSetStatusValue,
-    EntityContextService.MQTTEntityService,
-    BaseFileSystemEntity<MQTTBaseEntity, MQTTFileSystem>,
-    UIFieldSelection.SelectionConfiguration {
+        implements EntityService<MQTTService, MQTTBaseEntity>,
+        HasTimeValueSeries,
+        SelectionWithDynamicParameterFields,
+        HasAggregateValueFromSeries,
+        HasGetStatusValue,
+        HasSetStatusValue,
+        EntityContextService.MQTTEntityService,
+        BaseFileSystemEntity<MQTTBaseEntity, MQTTFileSystem>,
+        UIFieldSelection.SelectionConfiguration {
+
+    static String normalize(String topic) {
+        if (topic.startsWith("/")) {
+            topic = topic.substring(1);
+        }
+        return topic;
+    }
 
     @Override
     public @NotNull String getFileSystemAlias() {
@@ -225,7 +232,7 @@ public abstract class MQTTBaseEntity extends StorageEntity
     public void publish(@NotNull String topic, byte[] content, int qoS, boolean retain) {
         try {
             log.debug("[{}]: MQTT Name[{}]. Publish message: Topic[{}], Qos[{}], Retain[{}], Value[{}]", getEntityID(), getTitle(), topic, qoS,
-                retain, content);
+                    retain, content);
             getService().getMqttClient().publish(topic, content, qoS, retain);
         } catch (MqttException e) {
             throw new RuntimeException(e);
@@ -235,7 +242,7 @@ public abstract class MQTTBaseEntity extends StorageEntity
     @Override
     public @NotNull List<Object[]> getTimeValueSeries(PeriodRequest request) {
         return getService().getStorage().getTimeSeries(request.getFromTime(), request.getToTime(), "topic",
-            getTopicRequire(request.getParameters(), "queryTopic"));
+                getTopicRequire(request.getParameters(), "queryTopic"));
     }
 
     @Override
@@ -252,7 +259,7 @@ public abstract class MQTTBaseEntity extends StorageEntity
     public Object getAggregateValueFromSeries(@NotNull PeriodRequest request, @NotNull AggregationType aggregationType, boolean filterOnlyNumbers) {
         String topic = getTopicRequire(request.getParameters(), "queryTopic");
         return getService().getStorage().aggregate(request.getFromTime(), request.getToTime(), "topic", topic,
-            aggregationType, filterOnlyNumbers);
+                aggregationType, filterOnlyNumbers);
     }
 
     @Override
@@ -292,7 +299,7 @@ public abstract class MQTTBaseEntity extends StorageEntity
 
     @Override
     public void addUpdateValueListener(EntityContext entityContext, String key, JSONObject dynamicParameters,
-        Consumer<Object> listener) {
+                                       Consumer<Object> listener) {
         String topic = getTopicRequire(dynamicParameters, "queryTopic");
         entityContext.event().addEventListener(getEntityID() + "~~~" + topic, key, listener);
     }
@@ -325,13 +332,6 @@ public abstract class MQTTBaseEntity extends StorageEntity
         return getJsonDataHashCode("user", "pwd", "cid", "port", "cs", "ct", "ka", "host");
     }
 
-    static String normalize(String topic) {
-        if (topic.startsWith("/")) {
-            topic = topic.substring(1);
-        }
-        return topic;
-    }
-
     @Override
     protected void beforePersist() {
         super.beforePersist();
@@ -349,7 +349,7 @@ public abstract class MQTTBaseEntity extends StorageEntity
     private void publishFromDynamicTopic(String value, JSONObject dynamicParameters) {
         String topic = getTopicRequire(dynamicParameters, "publishTopic");
         publish(topic, value == null ? new byte[0] : value.getBytes(UTF_8), dynamicParameters.optInt("qos", 0),
-            dynamicParameters.optBoolean("retain", false));
+                dynamicParameters.optBoolean("retain", false));
     }
 
     @Override

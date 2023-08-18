@@ -1,10 +1,6 @@
 package org.onvif.ver20.ptz.wsdl;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -27,8 +23,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"profileToken", "auxiliaryData"})
+        name = "",
+        propOrder = {"profileToken", "auxiliaryData"})
 @XmlRootElement(name = "SendAuxiliaryCommand")
 public class SendAuxiliaryCommand {
 

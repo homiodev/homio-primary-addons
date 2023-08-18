@@ -7,8 +7,8 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "BacklightCompensation",
-    propOrder = {"mode", "level"})
+        name = "BacklightCompensation",
+        propOrder = {"mode", "level"})
 public class BacklightCompensation {
 
     @XmlElement(name = "Mode", required = true)

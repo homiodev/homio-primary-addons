@@ -1,10 +1,6 @@
 package org.onvif.ver20.imaging.wsdl;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import org.onvif.ver10.schema.FocusMove;
 
 /**
@@ -28,8 +24,8 @@ import org.onvif.ver10.schema.FocusMove;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"videoSourceToken", "focus"})
+        name = "",
+        propOrder = {"videoSourceToken", "focus"})
 @XmlRootElement(name = "Move")
 public class Move {
 

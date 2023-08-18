@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Mpeg4Configuration",
-    propOrder = {"govLength", "mpeg4Profile"})
+        name = "Mpeg4Configuration",
+        propOrder = {"govLength", "mpeg4Profile"})
 public class Mpeg4Configuration {
 
     @XmlElement(name = "GovLength")

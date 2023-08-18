@@ -16,4 +16,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "GetRemoteUser")
-public class GetRemoteUser {}
+public class GetRemoteUser {
+}

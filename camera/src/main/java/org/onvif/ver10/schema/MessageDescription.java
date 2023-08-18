@@ -1,15 +1,10 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlSeeAlso;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * Java-Klasse f�r MessageDescription complex type.
@@ -36,8 +31,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "MessageDescription",
-    propOrder = {"source", "key", "data", "extension"})
+        name = "MessageDescription",
+        propOrder = {"source", "key", "data", "extension"})
 @XmlSeeAlso({org.onvif.ver10.schema.ConfigDescription.Messages.class})
 public class MessageDescription {
 
@@ -56,7 +51,8 @@ public class MessageDescription {
     @XmlAttribute(name = "IsProperty")
     protected Boolean isProperty;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der source-Eigenschaft ab.

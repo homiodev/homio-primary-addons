@@ -1,18 +1,14 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+import org.oasis_open.docs.wsn.b_2.FilterType;
+import org.w3c.dom.Element;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
-import org.oasis_open.docs.wsn.b_2.FilterType;
-import org.w3c.dom.Element;
 
 /**
  * Subcription handling in the same way as base notification subscription.
@@ -49,8 +45,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "EventSubscription",
-    propOrder = {"filter", "subscriptionPolicy", "any"})
+        name = "EventSubscription",
+        propOrder = {"filter", "subscriptionPolicy", "any"})
 public class EventSubscription {
 
     @XmlElement(name = "Filter")
@@ -62,7 +58,8 @@ public class EventSubscription {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der filter-Eigenschaft ab.
@@ -158,8 +155,8 @@ public class EventSubscription {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(
-        name = "",
-        propOrder = {"any"})
+            name = "",
+            propOrder = {"any"})
     public static class SubscriptionPolicy {
 
         @XmlAnyElement(lax = true)

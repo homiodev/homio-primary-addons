@@ -1,13 +1,10 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * Java-Klasse f�r Rotate complex type.
@@ -32,8 +29,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Rotate",
-    propOrder = {"mode", "degree", "extension"})
+        name = "Rotate",
+        propOrder = {"mode", "degree", "extension"})
 public class Rotate {
 
     @XmlElement(name = "Mode", required = true)
@@ -45,7 +42,8 @@ public class Rotate {
     @XmlElement(name = "Extension")
     protected RotateExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der mode-Eigenschaft ab.

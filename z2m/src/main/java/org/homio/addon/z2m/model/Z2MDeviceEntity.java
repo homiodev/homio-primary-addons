@@ -1,20 +1,7 @@
 package org.homio.addon.z2m.model;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.apache.commons.lang3.StringUtils.trimToEmpty;
-import static org.apache.commons.lang3.StringUtils.trimToNull;
-import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
-import static org.homio.addon.z2m.service.endpoints.Z2MDeviceEndpointFirmwareUpdate.ENDPOINT_FIRMWARE_UPDATE;
-import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
-import static org.homio.api.ui.field.UIFieldType.HTML;
-import static org.homio.api.ui.field.UIFieldType.SelectBox;
-import static org.homio.api.util.CommonUtils.splitNameToReadableFormat;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,14 +22,9 @@ import org.homio.api.model.device.ConfigDeviceDefinitionService;
 import org.homio.api.model.endpoint.DeviceEndpoint;
 import org.homio.api.optionProvider.SelectPlaceOptionLoader;
 import org.homio.api.ui.UI.Color;
-import org.homio.api.ui.field.UIField;
-import org.homio.api.ui.field.UIFieldGroup;
-import org.homio.api.ui.field.UIFieldIgnore;
-import org.homio.api.ui.field.UIFieldInlineEditConfirm;
-import org.homio.api.ui.field.UIFieldSlider;
+import org.homio.api.ui.field.*;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
-import org.homio.api.ui.field.color.UIFieldColorBgRef;
 import org.homio.api.ui.field.color.UIFieldColorStatusMatch;
 import org.homio.api.ui.field.condition.UIFieldShowOnCondition;
 import org.homio.api.ui.field.model.HrefModel;
@@ -53,6 +35,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static org.apache.commons.lang3.StringUtils.*;
+import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
+import static org.homio.addon.z2m.service.endpoints.Z2MDeviceEndpointFirmwareUpdate.ENDPOINT_FIRMWARE_UPDATE;
+import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
+import static org.homio.api.ui.field.UIFieldType.SelectBox;
+import static org.homio.api.util.CommonUtils.splitNameToReadableFormat;
+
 @Log4j2
 @Getter
 @Setter
@@ -60,7 +53,8 @@ import org.json.JSONObject;
 @SuppressWarnings("unused")
 public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
 
-    @JsonIgnore private transient Z2MDeviceService deviceService;
+    @JsonIgnore
+    private transient Z2MDeviceService deviceService;
 
     public Z2MDeviceEntity(Z2MDeviceService deviceService, String ieeeAddress) {
         super();
@@ -70,14 +64,13 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
         setIeeeAddress(ieeeAddress);
     }
 
+    private static Float toFloat(Integer value) {
+        return value == null ? null : value.floatValue();
+    }
+
     @Override
     public @NotNull String getDeviceFullName() {
         return deviceService.getDeviceFullName();
-    }
-
-    public void setName(String value) {
-        deviceService.sendRequest(
-            "device/rename", new JSONObject().put("from", getName()).put("to", value).toString());
     }
 
     @UIField(order = 10, disableEdit = true, hideInEdit = true, hideOnEmpty = true)
@@ -136,14 +129,11 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
         return deviceService.getEndpoints();
     }
 
-    @UIField(order = 1, hideOnEmpty = true, fullWidth = true, color = "#89AA50", type = HTML)
-    @UIFieldShowOnCondition("return !context.get('compactMode')")
-    @UIFieldColorBgRef(value = "statusColor", animate = true)
-    @UIFieldGroup(value = "GENERAL", order = 1, borderColor = "#CDD649")
-    public String getDescription() {
+    @Override
+    public String getDescriptionImpl() {
         return defaultIfEmpty(
-            getFirstLevelDescription(),
-            deviceService.getApplianceModel().getDefinition().getDescription()
+                getFirstLevelDescription(),
+                deviceService.getApplianceModel().getDefinition().getDescription()
         );
     }
 
@@ -153,6 +143,11 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     @UIFieldGroup("GENERAL")
     public @NotNull String getName() {
         return defaultIfEmpty(deviceService.getApplianceModel().getName(), "UNKNOWN");
+    }
+
+    public void setName(String value) {
+        deviceService.sendRequest(
+                "device/rename", new JSONObject().put("from", getName()).put("to", value).toString());
     }
 
     @UIField(order = 3, label = "model")
@@ -277,7 +272,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
 
     public void setRetainDeviceMessages(boolean value) {
         deviceService.sendRequest(
-            "device/options", new JSONObject().put("id", getIeeeAddress()).put("options", new JSONObject().put("retain", value)).toString());
+                "device/options", new JSONObject().put("id", getIeeeAddress()).put("options", new JSONObject().put("retain", value)).toString());
     }
 
     @UIField(order = 5, inlineEdit = true)
@@ -290,7 +285,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
 
     public void setDisabled(boolean value) {
         deviceService.sendRequest(
-            "device/options", new JSONObject().put("id", getIeeeAddress()).put("options", new JSONObject().put("disabled", value)).toString());
+                "device/options", new JSONObject().put("id", getIeeeAddress()).put("options", new JSONObject().put("disabled", value)).toString());
     }
 
     @UIField(order = 6, inlineEdit = true)
@@ -320,7 +315,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     public void setDebounce(Float value) {
         if (!Objects.equals(getDebounce(), value)) {
             deviceService.sendRequest(
-                "device/options", new JSONObject().put("id", getIeeeAddress()).put("options", new JSONObject().put("debounce", value)).toString());
+                    "device/options", new JSONObject().put("id", getIeeeAddress()).put("options", new JSONObject().put("debounce", value)).toString());
         }
     }
 
@@ -385,7 +380,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
         }).editDialog(dialogBuilder -> {
             dialogBuilder.setTitle("CONTEXT.ACTION.CUSTOM_DESCRIPTION", new Icon("fas fa-comment"));
             dialogBuilder.addFlex("main", flex ->
-                flex.addTextInput("description", getCustomDescription(), false));
+                    flex.addTextInput("description", getCustomDescription(), false));
         });
 
         Z2MDeviceDefinition definition = deviceService.getApplianceModel().getDefinition();
@@ -394,15 +389,13 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
                 JsonNode deviceConfigurationOptions = deviceService.getConfiguration();
                 String flexName = "${z2m.setting.%s~%s}".formatted(option.getName(), splitNameToReadableFormat(option.getName()));
                 switch (option.getType()) {
-                    case ApplianceModel.BINARY_TYPE -> buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
-                    case ApplianceModel.NUMBER_TYPE -> buildNumberTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
+                    case ApplianceModel.BINARY_TYPE ->
+                            buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
+                    case ApplianceModel.NUMBER_TYPE ->
+                            buildNumberTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
                 }
             }
         }
-    }
-
-    private static Float toFloat(Integer value) {
-        return value == null ? null : value.floatValue();
     }
 
     private void buildNumberTypeAction(UIInputBuilder uiInputBuilder, Options option, JsonNode deviceConfigurationOptions, String flexName) {
@@ -412,17 +405,17 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
 
         Integer nValue = deviceConfigurationOptions == null ? null : deviceConfigurationOptions.path(option.getName()).asInt(0);
         uiInputBuilder.addFlex(option.getName() + "_flex", flex -> {
-                          flex.addNumberInput(option.getName(), toFloat(nValue), toFloat(minValue), toFloat(maxValue),
-                              (entityContext, params) -> {
-                                  deviceService.updateDeviceConfiguration(deviceService, option.getName(),
-                                      params.has("value") ? params.getInt("value") : null);
-                                  return null;
-                              });
-                          flex.addInfo(option.getDescription()).setOuterClass("context-description");
-                      })
-                      .columnFlexDirection()
-                      .setBorderColor(Color.random())
-                      .setBorderArea(flexName);
+                    flex.addNumberInput(option.getName(), toFloat(nValue), toFloat(minValue), toFloat(maxValue),
+                            (entityContext, params) -> {
+                                deviceService.updateDeviceConfiguration(deviceService, option.getName(),
+                                        params.has("value") ? params.getInt("value") : null);
+                                return null;
+                            });
+                    flex.addInfo(option.getDescription()).setOuterClass("context-description");
+                })
+                .columnFlexDirection()
+                .setBorderColor(Color.random())
+                .setBorderArea(flexName);
     }
 
     private void buildBinaryTypeAction(UIInputBuilder uiInputBuilder, Options option, JsonNode deviceConfigurationOptions, String flexName) {
@@ -430,9 +423,9 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
         boolean bValue = deviceConfigurationOptions == null ? defaultValue : deviceConfigurationOptions.path(option.getName()).asBoolean(defaultValue);
 
         uiInputBuilder.addFlex(option.getName() + "_flex", flex -> buildCheckbox(option, bValue, flex))
-                      .columnFlexDirection()
-                      .setBorderColor(Color.random())
-                      .setBorderArea(flexName);
+                .columnFlexDirection()
+                .setBorderColor(Color.random())
+                .setBorderArea(flexName);
     }
 
     private void buildCheckbox(Options option, boolean bValue, UIFlexLayoutBuilder flex) {
@@ -456,8 +449,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
             return "ZIGBEE.INTERVIEW_FAILED";
         }
         return defaultIfEmpty(
-            getCustomDescription(),
-            applianceModel.getDefinition().getDescription()
+                getCustomDescription(),
+                applianceModel.getDefinition().getDescription()
         );
     }
 }

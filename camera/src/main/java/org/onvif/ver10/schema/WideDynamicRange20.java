@@ -28,8 +28,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "WideDynamicRange20",
-    propOrder = {"mode", "level"})
+        name = "WideDynamicRange20",
+        propOrder = {"mode", "level"})
 public class WideDynamicRange20 {
 
     @XmlElement(name = "Mode", required = true)

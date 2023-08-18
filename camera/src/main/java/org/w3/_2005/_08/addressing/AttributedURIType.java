@@ -1,26 +1,22 @@
 package org.w3._2005._08.addressing;
 
-import java.util.HashMap;
-import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.XmlValue;
-import javax.xml.namespace.QName;
+import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+
+import javax.xml.namespace.QName;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
 @Accessors(chain = true)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "AttributedURIType",
-    propOrder = {"value"})
+        name = "AttributedURIType",
+        propOrder = {"value"})
 @ToString
 public class AttributedURIType {
 
@@ -28,5 +24,6 @@ public class AttributedURIType {
     @XmlSchemaType(name = "anyURI")
     protected String value;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<>();
 }

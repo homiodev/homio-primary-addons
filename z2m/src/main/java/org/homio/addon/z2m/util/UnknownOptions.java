@@ -1,19 +1,21 @@
 package org.homio.addon.z2m.util;
 
-import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.jetbrains.annotations.NotNull;
+
+import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
 
 public class UnknownOptions {
 
-    @JsonIgnore private final Map<String, JsonNode> unknownFields = new HashMap<>();
+    @JsonIgnore
+    private final Map<String, JsonNode> unknownFields = new HashMap<>();
 
     @SuppressWarnings("unused")
     @JsonAnyGetter

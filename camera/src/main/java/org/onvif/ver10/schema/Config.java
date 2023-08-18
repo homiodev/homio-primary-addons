@@ -1,16 +1,13 @@
 package org.onvif.ver10.schema;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
+
 import javax.xml.namespace.QName;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Config",
-    propOrder = {"parameters"})
+        name = "Config",
+        propOrder = {"parameters"})
 public class Config {
 
     @XmlElement(name = "Parameters", required = true)

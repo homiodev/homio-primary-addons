@@ -1,18 +1,13 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
 
 /**
  * Java-Klasse f�r Frame complex type.
@@ -40,8 +35,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Frame",
-    propOrder = {"ptzStatus", "transformation", "object", "objectTree", "extension"})
+        name = "Frame",
+        propOrder = {"ptzStatus", "transformation", "object", "objectTree", "extension"})
 public class Frame {
 
     @XmlElement(name = "PTZStatus")
@@ -63,7 +58,8 @@ public class Frame {
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar utcTime;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der ptzStatus-Eigenschaft ab.

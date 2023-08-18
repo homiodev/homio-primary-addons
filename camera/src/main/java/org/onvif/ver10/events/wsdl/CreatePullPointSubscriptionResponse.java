@@ -1,27 +1,22 @@
 package org.onvif.ver10.events.wsdl;
 
-import java.util.ArrayList;
-import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
+import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.w3._2005._08.addressing.EndpointReferenceType;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @Accessors(chain = true)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"subscriptionReference", "currentTime", "terminationTime", "any"})
+        name = "",
+        propOrder = {"subscriptionReference", "currentTime", "terminationTime", "any"})
 @XmlRootElement(name = "CreatePullPointSubscriptionResponse")
 public class CreatePullPointSubscriptionResponse {
 
@@ -29,17 +24,17 @@ public class CreatePullPointSubscriptionResponse {
     protected EndpointReferenceType subscriptionReference;
 
     @XmlElement(
-        name = "CurrentTime",
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        required = true)
+            name = "CurrentTime",
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar currentTime;
 
     @XmlElement(
-        name = "TerminationTime",
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        required = true,
-        nillable = true)
+            name = "TerminationTime",
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            required = true,
+            nillable = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar terminationTime;
 

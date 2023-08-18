@@ -594,7 +594,6 @@
       "name": "water_leak",
       "icon": "fa-water",
       "iconColor": "#0C9AB7",
-
       "persistent": true,
       "order": 2990
     },

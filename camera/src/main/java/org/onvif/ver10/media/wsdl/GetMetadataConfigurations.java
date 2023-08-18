@@ -16,4 +16,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "GetMetadataConfigurations")
-public class GetMetadataConfigurations {}
+public class GetMetadataConfigurations {
+}

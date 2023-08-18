@@ -1,16 +1,12 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * Java-Klasse f�r PresetTour complex type.
@@ -39,8 +35,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "PresetTour",
-    propOrder = {"name", "status", "autoStart", "startingCondition", "tourSpot", "extension"})
+        name = "PresetTour",
+        propOrder = {"name", "status", "autoStart", "startingCondition", "tourSpot", "extension"})
 public class PresetTour {
 
     @XmlElement(name = "Name")
@@ -64,7 +60,8 @@ public class PresetTour {
     @XmlAttribute(name = "token")
     protected String token;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der name-Eigenschaft ab.

@@ -1,27 +1,23 @@
 package org.onvif.ver10.events.wsdl;
 
+import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 @Getter
 @Setter
 @Accessors(chain = true)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "SubscriptionPolicy",
-    propOrder = {"any"})
+        name = "SubscriptionPolicy",
+        propOrder = {"any"})
 public class SubscriptionPolicy {
 
     @XmlAnyElement(lax = true)
@@ -30,7 +26,8 @@ public class SubscriptionPolicy {
     @XmlAttribute(name = "ChangedOnly")
     protected Boolean changedOnly;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     public List<Object> getAny() {
         if (any == null) {

@@ -1,12 +1,9 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElements;
-import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * Java-Klasse f�r VideoAnalyticsStream complex type.
@@ -29,13 +26,13 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "VideoAnalyticsStream",
-    propOrder = {"frameOrExtension"})
+        name = "VideoAnalyticsStream",
+        propOrder = {"frameOrExtension"})
 public class VideoAnalyticsStream {
 
     @XmlElements({
-        @XmlElement(name = "Frame", type = Frame.class),
-        @XmlElement(name = "Extension", type = VideoAnalyticsStreamExtension.class)
+            @XmlElement(name = "Frame", type = Frame.class),
+            @XmlElement(name = "Extension", type = VideoAnalyticsStreamExtension.class)
     })
     protected List<java.lang.Object> frameOrExtension;
 

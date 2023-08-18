@@ -36,8 +36,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "DeviceServiceCapabilities",
-    propOrder = {"network", "security", "system", "misc"})
+        name = "DeviceServiceCapabilities",
+        propOrder = {"network", "security", "system", "misc"})
 public class DeviceServiceCapabilities {
 
     @XmlElement(name = "Network", required = true)

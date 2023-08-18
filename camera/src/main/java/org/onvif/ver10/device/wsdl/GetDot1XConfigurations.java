@@ -16,4 +16,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "GetDot1XConfigurations")
-public class GetDot1XConfigurations {}
+public class GetDot1XConfigurations {
+}

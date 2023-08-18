@@ -1,17 +1,5 @@
 package org.homio.addon.z2m.util;
 
-import static org.homio.addon.z2m.util.ApplianceModel.BINARY_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.COMPOSITE_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.ENUM_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.SWITCH_TYPE;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +22,15 @@ import org.homio.api.util.Lang;
 import org.homio.hquery.ProgressBar;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.homio.addon.z2m.util.ApplianceModel.*;
+
 @Log4j2
 public final class ZigBeeUtil {
 
@@ -43,10 +40,10 @@ public final class ZigBeeUtil {
 
     public static void zigbeeScanStarted(
             @NotNull EntityContext entityContext,
-        @NotNull String entityID,
-        int duration,
-        @NotNull Runnable onDurationTimedOutHandler,
-        @NotNull Runnable stopScanHandler) {
+            @NotNull String entityID,
+            int duration,
+            @NotNull Runnable onDurationTimedOutHandler,
+            @NotNull Runnable stopScanHandler) {
         entityContext.ui().headerButtonBuilder("zigbee-scan-" + entityID)
                 .title("CONTEXT.ACTION.ZIGBEE_STOP_SCAN").border(1, "#899343").clickAction(() -> {
                     stopScanHandler.run();
@@ -88,13 +85,13 @@ public final class ZigBeeUtil {
                 case COMPOSITE_TYPE:
                     if (endpoint instanceof Z2MDeviceEndpointColor) {
                         uiInputBuilder
-                            .addColorPicker(entityID, ((Z2MDeviceEndpointColor) endpoint).getStateColor(),
-                                (entityContext, params) -> {
-                                    endpoint.fireAction(params.getString("value"));
-                                    return null;
-                                })
-                            .setColorType(ColorType.ColorSlider)
-                            .setDisabled(!endpoint.getDevice().getStatus().isOnline());
+                                .addColorPicker(entityID, ((Z2MDeviceEndpointColor) endpoint).getStateColor(),
+                                        (entityContext, params) -> {
+                                            endpoint.fireAction(params.getString("value"));
+                                            return null;
+                                        })
+                                .setColorType(ColorType.ColorSlider)
+                                .setDisabled(!endpoint.getDevice().getStatus().isOnline());
                         return uiInputBuilder;
                     }
                 default:
@@ -118,16 +115,16 @@ public final class ZigBeeUtil {
 
     @SneakyThrows
     public static void installOrUpdateZ2M(
-        @NotNull EntityContext entityContext,
-        @NotNull String version,
-        @NotNull ProjectUpdate projectUpdate) {
+            @NotNull EntityContext entityContext,
+            @NotNull String version,
+            @NotNull ProjectUpdate projectUpdate) {
         ProgressBar progressBar = projectUpdate.getProgressBar();
 
         try {
             projectUpdate.getProject().deleteProject();
         } catch (Exception ex) {
             entityContext.ui().sendErrorMessage(
-                Lang.getServerMessage("ZIGBEE.ERROR.DELETE", projectUpdate.getProject().getLocalProjectPath().toString()));
+                    Lang.getServerMessage("ZIGBEE.ERROR.DELETE", projectUpdate.getProject().getLocalProjectPath().toString()));
             throw ex;
         }
 
@@ -213,20 +210,20 @@ public final class ZigBeeUtil {
             @NotNull UIInputBuilder uiInputBuilder) {
         if (!endpoint.getExpose().isReadable() && endpoint.getExpose().getValues().size() == 1) {
             uiInputBuilder.addButton(endpoint.getEntityID(), new Icon("fas fa-play", "#eb0000"),
-                (entityContext, params) -> {
-                    endpoint.fireAction(endpoint.getExpose().getValues().iterator().next());
-                    return null;
-                }).setText("").setDisabled(!endpoint.getDevice().getStatus().isOnline());
+                    (entityContext, params) -> {
+                        endpoint.fireAction(endpoint.getExpose().getValues().iterator().next());
+                        return null;
+                    }).setText("").setDisabled(!endpoint.getDevice().getStatus().isOnline());
         } else {
             uiInputBuilder
-                .addSelectBox(endpoint.getEntityID(), (entityContext, params) -> {
-                    endpoint.fireAction(params.getString("value"));
-                    return null;
-                })
-                .addOptions(OptionModel.list(endpoint.getExpose().getValues()))
-                .setPlaceholder("-----------")
-                .setSelected(endpoint.getValue().toString())
-                .setDisabled(!endpoint.getDevice().getStatus().isOnline());
+                    .addSelectBox(endpoint.getEntityID(), (entityContext, params) -> {
+                        endpoint.fireAction(params.getString("value"));
+                        return null;
+                    })
+                    .addOptions(OptionModel.list(endpoint.getExpose().getValues()))
+                    .setPlaceholder("-----------")
+                    .setSelected(endpoint.getValue().toString())
+                    .setDisabled(!endpoint.getDevice().getStatus().isOnline());
         }
         return uiInputBuilder;
     }
@@ -239,13 +236,13 @@ public final class ZigBeeUtil {
         Objects.requireNonNull(endpoint.getExpose().getValueMax());
 
         builder.addSlider(entityID,
-                   endpoint.getValue().floatValue(0),
-                   endpoint.getExpose().getValueMin().floatValue(),
-                   endpoint.getExpose().getValueMax().floatValue(),
-                   (entityContext, params) -> {
-                       endpoint.fireAction(params.getInt("value"));
-                       return null;
-                   })
-               .setDisabled(!endpoint.getDevice().getStatus().isOnline());
+                        endpoint.getValue().floatValue(0),
+                        endpoint.getExpose().getValueMin().floatValue(),
+                        endpoint.getExpose().getValueMax().floatValue(),
+                        (entityContext, params) -> {
+                            endpoint.fireAction(params.getInt("value"));
+                            return null;
+                        })
+                .setDisabled(!endpoint.getDevice().getStatus().isOnline());
     }
 }

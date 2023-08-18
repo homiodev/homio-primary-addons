@@ -8,15 +8,12 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import java.util.ArrayList;
-import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -39,8 +36,8 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"iPv4Address", "iPv6Address"})
+        name = "",
+        propOrder = {"iPv4Address", "iPv6Address"})
 @XmlRootElement(name = "SetNetworkDefaultGateway")
 public class SetNetworkDefaultGateway {
 

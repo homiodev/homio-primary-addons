@@ -1,13 +1,10 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+import org.w3c.dom.Element;
+
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import org.w3c.dom.Element;
 
 /**
  * Java-Klasse f�r ImagingOptions20Extension complex type.
@@ -31,8 +28,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "ImagingOptions20Extension",
-    propOrder = {"any", "imageStabilization", "extension"})
+        name = "ImagingOptions20Extension",
+        propOrder = {"any", "imageStabilization", "extension"})
 public class ImagingOptions20Extension {
 
     @XmlAnyElement(lax = true)

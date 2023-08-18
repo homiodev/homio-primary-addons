@@ -3,13 +3,14 @@ package org.oasis_open.docs.wsrf.bf_2;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
+
 import javax.xml.namespace.QName;
 
 @XmlRegistry
 public class ObjectFactory {
 
     private static final QName _BaseFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsrf/bf-2", "BaseFault");
+            new QName("http://docs.oasis-open.org/wsrf/bf-2", "BaseFault");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.oasis_open.docs.wsrf.bf_2

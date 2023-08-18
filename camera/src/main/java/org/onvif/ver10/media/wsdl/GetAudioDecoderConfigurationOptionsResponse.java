@@ -1,10 +1,6 @@
 package org.onvif.ver10.media.wsdl;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.onvif.ver10.schema.AudioDecoderConfigurationOptions;
@@ -13,8 +9,8 @@ import org.onvif.ver10.schema.AudioDecoderConfigurationOptions;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"options"})
+        name = "",
+        propOrder = {"options"})
 @XmlRootElement(name = "GetAudioDecoderConfigurationOptionsResponse")
 public class GetAudioDecoderConfigurationOptionsResponse {
 

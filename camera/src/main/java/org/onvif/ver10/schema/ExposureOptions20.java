@@ -1,11 +1,12 @@
 package org.onvif.ver10.schema;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Java-Klasse f�r ExposureOptions20 complex type.
@@ -37,20 +38,20 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "ExposureOptions20",
-    propOrder = {
-        "mode",
-        "priority",
-        "minExposureTime",
-        "maxExposureTime",
-        "minGain",
-        "maxGain",
-        "minIris",
-        "maxIris",
-        "exposureTime",
-        "gain",
-        "iris"
-    })
+        name = "ExposureOptions20",
+        propOrder = {
+                "mode",
+                "priority",
+                "minExposureTime",
+                "maxExposureTime",
+                "minGain",
+                "maxGain",
+                "minIris",
+                "maxIris",
+                "exposureTime",
+                "gain",
+                "iris"
+        })
 public class ExposureOptions20 {
 
     @XmlElement(name = "Mode", required = true)

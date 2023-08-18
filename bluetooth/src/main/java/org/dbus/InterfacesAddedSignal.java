@@ -1,14 +1,10 @@
 package org.dbus;
 
-import java.util.Map;
 import lombok.Getter;
-import org.freedesktop.dbus.DBusInterface;
-import org.freedesktop.dbus.DBusInterfaceName;
-import org.freedesktop.dbus.DBusMemberName;
-import org.freedesktop.dbus.DBusSignal;
-import org.freedesktop.dbus.Path;
-import org.freedesktop.dbus.Variant;
+import org.freedesktop.dbus.*;
 import org.freedesktop.dbus.exceptions.DBusException;
+
+import java.util.Map;
 
 @DBusInterfaceName("org.freedesktop.DBus.ObjectManager")
 public interface InterfacesAddedSignal extends DBusInterface {

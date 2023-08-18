@@ -3,6 +3,7 @@ package org.onvif.ver20.ptz.wsdl;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -16,7 +17,7 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     private static final QName _Capabilities_QNAME =
-        new QName("http://www.onvif.org/ver20/ptz/wsdl", "Capabilities");
+            new QName("http://www.onvif.org/ver20/ptz/wsdl", "Capabilities");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.onvif.ver20.ptz.wsdl

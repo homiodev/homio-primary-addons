@@ -27,8 +27,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "NetworkInterfaceConnectionSetting",
-    propOrder = {"autoNegotiation", "speed", "duplex"})
+        name = "NetworkInterfaceConnectionSetting",
+        propOrder = {"autoNegotiation", "speed", "duplex"})
 public class NetworkInterfaceConnectionSetting {
 
     @XmlElement(name = "AutoNegotiation")

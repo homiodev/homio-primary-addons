@@ -1,11 +1,11 @@
 package org.homio.addon.z2m;
 
-import static org.homio.addon.z2m.Z2MEntrypoint.Z2M_RESOURCE;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.homio.api.EntityContext;
 import org.homio.api.console.ConsolePluginFrame;
+
+import static org.homio.addon.z2m.Z2MEntrypoint.Z2M_RESOURCE;
 
 @Getter
 @RequiredArgsConstructor

@@ -8,11 +8,7 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -34,8 +30,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"enabled"})
+        name = "",
+        propOrder = {"enabled"})
 @XmlRootElement(name = "SetClientCertificateMode")
 public class SetClientCertificateMode {
 

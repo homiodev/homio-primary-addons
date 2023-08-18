@@ -1,10 +1,5 @@
 package org.homio.addon.z2m.service.endpoints.inline;
 
-import static org.homio.api.model.Status.ERROR;
-import static org.homio.api.model.Status.OFFLINE;
-import static org.homio.api.model.Status.ONLINE;
-import static org.homio.api.model.Status.UNKNOWN;
-
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
@@ -13,6 +8,8 @@ import org.homio.api.model.Status;
 import org.homio.api.state.StringType;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.ui.field.action.v1.item.UIInfoItemBuilder.InfoType;
+
+import static org.homio.api.model.Status.*;
 
 /**
  * Extra endpoint for every device to store device status
@@ -27,7 +24,7 @@ public class Z2MDeviceStatusDeviceEndpoint extends Z2MDeviceEndpointInline {
         init(deviceService, options);
 
         entityContext.event().addEventListener("zigbee-%s".formatted(deviceService.getIeeeAddress()),
-            "z2m-endpoint", value -> setValue(new StringType(value.toString()), true));
+                "z2m-endpoint", value -> setValue(new StringType(value.toString()), true));
     }
 
     @Override

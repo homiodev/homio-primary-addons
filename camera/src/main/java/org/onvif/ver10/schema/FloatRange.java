@@ -28,8 +28,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "FloatRange",
-    propOrder = {"min", "max"})
+        name = "FloatRange",
+        propOrder = {"min", "max"})
 public class FloatRange {
 
     @XmlElement(name = "Min")

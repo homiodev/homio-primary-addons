@@ -1,20 +1,5 @@
 package org.homio.addon.z2m.service;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
-import static org.homio.addon.z2m.util.ApplianceModel.BINARY_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.ENUM_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.SWITCH_TYPE;
-import static org.homio.api.util.CommonUtils.splitNameToReadableFormat;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -27,15 +12,24 @@ import org.homio.api.EntityContextVar.VariableMetaBuilder;
 import org.homio.api.EntityContextVar.VariableType;
 import org.homio.api.model.Icon;
 import org.homio.api.model.endpoint.BaseDeviceEndpoint;
-import org.homio.api.state.DecimalType;
-import org.homio.api.state.JsonType;
-import org.homio.api.state.OnOffType;
-import org.homio.api.state.State;
-import org.homio.api.state.StringType;
+import org.homio.api.state.*;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
+import static org.homio.addon.z2m.util.ApplianceModel.*;
+import static org.homio.api.util.CommonUtils.splitNameToReadableFormat;
 
 @Log4j2
 @Getter
@@ -56,15 +50,15 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
         this.dataReader = this.dataReader == null ? buildDataReader() : this.dataReader;
         setAlternateEndpoints(expose.getName(), expose.getEndpoint());
         init(
-            CONFIG_DEVICE_SERVICE,
-            expose.getProperty(),
-            deviceService.getDeviceEntity(),
-            deviceService.getEntityContext(),
-            expose.getUnit(),
-            expose.isReadable(),
-            expose.isWritable(),
-            expose.getName(),
-            calcEndpointType()
+                CONFIG_DEVICE_SERVICE,
+                expose.getProperty(),
+                deviceService.getDeviceEntity(),
+                deviceService.getEntityContext(),
+                expose.getUnit(),
+                expose.isReadable(),
+                expose.isWritable(),
+                expose.getName(),
+                calcEndpointType()
         );
     }
 
@@ -263,11 +257,11 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
                     return VariableType.Bool;
                 }
                 if (valueStr.equals("1")
-                    || valueStr.equals("0")
-                    || valueStr.equals("true")
-                    || valueStr.equals("false")
-                    || valueStr.equalsIgnoreCase("ON")
-                    || valueStr.equalsIgnoreCase("OFF")) {
+                        || valueStr.equals("0")
+                        || valueStr.equals("true")
+                        || valueStr.equals("false")
+                        || valueStr.equalsIgnoreCase("ON")
+                        || valueStr.equalsIgnoreCase("OFF")) {
                     return VariableType.Bool;
                 }
                 return VariableType.Any;

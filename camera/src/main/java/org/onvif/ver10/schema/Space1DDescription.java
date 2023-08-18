@@ -1,10 +1,6 @@
 package org.onvif.ver10.schema;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 
 /**
  * Java-Klasse f�r Space1DDescription complex type.
@@ -27,8 +23,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Space1DDescription",
-    propOrder = {"uri", "xRange"})
+        name = "Space1DDescription",
+        propOrder = {"uri", "xRange"})
 public class Space1DDescription {
 
     @XmlElement(name = "URI", required = true)

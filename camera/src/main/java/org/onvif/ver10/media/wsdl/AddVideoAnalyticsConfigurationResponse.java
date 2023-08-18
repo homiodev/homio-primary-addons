@@ -8,4 +8,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "AddVideoAnalyticsConfigurationResponse")
-public class AddVideoAnalyticsConfigurationResponse {}
+public class AddVideoAnalyticsConfigurationResponse {
+}

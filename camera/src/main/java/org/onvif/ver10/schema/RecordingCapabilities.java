@@ -1,18 +1,13 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+import org.w3c.dom.Element;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
-import org.w3c.dom.Element;
 
 /**
  * Java-Klasse f�r RecordingCapabilities complex type.
@@ -41,16 +36,16 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "RecordingCapabilities",
-    propOrder = {
-        "xAddr",
-        "receiverSource",
-        "mediaProfileSource",
-        "dynamicRecordings",
-        "dynamicTracks",
-        "maxStringLength",
-        "any"
-    })
+        name = "RecordingCapabilities",
+        propOrder = {
+                "xAddr",
+                "receiverSource",
+                "mediaProfileSource",
+                "dynamicRecordings",
+                "dynamicTracks",
+                "maxStringLength",
+                "any"
+        })
 public class RecordingCapabilities {
 
     @XmlElement(name = "XAddr", required = true)
@@ -75,7 +70,8 @@ public class RecordingCapabilities {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der xAddr-Eigenschaft ab.

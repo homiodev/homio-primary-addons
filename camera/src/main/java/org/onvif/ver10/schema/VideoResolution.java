@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "VideoResolution",
-    propOrder = {"width", "height"})
+        name = "VideoResolution",
+        propOrder = {"width", "height"})
 public class VideoResolution {
 
     @XmlElement(name = "Width")

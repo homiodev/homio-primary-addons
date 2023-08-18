@@ -1,8 +1,8 @@
 package org.homio.addon.z2m.service.endpoints;
 
 import lombok.val;
-import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
+import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceEndpointActionEvent;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
@@ -12,7 +12,7 @@ import org.json.JSONObject;
 public class Z2MDeviceEndpointAction extends Z2MDeviceEndpoint {
 
     public Z2MDeviceEndpointAction() {
-        super(new Icon( "fa fa-fw fa-circle-play", "#9636d6"));
+        super(new Icon("fa fa-fw fa-circle-play", "#9636d6"));
     }
 
     public static Z2MDeviceEndpointActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {

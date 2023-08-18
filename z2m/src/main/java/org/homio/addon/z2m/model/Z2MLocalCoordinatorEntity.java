@@ -1,20 +1,7 @@
 package org.homio.addon.z2m.model;
 
-import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
-import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -40,12 +27,7 @@ import org.homio.api.model.OptionModel;
 import org.homio.api.model.endpoint.DeviceEndpoint;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
-import org.homio.api.ui.field.UIField;
-import org.homio.api.ui.field.UIFieldGroup;
-import org.homio.api.ui.field.UIFieldIgnore;
-import org.homio.api.ui.field.UIFieldLinkToEntity;
-import org.homio.api.ui.field.UIFieldSlider;
-import org.homio.api.ui.field.UIFieldType;
+import org.homio.api.ui.field.*;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.ui.field.color.UIFieldColorRef;
 import org.homio.api.ui.field.inline.UIFieldInlineEntities;
@@ -56,24 +38,33 @@ import org.homio.api.util.DataSourceUtil.DataSourceContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
+import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
+
 @SuppressWarnings({"unused", "rawtypes"})
 @Log4j2
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#11A4C2")
 public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
-    implements HasFirmwareVersion, HasEntitySourceLog, ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
+        implements HasFirmwareVersion, HasEntitySourceLog, ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
 
     @UIField(order = 9999, disableEdit = true, hideInEdit = true)
     @UIFieldInlineEntities(bg = "#27FF000D")
     public List<ZigBeeCoordinatorDeviceEntity> getCoordinatorDevices() {
         return optService()
-            .map(service ->
-                service.getDeviceHandlers().values()
-                       .stream()
-                       .sorted()
-                       .map(ZigBeeCoordinatorDeviceEntity::new)
-                       .collect(Collectors.toList()))
-            .orElse(Collections.emptyList());
+                .map(service ->
+                        service.getDeviceHandlers().values()
+                                .stream()
+                                .sorted()
+                                .map(ZigBeeCoordinatorDeviceEntity::new)
+                                .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
     }
 
     @UIField(order = 20, required = true, inlineEditWhenEmpty = true)
@@ -85,17 +76,18 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
             if (source.getSource() instanceof BaseEntity entity) {
                 return entity.getEntityID() + "~~~" + entity.getTitle();
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         return getJsonData().has("mqtt") ? "[Not found] " + getJsonData("mqtt") : null;
+    }
+
+    public void setMqttEntity(String value) {
+        setJsonData("mqtt", value);
     }
 
     @JsonIgnore
     public @Nullable MQTTEntityService getMqttEntityService() {
         return DataSourceUtil.getSource(getEntityContext(), getJsonData("mqtt")).getSource(MQTTEntityService.class, null);
-    }
-
-    public void setMqttEntity(String value) {
-        setJsonData("mqtt", value);
     }
 
     @JsonIgnore
@@ -144,7 +136,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     public void setBasicTopic(String value) {
         if (value.length() < 3 || value.length() > 100) {
             throw new IllegalArgumentException(
-                "BasicTopic size must be between 3..100. Actual size: " + value.length());
+                    "BasicTopic size must be between 3..100. Actual size: " + value.length());
         }
         setJsonData("bt", value);
     }
@@ -153,6 +145,10 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     @UIFieldGroup("GENERAL")
     public boolean isEnableWatchdog() {
         return getJsonData("wd", false);
+    }
+
+    public void setEnableWatchdog(boolean value) {
+        setJsonData("wd", value);
     }
 
     @UIField(order = 60, hideInEdit = true, hideOnEmpty = true)
@@ -196,10 +192,6 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
         setJsonData("he", value);
     }
 
-    public void setEnableWatchdog(boolean value) {
-        setJsonData("wd", value);
-    }
-
     @UIContextMenuAction(value = "ZIGBEE_START_SCAN",
             icon = "fas fa-search-location",
             iconColor = "#899343")
@@ -208,19 +200,19 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     }
 
     @UIContextMenuAction(value = "RESTART",
-                         icon = "fas fa-power-off",
-                         confirmMessage = "W.CONFIRM.ZIGBEE_RESTART",
-                         confirmMessageDialogColor = "#4E481E",
-                         iconColor = Color.RED)
+            icon = "fas fa-power-off",
+            confirmMessage = "W.CONFIRM.ZIGBEE_RESTART",
+            confirmMessageDialogColor = "#4E481E",
+            iconColor = Color.RED)
     public ActionResponseModel restart() {
         return getService().restartZ2M();
     }
 
     @UIContextMenuAction(value = "REINSTALL",
-                         icon = "fas fa-trash-can-arrow-up",
-                         confirmMessage = "W.CONFIRM.Z2M_REINSTALL",
-                         confirmMessageDialogColor = ERROR_DIALOG,
-                         iconColor = Color.RED)
+            icon = "fas fa-trash-can-arrow-up",
+            confirmMessage = "W.CONFIRM.Z2M_REINSTALL",
+            confirmMessageDialogColor = ERROR_DIALOG,
+            iconColor = Color.RED)
     public ActionResponseModel reinstall() {
         return getService().reinstallZ2M();
     }
@@ -265,7 +257,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     @Override
     public @NotNull Collection<ZigBeeDeviceBaseEntity> getZigBeeDevices() {
         return getService().getDeviceHandlers().values().stream()
-                           .map(Z2MDeviceService::getDeviceEntity).collect(Collectors.toList());
+                .map(Z2MDeviceService::getDeviceEntity).collect(Collectors.toList());
     }
 
     @Override
@@ -314,7 +306,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
                 name = deviceHandler.getDeviceEntity().getDescription();
             }
             this.ieeeAddress = deviceHandler.getDeviceEntity().getEntityID() + "~~~" +
-                ieeeAddress.toUpperCase().substring(2); // cut 0X
+                    ieeeAddress.toUpperCase().substring(2); // cut 0X
             endpointsCount = applianceModel.getDefinition().getExposes().size();
         }
     }

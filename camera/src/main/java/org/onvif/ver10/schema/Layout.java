@@ -1,15 +1,12 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * A layout describes a set of Video windows that are displayed simultaniously on a display.
@@ -35,8 +32,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Layout",
-    propOrder = {"paneLayout", "extension"})
+        name = "Layout",
+        propOrder = {"paneLayout", "extension"})
 public class Layout {
 
     @XmlElement(name = "PaneLayout", required = true)
@@ -45,7 +42,8 @@ public class Layout {
     @XmlElement(name = "Extension")
     protected LayoutExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the paneLayout property.

@@ -27,8 +27,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Time",
-    propOrder = {"hour", "minute", "second"})
+        name = "Time",
+        propOrder = {"hour", "minute", "second"})
 public class Time {
 
     @XmlElement(name = "Hour")

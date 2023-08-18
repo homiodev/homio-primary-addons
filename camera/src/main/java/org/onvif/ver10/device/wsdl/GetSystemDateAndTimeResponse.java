@@ -8,11 +8,7 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import org.onvif.ver10.schema.SystemDateTime;
 
 /**
@@ -35,8 +31,8 @@ import org.onvif.ver10.schema.SystemDateTime;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"systemDateAndTime"})
+        name = "",
+        propOrder = {"systemDateAndTime"})
 @XmlRootElement(name = "GetSystemDateAndTimeResponse")
 public class GetSystemDateAndTimeResponse {
 

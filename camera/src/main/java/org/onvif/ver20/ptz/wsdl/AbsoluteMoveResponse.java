@@ -25,4 +25,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "AbsoluteMoveResponse")
-public class AbsoluteMoveResponse {}
+public class AbsoluteMoveResponse {
+}

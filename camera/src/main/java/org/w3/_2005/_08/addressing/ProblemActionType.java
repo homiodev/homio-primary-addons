@@ -8,15 +8,11 @@
 
 package org.w3._2005._08.addressing;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
-import javax.xml.namespace.QName;
 
 /**
  * Java-Klasse f�r ProblemActionType complex type.
@@ -40,8 +36,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "ProblemActionType",
-    propOrder = {"action", "soapAction"})
+        name = "ProblemActionType",
+        propOrder = {"action", "soapAction"})
 public class ProblemActionType {
 
     @XmlElement(name = "Action")
@@ -51,7 +47,8 @@ public class ProblemActionType {
     @XmlSchemaType(name = "anyURI")
     protected String soapAction;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der action-Eigenschaft ab.

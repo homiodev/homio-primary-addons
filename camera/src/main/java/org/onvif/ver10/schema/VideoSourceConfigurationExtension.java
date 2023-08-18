@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "VideoSourceConfigurationExtension",
-    propOrder = {"rotate", "extension"})
+        name = "VideoSourceConfigurationExtension",
+        propOrder = {"rotate", "extension"})
 public class VideoSourceConfigurationExtension {
 
     @XmlElement(name = "Rotate")

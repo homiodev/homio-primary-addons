@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "SystemLog",
-    propOrder = {"binary", "string"})
+        name = "SystemLog",
+        propOrder = {"binary", "string"})
 public class SystemLog {
 
     @XmlElement(name = "Binary")

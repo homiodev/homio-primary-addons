@@ -11,6 +11,7 @@ package org.oasis_open.docs.wsn.t_1;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -24,9 +25,9 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     private static final QName _TopicSet_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet");
+            new QName("http://docs.oasis-open.org/wsn/t-1", "TopicSet");
     private static final QName _TopicNamespace_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/t-1", "TopicNamespace");
+            new QName("http://docs.oasis-open.org/wsn/t-1", "TopicNamespace");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.oasis_open.docs.wsn.t_1
@@ -90,6 +91,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/t-1", name = "TopicNamespace")
     public JAXBElement<TopicNamespaceType> createTopicNamespace(TopicNamespaceType value) {
         return new JAXBElement<TopicNamespaceType>(
-            _TopicNamespace_QNAME, TopicNamespaceType.class, null, value);
+                _TopicNamespace_QNAME, TopicNamespaceType.class, null, value);
     }
 }

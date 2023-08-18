@@ -8,11 +8,7 @@
 
 package org.onvif.ver10.media.wsdl;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import org.onvif.ver10.schema.VideoAnalyticsConfiguration;
 
 /**
@@ -35,8 +31,8 @@ import org.onvif.ver10.schema.VideoAnalyticsConfiguration;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"configuration"})
+        name = "",
+        propOrder = {"configuration"})
 @XmlRootElement(name = "GetVideoAnalyticsConfigurationResponse")
 public class GetVideoAnalyticsConfigurationResponse {
 

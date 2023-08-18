@@ -25,4 +25,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "SetHomePositionResponse")
-public class SetHomePositionResponse {}
+public class SetHomePositionResponse {
+}

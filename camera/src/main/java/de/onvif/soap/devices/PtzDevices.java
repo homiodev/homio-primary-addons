@@ -2,45 +2,13 @@ package de.onvif.soap.devices;
 
 import de.onvif.soap.OnvifDeviceState;
 import de.onvif.soap.SOAP;
-import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.onvif.ver10.schema.FloatRange;
-import org.onvif.ver10.schema.PTZConfiguration;
-import org.onvif.ver10.schema.PTZNode;
-import org.onvif.ver10.schema.PTZPreset;
-import org.onvif.ver10.schema.PTZSpaces;
-import org.onvif.ver10.schema.PTZSpeed;
-import org.onvif.ver10.schema.PTZStatus;
-import org.onvif.ver10.schema.PTZVector;
-import org.onvif.ver10.schema.Profile;
-import org.onvif.ver10.schema.Vector1D;
-import org.onvif.ver10.schema.Vector2D;
-import org.onvif.ver20.ptz.wsdl.AbsoluteMove;
-import org.onvif.ver20.ptz.wsdl.AbsoluteMoveResponse;
-import org.onvif.ver20.ptz.wsdl.ContinuousMove;
-import org.onvif.ver20.ptz.wsdl.ContinuousMoveResponse;
-import org.onvif.ver20.ptz.wsdl.GetNode;
-import org.onvif.ver20.ptz.wsdl.GetNodeResponse;
-import org.onvif.ver20.ptz.wsdl.GetNodes;
-import org.onvif.ver20.ptz.wsdl.GetNodesResponse;
-import org.onvif.ver20.ptz.wsdl.GetPresets;
-import org.onvif.ver20.ptz.wsdl.GetPresetsResponse;
-import org.onvif.ver20.ptz.wsdl.GetStatus;
-import org.onvif.ver20.ptz.wsdl.GetStatusResponse;
-import org.onvif.ver20.ptz.wsdl.GotoPreset;
-import org.onvif.ver20.ptz.wsdl.GotoPresetResponse;
-import org.onvif.ver20.ptz.wsdl.RelativeMove;
-import org.onvif.ver20.ptz.wsdl.RelativeMoveResponse;
-import org.onvif.ver20.ptz.wsdl.RemovePreset;
-import org.onvif.ver20.ptz.wsdl.RemovePresetResponse;
-import org.onvif.ver20.ptz.wsdl.SetHomePosition;
-import org.onvif.ver20.ptz.wsdl.SetHomePositionResponse;
-import org.onvif.ver20.ptz.wsdl.SetPreset;
-import org.onvif.ver20.ptz.wsdl.SetPresetResponse;
-import org.onvif.ver20.ptz.wsdl.Stop;
-import org.onvif.ver20.ptz.wsdl.StopResponse;
+import org.onvif.ver10.schema.*;
+import org.onvif.ver20.ptz.wsdl.*;
+
+import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
@@ -200,7 +168,7 @@ public class PtzDevices {
         request.setProfileToken(onvifDeviceState.getProfileToken());
 
         ContinuousMoveResponse response =
-            soap.createSOAPPtzRequest(request, ContinuousMoveResponse.class);
+                soap.createSOAPPtzRequest(request, ContinuousMoveResponse.class);
         return response != null;
     }
 
@@ -237,7 +205,7 @@ public class PtzDevices {
         request.setProfileToken(profileToken);
 
         SetHomePositionResponse response =
-            soap.createSOAPPtzRequest(request, SetHomePositionResponse.class);
+                soap.createSOAPPtzRequest(request, SetHomePositionResponse.class);
         return response != null;
     }
 
@@ -352,15 +320,15 @@ public class PtzDevices {
 
         currentPanCamValue = ptzStatus.getPosition().getPanTilt().getX();
         currentPanPercentage =
-            (((panRangeMin - currentPanCamValue) * -1) / ((panRangeMin - panRangeMax) * -1)) * 100;
+                (((panRangeMin - currentPanCamValue) * -1) / ((panRangeMin - panRangeMax) * -1)) * 100;
 
         currentTiltCamValue = ptzStatus.getPosition().getPanTilt().getY();
         currentTiltPercentage =
-            (((tiltRangeMin - currentTiltCamValue) * -1) / ((tiltRangeMin - tiltRangeMax) * -1)) * 100;
+                (((tiltRangeMin - currentTiltCamValue) * -1) / ((tiltRangeMin - tiltRangeMax) * -1)) * 100;
 
         currentZoomCamValue = ptzStatus.getPosition().getZoom().getX();
         currentZoomPercentage =
-            (((zoomMin - currentZoomCamValue) * -1) / ((zoomMin - zoomMax) * -1)) * 100;
+                (((zoomMin - currentZoomCamValue) * -1) / ((zoomMin - zoomMax) * -1)) * 100;
     }
 
     public void gotoPreset(int index) {
@@ -400,11 +368,11 @@ public class PtzDevices {
         PTZNode node = getNode(profileToken);
         if (node != null) {
             FloatRange xRange =
-                node.getSupportedPTZSpaces().getAbsolutePanTiltPositionSpace().get(0).getXRange();
+                    node.getSupportedPTZSpaces().getAbsolutePanTiltPositionSpace().get(0).getXRange();
             FloatRange yRange =
-                node.getSupportedPTZSpaces().getAbsolutePanTiltPositionSpace().get(0).getYRange();
+                    node.getSupportedPTZSpaces().getAbsolutePanTiltPositionSpace().get(0).getYRange();
             FloatRange zRange =
-                node.getSupportedPTZSpaces().getAbsoluteZoomPositionSpace().get(0).getXRange();
+                    node.getSupportedPTZSpaces().getAbsoluteZoomPositionSpace().get(0).getXRange();
 
             if (zoom < zRange.getMin() || zoom > zRange.getMax()) {
                 throw new IllegalArgumentException("Bad value for zoom: " + zoom);

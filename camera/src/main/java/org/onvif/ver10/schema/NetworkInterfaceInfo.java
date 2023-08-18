@@ -29,8 +29,8 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "NetworkInterfaceInfo",
-    propOrder = {"name", "hwAddress", "mtu"})
+        name = "NetworkInterfaceInfo",
+        propOrder = {"name", "hwAddress", "mtu"})
 public class NetworkInterfaceInfo {
 
     @XmlElement(name = "Name")

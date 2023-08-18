@@ -3,49 +3,50 @@ package org.onvif.ver20.media.wsdl;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
+
 import javax.xml.namespace.QName;
 
 @XmlRegistry
 public class ObjectFactory {
 
     private static final QName _GetVideoEncoderConfigurationOptions_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetVideoEncoderConfigurationOptions");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetVideoEncoderConfigurationOptions");
     private static final QName _Capabilities_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "Capabilities");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "Capabilities");
     private static final QName _StopMulticastStreaming_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "StopMulticastStreaming");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "StopMulticastStreaming");
     private static final QName _GetAnalyticsConfigurations_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetAnalyticsConfigurations");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetAnalyticsConfigurations");
     private static final QName _StartMulticastStreaming_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "StartMulticastStreaming");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "StartMulticastStreaming");
     private static final QName _GetVideoSourceConfigurations_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetVideoSourceConfigurations");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetVideoSourceConfigurations");
     private static final QName _GetAudioEncoderConfigurationOptions_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioEncoderConfigurationOptions");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioEncoderConfigurationOptions");
     private static final QName _GetVideoSourceConfigurationOptions_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetVideoSourceConfigurationOptions");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetVideoSourceConfigurationOptions");
     private static final QName _GetVideoEncoderConfigurations_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetVideoEncoderConfigurations");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetVideoEncoderConfigurations");
     private static final QName _GetMetadataConfigurationOptions_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetMetadataConfigurationOptions");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetMetadataConfigurationOptions");
     private static final QName _GetAudioOutputConfigurationOptions_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioOutputConfigurationOptions");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioOutputConfigurationOptions");
     private static final QName _ConfigurationEnumeration_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "ConfigurationEnumeration");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "ConfigurationEnumeration");
     private static final QName _GetAudioSourceConfigurationOptions_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioSourceConfigurationOptions");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioSourceConfigurationOptions");
     private static final QName _GetAudioOutputConfigurations_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioOutputConfigurations");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioOutputConfigurations");
     private static final QName _GetAudioDecoderConfigurationOptions_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioDecoderConfigurationOptions");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioDecoderConfigurationOptions");
     private static final QName _GetMetadataConfigurations_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetMetadataConfigurations");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetMetadataConfigurations");
     private static final QName _GetAudioSourceConfigurations_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioSourceConfigurations");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioSourceConfigurations");
     private static final QName _GetAudioDecoderConfigurations_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioDecoderConfigurations");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioDecoderConfigurations");
     private static final QName _GetAudioEncoderConfigurations_QNAME =
-        new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioEncoderConfigurations");
+            new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioEncoderConfigurations");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.onvif.ver20.media.wsdl
@@ -511,12 +512,12 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetVideoEncoderConfigurationOptions")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetVideoEncoderConfigurationOptions")
     public JAXBElement<GetConfiguration> createGetVideoEncoderConfigurationOptions(
-        GetConfiguration value) {
+            GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetVideoEncoderConfigurationOptions_QNAME, GetConfiguration.class, null, value);
+                _GetVideoEncoderConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
@@ -531,195 +532,195 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link StartStopMulticastStreaming }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "StopMulticastStreaming")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "StopMulticastStreaming")
     public JAXBElement<StartStopMulticastStreaming> createStopMulticastStreaming(
-        StartStopMulticastStreaming value) {
+            StartStopMulticastStreaming value) {
         return new JAXBElement<StartStopMulticastStreaming>(
-            _StopMulticastStreaming_QNAME, StartStopMulticastStreaming.class, null, value);
+                _StopMulticastStreaming_QNAME, StartStopMulticastStreaming.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetAnalyticsConfigurations")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetAnalyticsConfigurations")
     public JAXBElement<GetConfiguration> createGetAnalyticsConfigurations(GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetAnalyticsConfigurations_QNAME, GetConfiguration.class, null, value);
+                _GetAnalyticsConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link StartStopMulticastStreaming }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "StartMulticastStreaming")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "StartMulticastStreaming")
     public JAXBElement<StartStopMulticastStreaming> createStartMulticastStreaming(
-        StartStopMulticastStreaming value) {
+            StartStopMulticastStreaming value) {
         return new JAXBElement<StartStopMulticastStreaming>(
-            _StartMulticastStreaming_QNAME, StartStopMulticastStreaming.class, null, value);
+                _StartMulticastStreaming_QNAME, StartStopMulticastStreaming.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetVideoSourceConfigurations")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetVideoSourceConfigurations")
     public JAXBElement<GetConfiguration> createGetVideoSourceConfigurations(GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetVideoSourceConfigurations_QNAME, GetConfiguration.class, null, value);
+                _GetVideoSourceConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetAudioEncoderConfigurationOptions")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetAudioEncoderConfigurationOptions")
     public JAXBElement<GetConfiguration> createGetAudioEncoderConfigurationOptions(
-        GetConfiguration value) {
+            GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetAudioEncoderConfigurationOptions_QNAME, GetConfiguration.class, null, value);
+                _GetAudioEncoderConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetVideoSourceConfigurationOptions")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetVideoSourceConfigurationOptions")
     public JAXBElement<GetConfiguration> createGetVideoSourceConfigurationOptions(
-        GetConfiguration value) {
+            GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetVideoSourceConfigurationOptions_QNAME, GetConfiguration.class, null, value);
+                _GetVideoSourceConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetVideoEncoderConfigurations")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetVideoEncoderConfigurations")
     public JAXBElement<GetConfiguration> createGetVideoEncoderConfigurations(GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetVideoEncoderConfigurations_QNAME, GetConfiguration.class, null, value);
+                _GetVideoEncoderConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetMetadataConfigurationOptions")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetMetadataConfigurationOptions")
     public JAXBElement<GetConfiguration> createGetMetadataConfigurationOptions(
-        GetConfiguration value) {
+            GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetMetadataConfigurationOptions_QNAME, GetConfiguration.class, null, value);
+                _GetMetadataConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetAudioOutputConfigurationOptions")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetAudioOutputConfigurationOptions")
     public JAXBElement<GetConfiguration> createGetAudioOutputConfigurationOptions(
-        GetConfiguration value) {
+            GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetAudioOutputConfigurationOptions_QNAME, GetConfiguration.class, null, value);
+                _GetAudioOutputConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ConfigurationEnumeration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "ConfigurationEnumeration")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "ConfigurationEnumeration")
     public JAXBElement<ConfigurationEnumeration> createConfigurationEnumeration(
-        ConfigurationEnumeration value) {
+            ConfigurationEnumeration value) {
         return new JAXBElement<ConfigurationEnumeration>(
-            _ConfigurationEnumeration_QNAME, ConfigurationEnumeration.class, null, value);
+                _ConfigurationEnumeration_QNAME, ConfigurationEnumeration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetAudioSourceConfigurationOptions")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetAudioSourceConfigurationOptions")
     public JAXBElement<GetConfiguration> createGetAudioSourceConfigurationOptions(
-        GetConfiguration value) {
+            GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetAudioSourceConfigurationOptions_QNAME, GetConfiguration.class, null, value);
+                _GetAudioSourceConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetAudioOutputConfigurations")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetAudioOutputConfigurations")
     public JAXBElement<GetConfiguration> createGetAudioOutputConfigurations(GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetAudioOutputConfigurations_QNAME, GetConfiguration.class, null, value);
+                _GetAudioOutputConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetAudioDecoderConfigurationOptions")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetAudioDecoderConfigurationOptions")
     public JAXBElement<GetConfiguration> createGetAudioDecoderConfigurationOptions(
-        GetConfiguration value) {
+            GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetAudioDecoderConfigurationOptions_QNAME, GetConfiguration.class, null, value);
+                _GetAudioDecoderConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetMetadataConfigurations")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetMetadataConfigurations")
     public JAXBElement<GetConfiguration> createGetMetadataConfigurations(GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetMetadataConfigurations_QNAME, GetConfiguration.class, null, value);
+                _GetMetadataConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetAudioSourceConfigurations")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetAudioSourceConfigurations")
     public JAXBElement<GetConfiguration> createGetAudioSourceConfigurations(GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetAudioSourceConfigurations_QNAME, GetConfiguration.class, null, value);
+                _GetAudioSourceConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetAudioDecoderConfigurations")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetAudioDecoderConfigurations")
     public JAXBElement<GetConfiguration> createGetAudioDecoderConfigurations(GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetAudioDecoderConfigurations_QNAME, GetConfiguration.class, null, value);
+                _GetAudioDecoderConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver20/media/wsdl",
-        name = "GetAudioEncoderConfigurations")
+            namespace = "http://www.onvif.org/ver20/media/wsdl",
+            name = "GetAudioEncoderConfigurations")
     public JAXBElement<GetConfiguration> createGetAudioEncoderConfigurations(GetConfiguration value) {
         return new JAXBElement<GetConfiguration>(
-            _GetAudioEncoderConfigurations_QNAME, GetConfiguration.class, null, value);
+                _GetAudioEncoderConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 }

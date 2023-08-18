@@ -16,4 +16,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "SetDNSResponse")
-public class SetDNSResponse {}
+public class SetDNSResponse {
+}

@@ -25,8 +25,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "PanTiltLimits",
-    propOrder = {"range"})
+        name = "PanTiltLimits",
+        propOrder = {"range"})
 public class PanTiltLimits {
 
     @XmlElement(name = "Range", required = true)

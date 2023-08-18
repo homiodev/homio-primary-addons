@@ -1,16 +1,13 @@
 package org.onvif.ver10.schema;
 
-import java.util.HashMap;
-import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import javax.xml.datatype.Duration;
 import javax.xml.namespace.QName;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Java-Klasse f�r DynamicDNSInformation complex type.
@@ -36,8 +33,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "DynamicDNSInformation",
-    propOrder = {"type", "name", "ttl", "extension"})
+        name = "DynamicDNSInformation",
+        propOrder = {"type", "name", "ttl", "extension"})
 public class DynamicDNSInformation {
 
     @XmlElement(name = "Type", required = true)
@@ -53,7 +50,8 @@ public class DynamicDNSInformation {
     @XmlElement(name = "Extension")
     protected DynamicDNSInformationExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der type-Eigenschaft ab.

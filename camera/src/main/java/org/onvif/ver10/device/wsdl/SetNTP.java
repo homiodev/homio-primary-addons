@@ -8,14 +8,11 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import jakarta.xml.bind.annotation.*;
+import org.onvif.ver10.schema.NetworkHost;
+
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
-import org.onvif.ver10.schema.NetworkHost;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -38,8 +35,8 @@ import org.onvif.ver10.schema.NetworkHost;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"fromDHCP", "ntpManual"})
+        name = "",
+        propOrder = {"fromDHCP", "ntpManual"})
 @XmlRootElement(name = "SetNTP")
 public class SetNTP {
 

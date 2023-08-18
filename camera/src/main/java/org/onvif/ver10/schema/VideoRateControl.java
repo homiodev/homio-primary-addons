@@ -27,8 +27,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "VideoRateControl",
-    propOrder = {"frameRateLimit", "encodingInterval", "bitrateLimit"})
+        name = "VideoRateControl",
+        propOrder = {"frameRateLimit", "encodingInterval", "bitrateLimit"})
 public class VideoRateControl {
 
     @XmlElement(name = "FrameRateLimit")

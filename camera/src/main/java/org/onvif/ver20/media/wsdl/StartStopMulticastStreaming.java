@@ -25,8 +25,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "StartStopMulticastStreaming",
-    propOrder = {"profileToken"})
+        name = "StartStopMulticastStreaming",
+        propOrder = {"profileToken"})
 public class StartStopMulticastStreaming {
 
     @XmlElement(name = "ProfileToken", required = true)

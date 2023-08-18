@@ -11,6 +11,7 @@ package org.onvif.ver10.device.wsdl;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -24,7 +25,7 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     private static final QName _Capabilities_QNAME =
-        new QName("http://www.onvif.org/ver10/device/wsdl", "Capabilities");
+            new QName("http://www.onvif.org/ver10/device/wsdl", "Capabilities");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.onvif.ver10.device.wsdl
@@ -1241,8 +1242,8 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.onvif.org/ver10/device/wsdl", name = "Capabilities")
     public JAXBElement<DeviceServiceCapabilities> createCapabilities(
-        DeviceServiceCapabilities value) {
+            DeviceServiceCapabilities value) {
         return new JAXBElement<DeviceServiceCapabilities>(
-            _Capabilities_QNAME, DeviceServiceCapabilities.class, null, value);
+                _Capabilities_QNAME, DeviceServiceCapabilities.class, null, value);
     }
 }

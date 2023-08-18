@@ -33,4 +33,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "StopMulticastStreamingResponse")
-public class StopMulticastStreamingResponse {}
+public class StopMulticastStreamingResponse {
+}

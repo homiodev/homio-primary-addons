@@ -3,6 +3,7 @@ package org.onvif.ver10.schema;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -16,29 +17,29 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     private static final QName _VideoSourceConfiguration_QNAME =
-        new QName("http://www.onvif.org/ver10/schema", "VideoSourceConfiguration");
+            new QName("http://www.onvif.org/ver10/schema", "VideoSourceConfiguration");
     private static final QName _MetadataStream_QNAME =
-        new QName("http://www.onvif.org/ver10/schema", "MetadataStream");
+            new QName("http://www.onvif.org/ver10/schema", "MetadataStream");
     private static final QName _AudioEncoderConfiguration_QNAME =
-        new QName("http://www.onvif.org/ver10/schema", "AudioEncoderConfiguration");
+            new QName("http://www.onvif.org/ver10/schema", "AudioEncoderConfiguration");
     private static final QName _VideoEncoderConfiguration_QNAME =
-        new QName("http://www.onvif.org/ver10/schema", "VideoEncoderConfiguration");
+            new QName("http://www.onvif.org/ver10/schema", "VideoEncoderConfiguration");
     private static final QName _VideoAnalyticsConfiguration_QNAME =
-        new QName("http://www.onvif.org/ver10/schema", "VideoAnalyticsConfiguration");
+            new QName("http://www.onvif.org/ver10/schema", "VideoAnalyticsConfiguration");
     private static final QName _AudioOutputConfiguration_QNAME =
-        new QName("http://www.onvif.org/ver10/schema", "AudioOutputConfiguration");
+            new QName("http://www.onvif.org/ver10/schema", "AudioOutputConfiguration");
     private static final QName _Polygon_QNAME =
-        new QName("http://www.onvif.org/ver10/schema", "Polygon");
+            new QName("http://www.onvif.org/ver10/schema", "Polygon");
     private static final QName _Polyline_QNAME =
-        new QName("http://www.onvif.org/ver10/schema", "Polyline");
+            new QName("http://www.onvif.org/ver10/schema", "Polyline");
     private static final QName _AudioSourceConfiguration_QNAME =
-        new QName("http://www.onvif.org/ver10/schema", "AudioSourceConfiguration");
+            new QName("http://www.onvif.org/ver10/schema", "AudioSourceConfiguration");
     private static final QName _MetadataConfiguration_QNAME =
-        new QName("http://www.onvif.org/ver10/schema", "MetadataConfiguration");
+            new QName("http://www.onvif.org/ver10/schema", "MetadataConfiguration");
     private static final QName _PTZConfiguration_QNAME =
-        new QName("http://www.onvif.org/ver10/schema", "PTZConfiguration");
+            new QName("http://www.onvif.org/ver10/schema", "PTZConfiguration");
     private static final QName _AudioDecoderConfiguration_QNAME =
-        new QName("http://www.onvif.org/ver10/schema", "AudioDecoderConfiguration");
+            new QName("http://www.onvif.org/ver10/schema", "AudioDecoderConfiguration");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.onvif.ver10.schema
@@ -3372,12 +3373,12 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link VideoSourceConfiguration }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver10/schema",
-        name = "VideoSourceConfiguration")
+            namespace = "http://www.onvif.org/ver10/schema",
+            name = "VideoSourceConfiguration")
     public JAXBElement<VideoSourceConfiguration> createVideoSourceConfiguration(
-        VideoSourceConfiguration value) {
+            VideoSourceConfiguration value) {
         return new JAXBElement<VideoSourceConfiguration>(
-            _VideoSourceConfiguration_QNAME, VideoSourceConfiguration.class, null, value);
+                _VideoSourceConfiguration_QNAME, VideoSourceConfiguration.class, null, value);
     }
 
     /**
@@ -3386,55 +3387,55 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.onvif.org/ver10/schema", name = "MetadataStream")
     public JAXBElement<MetadataStream> createMetadataStream(MetadataStream value) {
         return new JAXBElement<MetadataStream>(
-            _MetadataStream_QNAME, MetadataStream.class, null, value);
+                _MetadataStream_QNAME, MetadataStream.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link AudioEncoderConfiguration }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver10/schema",
-        name = "AudioEncoderConfiguration")
+            namespace = "http://www.onvif.org/ver10/schema",
+            name = "AudioEncoderConfiguration")
     public JAXBElement<AudioEncoderConfiguration> createAudioEncoderConfiguration(
-        AudioEncoderConfiguration value) {
+            AudioEncoderConfiguration value) {
         return new JAXBElement<AudioEncoderConfiguration>(
-            _AudioEncoderConfiguration_QNAME, AudioEncoderConfiguration.class, null, value);
+                _AudioEncoderConfiguration_QNAME, AudioEncoderConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link VideoEncoderConfiguration }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver10/schema",
-        name = "VideoEncoderConfiguration")
+            namespace = "http://www.onvif.org/ver10/schema",
+            name = "VideoEncoderConfiguration")
     public JAXBElement<VideoEncoderConfiguration> createVideoEncoderConfiguration(
-        VideoEncoderConfiguration value) {
+            VideoEncoderConfiguration value) {
         return new JAXBElement<VideoEncoderConfiguration>(
-            _VideoEncoderConfiguration_QNAME, VideoEncoderConfiguration.class, null, value);
+                _VideoEncoderConfiguration_QNAME, VideoEncoderConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link VideoAnalyticsConfiguration }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver10/schema",
-        name = "VideoAnalyticsConfiguration")
+            namespace = "http://www.onvif.org/ver10/schema",
+            name = "VideoAnalyticsConfiguration")
     public JAXBElement<VideoAnalyticsConfiguration> createVideoAnalyticsConfiguration(
-        VideoAnalyticsConfiguration value) {
+            VideoAnalyticsConfiguration value) {
         return new JAXBElement<VideoAnalyticsConfiguration>(
-            _VideoAnalyticsConfiguration_QNAME, VideoAnalyticsConfiguration.class, null, value);
+                _VideoAnalyticsConfiguration_QNAME, VideoAnalyticsConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link AudioOutputConfiguration }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver10/schema",
-        name = "AudioOutputConfiguration")
+            namespace = "http://www.onvif.org/ver10/schema",
+            name = "AudioOutputConfiguration")
     public JAXBElement<AudioOutputConfiguration> createAudioOutputConfiguration(
-        AudioOutputConfiguration value) {
+            AudioOutputConfiguration value) {
         return new JAXBElement<AudioOutputConfiguration>(
-            _AudioOutputConfiguration_QNAME, AudioOutputConfiguration.class, null, value);
+                _AudioOutputConfiguration_QNAME, AudioOutputConfiguration.class, null, value);
     }
 
     /**
@@ -3457,12 +3458,12 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link AudioSourceConfiguration }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver10/schema",
-        name = "AudioSourceConfiguration")
+            namespace = "http://www.onvif.org/ver10/schema",
+            name = "AudioSourceConfiguration")
     public JAXBElement<AudioSourceConfiguration> createAudioSourceConfiguration(
-        AudioSourceConfiguration value) {
+            AudioSourceConfiguration value) {
         return new JAXBElement<AudioSourceConfiguration>(
-            _AudioSourceConfiguration_QNAME, AudioSourceConfiguration.class, null, value);
+                _AudioSourceConfiguration_QNAME, AudioSourceConfiguration.class, null, value);
     }
 
     /**
@@ -3470,9 +3471,9 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.onvif.org/ver10/schema", name = "MetadataConfiguration")
     public JAXBElement<MetadataConfiguration> createMetadataConfiguration(
-        MetadataConfiguration value) {
+            MetadataConfiguration value) {
         return new JAXBElement<MetadataConfiguration>(
-            _MetadataConfiguration_QNAME, MetadataConfiguration.class, null, value);
+                _MetadataConfiguration_QNAME, MetadataConfiguration.class, null, value);
     }
 
     /**
@@ -3481,18 +3482,18 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.onvif.org/ver10/schema", name = "PTZConfiguration")
     public JAXBElement<PTZConfiguration> createPTZConfiguration(PTZConfiguration value) {
         return new JAXBElement<PTZConfiguration>(
-            _PTZConfiguration_QNAME, PTZConfiguration.class, null, value);
+                _PTZConfiguration_QNAME, PTZConfiguration.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link AudioDecoderConfiguration }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://www.onvif.org/ver10/schema",
-        name = "AudioDecoderConfiguration")
+            namespace = "http://www.onvif.org/ver10/schema",
+            name = "AudioDecoderConfiguration")
     public JAXBElement<AudioDecoderConfiguration> createAudioDecoderConfiguration(
-        AudioDecoderConfiguration value) {
+            AudioDecoderConfiguration value) {
         return new JAXBElement<AudioDecoderConfiguration>(
-            _AudioDecoderConfiguration_QNAME, AudioDecoderConfiguration.class, null, value);
+                _AudioDecoderConfiguration_QNAME, AudioDecoderConfiguration.class, null, value);
     }
 }

@@ -1,12 +1,9 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlSeeAlso;
-import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * Java-Klasse f�r JpegOptions complex type.
@@ -30,8 +27,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "JpegOptions",
-    propOrder = {"resolutionsAvailable", "frameRateRange", "encodingIntervalRange"})
+        name = "JpegOptions",
+        propOrder = {"resolutionsAvailable", "frameRateRange", "encodingIntervalRange"})
 @XmlSeeAlso({JpegOptions2.class})
 public class JpegOptions {
 

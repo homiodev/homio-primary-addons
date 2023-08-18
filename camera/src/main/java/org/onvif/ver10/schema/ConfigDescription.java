@@ -1,21 +1,17 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "ConfigDescription",
-    propOrder = {"parameters", "messages", "extension"})
+        name = "ConfigDescription",
+        propOrder = {"parameters", "messages", "extension"})
 public class ConfigDescription {
 
     @XmlElement(name = "Parameters", required = true)
@@ -30,7 +26,8 @@ public class ConfigDescription {
     @XmlAttribute(name = "Name", required = true)
     protected QName name;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der parameters-Eigenschaft ab.
@@ -144,8 +141,8 @@ public class ConfigDescription {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(
-        name = "",
-        propOrder = {"parentTopic"})
+            name = "",
+            propOrder = {"parentTopic"})
     public static class Messages extends MessageDescription {
 
         @XmlElement(name = "ParentTopic", required = true)

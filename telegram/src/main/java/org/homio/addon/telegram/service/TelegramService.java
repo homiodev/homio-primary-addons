@@ -1,21 +1,10 @@
 package org.homio.addon.telegram.service;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.homio.addon.telegram.TelegramEntity;
-import org.homio.addon.telegram.commands.TelegramEventCommand;
-import org.homio.addon.telegram.commands.TelegramHelpCommand;
-import org.homio.addon.telegram.commands.TelegramRegisterUserCommand;
-import org.homio.addon.telegram.commands.TelegramStartCommand;
-import org.homio.addon.telegram.commands.TelegramUnregisterUserCommand;
+import org.homio.addon.telegram.commands.*;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Status;
 import org.homio.api.util.CommonUtils;
@@ -38,6 +27,14 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Log4j2
 @Component
@@ -78,17 +75,17 @@ public class TelegramService {
     }
 
     public void sendPhoto(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile,
-        String caption) {
+                          String caption) {
         getTelegramBot(telegramEntity).sendPhoto(checkUsers(users), inputFile, caption);
     }
 
     public void sendVideo(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile,
-        String caption) {
+                          String caption) {
         getTelegramBot(telegramEntity).sendVideo(checkUsers(users), inputFile, caption);
     }
 
     public Message sendMessage(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, String message,
-        String[] buttons) {
+                               String[] buttons) {
         return getTelegramBot(telegramEntity).sendMessage(checkUsers(users), message, buttons);
     }
 
@@ -128,7 +125,7 @@ public class TelegramService {
                 log.warn("Telegram bot not running. Requires settings.");
                 entityContext.ui().sendWarningMessage("Telegram bot not running. Requires settings.");
                 telegramEntity.setStatus(Status.ERROR, isEmpty(telegramEntity.getBotName()) ?
-                    "Require bot name field" : "Require bot token field");
+                        "Require bot name field" : "Require bot token field");
             }
         } catch (Exception ex) {
             String msg = "Unable to start telegram bot: " + CommonUtils.getErrorMessage(ex);
@@ -174,7 +171,7 @@ public class TelegramService {
             registerDefaultAction(((absSender, message) -> {
 
                 log.warn("Telegram User {} is trying to execute unknown command '{}'.", message.getFrom().getId(),
-                    message.getText());
+                        message.getText());
 
                 SendMessage text = new SendMessage();
                 text.setChatId(Long.toString(message.getChatId()));
@@ -255,12 +252,12 @@ public class TelegramService {
             if (update.getCallbackQuery() != null) {
                 Integer messageId = update.getCallbackQuery().getMessage().getMessageId();
                 TelegramAnswer telegramAnswer = new TelegramAnswer(messageId,
-                    update.getCallbackQuery().getData(),
-                    update.getCallbackQuery().getFrom().getId());
+                        update.getCallbackQuery().getData(),
+                        update.getCallbackQuery().getFrom().getId());
 
                 TelegramService.this.entityContext.event()
-                                                  .fireEvent(TELEGRAM_EVENT_PREFIX + messageId, telegramAnswer)
-                                                  .fireEvent(TELEGRAM_EVENT_PREFIX + messageId + "_" + telegramAnswer.getData(), telegramAnswer);
+                        .fireEvent(TELEGRAM_EVENT_PREFIX + messageId, telegramAnswer)
+                        .fireEvent(TELEGRAM_EVENT_PREFIX + messageId + "_" + telegramAnswer.getData(), telegramAnswer);
 
                 AnswerCallbackQuery query = new AnswerCallbackQuery(update.getCallbackQuery().getId());
                 query.setText("Done");
@@ -268,19 +265,19 @@ public class TelegramService {
 
                 // remove buttons
                 EditMessageReplyMarkup editReplyMarkup =
-                    new EditMessageReplyMarkup(Long.toString(update.getCallbackQuery().getFrom().getId()),
-                        update.getCallbackQuery().getMessage().getMessageId(), null,
-                        new InlineKeyboardMarkup(new ArrayList<>()));
+                        new EditMessageReplyMarkup(Long.toString(update.getCallbackQuery().getFrom().getId()),
+                                update.getCallbackQuery().getMessage().getMessageId(), null,
+                                new InlineKeyboardMarkup(new ArrayList<>()));
                 this.execute(editReplyMarkup);
             }
             log.debug("Income message {}", update.getMessage() != null ?
-                update.getMessage().getText() : update.getCallbackQuery().getData());
+                    update.getMessage().getText() : update.getCallbackQuery().getData());
         }
 
         public void registerEvent(String command, String description, String workspaceId, BroadcastLock lock) {
             TelegramEventCommand telegramEventCommand = eventCommandMap.computeIfAbsent(command, commandIdentifier -> {
                 TelegramEventCommand eventCommand = new TelegramEventCommand(commandIdentifier, description,
-                    this);
+                        this);
                 this.register(eventCommand);
                 return eventCommand;
             });

@@ -1,15 +1,12 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * Java-Klasse f�r VideoSourceConfigurationOptions complex type.
@@ -34,8 +31,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "VideoSourceConfigurationOptions",
-    propOrder = {"boundsRange", "videoSourceTokensAvailable", "extension"})
+        name = "VideoSourceConfigurationOptions",
+        propOrder = {"boundsRange", "videoSourceTokensAvailable", "extension"})
 public class VideoSourceConfigurationOptions {
 
     @XmlElement(name = "BoundsRange", required = true)
@@ -47,7 +44,8 @@ public class VideoSourceConfigurationOptions {
     @XmlElement(name = "Extension")
     protected VideoSourceConfigurationOptionsExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der boundsRange-Eigenschaft ab.

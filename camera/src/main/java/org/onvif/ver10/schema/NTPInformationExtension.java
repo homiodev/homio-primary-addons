@@ -1,12 +1,13 @@
 package org.onvif.ver10.schema;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.w3c.dom.Element;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Java-Klasse f�r NTPInformationExtension complex type.
@@ -28,8 +29,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "NTPInformationExtension",
-    propOrder = {"any"})
+        name = "NTPInformationExtension",
+        propOrder = {"any"})
 public class NTPInformationExtension {
 
     @XmlAnyElement(lax = true)

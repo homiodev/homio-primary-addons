@@ -16,4 +16,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "DeleteUsersResponse")
-public class DeleteUsersResponse {}
+public class DeleteUsersResponse {
+}

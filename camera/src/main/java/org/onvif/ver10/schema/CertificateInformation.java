@@ -1,33 +1,29 @@
 package org.onvif.ver10.schema;
 
-import java.util.HashMap;
-import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import javax.xml.namespace.QName;
+import java.util.HashMap;
+import java.util.Map;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "CertificateInformation",
-    propOrder = {
-        "certificateID",
-        "issuerDN",
-        "subjectDN",
-        "keyUsage",
-        "extendedKeyUsage",
-        "keyLength",
-        "version",
-        "serialNum",
-        "signatureAlgorithm",
-        "validity",
-        "extension"
-    })
+        name = "CertificateInformation",
+        propOrder = {
+                "certificateID",
+                "issuerDN",
+                "subjectDN",
+                "keyUsage",
+                "extendedKeyUsage",
+                "keyLength",
+                "version",
+                "serialNum",
+                "signatureAlgorithm",
+                "validity",
+                "extension"
+        })
 public class CertificateInformation {
 
     @XmlElement(name = "CertificateID", required = true)
@@ -65,7 +61,8 @@ public class CertificateInformation {
     @XmlElement(name = "Extension")
     protected CertificateInformationExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der certificateID-Eigenschaft ab.

@@ -1,14 +1,11 @@
 package org.onvif.ver10.schema;
 
-import java.util.HashMap;
-import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
+
 import javax.xml.datatype.Duration;
 import javax.xml.namespace.QName;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Java-Klasse f�r PTZPresetTourStartingCondition complex type.
@@ -34,8 +31,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "PTZPresetTourStartingCondition",
-    propOrder = {"recurringTime", "recurringDuration", "direction", "extension"})
+        name = "PTZPresetTourStartingCondition",
+        propOrder = {"recurringTime", "recurringDuration", "direction", "extension"})
 public class PTZPresetTourStartingCondition {
 
     @XmlElement(name = "RecurringTime")
@@ -50,7 +47,8 @@ public class PTZPresetTourStartingCondition {
     @XmlElement(name = "Extension")
     protected PTZPresetTourStartingConditionExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der recurringTime-Eigenschaft ab.

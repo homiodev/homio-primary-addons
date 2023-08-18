@@ -1,8 +1,8 @@
 package org.homio.addon.z2m.service.endpoints;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
+import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
@@ -37,9 +37,9 @@ public class Z2MDeviceEndpointFirmwareUpdate extends Z2MDeviceEndpoint {
             if ("updating".equals(status)) {
                 wasProgress = true;
                 String message = Lang.getServerMessage("ZIGBEE.UPDATING",
-                    FlowMap.of("NAME", getDeviceService().getDeviceEntity().getTitle(), "VALUE", node.get("remaining").asInt()));
+                        FlowMap.of("NAME", getDeviceService().getDeviceEntity().getTitle(), "VALUE", node.get("remaining").asInt()));
                 entityContext.ui().progress("upd-" + getDeviceService().getIeeeAddress(),
-                    node.get("progress").asDouble(), message, false);
+                        node.get("progress").asDouble(), message, false);
             } else if (wasProgress) {
                 entityContext.ui().progressDone("upd-" + getDeviceService().getIeeeAddress());
             }
@@ -73,18 +73,18 @@ public class Z2MDeviceEndpointFirmwareUpdate extends Z2MDeviceEndpoint {
             case "available" -> {
                 String updateTitle = node.get("installed_version").asText() + "=>" + node.get("latest_version").asText();
                 uiInputBuilder.addButton(getEntityID(), new Icon("fas fa-retweet", "#FF0000"),
-                                  (entityContext, params) -> sendRequest(Request.update))
-                              .setText(updateTitle)
-                              .setConfirmMessage("W.CONFIRM.ZIGBEE_UPDATE")
-                              .setConfirmMessageDialogColor(Color.ERROR_DIALOG)
-                              .setDisabled(!getDevice().getStatus().isOnline());
+                                (entityContext, params) -> sendRequest(Request.update))
+                        .setText(updateTitle)
+                        .setConfirmMessage("W.CONFIRM.ZIGBEE_UPDATE")
+                        .setConfirmMessageDialogColor(Color.ERROR_DIALOG)
+                        .setDisabled(!getDevice().getStatus().isOnline());
             }
             case "updating" -> uiInputBuilder.addInfo("UPDATING");
             case "idle" -> uiInputBuilder.addButton(getEntityID(), new Icon("fas fa-check-to-slot", "#72A7A1"),
-                                             (entityContext, params) -> sendRequest(Request.check))
-                                         .setText("ZIGBEE.CHECK_UPDATES")
-                                         .setConfirmMessage("W.CONFIRM.ZIGBEE_CHECK_UPDATES")
-                                         .setDisabled(!getDevice().getStatus().isOnline());
+                            (entityContext, params) -> sendRequest(Request.check))
+                    .setText("ZIGBEE.CHECK_UPDATES")
+                    .setConfirmMessage("W.CONFIRM.ZIGBEE_CHECK_UPDATES")
+                    .setDisabled(!getDevice().getStatus().isOnline());
             default -> uiInputBuilder.addInfo("-");
         }
     }
@@ -101,9 +101,9 @@ public class Z2MDeviceEndpointFirmwareUpdate extends Z2MDeviceEndpoint {
 
     private ActionResponseModel sendRequest(Request request) {
         getDeviceService().publish("bridge/request/device/ota_update/" + request.name(),
-            new JSONObject().put("id", getDeviceService().getIeeeAddress()));
+                new JSONObject().put("id", getDeviceService().getIeeeAddress()));
         return ActionResponseModel.showSuccess(Lang.getServerMessage("ZIGBEE.REQUEST_UPDATE_" + request.name().toUpperCase(),
-            getDeviceService().getIeeeAddress()));
+                getDeviceService().getIeeeAddress()));
     }
 
     private enum Request {

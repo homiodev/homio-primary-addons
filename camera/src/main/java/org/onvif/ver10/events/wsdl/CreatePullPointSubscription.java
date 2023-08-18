@@ -1,25 +1,20 @@
 package org.onvif.ver10.events.wsdl;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlElementRef;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.oasis_open.docs.wsn.b_2.FilterType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"filter", "initialTerminationTime", "subscriptionPolicy", "any"})
+        name = "",
+        propOrder = {"filter", "initialTerminationTime", "subscriptionPolicy", "any"})
 @XmlRootElement(name = "CreatePullPointSubscription")
 public class CreatePullPointSubscription {
 
@@ -27,10 +22,10 @@ public class CreatePullPointSubscription {
     protected FilterType filter;
 
     @XmlElementRef(
-        name = "InitialTerminationTime",
-        namespace = "http://www.onvif.org/ver10/events/wsdl",
-        type = JAXBElement.class,
-        required = false)
+            name = "InitialTerminationTime",
+            namespace = "http://www.onvif.org/ver10/events/wsdl",
+            type = JAXBElement.class,
+            required = false)
     protected JAXBElement<String> initialTerminationTime;
 
     @XmlElement(name = "SubscriptionPolicy")
@@ -41,7 +36,7 @@ public class CreatePullPointSubscription {
 
     public CreatePullPointSubscription() {
         setInitialTerminationTime(
-            new ObjectFactory().createCreatePullPointSubscriptionInitialTerminationTime("PT600S"));
+                new ObjectFactory().createCreatePullPointSubscriptionInitialTerminationTime("PT600S"));
     }
 
     public List<Object> getAny() {
@@ -53,8 +48,8 @@ public class CreatePullPointSubscription {
 
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(
-        name = "",
-        propOrder = {"any"})
+            name = "",
+            propOrder = {"any"})
     public static class SubscriptionPolicy {
 
         @XmlAnyElement(lax = true)

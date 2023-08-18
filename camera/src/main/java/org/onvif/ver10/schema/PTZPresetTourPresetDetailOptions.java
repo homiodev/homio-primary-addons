@@ -1,15 +1,12 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * Java-Klasse f�r PTZPresetTourPresetDetailOptions complex type.
@@ -36,8 +33,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "PTZPresetTourPresetDetailOptions",
-    propOrder = {"presetToken", "home", "panTiltPositionSpace", "zoomPositionSpace", "extension"})
+        name = "PTZPresetTourPresetDetailOptions",
+        propOrder = {"presetToken", "home", "panTiltPositionSpace", "zoomPositionSpace", "extension"})
 public class PTZPresetTourPresetDetailOptions {
 
     @XmlElement(name = "PresetToken")
@@ -55,7 +52,8 @@ public class PTZPresetTourPresetDetailOptions {
     @XmlElement(name = "Extension")
     protected PTZPresetTourPresetDetailOptionsExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the presetToken property.

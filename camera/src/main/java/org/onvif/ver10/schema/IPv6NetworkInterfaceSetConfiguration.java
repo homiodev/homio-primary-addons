@@ -1,11 +1,12 @@
 package org.onvif.ver10.schema;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Java-Klasse f�r IPv6NetworkInterfaceSetConfiguration complex type.
@@ -30,8 +31,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "IPv6NetworkInterfaceSetConfiguration",
-    propOrder = {"enabled", "acceptRouterAdvert", "manual", "dhcp"})
+        name = "IPv6NetworkInterfaceSetConfiguration",
+        propOrder = {"enabled", "acceptRouterAdvert", "manual", "dhcp"})
 public class IPv6NetworkInterfaceSetConfiguration {
 
     @XmlElement(name = "Enabled")

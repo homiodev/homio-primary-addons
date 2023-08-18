@@ -1,35 +1,30 @@
 package org.onvif.ver10.events.wsdl;
 
-import java.util.ArrayList;
-import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @Accessors(chain = true)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {
-        "topicNamespaceLocation",
-        "fixedTopicSet",
-        "topicSet",
-        "topicExpressionDialect",
-        "messageContentFilterDialect",
-        "producerPropertiesFilterDialect",
-        "messageContentSchemaLocation",
-        "any"
-    })
+        name = "",
+        propOrder = {
+                "topicNamespaceLocation",
+                "fixedTopicSet",
+                "topicSet",
+                "topicExpressionDialect",
+                "messageContentFilterDialect",
+                "producerPropertiesFilterDialect",
+                "messageContentSchemaLocation",
+                "any"
+        })
 @XmlRootElement(name = "GetEventPropertiesResponse")
 public class GetEventPropertiesResponse {
 
@@ -38,18 +33,18 @@ public class GetEventPropertiesResponse {
     protected List<String> topicNamespaceLocation;
 
     @XmlElement(
-        name = "FixedTopicSet",
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        defaultValue = "true")
+            name = "FixedTopicSet",
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            defaultValue = "true")
     protected boolean fixedTopicSet;
 
     @XmlElement(name = "TopicSet", namespace = "http://docs.oasis-open.org/wsn/t-1", required = true)
     protected TopicSetType topicSet;
 
     @XmlElement(
-        name = "TopicExpressionDialect",
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        required = true)
+            name = "TopicExpressionDialect",
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            required = true)
     @XmlSchemaType(name = "anyURI")
     protected List<String> topicExpressionDialect;
 

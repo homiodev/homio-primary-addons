@@ -25,4 +25,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "SetConfigurationResponse")
-public class SetConfigurationResponse {}
+public class SetConfigurationResponse {
+}

@@ -36,21 +36,21 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Exposure",
-    propOrder = {
-        "mode",
-        "priority",
-        "window",
-        "minExposureTime",
-        "maxExposureTime",
-        "minGain",
-        "maxGain",
-        "minIris",
-        "maxIris",
-        "exposureTime",
-        "gain",
-        "iris"
-    })
+        name = "Exposure",
+        propOrder = {
+                "mode",
+                "priority",
+                "window",
+                "minExposureTime",
+                "maxExposureTime",
+                "minGain",
+                "maxGain",
+                "minIris",
+                "maxIris",
+                "exposureTime",
+                "gain",
+                "iris"
+        })
 public class Exposure {
 
     @XmlElement(name = "Mode", required = true)

@@ -28,8 +28,8 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "PrefixedIPv6Address",
-    propOrder = {"address", "prefixLength"})
+        name = "PrefixedIPv6Address",
+        propOrder = {"address", "prefixLength"})
 public class PrefixedIPv6Address {
 
     @XmlElement(name = "Address", required = true)

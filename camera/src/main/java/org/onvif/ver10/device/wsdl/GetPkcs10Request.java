@@ -8,12 +8,7 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.onvif.ver10.schema.BinaryData;
@@ -40,8 +35,8 @@ import org.onvif.ver10.schema.BinaryData;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"certificateID", "subject", "attributes"})
+        name = "",
+        propOrder = {"certificateID", "subject", "attributes"})
 @XmlRootElement(name = "GetPkcs10Request")
 public class GetPkcs10Request {
 

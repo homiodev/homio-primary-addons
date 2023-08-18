@@ -16,4 +16,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "GetSystemDateAndTime")
-public class GetSystemDateAndTime {}
+public class GetSystemDateAndTime {
+}

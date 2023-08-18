@@ -16,4 +16,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "RemoveAudioSourceConfigurationResponse")
-public class RemoveAudioSourceConfigurationResponse {}
+public class RemoveAudioSourceConfigurationResponse {
+}

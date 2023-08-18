@@ -31,4 +31,5 @@ import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "InvalidTopicExpressionFaultType")
-public class InvalidTopicExpressionFaultType extends BaseFaultType {}
+public class InvalidTopicExpressionFaultType extends BaseFaultType {
+}

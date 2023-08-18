@@ -11,9 +11,10 @@ package org.oasis_open.docs.wsn.b_2;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
+import org.w3._2005._08.addressing.EndpointReferenceType;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
-import org.w3._2005._08.addressing.EndpointReferenceType;
 
 /**
  * This object contains factory methods for each Java content interface and Java element interface generated in the org.oasis_open.docs.wsn.b_2 package.
@@ -26,77 +27,77 @@ import org.w3._2005._08.addressing.EndpointReferenceType;
 public class ObjectFactory {
 
     private static final QName _TerminationTime_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "TerminationTime");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "TerminationTime");
     private static final QName _NotifyMessageNotSupportedFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "NotifyMessageNotSupportedFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "NotifyMessageNotSupportedFault");
     private static final QName _ConsumerReference_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "ConsumerReference");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "ConsumerReference");
     private static final QName _UnsupportedPolicyRequestFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "UnsupportedPolicyRequestFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "UnsupportedPolicyRequestFault");
     private static final QName _SubscriptionPolicy_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "SubscriptionPolicy");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "SubscriptionPolicy");
     private static final QName _NotificationMessage_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "NotificationMessage");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "NotificationMessage");
     private static final QName _UnacceptableInitialTerminationTimeFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "UnacceptableInitialTerminationTimeFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "UnacceptableInitialTerminationTimeFault");
     private static final QName _InvalidTopicExpressionFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "InvalidTopicExpressionFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "InvalidTopicExpressionFault");
     private static final QName _TopicExpressionDialect_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpressionDialect");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpressionDialect");
     private static final QName _Filter_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "Filter");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "Filter");
     private static final QName _UnableToCreatePullPointFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "UnableToCreatePullPointFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "UnableToCreatePullPointFault");
     private static final QName _CreationTime_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "CreationTime");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "CreationTime");
     private static final QName _ResumeFailedFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "ResumeFailedFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "ResumeFailedFault");
     private static final QName _InvalidProducerPropertiesExpressionFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "InvalidProducerPropertiesExpressionFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "InvalidProducerPropertiesExpressionFault");
     private static final QName _UnableToGetMessagesFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "UnableToGetMessagesFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "UnableToGetMessagesFault");
     private static final QName _MessageContent_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "MessageContent");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "MessageContent");
     private static final QName _TopicExpressionDialectUnknownFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpressionDialectUnknownFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpressionDialectUnknownFault");
     private static final QName _UnableToDestroySubscriptionFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "UnableToDestroySubscriptionFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "UnableToDestroySubscriptionFault");
     private static final QName _UnrecognizedPolicyRequestFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "UnrecognizedPolicyRequestFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "UnrecognizedPolicyRequestFault");
     private static final QName _SubscribeCreationFailedFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "SubscribeCreationFailedFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "SubscribeCreationFailedFault");
     private static final QName _ProducerReference_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "ProducerReference");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "ProducerReference");
     private static final QName _NoCurrentMessageOnTopicFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "NoCurrentMessageOnTopicFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "NoCurrentMessageOnTopicFault");
     private static final QName _MultipleTopicsSpecifiedFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "MultipleTopicsSpecifiedFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "MultipleTopicsSpecifiedFault");
     private static final QName _UnacceptableTerminationTimeFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "UnacceptableTerminationTimeFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "UnacceptableTerminationTimeFault");
     private static final QName _CurrentTime_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "CurrentTime");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "CurrentTime");
     private static final QName _TopicExpression_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpression");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "TopicExpression");
     private static final QName _ProducerProperties_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "ProducerProperties");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "ProducerProperties");
     private static final QName _TopicNotSupportedFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "TopicNotSupportedFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "TopicNotSupportedFault");
     private static final QName _InvalidFilterFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "InvalidFilterFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "InvalidFilterFault");
     private static final QName _FixedTopicSet_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "FixedTopicSet");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "FixedTopicSet");
     private static final QName _Topic_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "Topic");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "Topic");
     private static final QName _UnableToDestroyPullPointFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "UnableToDestroyPullPointFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "UnableToDestroyPullPointFault");
     private static final QName _InvalidMessageContentExpressionFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "InvalidMessageContentExpressionFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "InvalidMessageContentExpressionFault");
     private static final QName _PauseFailedFault_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "PauseFailedFault");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "PauseFailedFault");
     private static final QName _SubscriptionReference_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "SubscriptionReference");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "SubscriptionReference");
     private static final QName _SubscribeInitialTerminationTime_QNAME =
-        new QName("http://docs.oasis-open.org/wsn/b-2", "InitialTerminationTime");
+            new QName("http://docs.oasis-open.org/wsn/b-2", "InitialTerminationTime");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.oasis_open.docs.wsn.b_2
@@ -455,22 +456,22 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "TerminationTime")
     public JAXBElement<XMLGregorianCalendar> createTerminationTime(XMLGregorianCalendar value) {
         return new JAXBElement<XMLGregorianCalendar>(
-            _TerminationTime_QNAME, XMLGregorianCalendar.class, null, value);
+                _TerminationTime_QNAME, XMLGregorianCalendar.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NotifyMessageNotSupportedFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "NotifyMessageNotSupportedFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "NotifyMessageNotSupportedFault")
     public JAXBElement<NotifyMessageNotSupportedFaultType> createNotifyMessageNotSupportedFault(
-        NotifyMessageNotSupportedFaultType value) {
+            NotifyMessageNotSupportedFaultType value) {
         return new JAXBElement<NotifyMessageNotSupportedFaultType>(
-            _NotifyMessageNotSupportedFault_QNAME,
-            NotifyMessageNotSupportedFaultType.class,
-            null,
-            value);
+                _NotifyMessageNotSupportedFault_QNAME,
+                NotifyMessageNotSupportedFaultType.class,
+                null,
+                value);
     }
 
     /**
@@ -479,19 +480,19 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "ConsumerReference")
     public JAXBElement<EndpointReferenceType> createConsumerReference(EndpointReferenceType value) {
         return new JAXBElement<EndpointReferenceType>(
-            _ConsumerReference_QNAME, EndpointReferenceType.class, null, value);
+                _ConsumerReference_QNAME, EndpointReferenceType.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UnsupportedPolicyRequestFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "UnsupportedPolicyRequestFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "UnsupportedPolicyRequestFault")
     public JAXBElement<UnsupportedPolicyRequestFaultType> createUnsupportedPolicyRequestFault(
-        UnsupportedPolicyRequestFaultType value) {
+            UnsupportedPolicyRequestFaultType value) {
         return new JAXBElement<UnsupportedPolicyRequestFaultType>(
-            _UnsupportedPolicyRequestFault_QNAME, UnsupportedPolicyRequestFaultType.class, null, value);
+                _UnsupportedPolicyRequestFault_QNAME, UnsupportedPolicyRequestFaultType.class, null, value);
     }
 
     /**
@@ -499,9 +500,9 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "SubscriptionPolicy")
     public JAXBElement<SubscriptionPolicyType> createSubscriptionPolicy(
-        SubscriptionPolicyType value) {
+            SubscriptionPolicyType value) {
         return new JAXBElement<SubscriptionPolicyType>(
-            _SubscriptionPolicy_QNAME, SubscriptionPolicyType.class, null, value);
+                _SubscriptionPolicy_QNAME, SubscriptionPolicyType.class, null, value);
     }
 
     /**
@@ -509,37 +510,37 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "NotificationMessage")
     public JAXBElement<NotificationMessageHolderType> createNotificationMessage(
-        NotificationMessageHolderType value) {
+            NotificationMessageHolderType value) {
         return new JAXBElement<NotificationMessageHolderType>(
-            _NotificationMessage_QNAME, NotificationMessageHolderType.class, null, value);
+                _NotificationMessage_QNAME, NotificationMessageHolderType.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UnacceptableInitialTerminationTimeFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "UnacceptableInitialTerminationTimeFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "UnacceptableInitialTerminationTimeFault")
     public JAXBElement<UnacceptableInitialTerminationTimeFaultType>
     createUnacceptableInitialTerminationTimeFault(
-        UnacceptableInitialTerminationTimeFaultType value) {
+            UnacceptableInitialTerminationTimeFaultType value) {
         return new JAXBElement<UnacceptableInitialTerminationTimeFaultType>(
-            _UnacceptableInitialTerminationTimeFault_QNAME,
-            UnacceptableInitialTerminationTimeFaultType.class,
-            null,
-            value);
+                _UnacceptableInitialTerminationTimeFault_QNAME,
+                UnacceptableInitialTerminationTimeFaultType.class,
+                null,
+                value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link InvalidTopicExpressionFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "InvalidTopicExpressionFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "InvalidTopicExpressionFault")
     public JAXBElement<InvalidTopicExpressionFaultType> createInvalidTopicExpressionFault(
-        InvalidTopicExpressionFaultType value) {
+            InvalidTopicExpressionFaultType value) {
         return new JAXBElement<InvalidTopicExpressionFaultType>(
-            _InvalidTopicExpressionFault_QNAME, InvalidTopicExpressionFaultType.class, null, value);
+                _InvalidTopicExpressionFault_QNAME, InvalidTopicExpressionFaultType.class, null, value);
     }
 
     /**
@@ -562,12 +563,12 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link UnableToCreatePullPointFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "UnableToCreatePullPointFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "UnableToCreatePullPointFault")
     public JAXBElement<UnableToCreatePullPointFaultType> createUnableToCreatePullPointFault(
-        UnableToCreatePullPointFaultType value) {
+            UnableToCreatePullPointFaultType value) {
         return new JAXBElement<UnableToCreatePullPointFaultType>(
-            _UnableToCreatePullPointFault_QNAME, UnableToCreatePullPointFaultType.class, null, value);
+                _UnableToCreatePullPointFault_QNAME, UnableToCreatePullPointFaultType.class, null, value);
     }
 
     /**
@@ -576,7 +577,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "CreationTime")
     public JAXBElement<XMLGregorianCalendar> createCreationTime(XMLGregorianCalendar value) {
         return new JAXBElement<XMLGregorianCalendar>(
-            _CreationTime_QNAME, XMLGregorianCalendar.class, null, value);
+                _CreationTime_QNAME, XMLGregorianCalendar.class, null, value);
     }
 
     /**
@@ -585,35 +586,35 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "ResumeFailedFault")
     public JAXBElement<ResumeFailedFaultType> createResumeFailedFault(ResumeFailedFaultType value) {
         return new JAXBElement<ResumeFailedFaultType>(
-            _ResumeFailedFault_QNAME, ResumeFailedFaultType.class, null, value);
+                _ResumeFailedFault_QNAME, ResumeFailedFaultType.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link InvalidProducerPropertiesExpressionFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "InvalidProducerPropertiesExpressionFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "InvalidProducerPropertiesExpressionFault")
     public JAXBElement<InvalidProducerPropertiesExpressionFaultType>
     createInvalidProducerPropertiesExpressionFault(
-        InvalidProducerPropertiesExpressionFaultType value) {
+            InvalidProducerPropertiesExpressionFaultType value) {
         return new JAXBElement<InvalidProducerPropertiesExpressionFaultType>(
-            _InvalidProducerPropertiesExpressionFault_QNAME,
-            InvalidProducerPropertiesExpressionFaultType.class,
-            null,
-            value);
+                _InvalidProducerPropertiesExpressionFault_QNAME,
+                InvalidProducerPropertiesExpressionFaultType.class,
+                null,
+                value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UnableToGetMessagesFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "UnableToGetMessagesFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "UnableToGetMessagesFault")
     public JAXBElement<UnableToGetMessagesFaultType> createUnableToGetMessagesFault(
-        UnableToGetMessagesFaultType value) {
+            UnableToGetMessagesFaultType value) {
         return new JAXBElement<UnableToGetMessagesFaultType>(
-            _UnableToGetMessagesFault_QNAME, UnableToGetMessagesFaultType.class, null, value);
+                _UnableToGetMessagesFault_QNAME, UnableToGetMessagesFaultType.class, null, value);
     }
 
     /**
@@ -622,64 +623,64 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "MessageContent")
     public JAXBElement<QueryExpressionType> createMessageContent(QueryExpressionType value) {
         return new JAXBElement<QueryExpressionType>(
-            _MessageContent_QNAME, QueryExpressionType.class, null, value);
+                _MessageContent_QNAME, QueryExpressionType.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TopicExpressionDialectUnknownFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "TopicExpressionDialectUnknownFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "TopicExpressionDialectUnknownFault")
     public JAXBElement<TopicExpressionDialectUnknownFaultType>
     createTopicExpressionDialectUnknownFault(TopicExpressionDialectUnknownFaultType value) {
         return new JAXBElement<TopicExpressionDialectUnknownFaultType>(
-            _TopicExpressionDialectUnknownFault_QNAME,
-            TopicExpressionDialectUnknownFaultType.class,
-            null,
-            value);
+                _TopicExpressionDialectUnknownFault_QNAME,
+                TopicExpressionDialectUnknownFaultType.class,
+                null,
+                value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UnableToDestroySubscriptionFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "UnableToDestroySubscriptionFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "UnableToDestroySubscriptionFault")
     public JAXBElement<UnableToDestroySubscriptionFaultType> createUnableToDestroySubscriptionFault(
-        UnableToDestroySubscriptionFaultType value) {
+            UnableToDestroySubscriptionFaultType value) {
         return new JAXBElement<UnableToDestroySubscriptionFaultType>(
-            _UnableToDestroySubscriptionFault_QNAME,
-            UnableToDestroySubscriptionFaultType.class,
-            null,
-            value);
+                _UnableToDestroySubscriptionFault_QNAME,
+                UnableToDestroySubscriptionFaultType.class,
+                null,
+                value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UnrecognizedPolicyRequestFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "UnrecognizedPolicyRequestFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "UnrecognizedPolicyRequestFault")
     public JAXBElement<UnrecognizedPolicyRequestFaultType> createUnrecognizedPolicyRequestFault(
-        UnrecognizedPolicyRequestFaultType value) {
+            UnrecognizedPolicyRequestFaultType value) {
         return new JAXBElement<UnrecognizedPolicyRequestFaultType>(
-            _UnrecognizedPolicyRequestFault_QNAME,
-            UnrecognizedPolicyRequestFaultType.class,
-            null,
-            value);
+                _UnrecognizedPolicyRequestFault_QNAME,
+                UnrecognizedPolicyRequestFaultType.class,
+                null,
+                value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link SubscribeCreationFailedFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "SubscribeCreationFailedFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "SubscribeCreationFailedFault")
     public JAXBElement<SubscribeCreationFailedFaultType> createSubscribeCreationFailedFault(
-        SubscribeCreationFailedFaultType value) {
+            SubscribeCreationFailedFaultType value) {
         return new JAXBElement<SubscribeCreationFailedFaultType>(
-            _SubscribeCreationFailedFault_QNAME, SubscribeCreationFailedFaultType.class, null, value);
+                _SubscribeCreationFailedFault_QNAME, SubscribeCreationFailedFaultType.class, null, value);
     }
 
     /**
@@ -688,46 +689,46 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "ProducerReference")
     public JAXBElement<EndpointReferenceType> createProducerReference(EndpointReferenceType value) {
         return new JAXBElement<EndpointReferenceType>(
-            _ProducerReference_QNAME, EndpointReferenceType.class, null, value);
+                _ProducerReference_QNAME, EndpointReferenceType.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link NoCurrentMessageOnTopicFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "NoCurrentMessageOnTopicFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "NoCurrentMessageOnTopicFault")
     public JAXBElement<NoCurrentMessageOnTopicFaultType> createNoCurrentMessageOnTopicFault(
-        NoCurrentMessageOnTopicFaultType value) {
+            NoCurrentMessageOnTopicFaultType value) {
         return new JAXBElement<NoCurrentMessageOnTopicFaultType>(
-            _NoCurrentMessageOnTopicFault_QNAME, NoCurrentMessageOnTopicFaultType.class, null, value);
+                _NoCurrentMessageOnTopicFault_QNAME, NoCurrentMessageOnTopicFaultType.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link MultipleTopicsSpecifiedFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "MultipleTopicsSpecifiedFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "MultipleTopicsSpecifiedFault")
     public JAXBElement<MultipleTopicsSpecifiedFaultType> createMultipleTopicsSpecifiedFault(
-        MultipleTopicsSpecifiedFaultType value) {
+            MultipleTopicsSpecifiedFaultType value) {
         return new JAXBElement<MultipleTopicsSpecifiedFaultType>(
-            _MultipleTopicsSpecifiedFault_QNAME, MultipleTopicsSpecifiedFaultType.class, null, value);
+                _MultipleTopicsSpecifiedFault_QNAME, MultipleTopicsSpecifiedFaultType.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UnacceptableTerminationTimeFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "UnacceptableTerminationTimeFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "UnacceptableTerminationTimeFault")
     public JAXBElement<UnacceptableTerminationTimeFaultType> createUnacceptableTerminationTimeFault(
-        UnacceptableTerminationTimeFaultType value) {
+            UnacceptableTerminationTimeFaultType value) {
         return new JAXBElement<UnacceptableTerminationTimeFaultType>(
-            _UnacceptableTerminationTimeFault_QNAME,
-            UnacceptableTerminationTimeFaultType.class,
-            null,
-            value);
+                _UnacceptableTerminationTimeFault_QNAME,
+                UnacceptableTerminationTimeFaultType.class,
+                null,
+                value);
     }
 
     /**
@@ -736,7 +737,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "CurrentTime")
     public JAXBElement<XMLGregorianCalendar> createCurrentTime(XMLGregorianCalendar value) {
         return new JAXBElement<XMLGregorianCalendar>(
-            _CurrentTime_QNAME, XMLGregorianCalendar.class, null, value);
+                _CurrentTime_QNAME, XMLGregorianCalendar.class, null, value);
     }
 
     /**
@@ -745,7 +746,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "TopicExpression")
     public JAXBElement<TopicExpressionType> createTopicExpression(TopicExpressionType value) {
         return new JAXBElement<TopicExpressionType>(
-            _TopicExpression_QNAME, TopicExpressionType.class, null, value);
+                _TopicExpression_QNAME, TopicExpressionType.class, null, value);
     }
 
     /**
@@ -754,7 +755,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "ProducerProperties")
     public JAXBElement<QueryExpressionType> createProducerProperties(QueryExpressionType value) {
         return new JAXBElement<QueryExpressionType>(
-            _ProducerProperties_QNAME, QueryExpressionType.class, null, value);
+                _ProducerProperties_QNAME, QueryExpressionType.class, null, value);
     }
 
     /**
@@ -762,9 +763,9 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "TopicNotSupportedFault")
     public JAXBElement<TopicNotSupportedFaultType> createTopicNotSupportedFault(
-        TopicNotSupportedFaultType value) {
+            TopicNotSupportedFaultType value) {
         return new JAXBElement<TopicNotSupportedFaultType>(
-            _TopicNotSupportedFault_QNAME, TopicNotSupportedFaultType.class, null, value);
+                _TopicNotSupportedFault_QNAME, TopicNotSupportedFaultType.class, null, value);
     }
 
     /**
@@ -772,18 +773,18 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "InvalidFilterFault")
     public JAXBElement<InvalidFilterFaultType> createInvalidFilterFault(
-        InvalidFilterFaultType value) {
+            InvalidFilterFaultType value) {
         return new JAXBElement<InvalidFilterFaultType>(
-            _InvalidFilterFault_QNAME, InvalidFilterFaultType.class, null, value);
+                _InvalidFilterFault_QNAME, InvalidFilterFaultType.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "FixedTopicSet",
-        defaultValue = "true")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "FixedTopicSet",
+            defaultValue = "true")
     public JAXBElement<Boolean> createFixedTopicSet(Boolean value) {
         return new JAXBElement<Boolean>(_FixedTopicSet_QNAME, Boolean.class, null, value);
     }
@@ -794,34 +795,34 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "Topic")
     public JAXBElement<TopicExpressionType> createTopic(TopicExpressionType value) {
         return new JAXBElement<TopicExpressionType>(
-            _Topic_QNAME, TopicExpressionType.class, null, value);
+                _Topic_QNAME, TopicExpressionType.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UnableToDestroyPullPointFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "UnableToDestroyPullPointFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "UnableToDestroyPullPointFault")
     public JAXBElement<UnableToDestroyPullPointFaultType> createUnableToDestroyPullPointFault(
-        UnableToDestroyPullPointFaultType value) {
+            UnableToDestroyPullPointFaultType value) {
         return new JAXBElement<UnableToDestroyPullPointFaultType>(
-            _UnableToDestroyPullPointFault_QNAME, UnableToDestroyPullPointFaultType.class, null, value);
+                _UnableToDestroyPullPointFault_QNAME, UnableToDestroyPullPointFaultType.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link InvalidMessageContentExpressionFaultType }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "InvalidMessageContentExpressionFault")
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "InvalidMessageContentExpressionFault")
     public JAXBElement<InvalidMessageContentExpressionFaultType>
     createInvalidMessageContentExpressionFault(InvalidMessageContentExpressionFaultType value) {
         return new JAXBElement<InvalidMessageContentExpressionFaultType>(
-            _InvalidMessageContentExpressionFault_QNAME,
-            InvalidMessageContentExpressionFaultType.class,
-            null,
-            value);
+                _InvalidMessageContentExpressionFault_QNAME,
+                InvalidMessageContentExpressionFaultType.class,
+                null,
+                value);
     }
 
     /**
@@ -830,7 +831,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "PauseFailedFault")
     public JAXBElement<PauseFailedFaultType> createPauseFailedFault(PauseFailedFaultType value) {
         return new JAXBElement<PauseFailedFaultType>(
-            _PauseFailedFault_QNAME, PauseFailedFaultType.class, null, value);
+                _PauseFailedFault_QNAME, PauseFailedFaultType.class, null, value);
     }
 
     /**
@@ -838,20 +839,20 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://docs.oasis-open.org/wsn/b-2", name = "SubscriptionReference")
     public JAXBElement<EndpointReferenceType> createSubscriptionReference(
-        EndpointReferenceType value) {
+            EndpointReferenceType value) {
         return new JAXBElement<EndpointReferenceType>(
-            _SubscriptionReference_QNAME, EndpointReferenceType.class, null, value);
+                _SubscriptionReference_QNAME, EndpointReferenceType.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
     @XmlElementDecl(
-        namespace = "http://docs.oasis-open.org/wsn/b-2",
-        name = "InitialTerminationTime",
-        scope = Subscribe.class)
+            namespace = "http://docs.oasis-open.org/wsn/b-2",
+            name = "InitialTerminationTime",
+            scope = Subscribe.class)
     public JAXBElement<String> createSubscribeInitialTerminationTime(String value) {
         return new JAXBElement<String>(
-            _SubscribeInitialTerminationTime_QNAME, String.class, Subscribe.class, value);
+                _SubscribeInitialTerminationTime_QNAME, String.class, Subscribe.class, value);
     }
 }

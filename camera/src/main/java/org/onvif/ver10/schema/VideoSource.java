@@ -1,13 +1,10 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * Representation of a physical video input.
@@ -35,8 +32,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "VideoSource",
-    propOrder = {"framerate", "resolution", "imaging", "extension"})
+        name = "VideoSource",
+        propOrder = {"framerate", "resolution", "imaging", "extension"})
 public class VideoSource extends DeviceEntity {
 
     @XmlElement(name = "Framerate")
@@ -51,7 +48,8 @@ public class VideoSource extends DeviceEntity {
     @XmlElement(name = "Extension")
     protected VideoSourceExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der framerate-Eigenschaft ab.

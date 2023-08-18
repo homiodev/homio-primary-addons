@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "PTZMoveStatus",
-    propOrder = {"panTilt", "zoom"})
+        name = "PTZMoveStatus",
+        propOrder = {"panTilt", "zoom"})
 public class PTZMoveStatus {
 
     @XmlElement(name = "PanTilt")

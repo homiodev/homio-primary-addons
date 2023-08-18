@@ -11,7 +11,6 @@ import org.homio.api.AddonEntrypoint;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeBaseCoordinatorEntity;
-import org.homio.api.model.Icon;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -38,22 +37,22 @@ import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE
 @RequiredArgsConstructor
 public class Z2MEntrypoint implements AddonEntrypoint {
 
-    private final EntityContext entityContext;
     public static final String Z2M_RESOURCE = "ROLE_Z2M";
+    private final EntityContext entityContext;
 
     @Override
     public void init() {
         entityContext.registerResource(Z2M_RESOURCE);
         entityContext.ui().registerConsolePluginName("zigbee", Z2M_RESOURCE);
         entityContext.setting().listenValue(ZigBeeEntityCompactModeSetting.class, "zigbee-compact-mode",
-            (value) -> entityContext.ui().updateItems(Z2MDeviceEntity.class));
+                (value) -> entityContext.ui().updateItems(Z2MDeviceEntity.class));
 
         entityContext.event().addPortChangeStatusListener("zigbee-ports",
-            port -> {
-                Map<String, SerialPort> ports = getPorts();
-                testCoordinators(entityContext.findAll(Z2MLocalCoordinatorEntity.class), ports, coordinator ->
-                    coordinator.getService().restartCoordinator());
-            });
+                port -> {
+                    Map<String, SerialPort> ports = getPorts();
+                    testCoordinators(entityContext.findAll(Z2MLocalCoordinatorEntity.class), ports, coordinator ->
+                            coordinator.getService().restartCoordinator());
+                });
 
         entityContext.bgp().builder("z2m-config-reader")
                 .delay(Duration.ofHours(1))
@@ -62,7 +61,7 @@ public class Z2MEntrypoint implements AddonEntrypoint {
     }
 
     private <T extends BaseEntity & ZigBeeBaseCoordinatorEntity> void testCoordinators(List<T> entities, Map<String, SerialPort> ports,
-        Consumer<T> reInitializeCoordinatorHandler) {
+                                                                                       Consumer<T> reInitializeCoordinatorHandler) {
         for (T coordinator : entities) {
             if (StringUtils.isNotEmpty(coordinator.getPort()) && coordinator.isStart() && coordinator.getStatus().isOffline()) {
                 testCoordinator(ports, reInitializeCoordinatorHandler, coordinator);
@@ -71,7 +70,7 @@ public class Z2MEntrypoint implements AddonEntrypoint {
     }
 
     private <T extends BaseEntity & ZigBeeBaseCoordinatorEntity> void testCoordinator(Map<String, SerialPort> ports, Consumer<T> reInitializeCoordinatorHandler,
-        T coordinator) {
+                                                                                      T coordinator) {
         if (ports.containsKey(coordinator.getPort())) {
             // try re-initialize coordinator
             reInitializeCoordinatorHandler.accept(coordinator);
@@ -80,7 +79,7 @@ public class Z2MEntrypoint implements AddonEntrypoint {
             for (SerialPort serialPort : ports.values()) {
                 if (Objects.equals(serialPort.getDescriptivePortName(), coordinator.getPortD())) {
                     log.info("[{}]: Coordinator port changed from {} -> {}", coordinator.getEntityID(), coordinator.getPort(),
-                        serialPort.getSystemPortName());
+                            serialPort.getSystemPortName());
                     entityContext.save((T) coordinator.setSerialPort(serialPort));
                 }
             }

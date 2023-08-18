@@ -25,8 +25,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "ZoomLimits",
-    propOrder = {"range"})
+        name = "ZoomLimits",
+        propOrder = {"range"})
 public class ZoomLimits {
 
     @XmlElement(name = "Range", required = true)

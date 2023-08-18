@@ -23,4 +23,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "RemovePresetResponse")
-public class RemovePresetResponse {}
+public class RemovePresetResponse {
+}

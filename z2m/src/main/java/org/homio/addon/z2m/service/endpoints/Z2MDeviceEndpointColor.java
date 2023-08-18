@@ -1,9 +1,5 @@
 package org.homio.addon.z2m.service.endpoints;
 
-import java.awt.Color;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.util.ApplianceModel;
@@ -13,13 +9,18 @@ import org.homio.api.state.StringType;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import java.awt.*;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
 
     // 1931 CIE XYZ to sRGB (D65 reference white)
     private static final float[][] XY2RGB = {
-        {3.2406f, -1.5372f, -0.4986f},
-        {-0.9689f, 1.8758f, 0.0415f},
-        {0.0557f, -0.2040f, 1.0570f}};
+            {3.2406f, -1.5372f, -0.4986f},
+            {-0.9689f, 1.8758f, 0.0415f},
+            {0.0557f, -0.2040f, 1.0570f}};
 
     public Z2MDeviceEndpointColor() {
         super(new Icon("fas fa-fw fa-palette", "#FF009B"));
@@ -44,96 +45,6 @@ public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
         b = gammaCompress(b / max);
 
         return new int[]{(int) (r * 255.0 + 0.5), (int) (g * 255.0 + 0.5), (int) (b * 255.0 + 0.5)};
-    }
-
-    @Override
-    public void init(@NotNull Z2MDeviceService deviceService, @NotNull ApplianceModel.Z2MDeviceDefinition.Options expose) {
-        switch (expose.getName()) {
-            case "color_xy" -> setDataReader(
-                payload -> {
-                    JSONObject color = payload.getJSONObject("color");
-                    float x = color.getFloat("x");
-                    float y = color.getFloat("y");
-                    return new StringType(xyToHex(x, y));
-                });
-            case "color_hs" -> setDataReader(
-                payload -> {
-                    JSONObject color = payload.getJSONObject("color");
-                    float hue = color.getFloat("hue");
-                    float saturation = color.getFloat("saturation");
-                    return new StringType(hsToHex(hue, saturation, getBrightness(payload)));
-                });
-        }
-        super.init(deviceService, expose);
-    }
-
-    @Override
-    public boolean isWritable() {
-        List<Options> features = getExpose().getFeatures();
-        if (features != null && !features.isEmpty()) {
-            Map<String, Options> name2feature = features.stream().collect(Collectors.toMap(Options::getProperty, f -> f));
-            switch (getExpose().getName()) {
-                case "color_xy" -> {
-                    return name2feature.containsKey("x")
-                        && name2feature.get("x").isWritable()
-                        && name2feature.containsKey("y")
-                        && name2feature.get("y").isWritable();
-                }
-                case "color_hs" -> {
-                    return name2feature.containsKey("hue")
-                        && name2feature.get("hue").isWritable()
-                        && name2feature.containsKey("saturation")
-                        && name2feature.get("saturation").isWritable();
-                }
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public @NotNull String getEndpointDefinition() {
-        return "color";
-    }
-
-    /*public float[] rgbToCie(int reg, int green, int blue) {
-        float r = gammaDecompress(reg / 100.0f);
-        float g = gammaDecompress(green / 100.0f);
-        float b = gammaDecompress(blue / 100.0f);
-
-        float tmpX = r * RGB2XY[0][0] + g * RGB2XY[0][1] + b * RGB2XY[0][2];
-        float tmpY = r * RGB2XY[1][0] + g * RGB2XY[1][1] + b * RGB2XY[1][2];
-        float tmpZ = r * RGB2XY[2][0] + g * RGB2XY[2][1] + b * RGB2XY[2][2];
-
-        float x = tmpX / (tmpX + tmpY + tmpZ);
-        float y = tmpY / (tmpX + tmpY + tmpZ);
-
-        return new float[]{x * 100.0f, y * 100.0f};
-        *//*return new DecimalType[]{new DecimalType(x * 100.0f),
-            new DecimalType(y * 100.0f),
-            new DecimalType(tmpY * getBrightness().floatValue())};*//*
-    }*/
-
-    public String getStateColor() {
-        return getValue().stringValue().startsWith("#") ? getValue().stringValue() : "#FFFFFF";
-    }
-
-    @Override
-    public void fireAction(String value) {
-        JSONObject color = new JSONObject();
-        Color rgbColor = Color.decode(value);
-
-        switch (getExpose().getName()) {
-            case "color_xy" ->
-                /*float[] cie = rgbToCie(rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue());
-                color.put("x", cie[0]).put("y", cie[1]);*/
-                color.put("r", rgbColor.getRed()).put("g", rgbColor.getGreen()).put("b", rgbColor.getBlue());
-            case "color_hs" -> {
-                float[] hsb = Color.RGBtoHSB(rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue(), null);
-                color.put("h", hsb[0]).put("s", hsb[1]).put("b", hsb[2]);
-                return;
-            }
-        }
-        getDeviceService().publish("set", new JSONObject().put(getExpose().getProperty(), color));
     }
 
     private static String xyToHex(float x, float y) {
@@ -175,6 +86,24 @@ public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
         return new float[]{Double.isNaN(x) ? 0 : x, Double.isNaN(y) ? 0 : y};
     }
 
+    /*public float[] rgbToCie(int reg, int green, int blue) {
+        float r = gammaDecompress(reg / 100.0f);
+        float g = gammaDecompress(green / 100.0f);
+        float b = gammaDecompress(blue / 100.0f);
+
+        float tmpX = r * RGB2XY[0][0] + g * RGB2XY[0][1] + b * RGB2XY[0][2];
+        float tmpY = r * RGB2XY[1][0] + g * RGB2XY[1][1] + b * RGB2XY[1][2];
+        float tmpZ = r * RGB2XY[2][0] + g * RGB2XY[2][1] + b * RGB2XY[2][2];
+
+        float x = tmpX / (tmpX + tmpY + tmpZ);
+        float y = tmpY / (tmpX + tmpY + tmpZ);
+
+        return new float[]{x * 100.0f, y * 100.0f};
+        *//*return new DecimalType[]{new DecimalType(x * 100.0f),
+            new DecimalType(y * 100.0f),
+            new DecimalType(tmpY * getBrightness().floatValue())};*//*
+    }*/
+
     private static boolean xyIsInGamutRange(float x, float y, float[][] gamutRange) {
         float[] v0 = new float[]{gamutRange[2][0] - gamutRange[0][0], gamutRange[2][1] - gamutRange[0][1]};
         float[] v1 = new float[]{gamutRange[1][0] - gamutRange[0][0], gamutRange[1][1] - gamutRange[0][1]};
@@ -205,17 +134,6 @@ public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
         return c <= 0.04045f ? c / 12.92 : (float) Math.pow((c + 0.055) / (1.0f + 0.055), 2.4);
     }
 
-    private int getBrightness(JSONObject payload) {
-        return payload.has("brightness")
-            ? payload.getInt("brightness")
-            : getDeviceService().getEndpoints().get("brightness").getValue().intValue(255);
-    }
-
-    private String hsToHex(float hue, float saturation, int brightness) {
-        Color rgb = new Color(Color.HSBtoRGB(hue, saturation, brightness));
-        return String.format("#%02x%02x%02x", rgb.getRed(), rgb.getGreen(), rgb.getBlue());
-    }
-
     private static float[][][] getGamutRanges() {
         float[][][] gamutRanges = new float[4][3][2];
         // gamutA
@@ -243,5 +161,88 @@ public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
         gamutRanges[3][2] = new float[]{0F, 0F};
 
         return gamutRanges;
+    }
+
+    @Override
+    public void init(@NotNull Z2MDeviceService deviceService, @NotNull ApplianceModel.Z2MDeviceDefinition.Options expose) {
+        switch (expose.getName()) {
+            case "color_xy" -> setDataReader(
+                    payload -> {
+                        JSONObject color = payload.getJSONObject("color");
+                        float x = color.getFloat("x");
+                        float y = color.getFloat("y");
+                        return new StringType(xyToHex(x, y));
+                    });
+            case "color_hs" -> setDataReader(
+                    payload -> {
+                        JSONObject color = payload.getJSONObject("color");
+                        float hue = color.getFloat("hue");
+                        float saturation = color.getFloat("saturation");
+                        return new StringType(hsToHex(hue, saturation, getBrightness(payload)));
+                    });
+        }
+        super.init(deviceService, expose);
+    }
+
+    @Override
+    public boolean isWritable() {
+        List<Options> features = getExpose().getFeatures();
+        if (features != null && !features.isEmpty()) {
+            Map<String, Options> name2feature = features.stream().collect(Collectors.toMap(Options::getProperty, f -> f));
+            switch (getExpose().getName()) {
+                case "color_xy" -> {
+                    return name2feature.containsKey("x")
+                            && name2feature.get("x").isWritable()
+                            && name2feature.containsKey("y")
+                            && name2feature.get("y").isWritable();
+                }
+                case "color_hs" -> {
+                    return name2feature.containsKey("hue")
+                            && name2feature.get("hue").isWritable()
+                            && name2feature.containsKey("saturation")
+                            && name2feature.get("saturation").isWritable();
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public @NotNull String getEndpointDefinition() {
+        return "color";
+    }
+
+    public String getStateColor() {
+        return getValue().stringValue().startsWith("#") ? getValue().stringValue() : "#FFFFFF";
+    }
+
+    @Override
+    public void fireAction(String value) {
+        JSONObject color = new JSONObject();
+        Color rgbColor = Color.decode(value);
+
+        switch (getExpose().getName()) {
+            case "color_xy" ->
+                /*float[] cie = rgbToCie(rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue());
+                color.put("x", cie[0]).put("y", cie[1]);*/
+                    color.put("r", rgbColor.getRed()).put("g", rgbColor.getGreen()).put("b", rgbColor.getBlue());
+            case "color_hs" -> {
+                float[] hsb = Color.RGBtoHSB(rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue(), null);
+                color.put("h", hsb[0]).put("s", hsb[1]).put("b", hsb[2]);
+                return;
+            }
+        }
+        getDeviceService().publish("set", new JSONObject().put(getExpose().getProperty(), color));
+    }
+
+    private int getBrightness(JSONObject payload) {
+        return payload.has("brightness")
+                ? payload.getInt("brightness")
+                : getDeviceService().getEndpoints().get("brightness").getValue().intValue(255);
+    }
+
+    private String hsToHex(float hue, float saturation, int brightness) {
+        Color rgb = new Color(Color.HSBtoRGB(hue, saturation, brightness));
+        return String.format("#%02x%02x%02x", rgb.getRed(), rgb.getGreen(), rgb.getBlue());
     }
 }

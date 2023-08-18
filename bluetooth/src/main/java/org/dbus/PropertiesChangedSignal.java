@@ -1,14 +1,11 @@
 package org.dbus;
 
+import lombok.Getter;
+import org.freedesktop.dbus.*;
+import org.freedesktop.dbus.exceptions.DBusException;
+
 import java.util.List;
 import java.util.Map;
-import lombok.Getter;
-import org.freedesktop.dbus.DBusInterface;
-import org.freedesktop.dbus.DBusInterfaceName;
-import org.freedesktop.dbus.DBusMemberName;
-import org.freedesktop.dbus.DBusSignal;
-import org.freedesktop.dbus.Variant;
-import org.freedesktop.dbus.exceptions.DBusException;
 
 @DBusInterfaceName("org.freedesktop.DBus.Properties")
 public interface PropertiesChangedSignal extends DBusInterface {

@@ -8,13 +8,14 @@
 
 package org.onvif.ver10.media.wsdl;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.w3c.dom.Element;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Java-Klasse f�r VideoSourceModeExtension complex type.
@@ -36,8 +37,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "VideoSourceModeExtension",
-    propOrder = {"any"})
+        name = "VideoSourceModeExtension",
+        propOrder = {"any"})
 public class VideoSourceModeExtension {
 
     @XmlAnyElement(lax = true)

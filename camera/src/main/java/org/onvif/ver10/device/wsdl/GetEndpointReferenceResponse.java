@@ -8,15 +8,11 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import jakarta.xml.bind.annotation.*;
+import org.w3c.dom.Element;
+
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
-import org.w3c.dom.Element;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -39,8 +35,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"guid", "any"})
+        name = "",
+        propOrder = {"guid", "any"})
 @XmlRootElement(name = "GetEndpointReferenceResponse")
 public class GetEndpointReferenceResponse {
 

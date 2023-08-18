@@ -8,11 +8,7 @@
 
 package org.onvif.ver10.media.wsdl;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -34,8 +30,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"configurationToken"})
+        name = "",
+        propOrder = {"configurationToken"})
 @XmlRootElement(name = "GetAudioOutputConfiguration")
 public class GetAudioOutputConfiguration {
 

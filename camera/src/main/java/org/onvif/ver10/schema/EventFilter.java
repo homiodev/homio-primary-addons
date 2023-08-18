@@ -1,13 +1,14 @@
 package org.onvif.ver10.schema;
 
-import java.util.HashMap;
-import java.util.Map;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyAttribute;
 import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 import org.oasis_open.docs.wsn.b_2.FilterType;
+
+import javax.xml.namespace.QName;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Java-Klasse f�r EventFilter complex type.
@@ -29,7 +30,8 @@ import org.oasis_open.docs.wsn.b_2.FilterType;
 @XmlType(name = "EventFilter")
 public class EventFilter extends FilterType {
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets a map that contains attributes that aren't bound to any typed property on this class.

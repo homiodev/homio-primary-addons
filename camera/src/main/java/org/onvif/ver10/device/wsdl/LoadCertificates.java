@@ -8,14 +8,11 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import jakarta.xml.bind.annotation.*;
+import org.onvif.ver10.schema.Certificate;
+
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
-import org.onvif.ver10.schema.Certificate;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -37,8 +34,8 @@ import org.onvif.ver10.schema.Certificate;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"nvtCertificate"})
+        name = "",
+        propOrder = {"nvtCertificate"})
 @XmlRootElement(name = "LoadCertificates")
 public class LoadCertificates {
 

@@ -1,26 +1,21 @@
 package org.onvif.ver10.media.wsdl;
 
+import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
-import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Capabilities",
-    propOrder = {"profileCapabilities", "streamingCapabilities", "any"})
+        name = "Capabilities",
+        propOrder = {"profileCapabilities", "streamingCapabilities", "any"})
 public class Capabilities {
 
     @XmlElement(name = "ProfileCapabilities", required = true)
@@ -44,7 +39,8 @@ public class Capabilities {
     @XmlAttribute(name = "OSD")
     protected Boolean osd;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Object> getAny() {
         if (any == null) {

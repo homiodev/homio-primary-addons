@@ -1,17 +1,18 @@
 package org.onvif.ver10.schema;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.w3c.dom.Element;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "ColorDescriptorExtension",
-    propOrder = {"any"})
+        name = "ColorDescriptorExtension",
+        propOrder = {"any"})
 public class ColorDescriptorExtension {
 
     @XmlAnyElement(lax = true)

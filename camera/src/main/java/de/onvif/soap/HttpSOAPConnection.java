@@ -1,10 +1,10 @@
 package de.onvif.soap;
 
-import jakarta.xml.soap.MessageFactory;
-import jakarta.xml.soap.MimeHeader;
-import jakarta.xml.soap.MimeHeaders;
-import jakarta.xml.soap.SOAPException;
-import jakarta.xml.soap.SOAPMessage;
+import jakarta.xml.soap.*;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.NotImplementedException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,9 +16,6 @@ import java.net.URL;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.NotImplementedException;
 
 @Log4j2
 public class HttpSOAPConnection {
@@ -79,6 +76,10 @@ public class HttpSOAPConnection {
         return sb.toString();
     }
 
+    private static char unescape(String s, int i) {
+        return (char) Integer.parseInt(s.substring(i + 1, i + 3), 16);
+    }
+
     public SOAPMessage call(SOAPMessage message, Object endPoint) throws SOAPException, IOException {
         Class<?> urlEndpointClass = null;
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -137,10 +138,10 @@ public class HttpSOAPConnection {
             URI uri = new URI(endPoint.toString());
             String userInfo = uri.getRawUserInfo();
             if (!endPoint.getProtocol().equalsIgnoreCase("http")
-                && !endPoint.getProtocol().equalsIgnoreCase("https")) {
+                    && !endPoint.getProtocol().equalsIgnoreCase("https")) {
                 log.error("[{}]: SAAJ0052.p2p.protocol.mustbe.http.or.https", entityID);
                 throw new IllegalArgumentException(
-                    "Protocol " + endPoint.getProtocol() + " not supported in URL " + endPoint);
+                        "Protocol " + endPoint.getProtocol() + " not supported in URL " + endPoint);
             }
 
             httpConnection = (HttpURLConnection) endPoint.openConnection();
@@ -223,9 +224,9 @@ public class HttpSOAPConnection {
                     httpIn = isFailure ? httpConnection.getErrorStream() : httpConnection.getInputStream();
                     InputStream stream = IOUtils.toBufferedInputStream(httpIn);
                     int length =
-                        httpConnection.getContentLength() == -1
-                            ? stream.available()
-                            : httpConnection.getContentLength();
+                            httpConnection.getContentLength() == -1
+                                    ? stream.available()
+                                    : httpConnection.getContentLength();
                     if (length == 0) {
                         log.warn("[{}]: SAAJ0014.p2p.content.zero", entityID);
                     } else {
@@ -258,10 +259,6 @@ public class HttpSOAPConnection {
         }
 
         return response;
-    }
-
-    private static char unescape(String s, int i) {
-        return (char) Integer.parseInt(s.substring(i + 1, i + 3), 16);
     }
 
     private void initAuthUserInfo(HttpURLConnection conn, String userInfo) {

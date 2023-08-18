@@ -7,8 +7,8 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "AbsoluteFocusOptions",
-    propOrder = {"position", "speed"})
+        name = "AbsoluteFocusOptions",
+        propOrder = {"position", "speed"})
 public class AbsoluteFocusOptions {
 
     @XmlElement(name = "Position", required = true)

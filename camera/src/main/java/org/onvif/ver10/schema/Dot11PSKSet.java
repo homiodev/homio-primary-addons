@@ -1,15 +1,12 @@
 package org.onvif.ver10.schema;
 
-import java.util.HashMap;
-import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.HexBinaryAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import javax.xml.namespace.QName;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Java-Klasse f�r Dot11PSKSet complex type.
@@ -34,8 +31,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Dot11PSKSet",
-    propOrder = {"key", "passphrase", "extension"})
+        name = "Dot11PSKSet",
+        propOrder = {"key", "passphrase", "extension"})
 public class Dot11PSKSet {
 
     @XmlElement(name = "Key", type = String.class)
@@ -48,7 +45,8 @@ public class Dot11PSKSet {
     @XmlElement(name = "Extension")
     protected Dot11PSKSetExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der key-Eigenschaft ab.

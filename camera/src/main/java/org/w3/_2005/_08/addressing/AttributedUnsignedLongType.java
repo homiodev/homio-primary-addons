@@ -8,16 +8,12 @@
 
 package org.w3._2005._08.addressing;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.XmlValue;
-import javax.xml.namespace.QName;
 
 /**
  * Java-Klasse f�r AttributedUnsignedLongType complex type.
@@ -37,15 +33,16 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "AttributedUnsignedLongType",
-    propOrder = {"value"})
+        name = "AttributedUnsignedLongType",
+        propOrder = {"value"})
 public class AttributedUnsignedLongType {
 
     @XmlValue
     @XmlSchemaType(name = "unsignedLong")
     protected BigInteger value;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der value-Eigenschaft ab.

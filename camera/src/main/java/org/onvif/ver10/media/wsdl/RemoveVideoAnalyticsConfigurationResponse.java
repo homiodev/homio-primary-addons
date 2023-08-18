@@ -16,4 +16,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "RemoveVideoAnalyticsConfigurationResponse")
-public class RemoveVideoAnalyticsConfigurationResponse {}
+public class RemoveVideoAnalyticsConfigurationResponse {
+}

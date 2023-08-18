@@ -1,11 +1,12 @@
 package org.onvif.ver10.schema;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Java-Klasse f�r FocusOptions complex type.
@@ -30,8 +31,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "FocusOptions",
-    propOrder = {"autoFocusModes", "defaultSpeed", "nearLimit", "farLimit"})
+        name = "FocusOptions",
+        propOrder = {"autoFocusModes", "defaultSpeed", "nearLimit", "farLimit"})
 public class FocusOptions {
 
     @XmlElement(name = "AutoFocusModes")

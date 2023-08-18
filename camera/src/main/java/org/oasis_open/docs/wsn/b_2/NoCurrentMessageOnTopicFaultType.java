@@ -7,4 +7,5 @@ import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "NoCurrentMessageOnTopicFaultType")
-public class NoCurrentMessageOnTopicFaultType extends BaseFaultType {}
+public class NoCurrentMessageOnTopicFaultType extends BaseFaultType {
+}

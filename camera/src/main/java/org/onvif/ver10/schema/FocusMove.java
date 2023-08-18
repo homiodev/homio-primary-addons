@@ -27,8 +27,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "FocusMove",
-    propOrder = {"absolute", "relative", "continuous"})
+        name = "FocusMove",
+        propOrder = {"absolute", "relative", "continuous"})
 public class FocusMove {
 
     @XmlElement(name = "Absolute")

@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Rename",
-    propOrder = {"from", "to"})
+        name = "Rename",
+        propOrder = {"from", "to"})
 public class Rename {
 
     @XmlElement(required = true)

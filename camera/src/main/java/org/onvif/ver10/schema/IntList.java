@@ -1,11 +1,12 @@
 package org.onvif.ver10.schema;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * List of values.
@@ -29,8 +30,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "IntList",
-    propOrder = {"items"})
+        name = "IntList",
+        propOrder = {"items"})
 public class IntList {
 
     @XmlElement(name = "Items", type = Integer.class)

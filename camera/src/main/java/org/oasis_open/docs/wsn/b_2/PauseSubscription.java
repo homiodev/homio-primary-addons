@@ -8,14 +8,11 @@
 
 package org.oasis_open.docs.wsn.b_2;
 
+import jakarta.xml.bind.annotation.*;
+import org.w3c.dom.Element;
+
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
-import org.w3c.dom.Element;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -37,8 +34,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"any"})
+        name = "",
+        propOrder = {"any"})
 @XmlRootElement(name = "PauseSubscription")
 public class PauseSubscription {
 

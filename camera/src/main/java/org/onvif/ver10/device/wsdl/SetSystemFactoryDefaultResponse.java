@@ -16,4 +16,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "SetSystemFactoryDefaultResponse")
-public class SetSystemFactoryDefaultResponse {}
+public class SetSystemFactoryDefaultResponse {
+}

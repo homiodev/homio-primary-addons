@@ -27,8 +27,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "NetworkInterfaceLink",
-    propOrder = {"adminSettings", "operSettings", "interfaceType"})
+        name = "NetworkInterfaceLink",
+        propOrder = {"adminSettings", "operSettings", "interfaceType"})
 public class NetworkInterfaceLink {
 
     @XmlElement(name = "AdminSettings", required = true)

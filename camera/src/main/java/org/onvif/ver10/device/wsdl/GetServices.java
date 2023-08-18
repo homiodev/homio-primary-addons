@@ -1,10 +1,6 @@
 package org.onvif.ver10.device.wsdl;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -14,8 +10,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"includeCapability"})
+        name = "",
+        propOrder = {"includeCapability"})
 @XmlRootElement(name = "GetServices")
 public class GetServices {
 

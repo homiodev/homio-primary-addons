@@ -8,11 +8,7 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import org.onvif.ver10.schema.DateTime;
 import org.onvif.ver10.schema.SetDateTimeType;
 import org.onvif.ver10.schema.TimeZone;
@@ -40,8 +36,8 @@ import org.onvif.ver10.schema.TimeZone;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"dateTimeType", "daylightSavings", "timeZone", "utcDateTime"})
+        name = "",
+        propOrder = {"dateTimeType", "daylightSavings", "timeZone", "utcDateTime"})
 @XmlRootElement(name = "SetSystemDateAndTime")
 public class SetSystemDateAndTime {
 

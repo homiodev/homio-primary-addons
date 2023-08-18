@@ -1,32 +1,21 @@
 package de.onvif.soap.devices;
 
-import static org.homio.api.EntityContextSetting.SERVER_PORT;
-
 import de.onvif.soap.OnvifDeviceState;
 import de.onvif.soap.SOAP;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
-import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
-import org.oasis_open.docs.wsn.b_2.Renew;
-import org.oasis_open.docs.wsn.b_2.RenewResponse;
-import org.oasis_open.docs.wsn.b_2.Subscribe;
-import org.oasis_open.docs.wsn.b_2.SubscribeResponse;
-import org.oasis_open.docs.wsn.b_2.Unsubscribe;
-import org.onvif.ver10.events.wsdl.CreatePullPointSubscription;
-import org.onvif.ver10.events.wsdl.CreatePullPointSubscriptionResponse;
-import org.onvif.ver10.events.wsdl.GetEventProperties;
-import org.onvif.ver10.events.wsdl.GetEventPropertiesResponse;
-import org.onvif.ver10.events.wsdl.GetServiceCapabilities;
-import org.onvif.ver10.events.wsdl.GetServiceCapabilitiesResponse;
-import org.onvif.ver10.events.wsdl.PullMessages;
-import org.onvif.ver10.events.wsdl.PullMessagesResponse;
+import org.oasis_open.docs.wsn.b_2.*;
+import org.onvif.ver10.events.wsdl.*;
 import org.w3._2005._08.addressing.AttributedURIType;
 import org.w3._2005._08.addressing.EndpointReferenceType;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.homio.api.EntityContextSetting.SERVER_PORT;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -50,7 +39,7 @@ public class EventDevices {
         }
         // try reinitialize if Subscription not initialized
         if (onvifDeviceState.getSubscriptionIpLessUri() == null &&
-            System.currentTimeMillis() - lastTimeResubscribeRequest > 60000) {
+                System.currentTimeMillis() - lastTimeResubscribeRequest > 60000) {
             lastTimeResubscribeRequest = System.currentTimeMillis();
             fetchSubscriptionUrlAndSendPullMessages();
         }
@@ -67,24 +56,24 @@ public class EventDevices {
         // first listen for events
         soap.addAsyncListener(PullMessagesResponse.class, "listen-PullMessagesResponse", this::handleEventReceived);
         soap.addAsyncListener(RenewResponse.class, "listen-RenewResponse",
-            response -> {
-                log.debug("[{}]: Pulling messages from onvif", entityID);
-                this.lastTimeRenewResponse = System.currentTimeMillis();
-                soap.sendSOAPSubscribeRequestAsync(new PullMessages());
-            });
+                response -> {
+                    log.debug("[{}]: Pulling messages from onvif", entityID);
+                    this.lastTimeRenewResponse = System.currentTimeMillis();
+                    soap.sendSOAPSubscribeRequestAsync(new PullMessages());
+                });
 
         this.eventProperties =
-            soap.createSOAPDeviceRequestType(
-                new GetEventProperties(), GetEventPropertiesResponse.class);
+                soap.createSOAPDeviceRequestType(
+                        new GetEventProperties(), GetEventPropertiesResponse.class);
 
         fetchSubscriptionUrlAndSendPullMessages();
 
         GetServiceCapabilitiesResponse serviceCapabilities = soap.createSOAPDeviceRequestType(new GetServiceCapabilities(),
-            GetServiceCapabilitiesResponse.class);
+                GetServiceCapabilitiesResponse.class);
         if (serviceCapabilities != null && serviceCapabilities.getCapabilities().getWsSubscriptionPolicySupport()) {
             Subscribe subscribe = createSubscribe();
             SubscribeResponse subscribeResponse =
-                soap.createSOAPDeviceRequestType(subscribe, SubscribeResponse.class);
+                    soap.createSOAPDeviceRequestType(subscribe, SubscribeResponse.class);
             if (subscribeResponse != null) {
                 log.info("[{}]: Onvif Subscribe appears to be working for Alarms/Events.", entityID);
             }
@@ -93,7 +82,7 @@ public class EventDevices {
 
     private Subscribe createSubscribe() {
         String url = "%s:%s/rest/camera/%s".formatted(onvifDeviceState.getIp(), SERVER_PORT,
-            onvifDeviceState.getEntityID());
+                onvifDeviceState.getEntityID());
         val address = new AttributedURIType().setValue(url);
         val consumerReference = new EndpointReferenceType().setAddress(address);
         return new Subscribe().setConsumerReference(consumerReference);
@@ -115,20 +104,20 @@ public class EventDevices {
 
     private void fetchSubscriptionUrlAndSendPullMessages() {
         log.info(
-            "[{}]: Trying fetch onvif message subscription for ip address <{}>...",
-            entityID,
-            onvifDeviceState.getIp());
+                "[{}]: Trying fetch onvif message subscription for ip address <{}>...",
+                entityID,
+                onvifDeviceState.getIp());
         try {
             CreatePullPointSubscriptionResponse pullPointResponse =
-                soap.createSOAPDeviceRequestTypeThrowError(
-                    new CreatePullPointSubscription(), CreatePullPointSubscriptionResponse.class);
+                    soap.createSOAPDeviceRequestTypeThrowError(
+                            new CreatePullPointSubscription(), CreatePullPointSubscriptionResponse.class);
             onvifDeviceState.setSubscriptionUri(
-                pullPointResponse.getSubscriptionReference().getAddress().getValue());
+                    pullPointResponse.getSubscriptionReference().getAddress().getValue());
             soap.sendSOAPSubscribeRequestAsync(new PullMessages());
             log.info(
-                "[{}]: Successfully fetched onvif message subscription: <{}>",
-                entityID,
-                onvifDeviceState.getSubscriptionIpLessUri());
+                    "[{}]: Successfully fetched onvif message subscription: <{}>",
+                    entityID,
+                    onvifDeviceState.getSubscriptionIpLessUri());
             onvifDeviceState.setSubscriptionError(null);
         } catch (Exception ex) {
             onvifDeviceState.setSubscriptionError(ex.getMessage());
@@ -140,7 +129,7 @@ public class EventDevices {
         if (pullMessagesResponse != null) {
             boolean handled = pullMessagesResponse.getNotificationMessage().isEmpty();
             for (NotificationMessageHolderType notificationMessageHolderType :
-                pullMessagesResponse.getNotificationMessage()) {
+                    pullMessagesResponse.getNotificationMessage()) {
                 String topic = notificationMessageHolderType.getTopic().getContent().get(0).toString();
                 if (topic.startsWith("tns1:")) {
                     topic = topic.substring("tns1:".length());
@@ -151,11 +140,11 @@ public class EventDevices {
                             String name = data.getAttributes().getNamedItem("Name").getTextContent();
                             String value = data.getAttributes().getNamedItem("Value").getTextContent();
                             log.info(
-                                "[{}]: Received onvif event <{}>. Name: <{}>. Value: <{}>",
-                                entityID,
-                                topic,
-                                name,
-                                value);
+                                    "[{}]: Received onvif event <{}>. Name: <{}>. Value: <{}>",
+                                    entityID,
+                                    topic,
+                                    name,
+                                    value);
                             eventHandlers.get(topic).handle(name, value);
                         }
                     }
@@ -170,7 +159,7 @@ public class EventDevices {
 
     private Node findEventData(NotificationMessageHolderType notificationMessageHolderType) {
         NodeList childNodes =
-            ((Node) notificationMessageHolderType.getMessage().getAny()).getChildNodes();
+                ((Node) notificationMessageHolderType.getMessage().getAny()).getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getLocalName().equals("Data")) {
                 return childNodes.item(i).getFirstChild();

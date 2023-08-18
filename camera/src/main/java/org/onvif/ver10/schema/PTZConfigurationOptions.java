@@ -1,17 +1,13 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+import org.w3c.dom.Element;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
-import org.w3c.dom.Element;
 
 /**
  * Java-Klasse f�r PTZConfigurationOptions complex type.
@@ -38,8 +34,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "PTZConfigurationOptions",
-    propOrder = {"spaces", "ptzTimeout", "any", "ptControlDirection", "extension"})
+        name = "PTZConfigurationOptions",
+        propOrder = {"spaces", "ptzTimeout", "any", "ptControlDirection", "extension"})
 public class PTZConfigurationOptions {
 
     @XmlElement(name = "Spaces", required = true)
@@ -57,7 +53,8 @@ public class PTZConfigurationOptions {
     @XmlElement(name = "Extension")
     protected PTZConfigurationOptions2 extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der spaces-Eigenschaft ab.

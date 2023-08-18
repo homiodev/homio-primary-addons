@@ -1,15 +1,11 @@
 package org.onvif.ver20.media.wsdl;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"osdToken", "configurationToken"})
+        name = "",
+        propOrder = {"osdToken", "configurationToken"})
 @XmlRootElement(name = "GetOSDs")
 public class GetOSDs {
 

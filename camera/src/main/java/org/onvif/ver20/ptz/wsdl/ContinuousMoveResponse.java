@@ -25,4 +25,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "ContinuousMoveResponse")
-public class ContinuousMoveResponse {}
+public class ContinuousMoveResponse {
+}

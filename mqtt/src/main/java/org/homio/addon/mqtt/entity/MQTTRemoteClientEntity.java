@@ -11,23 +11,23 @@ import org.jetbrains.annotations.NotNull;
 @UISidebarChildren(icon = "far fa-building", color = Scratch3MQTTBlocks.COLOR)
 public class MQTTRemoteClientEntity extends MQTTBaseEntity {
 
-  @Override
-  protected @NotNull String getDevicePrefix() {
-    return "mqtt_remote";
-  }
+    @Override
+    protected @NotNull String getDevicePrefix() {
+        return "mqtt_remote";
+    }
 
-  @Override
-  public String getDefaultName() {
-    return "MQTT remote client";
-  }
+    @Override
+    public String getDefaultName() {
+        return "MQTT remote client";
+    }
 
-  @Override
-  public Icon selectionIcon() {
-    return new Icon("fas fa-mattress-pillow", "#AD971A");
-  }
+    @Override
+    public Icon selectionIcon() {
+        return new Icon("fas fa-mattress-pillow", "#AD971A");
+    }
 
-  @Override
-  public void assembleActions(UIInputBuilder uiInputBuilder) {
+    @Override
+    public void assembleActions(UIInputBuilder uiInputBuilder) {
 
-  }
+    }
 }

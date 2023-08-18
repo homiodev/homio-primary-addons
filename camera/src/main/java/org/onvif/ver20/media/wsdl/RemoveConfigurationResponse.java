@@ -25,4 +25,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "RemoveConfigurationResponse")
-public class RemoveConfigurationResponse {}
+public class RemoveConfigurationResponse {
+}

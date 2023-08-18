@@ -1,13 +1,10 @@
 package org.onvif.ver20.media.wsdl;
 
+import jakarta.xml.bind.annotation.*;
+import org.onvif.ver10.schema.VideoSourceConfiguration;
+
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
-import org.onvif.ver10.schema.VideoSourceConfiguration;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -29,8 +26,8 @@ import org.onvif.ver10.schema.VideoSourceConfiguration;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"configurations"})
+        name = "",
+        propOrder = {"configurations"})
 @XmlRootElement(name = "GetVideoSourceConfigurationsResponse")
 public class GetVideoSourceConfigurationsResponse {
 

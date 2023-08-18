@@ -1,13 +1,14 @@
 package org.onvif.ver10.schema;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Java-Klasse f�r NetworkGateway complex type.
@@ -30,8 +31,8 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "NetworkGateway",
-    propOrder = {"iPv4Address", "iPv6Address"})
+        name = "NetworkGateway",
+        propOrder = {"iPv4Address", "iPv6Address"})
 public class NetworkGateway {
 
     @XmlElement(name = "IPv4Address")

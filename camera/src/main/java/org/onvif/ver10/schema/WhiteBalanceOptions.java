@@ -1,11 +1,12 @@
 package org.onvif.ver10.schema;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Java-Klasse f�r WhiteBalanceOptions complex type.
@@ -29,8 +30,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "WhiteBalanceOptions",
-    propOrder = {"mode", "yrGain", "ybGain"})
+        name = "WhiteBalanceOptions",
+        propOrder = {"mode", "yrGain", "ybGain"})
 public class WhiteBalanceOptions {
 
     @XmlElement(name = "Mode", required = true)

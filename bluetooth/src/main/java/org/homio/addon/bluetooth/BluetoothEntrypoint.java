@@ -15,7 +15,7 @@ import org.springframework.stereotype.Controller;
 public class BluetoothEntrypoint implements AddonEntrypoint {
 
     public BluetoothEntrypoint(EntityContext entityContext, MachineHardwareRepository machineHardwareRepository,
-        NetworkHardwareRepository networkHardwareRepository) {
+                               NetworkHardwareRepository networkHardwareRepository) {
         //  super(machineHardwareRepository, networkHardwareRepository, entityContext);
     }
 

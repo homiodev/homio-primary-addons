@@ -1,18 +1,15 @@
 package org.onvif.ver10.schema;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "CertificateUsage",
-    propOrder = {"value"})
+        name = "CertificateUsage",
+        propOrder = {"value"})
 public class CertificateUsage {
 
-    @XmlValue protected String value;
+    @XmlValue
+    protected String value;
 
     @XmlAttribute(name = "Critical", required = true)
     protected boolean critical;

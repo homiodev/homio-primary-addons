@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "SecurityCapabilitiesExtension",
-    propOrder = {"tls10", "extension"})
+        name = "SecurityCapabilitiesExtension",
+        propOrder = {"tls10", "extension"})
 public class SecurityCapabilitiesExtension {
 
     @XmlElement(name = "TLS1.0")

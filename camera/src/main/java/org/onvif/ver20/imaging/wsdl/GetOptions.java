@@ -1,15 +1,11 @@
 package org.onvif.ver20.imaging.wsdl;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"videoSourceToken"})
+        name = "",
+        propOrder = {"videoSourceToken"})
 @XmlRootElement(name = "GetOptions")
 public class GetOptions {
 

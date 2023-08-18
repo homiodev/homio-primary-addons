@@ -1,19 +1,15 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.adapters.HexBinaryAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.w3c.dom.Element;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.adapters.HexBinaryAdapter;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import javax.xml.namespace.QName;
-import org.w3c.dom.Element;
 
 /**
  * Java-Klasse f�r Dot11Configuration complex type.
@@ -41,8 +37,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Dot11Configuration",
-    propOrder = {"ssid", "mode", "alias", "priority", "security", "any"})
+        name = "Dot11Configuration",
+        propOrder = {"ssid", "mode", "alias", "priority", "security", "any"})
 public class Dot11Configuration {
 
     @XmlElement(name = "SSID", required = true, type = String.class)
@@ -64,7 +60,8 @@ public class Dot11Configuration {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der ssid-Eigenschaft ab.

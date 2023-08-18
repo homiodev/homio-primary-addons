@@ -1,13 +1,10 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+import org.w3c.dom.Element;
+
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import org.w3c.dom.Element;
 
 /**
  * Java-Klasse f�r NetworkInterfaceExtension complex type.
@@ -33,8 +30,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "NetworkInterfaceExtension",
-    propOrder = {"any", "interfaceType", "dot3", "dot11", "extension"})
+        name = "NetworkInterfaceExtension",
+        propOrder = {"any", "interfaceType", "dot3", "dot11", "extension"})
 public class NetworkInterfaceExtension {
 
     @XmlAnyElement(lax = true)

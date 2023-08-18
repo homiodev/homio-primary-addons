@@ -23,4 +23,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "GetNodes")
-public class GetNodes {}
+public class GetNodes {
+}

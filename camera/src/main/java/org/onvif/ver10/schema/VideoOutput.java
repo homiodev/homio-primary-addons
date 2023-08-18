@@ -1,13 +1,10 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * Representation of a physical video outputs.
@@ -36,8 +33,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "VideoOutput",
-    propOrder = {"layout", "resolution", "refreshRate", "aspectRatio", "extension"})
+        name = "VideoOutput",
+        propOrder = {"layout", "resolution", "refreshRate", "aspectRatio", "extension"})
 public class VideoOutput extends DeviceEntity {
 
     @XmlElement(name = "Layout", required = true)
@@ -55,7 +52,8 @@ public class VideoOutput extends DeviceEntity {
     @XmlElement(name = "Extension")
     protected VideoOutputExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der layout-Eigenschaft ab.

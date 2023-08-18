@@ -7,8 +7,8 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "BackupFile",
-    propOrder = {"name", "data"})
+        name = "BackupFile",
+        propOrder = {"name", "data"})
 public class BackupFile {
 
     @XmlElement(name = "Name", required = true)

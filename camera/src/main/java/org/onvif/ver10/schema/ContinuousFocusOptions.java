@@ -7,8 +7,8 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "ContinuousFocusOptions",
-    propOrder = {"speed"})
+        name = "ContinuousFocusOptions",
+        propOrder = {"speed"})
 public class ContinuousFocusOptions {
 
     @XmlElement(name = "Speed", required = true)

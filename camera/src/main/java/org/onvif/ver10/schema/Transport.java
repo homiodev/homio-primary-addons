@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Transport",
-    propOrder = {"protocol", "tunnel"})
+        name = "Transport",
+        propOrder = {"protocol", "tunnel"})
 public class Transport {
 
     @XmlElement(name = "Protocol", required = true)

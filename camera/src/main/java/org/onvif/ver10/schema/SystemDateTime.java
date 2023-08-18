@@ -1,13 +1,10 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * General date time inforamtion returned by the GetSystemDateTime method.
@@ -37,15 +34,15 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "SystemDateTime",
-    propOrder = {
-        "dateTimeType",
-        "daylightSavings",
-        "timeZone",
-        "utcDateTime",
-        "localDateTime",
-        "extension"
-    })
+        name = "SystemDateTime",
+        propOrder = {
+                "dateTimeType",
+                "daylightSavings",
+                "timeZone",
+                "utcDateTime",
+                "localDateTime",
+                "extension"
+        })
 public class SystemDateTime {
 
     @XmlElement(name = "DateTimeType", required = true)
@@ -66,7 +63,8 @@ public class SystemDateTime {
     @XmlElement(name = "Extension")
     protected SystemDateTimeExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der dateTimeType-Eigenschaft ab.

@@ -1,18 +1,11 @@
 package org.homio.addon.telegram;
 
-import static org.homio.addon.telegram.service.TelegramService.TELEGRAM_EVENT_PREFIX;
-
-import java.io.ByteArrayInputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.homio.addon.telegram.service.TelegramAnswer;
+import org.homio.addon.telegram.service.TelegramService;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.EntityFieldMetadata;
 import org.homio.api.state.RawType;
@@ -23,13 +16,21 @@ import org.homio.api.workspace.WorkspaceBlock;
 import org.homio.api.workspace.scratch.MenuBlock;
 import org.homio.api.workspace.scratch.Scratch3Block;
 import org.homio.api.workspace.scratch.Scratch3ExtensionBlocks;
-import org.homio.addon.telegram.service.TelegramAnswer;
-import org.homio.addon.telegram.service.TelegramService;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
+
+import java.io.ByteArrayInputStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.homio.addon.telegram.service.TelegramService.TELEGRAM_EVENT_PREFIX;
 
 @Component
 public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
@@ -47,7 +48,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     private final MenuBlock.ServerMenuBlock telegramEntityUsersMenu;
 
     public Scratch3TelegramBlocks(TelegramService telegramService, EntityContext entityContext,
-        TelegramEntrypoint telegramEntrypoint) {
+                                  TelegramEntrypoint telegramEntrypoint) {
         super("#73868c", entityContext, telegramEntrypoint);
         setParent("communication");
         this.telegramService = telegramService;
@@ -57,11 +58,11 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         this.levelMenu = menuStatic("levelMenu", Level.class, Level.info);
 
         blockHat(10, "get_msg", "On command [COMMAND] of [USER] | Desc: [DESCR]",
-            this::whenGetMessage, block -> {
-                block.addArgument(USER, this.telegramEntityUsersMenu);
-                block.addArgument(COMMAND, "bulb_on");
-                block.addArgument(DESCR, "Turn on bulb");
-            });
+                this::whenGetMessage, block -> {
+                    block.addArgument(USER, this.telegramEntityUsersMenu);
+                    block.addArgument(COMMAND, "bulb_on");
+                    block.addArgument(DESCR, "Turn on bulb");
+                });
 
         blockCommand(20, "send_msg", "Send [MESSAGE] to [USER]. [LEVEL]", this::sendMessageCommand, block -> {
             block.addArgument(USER, this.telegramEntityUsersMenu);
@@ -75,13 +76,13 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         });
 
         ask(blockCommand(40, "send_question",
-            "Ask&Wait [MESSAGE] to [USER] | [BUTTONS]", this::sendQuestionNoSplitCommand));
+                "Ask&Wait [MESSAGE] to [USER] | [BUTTONS]", this::sendQuestionNoSplitCommand));
 
         ask(blockCondition(41, "send_question_if",
-            "Ask&Wait [MESSAGE] to [USER] | [BUTTONS]", this::sendQuestionSplitCommand));
+                "Ask&Wait [MESSAGE] to [USER] | [BUTTONS]", this::sendQuestionSplitCommand));
 
         ask(blockCondition(42, "send_question_if_else",
-            "Ask&Wait [MESSAGE] to [USER] | [BUTTONS]", this::sendQuestionSplitElseCommand).addBranch("else"));
+                "Ask&Wait [MESSAGE] to [USER] | [BUTTONS]", this::sendQuestionSplitElseCommand).addBranch("else"));
     }
 
     private static String escape(String text) {
@@ -106,7 +107,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         String caption = workspaceBlock.getInputString("CAPTION");
         RawType rawType = workspaceBlock.getInputRawType(MESSAGE, 50 * 1024 * 1024);
         InputFile inputFile = new InputFile(new ByteArrayInputStream(rawType.byteArrayValue()),
-            StringUtils.defaultString(rawType.getName(), "Undefined name"));
+                StringUtils.defaultString(rawType.getName(), "Undefined name"));
         try {
             if (rawType.isImage()) {
                 telegramService.sendPhoto(context.telegramEntity, context.users, inputFile, caption);
@@ -139,22 +140,22 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         Message message = sendTelegramMessage(workspaceBlock, buttons, Function.identity(), context);
         if (message != null) {
             BroadcastLock lock = workspaceBlock.getBroadcastLockManager().getOrCreateLock(workspaceBlock,
-                TELEGRAM_EVENT_PREFIX + message.getMessageId());
+                    TELEGRAM_EVENT_PREFIX + message.getMessageId());
             workspaceBlock.waitForLock(lock, context.telegramEntity.getWaitQuestionMaxSeconds(),
-                TimeUnit.SECONDS, () -> {
-                    if (((TelegramAnswer) lock.getValue()).getData().equals(buttons[0])) {
-                        if (nextBlock != null) {
-                            nextBlock.handle();
+                    TimeUnit.SECONDS, () -> {
+                        if (((TelegramAnswer) lock.getValue()).getData().equals(buttons[0])) {
+                            if (nextBlock != null) {
+                                nextBlock.handle();
+                            }
+                        } else if (elseBlock != null) {
+                            elseBlock.handle();
                         }
-                    } else if (elseBlock != null) {
-                        elseBlock.handle();
-                    }
-                });
+                    });
         }
     }
 
     private Message sendTelegramMessage(WorkspaceBlock workspaceBlock, String[] buttons,
-        Function<String, String> messagePreUpdate, TelegramUser context) {
+                                        Function<String, String> messagePreUpdate, TelegramUser context) {
         String message = workspaceBlock.getInputString(MESSAGE);
         try {
             try {
@@ -164,7 +165,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
             } catch (Exception ignore) {
             }
             return telegramService.sendMessage(context.telegramEntity, context.users, messagePreUpdate.apply(escape(message)),
-                buttons);
+                    buttons);
         } catch (Exception ex) {
             workspaceBlock.logError("Error send telegram message " + ex);
         }
@@ -200,7 +201,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
             List<TelegramEntity.TelegramUser> users = telegramEntity.getUsers();
             if (users.isEmpty()) {
                 workspaceBlock.logErrorAndThrow(
-                    "Unable to find any registered users. Please open telegram bot and run command '/register'");
+                        "Unable to find any registered users. Please open telegram bot and run command '/register'");
             }
             return new TelegramUser(telegramEntity, users);
         }

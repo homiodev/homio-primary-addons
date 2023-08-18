@@ -23,4 +23,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "GotoPresetResponse")
-public class GotoPresetResponse {}
+public class GotoPresetResponse {
+}

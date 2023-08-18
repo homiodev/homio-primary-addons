@@ -8,13 +8,14 @@
 
 package org.oasis_open.docs.wsn.b_2;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.w3c.dom.Element;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Java-Klasse f�r SubscriptionPolicyType complex type.
@@ -36,8 +37,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "SubscriptionPolicyType",
-    propOrder = {"any"})
+        name = "SubscriptionPolicyType",
+        propOrder = {"any"})
 public class SubscriptionPolicyType {
 
     @XmlAnyElement(lax = true)

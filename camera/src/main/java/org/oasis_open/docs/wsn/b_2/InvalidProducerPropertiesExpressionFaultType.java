@@ -31,4 +31,5 @@ import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "InvalidProducerPropertiesExpressionFaultType")
-public class InvalidProducerPropertiesExpressionFaultType extends BaseFaultType {}
+public class InvalidProducerPropertiesExpressionFaultType extends BaseFaultType {
+}

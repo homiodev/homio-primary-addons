@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "OnvifVersion",
-    propOrder = {"major", "minor"})
+        name = "OnvifVersion",
+        propOrder = {"major", "minor"})
 public class OnvifVersion {
 
     @XmlElement(name = "Major")

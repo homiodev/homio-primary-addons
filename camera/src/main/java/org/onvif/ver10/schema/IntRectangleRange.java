@@ -30,8 +30,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "IntRectangleRange",
-    propOrder = {"xRange", "yRange", "widthRange", "heightRange"})
+        name = "IntRectangleRange",
+        propOrder = {"xRange", "yRange", "widthRange", "heightRange"})
 public class IntRectangleRange {
 
     @XmlElement(name = "XRange", required = true)

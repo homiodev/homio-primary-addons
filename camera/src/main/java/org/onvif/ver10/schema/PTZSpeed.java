@@ -13,8 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "PTZSpeed",
-    propOrder = {"panTilt", "zoom"})
+        name = "PTZSpeed",
+        propOrder = {"panTilt", "zoom"})
 public class PTZSpeed {
 
     @XmlElement(name = "PanTilt")

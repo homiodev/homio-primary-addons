@@ -25,4 +25,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "ModifyPresetTourResponse")
-public class ModifyPresetTourResponse {}
+public class ModifyPresetTourResponse {
+}

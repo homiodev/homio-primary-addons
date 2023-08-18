@@ -31,4 +31,5 @@ import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "TopicExpressionDialectUnknownFaultType")
-public class TopicExpressionDialectUnknownFaultType extends BaseFaultType {}
+public class TopicExpressionDialectUnknownFaultType extends BaseFaultType {
+}

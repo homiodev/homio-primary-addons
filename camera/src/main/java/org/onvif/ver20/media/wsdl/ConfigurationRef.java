@@ -7,8 +7,8 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "ConfigurationRef",
-    propOrder = {"type", "token"})
+        name = "ConfigurationRef",
+        propOrder = {"type", "token"})
 public class ConfigurationRef {
 
     @XmlElement(name = "Type", required = true)

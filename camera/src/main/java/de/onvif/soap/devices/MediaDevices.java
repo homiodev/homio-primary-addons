@@ -2,33 +2,15 @@ package de.onvif.soap.devices;
 
 import de.onvif.soap.OnvifDeviceState;
 import de.onvif.soap.SOAP;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.Nullable;
-import org.onvif.ver10.media.wsdl.GetAudioSources;
-import org.onvif.ver10.media.wsdl.GetAudioSourcesResponse;
-import org.onvif.ver10.media.wsdl.GetSnapshotUri;
-import org.onvif.ver10.media.wsdl.GetSnapshotUriResponse;
-import org.onvif.ver10.media.wsdl.GetStreamUri;
-import org.onvif.ver10.media.wsdl.GetStreamUriResponse;
-import org.onvif.ver10.media.wsdl.GetVideoEncoderConfigurationOptions;
-import org.onvif.ver10.media.wsdl.GetVideoEncoderConfigurationOptionsResponse;
-import org.onvif.ver10.media.wsdl.GetVideoSources;
-import org.onvif.ver10.media.wsdl.GetVideoSourcesResponse;
-import org.onvif.ver10.media.wsdl.SetVideoEncoderConfiguration;
-import org.onvif.ver10.media.wsdl.SetVideoEncoderConfigurationResponse;
-import org.onvif.ver10.schema.AudioSource;
-import org.onvif.ver10.schema.Profile;
-import org.onvif.ver10.schema.StreamSetup;
-import org.onvif.ver10.schema.StreamType;
-import org.onvif.ver10.schema.Transport;
-import org.onvif.ver10.schema.TransportProtocol;
-import org.onvif.ver10.schema.VideoEncoderConfiguration;
-import org.onvif.ver10.schema.VideoEncoderConfigurationOptions;
-import org.onvif.ver10.schema.VideoSource;
+import org.onvif.ver10.media.wsdl.*;
+import org.onvif.ver10.schema.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class MediaDevices {
@@ -59,7 +41,7 @@ public class MediaDevices {
         request.setProfileToken(profileToken);
 
         GetVideoEncoderConfigurationOptionsResponse response =
-            soap.createSOAPMediaRequest(request, GetVideoEncoderConfigurationOptionsResponse.class);
+                soap.createSOAPMediaRequest(request, GetVideoEncoderConfigurationOptionsResponse.class);
 
         if (response == null) {
             return null;
@@ -74,7 +56,7 @@ public class MediaDevices {
         request.setForcePersistence(true);
 
         SetVideoEncoderConfigurationResponse response =
-            soap.createSOAPMediaRequest(request, SetVideoEncoderConfigurationResponse.class);
+                soap.createSOAPMediaRequest(request, SetVideoEncoderConfigurationResponse.class);
         return response != null;
     }
 
@@ -91,13 +73,13 @@ public class MediaDevices {
                 request.setProfileToken(profile);
 
                 GetSnapshotUriResponse response =
-                    soap.createSOAPMediaRequest(request, GetSnapshotUriResponse.class);
+                        soap.createSOAPMediaRequest(request, GetSnapshotUriResponse.class);
                 if (response == null || response.getMediaUri() == null) {
                     return null;
                 }
 
                 mediaDeviceCache.snapshotUri =
-                    onvifDeviceState.replaceLocalIpWithProxyIp(response.getMediaUri().getUri());
+                        onvifDeviceState.replaceLocalIpWithProxyIp(response.getMediaUri().getUri());
             } catch (Exception ex) {
                 return null;
             }
@@ -108,7 +90,7 @@ public class MediaDevices {
     public List<VideoSource> getVideoSources() {
         GetVideoSources request = new GetVideoSources();
         GetVideoSourcesResponse response =
-            soap.createSOAPMediaRequest(request, GetVideoSourcesResponse.class);
+                soap.createSOAPMediaRequest(request, GetVideoSourcesResponse.class);
         if (response == null) {
             return null;
         }
@@ -119,7 +101,7 @@ public class MediaDevices {
     public List<AudioSource> getAudioSources() {
         GetAudioSources request = new GetAudioSources();
         GetAudioSourcesResponse response =
-            soap.createSOAPMediaRequest(request, GetAudioSourcesResponse.class);
+                soap.createSOAPMediaRequest(request, GetAudioSourcesResponse.class);
         if (response == null) {
             return null;
         }
@@ -137,7 +119,7 @@ public class MediaDevices {
         request.setProfileToken(profileToken);
         request.setStreamSetup(streamSetup);
         GetStreamUriResponse response =
-            soap.createSOAPMediaRequest(request, GetStreamUriResponse.class);
+                soap.createSOAPMediaRequest(request, GetStreamUriResponse.class);
 
         if (response == null) {
             return null;

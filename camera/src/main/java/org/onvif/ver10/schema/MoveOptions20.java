@@ -27,8 +27,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "MoveOptions20",
-    propOrder = {"absolute", "relative", "continuous"})
+        name = "MoveOptions20",
+        propOrder = {"absolute", "relative", "continuous"})
 public class MoveOptions20 {
 
     @XmlElement(name = "Absolute")

@@ -8,20 +8,15 @@
 
 package org.onvif.ver10.device.wsdl;
 
+import jakarta.xml.bind.annotation.*;
+import org.onvif.ver10.schema.OnvifVersion;
+import org.w3c.dom.Element;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAnyElement;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
-import org.onvif.ver10.schema.OnvifVersion;
-import org.w3c.dom.Element;
 
 /**
  * Java-Klasse f�r Service complex type.
@@ -58,8 +53,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Service",
-    propOrder = {"namespace", "xAddr", "capabilities", "version", "any"})
+        name = "Service",
+        propOrder = {"namespace", "xAddr", "capabilities", "version", "any"})
 public class Service {
 
     @XmlElement(name = "Namespace", required = true)
@@ -79,7 +74,8 @@ public class Service {
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der namespace-Eigenschaft ab.
@@ -210,8 +206,8 @@ public class Service {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(
-        name = "",
-        propOrder = {"any"})
+            name = "",
+            propOrder = {"any"})
     public static class Capabilities {
 
         @XmlAnyElement(lax = true)

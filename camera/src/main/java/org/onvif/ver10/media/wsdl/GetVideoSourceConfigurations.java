@@ -16,4 +16,5 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "GetVideoSourceConfigurations")
-public class GetVideoSourceConfigurations {}
+public class GetVideoSourceConfigurations {
+}

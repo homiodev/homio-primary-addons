@@ -31,4 +31,5 @@ import org.oasis_open.docs.wsrf.bf_2.BaseFaultType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "NotifyMessageNotSupportedFaultType")
-public class NotifyMessageNotSupportedFaultType extends BaseFaultType {}
+public class NotifyMessageNotSupportedFaultType extends BaseFaultType {
+}

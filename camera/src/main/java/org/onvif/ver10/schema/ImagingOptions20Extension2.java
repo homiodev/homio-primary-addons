@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "ImagingOptions20Extension2",
-    propOrder = {"irCutFilterAutoAdjustment", "extension"})
+        name = "ImagingOptions20Extension2",
+        propOrder = {"irCutFilterAutoAdjustment", "extension"})
 public class ImagingOptions20Extension2 {
 
     @XmlElement(name = "IrCutFilterAutoAdjustment")

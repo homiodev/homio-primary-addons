@@ -7,8 +7,8 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "GetConfiguration",
-    propOrder = {"configurationToken", "profileToken"})
+        name = "GetConfiguration",
+        propOrder = {"configurationToken", "profileToken"})
 public class GetConfiguration {
 
     @XmlElement(name = "ConfigurationToken")

@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "H264Configuration",
-    propOrder = {"govLength", "h264Profile"})
+        name = "H264Configuration",
+        propOrder = {"govLength", "h264Profile"})
 public class H264Configuration {
 
     @XmlElement(name = "GovLength")

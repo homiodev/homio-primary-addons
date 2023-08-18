@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "RelativeFocus",
-    propOrder = {"distance", "speed"})
+        name = "RelativeFocus",
+        propOrder = {"distance", "speed"})
 public class RelativeFocus {
 
     @XmlElement(name = "Distance")

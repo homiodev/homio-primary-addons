@@ -8,15 +8,11 @@
 
 package org.oasis_open.docs.wsn.b_2;
 
+import jakarta.xml.bind.annotation.*;
+import org.oasis_open.docs.wsn.t_1.TopicSetType;
+
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
-import org.oasis_open.docs.wsn.t_1.TopicSetType;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -41,8 +37,8 @@ import org.oasis_open.docs.wsn.t_1.TopicSetType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"topicExpression", "fixedTopicSet", "topicExpressionDialect", "topicSet"})
+        name = "",
+        propOrder = {"topicExpression", "fixedTopicSet", "topicExpressionDialect", "topicSet"})
 @XmlRootElement(name = "NotificationProducerRP")
 public class NotificationProducerRP {
 

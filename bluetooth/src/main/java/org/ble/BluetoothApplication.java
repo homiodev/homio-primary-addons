@@ -1,16 +1,15 @@
 package org.ble;
 
-import static org.ble.CharacteristicFlag.C_READ;
-import static org.ble.CharacteristicFlag.C_READ_WRITE;
-import static org.ble.CharacteristicFlag.C_WRITE;
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
-import org.freedesktop.dbus.exceptions.DBusException;
+
+import static org.ble.CharacteristicFlag.*;
 
 @Log4j2
 public class BluetoothApplication {

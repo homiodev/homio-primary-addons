@@ -7,8 +7,8 @@ import jakarta.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Date",
-    propOrder = {"year", "month", "day"})
+        name = "Date",
+        propOrder = {"year", "month", "day"})
 public class Date {
 
     @XmlElement(name = "Year")

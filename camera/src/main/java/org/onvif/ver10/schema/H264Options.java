@@ -1,12 +1,9 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlSeeAlso;
-import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * Java-Klasse f�r H264Options complex type.
@@ -32,14 +29,14 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "H264Options",
-    propOrder = {
-        "resolutionsAvailable",
-        "govLengthRange",
-        "frameRateRange",
-        "encodingIntervalRange",
-        "h264ProfilesSupported"
-    })
+        name = "H264Options",
+        propOrder = {
+                "resolutionsAvailable",
+                "govLengthRange",
+                "frameRateRange",
+                "encodingIntervalRange",
+                "h264ProfilesSupported"
+        })
 @XmlSeeAlso({H264Options2.class})
 public class H264Options {
 

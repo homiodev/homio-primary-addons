@@ -1,8 +1,5 @@
 package org.homio.addon.mqtt.setting;
 
-import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
-import static org.homio.api.util.JsonUtils.putOpt;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -17,12 +14,15 @@ import org.homio.api.ui.UI.Color;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
+import static org.homio.api.util.JsonUtils.putOpt;
+
 /**
  * 'Remove button' console header button for tree/table console blocks.
  */
 public class ConsoleRemoveMqttTreeNodeHeaderButtonSetting implements
-    ConsoleHeaderSettingPlugin<NodeRemoveRequest>,
-    SettingPlugin<NodeRemoveRequest> {
+        ConsoleHeaderSettingPlugin<NodeRemoveRequest>,
+        SettingPlugin<NodeRemoveRequest> {
 
     @Override
     public Icon getIcon() {

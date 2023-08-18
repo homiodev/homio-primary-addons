@@ -8,14 +8,11 @@
 
 package org.w3._2005._08.addressing;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.XmlValue;
-import javax.xml.namespace.QName;
 
 /**
  * Java-Klasse f�r AttributedQNameType complex type.
@@ -35,12 +32,14 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "AttributedQNameType",
-    propOrder = {"value"})
+        name = "AttributedQNameType",
+        propOrder = {"value"})
 public class AttributedQNameType {
 
-    @XmlValue protected QName value;
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlValue
+    protected QName value;
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der value-Eigenschaft ab.

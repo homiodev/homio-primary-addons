@@ -26,8 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "IPv6NetworkInterface",
-    propOrder = {"enabled", "config"})
+        name = "IPv6NetworkInterface",
+        propOrder = {"enabled", "config"})
 public class IPv6NetworkInterface {
 
     @XmlElement(name = "Enabled")

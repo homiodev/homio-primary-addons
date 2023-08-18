@@ -1,14 +1,10 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * A media profile consists of a set of media configurations. Media profiles are used by a client to configure properties of a media stream from an NVT.
@@ -58,18 +54,18 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Profile",
-    propOrder = {
-        "name",
-        "videoSourceConfiguration",
-        "audioSourceConfiguration",
-        "videoEncoderConfiguration",
-        "audioEncoderConfiguration",
-        "videoAnalyticsConfiguration",
-        "ptzConfiguration",
-        "metadataConfiguration",
-        "extension"
-    })
+        name = "Profile",
+        propOrder = {
+                "name",
+                "videoSourceConfiguration",
+                "audioSourceConfiguration",
+                "videoEncoderConfiguration",
+                "audioEncoderConfiguration",
+                "videoAnalyticsConfiguration",
+                "ptzConfiguration",
+                "metadataConfiguration",
+                "extension"
+        })
 public class Profile {
 
     @XmlElement(name = "Name", required = true)
@@ -105,7 +101,8 @@ public class Profile {
     @XmlAttribute(name = "fixed")
     protected Boolean fixed;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der name-Eigenschaft ab.

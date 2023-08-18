@@ -29,8 +29,8 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "IPAddress",
-    propOrder = {"type", "iPv4Address", "iPv6Address"})
+        name = "IPAddress",
+        propOrder = {"type", "iPv4Address", "iPv6Address"})
 public class IPAddress {
 
     @XmlElement(name = "Type", required = true)

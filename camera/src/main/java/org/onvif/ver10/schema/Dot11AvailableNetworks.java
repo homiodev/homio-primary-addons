@@ -1,30 +1,27 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.adapters.HexBinaryAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import jakarta.xml.bind.annotation.adapters.HexBinaryAdapter;
-import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import javax.xml.namespace.QName;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Dot11AvailableNetworks",
-    propOrder = {
-        "ssid",
-        "bssid",
-        "authAndMangementSuite",
-        "pairCipher",
-        "groupCipher",
-        "signalStrength",
-        "extension"
-    })
+        name = "Dot11AvailableNetworks",
+        propOrder = {
+                "ssid",
+                "bssid",
+                "authAndMangementSuite",
+                "pairCipher",
+                "groupCipher",
+                "signalStrength",
+                "extension"
+        })
 public class Dot11AvailableNetworks {
 
     @XmlElement(name = "SSID", required = true, type = String.class)
@@ -49,7 +46,8 @@ public class Dot11AvailableNetworks {
     @XmlElement(name = "Extension")
     protected Dot11AvailableNetworksExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der ssid-Eigenschaft ab.

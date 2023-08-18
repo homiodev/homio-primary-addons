@@ -1,11 +1,12 @@
 package org.homio.addon.mqtt.entity;
 
-import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.homio.api.storage.DataStorageEntity;
 import org.homio.api.util.CommonUtils;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -33,6 +34,6 @@ public class MQTTMessage extends DataStorageEntity {
     @Override
     public String toString() {
         return "{payload=" + getValue() + ", time=" + CommonUtils.DATE_TIME_FORMAT.format(new Date(getId())) + ", QoS=" +
-            qos + ", ret=" + retained + ", dup=" + duplicated + "}";
+                qos + ", ret=" + retained + ", dup=" + duplicated + "}";
     }
 }

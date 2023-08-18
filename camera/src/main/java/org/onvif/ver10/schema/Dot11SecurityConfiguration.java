@@ -1,13 +1,10 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * Java-Klasse f�r Dot11SecurityConfiguration complex type.
@@ -34,8 +31,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "Dot11SecurityConfiguration",
-    propOrder = {"mode", "algorithm", "psk", "dot1X", "extension"})
+        name = "Dot11SecurityConfiguration",
+        propOrder = {"mode", "algorithm", "psk", "dot1X", "extension"})
 public class Dot11SecurityConfiguration {
 
     @XmlElement(name = "Mode", required = true)
@@ -53,7 +50,8 @@ public class Dot11SecurityConfiguration {
     @XmlElement(name = "Extension")
     protected Dot11SecurityConfigurationExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der mode-Eigenschaft ab.

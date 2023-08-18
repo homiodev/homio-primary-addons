@@ -1,12 +1,13 @@
 package org.onvif.ver10.schema;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.w3c.dom.Element;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Java-Klasse f�r PTZSpacesExtension complex type.
@@ -28,8 +29,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "PTZSpacesExtension",
-    propOrder = {"any"})
+        name = "PTZSpacesExtension",
+        propOrder = {"any"})
 public class PTZSpacesExtension {
 
     @XmlAnyElement(lax = true)

@@ -8,14 +8,10 @@
 
 package org.oasis_open.docs.wsn.b_2;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlSchemaType;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
+import jakarta.xml.bind.annotation.*;
 import org.w3._2005._08.addressing.EndpointReferenceType;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -40,8 +36,8 @@ import org.w3._2005._08.addressing.EndpointReferenceType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"consumerReference", "filter", "subscriptionPolicy", "creationTime"})
+        name = "",
+        propOrder = {"consumerReference", "filter", "subscriptionPolicy", "creationTime"})
 @XmlRootElement(name = "SubscriptionManagerRP")
 public class SubscriptionManagerRP {
 

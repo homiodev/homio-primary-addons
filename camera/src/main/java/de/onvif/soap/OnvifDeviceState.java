@@ -1,29 +1,6 @@
 package de.onvif.soap;
 
-import de.onvif.soap.devices.EventDevices;
-import de.onvif.soap.devices.ImagingDevices;
-import de.onvif.soap.devices.InitialDevices;
-import de.onvif.soap.devices.MediaDevices;
-import de.onvif.soap.devices.PtzDevices;
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.SimpleTimeZone;
-import java.util.TimeZone;
-import java.util.TreeMap;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import de.onvif.soap.devices.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +13,15 @@ import org.onvif.ver10.device.wsdl.GetDeviceInformationResponse;
 import org.onvif.ver10.schema.Capabilities;
 import org.onvif.ver10.schema.Profile;
 import org.onvif.ver10.schema.VideoResolution;
+
+import java.net.ConnectException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Getter
 @Log4j2
@@ -69,12 +55,14 @@ public class OnvifDeviceState {
     private String ip;
     private int onvifPort;
     private String profileToken;
-    @Setter private Consumer<String> unreachableHandler;
+    @Setter
+    private Consumer<String> unreachableHandler;
     private Capabilities capabilities;
     private String subscriptionError;
     private boolean initialized;
 
-    @Setter private @Nullable Runnable updateListener;
+    @Setter
+    private @Nullable Runnable updateListener;
 
     @SneakyThrows
     public OnvifDeviceState(@NotNull String entityID) {
@@ -85,6 +73,16 @@ public class OnvifDeviceState {
         this.mediaDevices = new MediaDevices(this, soap);
         this.imagingDevices = new ImagingDevices(this, soap);
         this.eventDevices = new EventDevices(entityID, this, soap);
+    }
+
+    private static byte[] sha1(String s) throws NoSuchAlgorithmException {
+        MessageDigest SHA1;
+        SHA1 = MessageDigest.getInstance("SHA1");
+
+        SHA1.reset();
+        SHA1.update(s.getBytes());
+
+        return SHA1.digest();
     }
 
     public void setSubscriptionError(String subscriptionError) {
@@ -115,7 +113,7 @@ public class OnvifDeviceState {
 
         int activeProfileIndex = onvifMediaProfile >= this.profiles.size() ? 0 : onvifMediaProfile;
         Profile profile =
-            this.profiles.size() > activeProfileIndex ? this.profiles.get(activeProfileIndex) : null;
+                this.profiles.size() > activeProfileIndex ? this.profiles.get(activeProfileIndex) : null;
         if (profile != null) {
             this.profileToken = profile.getToken();
         }
@@ -132,8 +130,8 @@ public class OnvifDeviceState {
 
     private Map<VideoEncodeResolution, Profile> buildResolutionProfiles() {
         return profiles.stream().collect(Collectors.toMap(profile ->
-                new VideoEncodeResolution(profile.getVideoEncoderConfiguration().getResolution()),
-            Function.identity()));
+                        new VideoEncodeResolution(profile.getVideoEncoderConfiguration().getResolution()),
+                Function.identity()));
     }
 
     public void dispose() {
@@ -214,18 +212,11 @@ public class OnvifDeviceState {
             this.init();
             GetDeviceInformationResponse deviceInformation = initialDevices.getDeviceInformation();
             return deviceInformation.getSerialNumber() == null
-                ? null
-                : deviceInformation.getModel() + "~" + deviceInformation.getSerialNumber();
+                    ? null
+                    : deviceInformation.getModel() + "~" + deviceInformation.getSerialNumber();
         } catch (Exception ex) {
             // in case of auth this method may throws exception
             return null;
-        }
-    }
-
-    public void cameraUnreachable(String errorMessage) {
-        log.error("[{}]: Camera unreachable: <{}>", entityID, errorMessage);
-        if (unreachableHandler != null) {
-            unreachableHandler.accept(errorMessage);
         }
     }
 
@@ -234,28 +225,25 @@ public class OnvifDeviceState {
       return initialDevices.getDate();
   }*/
 
-    public void setSubscriptionUri(String subscriptionUri) {
-        this.subscriptionIpLessUri = SOAP.removeIpFromUrl(subscriptionUri);
+    public void cameraUnreachable(String errorMessage) {
+        log.error("[{}]: Camera unreachable: <{}>", entityID, errorMessage);
+        if (unreachableHandler != null) {
+            unreachableHandler.accept(errorMessage);
+        }
     }
 
   /*public String getHostname() {
       return initialDevices.getHostname();
   }*/
 
-    public String getProfile(boolean highResolution) {
-        return highResolution
-            ? resolutionProfiles.firstEntry().getValue().getName()
-            : resolutionProfiles.lastEntry().getValue().getName();
+    public void setSubscriptionUri(String subscriptionUri) {
+        this.subscriptionIpLessUri = SOAP.removeIpFromUrl(subscriptionUri);
     }
 
-    private static byte[] sha1(String s) throws NoSuchAlgorithmException {
-        MessageDigest SHA1;
-        SHA1 = MessageDigest.getInstance("SHA1");
-
-        SHA1.reset();
-        SHA1.update(s.getBytes());
-
-        return SHA1.digest();
+    public String getProfile(boolean highResolution) {
+        return highResolution
+                ? resolutionProfiles.firstEntry().getValue().getName()
+                : resolutionProfiles.lastEntry().getValue().getName();
     }
 
     /**

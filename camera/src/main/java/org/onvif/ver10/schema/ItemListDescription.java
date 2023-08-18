@@ -1,16 +1,12 @@
 package org.onvif.ver10.schema;
 
+import jakarta.xml.bind.annotation.*;
+
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAnyAttribute;
-import jakarta.xml.bind.annotation.XmlAttribute;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlType;
-import javax.xml.namespace.QName;
 
 /**
  * Describes a list of items. Each item in the list shall have a unique name. The list is designed as linear structure without optional or unbounded elements.
@@ -56,8 +52,8 @@ import javax.xml.namespace.QName;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "ItemListDescription",
-    propOrder = {"simpleItemDescription", "elementItemDescription", "extension"})
+        name = "ItemListDescription",
+        propOrder = {"simpleItemDescription", "elementItemDescription", "extension"})
 public class ItemListDescription {
 
     @XmlElement(name = "SimpleItemDescription")
@@ -69,7 +65,8 @@ public class ItemListDescription {
     @XmlElement(name = "Extension")
     protected ItemListDescriptionExtension extension;
 
-    @XmlAnyAttribute private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the simpleItemDescription property.
