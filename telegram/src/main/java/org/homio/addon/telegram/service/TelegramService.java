@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.homio.addon.telegram.TelegramEntity;
 import org.homio.addon.telegram.commands.*;
 import org.homio.api.EntityContext;
+import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.workspace.BroadcastLock;
@@ -104,6 +105,7 @@ public class TelegramService {
     }
 
     public void updateNotificationBlock(TelegramEntity entity) {
+        entityContext.ui().addNotificationBlockOptional("telegram", "Telegram", new Icon("fab fa-telegram", "#0088CC"));
         entityContext.ui().updateNotificationBlock("telegram", entity);
     }
 

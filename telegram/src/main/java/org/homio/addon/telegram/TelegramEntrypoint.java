@@ -20,7 +20,6 @@ public class TelegramEntrypoint implements AddonEntrypoint {
     private final TelegramService telegramService;
 
     public void init() {
-        entityContext.ui().addNotificationBlockOptional("telegram", "Telegram", new Icon("fab fa-telegram", "#0088CC"));
         entityContext.event().runOnceOnInternetUp("telegram-start", () -> {
             for (TelegramEntity telegramEntity : entityContext.findAll(TelegramEntity.class)) {
                 telegramService.restart(telegramEntity);

@@ -1,15 +1,11 @@
 package de.onvif.soap;
 
 import de.onvif.soap.devices.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
+import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.codec.binary.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.onvif.ver10.device.wsdl.GetDeviceInformationResponse;
 import org.onvif.ver10.schema.Capabilities;
 import org.onvif.ver10.schema.Profile;
 import org.onvif.ver10.schema.VideoResolution;
@@ -22,6 +18,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 @Getter
 @Log4j2
@@ -207,16 +205,17 @@ public class OnvifDeviceState {
         return utcTime;
     }
 
-    public String getIEEEAddress() {
+    public String getIEEEAddress(boolean muteError) {
         try {
-            this.init();
-            GetDeviceInformationResponse deviceInformation = initialDevices.getDeviceInformation();
-            return deviceInformation.getSerialNumber() == null
-                    ? null
-                    : deviceInformation.getModel() + "~" + deviceInformation.getSerialNumber();
+            init();
+            val di = initialDevices.getDeviceInformation();
+            return defaultIfEmpty(di.getSerialNumber(), defaultIfEmpty(di.getHardwareId(), HOST_IP));
         } catch (Exception ex) {
-            // in case of auth this method may throws exception
-            return null;
+            if (muteError) {
+                // in case of auth this method may throw exception
+                return null;
+            }
+            throw ex;
         }
     }
 
