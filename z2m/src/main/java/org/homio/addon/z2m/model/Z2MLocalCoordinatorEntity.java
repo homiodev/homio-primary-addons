@@ -1,12 +1,26 @@
 package org.homio.addon.z2m.model;
 
+import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
+import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.homio.addon.z2m.Z2MEntrypoint;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MLocalCoordinatorService;
 import org.homio.addon.z2m.util.ApplianceModel;
@@ -27,7 +41,12 @@ import org.homio.api.model.OptionModel;
 import org.homio.api.model.endpoint.DeviceEndpoint;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
-import org.homio.api.ui.field.*;
+import org.homio.api.ui.field.UIField;
+import org.homio.api.ui.field.UIFieldGroup;
+import org.homio.api.ui.field.UIFieldIgnore;
+import org.homio.api.ui.field.UIFieldLinkToEntity;
+import org.homio.api.ui.field.UIFieldSlider;
+import org.homio.api.ui.field.UIFieldType;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.ui.field.color.UIFieldColorRef;
 import org.homio.api.ui.field.inline.UIFieldInlineEntities;
@@ -37,15 +56,6 @@ import org.homio.api.util.DataSourceUtil;
 import org.homio.api.util.DataSourceUtil.DataSourceContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
-import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
 
 @SuppressWarnings({"unused", "rawtypes"})
 @Log4j2
@@ -107,8 +117,9 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
         return "ZigBee2MQTT";
     }
 
-    public long getDeepHashCode() {
-        return getEntityID().hashCode() + getJsonDataHashCode("mqtt", "bt", "port", "start");
+    @Override
+    public long getEntityServiceHashCode() {
+        return getJsonDataHashCode("mqtt", "bt", "port", "start");
     }
 
     @Override
@@ -230,7 +241,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
 
     @Override
     public void logBuilder(EntityLogBuilder entityLogBuilder) {
-        entityLogBuilder.addTopicFilterByEntityID("org.homio");
+        entityLogBuilder.addTopicFilterByEntityID(Z2MEntrypoint.class);
         entityLogBuilder.addTopic(Z2MLocalCoordinatorService.class);
     }
 

@@ -1,6 +1,7 @@
 package org.homio.addon.mqtt.entity;
 
 import jakarta.persistence.Entity;
+import org.homio.addon.mqtt.MQTTEntrypoint;
 import org.homio.addon.mqtt.workspace.Scratch3MQTTBlocks;
 import org.homio.api.entity.HasFirmwareVersion;
 import org.homio.api.entity.log.HasEntityLog;
@@ -59,7 +60,7 @@ public class MQTTLocalClientEntity extends MQTTBaseEntity implements HasEntityLo
 
     @Override
     public void logBuilder(EntityLogBuilder logBuilder) {
-        logBuilder.addTopicFilterByEntityID("org.homio.addon.mqtt");
+        logBuilder.addTopicFilterByEntityID(MQTTEntrypoint.class);
     }
 
     @Override

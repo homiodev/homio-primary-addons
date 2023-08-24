@@ -1,5 +1,17 @@
 package org.homio.addon.z2m.util;
 
+import static org.homio.addon.z2m.util.ApplianceModel.BINARY_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.COMPOSITE_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.ENUM_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.SWITCH_TYPE;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -21,15 +33,6 @@ import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Lang;
 import org.homio.hquery.ProgressBar;
 import org.jetbrains.annotations.NotNull;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.homio.addon.z2m.util.ApplianceModel.*;
 
 @Log4j2
 public final class ZigBeeUtil {
@@ -121,10 +124,11 @@ public final class ZigBeeUtil {
         ProgressBar progressBar = projectUpdate.getProgressBar();
 
         try {
-            projectUpdate.getProject().deleteProject();
+            projectUpdate.getGitHubProject().deleteProject();
         } catch (Exception ex) {
             entityContext.ui().sendErrorMessage(
-                    Lang.getServerMessage("ZIGBEE.ERROR.DELETE", projectUpdate.getProject().getLocalProjectPath().toString()));
+                Lang.getServerMessage("ZIGBEE.ERROR.DELETE",
+                    projectUpdate.getGitHubProject().getLocalProjectPath().toString()));
             throw ex;
         }
 

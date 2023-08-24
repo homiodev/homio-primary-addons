@@ -1,12 +1,35 @@
 package org.homio.addon.mqtt.entity;
 
+import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.homio.addon.mqtt.entity.MQTTBaseEntity.normalize;
+
+import java.nio.file.Paths;
+import java.text.NumberFormat;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.eclipse.paho.client.mqttv3.*;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.homio.addon.mqtt.console.MQTTExplorerConsolePlugin;
 import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
@@ -28,19 +51,6 @@ import org.homio.api.util.JsonUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-import java.nio.file.Paths;
-import java.text.NumberFormat;
-import java.time.Duration;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static java.lang.String.format;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.homio.addon.mqtt.entity.MQTTBaseEntity.normalize;
-
 @Log4j2
 public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
 
@@ -51,8 +61,6 @@ public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
     private DataStorageService<MQTTMessage> storage;
     @Getter
     private MqttClient mqttClient;
-    @Getter
-    private long serviceHashCode;
 
     public MQTTService(@NotNull EntityContext entityContext, @NotNull MQTTBaseEntity entity) {
         super(entityContext, entity, true);
@@ -83,11 +91,6 @@ public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
     public void clearHistory() {
         storage.deleteAll();
         this.sysHistoryMap.clear();
-    }
-
-    @Override
-    protected long getEntityHashCode(MQTTBaseEntity entity) {
-        return entity.getDeepHashCode();
     }
 
     @Override
@@ -132,12 +135,7 @@ public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
         if (!entity.getIncludeSys()) {
             sysHistoryMap.clear();
         }
-
-        long serviceHashCode = entity.getServiceHashCode();
-        if (serviceHashCode != this.serviceHashCode) {
-            this.serviceHashCode = serviceHashCode;
-            testServiceWithSetStatus();
-        }
+        testServiceWithSetStatus();
     }
 
     @Override

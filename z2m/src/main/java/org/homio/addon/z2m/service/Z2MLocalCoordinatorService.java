@@ -35,6 +35,7 @@ import org.homio.api.service.EntityService.ServiceInstance;
 import org.homio.api.service.EntityService.WatchdogService;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.util.CommonUtils;
+import org.homio.api.util.HardwareUtils;
 import org.homio.api.util.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -147,11 +148,6 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
 
         mqttEntityService = entity.getMqttEntityService();
         runZigBee2MQTT();
-    }
-
-    @Override
-    protected long getEntityHashCode(Z2MLocalCoordinatorEntity entity) {
-        return entity.getDeepHashCode();
     }
 
     public void dispose(@Nullable Exception ex) {
@@ -407,7 +403,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     private String validateEntity(Z2MLocalCoordinatorEntity newEntity) {
         if (isEmpty(newEntity.getPort())) {
             return "ZIGBEE.ERROR.NO_PORT";
-        } else if (CommonUtils.getSerialPort(entity.getPort()) == null) {
+        } else if (HardwareUtils.getSerialPort(entity.getPort()) == null) {
             return Lang.getServerMessage("ZIGBEE.ERROR.PORT_NOT_FOUND", entity.getPort());
         }
         if (isEmpty(entity.getRawMqttEntity())) {

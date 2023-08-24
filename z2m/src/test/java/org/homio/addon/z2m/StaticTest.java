@@ -2,6 +2,7 @@ package org.homio.addon.z2m;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.SystemUtils;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.Z2MConfiguration;
 import org.homio.api.model.device.ConfigDeviceDefinition;
@@ -27,6 +28,7 @@ public class StaticTest {
                 new TypeReference<>() {
                 });
         assertEquals(2, applianceModels.size());
+        System.setProperty("rootPath", SystemUtils.getUserHome().toString());
 
         ConfigDeviceDefinitionService service = new ConfigDeviceDefinitionService("zigbee-devices.json");
 

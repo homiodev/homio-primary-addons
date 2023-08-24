@@ -1,5 +1,10 @@
 package org.homio.addon.mqtt;
 
+import static java.lang.String.format;
+
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -9,14 +14,8 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.homio.addon.mqtt.entity.MQTTLocalClientEntity;
 import org.homio.api.AddonEntrypoint;
 import org.homio.api.EntityContext;
-import org.homio.api.util.CommonUtils;
+import org.homio.api.util.HardwareUtils;
 import org.springframework.stereotype.Component;
-
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static java.lang.String.format;
 
 @Log4j2
 @Component
@@ -33,7 +32,7 @@ public class MQTTEntrypoint implements AddonEntrypoint {
         entityContext.bgp().builder("check-mqtt").execute(() -> {
             Set<String> existIps = entityContext.findAll(MQTTLocalClientEntity.class).stream()
                     .map(MQTTLocalClientEntity::getHostname).collect(Collectors.toSet());
-            CommonUtils.scanForDevice(entityContext, 1883, "MQTT", ip -> {
+            HardwareUtils.scanForDevice(entityContext, 1883, "MQTT", ip -> {
                 if (existIps.contains(ip)) {
                     return false;
                 }
