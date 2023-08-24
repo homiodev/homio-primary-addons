@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "EventCapabilities",
@@ -43,50 +42,40 @@ public class EventCapabilities {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public String getXAddr() {
         return xAddr;
     }
 
-
     public void setXAddr(String value) {
         this.xAddr = value;
     }
-
 
     public boolean isWSSubscriptionPolicySupport() {
         return wsSubscriptionPolicySupport;
     }
 
-
     public void setWSSubscriptionPolicySupport(boolean value) {
         this.wsSubscriptionPolicySupport = value;
     }
-
 
     public boolean isWSPullPointSupport() {
         return wsPullPointSupport;
     }
 
-
     public void setWSPullPointSupport(boolean value) {
         this.wsPullPointSupport = value;
     }
-
 
     public boolean isWSPausableSubscriptionManagerInterfaceSupport() {
         return wsPausableSubscriptionManagerInterfaceSupport;
     }
 
-
     public void setWSPausableSubscriptionManagerInterfaceSupport(boolean value) {
         this.wsPausableSubscriptionManagerInterfaceSupport = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -94,5 +83,4 @@ public class EventCapabilities {
         }
         return this.any;
     }
-
 }

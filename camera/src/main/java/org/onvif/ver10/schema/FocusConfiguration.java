@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,18 +20,14 @@ import lombok.Getter;
         propOrder = {"autoFocusMode", "defaultSpeed", "nearLimit", "farLimit", "any"})
 public class FocusConfiguration {
 
-
     @XmlElement(name = "AutoFocusMode", required = true)
     protected AutoFocusMode autoFocusMode;
-
 
     @Getter @XmlElement(name = "DefaultSpeed")
     protected float defaultSpeed;
 
-
     @Getter @XmlElement(name = "NearLimit")
     protected float nearLimit;
-
 
     @Getter @XmlElement(name = "FarLimit")
     protected float farLimit;
@@ -40,30 +35,24 @@ public class FocusConfiguration {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setAutoFocusMode(AutoFocusMode value) {
         this.autoFocusMode = value;
     }
 
-
     public void setDefaultSpeed(float value) {
         this.defaultSpeed = value;
     }
-
 
     public void setNearLimit(float value) {
         this.nearLimit = value;
     }
 
-
     public void setFarLimit(float value) {
         this.farLimit = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -71,5 +60,4 @@ public class FocusConfiguration {
         }
         return this.any;
     }
-
 }

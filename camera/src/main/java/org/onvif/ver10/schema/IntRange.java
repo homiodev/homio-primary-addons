@@ -6,7 +6,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -14,19 +13,15 @@ import lombok.Getter;
         propOrder = {"min", "max"})
 public class IntRange {
 
-
     @XmlElement(name = "Min")
     protected int min;
-
 
     @XmlElement(name = "Max")
     protected int max;
 
-
     public void setMin(int value) {
         this.min = value;
     }
-
 
     public void setMax(int value) {
         this.max = value;

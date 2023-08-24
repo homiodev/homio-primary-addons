@@ -17,11 +17,9 @@ public class GetOSDOptionsResponse {
     @XmlElement(name = "OSDOptions", required = true)
     protected OSDConfigurationOptions osdOptions;
 
-
     public OSDConfigurationOptions getOSDOptions() {
         return osdOptions;
     }
-
 
     public void setOSDOptions(OSDConfigurationOptions value) {
         this.osdOptions = value;

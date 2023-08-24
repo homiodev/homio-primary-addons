@@ -16,10 +16,8 @@ import org.onvif.ver10.schema.AudioSourceConfigurationOptions;
 @XmlRootElement(name = "GetAudioSourceConfigurationOptionsResponse")
 public class GetAudioSourceConfigurationOptionsResponse {
 
-
     @XmlElement(name = "Options", required = true)
     protected AudioSourceConfigurationOptions options;
-
 
     public void setOptions(AudioSourceConfigurationOptions value) {
         this.options = value;

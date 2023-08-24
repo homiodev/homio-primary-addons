@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,26 +17,20 @@ import lombok.Getter;
         propOrder = {"status", "position"})
 public class PTZFilter {
 
-
     @XmlElement(name = "Status")
     protected boolean status;
-
 
     @XmlElement(name = "Position")
     protected boolean position;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setStatus(boolean value) {
         this.status = value;
     }
 
-
     public void setPosition(boolean value) {
         this.position = value;
     }
-
 }

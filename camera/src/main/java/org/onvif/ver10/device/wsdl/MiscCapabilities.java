@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -20,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MiscCapabilities")
 public class MiscCapabilities {
@@ -28,10 +20,8 @@ public class MiscCapabilities {
     @XmlAttribute(name = "AuxiliaryCommands")
     protected List<String> auxiliaryCommands;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<String> getAuxiliaryCommands() {
         if (auxiliaryCommands == null) {
@@ -39,5 +29,4 @@ public class MiscCapabilities {
         }
         return this.auxiliaryCommands;
     }
-
 }

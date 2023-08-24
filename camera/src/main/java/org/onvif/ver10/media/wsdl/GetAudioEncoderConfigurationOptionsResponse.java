@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -16,7 +9,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 import org.onvif.ver10.schema.AudioEncoderConfigurationOptions;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -25,10 +17,8 @@ import org.onvif.ver10.schema.AudioEncoderConfigurationOptions;
 @XmlRootElement(name = "GetAudioEncoderConfigurationOptionsResponse")
 public class GetAudioEncoderConfigurationOptionsResponse {
 
-
     @XmlElement(name = "Options", required = true)
     protected AudioEncoderConfigurationOptions options;
-
 
     public void setOptions(AudioEncoderConfigurationOptions value) {
         this.options = value;

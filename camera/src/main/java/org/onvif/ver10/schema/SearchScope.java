@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "SearchScope",
@@ -30,18 +29,14 @@ public class SearchScope {
     @XmlElement(name = "IncludedRecordings")
     protected List<String> includedRecordings;
 
-
     @Getter @XmlElement(name = "RecordingInformationFilter")
     protected String recordingInformationFilter;
-
 
     @Getter @XmlElement(name = "Extension")
     protected SearchScopeExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<SourceReference> getIncludedSources() {
         if (includedSources == null) {
@@ -50,7 +45,6 @@ public class SearchScope {
         return this.includedSources;
     }
 
-
     public List<String> getIncludedRecordings() {
         if (includedRecordings == null) {
             includedRecordings = new ArrayList<String>();
@@ -58,14 +52,11 @@ public class SearchScope {
         return this.includedRecordings;
     }
 
-
     public void setRecordingInformationFilter(String value) {
         this.recordingInformationFilter = value;
     }
 
-
     public void setExtension(SearchScopeExtension value) {
         this.extension = value;
     }
-
 }

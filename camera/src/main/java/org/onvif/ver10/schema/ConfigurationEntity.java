@@ -30,28 +30,22 @@ import lombok.Getter;
 })
 public class ConfigurationEntity {
 
-
     @XmlElement(name = "Name", required = true)
     protected String name;
-
 
     @XmlElement(name = "UseCount")
     protected int useCount;
 
-
     @XmlAttribute(name = "token", required = true)
     protected String token;
-
 
     public void setName(String value) {
         this.name = value;
     }
 
-
     public void setUseCount(int value) {
         this.useCount = value;
     }
-
 
     public void setToken(String value) {
         this.token = value;

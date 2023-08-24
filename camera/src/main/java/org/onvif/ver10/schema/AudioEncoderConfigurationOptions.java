@@ -21,10 +21,8 @@ public class AudioEncoderConfigurationOptions {
     @XmlElement(name = "Options")
     protected List<AudioEncoderConfigurationOption> options;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<AudioEncoderConfigurationOption> getOptions() {
         if (options == null) {
@@ -32,5 +30,4 @@ public class AudioEncoderConfigurationOptions {
         }
         return this.options;
     }
-
 }

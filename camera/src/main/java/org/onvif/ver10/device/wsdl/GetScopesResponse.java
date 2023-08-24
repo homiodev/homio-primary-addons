@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -17,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.Scope;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -27,7 +19,6 @@ public class GetScopesResponse {
 
     @XmlElement(name = "Scopes", required = true)
     protected List<Scope> scopes;
-
 
     public List<Scope> getScopes() {
         if (scopes == null) {

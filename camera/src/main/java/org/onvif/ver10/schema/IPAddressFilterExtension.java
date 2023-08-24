@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IPAddressFilterExtension",
@@ -16,7 +15,6 @@ public class IPAddressFilterExtension {
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {

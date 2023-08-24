@@ -8,7 +8,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 import org.onvif.ver10.schema.ImagingSettings20;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -17,10 +16,8 @@ import org.onvif.ver10.schema.ImagingSettings20;
 @XmlRootElement(name = "SetImagingSettings")
 public class SetImagingSettings {
 
-
     @XmlElement(name = "VideoSourceToken", required = true)
     protected String videoSourceToken;
-
 
     @Getter @XmlElement(name = "ImagingSettings", required = true)
     protected ImagingSettings20 imagingSettings;
@@ -28,21 +25,17 @@ public class SetImagingSettings {
     @XmlElement(name = "ForcePersistence")
     protected Boolean forcePersistence;
 
-
     public void setVideoSourceToken(String value) {
         this.videoSourceToken = value;
     }
-
 
     public void setImagingSettings(ImagingSettings20 value) {
         this.imagingSettings = value;
     }
 
-
     public Boolean isForcePersistence() {
         return forcePersistence;
     }
-
 
     public void setForcePersistence(Boolean value) {
         this.forcePersistence = value;

@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTControlDirection",
@@ -20,36 +19,28 @@ public class PTControlDirection {
     @XmlElement(name = "EFlip")
     protected EFlip eFlip;
 
-
     @Getter @XmlElement(name = "Reverse")
     protected Reverse reverse;
-
 
     @Getter @XmlElement(name = "Extension")
     protected PTControlDirectionExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public EFlip getEFlip() {
         return eFlip;
     }
 
-
     public void setEFlip(EFlip value) {
         this.eFlip = value;
     }
-
 
     public void setReverse(Reverse value) {
         this.reverse = value;
     }
 
-
     public void setExtension(PTControlDirectionExtension value) {
         this.extension = value;
     }
-
 }

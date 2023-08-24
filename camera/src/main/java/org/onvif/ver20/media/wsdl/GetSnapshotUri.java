@@ -15,10 +15,8 @@ import lombok.Getter;
 @XmlRootElement(name = "GetSnapshotUri")
 public class GetSnapshotUri {
 
-
     @XmlElement(name = "ProfileToken", required = true)
     protected String profileToken;
-
 
     public void setProfileToken(String value) {
         this.profileToken = value;

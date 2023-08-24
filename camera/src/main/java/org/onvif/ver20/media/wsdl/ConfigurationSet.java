@@ -41,22 +41,17 @@ import org.w3c.dom.Element;
         })
 public class ConfigurationSet {
 
-
     @XmlElement(name = "VideoSource")
     protected VideoSourceConfiguration videoSource;
-
 
     @Getter @XmlElement(name = "AudioSource")
     protected AudioSourceConfiguration audioSource;
 
-
     @Getter @XmlElement(name = "VideoEncoder")
     protected VideoEncoder2Configuration videoEncoder;
 
-
     @Getter @XmlElement(name = "AudioEncoder")
     protected AudioEncoder2Configuration audioEncoder;
-
 
     @Getter @XmlElement(name = "Analytics")
     protected ConfigurationEntity analytics;
@@ -64,14 +59,11 @@ public class ConfigurationSet {
     @XmlElement(name = "PTZ")
     protected PTZConfiguration ptz;
 
-
     @Getter @XmlElement(name = "Metadata")
     protected MetadataConfiguration metadata;
 
-
     @Getter @XmlElement(name = "AudioOutput")
     protected AudioOutputConfiguration audioOutput;
-
 
     @Getter @XmlElement(name = "AudioDecoder")
     protected AudioDecoderConfiguration audioDecoder;
@@ -80,58 +72,47 @@ public class ConfigurationSet {
     protected List<Element> any;
 
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setVideoSource(VideoSourceConfiguration value) {
         this.videoSource = value;
     }
 
-
     public void setAudioSource(AudioSourceConfiguration value) {
         this.audioSource = value;
     }
-
 
     public void setVideoEncoder(VideoEncoder2Configuration value) {
         this.videoEncoder = value;
     }
 
-
     public void setAudioEncoder(AudioEncoder2Configuration value) {
         this.audioEncoder = value;
     }
-
 
     public void setAnalytics(ConfigurationEntity value) {
         this.analytics = value;
     }
 
-
     public PTZConfiguration getPTZ() {
         return ptz;
     }
-
 
     public void setPTZ(PTZConfiguration value) {
         this.ptz = value;
     }
 
-
     public void setMetadata(MetadataConfiguration value) {
         this.metadata = value;
     }
-
 
     public void setAudioOutput(AudioOutputConfiguration value) {
         this.audioOutput = value;
     }
 
-
     public void setAudioDecoder(AudioDecoderConfiguration value) {
         this.audioDecoder = value;
     }
-
 
     public List<Element> getAny() {
         if (any == null) {
@@ -139,5 +120,4 @@ public class ConfigurationSet {
         }
         return this.any;
     }
-
 }

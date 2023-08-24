@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -16,10 +15,8 @@ import lombok.Getter;
 @XmlRootElement(name = "CreatePresetTourResponse")
 public class CreatePresetTourResponse {
 
-
     @XmlElement(name = "PresetTourToken", required = true)
     protected String presetTourToken;
-
 
     public void setPresetTourToken(String value) {
         this.presetTourToken = value;

@@ -15,10 +15,8 @@ import lombok.Getter;
 @XmlRootElement(name = "GetOSDOptions")
 public class GetOSDOptions {
 
-
     @XmlElement(name = "ConfigurationToken", required = true)
     protected String configurationToken;
-
 
     public void setConfigurationToken(String value) {
         this.configurationToken = value;

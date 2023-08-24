@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -22,10 +21,8 @@ import lombok.Getter;
         propOrder = {"type", "uri", "any"})
 public class SystemLogUri {
 
-
     @XmlElement(name = "Type", required = true)
     protected SystemLogType type;
-
 
     @Getter @XmlElement(name = "Uri", required = true)
     @XmlSchemaType(name = "anyURI")
@@ -34,20 +31,16 @@ public class SystemLogUri {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setType(SystemLogType value) {
         this.type = value;
     }
 
-
     public void setUri(String value) {
         this.uri = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -55,5 +48,4 @@ public class SystemLogUri {
         }
         return this.any;
     }
-
 }

@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -27,7 +26,6 @@ import lombok.Getter;
         })
 public class OSDConfigurationOptions {
 
-
     @XmlElement(name = "MaximumNumberOfOSDs", required = true)
     protected MaximumNumberOfOSDs maximumNumberOfOSDs;
 
@@ -37,27 +35,21 @@ public class OSDConfigurationOptions {
     @XmlElement(name = "PositionOption", required = true)
     protected List<String> positionOption;
 
-
     @Getter @XmlElement(name = "TextOption")
     protected OSDTextOptions textOption;
-
 
     @Getter @XmlElement(name = "ImageOption")
     protected OSDImgOptions imageOption;
 
-
     @Getter @XmlElement(name = "Extension")
     protected OSDConfigurationOptionsExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setMaximumNumberOfOSDs(MaximumNumberOfOSDs value) {
         this.maximumNumberOfOSDs = value;
     }
-
 
     public List<OSDType> getType() {
         if (type == null) {
@@ -66,7 +58,6 @@ public class OSDConfigurationOptions {
         return this.type;
     }
 
-
     public List<String> getPositionOption() {
         if (positionOption == null) {
             positionOption = new ArrayList<String>();
@@ -74,19 +65,15 @@ public class OSDConfigurationOptions {
         return this.positionOption;
     }
 
-
     public void setTextOption(OSDTextOptions value) {
         this.textOption = value;
     }
-
 
     public void setImageOption(OSDImgOptions value) {
         this.imageOption = value;
     }
 
-
     public void setExtension(OSDConfigurationOptionsExtension value) {
         this.extension = value;
     }
-
 }

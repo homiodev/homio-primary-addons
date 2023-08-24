@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,37 +20,29 @@ import lombok.Getter;
         propOrder = {"fromDHCP", "name", "extension"})
 public class HostnameInformation {
 
-
     @XmlElement(name = "FromDHCP")
     protected boolean fromDHCP;
-
 
     @XmlElement(name = "Name")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String name;
 
-
     @XmlElement(name = "Extension")
     protected HostnameInformationExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setFromDHCP(boolean value) {
         this.fromDHCP = value;
     }
 
-
     public void setName(String value) {
         this.name = value;
     }
 
-
     public void setExtension(HostnameInformationExtension value) {
         this.extension = value;
     }
-
 }

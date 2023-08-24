@@ -15,7 +15,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -23,16 +22,13 @@ import lombok.Getter;
         propOrder = {"dataFrom", "dataUntil", "numberRecordings", "any"})
 public class RecordingSummary {
 
-
     @XmlElement(name = "DataFrom", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar dataFrom;
 
-
     @Getter @XmlElement(name = "DataUntil", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar dataUntil;
-
 
     @Getter @XmlElement(name = "NumberRecordings")
     protected int numberRecordings;
@@ -40,25 +36,20 @@ public class RecordingSummary {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setDataFrom(XMLGregorianCalendar value) {
         this.dataFrom = value;
     }
 
-
     public void setDataUntil(XMLGregorianCalendar value) {
         this.dataUntil = value;
     }
 
-
     public void setNumberRecordings(int value) {
         this.numberRecordings = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -66,5 +57,4 @@ public class RecordingSummary {
         }
         return this.any;
     }
-
 }

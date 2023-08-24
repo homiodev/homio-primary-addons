@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "AnalyticsEngine",
@@ -27,12 +29,7 @@ public class AnalyticsEngine extends ConfigurationEntity {
     protected List<java.lang.Object> any;
 
      @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
-
-    public void setAnalyticsEngineConfiguration(AnalyticsDeviceEngineConfiguration value) {
-        this.analyticsEngineConfiguration = value;
-    }
+     private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<java.lang.Object> getAny() {
         if (any == null) {

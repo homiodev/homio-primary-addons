@@ -22,7 +22,6 @@ import lombok.Setter;
         propOrder = {"encoding", "bitrateList", "sampleRateList", "any"})
 public class AudioEncoderConfigurationOption {
 
-
     @XmlElement(name = "Encoding", required = true)
     protected AudioEncoding encoding;
 
@@ -44,5 +43,4 @@ public class AudioEncoderConfigurationOption {
         }
         return this.any;
     }
-
 }

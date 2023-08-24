@@ -8,14 +8,12 @@ import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IPAddress",
         propOrder = {"type", "iPv4Address", "iPv6Address"})
 public class IPAddress {
-
 
     @XmlElement(name = "Type", required = true)
     protected IPType type;
@@ -28,26 +26,21 @@ public class IPAddress {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String iPv6Address;
 
-
     public void setType(IPType value) {
         this.type = value;
     }
-
 
     public String getIPv4Address() {
         return iPv4Address;
     }
 
-
     public void setIPv4Address(String value) {
         this.iPv4Address = value;
     }
 
-
     public String getIPv6Address() {
         return iPv6Address;
     }
-
 
     public void setIPv6Address(String value) {
         this.iPv6Address = value;

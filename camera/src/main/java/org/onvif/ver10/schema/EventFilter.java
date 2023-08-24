@@ -10,14 +10,12 @@ import javax.xml.namespace.QName;
 import lombok.Getter;
 import org.oasis_open.docs.wsn.b_2.FilterType;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "EventFilter")
 public class EventFilter extends FilterType {
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
 }

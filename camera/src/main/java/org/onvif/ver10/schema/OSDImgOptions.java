@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "OSDImgOptions",
@@ -24,14 +23,11 @@ public class OSDImgOptions {
     @XmlSchemaType(name = "anyURI")
     protected List<String> imagePath;
 
-
     @Getter @XmlElement(name = "Extension")
     protected OSDImgOptionsExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<String> getImagePath() {
         if (imagePath == null) {
@@ -40,9 +36,7 @@ public class OSDImgOptions {
         return this.imagePath;
     }
 
-
     public void setExtension(OSDImgOptionsExtension value) {
         this.extension = value;
     }
-
 }

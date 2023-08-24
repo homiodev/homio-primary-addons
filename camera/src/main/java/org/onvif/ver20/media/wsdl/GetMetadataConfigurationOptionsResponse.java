@@ -16,10 +16,8 @@ import org.onvif.ver10.schema.MetadataConfigurationOptions;
 @XmlRootElement(name = "GetMetadataConfigurationOptionsResponse")
 public class GetMetadataConfigurationOptionsResponse {
 
-
     @XmlElement(name = "Options", required = true)
     protected MetadataConfigurationOptions options;
-
 
     public void setOptions(MetadataConfigurationOptions value) {
         this.options = value;

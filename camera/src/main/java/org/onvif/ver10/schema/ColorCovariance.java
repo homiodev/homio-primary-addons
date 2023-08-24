@@ -29,71 +29,57 @@ public class ColorCovariance {
     @XmlAttribute(name = "YZ")
     protected Float yz;
 
-
     @Getter @XmlAttribute(name = "Colorspace")
     @XmlSchemaType(name = "anyURI")
     protected String colorspace;
-
 
     public float getXX() {
         return xx;
     }
 
-
     public void setXX(float value) {
         this.xx = value;
     }
-
 
     public float getYY() {
         return yy;
     }
 
-
     public void setYY(float value) {
         this.yy = value;
     }
-
 
     public float getZZ() {
         return zz;
     }
 
-
     public void setZZ(float value) {
         this.zz = value;
     }
-
 
     public Float getXY() {
         return xy;
     }
 
-
     public void setXY(Float value) {
         this.xy = value;
     }
-
 
     public Float getXZ() {
         return xz;
     }
 
-
     public void setXZ(Float value) {
         this.xz = value;
     }
-
 
     public Float getYZ() {
         return yz;
     }
 
-
     public void setYZ(Float value) {
         this.yz = value;
     }
-
 
     public void setColorspace(String value) {
         this.colorspace = value;

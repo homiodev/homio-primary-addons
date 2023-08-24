@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ReceiverCapabilities",
@@ -42,10 +41,8 @@ public class ReceiverCapabilities {
     @XmlElement(name = "RTP_RTSP_TCP")
     protected boolean rtprtsptcp;
 
-
     @Getter @XmlElement(name = "SupportedReceivers")
     protected int supportedReceivers;
-
 
     @Getter @XmlElement(name = "MaximumRTSPURILength")
     protected int maximumRTSPURILength;
@@ -53,60 +50,48 @@ public class ReceiverCapabilities {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public String getXAddr() {
         return xAddr;
     }
 
-
     public void setXAddr(String value) {
         this.xAddr = value;
     }
-
 
     public boolean isRTPMulticast() {
         return rtpMulticast;
     }
 
-
     public void setRTPMulticast(boolean value) {
         this.rtpMulticast = value;
     }
-
 
     public boolean isRTPTCP() {
         return rtptcp;
     }
 
-
     public void setRTPTCP(boolean value) {
         this.rtptcp = value;
     }
-
 
     public boolean isRTPRTSPTCP() {
         return rtprtsptcp;
     }
 
-
     public void setRTPRTSPTCP(boolean value) {
         this.rtprtsptcp = value;
     }
-
 
     public void setSupportedReceivers(int value) {
         this.supportedReceivers = value;
     }
 
-
     public void setMaximumRTSPURILength(int value) {
         this.maximumRTSPURILength = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -114,5 +99,4 @@ public class ReceiverCapabilities {
         }
         return this.any;
     }
-
 }

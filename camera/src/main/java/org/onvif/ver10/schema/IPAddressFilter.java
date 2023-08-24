@@ -12,14 +12,12 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IPAddressFilter",
         propOrder = {"type", "iPv4Address", "iPv6Address", "extension"})
 public class IPAddressFilter {
-
 
     @XmlElement(name = "Type", required = true)
     protected IPAddressFilterType type;
@@ -30,19 +28,15 @@ public class IPAddressFilter {
     @XmlElement(name = "IPv6Address")
     protected List<PrefixedIPv6Address> iPv6Address;
 
-
     @Getter @XmlElement(name = "Extension")
     protected IPAddressFilterExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setType(IPAddressFilterType value) {
         this.type = value;
     }
-
 
     public List<PrefixedIPv4Address> getIPv4Address() {
         if (iPv4Address == null) {
@@ -51,7 +45,6 @@ public class IPAddressFilter {
         return this.iPv4Address;
     }
 
-
     public List<PrefixedIPv6Address> getIPv6Address() {
         if (iPv6Address == null) {
             iPv6Address = new ArrayList<PrefixedIPv6Address>();
@@ -59,9 +52,7 @@ public class IPAddressFilter {
         return this.iPv6Address;
     }
 
-
     public void setExtension(IPAddressFilterExtension value) {
         this.extension = value;
     }
-
 }

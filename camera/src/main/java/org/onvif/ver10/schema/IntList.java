@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IntList",
@@ -16,7 +15,6 @@ public class IntList {
 
     @XmlElement(name = "Items", type = Integer.class)
     protected List<Integer> items;
-
 
     public List<Integer> getItems() {
         if (items == null) {

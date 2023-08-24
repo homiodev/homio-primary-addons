@@ -22,7 +22,6 @@ import lombok.Getter;
         propOrder = {"fromDHCP", "searchDomain", "dnsFromDHCP", "dnsManual", "extension"})
 public class DNSInformation {
 
-
     @XmlElement(name = "FromDHCP")
     protected boolean fromDHCP;
 
@@ -37,19 +36,15 @@ public class DNSInformation {
     @XmlElement(name = "DNSManual")
     protected List<IPAddress> dnsManual;
 
-
     @Getter @XmlElement(name = "Extension")
     protected DNSInformationExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setFromDHCP(boolean value) {
         this.fromDHCP = value;
     }
-
 
     public List<String> getSearchDomain() {
         if (searchDomain == null) {
@@ -58,14 +53,12 @@ public class DNSInformation {
         return this.searchDomain;
     }
 
-
     public List<IPAddress> getDNSFromDHCP() {
         if (dnsFromDHCP == null) {
             dnsFromDHCP = new ArrayList<IPAddress>();
         }
         return this.dnsFromDHCP;
     }
-
 
     public List<IPAddress> getDNSManual() {
         if (dnsManual == null) {
@@ -74,9 +67,7 @@ public class DNSInformation {
         return this.dnsManual;
     }
 
-
     public void setExtension(DNSInformationExtension value) {
         this.extension = value;
     }
-
 }

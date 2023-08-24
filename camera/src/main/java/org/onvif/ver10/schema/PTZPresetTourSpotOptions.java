@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"presetDetail", "stayTime", "any"})
 public class PTZPresetTourSpotOptions {
 
-
     @XmlElement(name = "PresetDetail", required = true)
     protected PTZPresetTourPresetDetailOptions presetDetail;
-
 
     @Getter @XmlElement(name = "StayTime", required = true)
     protected DurationRange stayTime;
@@ -32,20 +29,16 @@ public class PTZPresetTourSpotOptions {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setPresetDetail(PTZPresetTourPresetDetailOptions value) {
         this.presetDetail = value;
     }
 
-
     public void setStayTime(DurationRange value) {
         this.stayTime = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -53,5 +46,4 @@ public class PTZPresetTourSpotOptions {
         }
         return this.any;
     }
-
 }

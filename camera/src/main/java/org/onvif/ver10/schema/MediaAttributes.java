@@ -15,7 +15,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -23,18 +22,15 @@ import lombok.Getter;
         propOrder = {"recordingToken", "trackAttributes", "from", "until", "any"})
 public class MediaAttributes {
 
-
     @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
     @XmlElement(name = "TrackAttributes")
     protected List<TrackAttributes> trackAttributes;
 
-
     @Getter @XmlElement(name = "From", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar from;
-
 
     @Getter @XmlElement(name = "Until", required = true)
     @XmlSchemaType(name = "dateTime")
@@ -43,15 +39,12 @@ public class MediaAttributes {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setRecordingToken(String value) {
         this.recordingToken = value;
     }
-
 
     public List<TrackAttributes> getTrackAttributes() {
         if (trackAttributes == null) {
@@ -60,16 +53,13 @@ public class MediaAttributes {
         return this.trackAttributes;
     }
 
-
     public void setFrom(XMLGregorianCalendar value) {
         this.from = value;
     }
 
-
     public void setUntil(XMLGregorianCalendar value) {
         this.until = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -77,5 +67,4 @@ public class MediaAttributes {
         }
         return this.any;
     }
-
 }

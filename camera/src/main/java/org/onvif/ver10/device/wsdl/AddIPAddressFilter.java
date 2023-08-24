@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -25,11 +18,9 @@ public class AddIPAddressFilter {
     @XmlElement(name = "IPAddressFilter", required = true)
     protected IPAddressFilter ipAddressFilter;
 
-
     public IPAddressFilter getIPAddressFilter() {
         return ipAddressFilter;
     }
-
 
     public void setIPAddressFilter(IPAddressFilter value) {
         this.ipAddressFilter = value;

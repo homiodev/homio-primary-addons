@@ -14,19 +14,15 @@ import lombok.Getter;
         propOrder = {"value"})
 public class CertificateUsage {
 
-
     @XmlValue
     protected String value;
-
 
     @XmlAttribute(name = "Critical", required = true)
     protected boolean critical;
 
-
     public void setValue(String value) {
         this.value = value;
     }
-
 
     public void setCritical(boolean value) {
         this.critical = value;

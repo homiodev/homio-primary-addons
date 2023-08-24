@@ -8,7 +8,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoAnalyticsStream",
@@ -20,7 +19,6 @@ public class VideoAnalyticsStream {
             @XmlElement(name = "Extension", type = VideoAnalyticsStreamExtension.class)
     })
     protected List<java.lang.Object> frameOrExtension;
-
 
     public List<java.lang.Object> getFrameOrExtension() {
         if (frameOrExtension == null) {

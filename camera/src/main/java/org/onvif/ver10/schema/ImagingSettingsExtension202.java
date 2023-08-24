@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ImagingSettingsExtension202",
@@ -18,10 +17,8 @@ public class ImagingSettingsExtension202 {
     @XmlElement(name = "IrCutFilterAutoAdjustment")
     protected List<IrCutFilterAutoAdjustment> irCutFilterAutoAdjustment;
 
-
     @Getter @XmlElement(name = "Extension")
     protected ImagingSettingsExtension203 extension;
-
 
     public List<IrCutFilterAutoAdjustment> getIrCutFilterAutoAdjustment() {
         if (irCutFilterAutoAdjustment == null) {
@@ -29,7 +26,6 @@ public class ImagingSettingsExtension202 {
         }
         return this.irCutFilterAutoAdjustment;
     }
-
 
     public void setExtension(ImagingSettingsExtension203 value) {
         this.extension = value;

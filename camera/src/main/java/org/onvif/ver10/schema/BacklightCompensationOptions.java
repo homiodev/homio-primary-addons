@@ -17,10 +17,8 @@ public class BacklightCompensationOptions {
     @XmlElement(name = "Mode", required = true)
     protected List<WideDynamicMode> mode;
 
-
     @Getter @XmlElement(name = "Level", required = true)
     protected FloatRange level;
-
 
     public List<WideDynamicMode> getMode() {
         if (mode == null) {
@@ -28,7 +26,6 @@ public class BacklightCompensationOptions {
         }
         return this.mode;
     }
-
 
     public void setLevel(FloatRange value) {
         this.level = value;

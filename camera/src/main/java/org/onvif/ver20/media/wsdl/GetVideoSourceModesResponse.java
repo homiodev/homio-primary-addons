@@ -18,7 +18,6 @@ public class GetVideoSourceModesResponse {
     @XmlElement(name = "VideoSourceModes", required = true)
     protected List<VideoSourceMode> videoSourceModes;
 
-
     public List<VideoSourceMode> getVideoSourceModes() {
         if (videoSourceModes == null) {
             videoSourceModes = new ArrayList<VideoSourceMode>();

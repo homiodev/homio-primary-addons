@@ -19,7 +19,6 @@ public class GetMetadataConfigurationsResponse {
     @XmlElement(name = "Configurations")
     protected List<MetadataConfiguration> configurations;
 
-
     public List<MetadataConfiguration> getConfigurations() {
         if (configurations == null) {
             configurations = new ArrayList<MetadataConfiguration>();

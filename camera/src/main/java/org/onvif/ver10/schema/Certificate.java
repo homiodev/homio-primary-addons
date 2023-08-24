@@ -16,21 +16,17 @@ import lombok.Getter;
         propOrder = {"certificateID", "certificate"})
 public class Certificate {
 
-
     @XmlElement(name = "CertificateID", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String certificateID;
 
-
     @XmlElement(name = "Certificate", required = true)
     protected BinaryData certificate;
-
 
     public void setCertificateID(String value) {
         this.certificateID = value;
     }
-
 
     public void setCertificate(BinaryData value) {
         this.certificate = value;

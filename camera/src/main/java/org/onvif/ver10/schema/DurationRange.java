@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import javax.xml.datatype.Duration;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -15,19 +14,15 @@ import lombok.Getter;
         propOrder = {"min", "max"})
 public class DurationRange {
 
-
     @XmlElement(name = "Min", required = true)
     protected Duration min;
-
 
     @XmlElement(name = "Max", required = true)
     protected Duration max;
 
-
     public void setMin(Duration value) {
         this.min = value;
     }
-
 
     public void setMax(Duration value) {
         this.max = value;

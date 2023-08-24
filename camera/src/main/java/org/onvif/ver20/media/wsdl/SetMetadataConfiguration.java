@@ -8,7 +8,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 import org.onvif.ver10.schema.MetadataConfiguration;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -17,10 +16,8 @@ import org.onvif.ver10.schema.MetadataConfiguration;
 @XmlRootElement(name = "SetMetadataConfiguration")
 public class SetMetadataConfiguration {
 
-
     @XmlElement(name = "Configuration", required = true)
     protected MetadataConfiguration configuration;
-
 
     public void setConfiguration(MetadataConfiguration value) {
         this.configuration = value;

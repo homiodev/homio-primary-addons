@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import javax.xml.datatype.Duration;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -15,28 +14,22 @@ import lombok.Getter;
         propOrder = {"mode", "delayTime", "idleState"})
 public class RelayOutputSettings {
 
-
     @XmlElement(name = "Mode", required = true)
     protected RelayMode mode;
-
 
     @XmlElement(name = "DelayTime", required = true)
     protected Duration delayTime;
 
-
     @XmlElement(name = "IdleState", required = true)
     protected RelayIdleState idleState;
-
 
     public void setMode(RelayMode value) {
         this.mode = value;
     }
 
-
     public void setDelayTime(Duration value) {
         this.delayTime = value;
     }
-
 
     public void setIdleState(RelayIdleState value) {
         this.idleState = value;

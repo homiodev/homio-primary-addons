@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"trackToken", "configuration", "any"})
 public class GetTracksResponseItem {
 
-
     @XmlElement(name = "TrackToken", required = true)
     protected String trackToken;
-
 
     @Getter @XmlElement(name = "Configuration", required = true)
     protected TrackConfiguration configuration;
@@ -32,20 +29,16 @@ public class GetTracksResponseItem {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setTrackToken(String value) {
         this.trackToken = value;
     }
 
-
     public void setConfiguration(TrackConfiguration value) {
         this.configuration = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -53,5 +46,4 @@ public class GetTracksResponseItem {
         }
         return this.any;
     }
-
 }

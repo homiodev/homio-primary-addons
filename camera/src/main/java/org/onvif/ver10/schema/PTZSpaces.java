@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZSpaces",
@@ -53,14 +52,11 @@ public class PTZSpaces {
     @XmlElement(name = "ZoomSpeedSpace")
     protected List<Space1DDescription> zoomSpeedSpace;
 
-
     @Getter @XmlElement(name = "Extension")
     protected PTZSpacesExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Space2DDescription> getAbsolutePanTiltPositionSpace() {
         if (absolutePanTiltPositionSpace == null) {
@@ -69,14 +65,12 @@ public class PTZSpaces {
         return this.absolutePanTiltPositionSpace;
     }
 
-
     public List<Space1DDescription> getAbsoluteZoomPositionSpace() {
         if (absoluteZoomPositionSpace == null) {
             absoluteZoomPositionSpace = new ArrayList<Space1DDescription>();
         }
         return this.absoluteZoomPositionSpace;
     }
-
 
     public List<Space2DDescription> getRelativePanTiltTranslationSpace() {
         if (relativePanTiltTranslationSpace == null) {
@@ -85,14 +79,12 @@ public class PTZSpaces {
         return this.relativePanTiltTranslationSpace;
     }
 
-
     public List<Space1DDescription> getRelativeZoomTranslationSpace() {
         if (relativeZoomTranslationSpace == null) {
             relativeZoomTranslationSpace = new ArrayList<Space1DDescription>();
         }
         return this.relativeZoomTranslationSpace;
     }
-
 
     public List<Space2DDescription> getContinuousPanTiltVelocitySpace() {
         if (continuousPanTiltVelocitySpace == null) {
@@ -101,14 +93,12 @@ public class PTZSpaces {
         return this.continuousPanTiltVelocitySpace;
     }
 
-
     public List<Space1DDescription> getContinuousZoomVelocitySpace() {
         if (continuousZoomVelocitySpace == null) {
             continuousZoomVelocitySpace = new ArrayList<Space1DDescription>();
         }
         return this.continuousZoomVelocitySpace;
     }
-
 
     public List<Space1DDescription> getPanTiltSpeedSpace() {
         if (panTiltSpeedSpace == null) {
@@ -117,7 +107,6 @@ public class PTZSpaces {
         return this.panTiltSpeedSpace;
     }
 
-
     public List<Space1DDescription> getZoomSpeedSpace() {
         if (zoomSpeedSpace == null) {
             zoomSpeedSpace = new ArrayList<Space1DDescription>();
@@ -125,9 +114,7 @@ public class PTZSpaces {
         return this.zoomSpeedSpace;
     }
 
-
     public void setExtension(PTZSpacesExtension value) {
         this.extension = value;
     }
-
 }

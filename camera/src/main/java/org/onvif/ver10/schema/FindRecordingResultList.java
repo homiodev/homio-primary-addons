@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -16,18 +15,15 @@ import lombok.Getter;
         propOrder = {"searchState", "recordingInformation"})
 public class FindRecordingResultList {
 
-
     @XmlElement(name = "SearchState", required = true)
     protected SearchState searchState;
 
     @XmlElement(name = "RecordingInformation")
     protected List<RecordingInformation> recordingInformation;
 
-
     public void setSearchState(SearchState value) {
         this.searchState = value;
     }
-
 
     public List<RecordingInformation> getRecordingInformation() {
         if (recordingInformation == null) {

@@ -13,20 +13,16 @@ import lombok.Getter;
         propOrder = {"name", "data"})
 public class BackupFile {
 
-    
     @XmlElement(name = "Name", required = true)
     protected String name;
 
-    
     @XmlElement(name = "Data", required = true)
     protected AttachmentData data;
 
-    
     public void setName(String value) {
         this.name = value;
     }
 
-    
     public void setData(AttachmentData value) {
         this.data = value;
     }

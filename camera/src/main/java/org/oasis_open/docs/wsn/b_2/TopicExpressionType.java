@@ -35,7 +35,7 @@ public class TopicExpressionType {
     protected String dialect;
 
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Object> getContent() {
         if (content == null) {

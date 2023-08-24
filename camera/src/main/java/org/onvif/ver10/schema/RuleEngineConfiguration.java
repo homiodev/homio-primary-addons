@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RuleEngineConfiguration",
@@ -22,14 +21,11 @@ public class RuleEngineConfiguration {
     @XmlElement(name = "Rule")
     protected List<Config> rule;
 
-
     @Getter @XmlElement(name = "Extension")
     protected RuleEngineConfigurationExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Config> getRule() {
         if (rule == null) {
@@ -38,9 +34,7 @@ public class RuleEngineConfiguration {
         return this.rule;
     }
 
-
     public void setExtension(RuleEngineConfigurationExtension value) {
         this.extension = value;
     }
-
 }

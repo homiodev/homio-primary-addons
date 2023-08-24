@@ -8,7 +8,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 import org.onvif.ver10.schema.FocusMove;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -17,19 +16,15 @@ import org.onvif.ver10.schema.FocusMove;
 @XmlRootElement(name = "Move")
 public class Move {
 
-
     @XmlElement(name = "VideoSourceToken", required = true)
     protected String videoSourceToken;
-
 
     @XmlElement(name = "Focus", required = true)
     protected FocusMove focus;
 
-
     public void setVideoSourceToken(String value) {
         this.videoSourceToken = value;
     }
-
 
     public void setFocus(FocusMove value) {
         this.focus = value;

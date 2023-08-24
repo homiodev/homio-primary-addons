@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,22 +20,18 @@ import lombok.Getter;
         propOrder = {"motionExpression", "any"})
 public class MotionExpressionConfiguration {
 
-
     @XmlElement(name = "MotionExpression", required = true)
     protected MotionExpression motionExpression;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setMotionExpression(MotionExpression value) {
         this.motionExpression = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -44,5 +39,4 @@ public class MotionExpressionConfiguration {
         }
         return this.any;
     }
-
 }

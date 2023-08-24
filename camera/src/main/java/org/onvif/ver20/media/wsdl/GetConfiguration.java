@@ -13,19 +13,15 @@ import lombok.Getter;
         propOrder = {"configurationToken", "profileToken"})
 public class GetConfiguration {
 
-
     @XmlElement(name = "ConfigurationToken")
     protected String configurationToken;
-
 
     @XmlElement(name = "ProfileToken")
     protected String profileToken;
 
-
     public void setConfigurationToken(String value) {
         this.configurationToken = value;
     }
-
 
     public void setProfileToken(String value) {
         this.profileToken = value;

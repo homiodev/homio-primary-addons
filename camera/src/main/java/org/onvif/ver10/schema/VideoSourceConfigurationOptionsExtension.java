@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoSourceConfigurationOptionsExtension",
@@ -19,14 +18,11 @@ public class VideoSourceConfigurationOptionsExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlElement(name = "Rotate")
     protected RotateOptions rotate;
 
-
     @Getter @XmlElement(name = "Extension")
     protected VideoSourceConfigurationOptionsExtension2 extension;
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -35,11 +31,9 @@ public class VideoSourceConfigurationOptionsExtension {
         return this.any;
     }
 
-
     public void setRotate(RotateOptions value) {
         this.rotate = value;
     }
-
 
     public void setExtension(VideoSourceConfigurationOptionsExtension2 value) {
         this.extension = value;

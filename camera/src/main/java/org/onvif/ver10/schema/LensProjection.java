@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,14 +20,11 @@ import lombok.Getter;
         propOrder = {"angle", "radius", "transmittance", "any"})
 public class LensProjection {
 
-
     @XmlElement(name = "Angle")
     protected float angle;
 
-
     @Getter @XmlElement(name = "Radius")
     protected float radius;
-
 
     @Getter @XmlElement(name = "Transmittance")
     protected Float transmittance;
@@ -36,25 +32,20 @@ public class LensProjection {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setAngle(float value) {
         this.angle = value;
     }
 
-
     public void setRadius(float value) {
         this.radius = value;
     }
 
-
     public void setTransmittance(Float value) {
         this.transmittance = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -62,5 +53,4 @@ public class LensProjection {
         }
         return this.any;
     }
-
 }

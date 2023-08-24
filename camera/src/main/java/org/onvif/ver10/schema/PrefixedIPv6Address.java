@@ -8,7 +8,6 @@ import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -16,20 +15,16 @@ import lombok.Getter;
         propOrder = {"address", "prefixLength"})
 public class PrefixedIPv6Address {
 
-
     @XmlElement(name = "Address", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String address;
 
-
     @XmlElement(name = "PrefixLength")
     protected int prefixLength;
-
 
     public void setAddress(String value) {
         this.address = value;
     }
-
 
     public void setPrefixLength(int value) {
         this.prefixLength = value;

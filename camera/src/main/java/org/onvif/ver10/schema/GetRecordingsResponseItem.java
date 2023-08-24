@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,14 +20,11 @@ import lombok.Getter;
         propOrder = {"recordingToken", "configuration", "tracks", "any"})
 public class GetRecordingsResponseItem {
 
-
     @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
-
     @Getter @XmlElement(name = "Configuration", required = true)
     protected RecordingConfiguration configuration;
-
 
     @Getter @XmlElement(name = "Tracks", required = true)
     protected GetTracksResponseList tracks;
@@ -36,25 +32,20 @@ public class GetRecordingsResponseItem {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setRecordingToken(String value) {
         this.recordingToken = value;
     }
 
-
     public void setConfiguration(RecordingConfiguration value) {
         this.configuration = value;
     }
 
-
     public void setTracks(GetTracksResponseList value) {
         this.tracks = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -62,5 +53,4 @@ public class GetRecordingsResponseItem {
         }
         return this.any;
     }
-
 }

@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -17,7 +10,6 @@ import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -34,14 +26,12 @@ public class SetNetworkDefaultGateway {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected List<String> iPv6Address;
 
-
     public List<String> getIPv4Address() {
         if (iPv4Address == null) {
             iPv4Address = new ArrayList<String>();
         }
         return this.iPv4Address;
     }
-
 
     public List<String> getIPv6Address() {
         if (iPv6Address == null) {

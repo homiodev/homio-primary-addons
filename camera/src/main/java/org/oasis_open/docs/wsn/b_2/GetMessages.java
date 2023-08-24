@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -24,7 +17,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -33,7 +25,6 @@ import lombok.Getter;
 @XmlRootElement(name = "GetMessages")
 public class GetMessages {
 
-
     @XmlElement(name = "MaximumNumber")
     @XmlSchemaType(name = "nonNegativeInteger")
     protected BigInteger maximumNumber;
@@ -41,15 +32,12 @@ public class GetMessages {
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setMaximumNumber(BigInteger value) {
         this.maximumNumber = value;
     }
-
 
     public List<Object> getAny() {
         if (any == null) {
@@ -57,5 +45,4 @@ public class GetMessages {
         }
         return this.any;
     }
-
 }

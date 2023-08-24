@@ -4,7 +4,6 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-
 @XmlType(name = "Dot11StationMode")
 @XmlEnum
 public enum Dot11StationMode {

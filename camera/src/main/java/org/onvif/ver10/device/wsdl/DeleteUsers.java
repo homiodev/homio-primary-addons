@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -16,7 +9,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -26,7 +18,6 @@ public class DeleteUsers {
 
     @XmlElement(name = "Username", required = true)
     protected List<String> username;
-
 
     public List<String> getUsername() {
         if (username == null) {

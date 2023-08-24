@@ -21,10 +21,8 @@ public class ClassDescriptorExtension2 {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -32,5 +30,4 @@ public class ClassDescriptorExtension2 {
         }
         return this.any;
     }
-
 }

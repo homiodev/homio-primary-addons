@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -27,7 +20,6 @@ public class AddScopes {
     @XmlElement(name = "ScopeItem", required = true)
     @XmlSchemaType(name = "anyURI")
     protected List<String> scopeItem;
-
 
     public List<String> getScopeItem() {
         if (scopeItem == null) {

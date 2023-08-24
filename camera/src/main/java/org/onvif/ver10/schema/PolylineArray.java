@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PolylineArray",
@@ -22,14 +21,11 @@ public class PolylineArray {
     @XmlElement(name = "Segment", required = true)
     protected List<Polyline> segment;
 
-
     @Getter @XmlElement(name = "Extension")
     protected PolylineArrayExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Polyline> getSegment() {
         if (segment == null) {
@@ -38,9 +34,7 @@ public class PolylineArray {
         return this.segment;
     }
 
-
     public void setExtension(PolylineArrayExtension value) {
         this.extension = value;
     }
-
 }

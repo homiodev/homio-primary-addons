@@ -12,14 +12,12 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NTPInformation",
         propOrder = {"fromDHCP", "ntpFromDHCP", "ntpManual", "extension"})
 public class NTPInformation {
-
 
     @XmlElement(name = "FromDHCP")
     protected boolean fromDHCP;
@@ -30,19 +28,15 @@ public class NTPInformation {
     @XmlElement(name = "NTPManual")
     protected List<NetworkHost> ntpManual;
 
-
     @Getter @XmlElement(name = "Extension")
     protected NTPInformationExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setFromDHCP(boolean value) {
         this.fromDHCP = value;
     }
-
 
     public List<NetworkHost> getNTPFromDHCP() {
         if (ntpFromDHCP == null) {
@@ -51,7 +45,6 @@ public class NTPInformation {
         return this.ntpFromDHCP;
     }
 
-
     public List<NetworkHost> getNTPManual() {
         if (ntpManual == null) {
             ntpManual = new ArrayList<NetworkHost>();
@@ -59,9 +52,7 @@ public class NTPInformation {
         return this.ntpManual;
     }
 
-
     public void setExtension(NTPInformationExtension value) {
         this.extension = value;
     }
-
 }

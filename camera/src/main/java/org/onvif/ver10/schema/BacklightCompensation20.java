@@ -13,20 +13,16 @@ import lombok.Getter;
         propOrder = {"mode", "level"})
 public class BacklightCompensation20 {
 
-    
     @XmlElement(name = "Mode", required = true)
     protected BacklightCompensationMode mode;
 
-    
     @XmlElement(name = "Level")
     protected Float level;
 
-    
     public void setMode(BacklightCompensationMode value) {
         this.mode = value;
     }
 
-    
     public void setLevel(Float value) {
         this.level = value;
     }

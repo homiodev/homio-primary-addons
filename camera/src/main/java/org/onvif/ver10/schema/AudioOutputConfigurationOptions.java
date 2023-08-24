@@ -27,17 +27,14 @@ public class AudioOutputConfigurationOptions {
     @XmlSchemaType(name = "anyURI")
     protected List<String> sendPrimacyOptions;
 
-
     @Getter @XmlElement(name = "OutputLevelRange", required = true)
     protected IntRange outputLevelRange;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<String> getOutputTokensAvailable() {
         if (outputTokensAvailable == null) {
@@ -46,7 +43,6 @@ public class AudioOutputConfigurationOptions {
         return this.outputTokensAvailable;
     }
 
-
     public List<String> getSendPrimacyOptions() {
         if (sendPrimacyOptions == null) {
             sendPrimacyOptions = new ArrayList<String>();
@@ -54,11 +50,9 @@ public class AudioOutputConfigurationOptions {
         return this.sendPrimacyOptions;
     }
 
-
     public void setOutputLevelRange(IntRange value) {
         this.outputLevelRange = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -66,5 +60,4 @@ public class AudioOutputConfigurationOptions {
         }
         return this.any;
     }
-
 }

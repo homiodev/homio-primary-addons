@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,44 +17,34 @@ import lombok.Getter;
         propOrder = {"position", "moveStatus", "error", "extension"})
 public class FocusStatus20 {
 
-
     @XmlElement(name = "Position")
     protected float position;
-
 
     @XmlElement(name = "MoveStatus", required = true)
     protected MoveStatus moveStatus;
 
-
     @XmlElement(name = "Error")
     protected String error;
-
 
     @XmlElement(name = "Extension")
     protected FocusStatus20Extension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setPosition(float value) {
         this.position = value;
     }
 
-
     public void setMoveStatus(MoveStatus value) {
         this.moveStatus = value;
     }
-
 
     public void setError(String value) {
         this.error = value;
     }
 
-
     public void setExtension(FocusStatus20Extension value) {
         this.extension = value;
     }
-
 }

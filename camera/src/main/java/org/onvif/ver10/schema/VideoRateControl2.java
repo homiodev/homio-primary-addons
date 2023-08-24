@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -22,10 +21,8 @@ import lombok.Getter;
         propOrder = {"frameRateLimit", "bitrateLimit", "any"})
 public class VideoRateControl2 {
 
-
     @XmlElement(name = "FrameRateLimit")
     protected float frameRateLimit;
-
 
     @Getter @XmlElement(name = "BitrateLimit")
     protected int bitrateLimit;
@@ -36,20 +33,16 @@ public class VideoRateControl2 {
     @XmlAttribute(name = "ConstantBitRate")
     protected Boolean constantBitRate;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setFrameRateLimit(float value) {
         this.frameRateLimit = value;
     }
 
-
     public void setBitrateLimit(int value) {
         this.bitrateLimit = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -58,14 +51,11 @@ public class VideoRateControl2 {
         return this.any;
     }
 
-
     public Boolean isConstantBitRate() {
         return constantBitRate;
     }
 
-
     public void setConstantBitRate(Boolean value) {
         this.constantBitRate = value;
     }
-
 }

@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ObjectTree",
@@ -31,14 +30,11 @@ public class ObjectTree {
     @XmlElement(name = "Delete")
     protected List<ObjectId> delete;
 
-
     @Getter @XmlElement(name = "Extension")
     protected ObjectTreeExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Rename> getRename() {
         if (rename == null) {
@@ -47,14 +43,12 @@ public class ObjectTree {
         return this.rename;
     }
 
-
     public List<Split> getSplit() {
         if (split == null) {
             split = new ArrayList<Split>();
         }
         return this.split;
     }
-
 
     public List<Merge> getMerge() {
         if (merge == null) {
@@ -63,7 +57,6 @@ public class ObjectTree {
         return this.merge;
     }
 
-
     public List<ObjectId> getDelete() {
         if (delete == null) {
             delete = new ArrayList<ObjectId>();
@@ -71,9 +64,7 @@ public class ObjectTree {
         return this.delete;
     }
 
-
     public void setExtension(ObjectTreeExtension value) {
         this.extension = value;
     }
-
 }

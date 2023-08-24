@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MetadataInput",
@@ -22,14 +21,11 @@ public class MetadataInput {
     @XmlElement(name = "MetadataConfig")
     protected List<Config> metadataConfig;
 
-
     @Getter @XmlElement(name = "Extension")
     protected MetadataInputExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Config> getMetadataConfig() {
         if (metadataConfig == null) {
@@ -38,9 +34,7 @@ public class MetadataInput {
         return this.metadataConfig;
     }
 
-
     public void setExtension(MetadataInputExtension value) {
         this.extension = value;
     }
-
 }

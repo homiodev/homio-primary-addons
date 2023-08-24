@@ -15,7 +15,6 @@ import lombok.Setter;
         propOrder = {"mode", "level"})
 public class WideDynamicRange {
 
-
     @XmlElement(name = "Mode", required = true)
     protected WideDynamicMode mode;
 

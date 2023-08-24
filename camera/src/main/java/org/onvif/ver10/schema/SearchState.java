@@ -4,23 +4,18 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-
 @XmlType(name = "SearchState")
 @XmlEnum
 public enum SearchState {
 
-
     @XmlEnumValue("Queued")
     QUEUED("Queued"),
-
 
     @XmlEnumValue("Searching")
     SEARCHING("Searching"),
 
-
     @XmlEnumValue("Completed")
     COMPLETED("Completed"),
-
 
     @XmlEnumValue("Unknown")
     UNKNOWN("Unknown");

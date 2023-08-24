@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "SystemCapabilitiesExtension",
@@ -38,10 +37,8 @@ public class SystemCapabilitiesExtension {
     @XmlElement(name = "HttpSupportInformation")
     protected Boolean httpSupportInformation;
 
-
     @Getter @XmlElement(name = "Extension")
     protected SystemCapabilitiesExtension2 extension;
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -50,46 +47,37 @@ public class SystemCapabilitiesExtension {
         return this.any;
     }
 
-
     public Boolean isHttpFirmwareUpgrade() {
         return httpFirmwareUpgrade;
     }
-
 
     public void setHttpFirmwareUpgrade(Boolean value) {
         this.httpFirmwareUpgrade = value;
     }
 
-
     public Boolean isHttpSystemBackup() {
         return httpSystemBackup;
     }
-
 
     public void setHttpSystemBackup(Boolean value) {
         this.httpSystemBackup = value;
     }
 
-
     public Boolean isHttpSystemLogging() {
         return httpSystemLogging;
     }
-
 
     public void setHttpSystemLogging(Boolean value) {
         this.httpSystemLogging = value;
     }
 
-
     public Boolean isHttpSupportInformation() {
         return httpSupportInformation;
     }
 
-
     public void setHttpSupportInformation(Boolean value) {
         this.httpSupportInformation = value;
     }
-
 
     public void setExtension(SystemCapabilitiesExtension2 value) {
         this.extension = value;

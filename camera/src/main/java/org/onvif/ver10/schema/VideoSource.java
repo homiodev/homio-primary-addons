@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,44 +17,34 @@ import lombok.Getter;
         propOrder = {"framerate", "resolution", "imaging", "extension"})
 public class VideoSource extends DeviceEntity {
 
-
     @XmlElement(name = "Framerate")
     protected float framerate;
-
 
     @XmlElement(name = "Resolution", required = true)
     protected VideoResolution resolution;
 
-
     @XmlElement(name = "Imaging")
     protected ImagingSettings imaging;
-
 
     @XmlElement(name = "Extension")
     protected VideoSourceExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setFramerate(float value) {
         this.framerate = value;
     }
 
-
     public void setResolution(VideoResolution value) {
         this.resolution = value;
     }
-
 
     public void setImaging(ImagingSettings value) {
         this.imaging = value;
     }
 
-
     public void setExtension(VideoSourceExtension value) {
         this.extension = value;
     }
-
 }

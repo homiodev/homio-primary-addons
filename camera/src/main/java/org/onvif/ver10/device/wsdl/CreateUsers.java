@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -26,7 +19,6 @@ public class CreateUsers {
 
     @XmlElement(name = "User", required = true)
     protected List<User> user;
-
 
     public List<User> getUser() {
         if (user == null) {

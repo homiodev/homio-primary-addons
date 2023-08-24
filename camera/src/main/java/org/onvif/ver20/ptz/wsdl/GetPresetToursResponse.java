@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.PresetTour;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -19,7 +18,6 @@ public class GetPresetToursResponse {
 
     @XmlElement(name = "PresetTour")
     protected List<PresetTour> presetTour;
-
 
     public List<PresetTour> getPresetTour() {
         if (presetTour == null) {

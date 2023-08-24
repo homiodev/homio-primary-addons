@@ -21,14 +21,11 @@ public class AudioSourceConfigurationOptions {
     @XmlElement(name = "InputTokensAvailable", required = true)
     protected List<String> inputTokensAvailable;
 
-
     @Getter @XmlElement(name = "Extension")
     protected AudioSourceOptionsExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<String> getInputTokensAvailable() {
         if (inputTokensAvailable == null) {
@@ -37,9 +34,7 @@ public class AudioSourceConfigurationOptions {
         return this.inputTokensAvailable;
     }
 
-
     public void setExtension(AudioSourceOptionsExtension value) {
         this.extension = value;
     }
-
 }

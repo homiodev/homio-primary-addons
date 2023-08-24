@@ -8,7 +8,6 @@ import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -17,11 +16,9 @@ import lombok.Getter;
 @XmlRootElement(name = "GetStreamUriResponse")
 public class GetStreamUriResponse {
 
-
     @XmlElement(name = "Uri", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String uri;
-
 
     public void setUri(String value) {
         this.uri = value;

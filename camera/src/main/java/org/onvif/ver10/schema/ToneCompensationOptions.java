@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ToneCompensationOptions",
@@ -23,17 +22,14 @@ public class ToneCompensationOptions {
     @XmlElement(name = "Mode", required = true)
     protected List<String> mode;
 
-
     @Getter @XmlElement(name = "Level")
     protected boolean level;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<String> getMode() {
         if (mode == null) {
@@ -42,11 +38,9 @@ public class ToneCompensationOptions {
         return this.mode;
     }
 
-
     public void setLevel(boolean value) {
         this.level = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -54,5 +48,4 @@ public class ToneCompensationOptions {
         }
         return this.any;
     }
-
 }

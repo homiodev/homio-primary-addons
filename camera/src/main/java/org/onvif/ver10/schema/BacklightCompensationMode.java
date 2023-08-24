@@ -7,10 +7,8 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum BacklightCompensationMode {
 
-    
     OFF,
 
-    
     ON;
 
     public static BacklightCompensationMode fromValue(String v) {

@@ -30,14 +30,11 @@ import lombok.Getter;
         })
 public class Dot1XConfiguration {
 
-
     @XmlElement(name = "Dot1XConfigurationToken", required = true)
     protected String dot1XConfigurationToken;
 
-
     @Getter @XmlElement(name = "Identity", required = true)
     protected String identity;
-
 
     @Getter @XmlElement(name = "AnonymousID")
     protected String anonymousID;
@@ -53,39 +50,31 @@ public class Dot1XConfiguration {
     @XmlElement(name = "EAPMethodConfiguration")
     protected EAPMethodConfiguration eapMethodConfiguration;
 
-
     @Getter @XmlElement(name = "Extension")
     protected Dot1XConfigurationExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setDot1XConfigurationToken(String value) {
         this.dot1XConfigurationToken = value;
     }
 
-
     public void setIdentity(String value) {
         this.identity = value;
     }
-
 
     public void setAnonymousID(String value) {
         this.anonymousID = value;
     }
 
-
     public int getEAPMethod() {
         return eapMethod;
     }
 
-
     public void setEAPMethod(int value) {
         this.eapMethod = value;
     }
-
 
     public List<String> getCACertificateID() {
         if (caCertificateID == null) {
@@ -94,19 +83,15 @@ public class Dot1XConfiguration {
         return this.caCertificateID;
     }
 
-
     public EAPMethodConfiguration getEAPMethodConfiguration() {
         return eapMethodConfiguration;
     }
-
 
     public void setEAPMethodConfiguration(EAPMethodConfiguration value) {
         this.eapMethodConfiguration = value;
     }
 
-
     public void setExtension(Dot1XConfigurationExtension value) {
         this.extension = value;
     }
-
 }

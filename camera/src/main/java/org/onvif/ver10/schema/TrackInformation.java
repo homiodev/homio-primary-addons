@@ -15,7 +15,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -23,23 +22,18 @@ import lombok.Getter;
         propOrder = {"trackToken", "trackType", "description", "dataFrom", "dataTo", "any"})
 public class TrackInformation {
 
-
     @XmlElement(name = "TrackToken", required = true)
     protected String trackToken;
-
 
     @Getter @XmlElement(name = "TrackType", required = true)
     protected TrackType trackType;
 
-
     @Getter @XmlElement(name = "Description", required = true)
     protected String description;
-
 
     @Getter @XmlElement(name = "DataFrom", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar dataFrom;
-
 
     @Getter @XmlElement(name = "DataTo", required = true)
     @XmlSchemaType(name = "dateTime")
@@ -48,35 +42,28 @@ public class TrackInformation {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setTrackToken(String value) {
         this.trackToken = value;
     }
 
-
     public void setTrackType(TrackType value) {
         this.trackType = value;
     }
-
 
     public void setDescription(String value) {
         this.description = value;
     }
 
-
     public void setDataFrom(XMLGregorianCalendar value) {
         this.dataFrom = value;
     }
 
-
     public void setDataTo(XMLGregorianCalendar value) {
         this.dataTo = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -84,5 +71,4 @@ public class TrackInformation {
         }
         return this.any;
     }
-
 }

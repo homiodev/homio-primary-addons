@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -20,26 +19,21 @@ import lombok.Getter;
         propOrder = {"maximumNumberOfPresetTours", "ptzPresetTourOperation", "extension"})
 public class PTZPresetTourSupported {
 
-
     @XmlElement(name = "MaximumNumberOfPresetTours")
     protected int maximumNumberOfPresetTours;
 
     @XmlElement(name = "PTZPresetTourOperation")
     protected List<PTZPresetTourOperation> ptzPresetTourOperation;
 
-
     @Getter @XmlElement(name = "Extension")
     protected PTZPresetTourSupportedExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setMaximumNumberOfPresetTours(int value) {
         this.maximumNumberOfPresetTours = value;
     }
-
 
     public List<PTZPresetTourOperation> getPTZPresetTourOperation() {
         if (ptzPresetTourOperation == null) {
@@ -48,9 +42,7 @@ public class PTZPresetTourSupported {
         return this.ptzPresetTourOperation;
     }
 
-
     public void setExtension(PTZPresetTourSupportedExtension value) {
         this.extension = value;
     }
-
 }

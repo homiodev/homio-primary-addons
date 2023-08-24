@@ -16,7 +16,6 @@ public class ColorDescriptorExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

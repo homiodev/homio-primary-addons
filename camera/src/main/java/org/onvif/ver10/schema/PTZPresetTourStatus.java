@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,35 +17,27 @@ import lombok.Getter;
         propOrder = {"state", "currentTourSpot", "extension"})
 public class PTZPresetTourStatus {
 
-
     @XmlElement(name = "State", required = true)
     protected PTZPresetTourState state;
-
 
     @XmlElement(name = "CurrentTourSpot")
     protected PTZPresetTourSpot currentTourSpot;
 
-
     @XmlElement(name = "Extension")
     protected PTZPresetTourStatusExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setState(PTZPresetTourState value) {
         this.state = value;
     }
 
-
     public void setCurrentTourSpot(PTZPresetTourSpot value) {
         this.currentTourSpot = value;
     }
 
-
     public void setExtension(PTZPresetTourStatusExtension value) {
         this.extension = value;
     }
-
 }

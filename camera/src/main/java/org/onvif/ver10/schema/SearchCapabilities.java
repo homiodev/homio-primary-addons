@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "SearchCapabilities",
@@ -25,32 +24,26 @@ public class SearchCapabilities {
     @XmlSchemaType(name = "anyURI")
     protected String xAddr;
 
-
     @Getter @XmlElement(name = "MetadataSearch")
     protected boolean metadataSearch;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public String getXAddr() {
         return xAddr;
     }
 
-
     public void setXAddr(String value) {
         this.xAddr = value;
     }
 
-
     public void setMetadataSearch(boolean value) {
         this.metadataSearch = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -58,5 +51,4 @@ public class SearchCapabilities {
         }
         return this.any;
     }
-
 }

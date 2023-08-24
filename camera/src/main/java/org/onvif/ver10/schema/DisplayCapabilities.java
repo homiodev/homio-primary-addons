@@ -24,32 +24,26 @@ public class DisplayCapabilities {
     @XmlSchemaType(name = "anyURI")
     protected String xAddr;
 
-
     @Getter @XmlElement(name = "FixedLayout")
     protected boolean fixedLayout;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public String getXAddr() {
         return xAddr;
     }
 
-
     public void setXAddr(String value) {
         this.xAddr = value;
     }
 
-
     public void setFixedLayout(boolean value) {
         this.fixedLayout = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -57,5 +51,4 @@ public class DisplayCapabilities {
         }
         return this.any;
     }
-
 }

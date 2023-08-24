@@ -15,7 +15,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ItemList",
@@ -28,14 +27,11 @@ public class ItemList {
     @XmlElement(name = "ElementItem")
     protected List<ItemList.ElementItem> elementItem;
 
-
     @Getter @XmlElement(name = "Extension")
     protected ItemListExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<ItemList.SimpleItem> getSimpleItem() {
         if (simpleItem == null) {
@@ -44,7 +40,6 @@ public class ItemList {
         return this.simpleItem;
     }
 
-
     public List<ItemList.ElementItem> getElementItem() {
         if (elementItem == null) {
             elementItem = new ArrayList<ItemList.ElementItem>();
@@ -52,11 +47,9 @@ public class ItemList {
         return this.elementItem;
     }
 
-
     public void setExtension(ItemListExtension value) {
         this.extension = value;
     }
-
 
     @Getter
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -65,45 +58,36 @@ public class ItemList {
             propOrder = {"any"})
     public static class ElementItem {
 
-
         @XmlAnyElement(lax = true)
         protected java.lang.Object any;
-
 
         @XmlAttribute(name = "Name", required = true)
         protected String name;
 
-
         public void setAny(java.lang.Object value) {
             this.any = value;
         }
-
 
         public void setName(String value) {
             this.name = value;
         }
     }
 
-
     @Getter
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
     public static class SimpleItem {
 
-
         @XmlAttribute(name = "Name", required = true)
         protected String name;
-
 
         @XmlAttribute(name = "Value", required = true)
         @XmlSchemaType(name = "anySimpleType")
         protected String value;
 
-
         public void setName(String value) {
             this.name = value;
         }
-
 
         public void setValue(String value) {
             this.value = value;

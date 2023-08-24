@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -19,7 +12,6 @@ import javax.xml.datatype.Duration;
 import lombok.Getter;
 import org.onvif.ver10.schema.DynamicDNSType;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -28,10 +20,8 @@ import org.onvif.ver10.schema.DynamicDNSType;
 @XmlRootElement(name = "SetDynamicDNS")
 public class SetDynamicDNS {
 
-
     @XmlElement(name = "Type", required = true)
     protected DynamicDNSType type;
-
 
     @Getter @XmlElement(name = "Name")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
@@ -40,21 +30,17 @@ public class SetDynamicDNS {
     @XmlElement(name = "TTL")
     protected Duration ttl;
 
-
     public void setType(DynamicDNSType value) {
         this.type = value;
     }
-
 
     public void setName(String value) {
         this.name = value;
     }
 
-
     public Duration getTTL() {
         return ttl;
     }
-
 
     public void setTTL(Duration value) {
         this.ttl = value;

@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -22,10 +21,8 @@ import lombok.Getter;
         propOrder = {"interfaceToken", "enabled", "addresses", "extension"})
 public class NetworkZeroConfiguration {
 
-
     @XmlElement(name = "InterfaceToken", required = true)
     protected String interfaceToken;
-
 
     @Getter @XmlElement(name = "Enabled")
     protected boolean enabled;
@@ -34,24 +31,19 @@ public class NetworkZeroConfiguration {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected List<String> addresses;
 
-
     @Getter @XmlElement(name = "Extension")
     protected NetworkZeroConfigurationExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setInterfaceToken(String value) {
         this.interfaceToken = value;
     }
 
-
     public void setEnabled(boolean value) {
         this.enabled = value;
     }
-
 
     public List<String> getAddresses() {
         if (addresses == null) {
@@ -60,9 +52,7 @@ public class NetworkZeroConfiguration {
         return this.addresses;
     }
 
-
     public void setExtension(NetworkZeroConfigurationExtension value) {
         this.extension = value;
     }
-
 }

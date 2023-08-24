@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "SupportedRules",
@@ -27,14 +26,11 @@ public class SupportedRules {
     @XmlElement(name = "RuleDescription")
     protected List<ConfigDescription> ruleDescription;
 
-
     @Getter @XmlElement(name = "Extension")
     protected SupportedRulesExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<String> getRuleContentSchemaLocation() {
         if (ruleContentSchemaLocation == null) {
@@ -43,7 +39,6 @@ public class SupportedRules {
         return this.ruleContentSchemaLocation;
     }
 
-
     public List<ConfigDescription> getRuleDescription() {
         if (ruleDescription == null) {
             ruleDescription = new ArrayList<ConfigDescription>();
@@ -51,9 +46,7 @@ public class SupportedRules {
         return this.ruleDescription;
     }
 
-
     public void setExtension(SupportedRulesExtension value) {
         this.extension = value;
     }
-
 }

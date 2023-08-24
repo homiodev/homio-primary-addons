@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Merge",
@@ -18,10 +17,8 @@ public class Merge {
     @XmlElement(required = true)
     protected List<ObjectId> from;
 
-
     @Getter @XmlElement(required = true)
     protected ObjectId to;
-
 
     public List<ObjectId> getFrom() {
         if (from == null) {
@@ -29,7 +26,6 @@ public class Merge {
         }
         return this.from;
     }
-
 
     public void setTo(ObjectId value) {
         this.to = value;

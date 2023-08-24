@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,14 +20,11 @@ import lombok.Getter;
         propOrder = {"sourceToken", "state", "tracks", "any"})
 public class RecordingJobStateSource {
 
-
     @XmlElement(name = "SourceToken", required = true)
     protected SourceReference sourceToken;
 
-
     @Getter @XmlElement(name = "State", required = true)
     protected String state;
-
 
     @Getter @XmlElement(name = "Tracks", required = true)
     protected RecordingJobStateTracks tracks;
@@ -36,25 +32,20 @@ public class RecordingJobStateSource {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setSourceToken(SourceReference value) {
         this.sourceToken = value;
     }
 
-
     public void setState(String value) {
         this.state = value;
     }
 
-
     public void setTracks(RecordingJobStateTracks value) {
         this.tracks = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -62,5 +53,4 @@ public class RecordingJobStateSource {
         }
         return this.any;
     }
-
 }

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NetworkInterfaceExtension",
@@ -18,7 +17,6 @@ public class NetworkInterfaceExtension {
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
-
 
     @Getter @XmlElement(name = "InterfaceType")
     protected int interfaceType;
@@ -29,10 +27,8 @@ public class NetworkInterfaceExtension {
     @XmlElement(name = "Dot11")
     protected List<Dot11Configuration> dot11;
 
-
     @Getter @XmlElement(name = "Extension")
     protected NetworkInterfaceExtension2 extension;
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -41,11 +37,9 @@ public class NetworkInterfaceExtension {
         return this.any;
     }
 
-
     public void setInterfaceType(int value) {
         this.interfaceType = value;
     }
-
 
     public List<Dot3Configuration> getDot3() {
         if (dot3 == null) {
@@ -54,14 +48,12 @@ public class NetworkInterfaceExtension {
         return this.dot3;
     }
 
-
     public List<Dot11Configuration> getDot11() {
         if (dot11 == null) {
             dot11 = new ArrayList<Dot11Configuration>();
         }
         return this.dot11;
     }
-
 
     public void setExtension(NetworkInterfaceExtension2 value) {
         this.extension = value;

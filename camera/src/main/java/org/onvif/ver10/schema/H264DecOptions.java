@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "H264DecOptions",
@@ -32,10 +31,8 @@ public class H264DecOptions {
     @XmlElement(name = "SupportedH264Profiles", required = true)
     protected List<H264Profile> supportedH264Profiles;
 
-
     @Getter @XmlElement(name = "SupportedInputBitrate", required = true)
     protected IntRange supportedInputBitrate;
-
 
     @Getter @XmlElement(name = "SupportedFrameRate", required = true)
     protected IntRange supportedFrameRate;
@@ -43,10 +40,8 @@ public class H264DecOptions {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<VideoResolution> getResolutionsAvailable() {
         if (resolutionsAvailable == null) {
@@ -55,7 +50,6 @@ public class H264DecOptions {
         return this.resolutionsAvailable;
     }
 
-
     public List<H264Profile> getSupportedH264Profiles() {
         if (supportedH264Profiles == null) {
             supportedH264Profiles = new ArrayList<H264Profile>();
@@ -63,16 +57,13 @@ public class H264DecOptions {
         return this.supportedH264Profiles;
     }
 
-
     public void setSupportedInputBitrate(IntRange value) {
         this.supportedInputBitrate = value;
     }
 
-
     public void setSupportedFrameRate(IntRange value) {
         this.supportedFrameRate = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -80,5 +71,4 @@ public class H264DecOptions {
         }
         return this.any;
     }
-
 }

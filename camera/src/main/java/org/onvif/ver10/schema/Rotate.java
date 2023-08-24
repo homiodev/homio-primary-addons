@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,35 +17,27 @@ import lombok.Getter;
         propOrder = {"mode", "degree", "extension"})
 public class Rotate {
 
-
     @XmlElement(name = "Mode", required = true)
     protected RotateMode mode;
-
 
     @XmlElement(name = "Degree")
     protected Integer degree;
 
-
     @XmlElement(name = "Extension")
     protected RotateExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setMode(RotateMode value) {
         this.mode = value;
     }
 
-
     public void setDegree(Integer value) {
         this.degree = value;
     }
 
-
     public void setExtension(RotateExtension value) {
         this.extension = value;
     }
-
 }

@@ -8,7 +8,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 import org.onvif.ver10.schema.PTZConfiguration;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -19,20 +18,16 @@ public class SetConfiguration {
     @XmlElement(name = "PTZConfiguration", required = true)
     protected PTZConfiguration ptzConfiguration;
 
-
     @Getter @XmlElement(name = "ForcePersistence")
     protected boolean forcePersistence;
-
 
     public PTZConfiguration getPTZConfiguration() {
         return ptzConfiguration;
     }
 
-
     public void setPTZConfiguration(PTZConfiguration value) {
         this.ptzConfiguration = value;
     }
-
 
     public void setForcePersistence(boolean value) {
         this.forcePersistence = value;

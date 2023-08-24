@@ -19,21 +19,17 @@ import lombok.Setter;
         propOrder = {"mode", "crGain", "cbGain", "extension"})
 public class WhiteBalance20 {
 
-
     @XmlElement(name = "Mode", required = true)
     protected WhiteBalanceMode mode;
 
     @XmlElement(name = "CrGain")
     protected Float crGain;
 
-
     @XmlElement(name = "CbGain")
     protected Float cbGain;
 
-
     @XmlElement(name = "Extension")
     protected WhiteBalance20Extension extension;
-
 
     @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<>();

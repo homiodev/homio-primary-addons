@@ -6,7 +6,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -14,19 +13,15 @@ import lombok.Getter;
         propOrder = {"rotate", "extension"})
 public class VideoSourceConfigurationExtension {
 
-
     @XmlElement(name = "Rotate")
     protected Rotate rotate;
-
 
     @XmlElement(name = "Extension")
     protected VideoSourceConfigurationExtension2 extension;
 
-
     public void setRotate(Rotate value) {
         this.rotate = value;
     }
-
 
     public void setExtension(VideoSourceConfigurationExtension2 value) {
         this.extension = value;

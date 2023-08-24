@@ -1,11 +1,5 @@
 
 
-
-
-
-
-
-
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -16,7 +10,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -31,16 +24,13 @@ public class GetOSD {
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-
     public String getOSDToken() {
         return osdToken;
     }
 
-
     public void setOSDToken(String value) {
         this.osdToken = value;
     }
-
 
     public List<Object> getAny() {
         if (any == null) {

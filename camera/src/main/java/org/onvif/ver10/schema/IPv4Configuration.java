@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IPv4Configuration",
@@ -23,10 +22,8 @@ public class IPv4Configuration {
     @XmlElement(name = "Manual")
     protected List<PrefixedIPv4Address> manual;
 
-
     @Getter @XmlElement(name = "LinkLocal")
     protected PrefixedIPv4Address linkLocal;
-
 
     @Getter @XmlElement(name = "FromDHCP")
     protected PrefixedIPv4Address fromDHCP;
@@ -37,10 +34,8 @@ public class IPv4Configuration {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<PrefixedIPv4Address> getManual() {
         if (manual == null) {
@@ -49,26 +44,21 @@ public class IPv4Configuration {
         return this.manual;
     }
 
-
     public void setLinkLocal(PrefixedIPv4Address value) {
         this.linkLocal = value;
     }
-
 
     public void setFromDHCP(PrefixedIPv4Address value) {
         this.fromDHCP = value;
     }
 
-
     public boolean isDHCP() {
         return dhcp;
     }
 
-
     public void setDHCP(boolean value) {
         this.dhcp = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -76,5 +66,4 @@ public class IPv4Configuration {
         }
         return this.any;
     }
-
 }

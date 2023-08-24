@@ -20,37 +20,29 @@ import lombok.Getter;
         propOrder = {"removed", "idle", "extension"})
 public class Behaviour {
 
-
     @XmlElement(name = "Removed")
     protected Behaviour.Removed removed;
-
 
     @XmlElement(name = "Idle")
     protected Behaviour.Idle idle;
 
-
     @XmlElement(name = "Extension")
     protected BehaviourExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setRemoved(Behaviour.Removed value) {
         this.removed = value;
     }
 
-
     public void setIdle(Behaviour.Idle value) {
         this.idle = value;
     }
 
-
     public void setExtension(BehaviourExtension value) {
         this.extension = value;
     }
-
 
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(
@@ -61,7 +53,6 @@ public class Behaviour {
         @XmlAnyElement(lax = true)
         protected List<java.lang.Object> any;
 
-
         public List<java.lang.Object> getAny() {
             if (any == null) {
                 any = new ArrayList<java.lang.Object>();
@@ -69,7 +60,6 @@ public class Behaviour {
             return this.any;
         }
     }
-
 
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(
@@ -79,7 +69,6 @@ public class Behaviour {
 
         @XmlAnyElement(lax = true)
         protected List<java.lang.Object> any;
-
 
         public List<java.lang.Object> getAny() {
             if (any == null) {

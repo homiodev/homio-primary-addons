@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NetworkCapabilities",
@@ -29,57 +28,45 @@ public class NetworkCapabilities {
     @XmlElement(name = "DynDNS")
     protected Boolean dynDNS;
 
-
     @Getter @XmlElement(name = "Extension")
     protected NetworkCapabilitiesExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public Boolean isIPFilter() {
         return ipFilter;
     }
 
-
     public void setIPFilter(Boolean value) {
         this.ipFilter = value;
     }
-
 
     public Boolean isZeroConfiguration() {
         return zeroConfiguration;
     }
 
-
     public void setZeroConfiguration(Boolean value) {
         this.zeroConfiguration = value;
     }
-
 
     public Boolean isIPVersion6() {
         return ipVersion6;
     }
 
-
     public void setIPVersion6(Boolean value) {
         this.ipVersion6 = value;
     }
-
 
     public Boolean isDynDNS() {
         return dynDNS;
     }
 
-
     public void setDynDNS(Boolean value) {
         this.dynDNS = value;
     }
 
-
     public void setExtension(NetworkCapabilitiesExtension value) {
         this.extension = value;
     }
-
 }

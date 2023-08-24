@@ -13,7 +13,6 @@ import javax.xml.datatype.Duration;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"type", "name", "ttl", "extension"})
 public class DynamicDNSInformation {
 
-
     @XmlElement(name = "Type", required = true)
     protected DynamicDNSType type;
-
 
     @Getter @XmlElement(name = "Name")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
@@ -33,37 +30,29 @@ public class DynamicDNSInformation {
     @XmlElement(name = "TTL")
     protected Duration ttl;
 
-
     @Getter @XmlElement(name = "Extension")
     protected DynamicDNSInformationExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setType(DynamicDNSType value) {
         this.type = value;
     }
 
-
     public void setName(String value) {
         this.name = value;
     }
-
 
     public Duration getTTL() {
         return ttl;
     }
 
-
     public void setTTL(Duration value) {
         this.ttl = value;
     }
 
-
     public void setExtension(DynamicDNSInformationExtension value) {
         this.extension = value;
     }
-
 }

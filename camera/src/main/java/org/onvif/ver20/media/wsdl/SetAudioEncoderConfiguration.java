@@ -8,7 +8,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 import org.onvif.ver10.schema.AudioEncoder2Configuration;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -17,10 +16,8 @@ import org.onvif.ver10.schema.AudioEncoder2Configuration;
 @XmlRootElement(name = "SetAudioEncoderConfiguration")
 public class SetAudioEncoderConfiguration {
 
-
     @XmlElement(name = "Configuration", required = true)
     protected AudioEncoder2Configuration configuration;
-
 
     public void setConfiguration(AudioEncoder2Configuration value) {
         this.configuration = value;

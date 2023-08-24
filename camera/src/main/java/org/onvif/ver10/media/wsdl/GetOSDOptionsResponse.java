@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -17,7 +10,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.OSDConfigurationOptions;
-
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -32,16 +24,13 @@ public class GetOSDOptionsResponse {
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-
     public OSDConfigurationOptions getOSDOptions() {
         return osdOptions;
     }
 
-
     public void setOSDOptions(OSDConfigurationOptions value) {
         this.osdOptions = value;
     }
-
 
     public List<Object> getAny() {
         if (any == null) {

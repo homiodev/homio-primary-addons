@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -16,19 +15,15 @@ import lombok.Getter;
 @XmlRootElement(name = "SendAuxiliaryCommand")
 public class SendAuxiliaryCommand {
 
-
     @XmlElement(name = "ProfileToken", required = true)
     protected String profileToken;
-
 
     @XmlElement(name = "AuxiliaryData", required = true)
     protected String auxiliaryData;
 
-
     public void setProfileToken(String value) {
         this.profileToken = value;
     }
-
 
     public void setAuxiliaryData(String value) {
         this.auxiliaryData = value;

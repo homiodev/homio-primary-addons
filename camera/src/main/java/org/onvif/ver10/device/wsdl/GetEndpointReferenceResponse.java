@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -16,7 +9,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -31,16 +23,13 @@ public class GetEndpointReferenceResponse {
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-
     public String getGUID() {
         return guid;
     }
 
-
     public void setGUID(String value) {
         this.guid = value;
     }
-
 
     public List<Object> getAny() {
         if (any == null) {

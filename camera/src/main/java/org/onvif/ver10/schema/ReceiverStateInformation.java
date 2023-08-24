@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"state", "autoCreated", "any"})
 public class ReceiverStateInformation {
 
-
     @XmlElement(name = "State", required = true)
     protected ReceiverState state;
-
 
     @Getter @XmlElement(name = "AutoCreated")
     protected boolean autoCreated;
@@ -32,20 +29,16 @@ public class ReceiverStateInformation {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setState(ReceiverState value) {
         this.state = value;
     }
 
-
     public void setAutoCreated(boolean value) {
         this.autoCreated = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -53,5 +46,4 @@ public class ReceiverStateInformation {
         }
         return this.any;
     }
-
 }

@@ -16,11 +16,9 @@ public class DeleteOSD {
     @XmlElement(name = "OSDToken", required = true)
     protected String osdToken;
 
-
     public String getOSDToken() {
         return osdToken;
     }
-
 
     public void setOSDToken(String value) {
         this.osdToken = value;

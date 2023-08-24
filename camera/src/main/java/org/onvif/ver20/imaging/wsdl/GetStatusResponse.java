@@ -16,10 +16,8 @@ import org.onvif.ver10.schema.ImagingStatus20;
 @XmlRootElement(name = "GetStatusResponse")
 public class GetStatusResponse {
 
-
     @XmlElement(name = "Status", required = true)
     protected ImagingStatus20 status;
-
 
     public void setStatus(ImagingStatus20 value) {
         this.status = value;

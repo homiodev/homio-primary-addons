@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"address", "port", "ttl", "autoStart", "any"})
 public class MulticastConfiguration {
 
-
     @XmlElement(name = "Address", required = true)
     protected IPAddress address;
-
 
     @Getter @XmlElement(name = "Port")
     protected int port;
@@ -32,42 +29,34 @@ public class MulticastConfiguration {
     @XmlElement(name = "TTL")
     protected int ttl;
 
-
     @Getter @XmlElement(name = "AutoStart")
     protected boolean autoStart;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setAddress(IPAddress value) {
         this.address = value;
     }
 
-
     public void setPort(int value) {
         this.port = value;
     }
-
 
     public int getTTL() {
         return ttl;
     }
 
-
     public void setTTL(int value) {
         this.ttl = value;
     }
 
-
     public void setAutoStart(boolean value) {
         this.autoStart = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -75,5 +64,4 @@ public class MulticastConfiguration {
         }
         return this.any;
     }
-
 }

@@ -13,19 +13,15 @@ import lombok.Getter;
         propOrder = {"type", "token"})
 public class ConfigurationRef {
 
-
     @XmlElement(name = "Type", required = true)
     protected String type;
-
 
     @XmlElement(name = "Token")
     protected String token;
 
-
     public void setType(String value) {
         this.type = value;
     }
-
 
     public void setToken(String value) {
         this.token = value;

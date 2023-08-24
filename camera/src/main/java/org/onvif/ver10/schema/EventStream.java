@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "EventStream",
@@ -24,7 +23,6 @@ public class EventStream {
             @XmlElement(name = "Extension", type = EventStreamExtension.class)
     })
     protected List<java.lang.Object> notificationMessageOrExtension;
-
 
     public List<java.lang.Object> getNotificationMessageOrExtension() {
         if (notificationMessageOrExtension == null) {

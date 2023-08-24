@@ -4,15 +4,12 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-
 @XmlType(name = "SystemLogType")
 @XmlEnum
 public enum SystemLogType {
 
-
     @XmlEnumValue("System")
     SYSTEM("System"),
-
 
     @XmlEnumValue("Access")
     ACCESS("Access");

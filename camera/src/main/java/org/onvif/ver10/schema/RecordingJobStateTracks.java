@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RecordingJobStateTracks",
@@ -22,10 +21,8 @@ public class RecordingJobStateTracks {
     @XmlElement(name = "Track")
     protected List<RecordingJobStateTrack> track;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<RecordingJobStateTrack> getTrack() {
         if (track == null) {
@@ -33,5 +30,4 @@ public class RecordingJobStateTracks {
         }
         return this.track;
     }
-
 }

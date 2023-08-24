@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "FrameExtension",
@@ -19,14 +18,11 @@ public class FrameExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlElement(name = "MotionInCells")
     protected MotionInCells motionInCells;
 
-
     @Getter @XmlElement(name = "Extension")
     protected FrameExtension2 extension;
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -35,11 +31,9 @@ public class FrameExtension {
         return this.any;
     }
 
-
     public void setMotionInCells(MotionInCells value) {
         this.motionInCells = value;
     }
-
 
     public void setExtension(FrameExtension2 value) {
         this.extension = value;

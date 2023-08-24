@@ -4,7 +4,6 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-
 @XmlType(name = "RecordingStatus")
 @XmlEnum
 public enum RecordingStatus {
@@ -18,7 +17,6 @@ public enum RecordingStatus {
     REMOVING("Removing"),
     @XmlEnumValue("Removed")
     REMOVED("Removed"),
-
 
     @XmlEnumValue("Unknown")
     UNKNOWN("Unknown");

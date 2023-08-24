@@ -21,25 +21,20 @@ public class AudioAnalyticsStream {
     @XmlElement(name = "AudioDescriptor")
     protected List<AudioDescriptor> audioDescriptor;
 
-
     @Getter @XmlElement(name = "Extension")
     protected AudioAnalyticsStreamExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<AudioDescriptor> getAudioDescriptor() {
         if (audioDescriptor == null) {
-            audioDescriptor = new ArrayList<AudioDescriptor>();
+            audioDescriptor = new ArrayList<>();
         }
         return this.audioDescriptor;
     }
 
-
     public void setExtension(AudioAnalyticsStreamExtension value) {
         this.extension = value;
     }
-
 }

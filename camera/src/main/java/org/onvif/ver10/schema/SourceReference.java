@@ -15,14 +15,12 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "SourceReference",
         propOrder = {"token", "any"})
 public class SourceReference {
-
 
     @XmlElement(name = "Token", required = true)
     protected String token;
@@ -34,15 +32,12 @@ public class SourceReference {
     @XmlSchemaType(name = "anyURI")
     protected String type;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setToken(String value) {
         this.token = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -50,7 +45,6 @@ public class SourceReference {
         }
         return this.any;
     }
-
 
     public String getType() {
         if (type == null) {
@@ -60,9 +54,7 @@ public class SourceReference {
         }
     }
 
-
     public void setType(String value) {
         this.type = value;
     }
-
 }

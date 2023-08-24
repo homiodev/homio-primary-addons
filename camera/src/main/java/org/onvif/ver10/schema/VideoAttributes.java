@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,22 +20,17 @@ import lombok.Getter;
         propOrder = {"bitrate", "width", "height", "encoding", "framerate", "any"})
 public class VideoAttributes {
 
-
     @XmlElement(name = "Bitrate")
     protected Integer bitrate;
-
 
     @Getter @XmlElement(name = "Width")
     protected int width;
 
-
     @Getter @XmlElement(name = "Height")
     protected int height;
 
-
     @Getter @XmlElement(name = "Encoding", required = true)
     protected VideoEncoding encoding;
-
 
     @Getter @XmlElement(name = "Framerate")
     protected float framerate;
@@ -44,35 +38,28 @@ public class VideoAttributes {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setBitrate(Integer value) {
         this.bitrate = value;
     }
 
-
     public void setWidth(int value) {
         this.width = value;
     }
-
 
     public void setHeight(int value) {
         this.height = value;
     }
 
-
     public void setEncoding(VideoEncoding value) {
         this.encoding = value;
     }
 
-
     public void setFramerate(float value) {
         this.framerate = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -80,5 +67,4 @@ public class VideoAttributes {
         }
         return this.any;
     }
-
 }

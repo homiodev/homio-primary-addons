@@ -4,7 +4,6 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-
 @XmlType(name = "TrackType")
 @XmlEnum
 public enum TrackType {
@@ -14,7 +13,6 @@ public enum TrackType {
     AUDIO("Audio"),
     @XmlEnumValue("Metadata")
     METADATA("Metadata"),
-
 
     @XmlEnumValue("Extended")
     EXTENDED("Extended");

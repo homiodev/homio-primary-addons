@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.VideoEncoder2Configuration;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -19,7 +18,6 @@ public class GetVideoEncoderConfigurationsResponse {
 
     @XmlElement(name = "Configurations")
     protected List<VideoEncoder2Configuration> configurations;
-
 
     public List<VideoEncoder2Configuration> getConfigurations() {
         if (configurations == null) {

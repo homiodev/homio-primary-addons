@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IOCapabilitiesExtension",
@@ -29,14 +28,11 @@ public class IOCapabilitiesExtension {
     @XmlElement(name = "AuxiliaryCommands")
     protected List<String> auxiliaryCommands;
 
-
     @Getter @XmlElement(name = "Extension", required = true)
     protected IOCapabilitiesExtension2 extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -45,16 +41,13 @@ public class IOCapabilitiesExtension {
         return this.any;
     }
 
-
     public Boolean isAuxiliary() {
         return auxiliary;
     }
 
-
     public void setAuxiliary(Boolean value) {
         this.auxiliary = value;
     }
-
 
     public List<String> getAuxiliaryCommands() {
         if (auxiliaryCommands == null) {
@@ -63,9 +56,7 @@ public class IOCapabilitiesExtension {
         return this.auxiliaryCommands;
     }
 
-
     public void setExtension(IOCapabilitiesExtension2 value) {
         this.extension = value;
     }
-
 }

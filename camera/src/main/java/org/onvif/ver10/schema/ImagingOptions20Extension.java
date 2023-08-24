@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ImagingOptions20Extension",
@@ -19,14 +18,11 @@ public class ImagingOptions20Extension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlElement(name = "ImageStabilization")
     protected ImageStabilizationOptions imageStabilization;
 
-
     @Getter @XmlElement(name = "Extension")
     protected ImagingOptions20Extension2 extension;
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -35,11 +31,9 @@ public class ImagingOptions20Extension {
         return this.any;
     }
 
-
     public void setImageStabilization(ImageStabilizationOptions value) {
         this.imageStabilization = value;
     }
-
 
     public void setExtension(ImagingOptions20Extension2 value) {
         this.extension = value;

@@ -14,7 +14,6 @@ import javax.xml.namespace.QName;
 import lombok.Getter;
 import org.oasis_open.docs.wsn.b_2.FilterType;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -22,10 +21,8 @@ import org.oasis_open.docs.wsn.b_2.FilterType;
         propOrder = {"filter", "subscriptionPolicy", "any"})
 public class EventSubscription {
 
-
     @XmlElement(name = "Filter")
     protected FilterType filter;
-
 
     @Getter @XmlElement(name = "SubscriptionPolicy")
     protected EventSubscription.SubscriptionPolicy subscriptionPolicy;
@@ -33,20 +30,16 @@ public class EventSubscription {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setFilter(FilterType value) {
         this.filter = value;
     }
 
-
     public void setSubscriptionPolicy(EventSubscription.SubscriptionPolicy value) {
         this.subscriptionPolicy = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -54,7 +47,6 @@ public class EventSubscription {
         }
         return this.any;
     }
-
 
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(
@@ -64,7 +56,6 @@ public class EventSubscription {
 
         @XmlAnyElement(lax = true)
         protected List<java.lang.Object> any;
-
 
         public List<java.lang.Object> getAny() {
             if (any == null) {

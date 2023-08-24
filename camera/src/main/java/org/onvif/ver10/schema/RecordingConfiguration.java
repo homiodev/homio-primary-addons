@@ -14,7 +14,6 @@ import javax.xml.datatype.Duration;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -22,14 +21,11 @@ import lombok.Getter;
         propOrder = {"source", "content", "maximumRetentionTime", "any"})
 public class RecordingConfiguration {
 
-
     @XmlElement(name = "Source", required = true)
     protected RecordingSourceInformation source;
 
-
     @Getter @XmlElement(name = "Content", required = true)
     protected String content;
-
 
     @Getter @XmlElement(name = "MaximumRetentionTime", required = true)
     protected Duration maximumRetentionTime;
@@ -37,25 +33,20 @@ public class RecordingConfiguration {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setSource(RecordingSourceInformation value) {
         this.source = value;
     }
 
-
     public void setContent(String value) {
         this.content = value;
     }
 
-
     public void setMaximumRetentionTime(Duration value) {
         this.maximumRetentionTime = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -63,5 +54,4 @@ public class RecordingConfiguration {
         }
         return this.any;
     }
-
 }

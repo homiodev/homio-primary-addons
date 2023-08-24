@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RecordingCapabilities",
@@ -33,22 +32,17 @@ public class RecordingCapabilities {
     @XmlSchemaType(name = "anyURI")
     protected String xAddr;
 
-
     @Getter @XmlElement(name = "ReceiverSource")
     protected boolean receiverSource;
-
 
     @Getter @XmlElement(name = "MediaProfileSource")
     protected boolean mediaProfileSource;
 
-
     @Getter @XmlElement(name = "DynamicRecordings")
     protected boolean dynamicRecordings;
 
-
     @Getter @XmlElement(name = "DynamicTracks")
     protected boolean dynamicTracks;
-
 
     @Getter @XmlElement(name = "MaxStringLength")
     protected int maxStringLength;
@@ -56,45 +50,36 @@ public class RecordingCapabilities {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public String getXAddr() {
         return xAddr;
     }
 
-
     public void setXAddr(String value) {
         this.xAddr = value;
     }
-
 
     public void setReceiverSource(boolean value) {
         this.receiverSource = value;
     }
 
-
     public void setMediaProfileSource(boolean value) {
         this.mediaProfileSource = value;
     }
-
 
     public void setDynamicRecordings(boolean value) {
         this.dynamicRecordings = value;
     }
 
-
     public void setDynamicTracks(boolean value) {
         this.dynamicTracks = value;
     }
 
-
     public void setMaxStringLength(int value) {
         this.maxStringLength = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -102,5 +87,4 @@ public class RecordingCapabilities {
         }
         return this.any;
     }
-
 }

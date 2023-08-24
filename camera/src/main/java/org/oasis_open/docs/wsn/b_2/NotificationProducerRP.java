@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -18,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
-
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -37,10 +29,8 @@ public class NotificationProducerRP {
     @XmlSchemaType(name = "anyURI")
     protected List<String> topicExpressionDialect;
 
-
     @Getter @XmlElement(name = "TopicSet", namespace = "http://docs.oasis-open.org/wsn/t-1")
     protected TopicSetType topicSet;
-
 
     public List<TopicExpressionType> getTopicExpression() {
         if (topicExpression == null) {
@@ -49,16 +39,13 @@ public class NotificationProducerRP {
         return this.topicExpression;
     }
 
-
     public Boolean isFixedTopicSet() {
         return fixedTopicSet;
     }
 
-
     public void setFixedTopicSet(Boolean value) {
         this.fixedTopicSet = value;
     }
-
 
     public List<String> getTopicExpressionDialect() {
         if (topicExpressionDialect == null) {
@@ -66,7 +53,6 @@ public class NotificationProducerRP {
         }
         return this.topicExpressionDialect;
     }
-
 
     public void setTopicSet(TopicSetType value) {
         this.topicSet = value;

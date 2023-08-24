@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MediaCapabilities",
@@ -25,36 +24,29 @@ public class MediaCapabilities {
     @XmlSchemaType(name = "anyURI")
     protected String xAddr;
 
-
     @Getter @XmlElement(name = "StreamingCapabilities", required = true)
     protected RealTimeStreamingCapabilities streamingCapabilities;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlElement(name = "Extension")
     protected MediaCapabilitiesExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public String getXAddr() {
         return xAddr;
     }
 
-
     public void setXAddr(String value) {
         this.xAddr = value;
     }
 
-
     public void setStreamingCapabilities(RealTimeStreamingCapabilities value) {
         this.streamingCapabilities = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -63,9 +55,7 @@ public class MediaCapabilities {
         return this.any;
     }
 
-
     public void setExtension(MediaCapabilitiesExtension value) {
         this.extension = value;
     }
-
 }

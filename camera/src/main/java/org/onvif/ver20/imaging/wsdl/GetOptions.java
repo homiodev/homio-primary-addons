@@ -15,10 +15,8 @@ import lombok.Getter;
 @XmlRootElement(name = "GetOptions")
 public class GetOptions {
 
-
     @XmlElement(name = "VideoSourceToken", required = true)
     protected String videoSourceToken;
-
 
     public void setVideoSourceToken(String value) {
         this.videoSourceToken = value;

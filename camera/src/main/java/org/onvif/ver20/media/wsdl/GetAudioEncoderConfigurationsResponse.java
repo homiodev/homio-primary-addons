@@ -19,7 +19,6 @@ public class GetAudioEncoderConfigurationsResponse {
     @XmlElement(name = "Configurations")
     protected List<AudioEncoder2Configuration> configurations;
 
-
     public List<AudioEncoder2Configuration> getConfigurations() {
         if (configurations == null) {
             configurations = new ArrayList<AudioEncoder2Configuration>();

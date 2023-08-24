@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IrCutFilterAutoAdjustmentOptions",
@@ -25,18 +24,14 @@ public class IrCutFilterAutoAdjustmentOptions {
     @XmlElement(name = "BoundaryOffset")
     protected Boolean boundaryOffset;
 
-
     @Getter @XmlElement(name = "ResponseTimeRange")
     protected DurationRange responseTimeRange;
-
 
     @Getter @XmlElement(name = "Extension")
     protected IrCutFilterAutoAdjustmentOptionsExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<String> getBoundaryType() {
         if (boundaryType == null) {
@@ -45,24 +40,19 @@ public class IrCutFilterAutoAdjustmentOptions {
         return this.boundaryType;
     }
 
-
     public Boolean isBoundaryOffset() {
         return boundaryOffset;
     }
-
 
     public void setBoundaryOffset(Boolean value) {
         this.boundaryOffset = value;
     }
 
-
     public void setResponseTimeRange(DurationRange value) {
         this.responseTimeRange = value;
     }
 
-
     public void setExtension(IrCutFilterAutoAdjustmentOptionsExtension value) {
         this.extension = value;
     }
-
 }

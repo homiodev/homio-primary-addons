@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"sourceToken", "bounds", "any", "extension"})
 public class VideoSourceConfiguration extends ConfigurationEntity {
 
-
     @XmlElement(name = "SourceToken", required = true)
     protected String sourceToken;
-
 
     @Getter @XmlElement(name = "Bounds", required = true)
     protected IntRectangle bounds;
@@ -32,24 +29,19 @@ public class VideoSourceConfiguration extends ConfigurationEntity {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlElement(name = "Extension")
     protected VideoSourceConfigurationExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setSourceToken(String value) {
         this.sourceToken = value;
     }
 
-
     public void setBounds(IntRectangle value) {
         this.bounds = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -58,9 +50,7 @@ public class VideoSourceConfiguration extends ConfigurationEntity {
         return this.any;
     }
 
-
     public void setExtension(VideoSourceConfigurationExtension value) {
         this.extension = value;
     }
-
 }

@@ -24,10 +24,8 @@ public class ColorOptions {
     @XmlElement(name = "ColorspaceRange")
     protected List<ColorspaceRange> colorspaceRange;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Color> getColorList() {
         if (colorList == null) {
@@ -36,12 +34,10 @@ public class ColorOptions {
         return this.colorList;
     }
 
-
     public List<ColorspaceRange> getColorspaceRange() {
         if (colorspaceRange == null) {
             colorspaceRange = new ArrayList<ColorspaceRange>();
         }
         return this.colorspaceRange;
     }
-
 }

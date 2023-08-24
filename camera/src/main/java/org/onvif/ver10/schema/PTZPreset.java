@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -19,39 +18,31 @@ import lombok.Getter;
         propOrder = {"name", "ptzPosition"})
 public class PTZPreset {
 
-
     @XmlElement(name = "Name")
     protected String name;
 
     @XmlElement(name = "PTZPosition")
     protected PTZVector ptzPosition;
 
-
     @Getter @XmlAttribute(name = "token")
     protected String token;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setName(String value) {
         this.name = value;
     }
 
-
     public PTZVector getPTZPosition() {
         return ptzPosition;
     }
-
 
     public void setPTZPosition(PTZVector value) {
         this.ptzPosition = value;
     }
 
-
     public void setToken(String value) {
         this.token = value;
     }
-
 }

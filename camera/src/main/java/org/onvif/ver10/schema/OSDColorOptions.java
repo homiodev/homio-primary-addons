@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,35 +17,27 @@ import lombok.Getter;
         propOrder = {"color", "transparent", "extension"})
 public class OSDColorOptions {
 
-
     @XmlElement(name = "Color")
     protected ColorOptions color;
-
 
     @XmlElement(name = "Transparent")
     protected IntRange transparent;
 
-
     @XmlElement(name = "Extension")
     protected OSDColorOptionsExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setColor(ColorOptions value) {
         this.color = value;
     }
 
-
     public void setTransparent(IntRange value) {
         this.transparent = value;
     }
 
-
     public void setExtension(OSDColorOptionsExtension value) {
         this.extension = value;
     }
-
 }

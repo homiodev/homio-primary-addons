@@ -13,10 +13,8 @@ import lombok.Getter;
         propOrder = {"speed"})
 public class ContinuousFocus {
 
-
     @XmlElement(name = "Speed")
     protected float speed;
-
 
     public void setSpeed(float value) {
         this.speed = value;

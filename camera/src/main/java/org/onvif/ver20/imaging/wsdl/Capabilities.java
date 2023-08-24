@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Capabilities",
@@ -26,10 +25,8 @@ public class Capabilities {
     @XmlAttribute(name = "ImageStabilization")
     protected Boolean imageStabilization;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Object> getAny() {
         if (any == null) {
@@ -38,14 +35,11 @@ public class Capabilities {
         return this.any;
     }
 
-
     public Boolean isImageStabilization() {
         return imageStabilization;
     }
 
-
     public void setImageStabilization(Boolean value) {
         this.imageStabilization = value;
     }
-
 }

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "WideDynamicRangeOptions20",
@@ -18,10 +17,8 @@ public class WideDynamicRangeOptions20 {
     @XmlElement(name = "Mode", required = true)
     protected List<WideDynamicMode> mode;
 
-
     @Getter @XmlElement(name = "Level")
     protected FloatRange level;
-
 
     public List<WideDynamicMode> getMode() {
         if (mode == null) {
@@ -29,7 +26,6 @@ public class WideDynamicRangeOptions20 {
         }
         return this.mode;
     }
-
 
     public void setLevel(FloatRange value) {
         this.level = value;

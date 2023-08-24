@@ -12,14 +12,12 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RecordingJobSource",
         propOrder = {"sourceToken", "autoCreateReceiver", "tracks", "extension"})
 public class RecordingJobSource {
-
 
     @XmlElement(name = "SourceToken")
     protected SourceReference sourceToken;
@@ -30,29 +28,23 @@ public class RecordingJobSource {
     @XmlElement(name = "Tracks")
     protected List<RecordingJobTrack> tracks;
 
-
     @Getter @XmlElement(name = "Extension")
     protected RecordingJobSourceExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setSourceToken(SourceReference value) {
         this.sourceToken = value;
     }
 
-
     public Boolean isAutoCreateReceiver() {
         return autoCreateReceiver;
     }
 
-
     public void setAutoCreateReceiver(Boolean value) {
         this.autoCreateReceiver = value;
     }
-
 
     public List<RecordingJobTrack> getTracks() {
         if (tracks == null) {
@@ -61,9 +53,7 @@ public class RecordingJobSource {
         return this.tracks;
     }
 
-
     public void setExtension(RecordingJobSourceExtension value) {
         this.extension = value;
     }
-
 }

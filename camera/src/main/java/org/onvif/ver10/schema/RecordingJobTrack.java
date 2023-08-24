@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"sourceTag", "destination", "any"})
 public class RecordingJobTrack {
 
-
     @XmlElement(name = "SourceTag", required = true)
     protected String sourceTag;
-
 
     @Getter @XmlElement(name = "Destination", required = true)
     protected String destination;
@@ -32,20 +29,16 @@ public class RecordingJobTrack {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setSourceTag(String value) {
         this.sourceTag = value;
     }
 
-
     public void setDestination(String value) {
         this.destination = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -53,5 +46,4 @@ public class RecordingJobTrack {
         }
         return this.any;
     }
-
 }

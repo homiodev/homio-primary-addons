@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IPv6Configuration",
@@ -45,34 +44,27 @@ public class IPv6Configuration {
     @XmlElement(name = "FromRA")
     protected List<PrefixedIPv6Address> fromRA;
 
-
     @Getter @XmlElement(name = "Extension")
     protected IPv6ConfigurationExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public Boolean isAcceptRouterAdvert() {
         return acceptRouterAdvert;
     }
 
-
     public void setAcceptRouterAdvert(Boolean value) {
         this.acceptRouterAdvert = value;
     }
-
 
     public IPv6DHCPConfiguration getDHCP() {
         return dhcp;
     }
 
-
     public void setDHCP(IPv6DHCPConfiguration value) {
         this.dhcp = value;
     }
-
 
     public List<PrefixedIPv6Address> getManual() {
         if (manual == null) {
@@ -81,14 +73,12 @@ public class IPv6Configuration {
         return this.manual;
     }
 
-
     public List<PrefixedIPv6Address> getLinkLocal() {
         if (linkLocal == null) {
             linkLocal = new ArrayList<PrefixedIPv6Address>();
         }
         return this.linkLocal;
     }
-
 
     public List<PrefixedIPv6Address> getFromDHCP() {
         if (fromDHCP == null) {
@@ -97,7 +87,6 @@ public class IPv6Configuration {
         return this.fromDHCP;
     }
 
-
     public List<PrefixedIPv6Address> getFromRA() {
         if (fromRA == null) {
             fromRA = new ArrayList<PrefixedIPv6Address>();
@@ -105,9 +94,7 @@ public class IPv6Configuration {
         return this.fromRA;
     }
 
-
     public void setExtension(IPv6ConfigurationExtension value) {
         this.extension = value;
     }
-
 }

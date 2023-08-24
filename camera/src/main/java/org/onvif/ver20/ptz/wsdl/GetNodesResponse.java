@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.PTZNode;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -19,7 +18,6 @@ public class GetNodesResponse {
 
     @XmlElement(name = "PTZNode")
     protected List<PTZNode> ptzNode;
-
 
     public List<PTZNode> getPTZNode() {
         if (ptzNode == null) {

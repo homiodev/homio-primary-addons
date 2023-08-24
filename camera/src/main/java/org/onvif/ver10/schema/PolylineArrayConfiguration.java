@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,22 +20,18 @@ import lombok.Getter;
         propOrder = {"polylineArray", "any"})
 public class PolylineArrayConfiguration {
 
-
     @XmlElement(name = "PolylineArray", required = true)
     protected PolylineArray polylineArray;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setPolylineArray(PolylineArray value) {
         this.polylineArray = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -44,5 +39,4 @@ public class PolylineArrayConfiguration {
         }
         return this.any;
     }
-
 }

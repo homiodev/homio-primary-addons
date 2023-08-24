@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -18,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -27,18 +19,15 @@ import lombok.Getter;
 @XmlRootElement(name = "GetOSDOptions")
 public class GetOSDOptions {
 
-
     @XmlElement(name = "ConfigurationToken", required = true)
     protected String configurationToken;
 
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-
     public void setConfigurationToken(String value) {
         this.configurationToken = value;
     }
-
 
     public List<Object> getAny() {
         if (any == null) {

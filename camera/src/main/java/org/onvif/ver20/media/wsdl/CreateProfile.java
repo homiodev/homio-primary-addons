@@ -17,18 +17,15 @@ import lombok.Getter;
 @XmlRootElement(name = "CreateProfile")
 public class CreateProfile {
 
-
     @XmlElement(name = "Name", required = true)
     protected String name;
 
     @XmlElement(name = "Configuration")
     protected List<ConfigurationRef> configuration;
 
-
     public void setName(String value) {
         this.name = value;
     }
-
 
     public List<ConfigurationRef> getConfiguration() {
         if (configuration == null) {

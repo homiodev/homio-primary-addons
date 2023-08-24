@@ -21,10 +21,8 @@ public class ClassDescriptorExtension {
     @XmlElement(name = "OtherTypes", required = true)
     protected List<OtherType> otherTypes;
 
-
     @Getter @XmlElement(name = "Extension")
     protected ClassDescriptorExtension2 extension;
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -33,14 +31,12 @@ public class ClassDescriptorExtension {
         return this.any;
     }
 
-
     public List<OtherType> getOtherTypes() {
         if (otherTypes == null) {
             otherTypes = new ArrayList<OtherType>();
         }
         return this.otherTypes;
     }
-
 
     public void setExtension(ClassDescriptorExtension2 value) {
         this.extension = value;

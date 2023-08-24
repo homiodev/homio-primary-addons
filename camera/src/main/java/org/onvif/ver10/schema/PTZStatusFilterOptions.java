@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -28,10 +27,8 @@ import lombok.Getter;
         })
 public class PTZStatusFilterOptions {
 
-
     @XmlElement(name = "PanTiltStatusSupported")
     protected boolean panTiltStatusSupported;
-
 
     @Getter @XmlElement(name = "ZoomStatusSupported")
     protected boolean zoomStatusSupported;
@@ -45,24 +42,19 @@ public class PTZStatusFilterOptions {
     @XmlElement(name = "ZoomPositionSupported")
     protected Boolean zoomPositionSupported;
 
-
     @Getter @XmlElement(name = "Extension")
     protected PTZStatusFilterOptionsExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setPanTiltStatusSupported(boolean value) {
         this.panTiltStatusSupported = value;
     }
 
-
     public void setZoomStatusSupported(boolean value) {
         this.zoomStatusSupported = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -71,29 +63,23 @@ public class PTZStatusFilterOptions {
         return this.any;
     }
 
-
     public Boolean isPanTiltPositionSupported() {
         return panTiltPositionSupported;
     }
-
 
     public void setPanTiltPositionSupported(Boolean value) {
         this.panTiltPositionSupported = value;
     }
 
-
     public Boolean isZoomPositionSupported() {
         return zoomPositionSupported;
     }
-
 
     public void setZoomPositionSupported(Boolean value) {
         this.zoomPositionSupported = value;
     }
 
-
     public void setExtension(PTZStatusFilterOptionsExtension value) {
         this.extension = value;
     }
-
 }

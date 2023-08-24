@@ -31,7 +31,7 @@ public class SubscriptionPolicy {
     protected Boolean changedOnly;
 
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Object> getAny() {
         if (any == null) {

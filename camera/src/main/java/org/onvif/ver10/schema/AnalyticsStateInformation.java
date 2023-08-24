@@ -32,7 +32,7 @@ public class AnalyticsStateInformation {
     protected List<java.lang.Object> any;
 
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<java.lang.Object> getAny() {
         if (any == null) {

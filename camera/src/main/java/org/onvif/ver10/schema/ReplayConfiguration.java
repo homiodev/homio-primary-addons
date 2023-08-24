@@ -14,7 +14,6 @@ import javax.xml.datatype.Duration;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -22,22 +21,18 @@ import lombok.Getter;
         propOrder = {"sessionTimeout", "any"})
 public class ReplayConfiguration {
 
-
     @XmlElement(name = "SessionTimeout", required = true)
     protected Duration sessionTimeout;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setSessionTimeout(Duration value) {
         this.sessionTimeout = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -45,5 +40,4 @@ public class ReplayConfiguration {
         }
         return this.any;
     }
-
 }

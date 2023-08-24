@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZPresetTourPresetDetailOptions",
@@ -25,22 +24,17 @@ public class PTZPresetTourPresetDetailOptions {
     @XmlElement(name = "Home")
     protected Boolean home;
 
-
     @Getter @XmlElement(name = "PanTiltPositionSpace")
     protected Space2DDescription panTiltPositionSpace;
-
 
     @Getter @XmlElement(name = "ZoomPositionSpace")
     protected Space1DDescription zoomPositionSpace;
 
-
     @Getter @XmlElement(name = "Extension")
     protected PTZPresetTourPresetDetailOptionsExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<String> getPresetToken() {
         if (presetToken == null) {
@@ -49,29 +43,23 @@ public class PTZPresetTourPresetDetailOptions {
         return this.presetToken;
     }
 
-
     public Boolean isHome() {
         return home;
     }
-
 
     public void setHome(Boolean value) {
         this.home = value;
     }
 
-
     public void setPanTiltPositionSpace(Space2DDescription value) {
         this.panTiltPositionSpace = value;
     }
-
 
     public void setZoomPositionSpace(Space1DDescription value) {
         this.zoomPositionSpace = value;
     }
 
-
     public void setExtension(PTZPresetTourPresetDetailOptionsExtension value) {
         this.extension = value;
     }
-
 }

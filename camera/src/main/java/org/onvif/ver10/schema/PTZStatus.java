@@ -15,7 +15,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -23,18 +22,14 @@ import lombok.Getter;
         propOrder = {"position", "moveStatus", "error", "utcTime", "any"})
 public class PTZStatus {
 
-
     @XmlElement(name = "Position")
     protected PTZVector position;
-
 
     @Getter @XmlElement(name = "MoveStatus")
     protected PTZMoveStatus moveStatus;
 
-
     @Getter @XmlElement(name = "Error")
     protected String error;
-
 
     @Getter @XmlElement(name = "UtcTime", required = true)
     @XmlSchemaType(name = "dateTime")
@@ -43,30 +38,24 @@ public class PTZStatus {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setPosition(PTZVector value) {
         this.position = value;
     }
 
-
     public void setMoveStatus(PTZMoveStatus value) {
         this.moveStatus = value;
     }
-
 
     public void setError(String value) {
         this.error = value;
     }
 
-
     public void setUtcTime(XMLGregorianCalendar value) {
         this.utcTime = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -74,5 +63,4 @@ public class PTZStatus {
         }
         return this.any;
     }
-
 }

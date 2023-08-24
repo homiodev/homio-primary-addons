@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -17,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.NetworkInterface;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -27,7 +19,6 @@ public class GetNetworkInterfacesResponse {
 
     @XmlElement(name = "NetworkInterfaces", required = true)
     protected List<NetworkInterface> networkInterfaces;
-
 
     public List<NetworkInterface> getNetworkInterfaces() {
         if (networkInterfaces == null) {

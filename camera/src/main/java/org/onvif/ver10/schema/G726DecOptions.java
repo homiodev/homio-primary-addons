@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"bitrate", "sampleRateRange", "any"})
 public class G726DecOptions {
 
-
     @XmlElement(name = "Bitrate", required = true)
     protected IntList bitrate;
-
 
     @Getter @XmlElement(name = "SampleRateRange", required = true)
     protected IntList sampleRateRange;
@@ -32,20 +29,16 @@ public class G726DecOptions {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setBitrate(IntList value) {
         this.bitrate = value;
     }
 
-
     public void setSampleRateRange(IntList value) {
         this.sampleRateRange = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -53,5 +46,4 @@ public class G726DecOptions {
         }
         return this.any;
     }
-
 }

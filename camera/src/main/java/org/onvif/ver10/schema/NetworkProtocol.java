@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -20,10 +19,8 @@ import lombok.Getter;
         propOrder = {"name", "enabled", "port", "extension"})
 public class NetworkProtocol {
 
-
     @XmlElement(name = "Name", required = true)
     protected NetworkProtocolType name;
-
 
     @Getter @XmlElement(name = "Enabled")
     protected boolean enabled;
@@ -31,24 +28,19 @@ public class NetworkProtocol {
     @XmlElement(name = "Port", type = Integer.class)
     protected List<Integer> port;
 
-
     @Getter @XmlElement(name = "Extension")
     protected NetworkProtocolExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setName(NetworkProtocolType value) {
         this.name = value;
     }
 
-
     public void setEnabled(boolean value) {
         this.enabled = value;
     }
-
 
     public List<Integer> getPort() {
         if (port == null) {
@@ -57,9 +49,7 @@ public class NetworkProtocol {
         return this.port;
     }
 
-
     public void setExtension(NetworkProtocolExtension value) {
         this.extension = value;
     }
-
 }

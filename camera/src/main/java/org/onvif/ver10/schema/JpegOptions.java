@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "JpegOptions",
@@ -20,14 +19,11 @@ public class JpegOptions {
     @XmlElement(name = "ResolutionsAvailable", required = true)
     protected List<VideoResolution> resolutionsAvailable;
 
-
     @Getter @XmlElement(name = "FrameRateRange", required = true)
     protected IntRange frameRateRange;
 
-
     @Getter @XmlElement(name = "EncodingIntervalRange", required = true)
     protected IntRange encodingIntervalRange;
-
 
     public List<VideoResolution> getResolutionsAvailable() {
         if (resolutionsAvailable == null) {
@@ -36,11 +32,9 @@ public class JpegOptions {
         return this.resolutionsAvailable;
     }
 
-
     public void setFrameRateRange(IntRange value) {
         this.frameRateRange = value;
     }
-
 
     public void setEncodingIntervalRange(IntRange value) {
         this.encodingIntervalRange = value;

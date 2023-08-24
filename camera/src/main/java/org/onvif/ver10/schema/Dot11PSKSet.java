@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -20,36 +19,28 @@ import lombok.Getter;
         propOrder = {"key", "passphrase", "extension"})
 public class Dot11PSKSet {
 
-
     @XmlElement(name = "Key", type = String.class)
     @XmlJavaTypeAdapter(HexBinaryAdapter.class)
     protected byte[] key;
 
-
     @XmlElement(name = "Passphrase")
     protected String passphrase;
-
 
     @XmlElement(name = "Extension")
     protected Dot11PSKSetExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setKey(byte[] value) {
         this.key = value;
     }
 
-
     public void setPassphrase(String value) {
         this.passphrase = value;
     }
 
-
     public void setExtension(Dot11PSKSetExtension value) {
         this.extension = value;
     }
-
 }

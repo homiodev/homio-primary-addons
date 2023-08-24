@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -20,14 +19,11 @@ import lombok.Getter;
         propOrder = {"recordingToken", "mode", "priority", "source", "extension"})
 public class RecordingJobConfiguration {
 
-
     @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
-
     @Getter @XmlElement(name = "Mode", required = true)
     protected String mode;
-
 
     @Getter @XmlElement(name = "Priority")
     protected int priority;
@@ -35,29 +31,23 @@ public class RecordingJobConfiguration {
     @XmlElement(name = "Source")
     protected List<RecordingJobSource> source;
 
-
     @Getter @XmlElement(name = "Extension")
     protected RecordingJobConfigurationExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setRecordingToken(String value) {
         this.recordingToken = value;
     }
 
-
     public void setMode(String value) {
         this.mode = value;
     }
 
-
     public void setPriority(int value) {
         this.priority = value;
     }
-
 
     public List<RecordingJobSource> getSource() {
         if (source == null) {
@@ -66,9 +56,7 @@ public class RecordingJobConfiguration {
         return this.source;
     }
 
-
     public void setExtension(RecordingJobConfigurationExtension value) {
         this.extension = value;
     }
-
 }

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,18 +17,15 @@ import lombok.Getter;
 @XmlRootElement(name = "RemoveConfiguration")
 public class RemoveConfiguration {
 
-
     @XmlElement(name = "ProfileToken", required = true)
     protected String profileToken;
 
     @XmlElement(name = "Configuration", required = true)
     protected List<ConfigurationRef> configuration;
 
-
     public void setProfileToken(String value) {
         this.profileToken = value;
     }
-
 
     public List<ConfigurationRef> getConfiguration() {
         if (configuration == null) {

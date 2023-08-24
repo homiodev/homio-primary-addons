@@ -8,7 +8,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZStream",
@@ -20,7 +19,6 @@ public class PTZStream {
             @XmlElement(name = "Extension", type = PTZStreamExtension.class)
     })
     protected List<java.lang.Object> ptzStatusOrExtension;
-
 
     public List<java.lang.Object> getPTZStatusOrExtension() {
         if (ptzStatusOrExtension == null) {

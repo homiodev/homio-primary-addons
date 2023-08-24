@@ -10,7 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "AnalyticsDeviceCapabilities",
@@ -24,37 +27,9 @@ public class AnalyticsDeviceCapabilities {
     @XmlElement(name = "RuleSupport")
     protected Boolean ruleSupport;
 
-
     @Getter @XmlElement(name = "Extension")
     protected AnalyticsDeviceExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
-
-    public String getXAddr() {
-        return xAddr;
-    }
-
-
-    public void setXAddr(String value) {
-        this.xAddr = value;
-    }
-
-
-    public Boolean isRuleSupport() {
-        return ruleSupport;
-    }
-
-
-    public void setRuleSupport(Boolean value) {
-        this.ruleSupport = value;
-    }
-
-
-    public void setExtension(AnalyticsDeviceExtension value) {
-        this.extension = value;
-    }
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 }

@@ -21,14 +21,11 @@ public class AudioClassDescriptor {
     @XmlElement(name = "ClassCandidate")
     protected List<AudioClassCandidate> classCandidate;
 
-
     @Getter @XmlElement(name = "Extension")
     protected AudioClassDescriptorExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<AudioClassCandidate> getClassCandidate() {
         if (classCandidate == null) {
@@ -37,9 +34,7 @@ public class AudioClassDescriptor {
         return this.classCandidate;
     }
 
-
     public void setExtension(AudioClassDescriptorExtension value) {
         this.extension = value;
     }
-
 }

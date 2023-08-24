@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -16,10 +15,8 @@ import lombok.Getter;
 @XmlRootElement(name = "SendAuxiliaryCommandResponse")
 public class SendAuxiliaryCommandResponse {
 
-
     @XmlElement(name = "AuxiliaryResponse", required = true)
     protected String auxiliaryResponse;
-
 
     public void setAuxiliaryResponse(String value) {
         this.auxiliaryResponse = value;

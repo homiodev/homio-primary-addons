@@ -15,7 +15,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -23,19 +22,15 @@ import lombok.Getter;
         propOrder = {"recordingToken", "trackToken", "time", "position", "any"})
 public class FindPTZPositionResult {
 
-
     @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
-
 
     @Getter @XmlElement(name = "TrackToken", required = true)
     protected String trackToken;
 
-
     @Getter @XmlElement(name = "Time", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar time;
-
 
     @Getter @XmlElement(name = "Position", required = true)
     protected PTZVector position;
@@ -43,30 +38,24 @@ public class FindPTZPositionResult {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setRecordingToken(String value) {
         this.recordingToken = value;
     }
 
-
     public void setTrackToken(String value) {
         this.trackToken = value;
     }
-
 
     public void setTime(XMLGregorianCalendar value) {
         this.time = value;
     }
 
-
     public void setPosition(PTZVector value) {
         this.position = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -74,5 +63,4 @@ public class FindPTZPositionResult {
         }
         return this.any;
     }
-
 }

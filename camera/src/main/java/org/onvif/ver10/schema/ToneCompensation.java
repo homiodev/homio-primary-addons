@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,35 +17,27 @@ import lombok.Getter;
         propOrder = {"mode", "level", "extension"})
 public class ToneCompensation {
 
-
     @XmlElement(name = "Mode", required = true)
     protected String mode;
-
 
     @XmlElement(name = "Level")
     protected Float level;
 
-
     @XmlElement(name = "Extension")
     protected ToneCompensationExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setMode(String value) {
         this.mode = value;
     }
 
-
     public void setLevel(Float value) {
         this.level = value;
     }
 
-
     public void setExtension(ToneCompensationExtension value) {
         this.extension = value;
     }
-
 }

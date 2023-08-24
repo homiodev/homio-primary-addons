@@ -26,13 +26,11 @@ public class VideoEncoder2ConfigurationOptions {
     @XmlElement(name = "Encoding", required = true)
     protected String encoding;
 
-
     @Getter @XmlElement(name = "QualityRange", required = true)
     protected IntRange qualityRange;
 
     @XmlElement(name = "ResolutionsAvailable", required = true)
     protected List<VideoResolution2> resolutionsAvailable;
-
 
     @Getter @XmlElement(name = "BitrateRange", required = true)
     protected IntRange bitrateRange;
@@ -52,10 +50,8 @@ public class VideoEncoder2ConfigurationOptions {
     @XmlAttribute(name = "ConstantBitRateSupported")
     protected Boolean constantBitRateSupported;
 
-
     @Getter @XmlAttribute(name = "GuaranteedInstances")
     protected Integer guaranteedInstances;
-
 
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<>();

@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -27,41 +20,33 @@ import lombok.Getter;
 @XmlRootElement(name = "CreateCertificate")
 public class CreateCertificate {
 
-
     @XmlElement(name = "CertificateID")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String certificateID;
 
-
     @XmlElement(name = "Subject")
     protected String subject;
-
 
     @XmlElement(name = "ValidNotBefore")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar validNotBefore;
 
-
     @XmlElement(name = "ValidNotAfter")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar validNotAfter;
-
 
     public void setCertificateID(String value) {
         this.certificateID = value;
     }
 
-
     public void setSubject(String value) {
         this.subject = value;
     }
 
-
     public void setValidNotBefore(XMLGregorianCalendar value) {
         this.validNotBefore = value;
     }
-
 
     public void setValidNotAfter(XMLGregorianCalendar value) {
         this.validNotAfter = value;

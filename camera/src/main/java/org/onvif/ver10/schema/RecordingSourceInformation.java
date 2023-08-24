@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -22,23 +21,18 @@ import lombok.Getter;
         propOrder = {"sourceId", "name", "location", "description", "address", "any"})
 public class RecordingSourceInformation {
 
-
     @XmlElement(name = "SourceId", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String sourceId;
 
-
     @Getter @XmlElement(name = "Name", required = true)
     protected String name;
-
 
     @Getter @XmlElement(name = "Location", required = true)
     protected String location;
 
-
     @Getter @XmlElement(name = "Description", required = true)
     protected String description;
-
 
     @Getter @XmlElement(name = "Address", required = true)
     @XmlSchemaType(name = "anyURI")
@@ -47,35 +41,28 @@ public class RecordingSourceInformation {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setSourceId(String value) {
         this.sourceId = value;
     }
 
-
     public void setName(String value) {
         this.name = value;
     }
-
 
     public void setLocation(String value) {
         this.location = value;
     }
 
-
     public void setDescription(String value) {
         this.description = value;
     }
 
-
     public void setAddress(String value) {
         this.address = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -83,5 +70,4 @@ public class RecordingSourceInformation {
         }
         return this.any;
     }
-
 }

@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -24,10 +17,8 @@ import org.onvif.ver10.schema.Certificate;
 @XmlRootElement(name = "CreateCertificateResponse")
 public class CreateCertificateResponse {
 
-
     @XmlElement(name = "NvtCertificate", required = true)
     protected Certificate nvtCertificate;
-
 
     public void setNvtCertificate(Certificate value) {
         this.nvtCertificate = value;

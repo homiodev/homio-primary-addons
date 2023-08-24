@@ -24,15 +24,12 @@ public class AudioDescriptor {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAttribute(name = "UtcTime", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar utcTime;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -41,9 +38,7 @@ public class AudioDescriptor {
         return this.any;
     }
 
-
     public void setUtcTime(XMLGregorianCalendar value) {
         this.utcTime = value;
     }
-
 }

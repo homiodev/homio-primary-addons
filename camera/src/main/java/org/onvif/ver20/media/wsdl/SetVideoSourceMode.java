@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -16,19 +15,15 @@ import lombok.Getter;
 @XmlRootElement(name = "SetVideoSourceMode")
 public class SetVideoSourceMode {
 
-
     @XmlElement(name = "VideoSourceToken", required = true)
     protected String videoSourceToken;
-
 
     @XmlElement(name = "VideoSourceModeToken", required = true)
     protected String videoSourceModeToken;
 
-
     public void setVideoSourceToken(String value) {
         this.videoSourceToken = value;
     }
-
 
     public void setVideoSourceModeToken(String value) {
         this.videoSourceModeToken = value;

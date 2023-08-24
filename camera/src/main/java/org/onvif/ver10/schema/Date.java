@@ -13,28 +13,22 @@ import lombok.Getter;
         propOrder = {"year", "month", "day"})
 public class Date {
 
-
     @XmlElement(name = "Year")
     protected int year;
-
 
     @XmlElement(name = "Month")
     protected int month;
 
-
     @XmlElement(name = "Day")
     protected int day;
-
 
     public void setYear(int value) {
         this.year = value;
     }
 
-
     public void setMonth(int value) {
         this.month = value;
     }
-
 
     public void setDay(int value) {
         this.day = value;

@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "SupportedAnalyticsModules",
@@ -27,14 +26,11 @@ public class SupportedAnalyticsModules {
     @XmlElement(name = "AnalyticsModuleDescription")
     protected List<ConfigDescription> analyticsModuleDescription;
 
-
     @Getter @XmlElement(name = "Extension")
     protected SupportedAnalyticsModulesExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<String> getAnalyticsModuleContentSchemaLocation() {
         if (analyticsModuleContentSchemaLocation == null) {
@@ -43,7 +39,6 @@ public class SupportedAnalyticsModules {
         return this.analyticsModuleContentSchemaLocation;
     }
 
-
     public List<ConfigDescription> getAnalyticsModuleDescription() {
         if (analyticsModuleDescription == null) {
             analyticsModuleDescription = new ArrayList<ConfigDescription>();
@@ -51,9 +46,7 @@ public class SupportedAnalyticsModules {
         return this.analyticsModuleDescription;
     }
 
-
     public void setExtension(SupportedAnalyticsModulesExtension value) {
         this.extension = value;
     }
-
 }

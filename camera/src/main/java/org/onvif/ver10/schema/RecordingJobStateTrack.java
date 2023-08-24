@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,18 +20,14 @@ import lombok.Getter;
         propOrder = {"sourceTag", "destination", "error", "state", "any"})
 public class RecordingJobStateTrack {
 
-
     @XmlElement(name = "SourceTag", required = true)
     protected String sourceTag;
-
 
     @Getter @XmlElement(name = "Destination", required = true)
     protected String destination;
 
-
     @Getter @XmlElement(name = "Error")
     protected String error;
-
 
     @Getter @XmlElement(name = "State", required = true)
     protected String state;
@@ -40,30 +35,24 @@ public class RecordingJobStateTrack {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setSourceTag(String value) {
         this.sourceTag = value;
     }
 
-
     public void setDestination(String value) {
         this.destination = value;
     }
-
 
     public void setError(String value) {
         this.error = value;
     }
 
-
     public void setState(String value) {
         this.state = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -71,5 +60,4 @@ public class RecordingJobStateTrack {
         }
         return this.any;
     }
-
 }

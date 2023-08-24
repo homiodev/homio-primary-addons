@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Dot11Capabilities",
@@ -30,14 +29,11 @@ public class Dot11Capabilities {
     @XmlElement(name = "TKIP")
     protected boolean tkip;
 
-
     @Getter @XmlElement(name = "ScanAvailableNetworks")
     protected boolean scanAvailableNetworks;
 
-
     @Getter @XmlElement(name = "MultipleConfiguration")
     protected boolean multipleConfiguration;
-
 
     @Getter @XmlElement(name = "AdHocStationMode")
     protected boolean adHocStationMode;
@@ -48,45 +44,36 @@ public class Dot11Capabilities {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public boolean isTKIP() {
         return tkip;
     }
 
-
     public void setTKIP(boolean value) {
         this.tkip = value;
     }
-
 
     public void setScanAvailableNetworks(boolean value) {
         this.scanAvailableNetworks = value;
     }
 
-
     public void setMultipleConfiguration(boolean value) {
         this.multipleConfiguration = value;
     }
-
 
     public void setAdHocStationMode(boolean value) {
         this.adHocStationMode = value;
     }
 
-
     public boolean isWEP() {
         return wep;
     }
 
-
     public void setWEP(boolean value) {
         this.wep = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -94,5 +81,4 @@ public class Dot11Capabilities {
         }
         return this.any;
     }
-
 }

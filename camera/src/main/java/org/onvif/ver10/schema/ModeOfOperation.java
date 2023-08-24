@@ -4,7 +4,6 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-
 @XmlType(name = "ModeOfOperation")
 @XmlEnum
 public enum ModeOfOperation {
@@ -12,7 +11,6 @@ public enum ModeOfOperation {
     IDLE("Idle"),
     @XmlEnumValue("Active")
     ACTIVE("Active"),
-
 
     @XmlEnumValue("Unknown")
     UNKNOWN("Unknown");

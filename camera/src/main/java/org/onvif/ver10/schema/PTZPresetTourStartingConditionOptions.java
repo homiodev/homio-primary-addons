@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -20,10 +19,8 @@ import lombok.Getter;
         propOrder = {"recurringTime", "recurringDuration", "direction", "extension"})
 public class PTZPresetTourStartingConditionOptions {
 
-
     @XmlElement(name = "RecurringTime")
     protected IntRange recurringTime;
-
 
     @Getter @XmlElement(name = "RecurringDuration")
     protected DurationRange recurringDuration;
@@ -31,24 +28,19 @@ public class PTZPresetTourStartingConditionOptions {
     @XmlElement(name = "Direction")
     protected List<PTZPresetTourDirection> direction;
 
-
     @Getter @XmlElement(name = "Extension")
     protected PTZPresetTourStartingConditionOptionsExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setRecurringTime(IntRange value) {
         this.recurringTime = value;
     }
 
-
     public void setRecurringDuration(DurationRange value) {
         this.recurringDuration = value;
     }
-
 
     public List<PTZPresetTourDirection> getDirection() {
         if (direction == null) {
@@ -57,9 +49,7 @@ public class PTZPresetTourStartingConditionOptions {
         return this.direction;
     }
 
-
     public void setExtension(PTZPresetTourStartingConditionOptionsExtension value) {
         this.extension = value;
     }
-
 }

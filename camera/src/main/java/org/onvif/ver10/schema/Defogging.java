@@ -17,35 +17,27 @@ import lombok.Getter;
         propOrder = {"mode", "level", "extension"})
 public class Defogging {
 
-
     @XmlElement(name = "Mode", required = true)
     protected String mode;
-
 
     @XmlElement(name = "Level")
     protected Float level;
 
-
     @XmlElement(name = "Extension")
     protected DefoggingExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setMode(String value) {
         this.mode = value;
     }
 
-
     public void setLevel(Float value) {
         this.level = value;
     }
 
-
     public void setExtension(DefoggingExtension value) {
         this.extension = value;
     }
-
 }

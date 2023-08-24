@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -16,7 +9,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -26,7 +18,6 @@ public class GetVideoSourceModesResponse {
 
     @XmlElement(name = "VideoSourceModes", required = true)
     protected List<VideoSourceMode> videoSourceModes;
-
 
     public List<VideoSourceMode> getVideoSourceModes() {
         if (videoSourceModes == null) {

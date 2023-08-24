@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Setter
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -15,7 +14,6 @@ import lombok.Setter;
         name = "WideDynamicRange20",
         propOrder = {"mode", "level"})
 public class WideDynamicRange20 {
-
 
     @XmlElement(name = "Mode", required = true)
     protected WideDynamicMode mode;

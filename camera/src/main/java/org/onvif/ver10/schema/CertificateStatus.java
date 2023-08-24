@@ -23,12 +23,10 @@ import lombok.Getter;
         propOrder = {"certificateID", "status", "any"})
 public class CertificateStatus {
 
-
     @XmlElement(name = "CertificateID", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String certificateID;
-
 
     @Getter @XmlElement(name = "Status")
     protected boolean status;
@@ -36,20 +34,16 @@ public class CertificateStatus {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setCertificateID(String value) {
         this.certificateID = value;
     }
 
-
     public void setStatus(boolean value) {
         this.status = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -57,5 +51,4 @@ public class CertificateStatus {
         }
         return this.any;
     }
-
 }

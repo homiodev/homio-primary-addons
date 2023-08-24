@@ -16,10 +16,8 @@ import org.onvif.ver10.schema.AudioDecoderConfiguration;
 @XmlRootElement(name = "SetAudioDecoderConfiguration")
 public class SetAudioDecoderConfiguration {
 
-
     @XmlElement(name = "Configuration", required = true)
     protected AudioDecoderConfiguration configuration;
-
 
     public void setConfiguration(AudioDecoderConfiguration value) {
         this.configuration = value;

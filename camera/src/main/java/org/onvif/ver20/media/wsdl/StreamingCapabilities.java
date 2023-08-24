@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "StreamingCapabilities",
@@ -35,10 +34,8 @@ public class StreamingCapabilities {
     @XmlAttribute(name = "NonAggregateControl")
     protected Boolean nonAggregateControl;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Object> getAny() {
         if (any == null) {
@@ -47,44 +44,35 @@ public class StreamingCapabilities {
         return this.any;
     }
 
-
     public Boolean isRTSPStreaming() {
         return rtspStreaming;
     }
-
 
     public void setRTSPStreaming(Boolean value) {
         this.rtspStreaming = value;
     }
 
-
     public Boolean isRTPMulticast() {
         return rtpMulticast;
     }
-
 
     public void setRTPMulticast(Boolean value) {
         this.rtpMulticast = value;
     }
 
-
     public Boolean isRTPRTSPTCP() {
         return rtprtsptcp;
     }
-
 
     public void setRTPRTSPTCP(Boolean value) {
         this.rtprtsptcp = value;
     }
 
-
     public Boolean isNonAggregateControl() {
         return nonAggregateControl;
     }
 
-
     public void setNonAggregateControl(Boolean value) {
         this.nonAggregateControl = value;
     }
-
 }

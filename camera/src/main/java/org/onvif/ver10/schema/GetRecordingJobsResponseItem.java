@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"jobToken", "jobConfiguration", "any"})
 public class GetRecordingJobsResponseItem {
 
-
     @XmlElement(name = "JobToken", required = true)
     protected String jobToken;
-
 
     @Getter @XmlElement(name = "JobConfiguration", required = true)
     protected RecordingJobConfiguration jobConfiguration;
@@ -32,20 +29,16 @@ public class GetRecordingJobsResponseItem {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setJobToken(String value) {
         this.jobToken = value;
     }
 
-
     public void setJobConfiguration(RecordingJobConfiguration value) {
         this.jobConfiguration = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -53,5 +46,4 @@ public class GetRecordingJobsResponseItem {
         }
         return this.any;
     }
-
 }

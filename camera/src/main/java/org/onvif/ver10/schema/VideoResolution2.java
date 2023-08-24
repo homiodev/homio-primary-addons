@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"width", "height", "any"})
 public class VideoResolution2 {
 
-
     @XmlElement(name = "Width")
     protected int width;
-
 
     @Getter @XmlElement(name = "Height")
     protected int height;
@@ -32,20 +29,16 @@ public class VideoResolution2 {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setWidth(int value) {
         this.width = value;
     }
 
-
     public void setHeight(int value) {
         this.height = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -53,5 +46,4 @@ public class VideoResolution2 {
         }
         return this.any;
     }
-
 }

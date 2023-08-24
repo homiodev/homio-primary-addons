@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"fileName", "progress", "any"})
 public class FileProgress {
 
-
     @XmlElement(name = "FileName", required = true)
     protected String fileName;
-
 
     @Getter @XmlElement(name = "Progress")
     protected float progress;
@@ -32,20 +29,16 @@ public class FileProgress {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setFileName(String value) {
         this.fileName = value;
     }
 
-
     public void setProgress(float value) {
         this.progress = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -53,5 +46,4 @@ public class FileProgress {
         }
         return this.any;
     }
-
 }

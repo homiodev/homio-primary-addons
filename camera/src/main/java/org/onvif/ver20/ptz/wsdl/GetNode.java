@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -16,10 +15,8 @@ import lombok.Getter;
 @XmlRootElement(name = "GetNode")
 public class GetNode {
 
-
     @XmlElement(name = "NodeToken", required = true)
     protected String nodeToken;
-
 
     public void setNodeToken(String value) {
         this.nodeToken = value;

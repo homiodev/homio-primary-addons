@@ -15,10 +15,8 @@ import lombok.Getter;
 @XmlRootElement(name = "DeleteProfile")
 public class DeleteProfile {
 
-
     @XmlElement(name = "Token", required = true)
     protected String token;
-
 
     public void setToken(String value) {
         this.token = value;

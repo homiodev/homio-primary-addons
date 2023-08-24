@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,14 +20,11 @@ import lombok.Getter;
         propOrder = {"autoStart", "startingCondition", "tourSpot", "any"})
 public class PTZPresetTourOptions {
 
-
     @XmlElement(name = "AutoStart")
     protected boolean autoStart;
 
-
     @Getter @XmlElement(name = "StartingCondition", required = true)
     protected PTZPresetTourStartingConditionOptions startingCondition;
-
 
     @Getter @XmlElement(name = "TourSpot", required = true)
     protected PTZPresetTourSpotOptions tourSpot;
@@ -36,25 +32,20 @@ public class PTZPresetTourOptions {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setAutoStart(boolean value) {
         this.autoStart = value;
     }
 
-
     public void setStartingCondition(PTZPresetTourStartingConditionOptions value) {
         this.startingCondition = value;
     }
 
-
     public void setTourSpot(PTZPresetTourSpotOptions value) {
         this.tourSpot = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -62,5 +53,4 @@ public class PTZPresetTourOptions {
         }
         return this.any;
     }
-
 }

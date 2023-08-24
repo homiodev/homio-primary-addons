@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -17,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.VideoAnalyticsConfiguration;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -27,7 +19,6 @@ public class GetVideoAnalyticsConfigurationsResponse {
 
     @XmlElement(name = "Configurations")
     protected List<VideoAnalyticsConfiguration> configurations;
-
 
     public List<VideoAnalyticsConfiguration> getConfigurations() {
         if (configurations == null) {

@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"type", "likelihood", "any"})
 public class OtherType {
 
-
     @XmlElement(name = "Type", required = true)
     protected String type;
-
 
     @Getter @XmlElement(name = "Likelihood")
     protected float likelihood;
@@ -32,20 +29,16 @@ public class OtherType {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setType(String value) {
         this.type = value;
     }
 
-
     public void setLikelihood(float value) {
         this.likelihood = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -53,5 +46,4 @@ public class OtherType {
         }
         return this.any;
     }
-
 }

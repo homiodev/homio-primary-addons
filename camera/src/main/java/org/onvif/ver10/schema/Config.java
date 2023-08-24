@@ -15,28 +15,22 @@ import lombok.Getter;
         propOrder = {"parameters"})
 public class Config {
 
-
     @XmlElement(name = "Parameters", required = true)
     protected ItemList parameters;
-
 
     @XmlAttribute(name = "Name", required = true)
     protected String name;
 
-
     @XmlAttribute(name = "Type", required = true)
     protected QName type;
-
 
     public void setParameters(ItemList value) {
         this.parameters = value;
     }
 
-
     public void setName(String value) {
         this.name = value;
     }
-
 
     public void setType(QName value) {
         this.type = value;

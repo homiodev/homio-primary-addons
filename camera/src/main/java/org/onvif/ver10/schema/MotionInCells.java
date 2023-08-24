@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MotionInCells",
@@ -24,22 +23,17 @@ public class MotionInCells {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAttribute(name = "Columns", required = true)
     protected BigInteger columns;
-
 
     @Getter @XmlAttribute(name = "Rows", required = true)
     protected BigInteger rows;
 
-
     @Getter @XmlAttribute(name = "Cells", required = true)
     protected byte[] cells;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -48,19 +42,15 @@ public class MotionInCells {
         return this.any;
     }
 
-
     public void setColumns(BigInteger value) {
         this.columns = value;
     }
-
 
     public void setRows(BigInteger value) {
         this.rows = value;
     }
 
-
     public void setCells(byte[] value) {
         this.cells = value;
     }
-
 }

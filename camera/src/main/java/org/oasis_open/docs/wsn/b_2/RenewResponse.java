@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -20,7 +13,6 @@ import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -29,11 +21,9 @@ import lombok.Getter;
 @XmlRootElement(name = "RenewResponse")
 public class RenewResponse {
 
-
     @XmlElement(name = "TerminationTime", required = true, nillable = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar terminationTime;
-
 
     @Getter @XmlElement(name = "CurrentTime")
     @XmlSchemaType(name = "dateTime")
@@ -42,16 +32,13 @@ public class RenewResponse {
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-
     public void setTerminationTime(XMLGregorianCalendar value) {
         this.terminationTime = value;
     }
 
-
     public void setCurrentTime(XMLGregorianCalendar value) {
         this.currentTime = value;
     }
-
 
     public List<Object> getAny() {
         if (any == null) {

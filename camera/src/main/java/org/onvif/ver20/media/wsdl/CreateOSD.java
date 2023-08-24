@@ -17,11 +17,9 @@ public class CreateOSD {
     @XmlElement(name = "OSD", required = true)
     protected OSDConfiguration osd;
 
-
     public OSDConfiguration getOSD() {
         return osd;
     }
-
 
     public void setOSD(OSDConfiguration value) {
         this.osd = value;

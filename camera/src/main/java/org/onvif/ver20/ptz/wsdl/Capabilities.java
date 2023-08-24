@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Capabilities",
@@ -32,10 +31,8 @@ public class Capabilities {
     @XmlAttribute(name = "GetCompatibleConfigurations")
     protected Boolean getCompatibleConfigurations;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Object> getAny() {
         if (any == null) {
@@ -44,34 +41,27 @@ public class Capabilities {
         return this.any;
     }
 
-
     public Boolean isEFlip() {
         return eFlip;
     }
-
 
     public void setEFlip(Boolean value) {
         this.eFlip = value;
     }
 
-
     public Boolean isReverse() {
         return reverse;
     }
-
 
     public void setReverse(Boolean value) {
         this.reverse = value;
     }
 
-
     public Boolean isGetCompatibleConfigurations() {
         return getCompatibleConfigurations;
     }
 
-
     public void setGetCompatibleConfigurations(Boolean value) {
         this.getCompatibleConfigurations = value;
     }
-
 }

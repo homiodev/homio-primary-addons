@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RotateOptions",
@@ -22,18 +21,14 @@ public class RotateOptions {
     @XmlElement(name = "Mode", required = true)
     protected List<RotateMode> mode;
 
-
     @Getter @XmlElement(name = "DegreeList")
     protected IntList degreeList;
-
 
     @Getter @XmlElement(name = "Extension")
     protected RotateOptionsExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<RotateMode> getMode() {
         if (mode == null) {
@@ -42,14 +37,11 @@ public class RotateOptions {
         return this.mode;
     }
 
-
     public void setDegreeList(IntList value) {
         this.degreeList = value;
     }
 
-
     public void setExtension(RotateOptionsExtension value) {
         this.extension = value;
     }
-
 }

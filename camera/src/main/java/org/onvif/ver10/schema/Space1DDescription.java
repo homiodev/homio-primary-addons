@@ -6,7 +6,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlType;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Space1DDescription",
@@ -20,21 +19,17 @@ public class Space1DDescription {
     @XmlElement(name = "XRange", required = true)
     protected FloatRange xRange;
 
-
     public String getURI() {
         return uri;
     }
-
 
     public void setURI(String value) {
         this.uri = value;
     }
 
-
     public FloatRange getXRange() {
         return xRange;
     }
-
 
     public void setXRange(FloatRange value) {
         this.xRange = value;

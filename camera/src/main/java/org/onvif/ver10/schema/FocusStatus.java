@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,14 +20,11 @@ import lombok.Getter;
         propOrder = {"position", "moveStatus", "error", "any"})
 public class FocusStatus {
 
-
     @XmlElement(name = "Position")
     protected float position;
 
-
     @Getter @XmlElement(name = "MoveStatus", required = true)
     protected MoveStatus moveStatus;
-
 
     @Getter @XmlElement(name = "Error", required = true)
     protected String error;
@@ -36,25 +32,20 @@ public class FocusStatus {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setPosition(float value) {
         this.position = value;
     }
 
-
     public void setMoveStatus(MoveStatus value) {
         this.moveStatus = value;
     }
 
-
     public void setError(String value) {
         this.error = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -62,5 +53,4 @@ public class FocusStatus {
         }
         return this.any;
     }
-
 }

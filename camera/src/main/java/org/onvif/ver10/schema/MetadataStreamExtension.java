@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MetadataStreamExtension",
@@ -19,14 +18,11 @@ public class MetadataStreamExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlElement(name = "AudioAnalyticsStream")
     protected AudioAnalyticsStream audioAnalyticsStream;
 
-
     @Getter @XmlElement(name = "Extension")
     protected MetadataStreamExtension2 extension;
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -35,11 +31,9 @@ public class MetadataStreamExtension {
         return this.any;
     }
 
-
     public void setAudioAnalyticsStream(AudioAnalyticsStream value) {
         this.audioAnalyticsStream = value;
     }
-
 
     public void setExtension(MetadataStreamExtension2 value) {
         this.extension = value;

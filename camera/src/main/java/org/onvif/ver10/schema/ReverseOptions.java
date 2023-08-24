@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ReverseOptions",
@@ -22,14 +21,11 @@ public class ReverseOptions {
     @XmlElement(name = "Mode")
     protected List<ReverseMode> mode;
 
-
     @Getter @XmlElement(name = "Extension")
     protected ReverseOptionsExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<ReverseMode> getMode() {
         if (mode == null) {
@@ -38,9 +34,7 @@ public class ReverseOptions {
         return this.mode;
     }
 
-
     public void setExtension(ReverseOptionsExtension value) {
         this.extension = value;
     }
-
 }

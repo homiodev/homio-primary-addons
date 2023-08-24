@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "EFlipOptions",
@@ -22,14 +21,11 @@ public class EFlipOptions {
     @XmlElement(name = "Mode")
     protected List<EFlipMode> mode;
 
-
     @Getter @XmlElement(name = "Extension")
     protected EFlipOptionsExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<EFlipMode> getMode() {
         if (mode == null) {
@@ -38,9 +34,7 @@ public class EFlipOptions {
         return this.mode;
     }
 
-
     public void setExtension(EFlipOptionsExtension value) {
         this.extension = value;
     }
-
 }

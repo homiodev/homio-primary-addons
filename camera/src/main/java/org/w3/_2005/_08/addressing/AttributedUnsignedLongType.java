@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.w3._2005._08.addressing;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -20,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -28,18 +20,14 @@ import lombok.Getter;
         propOrder = {"value"})
 public class AttributedUnsignedLongType {
 
-
     @XmlValue
     @XmlSchemaType(name = "unsignedLong")
     protected BigInteger value;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setValue(BigInteger value) {
         this.value = value;
     }
-
 }

@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -23,7 +16,6 @@ import javax.xml.namespace.QName;
 import lombok.Getter;
 import org.w3._2005._08.addressing.EndpointReferenceType;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -32,22 +24,18 @@ import org.w3._2005._08.addressing.EndpointReferenceType;
 @XmlRootElement(name = "CreatePullPointResponse")
 public class CreatePullPointResponse {
 
-
     @XmlElement(name = "PullPoint", required = true)
     protected EndpointReferenceType pullPoint;
 
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setPullPoint(EndpointReferenceType value) {
         this.pullPoint = value;
     }
-
 
     public List<Object> getAny() {
         if (any == null) {
@@ -55,5 +43,4 @@ public class CreatePullPointResponse {
         }
         return this.any;
     }
-
 }

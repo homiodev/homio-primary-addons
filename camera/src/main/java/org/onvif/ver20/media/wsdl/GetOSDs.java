@@ -17,20 +17,16 @@ public class GetOSDs {
     @XmlElement(name = "OSDToken")
     protected String osdToken;
 
-
     @Getter @XmlElement(name = "ConfigurationToken")
     protected String configurationToken;
-
 
     public String getOSDToken() {
         return osdToken;
     }
 
-
     public void setOSDToken(String value) {
         this.osdToken = value;
     }
-
 
     public void setConfigurationToken(String value) {
         this.configurationToken = value;

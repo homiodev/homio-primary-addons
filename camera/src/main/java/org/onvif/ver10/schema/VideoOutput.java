@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,53 +17,41 @@ import lombok.Getter;
         propOrder = {"layout", "resolution", "refreshRate", "aspectRatio", "extension"})
 public class VideoOutput extends DeviceEntity {
 
-
     @XmlElement(name = "Layout", required = true)
     protected Layout layout;
-
 
     @XmlElement(name = "Resolution")
     protected VideoResolution resolution;
 
-
     @XmlElement(name = "RefreshRate")
     protected Float refreshRate;
-
 
     @XmlElement(name = "AspectRatio")
     protected Float aspectRatio;
 
-
     @XmlElement(name = "Extension")
     protected VideoOutputExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setLayout(Layout value) {
         this.layout = value;
     }
 
-
     public void setResolution(VideoResolution value) {
         this.resolution = value;
     }
-
 
     public void setRefreshRate(Float value) {
         this.refreshRate = value;
     }
 
-
     public void setAspectRatio(Float value) {
         this.aspectRatio = value;
     }
 
-
     public void setExtension(VideoOutputExtension value) {
         this.extension = value;
     }
-
 }

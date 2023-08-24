@@ -13,19 +13,15 @@ import lombok.Getter;
         propOrder = {"time", "date"})
 public class DateTime {
 
-
     @XmlElement(name = "Time", required = true)
     protected Time time;
-
 
     @XmlElement(name = "Date", required = true)
     protected Date date;
 
-
     public void setTime(Time value) {
         this.time = value;
     }
-
 
     public void setDate(Date value) {
         this.date = value;

@@ -21,25 +21,20 @@ public class ArrayOfFileProgress {
     @XmlElement(name = "FileProgress")
     protected List<FileProgress> fileProgress;
 
-
     @Getter @XmlElement(name = "Extension")
     protected ArrayOfFileProgressExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<FileProgress> getFileProgress() {
         if (fileProgress == null) {
-            fileProgress = new ArrayList<FileProgress>();
+            fileProgress = new ArrayList<>();
         }
         return this.fileProgress;
     }
 
-
     public void setExtension(ArrayOfFileProgressExtension value) {
         this.extension = value;
     }
-
 }

@@ -6,7 +6,6 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -14,19 +13,15 @@ import lombok.Getter;
         propOrder = {"irCutFilterAutoAdjustment", "extension"})
 public class ImagingOptions20Extension2 {
 
-
     @XmlElement(name = "IrCutFilterAutoAdjustment")
     protected IrCutFilterAutoAdjustmentOptions irCutFilterAutoAdjustment;
-
 
     @XmlElement(name = "Extension")
     protected ImagingOptions20Extension3 extension;
 
-
     public void setIrCutFilterAutoAdjustment(IrCutFilterAutoAdjustmentOptions value) {
         this.irCutFilterAutoAdjustment = value;
     }
-
 
     public void setExtension(ImagingOptions20Extension3 value) {
         this.extension = value;

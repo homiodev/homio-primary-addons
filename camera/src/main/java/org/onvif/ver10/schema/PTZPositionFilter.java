@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,14 +20,11 @@ import lombok.Getter;
         propOrder = {"minPosition", "maxPosition", "enterOrExit", "any"})
 public class PTZPositionFilter {
 
-
     @XmlElement(name = "MinPosition", required = true)
     protected PTZVector minPosition;
 
-
     @Getter @XmlElement(name = "MaxPosition", required = true)
     protected PTZVector maxPosition;
-
 
     @Getter @XmlElement(name = "EnterOrExit")
     protected boolean enterOrExit;
@@ -36,25 +32,20 @@ public class PTZPositionFilter {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setMinPosition(PTZVector value) {
         this.minPosition = value;
     }
 
-
     public void setMaxPosition(PTZVector value) {
         this.maxPosition = value;
     }
 
-
     public void setEnterOrExit(boolean value) {
         this.enterOrExit = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -62,5 +53,4 @@ public class PTZPositionFilter {
         }
         return this.any;
     }
-
 }

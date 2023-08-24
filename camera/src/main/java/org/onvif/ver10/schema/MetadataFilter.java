@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,22 +20,18 @@ import lombok.Getter;
         propOrder = {"metadataStreamFilter", "any"})
 public class MetadataFilter {
 
-
     @XmlElement(name = "MetadataStreamFilter", required = true)
     protected String metadataStreamFilter;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setMetadataStreamFilter(String value) {
         this.metadataStreamFilter = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -44,5 +39,4 @@ public class MetadataFilter {
         }
         return this.any;
     }
-
 }

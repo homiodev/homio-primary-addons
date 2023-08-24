@@ -22,30 +22,24 @@ import lombok.Getter;
         propOrder = {"transformation", "any"})
 public class CellLayout {
 
-
     @XmlElement(name = "Transformation", required = true)
     protected Transformation transformation;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAttribute(name = "Columns", required = true)
     protected BigInteger columns;
-
 
     @Getter @XmlAttribute(name = "Rows", required = true)
     protected BigInteger rows;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setTransformation(Transformation value) {
         this.transformation = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -54,14 +48,11 @@ public class CellLayout {
         return this.any;
     }
 
-
     public void setColumns(BigInteger value) {
         this.columns = value;
     }
 
-
     public void setRows(BigInteger value) {
         this.rows = value;
     }
-
 }

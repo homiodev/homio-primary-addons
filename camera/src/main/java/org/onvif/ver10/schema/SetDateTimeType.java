@@ -4,15 +4,12 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-
 @XmlType(name = "SetDateTimeType")
 @XmlEnum
 public enum SetDateTimeType {
 
-
     @XmlEnumValue("Manual")
     MANUAL("Manual"),
-
 
     NTP("NTP");
     private final String value;

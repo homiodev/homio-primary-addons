@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -15,7 +8,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -24,10 +16,8 @@ import lombok.Getter;
 @XmlRootElement(name = "SetHostnameFromDHCP")
 public class SetHostnameFromDHCP {
 
-
     @XmlElement(name = "FromDHCP")
     protected boolean fromDHCP;
-
 
     public void setFromDHCP(boolean value) {
         this.fromDHCP = value;

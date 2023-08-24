@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.PTZStatus;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -18,11 +17,9 @@ public class GetStatusResponse {
     @XmlElement(name = "PTZStatus", required = true)
     protected PTZStatus ptzStatus;
 
-
     public PTZStatus getPTZStatus() {
         return ptzStatus;
     }
-
 
     public void setPTZStatus(PTZStatus value) {
         this.ptzStatus = value;

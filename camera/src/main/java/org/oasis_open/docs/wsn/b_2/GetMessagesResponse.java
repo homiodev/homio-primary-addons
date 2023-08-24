@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -22,7 +15,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,10 +28,8 @@ public class GetMessagesResponse {
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<NotificationMessageHolderType> getNotificationMessage() {
         if (notificationMessage == null) {
@@ -48,12 +38,10 @@ public class GetMessagesResponse {
         return this.notificationMessage;
     }
 
-
     public List<Object> getAny() {
         if (any == null) {
             any = new ArrayList<Object>();
         }
         return this.any;
     }
-
 }

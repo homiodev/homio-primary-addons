@@ -15,10 +15,8 @@ import lombok.Getter;
 @XmlRootElement(name = "GetServiceCapabilitiesResponse2")
 public class GetServiceCapabilitiesResponse2 {
 
-
     @XmlElement(name = "Capabilities", required = true)
     protected Capabilities2 capabilities;
-
 
     public void setCapabilities(Capabilities2 value) {
         this.capabilities = value;

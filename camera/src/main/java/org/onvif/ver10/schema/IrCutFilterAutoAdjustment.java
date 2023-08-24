@@ -11,7 +11,6 @@ import javax.xml.datatype.Duration;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -19,44 +18,34 @@ import lombok.Getter;
         propOrder = {"boundaryType", "boundaryOffset", "responseTime", "extension"})
 public class IrCutFilterAutoAdjustment {
 
-
     @XmlElement(name = "BoundaryType", required = true)
     protected String boundaryType;
-
 
     @XmlElement(name = "BoundaryOffset")
     protected Float boundaryOffset;
 
-
     @XmlElement(name = "ResponseTime")
     protected Duration responseTime;
-
 
     @XmlElement(name = "Extension")
     protected IrCutFilterAutoAdjustmentExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setBoundaryType(String value) {
         this.boundaryType = value;
     }
 
-
     public void setBoundaryOffset(Float value) {
         this.boundaryOffset = value;
     }
-
 
     public void setResponseTime(Duration value) {
         this.responseTime = value;
     }
 
-
     public void setExtension(IrCutFilterAutoAdjustmentExtension value) {
         this.extension = value;
     }
-
 }

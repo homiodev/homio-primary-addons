@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -18,7 +11,6 @@ import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -27,12 +19,10 @@ import lombok.Getter;
 @XmlRootElement(name = "GetCertificateInformation")
 public class GetCertificateInformation {
 
-
     @XmlElement(name = "CertificateID", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String certificateID;
-
 
     public void setCertificateID(String value) {
         this.certificateID = value;

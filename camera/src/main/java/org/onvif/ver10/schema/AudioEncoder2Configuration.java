@@ -46,5 +46,4 @@ public class AudioEncoder2Configuration extends ConfigurationEntity {
         }
         return this.any;
     }
-
 }

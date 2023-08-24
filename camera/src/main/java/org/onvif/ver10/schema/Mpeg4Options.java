@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Mpeg4Options",
@@ -26,21 +25,17 @@ public class Mpeg4Options {
     @XmlElement(name = "ResolutionsAvailable", required = true)
     protected List<VideoResolution> resolutionsAvailable;
 
-
     @Getter @XmlElement(name = "GovLengthRange", required = true)
     protected IntRange govLengthRange;
 
-
     @Getter @XmlElement(name = "FrameRateRange", required = true)
     protected IntRange frameRateRange;
-
 
     @Getter @XmlElement(name = "EncodingIntervalRange", required = true)
     protected IntRange encodingIntervalRange;
 
     @XmlElement(name = "Mpeg4ProfilesSupported", required = true)
     protected List<Mpeg4Profile> mpeg4ProfilesSupported;
-
 
     public List<VideoResolution> getResolutionsAvailable() {
         if (resolutionsAvailable == null) {
@@ -49,21 +44,17 @@ public class Mpeg4Options {
         return this.resolutionsAvailable;
     }
 
-
     public void setGovLengthRange(IntRange value) {
         this.govLengthRange = value;
     }
-
 
     public void setFrameRateRange(IntRange value) {
         this.frameRateRange = value;
     }
 
-
     public void setEncodingIntervalRange(IntRange value) {
         this.encodingIntervalRange = value;
     }
-
 
     public List<Mpeg4Profile> getMpeg4ProfilesSupported() {
         if (mpeg4ProfilesSupported == null) {

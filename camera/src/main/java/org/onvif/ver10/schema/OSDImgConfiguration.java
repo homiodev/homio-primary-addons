@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -19,27 +18,21 @@ import lombok.Getter;
         propOrder = {"imgPath", "extension"})
 public class OSDImgConfiguration {
 
-
     @XmlElement(name = "ImgPath", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String imgPath;
 
-
     @XmlElement(name = "Extension")
     protected OSDImgConfigurationExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setImgPath(String value) {
         this.imgPath = value;
     }
 
-
     public void setExtension(OSDImgConfigurationExtension value) {
         this.extension = value;
     }
-
 }

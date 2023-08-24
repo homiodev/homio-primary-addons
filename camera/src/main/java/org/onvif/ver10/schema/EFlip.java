@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,22 +20,18 @@ import lombok.Getter;
         propOrder = {"mode", "any"})
 public class EFlip {
 
-
     @XmlElement(name = "Mode", required = true)
     protected EFlipMode mode;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setMode(EFlipMode value) {
         this.mode = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -44,5 +39,4 @@ public class EFlip {
         }
         return this.any;
     }
-
 }

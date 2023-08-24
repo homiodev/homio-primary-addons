@@ -25,14 +25,11 @@ import lombok.Getter;
         })
 public class CodingCapabilities {
 
-
     @XmlElement(name = "AudioEncodingCapabilities")
     protected AudioEncoderConfigurationOptions audioEncodingCapabilities;
 
-
     @Getter @XmlElement(name = "AudioDecodingCapabilities")
     protected AudioDecoderConfigurationOptions audioDecodingCapabilities;
-
 
     @Getter @XmlElement(name = "VideoDecodingCapabilities", required = true)
     protected VideoDecoderConfigurationOptions videoDecodingCapabilities;
@@ -40,25 +37,20 @@ public class CodingCapabilities {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setAudioEncodingCapabilities(AudioEncoderConfigurationOptions value) {
         this.audioEncodingCapabilities = value;
     }
 
-
     public void setAudioDecodingCapabilities(AudioDecoderConfigurationOptions value) {
         this.audioDecodingCapabilities = value;
     }
 
-
     public void setVideoDecodingCapabilities(VideoDecoderConfigurationOptions value) {
         this.videoDecodingCapabilities = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -66,5 +58,4 @@ public class CodingCapabilities {
         }
         return this.any;
     }
-
 }

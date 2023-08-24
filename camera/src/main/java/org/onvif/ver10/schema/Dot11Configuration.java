@@ -15,7 +15,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Dot11Configuration",
@@ -26,18 +25,14 @@ public class Dot11Configuration {
     @XmlJavaTypeAdapter(HexBinaryAdapter.class)
     protected byte[] ssid;
 
-
     @Getter @XmlElement(name = "Mode", required = true)
     protected Dot11StationMode mode;
-
 
     @Getter @XmlElement(name = "Alias", required = true)
     protected String alias;
 
-
     @Getter @XmlElement(name = "Priority")
     protected int priority;
-
 
     @Getter @XmlElement(name = "Security", required = true)
     protected Dot11SecurityConfiguration security;
@@ -45,40 +40,32 @@ public class Dot11Configuration {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public byte[] getSSID() {
         return ssid;
     }
 
-
     public void setSSID(byte[] value) {
         this.ssid = value;
     }
-
 
     public void setMode(Dot11StationMode value) {
         this.mode = value;
     }
 
-
     public void setAlias(String value) {
         this.alias = value;
     }
-
 
     public void setPriority(int value) {
         this.priority = value;
     }
 
-
     public void setSecurity(Dot11SecurityConfiguration value) {
         this.security = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -86,5 +73,4 @@ public class Dot11Configuration {
         }
         return this.any;
     }
-
 }

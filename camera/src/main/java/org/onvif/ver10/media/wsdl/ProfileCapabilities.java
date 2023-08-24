@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -21,7 +14,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ProfileCapabilities",
@@ -31,14 +23,11 @@ public class ProfileCapabilities {
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-
     @Getter @XmlAttribute(name = "MaximumNumberOfProfiles")
     protected Integer maximumNumberOfProfiles;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Object> getAny() {
         if (any == null) {
@@ -47,9 +36,7 @@ public class ProfileCapabilities {
         return this.any;
     }
 
-
     public void setMaximumNumberOfProfiles(Integer value) {
         this.maximumNumberOfProfiles = value;
     }
-
 }

@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,10 +20,8 @@ import lombok.Getter;
         propOrder = {"stream", "transport", "any"})
 public class StreamSetup {
 
-
     @XmlElement(name = "Stream", required = true)
     protected StreamType stream;
-
 
     @Getter @XmlElement(name = "Transport", required = true)
     protected Transport transport;
@@ -32,20 +29,16 @@ public class StreamSetup {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setStream(StreamType value) {
         this.stream = value;
     }
 
-
     public void setTransport(Transport value) {
         this.transport = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -53,5 +46,4 @@ public class StreamSetup {
         }
         return this.any;
     }
-
 }

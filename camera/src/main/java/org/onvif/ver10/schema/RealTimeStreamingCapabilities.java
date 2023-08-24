@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RealTimeStreamingCapabilities",
@@ -26,47 +25,37 @@ public class RealTimeStreamingCapabilities {
     @XmlElement(name = "RTP_RTSP_TCP")
     protected Boolean rtprtsptcp;
 
-
     @Getter @XmlElement(name = "Extension")
     protected RealTimeStreamingCapabilitiesExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public Boolean isRTPMulticast() {
         return rtpMulticast;
     }
 
-
     public void setRTPMulticast(Boolean value) {
         this.rtpMulticast = value;
     }
-
 
     public Boolean isRTPTCP() {
         return rtptcp;
     }
 
-
     public void setRTPTCP(Boolean value) {
         this.rtptcp = value;
     }
-
 
     public Boolean isRTPRTSPTCP() {
         return rtprtsptcp;
     }
 
-
     public void setRTPRTSPTCP(Boolean value) {
         this.rtprtsptcp = value;
     }
 
-
     public void setExtension(RealTimeStreamingCapabilitiesExtension value) {
         this.extension = value;
     }
-
 }

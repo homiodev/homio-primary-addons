@@ -1,11 +1,5 @@
 
 
-
-
-
-
-
-
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -17,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.AudioOutput;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -27,7 +20,6 @@ public class GetAudioOutputsResponse {
 
     @XmlElement(name = "AudioOutputs")
     protected List<AudioOutput> audioOutputs;
-
 
     public List<AudioOutput> getAudioOutputs() {
         if (audioOutputs == null) {

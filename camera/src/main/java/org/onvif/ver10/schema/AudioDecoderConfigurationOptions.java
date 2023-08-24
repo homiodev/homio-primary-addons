@@ -19,45 +19,35 @@ public class AudioDecoderConfigurationOptions {
     @XmlElement(name = "AACDecOptions")
     protected AACDecOptions aacDecOptions;
 
-
     @Getter @XmlElement(name = "G711DecOptions")
     protected G711DecOptions g711DecOptions;
-
 
     @Getter @XmlElement(name = "G726DecOptions")
     protected G726DecOptions g726DecOptions;
 
-
     @Getter @XmlElement(name = "Extension")
     protected AudioDecoderConfigurationOptionsExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public AACDecOptions getAACDecOptions() {
         return aacDecOptions;
     }
 
-
     public void setAACDecOptions(AACDecOptions value) {
         this.aacDecOptions = value;
     }
-
 
     public void setG711DecOptions(G711DecOptions value) {
         this.g711DecOptions = value;
     }
 
-
     public void setG726DecOptions(G726DecOptions value) {
         this.g726DecOptions = value;
     }
 
-
     public void setExtension(AudioDecoderConfigurationOptionsExtension value) {
         this.extension = value;
     }
-
 }

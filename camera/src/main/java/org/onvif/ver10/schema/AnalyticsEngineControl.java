@@ -18,45 +18,41 @@ import lombok.Setter;
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-        name = "AnalyticsEngineControl",
-        propOrder = {
-                "engineToken",
-                "engineConfigToken",
-                "inputToken",
-                "receiverToken",
-                "multicast",
-                "subscription",
-                "mode",
-                "any"
-        })
+    name = "AnalyticsEngineControl",
+    propOrder = {
+        "engineToken",
+        "engineConfigToken",
+        "inputToken",
+        "receiverToken",
+        "multicast",
+        "subscription",
+        "mode",
+        "any"
+    })
 public class AnalyticsEngineControl extends ConfigurationEntity {
 
     @XmlElement(name = "EngineToken", required = true)
     protected String engineToken;
 
-     @XmlElement(name = "EngineConfigToken", required = true)
-    protected String engineConfigToken;
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     @XmlElement(name = "InputToken", required = true)
     protected List<String> inputToken;
 
     @XmlElement(name = "ReceiverToken", required = true)
     protected List<String> receiverToken;
-
-     @XmlElement(name = "Multicast")
+    @XmlElement(name = "EngineConfigToken", required = true)
+    protected String engineConfigToken;
+    @XmlElement(name = "Multicast")
     protected MulticastConfiguration multicast;
-
-     @XmlElement(name = "Subscription", required = true)
+    @XmlElement(name = "Subscription", required = true)
     protected Config subscription;
-
-     @XmlElement(name = "Mode", required = true)
-    protected ModeOfOperation mode;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
-
-     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<>();
+    @XmlElement(name = "Mode", required = true)
+    protected ModeOfOperation mode;
 
     public List<String> getInputToken() {
         if (inputToken == null) {

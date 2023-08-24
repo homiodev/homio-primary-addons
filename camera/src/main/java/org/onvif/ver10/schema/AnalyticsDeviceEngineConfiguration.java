@@ -11,7 +11,10 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "AnalyticsDeviceEngineConfiguration",
@@ -21,25 +24,16 @@ public class AnalyticsDeviceEngineConfiguration {
     @XmlElement(name = "EngineConfiguration", required = true)
     protected List<EngineConfiguration> engineConfiguration;
 
-
     @Getter @XmlElement(name = "Extension")
     protected AnalyticsDeviceEngineConfigurationExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<EngineConfiguration> getEngineConfiguration() {
         if (engineConfiguration == null) {
-            engineConfiguration = new ArrayList<EngineConfiguration>();
+            engineConfiguration = new ArrayList<>();
         }
         return this.engineConfiguration;
     }
-
-
-    public void setExtension(AnalyticsDeviceEngineConfigurationExtension value) {
-        this.extension = value;
-    }
-
 }

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.PTZConfiguration;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -19,7 +18,6 @@ public class GetCompatibleConfigurationsResponse {
 
     @XmlElement(name = "PTZConfiguration")
     protected List<PTZConfiguration> ptzConfiguration;
-
 
     public List<PTZConfiguration> getPTZConfiguration() {
         if (ptzConfiguration == null) {

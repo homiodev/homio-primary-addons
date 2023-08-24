@@ -16,14 +16,12 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "TLSConfiguration",
         propOrder = {"certificateID", "any"})
 public class TLSConfiguration {
-
 
     @XmlElement(name = "CertificateID", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
@@ -33,15 +31,12 @@ public class TLSConfiguration {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setCertificateID(String value) {
         this.certificateID = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -49,5 +44,4 @@ public class TLSConfiguration {
         }
         return this.any;
     }
-
 }

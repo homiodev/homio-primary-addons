@@ -44,38 +44,30 @@ public class Dot11AvailableNetworks {
     @XmlElement(name = "GroupCipher")
     protected List<Dot11Cipher> groupCipher;
 
-
     @Getter @XmlElement(name = "SignalStrength")
     protected Dot11SignalStrength signalStrength;
-
 
     @Getter @XmlElement(name = "Extension")
     protected Dot11AvailableNetworksExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public byte[] getSSID() {
         return ssid;
     }
 
-
     public void setSSID(byte[] value) {
         this.ssid = value;
     }
-
 
     public String getBSSID() {
         return bssid;
     }
 
-
     public void setBSSID(String value) {
         this.bssid = value;
     }
-
 
     public List<Dot11AuthAndMangementSuite> getAuthAndMangementSuite() {
         if (authAndMangementSuite == null) {
@@ -84,14 +76,12 @@ public class Dot11AvailableNetworks {
         return this.authAndMangementSuite;
     }
 
-
     public List<Dot11Cipher> getPairCipher() {
         if (pairCipher == null) {
             pairCipher = new ArrayList<Dot11Cipher>();
         }
         return this.pairCipher;
     }
-
 
     public List<Dot11Cipher> getGroupCipher() {
         if (groupCipher == null) {
@@ -100,14 +90,11 @@ public class Dot11AvailableNetworks {
         return this.groupCipher;
     }
 
-
     public void setSignalStrength(Dot11SignalStrength value) {
         this.signalStrength = value;
     }
 
-
     public void setExtension(Dot11AvailableNetworksExtension value) {
         this.extension = value;
     }
-
 }

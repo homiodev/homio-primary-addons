@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,26 +17,20 @@ import lombok.Getter;
         propOrder = {"focusStatus20", "extension"})
 public class ImagingStatus20 {
 
-
     @XmlElement(name = "FocusStatus20")
     protected FocusStatus20 focusStatus20;
-
 
     @XmlElement(name = "Extension")
     protected ImagingStatus20Extension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setFocusStatus20(FocusStatus20 value) {
         this.focusStatus20 = value;
     }
 
-
     public void setExtension(ImagingStatus20Extension value) {
         this.extension = value;
     }
-
 }

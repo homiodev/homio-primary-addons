@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "SystemLogUriList",
@@ -16,7 +15,6 @@ public class SystemLogUriList {
 
     @XmlElement(name = "SystemLog")
     protected List<SystemLogUri> systemLog;
-
 
     public List<SystemLogUri> getSystemLog() {
         if (systemLog == null) {

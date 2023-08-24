@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -20,10 +19,8 @@ import lombok.Getter;
         propOrder = {"boundingBox", "centerOfGravity", "polygon", "extension"})
 public class ShapeDescriptor {
 
-
     @XmlElement(name = "BoundingBox", required = true)
     protected Rectangle boundingBox;
-
 
     @Getter @XmlElement(name = "CenterOfGravity", required = true)
     protected Vector centerOfGravity;
@@ -31,24 +28,19 @@ public class ShapeDescriptor {
     @XmlElement(name = "Polygon")
     protected List<Polygon> polygon;
 
-
     @Getter @XmlElement(name = "Extension")
     protected ShapeDescriptorExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setBoundingBox(Rectangle value) {
         this.boundingBox = value;
     }
 
-
     public void setCenterOfGravity(Vector value) {
         this.centerOfGravity = value;
     }
-
 
     public List<Polygon> getPolygon() {
         if (polygon == null) {
@@ -57,9 +49,7 @@ public class ShapeDescriptor {
         return this.polygon;
     }
 
-
     public void setExtension(ShapeDescriptorExtension value) {
         this.extension = value;
     }
-
 }

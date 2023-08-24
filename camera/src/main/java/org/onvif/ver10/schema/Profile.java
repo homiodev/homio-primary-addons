@@ -172,7 +172,7 @@ public class Profile {
      * @return always non-null
      */
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Legt den Wert der name-Eigenschaft fest.
@@ -290,5 +290,4 @@ public class Profile {
     public void setFixed(Boolean value) {
         this.fixed = value;
     }
-
 }

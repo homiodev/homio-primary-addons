@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IPv4NetworkInterfaceSetConfiguration",
@@ -23,16 +22,13 @@ public class IPv4NetworkInterfaceSetConfiguration {
     @XmlElement(name = "DHCP")
     protected Boolean dhcp;
 
-
     public Boolean isEnabled() {
         return enabled;
     }
 
-
     public void setEnabled(Boolean value) {
         this.enabled = value;
     }
-
 
     public List<PrefixedIPv4Address> getManual() {
         if (manual == null) {
@@ -41,11 +37,9 @@ public class IPv4NetworkInterfaceSetConfiguration {
         return this.manual;
     }
 
-
     public Boolean isDHCP() {
         return dhcp;
     }
-
 
     public void setDHCP(Boolean value) {
         this.dhcp = value;

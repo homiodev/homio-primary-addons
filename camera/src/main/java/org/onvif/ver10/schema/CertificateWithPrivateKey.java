@@ -23,16 +23,13 @@ import lombok.Getter;
         propOrder = {"certificateID", "certificate", "privateKey", "any"})
 public class CertificateWithPrivateKey {
 
-
     @XmlElement(name = "CertificateID")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String certificateID;
 
-
     @Getter @XmlElement(name = "Certificate", required = true)
     protected BinaryData certificate;
-
 
     @Getter @XmlElement(name = "PrivateKey", required = true)
     protected BinaryData privateKey;
@@ -40,25 +37,20 @@ public class CertificateWithPrivateKey {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setCertificateID(String value) {
         this.certificateID = value;
     }
 
-
     public void setCertificate(BinaryData value) {
         this.certificate = value;
     }
 
-
     public void setPrivateKey(BinaryData value) {
         this.privateKey = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -66,5 +58,4 @@ public class CertificateWithPrivateKey {
         }
         return this.any;
     }
-
 }

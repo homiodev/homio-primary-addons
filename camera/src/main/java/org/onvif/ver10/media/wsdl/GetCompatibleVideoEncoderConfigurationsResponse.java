@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -17,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.VideoEncoderConfiguration;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -27,7 +19,6 @@ public class GetCompatibleVideoEncoderConfigurationsResponse {
 
     @XmlElement(name = "Configurations")
     protected List<VideoEncoderConfiguration> configurations;
-
 
     public List<VideoEncoderConfiguration> getConfigurations() {
         if (configurations == null) {

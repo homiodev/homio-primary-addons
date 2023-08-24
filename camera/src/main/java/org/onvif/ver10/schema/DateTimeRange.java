@@ -22,11 +22,9 @@ import lombok.Getter;
         propOrder = {"from", "until", "any"})
 public class DateTimeRange {
 
-
     @XmlElement(name = "From", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar from;
-
 
     @Getter @XmlElement(name = "Until", required = true)
     @XmlSchemaType(name = "dateTime")
@@ -35,20 +33,16 @@ public class DateTimeRange {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setFrom(XMLGregorianCalendar value) {
         this.from = value;
     }
 
-
     public void setUntil(XMLGregorianCalendar value) {
         this.until = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -56,5 +50,4 @@ public class DateTimeRange {
         }
         return this.any;
     }
-
 }

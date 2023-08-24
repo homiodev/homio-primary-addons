@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -21,7 +14,6 @@ import java.util.List;
 import lombok.Getter;
 import org.onvif.ver10.schema.IPAddress;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -29,7 +21,6 @@ import org.onvif.ver10.schema.IPAddress;
         propOrder = {"fromDHCP", "searchDomain", "dnsManual"})
 @XmlRootElement(name = "SetDNS")
 public class SetDNS {
-
 
     @XmlElement(name = "FromDHCP")
     protected boolean fromDHCP;
@@ -42,11 +33,9 @@ public class SetDNS {
     @XmlElement(name = "DNSManual")
     protected List<IPAddress> dnsManual;
 
-
     public void setFromDHCP(boolean value) {
         this.fromDHCP = value;
     }
-
 
     public List<String> getSearchDomain() {
         if (searchDomain == null) {
@@ -54,7 +43,6 @@ public class SetDNS {
         }
         return this.searchDomain;
     }
-
 
     public List<IPAddress> getDNSManual() {
         if (dnsManual == null) {

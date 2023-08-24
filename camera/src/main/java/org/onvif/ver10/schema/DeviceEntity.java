@@ -23,10 +23,8 @@ import lombok.Getter;
 })
 public class DeviceEntity {
 
-
     @XmlAttribute(name = "token", required = true)
     protected String token;
-
 
     public void setToken(String value) {
         this.token = value;

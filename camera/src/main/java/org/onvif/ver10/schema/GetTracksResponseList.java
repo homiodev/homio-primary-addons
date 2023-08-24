@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "GetTracksResponseList",
@@ -22,10 +21,8 @@ public class GetTracksResponseList {
     @XmlElement(name = "Track")
     protected List<GetTracksResponseItem> track;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<GetTracksResponseItem> getTrack() {
         if (track == null) {
@@ -33,5 +30,4 @@ public class GetTracksResponseList {
         }
         return this.track;
     }
-
 }

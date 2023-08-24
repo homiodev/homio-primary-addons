@@ -20,30 +20,24 @@ import lombok.Getter;
         propOrder = {"parameters", "messages", "extension"})
 public class ConfigDescription {
 
-
     @XmlElement(name = "Parameters", required = true)
     protected ItemListDescription parameters;
 
     @XmlElement(name = "Messages")
     protected List<ConfigDescription.Messages> messages;
 
-
     @Getter @XmlElement(name = "Extension")
     protected ConfigDescriptionExtension extension;
-
 
     @Getter @XmlAttribute(name = "Name", required = true)
     protected QName name;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setParameters(ItemListDescription value) {
         this.parameters = value;
     }
-
 
     public List<ConfigDescription.Messages> getMessages() {
         if (messages == null) {
@@ -52,16 +46,13 @@ public class ConfigDescription {
         return this.messages;
     }
 
-
     public void setExtension(ConfigDescriptionExtension value) {
         this.extension = value;
     }
 
-
     public void setName(QName value) {
         this.name = value;
     }
-
 
     @Getter
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -70,10 +61,8 @@ public class ConfigDescription {
             propOrder = {"parentTopic"})
     public static class Messages extends MessageDescription {
 
-
         @XmlElement(name = "ParentTopic", required = true)
         protected String parentTopic;
-
 
         public void setParentTopic(String value) {
             this.parentTopic = value;

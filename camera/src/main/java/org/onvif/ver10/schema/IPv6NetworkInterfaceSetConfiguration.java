@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IPv6NetworkInterfaceSetConfiguration",
@@ -26,26 +25,21 @@ public class IPv6NetworkInterfaceSetConfiguration {
     @XmlElement(name = "DHCP")
     protected IPv6DHCPConfiguration dhcp;
 
-
     public Boolean isEnabled() {
         return enabled;
     }
-
 
     public void setEnabled(Boolean value) {
         this.enabled = value;
     }
 
-
     public Boolean isAcceptRouterAdvert() {
         return acceptRouterAdvert;
     }
 
-
     public void setAcceptRouterAdvert(Boolean value) {
         this.acceptRouterAdvert = value;
     }
-
 
     public List<PrefixedIPv6Address> getManual() {
         if (manual == null) {
@@ -54,11 +48,9 @@ public class IPv6NetworkInterfaceSetConfiguration {
         return this.manual;
     }
 
-
     public IPv6DHCPConfiguration getDHCP() {
         return dhcp;
     }
-
 
     public void setDHCP(IPv6DHCPConfiguration value) {
         this.dhcp = value;

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.PTZPreset;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -19,7 +18,6 @@ public class GetPresetsResponse {
 
     @XmlElement(name = "Preset")
     protected List<PTZPreset> preset;
-
 
     public List<PTZPreset> getPreset() {
         if (preset == null) {

@@ -19,7 +19,6 @@ public class GetAudioOutputConfigurationsResponse {
     @XmlElement(name = "Configurations")
     protected List<AudioOutputConfiguration> configurations;
 
-
     public List<AudioOutputConfiguration> getConfigurations() {
         if (configurations == null) {
             configurations = new ArrayList<AudioOutputConfiguration>();

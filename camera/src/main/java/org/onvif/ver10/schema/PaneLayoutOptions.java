@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PaneLayoutOptions",
@@ -22,14 +21,11 @@ public class PaneLayoutOptions {
     @XmlElement(name = "Area", required = true)
     protected List<Rectangle> area;
 
-
     @Getter @XmlElement(name = "Extension")
     protected PaneOptionExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Rectangle> getArea() {
         if (area == null) {
@@ -38,9 +34,7 @@ public class PaneLayoutOptions {
         return this.area;
     }
 
-
     public void setExtension(PaneOptionExtension value) {
         this.extension = value;
     }
-
 }

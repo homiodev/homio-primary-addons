@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -17,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.BackupFile;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -27,7 +19,6 @@ public class GetSystemBackupResponse {
 
     @XmlElement(name = "BackupFiles", required = true)
     protected List<BackupFile> backupFiles;
-
 
     public List<BackupFile> getBackupFiles() {
         if (backupFiles == null) {

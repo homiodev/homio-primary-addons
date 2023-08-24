@@ -9,61 +9,31 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Appearance",
         propOrder = {"transformation", "shape", "color", "clazz", "extension"})
 public class Appearance {
 
-
     @XmlElement(name = "Transformation")
     protected Transformation transformation;
-
 
     @XmlElement(name = "Shape")
     protected ShapeDescriptor shape;
 
-
     @XmlElement(name = "Color")
     protected ColorDescriptor color;
-
 
     @XmlElement(name = "Class")
     protected ClassDescriptor clazz;
 
-
     @XmlElement(name = "Extension")
     protected AppearanceExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
-
-    public void setTransformation(Transformation value) {
-        this.transformation = value;
-    }
-
-
-    public void setShape(ShapeDescriptor value) {
-        this.shape = value;
-    }
-
-
-    public void setColor(ColorDescriptor value) {
-        this.color = value;
-    }
-
-
-    public void setClazz(ClassDescriptor value) {
-        this.clazz = value;
-    }
-
-
-    public void setExtension(AppearanceExtension value) {
-        this.extension = value;
-    }
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 }

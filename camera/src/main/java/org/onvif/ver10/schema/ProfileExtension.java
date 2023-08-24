@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ProfileExtension",
@@ -23,22 +22,17 @@ public class ProfileExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlElement(name = "AudioOutputConfiguration")
     protected AudioOutputConfiguration audioOutputConfiguration;
-
 
     @Getter @XmlElement(name = "AudioDecoderConfiguration")
     protected AudioDecoderConfiguration audioDecoderConfiguration;
 
-
     @Getter @XmlElement(name = "Extension")
     protected ProfileExtension2 extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -47,19 +41,15 @@ public class ProfileExtension {
         return this.any;
     }
 
-
     public void setAudioOutputConfiguration(AudioOutputConfiguration value) {
         this.audioOutputConfiguration = value;
     }
-
 
     public void setAudioDecoderConfiguration(AudioDecoderConfiguration value) {
         this.audioDecoderConfiguration = value;
     }
 
-
     public void setExtension(ProfileExtension2 value) {
         this.extension = value;
     }
-
 }

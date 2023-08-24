@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -17,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.onvif.ver10.schema.Dot1XConfiguration;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -27,7 +19,6 @@ public class GetDot1XConfigurationsResponse {
 
     @XmlElement(name = "Dot1XConfiguration")
     protected List<Dot1XConfiguration> dot1XConfiguration;
-
 
     public List<Dot1XConfiguration> getDot1XConfiguration() {
         if (dot1XConfiguration == null) {

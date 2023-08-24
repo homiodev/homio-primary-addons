@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,14 +17,11 @@ import lombok.Getter;
         propOrder = {"enabled", "info", "link", "iPv4", "iPv6", "extension"})
 public class NetworkInterface extends DeviceEntity {
 
-
     @XmlElement(name = "Enabled")
     protected boolean enabled;
 
-
     @Getter @XmlElement(name = "Info")
     protected NetworkInterfaceInfo info;
-
 
     @Getter @XmlElement(name = "Link")
     protected NetworkInterfaceLink link;
@@ -36,52 +32,41 @@ public class NetworkInterface extends DeviceEntity {
     @XmlElement(name = "IPv6")
     protected IPv6NetworkInterface iPv6;
 
-
     @Getter @XmlElement(name = "Extension")
     protected NetworkInterfaceExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setEnabled(boolean value) {
         this.enabled = value;
     }
 
-
     public void setInfo(NetworkInterfaceInfo value) {
         this.info = value;
     }
-
 
     public void setLink(NetworkInterfaceLink value) {
         this.link = value;
     }
 
-
     public IPv4NetworkInterface getIPv4() {
         return iPv4;
     }
-
 
     public void setIPv4(IPv4NetworkInterface value) {
         this.iPv4 = value;
     }
 
-
     public IPv6NetworkInterface getIPv6() {
         return iPv6;
     }
-
 
     public void setIPv6(IPv6NetworkInterface value) {
         this.iPv6 = value;
     }
 
-
     public void setExtension(NetworkInterfaceExtension value) {
         this.extension = value;
     }
-
 }

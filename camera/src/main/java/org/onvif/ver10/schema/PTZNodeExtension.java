@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZNodeExtension",
@@ -19,14 +18,11 @@ public class PTZNodeExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlElement(name = "SupportedPresetTour")
     protected PTZPresetTourSupported supportedPresetTour;
 
-
     @Getter @XmlElement(name = "Extension")
     protected PTZNodeExtension2 extension;
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -35,11 +31,9 @@ public class PTZNodeExtension {
         return this.any;
     }
 
-
     public void setSupportedPresetTour(PTZPresetTourSupported value) {
         this.supportedPresetTour = value;
     }
-
 
     public void setExtension(PTZNodeExtension2 value) {
         this.extension = value;

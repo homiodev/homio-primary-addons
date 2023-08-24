@@ -18,7 +18,6 @@ public class GetProfilesResponse {
     @XmlElement(name = "Profiles")
     protected List<MediaProfile> profiles;
 
-
     public List<MediaProfile> getProfiles() {
         if (profiles == null) {
             profiles = new ArrayList<MediaProfile>();

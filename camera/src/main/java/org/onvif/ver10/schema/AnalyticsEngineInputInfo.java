@@ -9,34 +9,22 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "AnalyticsEngineInputInfo",
         propOrder = {"inputInfo", "extension"})
 public class AnalyticsEngineInputInfo {
 
-
     @XmlElement(name = "InputInfo")
     protected Config inputInfo;
-
 
     @XmlElement(name = "Extension")
     protected AnalyticsEngineInputInfoExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
-
-    public void setInputInfo(Config value) {
-        this.inputInfo = value;
-    }
-
-
-    public void setExtension(AnalyticsEngineInputInfoExtension value) {
-        this.extension = value;
-    }
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 }

@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,35 +17,27 @@ import lombok.Getter;
         propOrder = {"storageToken", "relativePath", "extension"})
 public class StorageReferencePath {
 
-
     @XmlElement(name = "StorageToken", required = true)
     protected String storageToken;
-
 
     @XmlElement(name = "RelativePath")
     protected String relativePath;
 
-
     @XmlElement(name = "Extension")
     protected StorageReferencePathExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setStorageToken(String value) {
         this.storageToken = value;
     }
 
-
     public void setRelativePath(String value) {
         this.relativePath = value;
     }
 
-
     public void setExtension(StorageReferencePathExtension value) {
         this.extension = value;
     }
-
 }

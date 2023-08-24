@@ -19,7 +19,6 @@ public class GetAnalyticsConfigurationsResponse {
     @XmlElement(name = "Configurations")
     protected List<VideoAnalyticsConfiguration> configurations;
 
-
     public List<VideoAnalyticsConfiguration> getConfigurations() {
         if (configurations == null) {
             configurations = new ArrayList<VideoAnalyticsConfiguration>();

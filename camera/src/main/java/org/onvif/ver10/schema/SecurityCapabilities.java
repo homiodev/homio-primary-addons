@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "SecurityCapabilities",
@@ -37,21 +36,17 @@ public class SecurityCapabilities {
     @XmlElement(name = "TLS1.2")
     protected boolean tls12;
 
-
     @Getter @XmlElement(name = "OnboardKeyGeneration")
     protected boolean onboardKeyGeneration;
 
-
     @Getter @XmlElement(name = "AccessPolicyConfig")
     protected boolean accessPolicyConfig;
-
 
     @Getter @XmlElement(name = "X.509Token")
     protected boolean x509Token;
 
     @XmlElement(name = "SAMLToken")
     protected boolean samlToken;
-
 
     @Getter @XmlElement(name = "KerberosToken")
     protected boolean kerberosToken;
@@ -62,74 +57,59 @@ public class SecurityCapabilities {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlElement(name = "Extension")
     protected SecurityCapabilitiesExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public boolean isTLS11() {
         return tls11;
     }
 
-
     public void setTLS11(boolean value) {
         this.tls11 = value;
     }
-
 
     public boolean isTLS12() {
         return tls12;
     }
 
-
     public void setTLS12(boolean value) {
         this.tls12 = value;
     }
-
 
     public void setOnboardKeyGeneration(boolean value) {
         this.onboardKeyGeneration = value;
     }
 
-
     public void setAccessPolicyConfig(boolean value) {
         this.accessPolicyConfig = value;
     }
-
 
     public void setX509Token(boolean value) {
         this.x509Token = value;
     }
 
-
     public boolean isSAMLToken() {
         return samlToken;
     }
-
 
     public void setSAMLToken(boolean value) {
         this.samlToken = value;
     }
 
-
     public void setKerberosToken(boolean value) {
         this.kerberosToken = value;
     }
-
 
     public boolean isRELToken() {
         return relToken;
     }
 
-
     public void setRELToken(boolean value) {
         this.relToken = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -138,9 +118,7 @@ public class SecurityCapabilities {
         return this.any;
     }
 
-
     public void setExtension(SecurityCapabilitiesExtension value) {
         this.extension = value;
     }
-
 }

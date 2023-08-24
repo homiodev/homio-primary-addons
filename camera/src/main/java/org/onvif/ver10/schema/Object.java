@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -18,35 +17,27 @@ import lombok.Getter;
         propOrder = {"appearance", "behaviour", "extension"})
 public class Object extends ObjectId {
 
-
     @XmlElement(name = "Appearance")
     protected Appearance appearance;
-
 
     @XmlElement(name = "Behaviour")
     protected Behaviour behaviour;
 
-
     @XmlElement(name = "Extension")
     protected ObjectExtension extension;
 
-
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setAppearance(Appearance value) {
         this.appearance = value;
     }
 
-
     public void setBehaviour(Behaviour value) {
         this.behaviour = value;
     }
 
-
     public void setExtension(ObjectExtension value) {
         this.extension = value;
     }
-
 }

@@ -8,7 +8,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 import org.onvif.ver10.schema.PTZPresetTourOptions;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -17,10 +16,8 @@ import org.onvif.ver10.schema.PTZPresetTourOptions;
 @XmlRootElement(name = "GetPresetTourOptionsResponse")
 public class GetPresetTourOptionsResponse {
 
-
     @XmlElement(name = "Options", required = true)
     protected PTZPresetTourOptions options;
-
 
     public void setOptions(PTZPresetTourOptions value) {
         this.options = value;

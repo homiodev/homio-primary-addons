@@ -17,28 +17,22 @@ import org.onvif.ver10.schema.PTZVector;
 @XmlRootElement(name = "RelativeMove")
 public class RelativeMove {
 
-
     @XmlElement(name = "ProfileToken", required = true)
     protected String profileToken;
-
 
     @XmlElement(name = "Translation", required = true)
     protected PTZVector translation;
 
-
     @XmlElement(name = "Speed")
     protected PTZSpeed speed;
-
 
     public void setProfileToken(String value) {
         this.profileToken = value;
     }
 
-
     public void setTranslation(PTZVector value) {
         this.translation = value;
     }
-
 
     public void setSpeed(PTZSpeed value) {
         this.speed = value;

@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -21,14 +20,11 @@ import lombok.Getter;
         propOrder = {"username", "password", "useDerivedPassword", "any"})
 public class RemoteUser {
 
-
     @XmlElement(name = "Username", required = true)
     protected String username;
 
-
     @Getter @XmlElement(name = "Password")
     protected String password;
-
 
     @Getter @XmlElement(name = "UseDerivedPassword")
     protected boolean useDerivedPassword;
@@ -36,25 +32,20 @@ public class RemoteUser {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setUsername(String value) {
         this.username = value;
     }
 
-
     public void setPassword(String value) {
         this.password = value;
     }
 
-
     public void setUseDerivedPassword(boolean value) {
         this.useDerivedPassword = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -62,5 +53,4 @@ public class RemoteUser {
         }
         return this.any;
     }
-
 }

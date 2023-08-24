@@ -16,7 +16,6 @@ import javax.xml.namespace.QName;
 import lombok.Getter;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -24,23 +23,18 @@ import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
         propOrder = {"recordingToken", "trackToken", "time", "event", "startStateEvent", "any"})
 public class FindEventResult {
 
-
     @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
-
     @Getter @XmlElement(name = "TrackToken", required = true)
     protected String trackToken;
-
 
     @Getter @XmlElement(name = "Time", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar time;
 
-
     @Getter @XmlElement(name = "Event", required = true)
     protected NotificationMessageHolderType event;
-
 
     @Getter @XmlElement(name = "StartStateEvent")
     protected boolean startStateEvent;
@@ -48,35 +42,28 @@ public class FindEventResult {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setRecordingToken(String value) {
         this.recordingToken = value;
     }
 
-
     public void setTrackToken(String value) {
         this.trackToken = value;
     }
-
 
     public void setTime(XMLGregorianCalendar value) {
         this.time = value;
     }
 
-
     public void setEvent(NotificationMessageHolderType value) {
         this.event = value;
     }
 
-
     public void setStartStateEvent(boolean value) {
         this.startStateEvent = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -84,5 +71,4 @@ public class FindEventResult {
         }
         return this.any;
     }
-
 }

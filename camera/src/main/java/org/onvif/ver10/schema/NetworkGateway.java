@@ -9,7 +9,6 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NetworkGateway",
@@ -24,14 +23,12 @@ public class NetworkGateway {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected List<String> iPv6Address;
 
-
     public List<String> getIPv4Address() {
         if (iPv4Address == null) {
             iPv4Address = new ArrayList<String>();
         }
         return this.iPv4Address;
     }
-
 
     public List<String> getIPv6Address() {
         if (iPv6Address == null) {

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "WhiteBalanceOptions20",
@@ -18,18 +17,14 @@ public class WhiteBalanceOptions20 {
     @XmlElement(name = "Mode", required = true)
     protected List<WhiteBalanceMode> mode;
 
-
     @Getter @XmlElement(name = "YrGain")
     protected FloatRange yrGain;
-
 
     @Getter @XmlElement(name = "YbGain")
     protected FloatRange ybGain;
 
-
     @Getter @XmlElement(name = "Extension")
     protected WhiteBalanceOptions20Extension extension;
-
 
     public List<WhiteBalanceMode> getMode() {
         if (mode == null) {
@@ -38,16 +33,13 @@ public class WhiteBalanceOptions20 {
         return this.mode;
     }
 
-
     public void setYrGain(FloatRange value) {
         this.yrGain = value;
     }
 
-
     public void setYbGain(FloatRange value) {
         this.ybGain = value;
     }
-
 
     public void setExtension(WhiteBalanceOptions20Extension value) {
         this.extension = value;

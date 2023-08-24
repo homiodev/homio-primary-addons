@@ -15,19 +15,15 @@ import lombok.Getter;
 @XmlRootElement(name = "GetStreamUri")
 public class GetStreamUri {
 
-
     @XmlElement(name = "Protocol", required = true)
     protected String protocol;
-
 
     @XmlElement(name = "ProfileToken", required = true)
     protected String profileToken;
 
-
     public void setProtocol(String value) {
         this.protocol = value;
     }
-
 
     public void setProfileToken(String value) {
         this.profileToken = value;

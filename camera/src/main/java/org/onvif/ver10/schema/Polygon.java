@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Polygon",
@@ -16,7 +15,6 @@ public class Polygon {
 
     @XmlElement(name = "Point", required = true)
     protected List<Vector> point;
-
 
     public List<Vector> getPoint() {
         if (point == null) {

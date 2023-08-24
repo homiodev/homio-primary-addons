@@ -17,18 +17,15 @@ import lombok.Getter;
 @XmlRootElement(name = "GetProfiles")
 public class GetProfiles {
 
-
     @XmlElement(name = "Token")
     protected String token;
 
     @XmlElement(name = "Type")
     protected List<String> type;
 
-
     public void setToken(String value) {
         this.token = value;
     }
-
 
     public List<String> getType() {
         if (type == null) {

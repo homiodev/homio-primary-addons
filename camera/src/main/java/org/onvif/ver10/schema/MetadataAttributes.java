@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -22,14 +21,11 @@ import lombok.Getter;
         propOrder = {"canContainPTZ", "canContainAnalytics", "canContainNotifications", "any"})
 public class MetadataAttributes {
 
-
     @XmlElement(name = "CanContainPTZ")
     protected boolean canContainPTZ;
 
-
     @Getter @XmlElement(name = "CanContainAnalytics")
     protected boolean canContainAnalytics;
-
 
     @Getter @XmlElement(name = "CanContainNotifications")
     protected boolean canContainNotifications;
@@ -40,25 +36,20 @@ public class MetadataAttributes {
     @XmlAttribute(name = "PtzSpaces")
     protected List<String> ptzSpaces;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setCanContainPTZ(boolean value) {
         this.canContainPTZ = value;
     }
 
-
     public void setCanContainAnalytics(boolean value) {
         this.canContainAnalytics = value;
     }
 
-
     public void setCanContainNotifications(boolean value) {
         this.canContainNotifications = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -67,12 +58,10 @@ public class MetadataAttributes {
         return this.any;
     }
 
-
     public List<String> getPtzSpaces() {
         if (ptzSpaces == null) {
             ptzSpaces = new ArrayList<String>();
         }
         return this.ptzSpaces;
     }
-
 }

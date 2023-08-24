@@ -8,7 +8,6 @@ import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -16,10 +15,8 @@ import lombok.Getter;
         propOrder = {"name", "hwAddress", "mtu"})
 public class NetworkInterfaceInfo {
 
-
     @XmlElement(name = "Name")
     protected String name;
-
 
     @Getter @XmlElement(name = "HwAddress", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
@@ -28,21 +25,17 @@ public class NetworkInterfaceInfo {
     @XmlElement(name = "MTU")
     protected Integer mtu;
 
-
     public void setName(String value) {
         this.name = value;
     }
-
 
     public void setHwAddress(String value) {
         this.hwAddress = value;
     }
 
-
     public Integer getMTU() {
         return mtu;
     }
-
 
     public void setMTU(Integer value) {
         this.mtu = value;

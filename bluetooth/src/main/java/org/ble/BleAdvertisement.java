@@ -138,5 +138,4 @@ public class BleAdvertisement implements LEAdvertisement1, Properties {
     public enum AdvertisementType {
         broadcast, peripheral
     }
-
 }

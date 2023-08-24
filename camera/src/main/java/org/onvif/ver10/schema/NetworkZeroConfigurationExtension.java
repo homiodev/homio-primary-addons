@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NetworkZeroConfigurationExtension",
@@ -22,10 +21,8 @@ public class NetworkZeroConfigurationExtension {
     @XmlElement(name = "Additional")
     protected List<NetworkZeroConfiguration> additional;
 
-
     @Getter @XmlElement(name = "Extension")
     protected NetworkZeroConfigurationExtension2 extension;
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -34,14 +31,12 @@ public class NetworkZeroConfigurationExtension {
         return this.any;
     }
 
-
     public List<NetworkZeroConfiguration> getAdditional() {
         if (additional == null) {
             additional = new ArrayList<NetworkZeroConfiguration>();
         }
         return this.additional;
     }
-
 
     public void setExtension(NetworkZeroConfigurationExtension2 value) {
         this.extension = value;

@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -18,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -27,18 +19,15 @@ import lombok.Getter;
 @XmlRootElement(name = "GetCurrentMessage")
 public class GetCurrentMessage {
 
-
     @XmlElement(name = "Topic", required = true)
     protected TopicExpressionType topic;
 
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-
     public void setTopic(TopicExpressionType value) {
         this.topic = value;
     }
-
 
     public List<Object> getAny() {
         if (any == null) {

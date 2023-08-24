@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -20,26 +19,21 @@ import lombok.Getter;
         propOrder = {"name", "token", "extension"})
 public class SourceIdentification {
 
-
     @XmlElement(name = "Name", required = true)
     protected String name;
 
     @XmlElement(name = "Token", required = true)
     protected List<String> token;
 
-
     @Getter @XmlElement(name = "Extension")
     protected SourceIdentificationExtension extension;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public void setName(String value) {
         this.name = value;
     }
-
 
     public List<String> getToken() {
         if (token == null) {
@@ -48,9 +42,7 @@ public class SourceIdentification {
         return this.token;
     }
 
-
     public void setExtension(SourceIdentificationExtension value) {
         this.extension = value;
     }
-
 }

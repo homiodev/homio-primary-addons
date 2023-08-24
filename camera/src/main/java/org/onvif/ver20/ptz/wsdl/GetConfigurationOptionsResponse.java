@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import org.onvif.ver10.schema.PTZConfigurationOptions;
 
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -18,11 +17,9 @@ public class GetConfigurationOptionsResponse {
     @XmlElement(name = "PTZConfigurationOptions", required = true)
     protected PTZConfigurationOptions ptzConfigurationOptions;
 
-
     public PTZConfigurationOptions getPTZConfigurationOptions() {
         return ptzConfigurationOptions;
     }
-
 
     public void setPTZConfigurationOptions(PTZConfigurationOptions value) {
         this.ptzConfigurationOptions = value;

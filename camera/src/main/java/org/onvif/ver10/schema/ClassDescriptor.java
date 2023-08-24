@@ -17,10 +17,8 @@ public class ClassDescriptor {
     @XmlElement(name = "ClassCandidate")
     protected List<ClassDescriptor.ClassCandidate> classCandidate;
 
-
     @Getter @XmlElement(name = "Extension")
     protected ClassDescriptorExtension extension;
-
 
     public List<ClassDescriptor.ClassCandidate> getClassCandidate() {
         if (classCandidate == null) {
@@ -29,11 +27,9 @@ public class ClassDescriptor {
         return this.classCandidate;
     }
 
-
     public void setExtension(ClassDescriptorExtension value) {
         this.extension = value;
     }
-
 
     @Getter
     @XmlAccessorType(XmlAccessType.FIELD)
@@ -42,19 +38,15 @@ public class ClassDescriptor {
             propOrder = {"type", "likelihood"})
     public static class ClassCandidate {
 
-
         @XmlElement(name = "Type", required = true)
         protected ClassType type;
-
 
         @XmlElement(name = "Likelihood")
         protected float likelihood;
 
-
         public void setType(ClassType value) {
             this.type = value;
         }
-
 
         public void setLikelihood(float value) {
             this.likelihood = value;

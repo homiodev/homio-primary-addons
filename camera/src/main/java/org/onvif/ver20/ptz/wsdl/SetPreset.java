@@ -7,7 +7,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 
-
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -16,28 +15,22 @@ import lombok.Getter;
 @XmlRootElement(name = "SetPreset")
 public class SetPreset {
 
-
     @XmlElement(name = "ProfileToken", required = true)
     protected String profileToken;
-
 
     @XmlElement(name = "PresetName")
     protected String presetName;
 
-
     @XmlElement(name = "PresetToken")
     protected String presetToken;
-
 
     public void setProfileToken(String value) {
         this.profileToken = value;
     }
 
-
     public void setPresetName(String value) {
         this.presetName = value;
     }
-
 
     public void setPresetToken(String value) {
         this.presetToken = value;

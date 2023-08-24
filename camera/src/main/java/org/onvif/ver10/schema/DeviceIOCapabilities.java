@@ -32,22 +32,17 @@ public class DeviceIOCapabilities {
     @XmlSchemaType(name = "anyURI")
     protected String xAddr;
 
-
     @Getter @XmlElement(name = "VideoSources")
     protected int videoSources;
-
 
     @Getter @XmlElement(name = "VideoOutputs")
     protected int videoOutputs;
 
-
     @Getter @XmlElement(name = "AudioSources")
     protected int audioSources;
 
-
     @Getter @XmlElement(name = "AudioOutputs")
     protected int audioOutputs;
-
 
     @Getter @XmlElement(name = "RelayOutputs")
     protected int relayOutputs;
@@ -55,45 +50,36 @@ public class DeviceIOCapabilities {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public String getXAddr() {
         return xAddr;
     }
 
-
     public void setXAddr(String value) {
         this.xAddr = value;
     }
-
 
     public void setVideoSources(int value) {
         this.videoSources = value;
     }
 
-
     public void setVideoOutputs(int value) {
         this.videoOutputs = value;
     }
-
 
     public void setAudioSources(int value) {
         this.audioSources = value;
     }
 
-
     public void setAudioOutputs(int value) {
         this.audioOutputs = value;
     }
 
-
     public void setRelayOutputs(int value) {
         this.relayOutputs = value;
     }
-
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
@@ -101,5 +87,4 @@ public class DeviceIOCapabilities {
         }
         return this.any;
     }
-
 }
