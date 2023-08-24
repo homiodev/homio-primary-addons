@@ -13,44 +13,29 @@ import lombok.Getter;
         propOrder = {"year", "month", "day"})
 public class Date {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der year-Eigenschaft ab.
-     */
+
     @XmlElement(name = "Year")
     protected int year;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der month-Eigenschaft ab.
-     */
+
     @XmlElement(name = "Month")
     protected int month;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der day-Eigenschaft ab.
-     */
+
     @XmlElement(name = "Day")
     protected int day;
 
-    /**
-     * Legt den Wert der year-Eigenschaft fest.
-     */
+
     public void setYear(int value) {
         this.year = value;
     }
 
-    /**
-     * Legt den Wert der month-Eigenschaft fest.
-     */
+
     public void setMonth(int value) {
         this.month = value;
     }
 
-    /**
-     * Legt den Wert der day-Eigenschaft fest.
-     */
+
     public void setDay(int value) {
         this.day = value;
     }

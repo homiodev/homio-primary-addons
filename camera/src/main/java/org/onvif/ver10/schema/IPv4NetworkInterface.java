@@ -6,25 +6,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 
-/**
- * Java-Klasse f�r IPv4NetworkInterface complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="IPv4NetworkInterface">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="Enabled" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         <element name="Config" type="{http://www.onvif.org/ver10/schema}IPv4Configuration"/>
- *       </sequence>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -32,34 +14,20 @@ import lombok.Getter;
         propOrder = {"enabled", "config"})
 public class IPv4NetworkInterface {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der enabled-Eigenschaft ab.
-     */
+
     @XmlElement(name = "Enabled")
     protected boolean enabled;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der config-Eigenschaft ab.
-     *
-     * @return possible object is {@link IPv4Configuration }
-     */
+
     @XmlElement(name = "Config", required = true)
     protected IPv4Configuration config;
 
-    /**
-     * Legt den Wert der enabled-Eigenschaft fest.
-     */
+
     public void setEnabled(boolean value) {
         this.enabled = value;
     }
 
-    /**
-     * Legt den Wert der config-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link IPv4Configuration }
-     */
+
     public void setConfig(IPv4Configuration value) {
         this.config = value;
     }

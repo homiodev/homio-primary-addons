@@ -4,25 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r TransportProtocol.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * &lt;simpleType name="TransportProtocol">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="RtspUnicast"/>
- *     &lt;enumeration value="RtspMulticast"/>
- *     &lt;enumeration value="RTSP"/>
- *     &lt;enumeration value="RtspOverHttp"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
- * </pre>
- */
+
 @XmlType(name = "TransportProtocol")
 @XmlEnum
 public enum TransportProtocol {

@@ -12,30 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Java-Klasse f�r Dot11Configuration complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="Dot11Configuration">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="SSID" type="{http://www.onvif.org/ver10/schema}Dot11SSIDType"/>
- *         <element name="Mode" type="{http://www.onvif.org/ver10/schema}Dot11StationMode"/>
- *         <element name="Alias" type="{http://www.onvif.org/ver10/schema}Name"/>
- *         <element name="Priority" type="{http://www.onvif.org/ver10/schema}NetworkInterfaceConfigPriority"/>
- *         <element name="Security" type="{http://www.onvif.org/ver10/schema}Dot11SecurityConfiguration"/>
- *         <any processContents='lax' maxOccurs="unbounded" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Dot11Configuration",
@@ -46,124 +23,60 @@ public class Dot11Configuration {
     @XmlJavaTypeAdapter(HexBinaryAdapter.class)
     protected byte[] ssid;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der mode-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot11StationMode }
-     */
+
     @Getter @XmlElement(name = "Mode", required = true)
     protected Dot11StationMode mode;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der alias-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     @Getter @XmlElement(name = "Alias", required = true)
     protected String alias;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der priority-Eigenschaft ab.
-     */
+
     @Getter @XmlElement(name = "Priority")
     protected int priority;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der security-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot11SecurityConfiguration }
-     */
+
     @Getter @XmlElement(name = "Security", required = true)
     protected Dot11SecurityConfiguration security;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Ruft den Wert der ssid-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     public byte[] getSSID() {
         return ssid;
     }
 
-    /**
-     * Legt den Wert der ssid-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setSSID(byte[] value) {
         this.ssid = value;
     }
 
-    /**
-     * Legt den Wert der mode-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Dot11StationMode }
-     */
+
     public void setMode(Dot11StationMode value) {
         this.mode = value;
     }
 
-    /**
-     * Legt den Wert der alias-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setAlias(String value) {
         this.alias = value;
     }
 
-    /**
-     * Legt den Wert der priority-Eigenschaft fest.
-     */
+
     public void setPriority(int value) {
         this.priority = value;
     }
 
-    /**
-     * Legt den Wert der security-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Dot11SecurityConfiguration }
-     */
+
     public void setSecurity(Dot11SecurityConfiguration value) {
         this.security = value;
     }
 
-    /**
-     * Gets the value of the any property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getAny().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Element } {@link
-     * java.lang.Object }
-     */
+
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

@@ -13,38 +13,20 @@ import lombok.Getter;
         propOrder = {"time", "date"})
 public class DateTime {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der time-Eigenschaft ab.
-     *
-     * @return possible object is {@link Time }
-     */
+
     @XmlElement(name = "Time", required = true)
     protected Time time;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der date-Eigenschaft ab.
-     *
-     * @return possible object is {@link Date }
-     */
+
     @XmlElement(name = "Date", required = true)
     protected Date date;
 
-    /**
-     * Legt den Wert der time-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Time }
-     */
+
     public void setTime(Time value) {
         this.time = value;
     }
 
-    /**
-     * Legt den Wert der date-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Date }
-     */
+
     public void setDate(Date value) {
         this.date = value;
     }

@@ -6,24 +6,7 @@ import org.onvif.ver10.schema.PTZNode;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Java-Klasse f�r anonymous complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType>
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="PTZNode" type="{http://www.onvif.org/ver10/schema}PTZNode" maxOccurs="unbounded" minOccurs="0"/>
- *       </sequence>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -34,21 +17,7 @@ public class GetNodesResponse {
     @XmlElement(name = "PTZNode")
     protected List<PTZNode> ptzNode;
 
-    /**
-     * Gets the value of the ptzNode property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the ptzNode
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getPTZNode().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link PTZNode }
-     */
+
     public List<PTZNode> getPTZNode() {
         if (ptzNode == null) {
             ptzNode = new ArrayList<PTZNode>();

@@ -4,27 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r RecordingStatus.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * <simpleType name="RecordingStatus">
- *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     <enumeration value="Initiated"/>
- *     <enumeration value="Recording"/>
- *     <enumeration value="Stopped"/>
- *     <enumeration value="Removing"/>
- *     <enumeration value="Removed"/>
- *     <enumeration value="Unknown"/>
- *   </restriction>
- * </simpleType>
- * </pre>
- */
+
 @XmlType(name = "RecordingStatus")
 @XmlEnum
 public enum RecordingStatus {
@@ -39,9 +19,7 @@ public enum RecordingStatus {
     @XmlEnumValue("Removed")
     REMOVED("Removed"),
 
-    /**
-     * This case should never happen.
-     */
+
     @XmlEnumValue("Unknown")
     UNKNOWN("Unknown");
     private final String value;

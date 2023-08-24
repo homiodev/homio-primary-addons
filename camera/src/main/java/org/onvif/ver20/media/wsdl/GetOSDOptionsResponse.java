@@ -13,20 +13,12 @@ public class GetOSDOptionsResponse {
     @XmlElement(name = "OSDOptions", required = true)
     protected OSDConfigurationOptions osdOptions;
 
-    /**
-     * Ruft den Wert der osdOptions-Eigenschaft ab.
-     *
-     * @return possible object is {@link OSDConfigurationOptions }
-     */
+
     public OSDConfigurationOptions getOSDOptions() {
         return osdOptions;
     }
 
-    /**
-     * Legt den Wert der osdOptions-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link OSDConfigurationOptions }
-     */
+
     public void setOSDOptions(OSDConfigurationOptions value) {
         this.osdOptions = value;
     }

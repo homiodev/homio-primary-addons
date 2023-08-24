@@ -4,28 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r VideoEncodingProfiles.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * &lt;simpleType name="VideoEncodingProfiles">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="Simple"/>
- *     &lt;enumeration value="AdvancedSimple"/>
- *     &lt;enumeration value="Baseline"/>
- *     &lt;enumeration value="Main"/>
- *     &lt;enumeration value="Main10"/>
- *     &lt;enumeration value="Extended"/>
- *     &lt;enumeration value="High"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
- * </pre>
- */
+
 @XmlType(name = "VideoEncodingProfiles")
 @XmlEnum
 public enum VideoEncodingProfiles {

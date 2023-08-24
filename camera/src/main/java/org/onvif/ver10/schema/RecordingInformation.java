@@ -11,32 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Java-Klasse f�r RecordingInformation complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="RecordingInformation">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="RecordingToken" type="{http://www.onvif.org/ver10/schema}RecordingReference"/>
- *         <element name="Source" type="{http://www.onvif.org/ver10/schema}RecordingSourceInformation"/>
- *         <element name="EarliestRecording" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         <element name="LatestRecording" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         <element name="Content" type="{http://www.onvif.org/ver10/schema}Description"/>
- *         <element name="Track" type="{http://www.onvif.org/ver10/schema}TrackInformation" maxOccurs="unbounded" minOccurs="0"/>
- *         <element name="RecordingStatus" type="{http://www.onvif.org/ver10/schema}RecordingStatus"/>
- *         <any processContents='lax' maxOccurs="unbounded" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RecordingInformation",
@@ -52,141 +27,68 @@ import java.util.Map;
         })
 public class RecordingInformation {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der recordingToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     @Getter @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der source-Eigenschaft ab.
-     *
-     * @return possible object is {@link RecordingSourceInformation }
-     */
+
     @Getter @XmlElement(name = "Source", required = true)
     protected RecordingSourceInformation source;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der earliestRecording-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
+
     @Getter @XmlElement(name = "EarliestRecording")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar earliestRecording;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der latestRecording-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
+
     @Getter @XmlElement(name = "LatestRecording")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar latestRecording;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der content-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     @Getter @XmlElement(name = "Content", required = true)
     protected String content;
 
     @XmlElement(name = "Track")
     protected List<TrackInformation> track;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der recordingStatus-Eigenschaft ab.
-     *
-     * @return possible object is {@link RecordingStatus }
-     */
+
     @Getter @XmlElement(name = "RecordingStatus", required = true)
     protected RecordingStatus recordingStatus;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Legt den Wert der recordingToken-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setRecordingToken(String value) {
         this.recordingToken = value;
     }
 
-    /**
-     * Legt den Wert der source-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link RecordingSourceInformation }
-     */
+
     public void setSource(RecordingSourceInformation value) {
         this.source = value;
     }
 
-    /**
-     * Legt den Wert der earliestRecording-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link XMLGregorianCalendar }
-     */
+
     public void setEarliestRecording(XMLGregorianCalendar value) {
         this.earliestRecording = value;
     }
 
-    /**
-     * Legt den Wert der latestRecording-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link XMLGregorianCalendar }
-     */
+
     public void setLatestRecording(XMLGregorianCalendar value) {
         this.latestRecording = value;
     }
 
-    /**
-     * Legt den Wert der content-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setContent(String value) {
         this.content = value;
     }
 
-    /**
-     * Gets the value of the track property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the track
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getTrack().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link TrackInformation }
-     */
+
     public List<TrackInformation> getTrack() {
         if (track == null) {
             track = new ArrayList<TrackInformation>();
@@ -194,31 +96,12 @@ public class RecordingInformation {
         return this.track;
     }
 
-    /**
-     * Legt den Wert der recordingStatus-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link RecordingStatus }
-     */
+
     public void setRecordingStatus(RecordingStatus value) {
         this.recordingStatus = value;
     }
 
-    /**
-     * Gets the value of the any property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getAny().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Element } {@link
-     * java.lang.Object }
-     */
+
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

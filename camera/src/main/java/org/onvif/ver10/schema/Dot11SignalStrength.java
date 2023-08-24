@@ -4,27 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r Dot11SignalStrength.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * <simpleType name="Dot11SignalStrength">
- *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     <enumeration value="None"/>
- *     <enumeration value="Very Bad"/>
- *     <enumeration value="Bad"/>
- *     <enumeration value="Good"/>
- *     <enumeration value="Very Good"/>
- *     <enumeration value="Extended"/>
- *   </restriction>
- * </simpleType>
- * </pre>
- */
+
 @XmlType(name = "Dot11SignalStrength")
 @XmlEnum
 public enum Dot11SignalStrength {

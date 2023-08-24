@@ -4,25 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r TrackType.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * <simpleType name="TrackType">
- *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     <enumeration value="Video"/>
- *     <enumeration value="Audio"/>
- *     <enumeration value="Metadata"/>
- *     <enumeration value="Extended"/>
- *   </restriction>
- * </simpleType>
- * </pre>
- */
+
 @XmlType(name = "TrackType")
 @XmlEnum
 public enum TrackType {
@@ -33,9 +15,7 @@ public enum TrackType {
     @XmlEnumValue("Metadata")
     METADATA("Metadata"),
 
-    /**
-     * Placeholder for future extension.
-     */
+
     @XmlEnumValue("Extended")
     EXTENDED("Extended");
     private final String value;

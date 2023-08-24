@@ -11,20 +11,11 @@ import lombok.Getter;
 @XmlRootElement(name = "GetServiceCapabilitiesResponse2")
 public class GetServiceCapabilitiesResponse2 {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der capabilities-Eigenschaft ab.
-     *
-     * @return possible object is {@link Capabilities2 }
-     */
+
     @XmlElement(name = "Capabilities", required = true)
     protected Capabilities2 capabilities;
 
-    /**
-     * Legt den Wert der capabilities-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Capabilities2 }
-     */
+
     public void setCapabilities(Capabilities2 value) {
         this.capabilities = value;
     }

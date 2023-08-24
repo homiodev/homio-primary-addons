@@ -9,27 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-/**
- * Java-Klasse f�r FocusOptions complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="FocusOptions">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="AutoFocusModes" type="{http://www.onvif.org/ver10/schema}AutoFocusMode" maxOccurs="unbounded" minOccurs="0"/>
- *         <element name="DefaultSpeed" type="{http://www.onvif.org/ver10/schema}FloatRange"/>
- *         <element name="NearLimit" type="{http://www.onvif.org/ver10/schema}FloatRange"/>
- *         <element name="FarLimit" type="{http://www.onvif.org/ver10/schema}FloatRange"/>
- *       </sequence>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "FocusOptions",
@@ -39,48 +19,19 @@ public class FocusOptions {
     @XmlElement(name = "AutoFocusModes")
     protected List<AutoFocusMode> autoFocusModes;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der defaultSpeed-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
+
     @Getter @XmlElement(name = "DefaultSpeed", required = true)
     protected FloatRange defaultSpeed;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der nearLimit-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
+
     @Getter @XmlElement(name = "NearLimit", required = true)
     protected FloatRange nearLimit;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der farLimit-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
+
     @Getter @XmlElement(name = "FarLimit", required = true)
     protected FloatRange farLimit;
 
-    /**
-     * Gets the value of the autoFocusModes property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
-     * autoFocusModes property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getAutoFocusModes().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link AutoFocusMode }
-     */
+
     public List<AutoFocusMode> getAutoFocusModes() {
         if (autoFocusModes == null) {
             autoFocusModes = new ArrayList<AutoFocusMode>();
@@ -88,29 +39,17 @@ public class FocusOptions {
         return this.autoFocusModes;
     }
 
-    /**
-     * Legt den Wert der defaultSpeed-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link FloatRange }
-     */
+
     public void setDefaultSpeed(FloatRange value) {
         this.defaultSpeed = value;
     }
 
-    /**
-     * Legt den Wert der nearLimit-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link FloatRange }
-     */
+
     public void setNearLimit(FloatRange value) {
         this.nearLimit = value;
     }
 
-    /**
-     * Legt den Wert der farLimit-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link FloatRange }
-     */
+
     public void setFarLimit(FloatRange value) {
         this.farLimit = value;
     }

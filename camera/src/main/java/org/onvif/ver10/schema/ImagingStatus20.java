@@ -7,26 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 
-/**
- * Java-Klasse f�r ImagingStatus20 complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="ImagingStatus20">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="FocusStatus20" type="{http://www.onvif.org/ver10/schema}FocusStatus20" minOccurs="0"/>
- *         <element name="Extension" type="{http://www.onvif.org/ver10/schema}ImagingStatus20Extension" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -34,51 +15,24 @@ import lombok.Getter;
         propOrder = {"focusStatus20", "extension"})
 public class ImagingStatus20 {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der focusStatus20-Eigenschaft ab.
-     *
-     * @return possible object is {@link FocusStatus20 }
-     */
+
     @XmlElement(name = "FocusStatus20")
     protected FocusStatus20 focusStatus20;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ImagingStatus20Extension }
-     */
+
     @XmlElement(name = "Extension")
     protected ImagingStatus20Extension extension;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Legt den Wert der focusStatus20-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link FocusStatus20 }
-     */
+
     public void setFocusStatus20(FocusStatus20 value) {
         this.focusStatus20 = value;
     }
 
-    /**
-     * Legt den Wert der extension-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link ImagingStatus20Extension }
-     */
+
     public void setExtension(ImagingStatus20Extension value) {
         this.extension = value;
     }

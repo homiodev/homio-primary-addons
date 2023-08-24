@@ -41,88 +41,39 @@ public class Dot11AvailableNetworks {
     @XmlElement(name = "GroupCipher")
     protected List<Dot11Cipher> groupCipher;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der signalStrength-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot11SignalStrength }
-     */
+
     @Getter @XmlElement(name = "SignalStrength")
     protected Dot11SignalStrength signalStrength;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot11AvailableNetworksExtension }
-     */
+
     @Getter @XmlElement(name = "Extension")
     protected Dot11AvailableNetworksExtension extension;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Ruft den Wert der ssid-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     public byte[] getSSID() {
         return ssid;
     }
 
-    /**
-     * Legt den Wert der ssid-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setSSID(byte[] value) {
         this.ssid = value;
     }
 
-    /**
-     * Ruft den Wert der bssid-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     public String getBSSID() {
         return bssid;
     }
 
-    /**
-     * Legt den Wert der bssid-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setBSSID(String value) {
         this.bssid = value;
     }
 
-    /**
-     * Gets the value of the authAndMangementSuite property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
-     * authAndMangementSuite property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getAuthAndMangementSuite().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Dot11AuthAndMangementSuite }
-     */
+
     public List<Dot11AuthAndMangementSuite> getAuthAndMangementSuite() {
         if (authAndMangementSuite == null) {
             authAndMangementSuite = new ArrayList<Dot11AuthAndMangementSuite>();
@@ -130,21 +81,7 @@ public class Dot11AvailableNetworks {
         return this.authAndMangementSuite;
     }
 
-    /**
-     * Gets the value of the pairCipher property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the pairCipher
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getPairCipher().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Dot11Cipher }
-     */
+
     public List<Dot11Cipher> getPairCipher() {
         if (pairCipher == null) {
             pairCipher = new ArrayList<Dot11Cipher>();
@@ -152,21 +89,7 @@ public class Dot11AvailableNetworks {
         return this.pairCipher;
     }
 
-    /**
-     * Gets the value of the groupCipher property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the groupCipher
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getGroupCipher().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Dot11Cipher }
-     */
+
     public List<Dot11Cipher> getGroupCipher() {
         if (groupCipher == null) {
             groupCipher = new ArrayList<Dot11Cipher>();
@@ -174,20 +97,12 @@ public class Dot11AvailableNetworks {
         return this.groupCipher;
     }
 
-    /**
-     * Legt den Wert der signalStrength-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Dot11SignalStrength }
-     */
+
     public void setSignalStrength(Dot11SignalStrength value) {
         this.signalStrength = value;
     }
 
-    /**
-     * Legt den Wert der extension-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Dot11AvailableNetworksExtension }
-     */
+
     public void setExtension(Dot11AvailableNetworksExtension value) {
         this.extension = value;
     }

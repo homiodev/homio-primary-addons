@@ -11,140 +11,58 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Java-Klasse f�r FindPTZPositionResult complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="FindPTZPositionResult">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="RecordingToken" type="{http://www.onvif.org/ver10/schema}RecordingReference"/>
- *         <element name="TrackToken" type="{http://www.onvif.org/ver10/schema}TrackReference"/>
- *         <element name="Time" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
- *         <element name="Position" type="{http://www.onvif.org/ver10/schema}PTZVector"/>
- *         <any processContents='lax' maxOccurs="unbounded" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "FindPTZPositionResult",
         propOrder = {"recordingToken", "trackToken", "time", "position", "any"})
 public class FindPTZPositionResult {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der recordingToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     @Getter @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der trackToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     @Getter @XmlElement(name = "TrackToken", required = true)
     protected String trackToken;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der time-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
+
     @Getter @XmlElement(name = "Time", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar time;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der position-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZVector }
-     */
+
     @Getter @XmlElement(name = "Position", required = true)
     protected PTZVector position;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Legt den Wert der recordingToken-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setRecordingToken(String value) {
         this.recordingToken = value;
     }
 
-    /**
-     * Legt den Wert der trackToken-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setTrackToken(String value) {
         this.trackToken = value;
     }
 
-    /**
-     * Legt den Wert der time-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link XMLGregorianCalendar }
-     */
+
     public void setTime(XMLGregorianCalendar value) {
         this.time = value;
     }
 
-    /**
-     * Legt den Wert der position-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link PTZVector }
-     */
+
     public void setPosition(PTZVector value) {
         this.position = value;
     }
 
-    /**
-     * Gets the value of the any property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getAny().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Element } {@link
-     * java.lang.Object }
-     */
+
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

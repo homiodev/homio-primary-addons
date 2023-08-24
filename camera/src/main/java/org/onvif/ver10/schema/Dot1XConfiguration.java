@@ -25,30 +25,15 @@ import lombok.Getter;
         })
 public class Dot1XConfiguration {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der dot1XConfigurationToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     @Getter @XmlElement(name = "Dot1XConfigurationToken", required = true)
     protected String dot1XConfigurationToken;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der identity-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     @Getter @XmlElement(name = "Identity", required = true)
     protected String identity;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der anonymousID-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     @Getter @XmlElement(name = "AnonymousID")
     protected String anonymousID;
 
@@ -63,84 +48,40 @@ public class Dot1XConfiguration {
     @XmlElement(name = "EAPMethodConfiguration")
     protected EAPMethodConfiguration eapMethodConfiguration;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot1XConfigurationExtension }
-     */
+
     @Getter @XmlElement(name = "Extension")
     protected Dot1XConfigurationExtension extension;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Legt den Wert der dot1XConfigurationToken-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setDot1XConfigurationToken(String value) {
         this.dot1XConfigurationToken = value;
     }
 
-    /**
-     * Legt den Wert der identity-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setIdentity(String value) {
         this.identity = value;
     }
 
-    /**
-     * Legt den Wert der anonymousID-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setAnonymousID(String value) {
         this.anonymousID = value;
     }
 
-    /**
-     * Ruft den Wert der eapMethod-Eigenschaft ab.
-     */
+
     public int getEAPMethod() {
         return eapMethod;
     }
 
-    /**
-     * Legt den Wert der eapMethod-Eigenschaft fest.
-     */
+
     public void setEAPMethod(int value) {
         this.eapMethod = value;
     }
 
-    /**
-     * Gets the value of the caCertificateID property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
-     * caCertificateID property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getCACertificateID().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link String }
-     */
+
     public List<String> getCACertificateID() {
         if (caCertificateID == null) {
             caCertificateID = new ArrayList<String>();
@@ -148,29 +89,17 @@ public class Dot1XConfiguration {
         return this.caCertificateID;
     }
 
-    /**
-     * Ruft den Wert der eapMethodConfiguration-Eigenschaft ab.
-     *
-     * @return possible object is {@link EAPMethodConfiguration }
-     */
+
     public EAPMethodConfiguration getEAPMethodConfiguration() {
         return eapMethodConfiguration;
     }
 
-    /**
-     * Legt den Wert der eapMethodConfiguration-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link EAPMethodConfiguration }
-     */
+
     public void setEAPMethodConfiguration(EAPMethodConfiguration value) {
         this.eapMethodConfiguration = value;
     }
 
-    /**
-     * Legt den Wert der extension-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Dot1XConfigurationExtension }
-     */
+
     public void setExtension(Dot1XConfigurationExtension value) {
         this.extension = value;
     }

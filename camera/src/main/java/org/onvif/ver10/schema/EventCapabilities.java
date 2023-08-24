@@ -10,29 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Java-Klasse f�r EventCapabilities complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="EventCapabilities">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="XAddr" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
- *         <element name="WSSubscriptionPolicySupport" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         <element name="WSPullPointSupport" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         <element name="WSPausableSubscriptionManagerInterfaceSupport" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         <any processContents='lax' maxOccurs="unbounded" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "EventCapabilities",
@@ -61,95 +39,51 @@ public class EventCapabilities {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Ruft den Wert der xAddr-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     public String getXAddr() {
         return xAddr;
     }
 
-    /**
-     * Legt den Wert der xAddr-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setXAddr(String value) {
         this.xAddr = value;
     }
 
-    /**
-     * Ruft den Wert der wsSubscriptionPolicySupport-Eigenschaft ab.
-     */
+
     public boolean isWSSubscriptionPolicySupport() {
         return wsSubscriptionPolicySupport;
     }
 
-    /**
-     * Legt den Wert der wsSubscriptionPolicySupport-Eigenschaft fest.
-     */
+
     public void setWSSubscriptionPolicySupport(boolean value) {
         this.wsSubscriptionPolicySupport = value;
     }
 
-    /**
-     * Ruft den Wert der wsPullPointSupport-Eigenschaft ab.
-     */
+
     public boolean isWSPullPointSupport() {
         return wsPullPointSupport;
     }
 
-    /**
-     * Legt den Wert der wsPullPointSupport-Eigenschaft fest.
-     */
+
     public void setWSPullPointSupport(boolean value) {
         this.wsPullPointSupport = value;
     }
 
-    /**
-     * Ruft den Wert der wsPausableSubscriptionManagerInterfaceSupport-Eigenschaft ab.
-     */
+
     public boolean isWSPausableSubscriptionManagerInterfaceSupport() {
         return wsPausableSubscriptionManagerInterfaceSupport;
     }
 
-    /**
-     * Legt den Wert der wsPausableSubscriptionManagerInterfaceSupport-Eigenschaft fest.
-     */
+
     public void setWSPausableSubscriptionManagerInterfaceSupport(boolean value) {
         this.wsPausableSubscriptionManagerInterfaceSupport = value;
     }
 
-    /**
-     * Gets the value of the any property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getAny().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Element } {@link
-     * java.lang.Object }
-     */
+
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

@@ -10,116 +10,48 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Java-Klasse f�r PTZPresetTourOptions complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="PTZPresetTourOptions">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="AutoStart" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         <element name="StartingCondition" type="{http://www.onvif.org/ver10/schema}PTZPresetTourStartingConditionOptions"/>
- *         <element name="TourSpot" type="{http://www.onvif.org/ver10/schema}PTZPresetTourSpotOptions"/>
- *         <any processContents='lax' maxOccurs="unbounded" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZPresetTourOptions",
         propOrder = {"autoStart", "startingCondition", "tourSpot", "any"})
 public class PTZPresetTourOptions {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der autoStart-Eigenschaft ab.
-     */
+
     @Getter @XmlElement(name = "AutoStart")
     protected boolean autoStart;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der startingCondition-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZPresetTourStartingConditionOptions }
-     */
+
     @Getter @XmlElement(name = "StartingCondition", required = true)
     protected PTZPresetTourStartingConditionOptions startingCondition;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der tourSpot-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZPresetTourSpotOptions }
-     */
+
     @Getter @XmlElement(name = "TourSpot", required = true)
     protected PTZPresetTourSpotOptions tourSpot;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Legt den Wert der autoStart-Eigenschaft fest.
-     */
+
     public void setAutoStart(boolean value) {
         this.autoStart = value;
     }
 
-    /**
-     * Legt den Wert der startingCondition-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link PTZPresetTourStartingConditionOptions }
-     */
+
     public void setStartingCondition(PTZPresetTourStartingConditionOptions value) {
         this.startingCondition = value;
     }
 
-    /**
-     * Legt den Wert der tourSpot-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link PTZPresetTourSpotOptions }
-     */
+
     public void setTourSpot(PTZPresetTourSpotOptions value) {
         this.tourSpot = value;
     }
 
-    /**
-     * Gets the value of the any property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getAny().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Element } {@link
-     * java.lang.Object }
-     */
+
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

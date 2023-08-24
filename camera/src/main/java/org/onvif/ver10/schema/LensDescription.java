@@ -10,41 +10,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Java-Klasse f�r LensDescription complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * &lt;complexType name="LensDescription">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="Offset" type="{http://www.onvif.org/ver10/schema}LensOffset"/>
- *         &lt;element name="Projection" type="{http://www.onvif.org/ver10/schema}LensProjection" maxOccurs="unbounded"/>
- *         &lt;element name="XFactor" type="{http://www.w3.org/2001/XMLSchema}float"/>
- *         &lt;any processContents='lax' maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attribute name="FocalLength" type="{http://www.w3.org/2001/XMLSchema}float" />
- *       &lt;anyAttribute processContents='lax'/>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "LensDescription",
         propOrder = {"offset", "projection", "xFactor", "any"})
 public class LensDescription {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der offset-Eigenschaft ab.
-     *
-     * @return possible object is {@link LensOffset }
-     */
+
     @Getter @XmlElement(name = "Offset", required = true)
     protected LensOffset offset;
 
@@ -57,52 +30,20 @@ public class LensDescription {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der focalLength-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
+
     @Getter @XmlAttribute(name = "FocalLength")
     protected Float focalLength;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Legt den Wert der offset-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link LensOffset }
-     */
+
     public void setOffset(LensOffset value) {
         this.offset = value;
     }
 
-    /**
-     * Gets the value of the projection property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the projection
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     *    getProjection().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link LensProjection }
-     */
+
     public List<LensProjection> getProjection() {
         if (projection == null) {
             projection = new ArrayList<LensProjection>();
@@ -110,36 +51,17 @@ public class LensDescription {
         return this.projection;
     }
 
-    /**
-     * Ruft den Wert der xFactor-Eigenschaft ab.
-     */
+
     public float getXFactor() {
         return xFactor;
     }
 
-    /**
-     * Legt den Wert der xFactor-Eigenschaft fest.
-     */
+
     public void setXFactor(float value) {
         this.xFactor = value;
     }
 
-    /**
-     * Gets the value of the any property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     *    getAny().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Element } {@link
-     * java.lang.Object }
-     */
+
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();
@@ -147,11 +69,7 @@ public class LensDescription {
         return this.any;
     }
 
-    /**
-     * Legt den Wert der focalLength-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Float }
-     */
+
     public void setFocalLength(Float value) {
         this.focalLength = value;
     }

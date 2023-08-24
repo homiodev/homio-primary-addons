@@ -13,20 +13,12 @@ public class CreateOSD {
     @XmlElement(name = "OSD", required = true)
     protected OSDConfiguration osd;
 
-    /**
-     * Ruft den Wert der osd-Eigenschaft ab.
-     *
-     * @return possible object is {@link OSDConfiguration }
-     */
+
     public OSDConfiguration getOSD() {
         return osd;
     }
 
-    /**
-     * Legt den Wert der osd-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link OSDConfiguration }
-     */
+
     public void setOSD(OSDConfiguration value) {
         this.osd = value;
     }

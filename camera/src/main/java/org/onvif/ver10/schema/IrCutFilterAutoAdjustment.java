@@ -8,28 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 
-/**
- * Java-Klasse f�r IrCutFilterAutoAdjustment complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="IrCutFilterAutoAdjustment">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="BoundaryType" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         <element name="BoundaryOffset" type="{http://www.w3.org/2001/XMLSchema}float" minOccurs="0"/>
- *         <element name="ResponseTime" type="{http://www.w3.org/2001/XMLSchema}duration" minOccurs="0"/>
- *         <element name="Extension" type="{http://www.onvif.org/ver10/schema}IrCutFilterAutoAdjustmentExtension" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -37,87 +16,42 @@ import lombok.Getter;
         propOrder = {"boundaryType", "boundaryOffset", "responseTime", "extension"})
 public class IrCutFilterAutoAdjustment {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der boundaryType-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     @XmlElement(name = "BoundaryType", required = true)
     protected String boundaryType;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der boundaryOffset-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
+
     @XmlElement(name = "BoundaryOffset")
     protected Float boundaryOffset;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der responseTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link Duration }
-     */
+
     @XmlElement(name = "ResponseTime")
     protected Duration responseTime;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link IrCutFilterAutoAdjustmentExtension }
-     */
+
     @XmlElement(name = "Extension")
     protected IrCutFilterAutoAdjustmentExtension extension;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Legt den Wert der boundaryType-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setBoundaryType(String value) {
         this.boundaryType = value;
     }
 
-    /**
-     * Legt den Wert der boundaryOffset-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Float }
-     */
+
     public void setBoundaryOffset(Float value) {
         this.boundaryOffset = value;
     }
 
-    /**
-     * Legt den Wert der responseTime-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Duration }
-     */
+
     public void setResponseTime(Duration value) {
         this.responseTime = value;
     }
 
-    /**
-     * Legt den Wert der extension-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link IrCutFilterAutoAdjustmentExtension }
-     */
+
     public void setExtension(IrCutFilterAutoAdjustmentExtension value) {
         this.extension = value;
     }

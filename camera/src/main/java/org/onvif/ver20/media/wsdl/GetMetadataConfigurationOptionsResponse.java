@@ -12,20 +12,11 @@ import org.onvif.ver10.schema.MetadataConfigurationOptions;
 @XmlRootElement(name = "GetMetadataConfigurationOptionsResponse")
 public class GetMetadataConfigurationOptionsResponse {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der options-Eigenschaft ab.
-     *
-     * @return possible object is {@link MetadataConfigurationOptions }
-     */
+
     @XmlElement(name = "Options", required = true)
     protected MetadataConfigurationOptions options;
 
-    /**
-     * Legt den Wert der options-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link MetadataConfigurationOptions }
-     */
+
     public void setOptions(MetadataConfigurationOptions value) {
         this.options = value;
     }

@@ -4,25 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r PTZPresetTourOperation.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * <simpleType name="PTZPresetTourOperation">
- *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     <enumeration value="Start"/>
- *     <enumeration value="Stop"/>
- *     <enumeration value="Pause"/>
- *     <enumeration value="Extended"/>
- *   </restriction>
- * </simpleType>
- * </pre>
- */
+
 @XmlType(name = "PTZPresetTourOperation")
 @XmlEnum
 public enum PTZPresetTourOperation {

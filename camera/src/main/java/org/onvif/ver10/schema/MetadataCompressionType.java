@@ -4,24 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r MetadataCompressionType.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * &lt;simpleType name="MetadataCompressionType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="None"/>
- *     &lt;enumeration value="GZIP"/>
- *     &lt;enumeration value="EXI"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
- * </pre>
- */
+
 @XmlType(name = "MetadataCompressionType")
 @XmlEnum
 public enum MetadataCompressionType {

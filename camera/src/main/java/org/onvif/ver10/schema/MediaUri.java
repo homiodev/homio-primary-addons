@@ -11,132 +11,58 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Java-Klasse f�r MediaUri complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="MediaUri">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="Uri" type="{http://www.w3.org/2001/XMLSchema}anyURI"/>
- *         <element name="InvalidAfterConnect" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         <element name="InvalidAfterReboot" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         <element name="Timeout" type="{http://www.w3.org/2001/XMLSchema}duration"/>
- *         <any processContents='lax' maxOccurs="unbounded" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MediaUri",
         propOrder = {"uri", "invalidAfterConnect", "invalidAfterReboot", "timeout", "any"})
 public class MediaUri {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der uri-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+    
     @Getter @XmlElement(name = "Uri", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String uri;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der invalidAfterConnect-Eigenschaft ab.
-     */
+    
     @Getter @XmlElement(name = "InvalidAfterConnect")
     protected boolean invalidAfterConnect;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der invalidAfterReboot-Eigenschaft ab.
-     */
+    
     @Getter @XmlElement(name = "InvalidAfterReboot")
     protected boolean invalidAfterReboot;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der timeout-Eigenschaft ab.
-     *
-     * @return possible object is {@link Duration }
-     */
+    
     @Getter @XmlElement(name = "Timeout", required = true)
     protected Duration timeout;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+    
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Legt den Wert der uri-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+    
     public void setUri(String value) {
         this.uri = value;
     }
 
-    /**
-     * Legt den Wert der invalidAfterConnect-Eigenschaft fest.
-     */
+    
     public void setInvalidAfterConnect(boolean value) {
         this.invalidAfterConnect = value;
     }
 
-    /**
-     * Legt den Wert der invalidAfterReboot-Eigenschaft fest.
-     */
+    
     public void setInvalidAfterReboot(boolean value) {
         this.invalidAfterReboot = value;
     }
 
-    /**
-     * Legt den Wert der timeout-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Duration }
-     */
+    
     public void setTimeout(Duration value) {
         this.timeout = value;
     }
 
-    /**
-     * Gets the value of the any property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getAny().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Element } {@link
-     * java.lang.Object }
-     */
+    
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

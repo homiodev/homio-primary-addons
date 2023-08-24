@@ -7,28 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 
-/**
- * Java-Klasse f�r RealTimeStreamingCapabilities complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="RealTimeStreamingCapabilities">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="RTPMulticast" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         <element name="RTP_TCP" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         <element name="RTP_RTSP_TCP" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         <element name="Extension" type="{http://www.onvif.org/ver10/schema}RealTimeStreamingCapabilitiesExtension" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RealTimeStreamingCapabilities",
@@ -44,87 +23,45 @@ public class RealTimeStreamingCapabilities {
     @XmlElement(name = "RTP_RTSP_TCP")
     protected Boolean rtprtsptcp;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link RealTimeStreamingCapabilitiesExtension }
-     */
+
     @Getter @XmlElement(name = "Extension")
     protected RealTimeStreamingCapabilitiesExtension extension;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Ruft den Wert der rtpMulticast-Eigenschaft ab.
-     *
-     * @return possible object is {@link Boolean }
-     */
+
     public Boolean isRTPMulticast() {
         return rtpMulticast;
     }
 
-    /**
-     * Legt den Wert der rtpMulticast-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Boolean }
-     */
+
     public void setRTPMulticast(Boolean value) {
         this.rtpMulticast = value;
     }
 
-    /**
-     * Ruft den Wert der rtptcp-Eigenschaft ab.
-     *
-     * @return possible object is {@link Boolean }
-     */
+
     public Boolean isRTPTCP() {
         return rtptcp;
     }
 
-    /**
-     * Legt den Wert der rtptcp-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Boolean }
-     */
+
     public void setRTPTCP(Boolean value) {
         this.rtptcp = value;
     }
 
-    /**
-     * Ruft den Wert der rtprtsptcp-Eigenschaft ab.
-     *
-     * @return possible object is {@link Boolean }
-     */
+
     public Boolean isRTPRTSPTCP() {
         return rtprtsptcp;
     }
 
-    /**
-     * Legt den Wert der rtprtsptcp-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Boolean }
-     */
+
     public void setRTPRTSPTCP(Boolean value) {
         this.rtprtsptcp = value;
     }
 
-    /**
-     * Legt den Wert der extension-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link RealTimeStreamingCapabilitiesExtension }
-     */
+
     public void setExtension(RealTimeStreamingCapabilitiesExtension value) {
         this.extension = value;
     }

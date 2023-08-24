@@ -4,23 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r RelayIdleState.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * <simpleType name="RelayIdleState">
- *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     <enumeration value="closed"/>
- *     <enumeration value="open"/>
- *   </restriction>
- * </simpleType>
- * </pre>
- */
+
 @XmlType(name = "RelayIdleState")
 @XmlEnum
 public enum RelayIdleState {

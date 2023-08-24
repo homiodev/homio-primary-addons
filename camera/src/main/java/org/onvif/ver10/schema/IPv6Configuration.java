@@ -9,31 +9,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 
-/**
- * Java-Klasse f�r IPv6Configuration complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="IPv6Configuration">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="AcceptRouterAdvert" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         <element name="DHCP" type="{http://www.onvif.org/ver10/schema}IPv6DHCPConfiguration"/>
- *         <element name="Manual" type="{http://www.onvif.org/ver10/schema}PrefixedIPv6Address" maxOccurs="unbounded" minOccurs="0"/>
- *         <element name="LinkLocal" type="{http://www.onvif.org/ver10/schema}PrefixedIPv6Address" maxOccurs="unbounded" minOccurs="0"/>
- *         <element name="FromDHCP" type="{http://www.onvif.org/ver10/schema}PrefixedIPv6Address" maxOccurs="unbounded" minOccurs="0"/>
- *         <element name="FromRA" type="{http://www.onvif.org/ver10/schema}PrefixedIPv6Address" maxOccurs="unbounded" minOccurs="0"/>
- *         <element name="Extension" type="{http://www.onvif.org/ver10/schema}IPv6ConfigurationExtension" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IPv6Configuration",
@@ -66,79 +42,35 @@ public class IPv6Configuration {
     @XmlElement(name = "FromRA")
     protected List<PrefixedIPv6Address> fromRA;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link IPv6ConfigurationExtension }
-     */
+
     @Getter @XmlElement(name = "Extension")
     protected IPv6ConfigurationExtension extension;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Ruft den Wert der acceptRouterAdvert-Eigenschaft ab.
-     *
-     * @return possible object is {@link Boolean }
-     */
+
     public Boolean isAcceptRouterAdvert() {
         return acceptRouterAdvert;
     }
 
-    /**
-     * Legt den Wert der acceptRouterAdvert-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Boolean }
-     */
+
     public void setAcceptRouterAdvert(Boolean value) {
         this.acceptRouterAdvert = value;
     }
 
-    /**
-     * Ruft den Wert der dhcp-Eigenschaft ab.
-     *
-     * @return possible object is {@link IPv6DHCPConfiguration }
-     */
+
     public IPv6DHCPConfiguration getDHCP() {
         return dhcp;
     }
 
-    /**
-     * Legt den Wert der dhcp-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link IPv6DHCPConfiguration }
-     */
+
     public void setDHCP(IPv6DHCPConfiguration value) {
         this.dhcp = value;
     }
 
-    /**
-     * Gets the value of the manual property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the manual
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getManual().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link PrefixedIPv6Address }
-     */
+
     public List<PrefixedIPv6Address> getManual() {
         if (manual == null) {
             manual = new ArrayList<PrefixedIPv6Address>();
@@ -146,21 +78,7 @@ public class IPv6Configuration {
         return this.manual;
     }
 
-    /**
-     * Gets the value of the linkLocal property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the linkLocal
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getLinkLocal().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link PrefixedIPv6Address }
-     */
+
     public List<PrefixedIPv6Address> getLinkLocal() {
         if (linkLocal == null) {
             linkLocal = new ArrayList<PrefixedIPv6Address>();
@@ -168,21 +86,7 @@ public class IPv6Configuration {
         return this.linkLocal;
     }
 
-    /**
-     * Gets the value of the fromDHCP property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the fromDHCP
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getFromDHCP().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link PrefixedIPv6Address }
-     */
+
     public List<PrefixedIPv6Address> getFromDHCP() {
         if (fromDHCP == null) {
             fromDHCP = new ArrayList<PrefixedIPv6Address>();
@@ -190,21 +94,7 @@ public class IPv6Configuration {
         return this.fromDHCP;
     }
 
-    /**
-     * Gets the value of the fromRA property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the fromRA
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getFromRA().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link PrefixedIPv6Address }
-     */
+
     public List<PrefixedIPv6Address> getFromRA() {
         if (fromRA == null) {
             fromRA = new ArrayList<PrefixedIPv6Address>();
@@ -212,11 +102,7 @@ public class IPv6Configuration {
         return this.fromRA;
     }
 
-    /**
-     * Legt den Wert der extension-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link IPv6ConfigurationExtension }
-     */
+
     public void setExtension(IPv6ConfigurationExtension value) {
         this.extension = value;
     }

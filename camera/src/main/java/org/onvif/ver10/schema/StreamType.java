@@ -4,23 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r StreamType.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * <simpleType name="StreamType">
- *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     <enumeration value="RTP-Unicast"/>
- *     <enumeration value="RTP-Multicast"/>
- *   </restriction>
- * </simpleType>
- * </pre>
- */
+
 @XmlType(name = "StreamType")
 @XmlEnum
 public enum StreamType {

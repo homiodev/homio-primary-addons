@@ -4,25 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r IPv6DHCPConfiguration.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * <simpleType name="IPv6DHCPConfiguration">
- *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     <enumeration value="Auto"/>
- *     <enumeration value="Stateful"/>
- *     <enumeration value="Stateless"/>
- *     <enumeration value="Off"/>
- *   </restriction>
- * </simpleType>
- * </pre>
- */
+
 @XmlType(name = "IPv6DHCPConfiguration")
 @XmlEnum
 public enum IPv6DHCPConfiguration {

@@ -4,25 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r VideoEncodingMimeNames.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * &lt;simpleType name="VideoEncodingMimeNames">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="JPEG"/>
- *     &lt;enumeration value="MPV4-ES"/>
- *     &lt;enumeration value="H264"/>
- *     &lt;enumeration value="H265"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
- * </pre>
- */
+
 @XmlType(name = "VideoEncodingMimeNames")
 @XmlEnum
 public enum VideoEncodingMimeNames {

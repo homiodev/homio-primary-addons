@@ -1,126 +1,48 @@
 package org.onvif.ver10.schema;
 
-import jakarta.xml.bind.annotation.*;
-import lombok.Getter;
-import org.w3c.dom.Element;
-
-import javax.xml.namespace.QName;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAnyAttribute;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.namespace.QName;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Java-Klasse f�r WhiteBalance complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="WhiteBalance">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="Mode" type="{http://www.onvif.org/ver10/schema}WhiteBalanceMode"/>
- *         <element name="CrGain" type="{http://www.w3.org/2001/XMLSchema}float"/>
- *         <element name="CbGain" type="{http://www.w3.org/2001/XMLSchema}float"/>
- *         <any processContents='lax' maxOccurs="unbounded" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+@Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-        name = "WhiteBalance",
-        propOrder = {"mode", "crGain", "cbGain", "any"})
+    name = "WhiteBalance",
+    propOrder = {"mode", "crGain", "cbGain", "any"})
 public class WhiteBalance {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der mode-Eigenschaft ab.
-     *
-     * @return possible object is {@link WhiteBalanceMode }
-     */
-    @Getter @XmlElement(name = "Mode", required = true)
+
+    @XmlElement(name = "Mode", required = true)
     protected WhiteBalanceMode mode;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der crGain-Eigenschaft ab.
-     */
-    @Getter @XmlElement(name = "CrGain")
+
+    @XmlElement(name = "CrGain")
     protected float crGain;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der cbGain-Eigenschaft ab.
-     */
-    @Getter @XmlElement(name = "CbGain")
+    @XmlElement(name = "CbGain")
     protected float cbGain;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    @Getter @XmlAnyAttribute
+    @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Legt den Wert der mode-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link WhiteBalanceMode }
-     */
-    public void setMode(WhiteBalanceMode value) {
-        this.mode = value;
-    }
-
-    /**
-     * Legt den Wert der crGain-Eigenschaft fest.
-     */
-    public void setCrGain(float value) {
-        this.crGain = value;
-    }
-
-    /**
-     * Legt den Wert der cbGain-Eigenschaft fest.
-     */
-    public void setCbGain(float value) {
-        this.cbGain = value;
-    }
-
-    /**
-     * Gets the value of the any property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getAny().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Element } {@link
-     * java.lang.Object }
-     */
     public List<java.lang.Object> getAny() {
         if (any == null) {
-            any = new ArrayList<java.lang.Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
-
 }

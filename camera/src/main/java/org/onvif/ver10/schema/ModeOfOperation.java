@@ -4,24 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r ModeOfOperation.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * <simpleType name="ModeOfOperation">
- *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     <enumeration value="Idle"/>
- *     <enumeration value="Active"/>
- *     <enumeration value="Unknown"/>
- *   </restriction>
- * </simpleType>
- * </pre>
- */
+
 @XmlType(name = "ModeOfOperation")
 @XmlEnum
 public enum ModeOfOperation {
@@ -30,9 +13,7 @@ public enum ModeOfOperation {
     @XmlEnumValue("Active")
     ACTIVE("Active"),
 
-    /**
-     * This case should never happen.
-     */
+
     @XmlEnumValue("Unknown")
     UNKNOWN("Unknown");
     private final String value;

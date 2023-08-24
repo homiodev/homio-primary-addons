@@ -1,48 +1,38 @@
 package org.onvif.ver10.schema;
 
-import jakarta.xml.bind.annotation.*;
-import lombok.Getter;
-import org.w3c.dom.Element;
-
-import javax.xml.namespace.QName;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAnyAttribute;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.namespace.QName;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoEncoder2ConfigurationOptions",
         propOrder = {"encoding", "qualityRange", "resolutionsAvailable", "bitrateRange", "any"})
 public class VideoEncoder2ConfigurationOptions {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der encoding-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
     @Getter @XmlElement(name = "Encoding", required = true)
     protected String encoding;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der qualityRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link IntRange }
-     */
+
     @Getter @XmlElement(name = "QualityRange", required = true)
     protected IntRange qualityRange;
 
     @XmlElement(name = "ResolutionsAvailable", required = true)
     protected List<VideoResolution2> resolutionsAvailable;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der bitrateRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link IntRange }
-     */
+
     @Getter @XmlElement(name = "BitrateRange", required = true)
     protected IntRange bitrateRange;
 
@@ -61,191 +51,46 @@ public class VideoEncoder2ConfigurationOptions {
     @XmlAttribute(name = "ConstantBitRateSupported")
     protected Boolean constantBitRateSupported;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der guaranteedInstances-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
+
     @Getter @XmlAttribute(name = "GuaranteedInstances")
     protected Integer guaranteedInstances;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
-    /**
-     * Legt den Wert der encoding-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
-    public void setEncoding(String value) {
-        this.encoding = value;
-    }
-
-    /**
-     * Legt den Wert der qualityRange-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link IntRange }
-     */
-    public void setQualityRange(IntRange value) {
-        this.qualityRange = value;
-    }
-
-    /**
-     * Gets the value of the resolutionsAvailable property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
-     * resolutionsAvailable property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     *    getResolutionsAvailable().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link VideoResolution2 }
-     */
     public List<VideoResolution2> getResolutionsAvailable() {
         if (resolutionsAvailable == null) {
-            resolutionsAvailable = new ArrayList<VideoResolution2>();
+            resolutionsAvailable = new ArrayList<>();
         }
         return this.resolutionsAvailable;
     }
 
-    /**
-     * Legt den Wert der bitrateRange-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link IntRange }
-     */
-    public void setBitrateRange(IntRange value) {
-        this.bitrateRange = value;
-    }
-
-    /**
-     * Gets the value of the any property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     *    getAny().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Element } {@link
-     * java.lang.Object }
-     */
     public List<java.lang.Object> getAny() {
         if (any == null) {
-            any = new ArrayList<java.lang.Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
 
-    /**
-     * Gets the value of the govLengthRange property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
-     * govLengthRange property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     *    getGovLengthRange().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Integer }
-     */
     public List<Integer> getGovLengthRange() {
         if (govLengthRange == null) {
-            govLengthRange = new ArrayList<Integer>();
+            govLengthRange = new ArrayList<>();
         }
         return this.govLengthRange;
     }
 
-    /**
-     * Gets the value of the frameRatesSupported property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
-     * frameRatesSupported property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     *    getFrameRatesSupported().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Float }
-     */
     public List<Float> getFrameRatesSupported() {
         if (frameRatesSupported == null) {
-            frameRatesSupported = new ArrayList<Float>();
+            frameRatesSupported = new ArrayList<>();
         }
         return this.frameRatesSupported;
     }
 
-    /**
-     * Gets the value of the profilesSupported property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
-     * profilesSupported property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     *    getProfilesSupported().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link String }
-     */
     public List<String> getProfilesSupported() {
         if (profilesSupported == null) {
-            profilesSupported = new ArrayList<String>();
+            profilesSupported = new ArrayList<>();
         }
         return this.profilesSupported;
     }
-
-    /**
-     * Ruft den Wert der constantBitRateSupported-Eigenschaft ab.
-     *
-     * @return possible object is {@link Boolean }
-     */
-    public Boolean isConstantBitRateSupported() {
-        return constantBitRateSupported;
-    }
-
-    /**
-     * Legt den Wert der constantBitRateSupported-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Boolean }
-     */
-    public void setConstantBitRateSupported(Boolean value) {
-        this.constantBitRateSupported = value;
-    }
-
-    /**
-     * Legt den Wert der guaranteedInstances-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Integer }
-     */
-    public void setGuaranteedInstances(Integer value) {
-        this.guaranteedInstances = value;
-    }
-
 }

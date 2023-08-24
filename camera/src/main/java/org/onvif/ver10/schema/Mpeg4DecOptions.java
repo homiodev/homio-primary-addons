@@ -10,29 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Java-Klasse f�r Mpeg4DecOptions complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="Mpeg4DecOptions">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="ResolutionsAvailable" type="{http://www.onvif.org/ver10/schema}VideoResolution" maxOccurs="unbounded"/>
- *         <element name="SupportedMpeg4Profiles" type="{http://www.onvif.org/ver10/schema}Mpeg4Profile" maxOccurs="unbounded"/>
- *         <element name="SupportedInputBitrate" type="{http://www.onvif.org/ver10/schema}IntRange"/>
- *         <element name="SupportedFrameRate" type="{http://www.onvif.org/ver10/schema}IntRange"/>
- *         <any processContents='lax' maxOccurs="unbounded" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Mpeg4DecOptions",
@@ -51,55 +29,22 @@ public class Mpeg4DecOptions {
     @XmlElement(name = "SupportedMpeg4Profiles", required = true)
     protected List<Mpeg4Profile> supportedMpeg4Profiles;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der supportedInputBitrate-Eigenschaft ab.
-     *
-     * @return possible object is {@link IntRange }
-     */
+    
     @Getter @XmlElement(name = "SupportedInputBitrate", required = true)
     protected IntRange supportedInputBitrate;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der supportedFrameRate-Eigenschaft ab.
-     *
-     * @return possible object is {@link IntRange }
-     */
+    
     @Getter @XmlElement(name = "SupportedFrameRate", required = true)
     protected IntRange supportedFrameRate;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+    
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Gets the value of the resolutionsAvailable property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
-     * resolutionsAvailable property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getResolutionsAvailable().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link VideoResolution }
-     */
+    
     public List<VideoResolution> getResolutionsAvailable() {
         if (resolutionsAvailable == null) {
             resolutionsAvailable = new ArrayList<VideoResolution>();
@@ -107,21 +52,7 @@ public class Mpeg4DecOptions {
         return this.resolutionsAvailable;
     }
 
-    /**
-     * Gets the value of the supportedMpeg4Profiles property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the
-     * supportedMpeg4Profiles property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getSupportedMpeg4Profiles().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Mpeg4Profile }
-     */
+    
     public List<Mpeg4Profile> getSupportedMpeg4Profiles() {
         if (supportedMpeg4Profiles == null) {
             supportedMpeg4Profiles = new ArrayList<Mpeg4Profile>();
@@ -129,40 +60,17 @@ public class Mpeg4DecOptions {
         return this.supportedMpeg4Profiles;
     }
 
-    /**
-     * Legt den Wert der supportedInputBitrate-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link IntRange }
-     */
+    
     public void setSupportedInputBitrate(IntRange value) {
         this.supportedInputBitrate = value;
     }
 
-    /**
-     * Legt den Wert der supportedFrameRate-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link IntRange }
-     */
+    
     public void setSupportedFrameRate(IntRange value) {
         this.supportedFrameRate = value;
     }
 
-    /**
-     * Gets the value of the any property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getAny().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Element } {@link
-     * java.lang.Object }
-     */
+    
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

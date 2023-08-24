@@ -13,16 +13,11 @@ import lombok.Getter;
         propOrder = {"speed"})
 public class ContinuousFocus {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der speed-Eigenschaft ab.
-     */
+
     @XmlElement(name = "Speed")
     protected float speed;
 
-    /**
-     * Legt den Wert der speed-Eigenschaft fest.
-     */
+
     public void setSpeed(float value) {
         this.speed = value;
     }

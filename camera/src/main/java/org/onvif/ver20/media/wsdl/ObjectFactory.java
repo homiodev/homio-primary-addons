@@ -48,469 +48,337 @@ public class ObjectFactory {
     private static final QName _GetAudioEncoderConfigurations_QNAME =
             new QName("http://www.onvif.org/ver20/media/wsdl", "GetAudioEncoderConfigurations");
 
-    /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.onvif.ver20.media.wsdl
-     */
+
     public ObjectFactory() {
     }
 
-    /**
-     * Create an instance of {@link GetConfiguration }
-     */
+
     public GetConfiguration createGetConfiguration() {
         return new GetConfiguration();
     }
 
-    /**
-     * Create an instance of {@link SetVideoSourceMode }
-     */
+
     public SetVideoSourceMode createSetVideoSourceMode() {
         return new SetVideoSourceMode();
     }
 
-    /**
-     * Create an instance of {@link GetMetadataConfigurationsResponse }
-     */
+
     public GetMetadataConfigurationsResponse createGetMetadataConfigurationsResponse() {
         return new GetMetadataConfigurationsResponse();
     }
 
-    /**
-     * Create an instance of {@link DeleteProfileResponse }
-     */
+
     public DeleteProfileResponse createDeleteProfileResponse() {
         return new DeleteProfileResponse();
     }
 
-    /**
-     * Create an instance of {@link SetMetadataConfiguration }
-     */
+
     public SetMetadataConfiguration createSetMetadataConfiguration() {
         return new SetMetadataConfiguration();
     }
 
-    /**
-     * Create an instance of {@link SetSynchronizationPointResponse }
-     */
+
     public SetSynchronizationPointResponse createSetSynchronizationPointResponse() {
         return new SetSynchronizationPointResponse();
     }
 
-    /**
-     * Create an instance of {@link GetAnalyticsConfigurationsResponse }
-     */
+
     public GetAnalyticsConfigurationsResponse createGetAnalyticsConfigurationsResponse() {
         return new GetAnalyticsConfigurationsResponse();
     }
 
-    /**
-     * Create an instance of {@link RemoveConfiguration }
-     */
+
     public RemoveConfiguration createRemoveConfiguration() {
         return new RemoveConfiguration();
     }
 
-    /**
-     * Create an instance of {@link ConfigurationRef }
-     */
+
     public ConfigurationRef createConfigurationRef() {
         return new ConfigurationRef();
     }
 
-    /**
-     * Create an instance of {@link SetVideoSourceModeResponse }
-     */
+
     public SetVideoSourceModeResponse createSetVideoSourceModeResponse() {
         return new SetVideoSourceModeResponse();
     }
 
-    /**
-     * Create an instance of {@link GetOSDOptions }
-     */
+
     public GetOSDOptions createGetOSDOptions() {
         return new GetOSDOptions();
     }
 
-    /**
-     * Create an instance of {@link SetAudioSourceConfiguration }
-     */
+
     public SetAudioSourceConfiguration createSetAudioSourceConfiguration() {
         return new SetAudioSourceConfiguration();
     }
 
-    /**
-     * Create an instance of {@link DeleteOSD }
-     */
+
     public DeleteOSD createDeleteOSD() {
         return new DeleteOSD();
     }
 
-    /**
-     * Create an instance of {@link SetVideoEncoderConfiguration }
-     */
+
     public SetVideoEncoderConfiguration createSetVideoEncoderConfiguration() {
         return new SetVideoEncoderConfiguration();
     }
 
-    /**
-     * Create an instance of {@link DeleteProfile }
-     */
+
     public DeleteProfile createDeleteProfile() {
         return new DeleteProfile();
     }
 
-    /**
-     * Create an instance of {@link GetOSDsResponse }
-     */
+
     public GetOSDsResponse createGetOSDsResponse() {
         return new GetOSDsResponse();
     }
 
-    /**
-     * Create an instance of {@link CreateProfileResponse }
-     */
+
     public CreateProfileResponse createCreateProfileResponse() {
         return new CreateProfileResponse();
     }
 
-    /**
-     * Create an instance of {@link GetVideoSourceModesResponse }
-     */
+
     public GetVideoSourceModesResponse createGetVideoSourceModesResponse() {
         return new GetVideoSourceModesResponse();
     }
 
-    /**
-     * Create an instance of {@link VideoSourceMode }
-     */
+
     public VideoSourceMode createVideoSourceMode() {
         return new VideoSourceMode();
     }
 
-    /**
-     * Create an instance of {@link GetAudioOutputConfigurationOptionsResponse }
-     */
+
     public GetAudioOutputConfigurationOptionsResponse
     createGetAudioOutputConfigurationOptionsResponse() {
         return new GetAudioOutputConfigurationOptionsResponse();
     }
 
-    /**
-     * Create an instance of {@link GetVideoSourceModes }
-     */
+
     public GetVideoSourceModes createGetVideoSourceModes() {
         return new GetVideoSourceModes();
     }
 
-    /**
-     * Create an instance of {@link GetStreamUriResponse }
-     */
+
     public GetStreamUriResponse createGetStreamUriResponse() {
         return new GetStreamUriResponse();
     }
 
-    /**
-     * Create an instance of {@link GetProfilesResponse }
-     */
+
     public GetProfilesResponse createGetProfilesResponse() {
         return new GetProfilesResponse();
     }
 
-    /**
-     * Create an instance of {@link MediaProfile }
-     */
+
     public MediaProfile createMediaProfile() {
         return new MediaProfile();
     }
 
-    /**
-     * Create an instance of {@link SetOSD }
-     */
+
     public SetOSD createSetOSD() {
         return new SetOSD();
     }
 
-    /**
-     * Create an instance of {@link CreateOSDResponse }
-     */
+
     public CreateOSDResponse createCreateOSDResponse() {
         return new CreateOSDResponse();
     }
 
-    /**
-     * Create an instance of {@link GetAudioEncoderConfigurationOptionsResponse }
-     */
+
     public GetAudioEncoderConfigurationOptionsResponse
     createGetAudioEncoderConfigurationOptionsResponse() {
         return new GetAudioEncoderConfigurationOptionsResponse();
     }
 
-    /**
-     * Create an instance of {@link AddConfiguration }
-     */
+
     public AddConfiguration createAddConfiguration() {
         return new AddConfiguration();
     }
 
-    /**
-     * Create an instance of {@link GetAudioOutputConfigurationsResponse }
-     */
+
     public GetAudioOutputConfigurationsResponse createGetAudioOutputConfigurationsResponse() {
         return new GetAudioOutputConfigurationsResponse();
     }
 
-    /**
-     * Create an instance of {@link GetProfiles }
-     */
+
     public GetProfiles createGetProfiles() {
         return new GetProfiles();
     }
 
-    /**
-     * Create an instance of {@link SetAudioEncoderConfiguration }
-     */
+
     public SetAudioEncoderConfiguration createSetAudioEncoderConfiguration() {
         return new SetAudioEncoderConfiguration();
     }
 
-    /**
-     * Create an instance of {@link GetAudioSourceConfigurationsResponse }
-     */
+
     public GetAudioSourceConfigurationsResponse createGetAudioSourceConfigurationsResponse() {
         return new GetAudioSourceConfigurationsResponse();
     }
 
-    /**
-     * Create an instance of {@link SetVideoSourceConfiguration }
-     */
+
     public SetVideoSourceConfiguration createSetVideoSourceConfiguration() {
         return new SetVideoSourceConfiguration();
     }
 
-    /**
-     * Create an instance of {@link GetSnapshotUriResponse }
-     */
+
     public GetSnapshotUriResponse createGetSnapshotUriResponse() {
         return new GetSnapshotUriResponse();
     }
 
-    /**
-     * Create an instance of {@link SetAudioDecoderConfiguration }
-     */
+
     public SetAudioDecoderConfiguration createSetAudioDecoderConfiguration() {
         return new SetAudioDecoderConfiguration();
     }
 
-    /**
-     * Create an instance of {@link GetVideoEncoderConfigurationOptionsResponse }
-     */
+
     public GetVideoEncoderConfigurationOptionsResponse
     createGetVideoEncoderConfigurationOptionsResponse() {
         return new GetVideoEncoderConfigurationOptionsResponse();
     }
 
-    /**
-     * Create an instance of {@link GetAudioEncoderConfigurationsResponse }
-     */
+
     public GetAudioEncoderConfigurationsResponse createGetAudioEncoderConfigurationsResponse() {
         return new GetAudioEncoderConfigurationsResponse();
     }
 
-    /**
-     * Create an instance of {@link RemoveConfigurationResponse }
-     */
+
     public RemoveConfigurationResponse createRemoveConfigurationResponse() {
         return new RemoveConfigurationResponse();
     }
 
-    /**
-     * Create an instance of {@link SetConfigurationResponse }
-     */
+
     public SetConfigurationResponse createSetConfigurationResponse() {
         return new SetConfigurationResponse();
     }
 
-    /**
-     * Create an instance of {@link StartStopMulticastStreaming }
-     */
+
     public StartStopMulticastStreaming createStartStopMulticastStreaming() {
         return new StartStopMulticastStreaming();
     }
 
-    /**
-     * Create an instance of {@link SetSynchronizationPoint }
-     */
+
     public SetSynchronizationPoint createSetSynchronizationPoint() {
         return new SetSynchronizationPoint();
     }
 
-    /**
-     * Create an instance of {@link CreateOSD }
-     */
+
     public CreateOSD createCreateOSD() {
         return new CreateOSD();
     }
 
-    /**
-     * Create an instance of {@link GetAudioDecoderConfigurationsResponse }
-     */
+
     public GetAudioDecoderConfigurationsResponse createGetAudioDecoderConfigurationsResponse() {
         return new GetAudioDecoderConfigurationsResponse();
     }
 
-    /**
-     * Create an instance of {@link GetStreamUri }
-     */
+
     public GetStreamUri createGetStreamUri() {
         return new GetStreamUri();
     }
 
-    /**
-     * Create an instance of {@link AddConfigurationResponse }
-     */
+
     public AddConfigurationResponse createAddConfigurationResponse() {
         return new AddConfigurationResponse();
     }
 
-    /**
-     * Create an instance of {@link GetAudioSourceConfigurationOptionsResponse }
-     */
+
     public GetAudioSourceConfigurationOptionsResponse
     createGetAudioSourceConfigurationOptionsResponse() {
         return new GetAudioSourceConfigurationOptionsResponse();
     }
 
-    /**
-     * Create an instance of {@link GetSnapshotUri }
-     */
+
     public GetSnapshotUri createGetSnapshotUri() {
         return new GetSnapshotUri();
     }
 
-    /**
-     * Create an instance of {@link SetAudioOutputConfiguration }
-     */
+
     public SetAudioOutputConfiguration createSetAudioOutputConfiguration() {
         return new SetAudioOutputConfiguration();
     }
 
-    /**
-     * Create an instance of {@link GetAudioDecoderConfigurationOptionsResponse }
-     */
+
     public GetAudioDecoderConfigurationOptionsResponse
     createGetAudioDecoderConfigurationOptionsResponse() {
         return new GetAudioDecoderConfigurationOptionsResponse();
     }
 
-    /**
-     * Create an instance of {@link GetOSDOptionsResponse }
-     */
+
     public GetOSDOptionsResponse createGetOSDOptionsResponse() {
         return new GetOSDOptionsResponse();
     }
 
-    /**
-     * Create an instance of {@link GetMetadataConfigurationOptionsResponse }
-     */
+
     public GetMetadataConfigurationOptionsResponse createGetMetadataConfigurationOptionsResponse() {
         return new GetMetadataConfigurationOptionsResponse();
     }
 
-    /**
-     * Create an instance of {@link GetServiceCapabilities }
-     */
+
     public GetServiceCapabilities createGetServiceCapabilities() {
         return new GetServiceCapabilities();
     }
 
-    /**
-     * Create an instance of {@link GetVideoSourceConfigurationsResponse }
-     */
+
     public GetVideoSourceConfigurationsResponse createGetVideoSourceConfigurationsResponse() {
         return new GetVideoSourceConfigurationsResponse();
     }
 
-    /**
-     * Create an instance of {@link GetOSDs }
-     */
+
     public GetOSDs createGetOSDs() {
         return new GetOSDs();
     }
 
-    /**
-     * Create an instance of {@link Capabilities2 }
-     */
+
     public Capabilities2 createCapabilities2() {
         return new Capabilities2();
     }
 
-    /**
-     * Create an instance of {@link GetVideoEncoderConfigurationsResponse }
-     */
+
     public GetVideoEncoderConfigurationsResponse createGetVideoEncoderConfigurationsResponse() {
         return new GetVideoEncoderConfigurationsResponse();
     }
 
-    /**
-     * Create an instance of {@link GetVideoSourceConfigurationOptionsResponse }
-     */
+
     public GetVideoSourceConfigurationOptionsResponse
     createGetVideoSourceConfigurationOptionsResponse() {
         return new GetVideoSourceConfigurationOptionsResponse();
     }
 
-    /**
-     * Create an instance of {@link CreateProfile }
-     */
+
     public CreateProfile createCreateProfile() {
         return new CreateProfile();
     }
 
-    /**
-     * Create an instance of {@link StartStopMulticastStreamingResponse }
-     */
+
     public StartStopMulticastStreamingResponse createStartStopMulticastStreamingResponse() {
         return new StartStopMulticastStreamingResponse();
     }
 
-    /**
-     * Create an instance of {@link GetServiceCapabilitiesResponse2 }
-     */
+
     public GetServiceCapabilitiesResponse2 createGetServiceCapabilitiesResponse2() {
         return new GetServiceCapabilitiesResponse2();
     }
 
-    /**
-     * Create an instance of {@link ProfileCapabilities }
-     */
+
     public ProfileCapabilities createProfileCapabilities() {
         return new ProfileCapabilities();
     }
 
-    /**
-     * Create an instance of {@link StreamingCapabilities }
-     */
+
     public StreamingCapabilities createStreamingCapabilities() {
         return new StreamingCapabilities();
     }
 
-    /**
-     * Create an instance of {@link ConfigurationSet }
-     */
+
     public ConfigurationSet createConfigurationSet() {
         return new ConfigurationSet();
     }
 
-    /**
-     * Create an instance of {@link VideoSourceModeExtension }
-     */
+
     public VideoSourceModeExtension createVideoSourceModeExtension() {
         return new VideoSourceModeExtension();
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetVideoEncoderConfigurationOptions")
@@ -520,17 +388,13 @@ public class ObjectFactory {
                 _GetVideoEncoderConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Capabilities2 }{@code >}}
-     */
+
     @XmlElementDecl(namespace = "http://www.onvif.org/ver20/media/wsdl", name = "Capabilities")
     public JAXBElement<Capabilities2> createCapabilities(Capabilities2 value) {
         return new JAXBElement<Capabilities2>(_Capabilities_QNAME, Capabilities2.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link StartStopMulticastStreaming }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "StopMulticastStreaming")
@@ -540,9 +404,7 @@ public class ObjectFactory {
                 _StopMulticastStreaming_QNAME, StartStopMulticastStreaming.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetAnalyticsConfigurations")
@@ -551,9 +413,7 @@ public class ObjectFactory {
                 _GetAnalyticsConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link StartStopMulticastStreaming }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "StartMulticastStreaming")
@@ -563,9 +423,7 @@ public class ObjectFactory {
                 _StartMulticastStreaming_QNAME, StartStopMulticastStreaming.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetVideoSourceConfigurations")
@@ -574,9 +432,7 @@ public class ObjectFactory {
                 _GetVideoSourceConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetAudioEncoderConfigurationOptions")
@@ -586,9 +442,7 @@ public class ObjectFactory {
                 _GetAudioEncoderConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetVideoSourceConfigurationOptions")
@@ -598,9 +452,7 @@ public class ObjectFactory {
                 _GetVideoSourceConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetVideoEncoderConfigurations")
@@ -609,9 +461,7 @@ public class ObjectFactory {
                 _GetVideoEncoderConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetMetadataConfigurationOptions")
@@ -621,9 +471,7 @@ public class ObjectFactory {
                 _GetMetadataConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetAudioOutputConfigurationOptions")
@@ -633,9 +481,7 @@ public class ObjectFactory {
                 _GetAudioOutputConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link ConfigurationEnumeration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "ConfigurationEnumeration")
@@ -645,9 +491,7 @@ public class ObjectFactory {
                 _ConfigurationEnumeration_QNAME, ConfigurationEnumeration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetAudioSourceConfigurationOptions")
@@ -657,9 +501,7 @@ public class ObjectFactory {
                 _GetAudioSourceConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetAudioOutputConfigurations")
@@ -668,9 +510,7 @@ public class ObjectFactory {
                 _GetAudioOutputConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetAudioDecoderConfigurationOptions")
@@ -680,9 +520,7 @@ public class ObjectFactory {
                 _GetAudioDecoderConfigurationOptions_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetMetadataConfigurations")
@@ -691,9 +529,7 @@ public class ObjectFactory {
                 _GetMetadataConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetAudioSourceConfigurations")
@@ -702,9 +538,7 @@ public class ObjectFactory {
                 _GetAudioSourceConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetAudioDecoderConfigurations")
@@ -713,9 +547,7 @@ public class ObjectFactory {
                 _GetAudioDecoderConfigurations_QNAME, GetConfiguration.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetConfiguration }{@code >}}
-     */
+
     @XmlElementDecl(
             namespace = "http://www.onvif.org/ver20/media/wsdl",
             name = "GetAudioEncoderConfigurations")

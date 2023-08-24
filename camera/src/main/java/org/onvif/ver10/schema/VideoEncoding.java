@@ -4,24 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r VideoEncoding.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * <simpleType name="VideoEncoding">
- *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     <enumeration value="JPEG"/>
- *     <enumeration value="MPEG4"/>
- *     <enumeration value="H264"/>
- *   </restriction>
- * </simpleType>
- * </pre>
- */
+
 @XmlType(name = "VideoEncoding")
 @XmlEnum
 public enum VideoEncoding {

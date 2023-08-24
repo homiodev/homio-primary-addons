@@ -11,21 +11,12 @@ import lombok.Getter;
 @XmlRootElement(name = "GetSnapshotUriResponse")
 public class GetSnapshotUriResponse {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der uri-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
+
     @XmlElement(name = "Uri", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String uri;
 
-    /**
-     * Legt den Wert der uri-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link String }
-     */
+
     public void setUri(String value) {
         this.uri = value;
     }

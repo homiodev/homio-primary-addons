@@ -10,146 +10,66 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Java-Klasse f�r VideoAttributes complex type.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <pre>
- * <complexType name="VideoAttributes">
- *   <complexContent>
- *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       <sequence>
- *         <element name="Bitrate" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
- *         <element name="Width" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         <element name="Height" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         <element name="Encoding" type="{http://www.onvif.org/ver10/schema}VideoEncoding"/>
- *         <element name="Framerate" type="{http://www.w3.org/2001/XMLSchema}float"/>
- *         <any processContents='lax' maxOccurs="unbounded" minOccurs="0"/>
- *       </sequence>
- *       <anyAttribute processContents='lax'/>
- *     </restriction>
- *   </complexContent>
- * </complexType>
- * </pre>
- */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoAttributes",
         propOrder = {"bitrate", "width", "height", "encoding", "framerate", "any"})
 public class VideoAttributes {
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der bitrate-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
+
     @Getter @XmlElement(name = "Bitrate")
     protected Integer bitrate;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der width-Eigenschaft ab.
-     */
+
     @Getter @XmlElement(name = "Width")
     protected int width;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der height-Eigenschaft ab.
-     */
+
     @Getter @XmlElement(name = "Height")
     protected int height;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der encoding-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoEncoding }
-     */
+
     @Getter @XmlElement(name = "Encoding", required = true)
     protected VideoEncoding encoding;
 
-    /**
-     * -- GETTER --
-     *  Ruft den Wert der framerate-Eigenschaft ab.
-     */
+
     @Getter @XmlElement(name = "Framerate")
     protected float framerate;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    /**
-     * -- GETTER --
-     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
-     *  attribute.
-     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
-     *  directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    /**
-     * Legt den Wert der bitrate-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link Integer }
-     */
+
     public void setBitrate(Integer value) {
         this.bitrate = value;
     }
 
-    /**
-     * Legt den Wert der width-Eigenschaft fest.
-     */
+
     public void setWidth(int value) {
         this.width = value;
     }
 
-    /**
-     * Legt den Wert der height-Eigenschaft fest.
-     */
+
     public void setHeight(int value) {
         this.height = value;
     }
 
-    /**
-     * Legt den Wert der encoding-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link VideoEncoding }
-     */
+
     public void setEncoding(VideoEncoding value) {
         this.encoding = value;
     }
 
-    /**
-     * Legt den Wert der framerate-Eigenschaft fest.
-     */
+
     public void setFramerate(float value) {
         this.framerate = value;
     }
 
-    /**
-     * Gets the value of the any property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the any
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getAny().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link Element } {@link
-     * java.lang.Object }
-     */
+
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

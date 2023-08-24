@@ -4,23 +4,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 import jakarta.xml.bind.annotation.XmlEnumValue;
 import jakarta.xml.bind.annotation.XmlType;
 
-/**
- * Java-Klasse f�r IPType.
- *
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
- * ist.
- *
- * <p>
- *
- * <pre>
- * <simpleType name="IPType">
- *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     <enumeration value="IPv4"/>
- *     <enumeration value="IPv6"/>
- *   </restriction>
- * </simpleType>
- * </pre>
- */
+
 @XmlType(name = "IPType")
 @XmlEnum
 public enum IPType {
