@@ -1,9 +1,8 @@
 package org.bluez;
 
+import java.util.Map;
 import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.Variant;
-
-import java.util.Map;
 
 public interface GattCharacteristic1 extends DBusInterface {
 

@@ -11,7 +11,6 @@ package org.w3._2004._08.xop.include;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
-
 import javax.xml.namespace.QName;
 
 

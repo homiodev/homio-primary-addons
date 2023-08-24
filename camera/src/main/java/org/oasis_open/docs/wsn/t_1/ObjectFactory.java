@@ -11,7 +11,6 @@ package org.oasis_open.docs.wsn.t_1;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
-
 import javax.xml.namespace.QName;
 
 

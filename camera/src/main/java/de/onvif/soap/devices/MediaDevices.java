@@ -2,15 +2,33 @@ package de.onvif.soap.devices;
 
 import de.onvif.soap.OnvifDeviceState;
 import de.onvif.soap.SOAP;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.jetbrains.annotations.Nullable;
-import org.onvif.ver10.media.wsdl.*;
-import org.onvif.ver10.schema.*;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.jetbrains.annotations.Nullable;
+import org.onvif.ver10.media.wsdl.GetAudioSources;
+import org.onvif.ver10.media.wsdl.GetAudioSourcesResponse;
+import org.onvif.ver10.media.wsdl.GetSnapshotUri;
+import org.onvif.ver10.media.wsdl.GetSnapshotUriResponse;
+import org.onvif.ver10.media.wsdl.GetStreamUri;
+import org.onvif.ver10.media.wsdl.GetStreamUriResponse;
+import org.onvif.ver10.media.wsdl.GetVideoEncoderConfigurationOptions;
+import org.onvif.ver10.media.wsdl.GetVideoEncoderConfigurationOptionsResponse;
+import org.onvif.ver10.media.wsdl.GetVideoSources;
+import org.onvif.ver10.media.wsdl.GetVideoSourcesResponse;
+import org.onvif.ver10.media.wsdl.SetVideoEncoderConfiguration;
+import org.onvif.ver10.media.wsdl.SetVideoEncoderConfigurationResponse;
+import org.onvif.ver10.schema.AudioSource;
+import org.onvif.ver10.schema.Profile;
+import org.onvif.ver10.schema.StreamSetup;
+import org.onvif.ver10.schema.StreamType;
+import org.onvif.ver10.schema.Transport;
+import org.onvif.ver10.schema.TransportProtocol;
+import org.onvif.ver10.schema.VideoEncoderConfiguration;
+import org.onvif.ver10.schema.VideoEncoderConfigurationOptions;
+import org.onvif.ver10.schema.VideoSource;
 
 @RequiredArgsConstructor
 public class MediaDevices {

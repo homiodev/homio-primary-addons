@@ -1,5 +1,9 @@
 package org.ble;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import org.bluez.GattService1;
 import org.freedesktop.DBus.Properties;
@@ -7,11 +11,6 @@ import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.Path;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class BleService implements GattService1, Properties {
 

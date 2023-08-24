@@ -2,16 +2,47 @@ package de.onvif.soap.devices;
 
 import de.onvif.soap.OnvifDeviceState;
 import de.onvif.soap.SOAP;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.onvif.ver10.device.wsdl.*;
-import org.onvif.ver10.media.wsdl.*;
+import org.onvif.ver10.device.wsdl.GetCapabilities;
+import org.onvif.ver10.device.wsdl.GetCapabilitiesResponse;
+import org.onvif.ver10.device.wsdl.GetDeviceInformation;
+import org.onvif.ver10.device.wsdl.GetDeviceInformationResponse;
+import org.onvif.ver10.device.wsdl.GetHostname;
+import org.onvif.ver10.device.wsdl.GetHostnameResponse;
+import org.onvif.ver10.device.wsdl.GetScopes;
+import org.onvif.ver10.device.wsdl.GetScopesResponse;
+import org.onvif.ver10.device.wsdl.GetServices;
+import org.onvif.ver10.device.wsdl.GetServicesResponse;
+import org.onvif.ver10.device.wsdl.GetSystemDateAndTime;
+import org.onvif.ver10.device.wsdl.GetSystemDateAndTimeResponse;
+import org.onvif.ver10.device.wsdl.GetUsers;
+import org.onvif.ver10.device.wsdl.GetUsersResponse;
+import org.onvif.ver10.device.wsdl.Service;
+import org.onvif.ver10.device.wsdl.SetHostname;
+import org.onvif.ver10.device.wsdl.SetHostnameResponse;
+import org.onvif.ver10.device.wsdl.SetScopes;
+import org.onvif.ver10.device.wsdl.SetScopesResponse;
+import org.onvif.ver10.device.wsdl.SystemReboot;
+import org.onvif.ver10.device.wsdl.SystemRebootResponse;
+import org.onvif.ver10.media.wsdl.CreateProfile;
+import org.onvif.ver10.media.wsdl.CreateProfileResponse;
+import org.onvif.ver10.media.wsdl.GetProfile;
+import org.onvif.ver10.media.wsdl.GetProfileResponse;
+import org.onvif.ver10.media.wsdl.GetProfiles;
+import org.onvif.ver10.media.wsdl.GetProfilesResponse;
 import org.onvif.ver10.schema.Capabilities;
 import org.onvif.ver10.schema.Date;
-import org.onvif.ver10.schema.*;
-
-import java.util.*;
-import java.util.stream.Collectors;
+import org.onvif.ver10.schema.Profile;
+import org.onvif.ver10.schema.Scope;
+import org.onvif.ver10.schema.Time;
+import org.onvif.ver10.schema.User;
 
 @RequiredArgsConstructor
 public class InitialDevices {

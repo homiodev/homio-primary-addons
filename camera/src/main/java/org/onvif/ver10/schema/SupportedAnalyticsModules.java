@@ -1,12 +1,16 @@
 package org.onvif.ver10.schema;
 
-import jakarta.xml.bind.annotation.*;
-
-import javax.xml.namespace.QName;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAnyAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.namespace.QName;
 import lombok.Getter;
 
 
@@ -23,15 +27,15 @@ public class SupportedAnalyticsModules {
     @XmlElement(name = "AnalyticsModuleDescription")
     protected List<ConfigDescription> analyticsModuleDescription;
 
-    
+
     @Getter @XmlElement(name = "Extension")
     protected SupportedAnalyticsModulesExtension extension;
 
-    
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    
+
     public List<String> getAnalyticsModuleContentSchemaLocation() {
         if (analyticsModuleContentSchemaLocation == null) {
             analyticsModuleContentSchemaLocation = new ArrayList<String>();
@@ -39,7 +43,7 @@ public class SupportedAnalyticsModules {
         return this.analyticsModuleContentSchemaLocation;
     }
 
-    
+
     public List<ConfigDescription> getAnalyticsModuleDescription() {
         if (analyticsModuleDescription == null) {
             analyticsModuleDescription = new ArrayList<ConfigDescription>();
@@ -47,7 +51,7 @@ public class SupportedAnalyticsModules {
         return this.analyticsModuleDescription;
     }
 
-    
+
     public void setExtension(SupportedAnalyticsModulesExtension value) {
         this.extension = value;
     }

@@ -1,15 +1,13 @@
 package org.homio.addon.telegram;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.telegram.service.TelegramService;
 import org.homio.api.AddonEntrypoint;
 import org.homio.api.EntityContext;
-import org.homio.api.model.Icon;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 @Log4j2
 @Component

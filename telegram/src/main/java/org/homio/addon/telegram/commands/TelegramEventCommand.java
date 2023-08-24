@@ -1,5 +1,8 @@
 package org.homio.addon.telegram.commands;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.telegram.TelegramEntity.TelegramUser;
@@ -9,10 +12,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 @Log4j2
 public final class TelegramEventCommand extends TelegramBaseCommand {

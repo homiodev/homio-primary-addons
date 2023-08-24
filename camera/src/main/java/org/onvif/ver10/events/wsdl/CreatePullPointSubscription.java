@@ -1,13 +1,18 @@
 package org.onvif.ver10.events.wsdl;
 
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.oasis_open.docs.wsn.b_2.FilterType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter

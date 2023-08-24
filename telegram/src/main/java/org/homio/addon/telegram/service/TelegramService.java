@@ -1,10 +1,21 @@
 package org.homio.addon.telegram.service;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.homio.addon.telegram.TelegramEntity;
-import org.homio.addon.telegram.commands.*;
+import org.homio.addon.telegram.commands.TelegramEventCommand;
+import org.homio.addon.telegram.commands.TelegramHelpCommand;
+import org.homio.addon.telegram.commands.TelegramRegisterUserCommand;
+import org.homio.addon.telegram.commands.TelegramStartCommand;
+import org.homio.addon.telegram.commands.TelegramUnregisterUserCommand;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
@@ -28,14 +39,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Log4j2
 @Component

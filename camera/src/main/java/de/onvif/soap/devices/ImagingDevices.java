@@ -7,7 +7,14 @@ import org.onvif.ver10.schema.AbsoluteFocus;
 import org.onvif.ver10.schema.FocusMove;
 import org.onvif.ver10.schema.ImagingOptions20;
 import org.onvif.ver10.schema.ImagingSettings20;
-import org.onvif.ver20.imaging.wsdl.*;
+import org.onvif.ver20.imaging.wsdl.GetImagingSettings;
+import org.onvif.ver20.imaging.wsdl.GetImagingSettingsResponse;
+import org.onvif.ver20.imaging.wsdl.GetOptions;
+import org.onvif.ver20.imaging.wsdl.GetOptionsResponse;
+import org.onvif.ver20.imaging.wsdl.Move;
+import org.onvif.ver20.imaging.wsdl.MoveResponse;
+import org.onvif.ver20.imaging.wsdl.SetImagingSettings;
+import org.onvif.ver20.imaging.wsdl.SetImagingSettingsResponse;
 
 @RequiredArgsConstructor
 public class ImagingDevices {

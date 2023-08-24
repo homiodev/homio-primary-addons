@@ -11,10 +11,9 @@ package org.oasis_open.docs.wsn.b_2;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
-import org.w3._2005._08.addressing.EndpointReferenceType;
-
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
+import org.w3._2005._08.addressing.EndpointReferenceType;
 
 
 @XmlRegistry

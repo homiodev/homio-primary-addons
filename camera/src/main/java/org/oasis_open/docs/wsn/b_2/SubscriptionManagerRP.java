@@ -8,11 +8,15 @@
 
 package org.oasis_open.docs.wsn.b_2;
 
-import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
+import javax.xml.datatype.XMLGregorianCalendar;
 import lombok.Getter;
 import org.w3._2005._08.addressing.EndpointReferenceType;
-
-import javax.xml.datatype.XMLGregorianCalendar;
 
 
 @Getter

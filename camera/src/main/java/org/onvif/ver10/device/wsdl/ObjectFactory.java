@@ -11,7 +11,6 @@ package org.onvif.ver10.device.wsdl;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.annotation.XmlElementDecl;
 import jakarta.xml.bind.annotation.XmlRegistry;
-
 import javax.xml.namespace.QName;
 
 

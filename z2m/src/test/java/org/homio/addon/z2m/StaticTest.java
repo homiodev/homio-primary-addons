@@ -1,7 +1,17 @@
 package org.homio.addon.z2m;
 
+import static org.homio.api.util.JsonUtils.YAML_OBJECT_MAPPER;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.SystemUtils;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.Z2MConfiguration;
@@ -9,15 +19,6 @@ import org.homio.api.model.device.ConfigDeviceDefinition;
 import org.homio.api.model.device.ConfigDeviceDefinitionService;
 import org.homio.api.model.device.ConfigDeviceEndpoint;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static org.homio.api.util.JsonUtils.YAML_OBJECT_MAPPER;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class StaticTest {
 

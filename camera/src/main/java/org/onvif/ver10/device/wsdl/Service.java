@@ -8,16 +8,20 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import jakarta.xml.bind.annotation.*;
-import lombok.Getter;
-import org.onvif.ver10.schema.OnvifVersion;
-import org.w3c.dom.Element;
-
-import javax.xml.namespace.QName;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAnyAttribute;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.namespace.QName;
+import lombok.Getter;
+import org.onvif.ver10.schema.OnvifVersion;
 
 
 @Getter

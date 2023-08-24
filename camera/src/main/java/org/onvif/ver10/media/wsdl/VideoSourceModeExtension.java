@@ -12,8 +12,6 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAnyElement;
 import jakarta.xml.bind.annotation.XmlType;
-import org.w3c.dom.Element;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +25,7 @@ public class VideoSourceModeExtension {
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-    
+
     public List<Object> getAny() {
         if (any == null) {
             any = new ArrayList<Object>();

@@ -1,10 +1,10 @@
 package de.onvif.soap;
 
-import jakarta.xml.soap.*;
-import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.NotImplementedException;
-
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.MimeHeader;
+import jakarta.xml.soap.MimeHeaders;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPMessage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,6 +16,9 @@ import java.net.URL;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.NotImplementedException;
 
 @Log4j2
 public class HttpSOAPConnection {

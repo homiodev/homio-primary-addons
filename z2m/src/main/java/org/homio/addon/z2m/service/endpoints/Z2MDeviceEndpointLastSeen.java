@@ -1,14 +1,13 @@
 package org.homio.addon.z2m.service.endpoints;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
 import org.homio.api.model.Icon;
 import org.homio.api.state.DecimalType;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.json.JSONObject;
-
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 
 public class Z2MDeviceEndpointLastSeen extends Z2MDeviceEndpoint {
 

@@ -1,6 +1,25 @@
 package org.homio.addon.z2m.service;
 
+import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
+import static org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options.dynamicEndpoint;
+import static org.homio.api.model.Status.ONLINE;
+import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_DEVICE_STATUS;
+import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_LAST_SEEN;
+import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
+
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,22 +44,6 @@ import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static java.util.Objects.requireNonNull;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
-import static org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options.dynamicEndpoint;
-import static org.homio.api.model.Status.ONLINE;
-import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_DEVICE_STATUS;
-import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_LAST_SEEN;
-import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
 
 @Log4j2
 public class Z2MDeviceService {

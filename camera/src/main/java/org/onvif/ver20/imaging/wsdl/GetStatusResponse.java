@@ -1,6 +1,10 @@
 package org.onvif.ver20.imaging.wsdl;
 
-import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 import lombok.Getter;
 import org.onvif.ver10.schema.ImagingStatus20;
 

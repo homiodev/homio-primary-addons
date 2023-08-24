@@ -1,15 +1,16 @@
 package org.ble;
 
-import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
-import org.freedesktop.dbus.exceptions.DBusException;
+import static org.ble.CharacteristicFlag.C_READ;
+import static org.ble.CharacteristicFlag.C_READ_WRITE;
+import static org.ble.CharacteristicFlag.C_WRITE;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static org.ble.CharacteristicFlag.*;
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 @Getter
 @Log4j2

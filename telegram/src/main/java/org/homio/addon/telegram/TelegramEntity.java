@@ -1,9 +1,18 @@
 package org.homio.addon.telegram;
 
+import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.Entity;
-import lombok.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.telegram.service.TelegramService;
@@ -24,12 +33,6 @@ import org.homio.api.util.SecureString;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.bots.DefaultBotOptions.ProxyType;
 import org.telegram.telegrambots.meta.ApiConstants;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
 
 @Getter
 @Setter

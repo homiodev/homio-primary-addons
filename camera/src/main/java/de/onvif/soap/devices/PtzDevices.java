@@ -2,13 +2,45 @@ package de.onvif.soap.devices;
 
 import de.onvif.soap.OnvifDeviceState;
 import de.onvif.soap.SOAP;
+import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.onvif.ver10.schema.*;
-import org.onvif.ver20.ptz.wsdl.*;
-
-import java.util.List;
+import org.onvif.ver10.schema.FloatRange;
+import org.onvif.ver10.schema.PTZConfiguration;
+import org.onvif.ver10.schema.PTZNode;
+import org.onvif.ver10.schema.PTZPreset;
+import org.onvif.ver10.schema.PTZSpaces;
+import org.onvif.ver10.schema.PTZSpeed;
+import org.onvif.ver10.schema.PTZStatus;
+import org.onvif.ver10.schema.PTZVector;
+import org.onvif.ver10.schema.Profile;
+import org.onvif.ver10.schema.Vector1D;
+import org.onvif.ver10.schema.Vector2D;
+import org.onvif.ver20.ptz.wsdl.AbsoluteMove;
+import org.onvif.ver20.ptz.wsdl.AbsoluteMoveResponse;
+import org.onvif.ver20.ptz.wsdl.ContinuousMove;
+import org.onvif.ver20.ptz.wsdl.ContinuousMoveResponse;
+import org.onvif.ver20.ptz.wsdl.GetNode;
+import org.onvif.ver20.ptz.wsdl.GetNodeResponse;
+import org.onvif.ver20.ptz.wsdl.GetNodes;
+import org.onvif.ver20.ptz.wsdl.GetNodesResponse;
+import org.onvif.ver20.ptz.wsdl.GetPresets;
+import org.onvif.ver20.ptz.wsdl.GetPresetsResponse;
+import org.onvif.ver20.ptz.wsdl.GetStatus;
+import org.onvif.ver20.ptz.wsdl.GetStatusResponse;
+import org.onvif.ver20.ptz.wsdl.GotoPreset;
+import org.onvif.ver20.ptz.wsdl.GotoPresetResponse;
+import org.onvif.ver20.ptz.wsdl.RelativeMove;
+import org.onvif.ver20.ptz.wsdl.RelativeMoveResponse;
+import org.onvif.ver20.ptz.wsdl.RemovePreset;
+import org.onvif.ver20.ptz.wsdl.RemovePresetResponse;
+import org.onvif.ver20.ptz.wsdl.SetHomePosition;
+import org.onvif.ver20.ptz.wsdl.SetHomePositionResponse;
+import org.onvif.ver20.ptz.wsdl.SetPreset;
+import org.onvif.ver20.ptz.wsdl.SetPresetResponse;
+import org.onvif.ver20.ptz.wsdl.Stop;
+import org.onvif.ver20.ptz.wsdl.StopResponse;
 
 @Getter
 @RequiredArgsConstructor

@@ -1,7 +1,19 @@
 package org.homio.addon.z2m.model;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+import static org.apache.commons.lang3.StringUtils.trimToNull;
+import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
+import static org.homio.addon.z2m.service.endpoints.Z2MDeviceEndpointFirmwareUpdate.ENDPOINT_FIRMWARE_UPDATE;
+import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
+import static org.homio.api.ui.field.UIFieldType.SelectBox;
+import static org.homio.api.util.CommonUtils.splitNameToReadableFormat;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,7 +34,11 @@ import org.homio.api.model.device.ConfigDeviceDefinitionService;
 import org.homio.api.model.endpoint.DeviceEndpoint;
 import org.homio.api.optionProvider.SelectPlaceOptionLoader;
 import org.homio.api.ui.UI.Color;
-import org.homio.api.ui.field.*;
+import org.homio.api.ui.field.UIField;
+import org.homio.api.ui.field.UIFieldGroup;
+import org.homio.api.ui.field.UIFieldIgnore;
+import org.homio.api.ui.field.UIFieldInlineEditConfirm;
+import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
 import org.homio.api.ui.field.color.UIFieldColorStatusMatch;
@@ -34,17 +50,6 @@ import org.homio.api.widget.template.WidgetDefinition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import static org.apache.commons.lang3.StringUtils.*;
-import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
-import static org.homio.addon.z2m.service.endpoints.Z2MDeviceEndpointFirmwareUpdate.ENDPOINT_FIRMWARE_UPDATE;
-import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
-import static org.homio.api.ui.field.UIFieldType.SelectBox;
-import static org.homio.api.util.CommonUtils.splitNameToReadableFormat;
 
 @Log4j2
 @Getter

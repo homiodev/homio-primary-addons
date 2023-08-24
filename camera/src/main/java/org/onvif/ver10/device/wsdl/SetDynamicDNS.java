@@ -8,13 +8,16 @@
 
 package org.onvif.ver10.device.wsdl;
 
-import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.datatype.Duration;
 import lombok.Getter;
 import org.onvif.ver10.schema.DynamicDNSType;
-
-import javax.xml.datatype.Duration;
 
 
 @Getter

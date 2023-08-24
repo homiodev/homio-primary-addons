@@ -1,5 +1,12 @@
 package org.ble;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -11,10 +18,6 @@ import org.freedesktop.dbus.Path;
 import org.freedesktop.dbus.UInt16;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
-
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @Log4j2
 @RequiredArgsConstructor

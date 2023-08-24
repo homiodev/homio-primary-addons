@@ -1,5 +1,14 @@
 package org.homio.addon.telegram;
 
+import static org.homio.addon.telegram.service.TelegramService.TELEGRAM_EVENT_PREFIX;
+
+import java.io.ByteArrayInputStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -21,16 +30,6 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
-
-import java.io.ByteArrayInputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.homio.addon.telegram.service.TelegramService.TELEGRAM_EVENT_PREFIX;
 
 @Component
 public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {

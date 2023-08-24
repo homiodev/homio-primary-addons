@@ -1,25 +1,39 @@
 package de.onvif.soap;
 
-import de.onvif.soap.devices.*;
-import lombok.*;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+
+import de.onvif.soap.devices.EventDevices;
+import de.onvif.soap.devices.ImagingDevices;
+import de.onvif.soap.devices.InitialDevices;
+import de.onvif.soap.devices.MediaDevices;
+import de.onvif.soap.devices.PtzDevices;
+import java.net.ConnectException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
+import java.util.TreeMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.apache.commons.codec.binary.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.onvif.ver10.schema.Capabilities;
 import org.onvif.ver10.schema.Profile;
 import org.onvif.ver10.schema.VideoResolution;
-
-import java.net.ConnectException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 @Getter
 @Log4j2

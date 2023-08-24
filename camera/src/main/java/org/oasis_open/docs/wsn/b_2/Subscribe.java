@@ -1,14 +1,19 @@
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.w3._2005._08.addressing.EndpointReferenceType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter

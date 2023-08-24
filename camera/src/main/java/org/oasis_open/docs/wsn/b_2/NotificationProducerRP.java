@@ -8,12 +8,16 @@
 
 package org.oasis_open.docs.wsn.b_2;
 
-import jakarta.xml.bind.annotation.*;
-import lombok.Getter;
-import org.oasis_open.docs.wsn.t_1.TopicSetType;
-
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import org.oasis_open.docs.wsn.t_1.TopicSetType;
 
 
 @XmlAccessorType(XmlAccessType.FIELD)

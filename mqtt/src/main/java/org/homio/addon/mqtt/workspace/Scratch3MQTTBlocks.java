@@ -1,5 +1,9 @@
 package org.homio.addon.mqtt.workspace;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -15,10 +19,6 @@ import org.homio.api.workspace.scratch.Scratch3Block;
 import org.homio.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Getter
 @Component

@@ -1,5 +1,8 @@
 package org.ble;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.bluez.GattApplication1;
 import org.bluez.GattManager1;
 import org.bluez.GattService1;
@@ -14,10 +17,6 @@ import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.Path;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * BleApplication class is the starting point of the entire Peripheral service's structure. It is responsible of the service's publishment and and the

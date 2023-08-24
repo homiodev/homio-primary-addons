@@ -1,5 +1,9 @@
 package org.homio.addon.z2m.service.endpoints;
 
+import java.awt.Color;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.util.ApplianceModel;
@@ -8,11 +12,6 @@ import org.homio.api.model.Icon;
 import org.homio.api.state.StringType;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
-
-import java.awt.*;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
 

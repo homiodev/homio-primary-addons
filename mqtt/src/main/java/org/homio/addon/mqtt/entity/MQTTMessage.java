@@ -1,12 +1,11 @@
 package org.homio.addon.mqtt.entity;
 
+import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.homio.api.storage.DataStorageEntity;
 import org.homio.api.util.CommonUtils;
-
-import java.util.Date;
 
 @Getter
 @Setter
