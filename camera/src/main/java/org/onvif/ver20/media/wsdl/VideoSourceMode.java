@@ -1,6 +1,7 @@
 package org.onvif.ver20.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.VideoResolution;
 
 import javax.xml.namespace.QName;
@@ -48,55 +49,81 @@ import java.util.Map;
         })
 public class VideoSourceMode {
 
-    @XmlElement(name = "MaxFramerate")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maxFramerate-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "MaxFramerate")
     protected float maxFramerate;
 
-    @XmlElement(name = "MaxResolution", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maxResolution-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoResolution }
+     */
+    @Getter @XmlElement(name = "MaxResolution", required = true)
     protected VideoResolution maxResolution;
 
     @XmlList
     @XmlElement(name = "Encodings", required = true)
     protected List<String> encodings;
 
-    @XmlElement(name = "Reboot")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der reboot-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "Reboot")
     protected boolean reboot;
 
-    @XmlElement(name = "Description")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der description-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Description")
     protected String description;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoSourceModeExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected VideoSourceModeExtension extension;
 
-    @XmlAttribute(name = "token", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der token-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlAttribute(name = "token", required = true)
     protected String token;
 
     @XmlAttribute(name = "Enabled")
     protected Boolean enabled;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der maxFramerate-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
      */
-    public float getMaxFramerate() {
-        return maxFramerate;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der maxFramerate-Eigenschaft fest.
      */
     public void setMaxFramerate(float value) {
         this.maxFramerate = value;
-    }
-
-    /**
-     * Ruft den Wert der maxResolution-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoResolution }
-     */
-    public VideoResolution getMaxResolution() {
-        return maxResolution;
     }
 
     /**
@@ -131,26 +158,10 @@ public class VideoSourceMode {
     }
 
     /**
-     * Ruft den Wert der reboot-Eigenschaft ab.
-     */
-    public boolean isReboot() {
-        return reboot;
-    }
-
-    /**
      * Legt den Wert der reboot-Eigenschaft fest.
      */
     public void setReboot(boolean value) {
         this.reboot = value;
-    }
-
-    /**
-     * Ruft den Wert der description-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getDescription() {
-        return description;
     }
 
     /**
@@ -163,30 +174,12 @@ public class VideoSourceMode {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoSourceModeExtension }
-     */
-    public VideoSourceModeExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link VideoSourceModeExtension }
      */
     public void setExtension(VideoSourceModeExtension value) {
         this.extension = value;
-    }
-
-    /**
-     * Ruft den Wert der token-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getToken() {
-        return token;
     }
 
     /**
@@ -216,18 +209,4 @@ public class VideoSourceMode {
         this.enabled = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

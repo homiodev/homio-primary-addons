@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r VideoRateControl complex type.
@@ -25,27 +26,33 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoRateControl",
         propOrder = {"frameRateLimit", "encodingInterval", "bitrateLimit"})
 public class VideoRateControl {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der frameRateLimit-Eigenschaft ab.
+     */
     @XmlElement(name = "FrameRateLimit")
     protected int frameRateLimit;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der encodingInterval-Eigenschaft ab.
+     */
     @XmlElement(name = "EncodingInterval")
     protected int encodingInterval;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der bitrateLimit-Eigenschaft ab.
+     */
     @XmlElement(name = "BitrateLimit")
     protected int bitrateLimit;
-
-    /**
-     * Ruft den Wert der frameRateLimit-Eigenschaft ab.
-     */
-    public int getFrameRateLimit() {
-        return frameRateLimit;
-    }
 
     /**
      * Legt den Wert der frameRateLimit-Eigenschaft fest.
@@ -55,24 +62,10 @@ public class VideoRateControl {
     }
 
     /**
-     * Ruft den Wert der encodingInterval-Eigenschaft ab.
-     */
-    public int getEncodingInterval() {
-        return encodingInterval;
-    }
-
-    /**
      * Legt den Wert der encodingInterval-Eigenschaft fest.
      */
     public void setEncodingInterval(int value) {
         this.encodingInterval = value;
-    }
-
-    /**
-     * Ruft den Wert der bitrateLimit-Eigenschaft ab.
-     */
-    public int getBitrateLimit() {
-        return bitrateLimit;
     }
 
     /**

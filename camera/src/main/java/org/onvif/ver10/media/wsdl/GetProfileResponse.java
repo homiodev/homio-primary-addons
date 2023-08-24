@@ -9,6 +9,7 @@
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.Profile;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.Profile;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.Profile;
 @XmlRootElement(name = "GetProfileResponse")
 public class GetProfileResponse {
 
-    @XmlElement(name = "Profile", required = true)
-    protected Profile profile;
-
     /**
-     * Ruft den Wert der profile-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der profile-Eigenschaft ab.
      *
      * @return possible object is {@link Profile }
      */
-    public Profile getProfile() {
-        return profile;
-    }
+    @XmlElement(name = "Profile", required = true)
+    protected Profile profile;
 
     /**
      * Legt den Wert der profile-Eigenschaft fest.

@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.NetworkHost;
 
 import java.util.ArrayList;
@@ -40,18 +41,15 @@ import java.util.List;
 @XmlRootElement(name = "SetNTP")
 public class SetNTP {
 
-    @XmlElement(name = "FromDHCP")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der fromDHCP-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "FromDHCP")
     protected boolean fromDHCP;
 
     @XmlElement(name = "NTPManual")
     protected List<NetworkHost> ntpManual;
-
-    /**
-     * Ruft den Wert der fromDHCP-Eigenschaft ab.
-     */
-    public boolean isFromDHCP() {
-        return fromDHCP;
-    }
 
     /**
      * Legt den Wert der fromDHCP-Eigenschaft fest.

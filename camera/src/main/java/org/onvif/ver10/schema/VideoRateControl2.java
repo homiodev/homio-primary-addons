@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -37,10 +38,18 @@ import java.util.Map;
         propOrder = {"frameRateLimit", "bitrateLimit", "any"})
 public class VideoRateControl2 {
 
-    @XmlElement(name = "FrameRateLimit")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der frameRateLimit-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "FrameRateLimit")
     protected float frameRateLimit;
 
-    @XmlElement(name = "BitrateLimit")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der bitrateLimit-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "BitrateLimit")
     protected int bitrateLimit;
 
     @XmlAnyElement(lax = true)
@@ -49,28 +58,24 @@ public class VideoRateControl2 {
     @XmlAttribute(name = "ConstantBitRate")
     protected Boolean constantBitRate;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der frameRateLimit-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
      */
-    public float getFrameRateLimit() {
-        return frameRateLimit;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der frameRateLimit-Eigenschaft fest.
      */
     public void setFrameRateLimit(float value) {
         this.frameRateLimit = value;
-    }
-
-    /**
-     * Ruft den Wert der bitrateLimit-Eigenschaft ab.
-     */
-    public int getBitrateLimit() {
-        return bitrateLimit;
     }
 
     /**
@@ -121,18 +126,4 @@ public class VideoRateControl2 {
         this.constantBitRate = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

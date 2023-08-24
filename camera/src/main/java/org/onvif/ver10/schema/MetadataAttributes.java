@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -38,13 +39,25 @@ import java.util.Map;
         propOrder = {"canContainPTZ", "canContainAnalytics", "canContainNotifications", "any"})
 public class MetadataAttributes {
 
-    @XmlElement(name = "CanContainPTZ")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der canContainPTZ-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "CanContainPTZ")
     protected boolean canContainPTZ;
 
-    @XmlElement(name = "CanContainAnalytics")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der canContainAnalytics-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "CanContainAnalytics")
     protected boolean canContainAnalytics;
 
-    @XmlElement(name = "CanContainNotifications")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der canContainNotifications-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "CanContainNotifications")
     protected boolean canContainNotifications;
 
     @XmlAnyElement(lax = true)
@@ -53,15 +66,18 @@ public class MetadataAttributes {
     @XmlAttribute(name = "PtzSpaces")
     protected List<String> ptzSpaces;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der canContainPTZ-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
      */
-    public boolean isCanContainPTZ() {
-        return canContainPTZ;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der canContainPTZ-Eigenschaft fest.
@@ -71,24 +87,10 @@ public class MetadataAttributes {
     }
 
     /**
-     * Ruft den Wert der canContainAnalytics-Eigenschaft ab.
-     */
-    public boolean isCanContainAnalytics() {
-        return canContainAnalytics;
-    }
-
-    /**
      * Legt den Wert der canContainAnalytics-Eigenschaft fest.
      */
     public void setCanContainAnalytics(boolean value) {
         this.canContainAnalytics = value;
-    }
-
-    /**
-     * Ruft den Wert der canContainNotifications-Eigenschaft ab.
-     */
-    public boolean isCanContainNotifications() {
-        return canContainNotifications;
     }
 
     /**
@@ -143,18 +145,4 @@ public class MetadataAttributes {
         return this.ptzSpaces;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

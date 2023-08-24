@@ -1,6 +1,7 @@
 package org.onvif.ver20.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.*;
 import org.w3c.dom.Element;
 
@@ -27,46 +28,95 @@ import java.util.Map;
         })
 public class ConfigurationSet {
 
-    @XmlElement(name = "VideoSource")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der videoSource-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoSourceConfiguration }
+     */
+    @Getter @XmlElement(name = "VideoSource")
     protected VideoSourceConfiguration videoSource;
 
-    @XmlElement(name = "AudioSource")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioSource-Eigenschaft ab.
+     *
+     * @return possible object is {@link AudioSourceConfiguration }
+     */
+    @Getter @XmlElement(name = "AudioSource")
     protected AudioSourceConfiguration audioSource;
 
-    @XmlElement(name = "VideoEncoder")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der videoEncoder-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoEncoder2Configuration }
+     */
+    @Getter @XmlElement(name = "VideoEncoder")
     protected VideoEncoder2Configuration videoEncoder;
 
-    @XmlElement(name = "AudioEncoder")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioEncoder-Eigenschaft ab.
+     *
+     * @return possible object is {@link AudioEncoder2Configuration }
+     */
+    @Getter @XmlElement(name = "AudioEncoder")
     protected AudioEncoder2Configuration audioEncoder;
 
-    @XmlElement(name = "Analytics")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der analytics-Eigenschaft ab.
+     *
+     * @return possible object is {@link ConfigurationEntity }
+     */
+    @Getter @XmlElement(name = "Analytics")
     protected ConfigurationEntity analytics;
 
     @XmlElement(name = "PTZ")
     protected PTZConfiguration ptz;
 
-    @XmlElement(name = "Metadata")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der metadata-Eigenschaft ab.
+     *
+     * @return possible object is {@link MetadataConfiguration }
+     */
+    @Getter @XmlElement(name = "Metadata")
     protected MetadataConfiguration metadata;
 
-    @XmlElement(name = "AudioOutput")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioOutput-Eigenschaft ab.
+     *
+     * @return possible object is {@link AudioOutputConfiguration }
+     */
+    @Getter @XmlElement(name = "AudioOutput")
     protected AudioOutputConfiguration audioOutput;
 
-    @XmlElement(name = "AudioDecoder")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioDecoder-Eigenschaft ab.
+     *
+     * @return possible object is {@link AudioDecoderConfiguration }
+     */
+    @Getter @XmlElement(name = "AudioDecoder")
     protected AudioDecoderConfiguration audioDecoder;
 
     @XmlAnyElement
     protected List<Element> any;
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der videoSource-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link VideoSourceConfiguration }
+     * @return always non-null
      */
-    public VideoSourceConfiguration getVideoSource() {
-        return videoSource;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der videoSource-Eigenschaft fest.
@@ -75,15 +125,6 @@ public class ConfigurationSet {
      */
     public void setVideoSource(VideoSourceConfiguration value) {
         this.videoSource = value;
-    }
-
-    /**
-     * Ruft den Wert der audioSource-Eigenschaft ab.
-     *
-     * @return possible object is {@link AudioSourceConfiguration }
-     */
-    public AudioSourceConfiguration getAudioSource() {
-        return audioSource;
     }
 
     /**
@@ -96,15 +137,6 @@ public class ConfigurationSet {
     }
 
     /**
-     * Ruft den Wert der videoEncoder-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoEncoder2Configuration }
-     */
-    public VideoEncoder2Configuration getVideoEncoder() {
-        return videoEncoder;
-    }
-
-    /**
      * Legt den Wert der videoEncoder-Eigenschaft fest.
      *
      * @param value allowed object is {@link VideoEncoder2Configuration }
@@ -114,30 +146,12 @@ public class ConfigurationSet {
     }
 
     /**
-     * Ruft den Wert der audioEncoder-Eigenschaft ab.
-     *
-     * @return possible object is {@link AudioEncoder2Configuration }
-     */
-    public AudioEncoder2Configuration getAudioEncoder() {
-        return audioEncoder;
-    }
-
-    /**
      * Legt den Wert der audioEncoder-Eigenschaft fest.
      *
      * @param value allowed object is {@link AudioEncoder2Configuration }
      */
     public void setAudioEncoder(AudioEncoder2Configuration value) {
         this.audioEncoder = value;
-    }
-
-    /**
-     * Ruft den Wert der analytics-Eigenschaft ab.
-     *
-     * @return possible object is {@link ConfigurationEntity }
-     */
-    public ConfigurationEntity getAnalytics() {
-        return analytics;
     }
 
     /**
@@ -168,15 +182,6 @@ public class ConfigurationSet {
     }
 
     /**
-     * Ruft den Wert der metadata-Eigenschaft ab.
-     *
-     * @return possible object is {@link MetadataConfiguration }
-     */
-    public MetadataConfiguration getMetadata() {
-        return metadata;
-    }
-
-    /**
      * Legt den Wert der metadata-Eigenschaft fest.
      *
      * @param value allowed object is {@link MetadataConfiguration }
@@ -186,30 +191,12 @@ public class ConfigurationSet {
     }
 
     /**
-     * Ruft den Wert der audioOutput-Eigenschaft ab.
-     *
-     * @return possible object is {@link AudioOutputConfiguration }
-     */
-    public AudioOutputConfiguration getAudioOutput() {
-        return audioOutput;
-    }
-
-    /**
      * Legt den Wert der audioOutput-Eigenschaft fest.
      *
      * @param value allowed object is {@link AudioOutputConfiguration }
      */
     public void setAudioOutput(AudioOutputConfiguration value) {
         this.audioOutput = value;
-    }
-
-    /**
-     * Ruft den Wert der audioDecoder-Eigenschaft ab.
-     *
-     * @return possible object is {@link AudioDecoderConfiguration }
-     */
-    public AudioDecoderConfiguration getAudioDecoder() {
-        return audioDecoder;
     }
 
     /**
@@ -243,18 +230,4 @@ public class ConfigurationSet {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -37,7 +38,11 @@ public class NetworkInterfaceExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlElement(name = "InterfaceType")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der interfaceType-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "InterfaceType")
     protected int interfaceType;
 
     @XmlElement(name = "Dot3")
@@ -46,7 +51,13 @@ public class NetworkInterfaceExtension {
     @XmlElement(name = "Dot11")
     protected List<Dot11Configuration> dot11;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link NetworkInterfaceExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected NetworkInterfaceExtension2 extension;
 
     /**
@@ -70,13 +81,6 @@ public class NetworkInterfaceExtension {
             any = new ArrayList<java.lang.Object>();
         }
         return this.any;
-    }
-
-    /**
-     * Ruft den Wert der interfaceType-Eigenschaft ab.
-     */
-    public int getInterfaceType() {
-        return interfaceType;
     }
 
     /**
@@ -128,15 +132,6 @@ public class NetworkInterfaceExtension {
             dot11 = new ArrayList<Dot11Configuration>();
         }
         return this.dot11;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link NetworkInterfaceExtension2 }
-     */
-    public NetworkInterfaceExtension2 getExtension() {
-        return extension;
     }
 
     /**

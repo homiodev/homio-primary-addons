@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Merge complex type.
@@ -36,7 +37,13 @@ public class Merge {
     @XmlElement(required = true)
     protected List<ObjectId> from;
 
-    @XmlElement(required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der to-Eigenschaft ab.
+     *
+     * @return possible object is {@link ObjectId }
+     */
+    @Getter @XmlElement(required = true)
     protected ObjectId to;
 
     /**
@@ -59,15 +66,6 @@ public class Merge {
             from = new ArrayList<ObjectId>();
         }
         return this.from;
-    }
-
-    /**
-     * Ruft den Wert der to-Eigenschaft ab.
-     *
-     * @return possible object is {@link ObjectId }
-     */
-    public ObjectId getTo() {
-        return to;
     }
 
     /**

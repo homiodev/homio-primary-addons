@@ -1,6 +1,7 @@
 package org.onvif.ver20.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -21,6 +22,7 @@ import jakarta.xml.bind.annotation.*;
  * &lt;/complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -28,20 +30,23 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "SetVideoSourceMode")
 public class SetVideoSourceMode {
 
-    @XmlElement(name = "VideoSourceToken", required = true)
-    protected String videoSourceToken;
-
-    @XmlElement(name = "VideoSourceModeToken", required = true)
-    protected String videoSourceModeToken;
-
     /**
-     * Ruft den Wert der videoSourceToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der videoSourceToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getVideoSourceToken() {
-        return videoSourceToken;
-    }
+    @XmlElement(name = "VideoSourceToken", required = true)
+    protected String videoSourceToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der videoSourceModeToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "VideoSourceModeToken", required = true)
+    protected String videoSourceModeToken;
 
     /**
      * Legt den Wert der videoSourceToken-Eigenschaft fest.
@@ -50,15 +55,6 @@ public class SetVideoSourceMode {
      */
     public void setVideoSourceToken(String value) {
         this.videoSourceToken = value;
-    }
-
-    /**
-     * Ruft den Wert der videoSourceModeToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getVideoSourceModeToken() {
-        return videoSourceModeToken;
     }
 
     /**

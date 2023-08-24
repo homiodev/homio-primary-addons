@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Vector2D complex type.
@@ -20,26 +21,34 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Vector2D")
 public class Vector2D {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der x-Eigenschaft ab.
+     */
     @XmlAttribute(name = "x", required = true)
     protected float x;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der y-Eigenschaft ab.
+     */
     @XmlAttribute(name = "y", required = true)
     protected float y;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der space-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlAttribute(name = "space")
     @XmlSchemaType(name = "anyURI")
     protected String space;
-
-    /**
-     * Ruft den Wert der x-Eigenschaft ab.
-     */
-    public float getX() {
-        return x;
-    }
 
     /**
      * Legt den Wert der x-Eigenschaft fest.
@@ -49,26 +58,10 @@ public class Vector2D {
     }
 
     /**
-     * Ruft den Wert der y-Eigenschaft ab.
-     */
-    public float getY() {
-        return y;
-    }
-
-    /**
      * Legt den Wert der y-Eigenschaft fest.
      */
     public void setY(float value) {
         this.y = value;
-    }
-
-    /**
-     * Ruft den Wert der space-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getSpace() {
-        return space;
     }
 
     /**

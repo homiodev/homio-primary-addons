@@ -1,6 +1,7 @@
 package org.onvif.ver20.ptz.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.PTZSpeed;
 
 /**
@@ -23,6 +24,7 @@ import org.onvif.ver10.schema.PTZSpeed;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -30,23 +32,32 @@ import org.onvif.ver10.schema.PTZSpeed;
 @XmlRootElement(name = "GotoPreset")
 public class GotoPreset {
 
-    @XmlElement(name = "ProfileToken", required = true)
-    protected String profileToken;
-
-    @XmlElement(name = "PresetToken", required = true)
-    protected String presetToken;
-
-    @XmlElement(name = "Speed")
-    protected PTZSpeed speed;
-
     /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der profileToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getProfileToken() {
-        return profileToken;
-    }
+    @XmlElement(name = "ProfileToken", required = true)
+    protected String profileToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der presetToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "PresetToken", required = true)
+    protected String presetToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der speed-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZSpeed }
+     */
+    @XmlElement(name = "Speed")
+    protected PTZSpeed speed;
 
     /**
      * Legt den Wert der profileToken-Eigenschaft fest.
@@ -58,30 +69,12 @@ public class GotoPreset {
     }
 
     /**
-     * Ruft den Wert der presetToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getPresetToken() {
-        return presetToken;
-    }
-
-    /**
      * Legt den Wert der presetToken-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setPresetToken(String value) {
         this.presetToken = value;
-    }
-
-    /**
-     * Ruft den Wert der speed-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZSpeed }
-     */
-    public PTZSpeed getSpeed() {
-        return speed;
     }
 
     /**

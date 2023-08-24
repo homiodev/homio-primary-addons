@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -33,24 +34,25 @@ import java.util.List;
         propOrder = {"dot1X", "supportedEAPMethod", "remoteUserHandling", "any"})
 public class SecurityCapabilitiesExtension2 {
 
-    @XmlElement(name = "Dot1X")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dot1X-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "Dot1X")
     protected boolean dot1X;
 
     @XmlElement(name = "SupportedEAPMethod", type = Integer.class)
     protected List<Integer> supportedEAPMethod;
 
-    @XmlElement(name = "RemoteUserHandling")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der remoteUserHandling-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "RemoteUserHandling")
     protected boolean remoteUserHandling;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
-
-    /**
-     * Ruft den Wert der dot1X-Eigenschaft ab.
-     */
-    public boolean isDot1X() {
-        return dot1X;
-    }
 
     /**
      * Legt den Wert der dot1X-Eigenschaft fest.
@@ -79,13 +81,6 @@ public class SecurityCapabilitiesExtension2 {
             supportedEAPMethod = new ArrayList<Integer>();
         }
         return this.supportedEAPMethod;
-    }
-
-    /**
-     * Ruft den Wert der remoteUserHandling-Eigenschaft ab.
-     */
-    public boolean isRemoteUserHandling() {
-        return remoteUserHandling;
     }
 
     /**

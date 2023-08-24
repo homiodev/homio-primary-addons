@@ -22,7 +22,7 @@ public class ReferenceParametersType {
     protected List<Object> any;
 
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<>();
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Object> getAny() {
         if (any == null) {

@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Representation of a physical video outputs.
@@ -31,38 +32,70 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoOutput",
         propOrder = {"layout", "resolution", "refreshRate", "aspectRatio", "extension"})
 public class VideoOutput extends DeviceEntity {
 
-    @XmlElement(name = "Layout", required = true)
-    protected Layout layout;
-
-    @XmlElement(name = "Resolution")
-    protected VideoResolution resolution;
-
-    @XmlElement(name = "RefreshRate")
-    protected Float refreshRate;
-
-    @XmlElement(name = "AspectRatio")
-    protected Float aspectRatio;
-
-    @XmlElement(name = "Extension")
-    protected VideoOutputExtension extension;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der layout-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der layout-Eigenschaft ab.
      *
      * @return possible object is {@link Layout }
      */
-    public Layout getLayout() {
-        return layout;
-    }
+    @XmlElement(name = "Layout", required = true)
+    protected Layout layout;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der resolution-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoResolution }
+     */
+    @XmlElement(name = "Resolution")
+    protected VideoResolution resolution;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der refreshRate-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlElement(name = "RefreshRate")
+    protected Float refreshRate;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der aspectRatio-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlElement(name = "AspectRatio")
+    protected Float aspectRatio;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoOutputExtension }
+     */
+    @XmlElement(name = "Extension")
+    protected VideoOutputExtension extension;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der layout-Eigenschaft fest.
@@ -71,15 +104,6 @@ public class VideoOutput extends DeviceEntity {
      */
     public void setLayout(Layout value) {
         this.layout = value;
-    }
-
-    /**
-     * Ruft den Wert der resolution-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoResolution }
-     */
-    public VideoResolution getResolution() {
-        return resolution;
     }
 
     /**
@@ -92,30 +116,12 @@ public class VideoOutput extends DeviceEntity {
     }
 
     /**
-     * Ruft den Wert der refreshRate-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getRefreshRate() {
-        return refreshRate;
-    }
-
-    /**
      * Legt den Wert der refreshRate-Eigenschaft fest.
      *
      * @param value allowed object is {@link Float }
      */
     public void setRefreshRate(Float value) {
         this.refreshRate = value;
-    }
-
-    /**
-     * Ruft den Wert der aspectRatio-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getAspectRatio() {
-        return aspectRatio;
     }
 
     /**
@@ -128,15 +134,6 @@ public class VideoOutput extends DeviceEntity {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoOutputExtension }
-     */
-    public VideoOutputExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link VideoOutputExtension }
@@ -145,18 +142,4 @@ public class VideoOutput extends DeviceEntity {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

@@ -4,27 +4,32 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "GetConfiguration",
         propOrder = {"configurationToken", "profileToken"})
 public class GetConfiguration {
 
-    @XmlElement(name = "ConfigurationToken")
-    protected String configurationToken;
-
-    @XmlElement(name = "ProfileToken")
-    protected String profileToken;
-
     /**
-     * Ruft den Wert der configurationToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der configurationToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getConfigurationToken() {
-        return configurationToken;
-    }
+    @XmlElement(name = "ConfigurationToken")
+    protected String configurationToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der profileToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "ProfileToken")
+    protected String profileToken;
 
     /**
      * Legt den Wert der configurationToken-Eigenschaft fest.
@@ -33,15 +38,6 @@ public class GetConfiguration {
      */
     public void setConfigurationToken(String value) {
         this.configurationToken = value;
-    }
-
-    /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getProfileToken() {
-        return profileToken;
     }
 
     /**

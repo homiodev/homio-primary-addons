@@ -9,6 +9,7 @@
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -42,25 +43,28 @@ import java.util.List;
 @XmlRootElement(name = "RenewResponse")
 public class RenewResponse {
 
-    @XmlElement(name = "TerminationTime", required = true, nillable = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der terminationTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "TerminationTime", required = true, nillable = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar terminationTime;
 
-    @XmlElement(name = "CurrentTime")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der currentTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "CurrentTime")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar currentTime;
 
     @XmlAnyElement(lax = true)
     protected List<Object> any;
-
-    /**
-     * Ruft den Wert der terminationTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getTerminationTime() {
-        return terminationTime;
-    }
 
     /**
      * Legt den Wert der terminationTime-Eigenschaft fest.
@@ -69,15 +73,6 @@ public class RenewResponse {
      */
     public void setTerminationTime(XMLGregorianCalendar value) {
         this.terminationTime = value;
-    }
-
-    /**
-     * Ruft den Wert der currentTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getCurrentTime() {
-        return currentTime;
     }
 
     /**

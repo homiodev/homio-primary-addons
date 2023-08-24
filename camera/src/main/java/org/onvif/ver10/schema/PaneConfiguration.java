@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -50,38 +51,75 @@ import java.util.Map;
         })
 public class PaneConfiguration {
 
-    @XmlElement(name = "PaneName")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der paneName-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "PaneName")
     protected String paneName;
 
-    @XmlElement(name = "AudioOutputToken")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioOutputToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "AudioOutputToken")
     protected String audioOutputToken;
 
-    @XmlElement(name = "AudioSourceToken")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioSourceToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "AudioSourceToken")
     protected String audioSourceToken;
 
-    @XmlElement(name = "AudioEncoderConfiguration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioEncoderConfiguration-Eigenschaft ab.
+     *
+     * @return possible object is {@link AudioEncoderConfiguration }
+     */
+    @Getter @XmlElement(name = "AudioEncoderConfiguration")
     protected AudioEncoderConfiguration audioEncoderConfiguration;
 
-    @XmlElement(name = "ReceiverToken")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der receiverToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "ReceiverToken")
     protected String receiverToken;
 
-    @XmlElement(name = "Token", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der token-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Token", required = true)
     protected String token;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der paneName-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getPaneName() {
-        return paneName;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der paneName-Eigenschaft fest.
@@ -90,15 +128,6 @@ public class PaneConfiguration {
      */
     public void setPaneName(String value) {
         this.paneName = value;
-    }
-
-    /**
-     * Ruft den Wert der audioOutputToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getAudioOutputToken() {
-        return audioOutputToken;
     }
 
     /**
@@ -111,30 +140,12 @@ public class PaneConfiguration {
     }
 
     /**
-     * Ruft den Wert der audioSourceToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getAudioSourceToken() {
-        return audioSourceToken;
-    }
-
-    /**
      * Legt den Wert der audioSourceToken-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setAudioSourceToken(String value) {
         this.audioSourceToken = value;
-    }
-
-    /**
-     * Ruft den Wert der audioEncoderConfiguration-Eigenschaft ab.
-     *
-     * @return possible object is {@link AudioEncoderConfiguration }
-     */
-    public AudioEncoderConfiguration getAudioEncoderConfiguration() {
-        return audioEncoderConfiguration;
     }
 
     /**
@@ -147,30 +158,12 @@ public class PaneConfiguration {
     }
 
     /**
-     * Ruft den Wert der receiverToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getReceiverToken() {
-        return receiverToken;
-    }
-
-    /**
      * Legt den Wert der receiverToken-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setReceiverToken(String value) {
         this.receiverToken = value;
-    }
-
-    /**
-     * Ruft den Wert der token-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getToken() {
-        return token;
     }
 
     /**
@@ -205,18 +198,4 @@ public class PaneConfiguration {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

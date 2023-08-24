@@ -9,6 +9,7 @@
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -38,24 +39,27 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetGuaranteedNumberOfVideoEncoderInstancesResponse")
 public class GetGuaranteedNumberOfVideoEncoderInstancesResponse {
 
-    @XmlElement(name = "TotalNumber")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der totalNumber-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "TotalNumber")
     protected int totalNumber;
 
     @XmlElement(name = "JPEG")
     protected Integer jpeg;
 
-    @XmlElement(name = "H264")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der h264-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
+    @Getter @XmlElement(name = "H264")
     protected Integer h264;
 
     @XmlElement(name = "MPEG4")
     protected Integer mpeg4;
-
-    /**
-     * Ruft den Wert der totalNumber-Eigenschaft ab.
-     */
-    public int getTotalNumber() {
-        return totalNumber;
-    }
 
     /**
      * Legt den Wert der totalNumber-Eigenschaft fest.
@@ -80,15 +84,6 @@ public class GetGuaranteedNumberOfVideoEncoderInstancesResponse {
      */
     public void setJPEG(Integer value) {
         this.jpeg = value;
-    }
-
-    /**
-     * Ruft den Wert der h264-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
-    public Integer getH264() {
-        return h264;
     }
 
     /**

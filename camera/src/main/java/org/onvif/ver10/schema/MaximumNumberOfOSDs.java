@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r MaximumNumberOfOSDs complex type.
@@ -28,52 +29,81 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "MaximumNumberOfOSDs")
 public class MaximumNumberOfOSDs {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der total-Eigenschaft ab.
+     */
     @XmlAttribute(name = "Total", required = true)
     protected int total;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der image-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
     @XmlAttribute(name = "Image")
     protected Integer image;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der plainText-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
     @XmlAttribute(name = "PlainText")
     protected Integer plainText;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der date-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
     @XmlAttribute(name = "Date")
     protected Integer date;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der time-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
     @XmlAttribute(name = "Time")
     protected Integer time;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dateAndTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
     @XmlAttribute(name = "DateAndTime")
     protected Integer dateAndTime;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der total-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
      */
-    public int getTotal() {
-        return total;
-    }
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der total-Eigenschaft fest.
      */
     public void setTotal(int value) {
         this.total = value;
-    }
-
-    /**
-     * Ruft den Wert der image-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
-    public Integer getImage() {
-        return image;
     }
 
     /**
@@ -86,30 +116,12 @@ public class MaximumNumberOfOSDs {
     }
 
     /**
-     * Ruft den Wert der plainText-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
-    public Integer getPlainText() {
-        return plainText;
-    }
-
-    /**
      * Legt den Wert der plainText-Eigenschaft fest.
      *
      * @param value allowed object is {@link Integer }
      */
     public void setPlainText(Integer value) {
         this.plainText = value;
-    }
-
-    /**
-     * Ruft den Wert der date-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
-    public Integer getDate() {
-        return date;
     }
 
     /**
@@ -122,30 +134,12 @@ public class MaximumNumberOfOSDs {
     }
 
     /**
-     * Ruft den Wert der time-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
-    public Integer getTime() {
-        return time;
-    }
-
-    /**
      * Legt den Wert der time-Eigenschaft fest.
      *
      * @param value allowed object is {@link Integer }
      */
     public void setTime(Integer value) {
         this.time = value;
-    }
-
-    /**
-     * Ruft den Wert der dateAndTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
-    public Integer getDateAndTime() {
-        return dateAndTime;
     }
 
     /**
@@ -157,18 +151,4 @@ public class MaximumNumberOfOSDs {
         this.dateAndTime = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

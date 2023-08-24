@@ -4,27 +4,32 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "DateTime",
         propOrder = {"time", "date"})
 public class DateTime {
 
-    @XmlElement(name = "Time", required = true)
-    protected Time time;
-
-    @XmlElement(name = "Date", required = true)
-    protected Date date;
-
     /**
-     * Ruft den Wert der time-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der time-Eigenschaft ab.
      *
      * @return possible object is {@link Time }
      */
-    public Time getTime() {
-        return time;
-    }
+    @XmlElement(name = "Time", required = true)
+    protected Time time;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der date-Eigenschaft ab.
+     *
+     * @return possible object is {@link Date }
+     */
+    @XmlElement(name = "Date", required = true)
+    protected Date date;
 
     /**
      * Legt den Wert der time-Eigenschaft fest.
@@ -33,15 +38,6 @@ public class DateTime {
      */
     public void setTime(Time value) {
         this.time = value;
-    }
-
-    /**
-     * Ruft den Wert der date-Eigenschaft ab.
-     *
-     * @return possible object is {@link Date }
-     */
-    public Date getDate() {
-        return date;
     }
 
     /**

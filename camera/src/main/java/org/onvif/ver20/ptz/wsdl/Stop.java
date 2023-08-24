@@ -1,6 +1,7 @@
 package org.onvif.ver20.ptz.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -29,7 +30,13 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "Stop")
 public class Stop {
 
-    @XmlElement(name = "ProfileToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der profileToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "ProfileToken", required = true)
     protected String profileToken;
 
     @XmlElement(name = "PanTilt")
@@ -37,15 +44,6 @@ public class Stop {
 
     @XmlElement(name = "Zoom")
     protected Boolean zoom;
-
-    /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getProfileToken() {
-        return profileToken;
-    }
 
     /**
      * Legt den Wert der profileToken-Eigenschaft fest.

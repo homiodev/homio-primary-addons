@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r IPv6NetworkInterface complex type.
@@ -24,39 +25,34 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IPv6NetworkInterface",
         propOrder = {"enabled", "config"})
 public class IPv6NetworkInterface {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der enabled-Eigenschaft ab.
+     */
     @XmlElement(name = "Enabled")
     protected boolean enabled;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der config-Eigenschaft ab.
+     *
+     * @return possible object is {@link IPv6Configuration }
+     */
     @XmlElement(name = "Config")
     protected IPv6Configuration config;
-
-    /**
-     * Ruft den Wert der enabled-Eigenschaft ab.
-     */
-    public boolean isEnabled() {
-        return enabled;
-    }
 
     /**
      * Legt den Wert der enabled-Eigenschaft fest.
      */
     public void setEnabled(boolean value) {
         this.enabled = value;
-    }
-
-    /**
-     * Ruft den Wert der config-Eigenschaft ab.
-     *
-     * @return possible object is {@link IPv6Configuration }
-     */
-    public IPv6Configuration getConfig() {
-        return config;
     }
 
     /**

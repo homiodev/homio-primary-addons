@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -35,10 +36,22 @@ public class PTZNodeExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlElement(name = "SupportedPresetTour")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der supportedPresetTour-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZPresetTourSupported }
+     */
+    @Getter @XmlElement(name = "SupportedPresetTour")
     protected PTZPresetTourSupported supportedPresetTour;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZNodeExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected PTZNodeExtension2 extension;
 
     /**
@@ -65,30 +78,12 @@ public class PTZNodeExtension {
     }
 
     /**
-     * Ruft den Wert der supportedPresetTour-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZPresetTourSupported }
-     */
-    public PTZPresetTourSupported getSupportedPresetTour() {
-        return supportedPresetTour;
-    }
-
-    /**
      * Legt den Wert der supportedPresetTour-Eigenschaft fest.
      *
      * @param value allowed object is {@link PTZPresetTourSupported }
      */
     public void setSupportedPresetTour(PTZPresetTourSupported value) {
         this.supportedPresetTour = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZNodeExtension2 }
-     */
-    public PTZNodeExtension2 getExtension() {
-        return extension;
     }
 
     /**

@@ -1,8 +1,10 @@
 package org.onvif.ver20.imaging.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.ImagingStatus20;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -10,17 +12,14 @@ import org.onvif.ver10.schema.ImagingStatus20;
 @XmlRootElement(name = "GetStatusResponse")
 public class GetStatusResponse {
 
-    @XmlElement(name = "Status", required = true)
-    protected ImagingStatus20 status;
-
     /**
-     * Ruft den Wert der status-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der status-Eigenschaft ab.
      *
      * @return possible object is {@link ImagingStatus20 }
      */
-    public ImagingStatus20 getStatus() {
-        return status;
-    }
+    @XmlElement(name = "Status", required = true)
+    protected ImagingStatus20 status;
 
     /**
      * Legt den Wert der status-Eigenschaft fest.

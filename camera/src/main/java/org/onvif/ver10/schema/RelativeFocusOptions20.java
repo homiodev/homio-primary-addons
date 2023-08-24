@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r RelativeFocusOptions20 complex type.
@@ -24,26 +25,30 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RelativeFocusOptions20",
         propOrder = {"distance", "speed"})
 public class RelativeFocusOptions20 {
 
-    @XmlElement(name = "Distance", required = true)
-    protected FloatRange distance;
-
-    @XmlElement(name = "Speed")
-    protected FloatRange speed;
-
     /**
-     * Ruft den Wert der distance-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der distance-Eigenschaft ab.
      *
      * @return possible object is {@link FloatRange }
      */
-    public FloatRange getDistance() {
-        return distance;
-    }
+    @XmlElement(name = "Distance", required = true)
+    protected FloatRange distance;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der speed-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @XmlElement(name = "Speed")
+    protected FloatRange speed;
 
     /**
      * Legt den Wert der distance-Eigenschaft fest.
@@ -52,15 +57,6 @@ public class RelativeFocusOptions20 {
      */
     public void setDistance(FloatRange value) {
         this.distance = value;
-    }
-
-    /**
-     * Ruft den Wert der speed-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getSpeed() {
-        return speed;
     }
 
     /**

@@ -6,6 +6,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r IPAddress complex type.
@@ -33,7 +34,13 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
         propOrder = {"type", "iPv4Address", "iPv6Address"})
 public class IPAddress {
 
-    @XmlElement(name = "Type", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der type-Eigenschaft ab.
+     *
+     * @return possible object is {@link IPType }
+     */
+    @Getter @XmlElement(name = "Type", required = true)
     protected IPType type;
 
     @XmlElement(name = "IPv4Address")
@@ -43,15 +50,6 @@ public class IPAddress {
     @XmlElement(name = "IPv6Address")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String iPv6Address;
-
-    /**
-     * Ruft den Wert der type-Eigenschaft ab.
-     *
-     * @return possible object is {@link IPType }
-     */
-    public IPType getType() {
-        return type;
-    }
 
     /**
      * Legt den Wert der type-Eigenschaft fest.

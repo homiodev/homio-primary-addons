@@ -8,6 +8,7 @@ import javax.xml.datatype.Duration;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r DynamicDNSInformation complex type.
@@ -37,30 +38,49 @@ import java.util.Map;
         propOrder = {"type", "name", "ttl", "extension"})
 public class DynamicDNSInformation {
 
-    @XmlElement(name = "Type", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der type-Eigenschaft ab.
+     *
+     * @return possible object is {@link DynamicDNSType }
+     */
+    @Getter @XmlElement(name = "Type", required = true)
     protected DynamicDNSType type;
 
-    @XmlElement(name = "Name")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der name-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Name")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String name;
 
     @XmlElement(name = "TTL")
     protected Duration ttl;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link DynamicDNSInformationExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected DynamicDNSInformationExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der type-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link DynamicDNSType }
+     * @return always non-null
      */
-    public DynamicDNSType getType() {
-        return type;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der type-Eigenschaft fest.
@@ -69,15 +89,6 @@ public class DynamicDNSInformation {
      */
     public void setType(DynamicDNSType value) {
         this.type = value;
-    }
-
-    /**
-     * Ruft den Wert der name-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getName() {
-        return name;
     }
 
     /**
@@ -108,15 +119,6 @@ public class DynamicDNSInformation {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link DynamicDNSInformationExtension }
-     */
-    public DynamicDNSInformationExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link DynamicDNSInformationExtension }
@@ -125,18 +127,4 @@ public class DynamicDNSInformation {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

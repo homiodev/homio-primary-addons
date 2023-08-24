@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.datatype.Duration;
@@ -39,33 +40,54 @@ import java.util.Map;
         propOrder = {"uri", "invalidAfterConnect", "invalidAfterReboot", "timeout", "any"})
 public class MediaUri {
 
-    @XmlElement(name = "Uri", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der uri-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Uri", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String uri;
 
-    @XmlElement(name = "InvalidAfterConnect")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der invalidAfterConnect-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "InvalidAfterConnect")
     protected boolean invalidAfterConnect;
 
-    @XmlElement(name = "InvalidAfterReboot")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der invalidAfterReboot-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "InvalidAfterReboot")
     protected boolean invalidAfterReboot;
 
-    @XmlElement(name = "Timeout", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der timeout-Eigenschaft ab.
+     *
+     * @return possible object is {@link Duration }
+     */
+    @Getter @XmlElement(name = "Timeout", required = true)
     protected Duration timeout;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der uri-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getUri() {
-        return uri;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der uri-Eigenschaft fest.
@@ -77,13 +99,6 @@ public class MediaUri {
     }
 
     /**
-     * Ruft den Wert der invalidAfterConnect-Eigenschaft ab.
-     */
-    public boolean isInvalidAfterConnect() {
-        return invalidAfterConnect;
-    }
-
-    /**
      * Legt den Wert der invalidAfterConnect-Eigenschaft fest.
      */
     public void setInvalidAfterConnect(boolean value) {
@@ -91,26 +106,10 @@ public class MediaUri {
     }
 
     /**
-     * Ruft den Wert der invalidAfterReboot-Eigenschaft ab.
-     */
-    public boolean isInvalidAfterReboot() {
-        return invalidAfterReboot;
-    }
-
-    /**
      * Legt den Wert der invalidAfterReboot-Eigenschaft fest.
      */
     public void setInvalidAfterReboot(boolean value) {
         this.invalidAfterReboot = value;
-    }
-
-    /**
-     * Ruft den Wert der timeout-Eigenschaft ab.
-     *
-     * @return possible object is {@link Duration }
-     */
-    public Duration getTimeout() {
-        return timeout;
     }
 
     /**
@@ -145,18 +144,4 @@ public class MediaUri {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

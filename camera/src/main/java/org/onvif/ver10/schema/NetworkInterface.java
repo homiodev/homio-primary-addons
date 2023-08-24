@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r NetworkInterface complex type.
@@ -36,13 +37,29 @@ import java.util.Map;
         propOrder = {"enabled", "info", "link", "iPv4", "iPv6", "extension"})
 public class NetworkInterface extends DeviceEntity {
 
-    @XmlElement(name = "Enabled")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der enabled-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "Enabled")
     protected boolean enabled;
 
-    @XmlElement(name = "Info")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der info-Eigenschaft ab.
+     *
+     * @return possible object is {@link NetworkInterfaceInfo }
+     */
+    @Getter @XmlElement(name = "Info")
     protected NetworkInterfaceInfo info;
 
-    @XmlElement(name = "Link")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der link-Eigenschaft ab.
+     *
+     * @return possible object is {@link NetworkInterfaceLink }
+     */
+    @Getter @XmlElement(name = "Link")
     protected NetworkInterfaceLink link;
 
     @XmlElement(name = "IPv4")
@@ -51,18 +68,27 @@ public class NetworkInterface extends DeviceEntity {
     @XmlElement(name = "IPv6")
     protected IPv6NetworkInterface iPv6;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link NetworkInterfaceExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected NetworkInterfaceExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der enabled-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
      */
-    public boolean isEnabled() {
-        return enabled;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der enabled-Eigenschaft fest.
@@ -72,30 +98,12 @@ public class NetworkInterface extends DeviceEntity {
     }
 
     /**
-     * Ruft den Wert der info-Eigenschaft ab.
-     *
-     * @return possible object is {@link NetworkInterfaceInfo }
-     */
-    public NetworkInterfaceInfo getInfo() {
-        return info;
-    }
-
-    /**
      * Legt den Wert der info-Eigenschaft fest.
      *
      * @param value allowed object is {@link NetworkInterfaceInfo }
      */
     public void setInfo(NetworkInterfaceInfo value) {
         this.info = value;
-    }
-
-    /**
-     * Ruft den Wert der link-Eigenschaft ab.
-     *
-     * @return possible object is {@link NetworkInterfaceLink }
-     */
-    public NetworkInterfaceLink getLink() {
-        return link;
     }
 
     /**
@@ -144,15 +152,6 @@ public class NetworkInterface extends DeviceEntity {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link NetworkInterfaceExtension }
-     */
-    public NetworkInterfaceExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link NetworkInterfaceExtension }
@@ -161,18 +160,4 @@ public class NetworkInterface extends DeviceEntity {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

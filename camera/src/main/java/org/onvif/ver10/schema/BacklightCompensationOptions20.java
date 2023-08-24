@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -17,24 +18,11 @@ public class BacklightCompensationOptions20 {
     @XmlElement(name = "Mode", required = true)
     protected List<BacklightCompensationMode> mode;
 
-    @XmlElement(name = "Level")
+    
+    @Getter @XmlElement(name = "Level")
     protected FloatRange level;
 
-    /**
-     * Gets the value of the mode property.
-     *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the mode
-     * property.
-     *
-     * <p>For example, to add a new item, do as follows:
-     *
-     * <pre>
-     * getMode().add(newItem);
-     * </pre>
-     *
-     * <p>Objects of the following type(s) are allowed in the list {@link BacklightCompensationMode }
-     */
+    
     public List<BacklightCompensationMode> getMode() {
         if (mode == null) {
             mode = new ArrayList<BacklightCompensationMode>();
@@ -42,20 +30,7 @@ public class BacklightCompensationOptions20 {
         return this.mode;
     }
 
-    /**
-     * Ruft den Wert der level-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getLevel() {
-        return level;
-    }
-
-    /**
-     * Legt den Wert der level-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link FloatRange }
-     */
+    
     public void setLevel(FloatRange value) {
         this.level = value;
     }

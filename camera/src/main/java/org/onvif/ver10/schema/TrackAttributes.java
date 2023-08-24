@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r TrackAttributes complex type.
@@ -29,6 +30,7 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "TrackAttributes",
@@ -41,32 +43,63 @@ import java.util.Map;
         })
 public class TrackAttributes {
 
-    @XmlElement(name = "TrackInformation", required = true)
-    protected TrackInformation trackInformation;
-
-    @XmlElement(name = "VideoAttributes")
-    protected VideoAttributes videoAttributes;
-
-    @XmlElement(name = "AudioAttributes")
-    protected AudioAttributes audioAttributes;
-
-    @XmlElement(name = "MetadataAttributes")
-    protected MetadataAttributes metadataAttributes;
-
-    @XmlElement(name = "Extension")
-    protected TrackAttributesExtension extension;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der trackInformation-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der trackInformation-Eigenschaft ab.
      *
      * @return possible object is {@link TrackInformation }
      */
-    public TrackInformation getTrackInformation() {
-        return trackInformation;
-    }
+    @XmlElement(name = "TrackInformation", required = true)
+    protected TrackInformation trackInformation;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der videoAttributes-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoAttributes }
+     */
+    @XmlElement(name = "VideoAttributes")
+    protected VideoAttributes videoAttributes;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioAttributes-Eigenschaft ab.
+     *
+     * @return possible object is {@link AudioAttributes }
+     */
+    @XmlElement(name = "AudioAttributes")
+    protected AudioAttributes audioAttributes;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der metadataAttributes-Eigenschaft ab.
+     *
+     * @return possible object is {@link MetadataAttributes }
+     */
+    @XmlElement(name = "MetadataAttributes")
+    protected MetadataAttributes metadataAttributes;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link TrackAttributesExtension }
+     */
+    @XmlElement(name = "Extension")
+    protected TrackAttributesExtension extension;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der trackInformation-Eigenschaft fest.
@@ -75,15 +108,6 @@ public class TrackAttributes {
      */
     public void setTrackInformation(TrackInformation value) {
         this.trackInformation = value;
-    }
-
-    /**
-     * Ruft den Wert der videoAttributes-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoAttributes }
-     */
-    public VideoAttributes getVideoAttributes() {
-        return videoAttributes;
     }
 
     /**
@@ -96,30 +120,12 @@ public class TrackAttributes {
     }
 
     /**
-     * Ruft den Wert der audioAttributes-Eigenschaft ab.
-     *
-     * @return possible object is {@link AudioAttributes }
-     */
-    public AudioAttributes getAudioAttributes() {
-        return audioAttributes;
-    }
-
-    /**
      * Legt den Wert der audioAttributes-Eigenschaft fest.
      *
      * @param value allowed object is {@link AudioAttributes }
      */
     public void setAudioAttributes(AudioAttributes value) {
         this.audioAttributes = value;
-    }
-
-    /**
-     * Ruft den Wert der metadataAttributes-Eigenschaft ab.
-     *
-     * @return possible object is {@link MetadataAttributes }
-     */
-    public MetadataAttributes getMetadataAttributes() {
-        return metadataAttributes;
     }
 
     /**
@@ -132,15 +138,6 @@ public class TrackAttributes {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link TrackAttributesExtension }
-     */
-    public TrackAttributesExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link TrackAttributesExtension }
@@ -149,18 +146,4 @@ public class TrackAttributes {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

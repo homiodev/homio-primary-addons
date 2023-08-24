@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.RemoteUser;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.RemoteUser;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.RemoteUser;
 @XmlRootElement(name = "GetRemoteUserResponse")
 public class GetRemoteUserResponse {
 
-    @XmlElement(name = "RemoteUser")
-    protected RemoteUser remoteUser;
-
     /**
-     * Ruft den Wert der remoteUser-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der remoteUser-Eigenschaft ab.
      *
      * @return possible object is {@link RemoteUser }
      */
-    public RemoteUser getRemoteUser() {
-        return remoteUser;
-    }
+    @XmlElement(name = "RemoteUser")
+    protected RemoteUser remoteUser;
 
     /**
      * Legt den Wert der remoteUser-Eigenschaft fest.

@@ -6,6 +6,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 
 import javax.xml.datatype.Duration;
+import lombok.Getter;
 
 /**
  * Range of duration greater equal Min duration and less equal Max duration.
@@ -28,26 +29,30 @@ import javax.xml.datatype.Duration;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "DurationRange",
         propOrder = {"min", "max"})
 public class DurationRange {
 
-    @XmlElement(name = "Min", required = true)
-    protected Duration min;
-
-    @XmlElement(name = "Max", required = true)
-    protected Duration max;
-
     /**
-     * Ruft den Wert der min-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der min-Eigenschaft ab.
      *
      * @return possible object is {@link Duration }
      */
-    public Duration getMin() {
-        return min;
-    }
+    @XmlElement(name = "Min", required = true)
+    protected Duration min;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der max-Eigenschaft ab.
+     *
+     * @return possible object is {@link Duration }
+     */
+    @XmlElement(name = "Max", required = true)
+    protected Duration max;
 
     /**
      * Legt den Wert der min-Eigenschaft fest.
@@ -56,15 +61,6 @@ public class DurationRange {
      */
     public void setMin(Duration value) {
         this.min = value;
-    }
-
-    /**
-     * Ruft den Wert der max-Eigenschaft ab.
-     *
-     * @return possible object is {@link Duration }
-     */
-    public Duration getMax() {
-        return max;
     }
 
     /**

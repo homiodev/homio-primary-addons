@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r NetworkInterfaceLink complex type.
@@ -25,29 +26,37 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NetworkInterfaceLink",
         propOrder = {"adminSettings", "operSettings", "interfaceType"})
 public class NetworkInterfaceLink {
 
-    @XmlElement(name = "AdminSettings", required = true)
-    protected NetworkInterfaceConnectionSetting adminSettings;
-
-    @XmlElement(name = "OperSettings", required = true)
-    protected NetworkInterfaceConnectionSetting operSettings;
-
-    @XmlElement(name = "InterfaceType")
-    protected int interfaceType;
-
     /**
-     * Ruft den Wert der adminSettings-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der adminSettings-Eigenschaft ab.
      *
      * @return possible object is {@link NetworkInterfaceConnectionSetting }
      */
-    public NetworkInterfaceConnectionSetting getAdminSettings() {
-        return adminSettings;
-    }
+    @XmlElement(name = "AdminSettings", required = true)
+    protected NetworkInterfaceConnectionSetting adminSettings;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der operSettings-Eigenschaft ab.
+     *
+     * @return possible object is {@link NetworkInterfaceConnectionSetting }
+     */
+    @XmlElement(name = "OperSettings", required = true)
+    protected NetworkInterfaceConnectionSetting operSettings;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der interfaceType-Eigenschaft ab.
+     */
+    @XmlElement(name = "InterfaceType")
+    protected int interfaceType;
 
     /**
      * Legt den Wert der adminSettings-Eigenschaft fest.
@@ -59,28 +68,12 @@ public class NetworkInterfaceLink {
     }
 
     /**
-     * Ruft den Wert der operSettings-Eigenschaft ab.
-     *
-     * @return possible object is {@link NetworkInterfaceConnectionSetting }
-     */
-    public NetworkInterfaceConnectionSetting getOperSettings() {
-        return operSettings;
-    }
-
-    /**
      * Legt den Wert der operSettings-Eigenschaft fest.
      *
      * @param value allowed object is {@link NetworkInterfaceConnectionSetting }
      */
     public void setOperSettings(NetworkInterfaceConnectionSetting value) {
         this.operSettings = value;
-    }
-
-    /**
-     * Ruft den Wert der interfaceType-Eigenschaft ab.
-     */
-    public int getInterfaceType() {
-        return interfaceType;
     }
 
     /**

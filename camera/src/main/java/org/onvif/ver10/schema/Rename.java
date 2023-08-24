@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Rename complex type.
@@ -24,26 +25,30 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Rename",
         propOrder = {"from", "to"})
 public class Rename {
 
-    @XmlElement(required = true)
-    protected ObjectId from;
-
-    @XmlElement(required = true)
-    protected ObjectId to;
-
     /**
-     * Ruft den Wert der from-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der from-Eigenschaft ab.
      *
      * @return possible object is {@link ObjectId }
      */
-    public ObjectId getFrom() {
-        return from;
-    }
+    @XmlElement(required = true)
+    protected ObjectId from;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der to-Eigenschaft ab.
+     *
+     * @return possible object is {@link ObjectId }
+     */
+    @XmlElement(required = true)
+    protected ObjectId to;
 
     /**
      * Legt den Wert der from-Eigenschaft fest.
@@ -52,15 +57,6 @@ public class Rename {
      */
     public void setFrom(ObjectId value) {
         this.from = value;
-    }
-
-    /**
-     * Ruft den Wert der to-Eigenschaft ab.
-     *
-     * @return possible object is {@link ObjectId }
-     */
-    public ObjectId getTo() {
-        return to;
     }
 
     /**

@@ -1,7 +1,9 @@
 package org.onvif.ver20.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -9,20 +11,23 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetStreamUri")
 public class GetStreamUri {
 
-    @XmlElement(name = "Protocol", required = true)
-    protected String protocol;
-
-    @XmlElement(name = "ProfileToken", required = true)
-    protected String profileToken;
-
     /**
-     * Ruft den Wert der protocol-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der protocol-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getProtocol() {
-        return protocol;
-    }
+    @XmlElement(name = "Protocol", required = true)
+    protected String protocol;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der profileToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "ProfileToken", required = true)
+    protected String profileToken;
 
     /**
      * Legt den Wert der protocol-Eigenschaft fest.
@@ -31,15 +36,6 @@ public class GetStreamUri {
      */
     public void setProtocol(String value) {
         this.protocol = value;
-    }
-
-    /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getProfileToken() {
-        return profileToken;
     }
 
     /**

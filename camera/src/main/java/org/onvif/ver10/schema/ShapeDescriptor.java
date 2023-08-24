@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r ShapeDescriptor complex type.
@@ -36,29 +37,48 @@ import java.util.Map;
         propOrder = {"boundingBox", "centerOfGravity", "polygon", "extension"})
 public class ShapeDescriptor {
 
-    @XmlElement(name = "BoundingBox", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der boundingBox-Eigenschaft ab.
+     *
+     * @return possible object is {@link Rectangle }
+     */
+    @Getter @XmlElement(name = "BoundingBox", required = true)
     protected Rectangle boundingBox;
 
-    @XmlElement(name = "CenterOfGravity", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der centerOfGravity-Eigenschaft ab.
+     *
+     * @return possible object is {@link Vector }
+     */
+    @Getter @XmlElement(name = "CenterOfGravity", required = true)
     protected Vector centerOfGravity;
 
     @XmlElement(name = "Polygon")
     protected List<Polygon> polygon;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ShapeDescriptorExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected ShapeDescriptorExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der boundingBox-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link Rectangle }
+     * @return always non-null
      */
-    public Rectangle getBoundingBox() {
-        return boundingBox;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der boundingBox-Eigenschaft fest.
@@ -67,15 +87,6 @@ public class ShapeDescriptor {
      */
     public void setBoundingBox(Rectangle value) {
         this.boundingBox = value;
-    }
-
-    /**
-     * Ruft den Wert der centerOfGravity-Eigenschaft ab.
-     *
-     * @return possible object is {@link Vector }
-     */
-    public Vector getCenterOfGravity() {
-        return centerOfGravity;
     }
 
     /**
@@ -110,15 +121,6 @@ public class ShapeDescriptor {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ShapeDescriptorExtension }
-     */
-    public ShapeDescriptorExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link ShapeDescriptorExtension }
@@ -127,18 +129,4 @@ public class ShapeDescriptor {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

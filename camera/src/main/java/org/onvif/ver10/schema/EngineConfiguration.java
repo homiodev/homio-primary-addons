@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -36,26 +37,39 @@ import java.util.Map;
         propOrder = {"videoAnalyticsConfiguration", "analyticsEngineInputInfo", "any"})
 public class EngineConfiguration {
 
-    @XmlElement(name = "VideoAnalyticsConfiguration", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der videoAnalyticsConfiguration-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoAnalyticsConfiguration }
+     */
+    @Getter @XmlElement(name = "VideoAnalyticsConfiguration", required = true)
     protected VideoAnalyticsConfiguration videoAnalyticsConfiguration;
 
-    @XmlElement(name = "AnalyticsEngineInputInfo", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der analyticsEngineInputInfo-Eigenschaft ab.
+     *
+     * @return possible object is {@link AnalyticsEngineInputInfo }
+     */
+    @Getter @XmlElement(name = "AnalyticsEngineInputInfo", required = true)
     protected AnalyticsEngineInputInfo analyticsEngineInputInfo;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der videoAnalyticsConfiguration-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link VideoAnalyticsConfiguration }
+     * @return always non-null
      */
-    public VideoAnalyticsConfiguration getVideoAnalyticsConfiguration() {
-        return videoAnalyticsConfiguration;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der videoAnalyticsConfiguration-Eigenschaft fest.
@@ -64,15 +78,6 @@ public class EngineConfiguration {
      */
     public void setVideoAnalyticsConfiguration(VideoAnalyticsConfiguration value) {
         this.videoAnalyticsConfiguration = value;
-    }
-
-    /**
-     * Ruft den Wert der analyticsEngineInputInfo-Eigenschaft ab.
-     *
-     * @return possible object is {@link AnalyticsEngineInputInfo }
-     */
-    public AnalyticsEngineInputInfo getAnalyticsEngineInputInfo() {
-        return analyticsEngineInputInfo;
     }
 
     /**
@@ -107,18 +112,4 @@ public class EngineConfiguration {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

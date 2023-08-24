@@ -6,6 +6,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r PrefixedIPv6Address complex type.
@@ -26,27 +27,29 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PrefixedIPv6Address",
         propOrder = {"address", "prefixLength"})
 public class PrefixedIPv6Address {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der address-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "Address", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String address;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der prefixLength-Eigenschaft ab.
+     */
     @XmlElement(name = "PrefixLength")
     protected int prefixLength;
-
-    /**
-     * Ruft den Wert der address-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getAddress() {
-        return address;
-    }
 
     /**
      * Legt den Wert der address-Eigenschaft fest.
@@ -55,13 +58,6 @@ public class PrefixedIPv6Address {
      */
     public void setAddress(String value) {
         this.address = value;
-    }
-
-    /**
-     * Ruft den Wert der prefixLength-Eigenschaft ab.
-     */
-    public int getPrefixLength() {
-        return prefixLength;
     }
 
     /**

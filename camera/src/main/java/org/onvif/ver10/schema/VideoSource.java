@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Representation of a physical video input.
@@ -30,48 +31,65 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoSource",
         propOrder = {"framerate", "resolution", "imaging", "extension"})
 public class VideoSource extends DeviceEntity {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der framerate-Eigenschaft ab.
+     */
     @XmlElement(name = "Framerate")
     protected float framerate;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der resolution-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoResolution }
+     */
     @XmlElement(name = "Resolution", required = true)
     protected VideoResolution resolution;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der imaging-Eigenschaft ab.
+     *
+     * @return possible object is {@link ImagingSettings }
+     */
     @XmlElement(name = "Imaging")
     protected ImagingSettings imaging;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoSourceExtension }
+     */
     @XmlElement(name = "Extension")
     protected VideoSourceExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der framerate-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
      */
-    public float getFramerate() {
-        return framerate;
-    }
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der framerate-Eigenschaft fest.
      */
     public void setFramerate(float value) {
         this.framerate = value;
-    }
-
-    /**
-     * Ruft den Wert der resolution-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoResolution }
-     */
-    public VideoResolution getResolution() {
-        return resolution;
     }
 
     /**
@@ -84,30 +102,12 @@ public class VideoSource extends DeviceEntity {
     }
 
     /**
-     * Ruft den Wert der imaging-Eigenschaft ab.
-     *
-     * @return possible object is {@link ImagingSettings }
-     */
-    public ImagingSettings getImaging() {
-        return imaging;
-    }
-
-    /**
      * Legt den Wert der imaging-Eigenschaft fest.
      *
      * @param value allowed object is {@link ImagingSettings }
      */
     public void setImaging(ImagingSettings value) {
         this.imaging = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoSourceExtension }
-     */
-    public VideoSourceExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -119,18 +119,4 @@ public class VideoSource extends DeviceEntity {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

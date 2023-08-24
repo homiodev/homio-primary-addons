@@ -13,7 +13,9 @@ import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -21,30 +23,45 @@ import javax.xml.datatype.XMLGregorianCalendar;
 @XmlRootElement(name = "CreateCertificate")
 public class CreateCertificate {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der certificateID-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "CertificateID")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String certificateID;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der subject-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "Subject")
     protected String subject;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der validNotBefore-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
     @XmlElement(name = "ValidNotBefore")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar validNotBefore;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der validNotAfter-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
     @XmlElement(name = "ValidNotAfter")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar validNotAfter;
-
-    /**
-     * Ruft den Wert der certificateID-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getCertificateID() {
-        return certificateID;
-    }
 
     /**
      * Legt den Wert der certificateID-Eigenschaft fest.
@@ -53,15 +70,6 @@ public class CreateCertificate {
      */
     public void setCertificateID(String value) {
         this.certificateID = value;
-    }
-
-    /**
-     * Ruft den Wert der subject-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getSubject() {
-        return subject;
     }
 
     /**
@@ -74,30 +82,12 @@ public class CreateCertificate {
     }
 
     /**
-     * Ruft den Wert der validNotBefore-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getValidNotBefore() {
-        return validNotBefore;
-    }
-
-    /**
      * Legt den Wert der validNotBefore-Eigenschaft fest.
      *
      * @param value allowed object is {@link XMLGregorianCalendar }
      */
     public void setValidNotBefore(XMLGregorianCalendar value) {
         this.validNotBefore = value;
-    }
-
-    /**
-     * Ruft den Wert der validNotAfter-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getValidNotAfter() {
-        return validNotAfter;
     }
 
     /**

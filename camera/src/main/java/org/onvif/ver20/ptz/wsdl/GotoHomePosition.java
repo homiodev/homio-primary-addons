@@ -1,6 +1,7 @@
 package org.onvif.ver20.ptz.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.PTZSpeed;
 
 /**
@@ -22,6 +23,7 @@ import org.onvif.ver10.schema.PTZSpeed;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -29,20 +31,23 @@ import org.onvif.ver10.schema.PTZSpeed;
 @XmlRootElement(name = "GotoHomePosition")
 public class GotoHomePosition {
 
-    @XmlElement(name = "ProfileToken", required = true)
-    protected String profileToken;
-
-    @XmlElement(name = "Speed")
-    protected PTZSpeed speed;
-
     /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der profileToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getProfileToken() {
-        return profileToken;
-    }
+    @XmlElement(name = "ProfileToken", required = true)
+    protected String profileToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der speed-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZSpeed }
+     */
+    @XmlElement(name = "Speed")
+    protected PTZSpeed speed;
 
     /**
      * Legt den Wert der profileToken-Eigenschaft fest.
@@ -51,15 +56,6 @@ public class GotoHomePosition {
      */
     public void setProfileToken(String value) {
         this.profileToken = value;
-    }
-
-    /**
-     * Ruft den Wert der speed-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZSpeed }
-     */
-    public PTZSpeed getSpeed() {
-        return speed;
     }
 
     /**

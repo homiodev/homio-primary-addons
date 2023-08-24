@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -57,7 +58,13 @@ public class SystemCapabilitiesExtension {
     @XmlElement(name = "HttpSupportInformation")
     protected Boolean httpSupportInformation;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link SystemCapabilitiesExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected SystemCapabilitiesExtension2 extension;
 
     /**
@@ -153,15 +160,6 @@ public class SystemCapabilitiesExtension {
      */
     public void setHttpSupportInformation(Boolean value) {
         this.httpSupportInformation = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link SystemCapabilitiesExtension2 }
-     */
-    public SystemCapabilitiesExtension2 getExtension() {
-        return extension;
     }
 
     /**

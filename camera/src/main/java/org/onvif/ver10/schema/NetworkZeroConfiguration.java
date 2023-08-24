@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r NetworkZeroConfiguration complex type.
@@ -38,30 +39,47 @@ import java.util.Map;
         propOrder = {"interfaceToken", "enabled", "addresses", "extension"})
 public class NetworkZeroConfiguration {
 
-    @XmlElement(name = "InterfaceToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der interfaceToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "InterfaceToken", required = true)
     protected String interfaceToken;
 
-    @XmlElement(name = "Enabled")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der enabled-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "Enabled")
     protected boolean enabled;
 
     @XmlElement(name = "Addresses")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected List<String> addresses;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link NetworkZeroConfigurationExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected NetworkZeroConfigurationExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der interfaceToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getInterfaceToken() {
-        return interfaceToken;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der interfaceToken-Eigenschaft fest.
@@ -70,13 +88,6 @@ public class NetworkZeroConfiguration {
      */
     public void setInterfaceToken(String value) {
         this.interfaceToken = value;
-    }
-
-    /**
-     * Ruft den Wert der enabled-Eigenschaft ab.
-     */
-    public boolean isEnabled() {
-        return enabled;
     }
 
     /**
@@ -109,15 +120,6 @@ public class NetworkZeroConfiguration {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link NetworkZeroConfigurationExtension }
-     */
-    public NetworkZeroConfigurationExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link NetworkZeroConfigurationExtension }
@@ -126,18 +128,4 @@ public class NetworkZeroConfiguration {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

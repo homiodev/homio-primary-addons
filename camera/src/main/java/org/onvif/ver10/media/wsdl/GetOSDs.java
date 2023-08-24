@@ -9,6 +9,7 @@
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -28,6 +29,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -35,17 +37,14 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetOSDs")
 public class GetOSDs {
 
-    @XmlElement(name = "ConfigurationToken")
-    protected String configurationToken;
-
     /**
-     * Ruft den Wert der configurationToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der configurationToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getConfigurationToken() {
-        return configurationToken;
-    }
+    @XmlElement(name = "ConfigurationToken")
+    protected String configurationToken;
 
     /**
      * Legt den Wert der configurationToken-Eigenschaft fest.

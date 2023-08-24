@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.DynamicDNSInformation;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.DynamicDNSInformation;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.DynamicDNSInformation;
 @XmlRootElement(name = "GetDynamicDNSResponse")
 public class GetDynamicDNSResponse {
 
-    @XmlElement(name = "DynamicDNSInformation", required = true)
-    protected DynamicDNSInformation dynamicDNSInformation;
-
     /**
-     * Ruft den Wert der dynamicDNSInformation-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der dynamicDNSInformation-Eigenschaft ab.
      *
      * @return possible object is {@link DynamicDNSInformation }
      */
-    public DynamicDNSInformation getDynamicDNSInformation() {
-        return dynamicDNSInformation;
-    }
+    @XmlElement(name = "DynamicDNSInformation", required = true)
+    protected DynamicDNSInformation dynamicDNSInformation;
 
     /**
      * Legt den Wert der dynamicDNSInformation-Eigenschaft fest.

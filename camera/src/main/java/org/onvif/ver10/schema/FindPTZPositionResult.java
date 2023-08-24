@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -39,33 +40,58 @@ import java.util.Map;
         propOrder = {"recordingToken", "trackToken", "time", "position", "any"})
 public class FindPTZPositionResult {
 
-    @XmlElement(name = "RecordingToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der recordingToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
-    @XmlElement(name = "TrackToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der trackToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "TrackToken", required = true)
     protected String trackToken;
 
-    @XmlElement(name = "Time", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der time-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "Time", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar time;
 
-    @XmlElement(name = "Position", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der position-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZVector }
+     */
+    @Getter @XmlElement(name = "Position", required = true)
     protected PTZVector position;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der recordingToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getRecordingToken() {
-        return recordingToken;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der recordingToken-Eigenschaft fest.
@@ -74,15 +100,6 @@ public class FindPTZPositionResult {
      */
     public void setRecordingToken(String value) {
         this.recordingToken = value;
-    }
-
-    /**
-     * Ruft den Wert der trackToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getTrackToken() {
-        return trackToken;
     }
 
     /**
@@ -95,30 +112,12 @@ public class FindPTZPositionResult {
     }
 
     /**
-     * Ruft den Wert der time-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getTime() {
-        return time;
-    }
-
-    /**
      * Legt den Wert der time-Eigenschaft fest.
      *
      * @param value allowed object is {@link XMLGregorianCalendar }
      */
     public void setTime(XMLGregorianCalendar value) {
         this.time = value;
-    }
-
-    /**
-     * Ruft den Wert der position-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZVector }
-     */
-    public PTZVector getPosition() {
-        return position;
     }
 
     /**
@@ -153,18 +152,4 @@ public class FindPTZPositionResult {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

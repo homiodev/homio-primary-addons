@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.AttachmentData;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.AttachmentData;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.AttachmentData;
 @XmlRootElement(name = "UpgradeSystemFirmware")
 public class UpgradeSystemFirmware {
 
-    @XmlElement(name = "Firmware", required = true)
-    protected AttachmentData firmware;
-
     /**
-     * Ruft den Wert der firmware-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der firmware-Eigenschaft ab.
      *
      * @return possible object is {@link AttachmentData }
      */
-    public AttachmentData getFirmware() {
-        return firmware;
-    }
+    @XmlElement(name = "Firmware", required = true)
+    protected AttachmentData firmware;
 
     /**
      * Legt den Wert der firmware-Eigenschaft fest.

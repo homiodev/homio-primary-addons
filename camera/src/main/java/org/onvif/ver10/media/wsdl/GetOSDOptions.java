@@ -9,6 +9,7 @@
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -40,20 +41,17 @@ import java.util.List;
 @XmlRootElement(name = "GetOSDOptions")
 public class GetOSDOptions {
 
-    @XmlElement(name = "ConfigurationToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der configurationToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "ConfigurationToken", required = true)
     protected String configurationToken;
 
     @XmlAnyElement(lax = true)
     protected List<Object> any;
-
-    /**
-     * Ruft den Wert der configurationToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getConfigurationToken() {
-        return configurationToken;
-    }
 
     /**
      * Legt den Wert der configurationToken-Eigenschaft fest.

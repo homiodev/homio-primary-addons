@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r FocusStatus20 complex type.
@@ -28,48 +29,65 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "FocusStatus20",
         propOrder = {"position", "moveStatus", "error", "extension"})
 public class FocusStatus20 {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der position-Eigenschaft ab.
+     */
     @XmlElement(name = "Position")
     protected float position;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der moveStatus-Eigenschaft ab.
+     *
+     * @return possible object is {@link MoveStatus }
+     */
     @XmlElement(name = "MoveStatus", required = true)
     protected MoveStatus moveStatus;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der error-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "Error")
     protected String error;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link FocusStatus20Extension }
+     */
     @XmlElement(name = "Extension")
     protected FocusStatus20Extension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der position-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
      */
-    public float getPosition() {
-        return position;
-    }
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der position-Eigenschaft fest.
      */
     public void setPosition(float value) {
         this.position = value;
-    }
-
-    /**
-     * Ruft den Wert der moveStatus-Eigenschaft ab.
-     *
-     * @return possible object is {@link MoveStatus }
-     */
-    public MoveStatus getMoveStatus() {
-        return moveStatus;
     }
 
     /**
@@ -82,30 +100,12 @@ public class FocusStatus20 {
     }
 
     /**
-     * Ruft den Wert der error-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getError() {
-        return error;
-    }
-
-    /**
      * Legt den Wert der error-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setError(String value) {
         this.error = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link FocusStatus20Extension }
-     */
-    public FocusStatus20Extension getExtension() {
-        return extension;
     }
 
     /**
@@ -117,18 +117,4 @@ public class FocusStatus20 {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

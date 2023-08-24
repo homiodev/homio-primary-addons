@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -24,13 +25,31 @@ import java.util.Map;
         })
 public class Dot1XConfiguration {
 
-    @XmlElement(name = "Dot1XConfigurationToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dot1XConfigurationToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Dot1XConfigurationToken", required = true)
     protected String dot1XConfigurationToken;
 
-    @XmlElement(name = "Identity", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der identity-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Identity", required = true)
     protected String identity;
 
-    @XmlElement(name = "AnonymousID")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der anonymousID-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "AnonymousID")
     protected String anonymousID;
 
     @XmlElement(name = "EAPMethod")
@@ -44,20 +63,27 @@ public class Dot1XConfiguration {
     @XmlElement(name = "EAPMethodConfiguration")
     protected EAPMethodConfiguration eapMethodConfiguration;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link Dot1XConfigurationExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected Dot1XConfigurationExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der dot1XConfigurationToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getDot1XConfigurationToken() {
-        return dot1XConfigurationToken;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der dot1XConfigurationToken-Eigenschaft fest.
@@ -69,30 +95,12 @@ public class Dot1XConfiguration {
     }
 
     /**
-     * Ruft den Wert der identity-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getIdentity() {
-        return identity;
-    }
-
-    /**
      * Legt den Wert der identity-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setIdentity(String value) {
         this.identity = value;
-    }
-
-    /**
-     * Ruft den Wert der anonymousID-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getAnonymousID() {
-        return anonymousID;
     }
 
     /**
@@ -159,15 +167,6 @@ public class Dot1XConfiguration {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot1XConfigurationExtension }
-     */
-    public Dot1XConfigurationExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link Dot1XConfigurationExtension }
@@ -176,18 +175,4 @@ public class Dot1XConfiguration {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

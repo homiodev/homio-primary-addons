@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r HostnameInformation complex type.
@@ -29,47 +30,58 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "HostnameInformation",
         propOrder = {"fromDHCP", "name", "extension"})
 public class HostnameInformation {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der fromDHCP-Eigenschaft ab.
+     */
     @XmlElement(name = "FromDHCP")
     protected boolean fromDHCP;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der name-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "Name")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String name;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link HostnameInformationExtension }
+     */
     @XmlElement(name = "Extension")
     protected HostnameInformationExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der fromDHCP-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
      */
-    public boolean isFromDHCP() {
-        return fromDHCP;
-    }
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der fromDHCP-Eigenschaft fest.
      */
     public void setFromDHCP(boolean value) {
         this.fromDHCP = value;
-    }
-
-    /**
-     * Ruft den Wert der name-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getName() {
-        return name;
     }
 
     /**
@@ -82,15 +94,6 @@ public class HostnameInformation {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link HostnameInformationExtension }
-     */
-    public HostnameInformationExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link HostnameInformationExtension }
@@ -99,18 +102,4 @@ public class HostnameInformation {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

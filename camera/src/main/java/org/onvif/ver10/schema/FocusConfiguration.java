@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -38,32 +39,51 @@ import java.util.Map;
         propOrder = {"autoFocusMode", "defaultSpeed", "nearLimit", "farLimit", "any"})
 public class FocusConfiguration {
 
-    @XmlElement(name = "AutoFocusMode", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der autoFocusMode-Eigenschaft ab.
+     *
+     * @return possible object is {@link AutoFocusMode }
+     */
+    @Getter @XmlElement(name = "AutoFocusMode", required = true)
     protected AutoFocusMode autoFocusMode;
 
-    @XmlElement(name = "DefaultSpeed")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der defaultSpeed-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "DefaultSpeed")
     protected float defaultSpeed;
 
-    @XmlElement(name = "NearLimit")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der nearLimit-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "NearLimit")
     protected float nearLimit;
 
-    @XmlElement(name = "FarLimit")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der farLimit-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "FarLimit")
     protected float farLimit;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der autoFocusMode-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link AutoFocusMode }
+     * @return always non-null
      */
-    public AutoFocusMode getAutoFocusMode() {
-        return autoFocusMode;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der autoFocusMode-Eigenschaft fest.
@@ -75,13 +95,6 @@ public class FocusConfiguration {
     }
 
     /**
-     * Ruft den Wert der defaultSpeed-Eigenschaft ab.
-     */
-    public float getDefaultSpeed() {
-        return defaultSpeed;
-    }
-
-    /**
      * Legt den Wert der defaultSpeed-Eigenschaft fest.
      */
     public void setDefaultSpeed(float value) {
@@ -89,24 +102,10 @@ public class FocusConfiguration {
     }
 
     /**
-     * Ruft den Wert der nearLimit-Eigenschaft ab.
-     */
-    public float getNearLimit() {
-        return nearLimit;
-    }
-
-    /**
      * Legt den Wert der nearLimit-Eigenschaft fest.
      */
     public void setNearLimit(float value) {
         this.nearLimit = value;
-    }
-
-    /**
-     * Ruft den Wert der farLimit-Eigenschaft ab.
-     */
-    public float getFarLimit() {
-        return farLimit;
     }
 
     /**
@@ -139,18 +138,4 @@ public class FocusConfiguration {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

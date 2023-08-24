@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r WideDynamicRangeOptions20 complex type.
@@ -36,7 +37,13 @@ public class WideDynamicRangeOptions20 {
     @XmlElement(name = "Mode", required = true)
     protected List<WideDynamicMode> mode;
 
-    @XmlElement(name = "Level")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der level-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "Level")
     protected FloatRange level;
 
     /**
@@ -59,15 +66,6 @@ public class WideDynamicRangeOptions20 {
             mode = new ArrayList<WideDynamicMode>();
         }
         return this.mode;
-    }
-
-    /**
-     * Ruft den Wert der level-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getLevel() {
-        return level;
     }
 
     /**

@@ -14,13 +14,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
 
 import javax.xml.namespace.QName;
 
-/**
- * This object contains factory methods for each Java content interface and Java element interface generated in the org.w3._2005._08.addressing package.
- *
- * <p>An ObjectFactory allows you to programatically construct new instances of the Java
- * representation for XML content. The Java representation of XML content can consist of schema derived interfaces and classes representing the binding of
- * schema type definitions, element declarations and model groups. Factory methods for each of these are provided in this class.
- */
+
 @XmlRegistry
 public class ObjectFactory {
 
@@ -52,87 +46,63 @@ public class ObjectFactory {
     private static final QName _RelatesTo_QNAME =
             new QName("http://www.w3.org/2005/08/addressing", "RelatesTo");
 
-    /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.w3._2005._08.addressing
-     */
+
     public ObjectFactory() {
     }
 
-    /**
-     * Create an instance of {@link EndpointReferenceType }
-     */
+
     public EndpointReferenceType createEndpointReferenceType() {
         return new EndpointReferenceType();
     }
 
-    /**
-     * Create an instance of {@link ProblemActionType }
-     */
+
     public ProblemActionType createProblemActionType() {
         return new ProblemActionType();
     }
 
-    /**
-     * Create an instance of {@link AttributedAnyType }
-     */
+
     public AttributedAnyType createAttributedAnyType() {
         return new AttributedAnyType();
     }
 
-    /**
-     * Create an instance of {@link AttributedURIType }
-     */
+
     public AttributedURIType createAttributedURIType() {
         return new AttributedURIType();
     }
 
-    /**
-     * Create an instance of {@link AttributedQNameType }
-     */
+
     public AttributedQNameType createAttributedQNameType() {
         return new AttributedQNameType();
     }
 
-    /**
-     * Create an instance of {@link AttributedUnsignedLongType }
-     */
+
     public AttributedUnsignedLongType createAttributedUnsignedLongType() {
         return new AttributedUnsignedLongType();
     }
 
-    /**
-     * Create an instance of {@link MetadataType }
-     */
+
     public MetadataType createMetadataType() {
         return new MetadataType();
     }
 
-    /**
-     * Create an instance of {@link RelatesToType }
-     */
+
     public RelatesToType createRelatesToType() {
         return new RelatesToType();
     }
 
-    /**
-     * Create an instance of {@link ReferenceParametersType }
-     */
+
     public ReferenceParametersType createReferenceParametersType() {
         return new ReferenceParametersType();
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link EndpointReferenceType }{@code >}
-     */
+
     @XmlElementDecl(namespace = "http://www.w3.org/2005/08/addressing", name = "EndpointReference")
     public JAXBElement<EndpointReferenceType> createEndpointReference(EndpointReferenceType value) {
         return new JAXBElement<EndpointReferenceType>(
                 _EndpointReference_QNAME, EndpointReferenceType.class, null, value);
     }
 
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AttributedQNameType }{@code >}
-     */
+
     @XmlElementDecl(namespace = "http://www.w3.org/2005/08/addressing", name = "ProblemHeaderQName")
     public JAXBElement<AttributedQNameType> createProblemHeaderQName(AttributedQNameType value) {
         return new JAXBElement<AttributedQNameType>(

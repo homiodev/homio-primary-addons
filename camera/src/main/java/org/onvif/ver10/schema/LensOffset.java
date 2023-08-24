@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r LensOffset complex type.
@@ -24,27 +25,41 @@ import java.util.Map;
  * &lt;/complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "LensOffset")
 public class LensOffset {
 
-    @XmlAttribute(name = "x")
-    protected Float x;
-
-    @XmlAttribute(name = "y")
-    protected Float y;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der x-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der x-Eigenschaft ab.
      *
      * @return possible object is {@link Float }
      */
-    public Float getX() {
-        return x;
-    }
+    @XmlAttribute(name = "x")
+    protected Float x;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der y-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlAttribute(name = "y")
+    protected Float y;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der x-Eigenschaft fest.
@@ -56,15 +71,6 @@ public class LensOffset {
     }
 
     /**
-     * Ruft den Wert der y-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getY() {
-        return y;
-    }
-
-    /**
      * Legt den Wert der y-Eigenschaft fest.
      *
      * @param value allowed object is {@link Float }
@@ -73,18 +79,4 @@ public class LensOffset {
         this.y = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r FocusOptions complex type.
@@ -38,13 +39,31 @@ public class FocusOptions {
     @XmlElement(name = "AutoFocusModes")
     protected List<AutoFocusMode> autoFocusModes;
 
-    @XmlElement(name = "DefaultSpeed", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der defaultSpeed-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "DefaultSpeed", required = true)
     protected FloatRange defaultSpeed;
 
-    @XmlElement(name = "NearLimit", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der nearLimit-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "NearLimit", required = true)
     protected FloatRange nearLimit;
 
-    @XmlElement(name = "FarLimit", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der farLimit-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "FarLimit", required = true)
     protected FloatRange farLimit;
 
     /**
@@ -70,15 +89,6 @@ public class FocusOptions {
     }
 
     /**
-     * Ruft den Wert der defaultSpeed-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getDefaultSpeed() {
-        return defaultSpeed;
-    }
-
-    /**
      * Legt den Wert der defaultSpeed-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
@@ -88,30 +98,12 @@ public class FocusOptions {
     }
 
     /**
-     * Ruft den Wert der nearLimit-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getNearLimit() {
-        return nearLimit;
-    }
-
-    /**
      * Legt den Wert der nearLimit-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
      */
     public void setNearLimit(FloatRange value) {
         this.nearLimit = value;
-    }
-
-    /**
-     * Ruft den Wert der farLimit-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getFarLimit() {
-        return farLimit;
     }
 
     /**

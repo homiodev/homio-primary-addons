@@ -1,6 +1,7 @@
 package org.onvif.ver20.imaging.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.MoveOptions20;
 
 /**
@@ -21,6 +22,7 @@ import org.onvif.ver10.schema.MoveOptions20;
  * &lt;/complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -28,17 +30,14 @@ import org.onvif.ver10.schema.MoveOptions20;
 @XmlRootElement(name = "GetMoveOptionsResponse")
 public class GetMoveOptionsResponse {
 
-    @XmlElement(name = "MoveOptions", required = true)
-    protected MoveOptions20 moveOptions;
-
     /**
-     * Ruft den Wert der moveOptions-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der moveOptions-Eigenschaft ab.
      *
      * @return possible object is {@link MoveOptions20 }
      */
-    public MoveOptions20 getMoveOptions() {
-        return moveOptions;
-    }
+    @XmlElement(name = "MoveOptions", required = true)
+    protected MoveOptions20 moveOptions;
 
     /**
      * Legt den Wert der moveOptions-Eigenschaft fest.

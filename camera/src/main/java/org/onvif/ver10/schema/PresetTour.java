@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r PresetTour complex type.
@@ -39,38 +40,73 @@ import java.util.Map;
         propOrder = {"name", "status", "autoStart", "startingCondition", "tourSpot", "extension"})
 public class PresetTour {
 
-    @XmlElement(name = "Name")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der name-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Name")
     protected String name;
 
-    @XmlElement(name = "Status", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der status-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZPresetTourStatus }
+     */
+    @Getter @XmlElement(name = "Status", required = true)
     protected PTZPresetTourStatus status;
 
-    @XmlElement(name = "AutoStart")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der autoStart-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "AutoStart")
     protected boolean autoStart;
 
-    @XmlElement(name = "StartingCondition", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der startingCondition-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZPresetTourStartingCondition }
+     */
+    @Getter @XmlElement(name = "StartingCondition", required = true)
     protected PTZPresetTourStartingCondition startingCondition;
 
     @XmlElement(name = "TourSpot")
     protected List<PTZPresetTourSpot> tourSpot;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZPresetTourExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected PTZPresetTourExtension extension;
 
-    @XmlAttribute(name = "token")
-    protected String token;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der name-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der token-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Getter @XmlAttribute(name = "token")
+    protected String token;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der name-Eigenschaft fest.
@@ -79,15 +115,6 @@ public class PresetTour {
      */
     public void setName(String value) {
         this.name = value;
-    }
-
-    /**
-     * Ruft den Wert der status-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZPresetTourStatus }
-     */
-    public PTZPresetTourStatus getStatus() {
-        return status;
     }
 
     /**
@@ -100,26 +127,10 @@ public class PresetTour {
     }
 
     /**
-     * Ruft den Wert der autoStart-Eigenschaft ab.
-     */
-    public boolean isAutoStart() {
-        return autoStart;
-    }
-
-    /**
      * Legt den Wert der autoStart-Eigenschaft fest.
      */
     public void setAutoStart(boolean value) {
         this.autoStart = value;
-    }
-
-    /**
-     * Ruft den Wert der startingCondition-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZPresetTourStartingCondition }
-     */
-    public PTZPresetTourStartingCondition getStartingCondition() {
-        return startingCondition;
     }
 
     /**
@@ -154,30 +165,12 @@ public class PresetTour {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZPresetTourExtension }
-     */
-    public PTZPresetTourExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link PTZPresetTourExtension }
      */
     public void setExtension(PTZPresetTourExtension value) {
         this.extension = value;
-    }
-
-    /**
-     * Ruft den Wert der token-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getToken() {
-        return token;
     }
 
     /**
@@ -189,18 +182,4 @@ public class PresetTour {
         this.token = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.HostnameInformation;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.HostnameInformation;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.HostnameInformation;
 @XmlRootElement(name = "GetHostnameResponse")
 public class GetHostnameResponse {
 
-    @XmlElement(name = "HostnameInformation", required = true)
-    protected HostnameInformation hostnameInformation;
-
     /**
-     * Ruft den Wert der hostnameInformation-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der hostnameInformation-Eigenschaft ab.
      *
      * @return possible object is {@link HostnameInformation }
      */
-    public HostnameInformation getHostnameInformation() {
-        return hostnameInformation;
-    }
+    @XmlElement(name = "HostnameInformation", required = true)
+    protected HostnameInformation hostnameInformation;
 
     /**
      * Legt den Wert der hostnameInformation-Eigenschaft fest.

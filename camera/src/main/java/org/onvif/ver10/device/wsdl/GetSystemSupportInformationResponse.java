@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.SupportInformation;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.SupportInformation;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.SupportInformation;
 @XmlRootElement(name = "GetSystemSupportInformationResponse")
 public class GetSystemSupportInformationResponse {
 
-    @XmlElement(name = "SupportInformation", required = true)
-    protected SupportInformation supportInformation;
-
     /**
-     * Ruft den Wert der supportInformation-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der supportInformation-Eigenschaft ab.
      *
      * @return possible object is {@link SupportInformation }
      */
-    public SupportInformation getSupportInformation() {
-        return supportInformation;
-    }
+    @XmlElement(name = "SupportInformation", required = true)
+    protected SupportInformation supportInformation;
 
     /**
      * Legt den Wert der supportInformation-Eigenschaft fest.

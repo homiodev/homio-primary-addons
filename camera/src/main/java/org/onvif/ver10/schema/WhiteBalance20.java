@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r WhiteBalance20 complex type.
@@ -28,35 +29,61 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "WhiteBalance20",
         propOrder = {"mode", "crGain", "cbGain", "extension"})
 public class WhiteBalance20 {
 
-    @XmlElement(name = "Mode", required = true)
-    protected WhiteBalanceMode mode;
-
-    @XmlElement(name = "CrGain")
-    protected Float crGain;
-
-    @XmlElement(name = "CbGain")
-    protected Float cbGain;
-
-    @XmlElement(name = "Extension")
-    protected WhiteBalance20Extension extension;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der mode-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der mode-Eigenschaft ab.
      *
      * @return possible object is {@link WhiteBalanceMode }
      */
-    public WhiteBalanceMode getMode() {
-        return mode;
-    }
+    @XmlElement(name = "Mode", required = true)
+    protected WhiteBalanceMode mode;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der crGain-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlElement(name = "CrGain")
+    protected Float crGain;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der cbGain-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlElement(name = "CbGain")
+    protected Float cbGain;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link WhiteBalance20Extension }
+     */
+    @XmlElement(name = "Extension")
+    protected WhiteBalance20Extension extension;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der mode-Eigenschaft fest.
@@ -65,15 +92,6 @@ public class WhiteBalance20 {
      */
     public void setMode(WhiteBalanceMode value) {
         this.mode = value;
-    }
-
-    /**
-     * Ruft den Wert der crGain-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getCrGain() {
-        return crGain;
     }
 
     /**
@@ -86,30 +104,12 @@ public class WhiteBalance20 {
     }
 
     /**
-     * Ruft den Wert der cbGain-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getCbGain() {
-        return cbGain;
-    }
-
-    /**
      * Legt den Wert der cbGain-Eigenschaft fest.
      *
      * @param value allowed object is {@link Float }
      */
     public void setCbGain(Float value) {
         this.cbGain = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link WhiteBalance20Extension }
-     */
-    public WhiteBalance20Extension getExtension() {
-        return extension;
     }
 
     /**
@@ -121,18 +121,4 @@ public class WhiteBalance20 {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

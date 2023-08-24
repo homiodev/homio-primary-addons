@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.NetworkInterfaceSetConfiguration;
 
 /**
@@ -30,6 +31,7 @@ import org.onvif.ver10.schema.NetworkInterfaceSetConfiguration;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -37,20 +39,23 @@ import org.onvif.ver10.schema.NetworkInterfaceSetConfiguration;
 @XmlRootElement(name = "SetNetworkInterfaces")
 public class SetNetworkInterfaces {
 
-    @XmlElement(name = "InterfaceToken", required = true)
-    protected String interfaceToken;
-
-    @XmlElement(name = "NetworkInterface", required = true)
-    protected NetworkInterfaceSetConfiguration networkInterface;
-
     /**
-     * Ruft den Wert der interfaceToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der interfaceToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getInterfaceToken() {
-        return interfaceToken;
-    }
+    @XmlElement(name = "InterfaceToken", required = true)
+    protected String interfaceToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der networkInterface-Eigenschaft ab.
+     *
+     * @return possible object is {@link NetworkInterfaceSetConfiguration }
+     */
+    @XmlElement(name = "NetworkInterface", required = true)
+    protected NetworkInterfaceSetConfiguration networkInterface;
 
     /**
      * Legt den Wert der interfaceToken-Eigenschaft fest.
@@ -59,15 +64,6 @@ public class SetNetworkInterfaces {
      */
     public void setInterfaceToken(String value) {
         this.interfaceToken = value;
-    }
-
-    /**
-     * Ruft den Wert der networkInterface-Eigenschaft ab.
-     *
-     * @return possible object is {@link NetworkInterfaceSetConfiguration }
-     */
-    public NetworkInterfaceSetConfiguration getNetworkInterface() {
-        return networkInterface;
     }
 
     /**

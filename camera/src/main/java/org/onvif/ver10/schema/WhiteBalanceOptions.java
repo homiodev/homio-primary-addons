@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r WhiteBalanceOptions complex type.
@@ -37,10 +38,22 @@ public class WhiteBalanceOptions {
     @XmlElement(name = "Mode", required = true)
     protected List<WhiteBalanceMode> mode;
 
-    @XmlElement(name = "YrGain", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der yrGain-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "YrGain", required = true)
     protected FloatRange yrGain;
 
-    @XmlElement(name = "YbGain", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der ybGain-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "YbGain", required = true)
     protected FloatRange ybGain;
 
     /**
@@ -66,30 +79,12 @@ public class WhiteBalanceOptions {
     }
 
     /**
-     * Ruft den Wert der yrGain-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getYrGain() {
-        return yrGain;
-    }
-
-    /**
      * Legt den Wert der yrGain-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
      */
     public void setYrGain(FloatRange value) {
         this.yrGain = value;
-    }
-
-    /**
-     * Ruft den Wert der ybGain-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getYbGain() {
-        return ybGain;
     }
 
     /**

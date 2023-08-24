@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r NetworkInterfaceConnectionSetting complex type.
@@ -25,27 +26,35 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NetworkInterfaceConnectionSetting",
         propOrder = {"autoNegotiation", "speed", "duplex"})
 public class NetworkInterfaceConnectionSetting {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der autoNegotiation-Eigenschaft ab.
+     */
     @XmlElement(name = "AutoNegotiation")
     protected boolean autoNegotiation;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der speed-Eigenschaft ab.
+     */
     @XmlElement(name = "Speed")
     protected int speed;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der duplex-Eigenschaft ab.
+     *
+     * @return possible object is {@link Duplex }
+     */
     @XmlElement(name = "Duplex", required = true)
     protected Duplex duplex;
-
-    /**
-     * Ruft den Wert der autoNegotiation-Eigenschaft ab.
-     */
-    public boolean isAutoNegotiation() {
-        return autoNegotiation;
-    }
 
     /**
      * Legt den Wert der autoNegotiation-Eigenschaft fest.
@@ -55,26 +64,10 @@ public class NetworkInterfaceConnectionSetting {
     }
 
     /**
-     * Ruft den Wert der speed-Eigenschaft ab.
-     */
-    public int getSpeed() {
-        return speed;
-    }
-
-    /**
      * Legt den Wert der speed-Eigenschaft fest.
      */
     public void setSpeed(int value) {
         this.speed = value;
-    }
-
-    /**
-     * Ruft den Wert der duplex-Eigenschaft ab.
-     *
-     * @return possible object is {@link Duplex }
-     */
-    public Duplex getDuplex() {
-        return duplex;
     }
 
     /**

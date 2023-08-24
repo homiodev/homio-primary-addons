@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r H264Configuration complex type.
@@ -24,39 +25,34 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "H264Configuration",
         propOrder = {"govLength", "h264Profile"})
 public class H264Configuration {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der govLength-Eigenschaft ab.
+     */
     @XmlElement(name = "GovLength")
     protected int govLength;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der h264Profile-Eigenschaft ab.
+     *
+     * @return possible object is {@link H264Profile }
+     */
     @XmlElement(name = "H264Profile", required = true)
     protected H264Profile h264Profile;
-
-    /**
-     * Ruft den Wert der govLength-Eigenschaft ab.
-     */
-    public int getGovLength() {
-        return govLength;
-    }
 
     /**
      * Legt den Wert der govLength-Eigenschaft fest.
      */
     public void setGovLength(int value) {
         this.govLength = value;
-    }
-
-    /**
-     * Ruft den Wert der h264Profile-Eigenschaft ab.
-     *
-     * @return possible object is {@link H264Profile }
-     */
-    public H264Profile getH264Profile() {
-        return h264Profile;
     }
 
     /**

@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Type describing the ImagingSettings of a VideoSource. The supported options and ranges can be obtained via the GetOptions command.
@@ -37,6 +38,7 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ImagingSettings20",
@@ -55,50 +57,117 @@ import java.util.Map;
         })
 public class ImagingSettings20 {
 
-    @XmlElement(name = "BacklightCompensation")
-    protected BacklightCompensation20 backlightCompensation;
-
-    @XmlElement(name = "Brightness")
-    protected Float brightness;
-
-    @XmlElement(name = "ColorSaturation")
-    protected Float colorSaturation;
-
-    @XmlElement(name = "Contrast")
-    protected Float contrast;
-
-    @XmlElement(name = "Exposure")
-    protected Exposure20 exposure;
-
-    @XmlElement(name = "Focus")
-    protected FocusConfiguration20 focus;
-
-    @XmlElement(name = "IrCutFilter")
-    protected IrCutFilterMode irCutFilter;
-
-    @XmlElement(name = "Sharpness")
-    protected Float sharpness;
-
-    @XmlElement(name = "WideDynamicRange")
-    protected WideDynamicRange20 wideDynamicRange;
-
-    @XmlElement(name = "WhiteBalance")
-    protected WhiteBalance20 whiteBalance;
-
-    @XmlElement(name = "Extension")
-    protected ImagingSettingsExtension20 extension;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der backlightCompensation-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der backlightCompensation-Eigenschaft ab.
      *
      * @return possible object is {@link BacklightCompensation20 }
      */
-    public BacklightCompensation20 getBacklightCompensation() {
-        return backlightCompensation;
-    }
+    @XmlElement(name = "BacklightCompensation")
+    protected BacklightCompensation20 backlightCompensation;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der brightness-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlElement(name = "Brightness")
+    protected Float brightness;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der colorSaturation-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlElement(name = "ColorSaturation")
+    protected Float colorSaturation;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der contrast-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlElement(name = "Contrast")
+    protected Float contrast;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der exposure-Eigenschaft ab.
+     *
+     * @return possible object is {@link Exposure20 }
+     */
+    @XmlElement(name = "Exposure")
+    protected Exposure20 exposure;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der focus-Eigenschaft ab.
+     *
+     * @return possible object is {@link FocusConfiguration20 }
+     */
+    @XmlElement(name = "Focus")
+    protected FocusConfiguration20 focus;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der irCutFilter-Eigenschaft ab.
+     *
+     * @return possible object is {@link IrCutFilterMode }
+     */
+    @XmlElement(name = "IrCutFilter")
+    protected IrCutFilterMode irCutFilter;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der sharpness-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlElement(name = "Sharpness")
+    protected Float sharpness;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der wideDynamicRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link WideDynamicRange20 }
+     */
+    @XmlElement(name = "WideDynamicRange")
+    protected WideDynamicRange20 wideDynamicRange;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der whiteBalance-Eigenschaft ab.
+     *
+     * @return possible object is {@link WhiteBalance20 }
+     */
+    @XmlElement(name = "WhiteBalance")
+    protected WhiteBalance20 whiteBalance;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ImagingSettingsExtension20 }
+     */
+    @XmlElement(name = "Extension")
+    protected ImagingSettingsExtension20 extension;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der backlightCompensation-Eigenschaft fest.
@@ -107,15 +176,6 @@ public class ImagingSettings20 {
      */
     public void setBacklightCompensation(BacklightCompensation20 value) {
         this.backlightCompensation = value;
-    }
-
-    /**
-     * Ruft den Wert der brightness-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getBrightness() {
-        return brightness;
     }
 
     /**
@@ -128,30 +188,12 @@ public class ImagingSettings20 {
     }
 
     /**
-     * Ruft den Wert der colorSaturation-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getColorSaturation() {
-        return colorSaturation;
-    }
-
-    /**
      * Legt den Wert der colorSaturation-Eigenschaft fest.
      *
      * @param value allowed object is {@link Float }
      */
     public void setColorSaturation(Float value) {
         this.colorSaturation = value;
-    }
-
-    /**
-     * Ruft den Wert der contrast-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getContrast() {
-        return contrast;
     }
 
     /**
@@ -164,30 +206,12 @@ public class ImagingSettings20 {
     }
 
     /**
-     * Ruft den Wert der exposure-Eigenschaft ab.
-     *
-     * @return possible object is {@link Exposure20 }
-     */
-    public Exposure20 getExposure() {
-        return exposure;
-    }
-
-    /**
      * Legt den Wert der exposure-Eigenschaft fest.
      *
      * @param value allowed object is {@link Exposure20 }
      */
     public void setExposure(Exposure20 value) {
         this.exposure = value;
-    }
-
-    /**
-     * Ruft den Wert der focus-Eigenschaft ab.
-     *
-     * @return possible object is {@link FocusConfiguration20 }
-     */
-    public FocusConfiguration20 getFocus() {
-        return focus;
     }
 
     /**
@@ -200,30 +224,12 @@ public class ImagingSettings20 {
     }
 
     /**
-     * Ruft den Wert der irCutFilter-Eigenschaft ab.
-     *
-     * @return possible object is {@link IrCutFilterMode }
-     */
-    public IrCutFilterMode getIrCutFilter() {
-        return irCutFilter;
-    }
-
-    /**
      * Legt den Wert der irCutFilter-Eigenschaft fest.
      *
      * @param value allowed object is {@link IrCutFilterMode }
      */
     public void setIrCutFilter(IrCutFilterMode value) {
         this.irCutFilter = value;
-    }
-
-    /**
-     * Ruft den Wert der sharpness-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getSharpness() {
-        return sharpness;
     }
 
     /**
@@ -236,30 +242,12 @@ public class ImagingSettings20 {
     }
 
     /**
-     * Ruft den Wert der wideDynamicRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link WideDynamicRange20 }
-     */
-    public WideDynamicRange20 getWideDynamicRange() {
-        return wideDynamicRange;
-    }
-
-    /**
      * Legt den Wert der wideDynamicRange-Eigenschaft fest.
      *
      * @param value allowed object is {@link WideDynamicRange20 }
      */
     public void setWideDynamicRange(WideDynamicRange20 value) {
         this.wideDynamicRange = value;
-    }
-
-    /**
-     * Ruft den Wert der whiteBalance-Eigenschaft ab.
-     *
-     * @return possible object is {@link WhiteBalance20 }
-     */
-    public WhiteBalance20 getWhiteBalance() {
-        return whiteBalance;
     }
 
     /**
@@ -272,15 +260,6 @@ public class ImagingSettings20 {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ImagingSettingsExtension20 }
-     */
-    public ImagingSettingsExtension20 getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link ImagingSettingsExtension20 }
@@ -289,18 +268,4 @@ public class ImagingSettings20 {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

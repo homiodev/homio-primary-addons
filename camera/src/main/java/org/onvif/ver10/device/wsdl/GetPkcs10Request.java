@@ -11,6 +11,7 @@ package org.onvif.ver10.device.wsdl;
 import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.Getter;
 import org.onvif.ver10.schema.BinaryData;
 
 /**
@@ -33,6 +34,7 @@ import org.onvif.ver10.schema.BinaryData;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -40,25 +42,34 @@ import org.onvif.ver10.schema.BinaryData;
 @XmlRootElement(name = "GetPkcs10Request")
 public class GetPkcs10Request {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der certificateID-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "CertificateID", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String certificateID;
 
-    @XmlElement(name = "Subject")
-    protected String subject;
-
-    @XmlElement(name = "Attributes")
-    protected BinaryData attributes;
-
     /**
-     * Ruft den Wert der certificateID-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der subject-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getCertificateID() {
-        return certificateID;
-    }
+    @XmlElement(name = "Subject")
+    protected String subject;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der attributes-Eigenschaft ab.
+     *
+     * @return possible object is {@link BinaryData }
+     */
+    @XmlElement(name = "Attributes")
+    protected BinaryData attributes;
 
     /**
      * Legt den Wert der certificateID-Eigenschaft fest.
@@ -70,30 +81,12 @@ public class GetPkcs10Request {
     }
 
     /**
-     * Ruft den Wert der subject-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getSubject() {
-        return subject;
-    }
-
-    /**
      * Legt den Wert der subject-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setSubject(String value) {
         this.subject = value;
-    }
-
-    /**
-     * Ruft den Wert der attributes-Eigenschaft ab.
-     *
-     * @return possible object is {@link BinaryData }
-     */
-    public BinaryData getAttributes() {
-        return attributes;
     }
 
     /**

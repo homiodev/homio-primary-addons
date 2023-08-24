@@ -1,6 +1,7 @@
 package org.onvif.ver20.ptz.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -20,6 +21,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -27,17 +29,14 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetNode")
 public class GetNode {
 
-    @XmlElement(name = "NodeToken", required = true)
-    protected String nodeToken;
-
     /**
-     * Ruft den Wert der nodeToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der nodeToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getNodeToken() {
-        return nodeToken;
-    }
+    @XmlElement(name = "NodeToken", required = true)
+    protected String nodeToken;
 
     /**
      * Legt den Wert der nodeToken-Eigenschaft fest.

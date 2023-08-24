@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -17,11 +18,27 @@ public class ColorDescriptor {
     @XmlElement(name = "ColorCluster")
     protected List<ColorDescriptor.ColorCluster> colorCluster;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ColorDescriptorExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected ColorDescriptorExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the colorCluster property.
@@ -47,36 +64,12 @@ public class ColorDescriptor {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ColorDescriptorExtension }
-     */
-    public ColorDescriptorExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link ColorDescriptorExtension }
      */
     public void setExtension(ColorDescriptorExtension value) {
         this.extension = value;
-    }
-
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
     }
 
     /**
@@ -99,29 +92,39 @@ public class ColorDescriptor {
      * </complexType>
      * </pre>
      */
+    @Getter
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(
             name = "",
             propOrder = {"color", "weight", "covariance"})
     public static class ColorCluster {
 
-        @XmlElement(name = "Color", required = true)
-        protected Color color;
-
-        @XmlElement(name = "Weight")
-        protected Float weight;
-
-        @XmlElement(name = "Covariance")
-        protected ColorCovariance covariance;
-
         /**
-         * Ruft den Wert der color-Eigenschaft ab.
+         * -- GETTER --
+         *  Ruft den Wert der color-Eigenschaft ab.
          *
          * @return possible object is {@link Color }
          */
-        public Color getColor() {
-            return color;
-        }
+        @XmlElement(name = "Color", required = true)
+        protected Color color;
+
+        /**
+         * -- GETTER --
+         *  Ruft den Wert der weight-Eigenschaft ab.
+         *
+         * @return possible object is {@link Float }
+         */
+        @XmlElement(name = "Weight")
+        protected Float weight;
+
+        /**
+         * -- GETTER --
+         *  Ruft den Wert der covariance-Eigenschaft ab.
+         *
+         * @return possible object is {@link ColorCovariance }
+         */
+        @XmlElement(name = "Covariance")
+        protected ColorCovariance covariance;
 
         /**
          * Legt den Wert der color-Eigenschaft fest.
@@ -133,30 +136,12 @@ public class ColorDescriptor {
         }
 
         /**
-         * Ruft den Wert der weight-Eigenschaft ab.
-         *
-         * @return possible object is {@link Float }
-         */
-        public Float getWeight() {
-            return weight;
-        }
-
-        /**
          * Legt den Wert der weight-Eigenschaft fest.
          *
          * @param value allowed object is {@link Float }
          */
         public void setWeight(Float value) {
             this.weight = value;
-        }
-
-        /**
-         * Ruft den Wert der covariance-Eigenschaft ab.
-         *
-         * @return possible object is {@link ColorCovariance }
-         */
-        public ColorCovariance getCovariance() {
-            return covariance;
         }
 
         /**

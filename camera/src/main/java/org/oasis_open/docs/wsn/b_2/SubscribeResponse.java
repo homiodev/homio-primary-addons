@@ -9,6 +9,7 @@
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3._2005._08.addressing.EndpointReferenceType;
 import org.w3c.dom.Element;
 
@@ -44,28 +45,37 @@ import java.util.List;
 @XmlRootElement(name = "SubscribeResponse")
 public class SubscribeResponse {
 
-    @XmlElement(name = "SubscriptionReference", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der subscriptionReference-Eigenschaft ab.
+     *
+     * @return possible object is {@link EndpointReferenceType }
+     */
+    @Getter @XmlElement(name = "SubscriptionReference", required = true)
     protected EndpointReferenceType subscriptionReference;
 
-    @XmlElement(name = "CurrentTime")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der currentTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "CurrentTime")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar currentTime;
 
-    @XmlElement(name = "TerminationTime", nillable = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der terminationTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "TerminationTime", nillable = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar terminationTime;
 
     @XmlAnyElement(lax = true)
     protected List<Object> any;
-
-    /**
-     * Ruft den Wert der subscriptionReference-Eigenschaft ab.
-     *
-     * @return possible object is {@link EndpointReferenceType }
-     */
-    public EndpointReferenceType getSubscriptionReference() {
-        return subscriptionReference;
-    }
 
     /**
      * Legt den Wert der subscriptionReference-Eigenschaft fest.
@@ -77,30 +87,12 @@ public class SubscribeResponse {
     }
 
     /**
-     * Ruft den Wert der currentTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getCurrentTime() {
-        return currentTime;
-    }
-
-    /**
      * Legt den Wert der currentTime-Eigenschaft fest.
      *
      * @param value allowed object is {@link XMLGregorianCalendar }
      */
     public void setCurrentTime(XMLGregorianCalendar value) {
         this.currentTime = value;
-    }
-
-    /**
-     * Ruft den Wert der terminationTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getTerminationTime() {
-        return terminationTime;
     }
 
     /**

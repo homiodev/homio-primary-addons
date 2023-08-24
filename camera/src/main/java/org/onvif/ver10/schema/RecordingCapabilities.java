@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -52,26 +53,56 @@ public class RecordingCapabilities {
     @XmlSchemaType(name = "anyURI")
     protected String xAddr;
 
-    @XmlElement(name = "ReceiverSource")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der receiverSource-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "ReceiverSource")
     protected boolean receiverSource;
 
-    @XmlElement(name = "MediaProfileSource")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der mediaProfileSource-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "MediaProfileSource")
     protected boolean mediaProfileSource;
 
-    @XmlElement(name = "DynamicRecordings")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dynamicRecordings-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "DynamicRecordings")
     protected boolean dynamicRecordings;
 
-    @XmlElement(name = "DynamicTracks")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dynamicTracks-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "DynamicTracks")
     protected boolean dynamicTracks;
 
-    @XmlElement(name = "MaxStringLength")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maxStringLength-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "MaxStringLength")
     protected int maxStringLength;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der xAddr-Eigenschaft ab.
@@ -92,24 +123,10 @@ public class RecordingCapabilities {
     }
 
     /**
-     * Ruft den Wert der receiverSource-Eigenschaft ab.
-     */
-    public boolean isReceiverSource() {
-        return receiverSource;
-    }
-
-    /**
      * Legt den Wert der receiverSource-Eigenschaft fest.
      */
     public void setReceiverSource(boolean value) {
         this.receiverSource = value;
-    }
-
-    /**
-     * Ruft den Wert der mediaProfileSource-Eigenschaft ab.
-     */
-    public boolean isMediaProfileSource() {
-        return mediaProfileSource;
     }
 
     /**
@@ -120,13 +137,6 @@ public class RecordingCapabilities {
     }
 
     /**
-     * Ruft den Wert der dynamicRecordings-Eigenschaft ab.
-     */
-    public boolean isDynamicRecordings() {
-        return dynamicRecordings;
-    }
-
-    /**
      * Legt den Wert der dynamicRecordings-Eigenschaft fest.
      */
     public void setDynamicRecordings(boolean value) {
@@ -134,24 +144,10 @@ public class RecordingCapabilities {
     }
 
     /**
-     * Ruft den Wert der dynamicTracks-Eigenschaft ab.
-     */
-    public boolean isDynamicTracks() {
-        return dynamicTracks;
-    }
-
-    /**
      * Legt den Wert der dynamicTracks-Eigenschaft fest.
      */
     public void setDynamicTracks(boolean value) {
         this.dynamicTracks = value;
-    }
-
-    /**
-     * Ruft den Wert der maxStringLength-Eigenschaft ab.
-     */
-    public int getMaxStringLength() {
-        return maxStringLength;
     }
 
     /**
@@ -184,18 +180,4 @@ public class RecordingCapabilities {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

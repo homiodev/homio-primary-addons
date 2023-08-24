@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -40,7 +41,13 @@ import java.util.Map;
         propOrder = {"presetToken", "home", "ptzPosition", "typeExtension", "any"})
 public class PTZPresetTourPresetDetail {
 
-    @XmlElement(name = "PresetToken")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der presetToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "PresetToken")
     protected String presetToken;
 
     @XmlElement(name = "Home")
@@ -49,23 +56,30 @@ public class PTZPresetTourPresetDetail {
     @XmlElement(name = "PTZPosition")
     protected PTZVector ptzPosition;
 
-    @XmlElement(name = "TypeExtension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der typeExtension-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZPresetTourTypeExtension }
+     */
+    @Getter @XmlElement(name = "TypeExtension")
     protected PTZPresetTourTypeExtension typeExtension;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der presetToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getPresetToken() {
-        return presetToken;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der presetToken-Eigenschaft fest.
@@ -113,15 +127,6 @@ public class PTZPresetTourPresetDetail {
     }
 
     /**
-     * Ruft den Wert der typeExtension-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZPresetTourTypeExtension }
-     */
-    public PTZPresetTourTypeExtension getTypeExtension() {
-        return typeExtension;
-    }
-
-    /**
      * Legt den Wert der typeExtension-Eigenschaft fest.
      *
      * @param value allowed object is {@link PTZPresetTourTypeExtension }
@@ -153,18 +158,4 @@ public class PTZPresetTourPresetDetail {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

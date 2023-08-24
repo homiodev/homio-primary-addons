@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -38,7 +39,13 @@ public class NetworkZeroConfigurationExtension {
     @XmlElement(name = "Additional")
     protected List<NetworkZeroConfiguration> additional;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link NetworkZeroConfigurationExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected NetworkZeroConfigurationExtension2 extension;
 
     /**
@@ -84,15 +91,6 @@ public class NetworkZeroConfigurationExtension {
             additional = new ArrayList<NetworkZeroConfiguration>();
         }
         return this.additional;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link NetworkZeroConfigurationExtension2 }
-     */
-    public NetworkZeroConfigurationExtension2 getExtension() {
-        return extension;
     }
 
     /**

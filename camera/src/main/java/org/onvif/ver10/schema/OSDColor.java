@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * The value range of "Transparent" could be defined by vendors only should follow this rule: the minimum value means non-transparent and the maximum value
@@ -29,29 +30,43 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "OSDColor",
         propOrder = {"color"})
 public class OSDColor {
 
-    @XmlElement(name = "Color", required = true)
-    protected Color color;
-
-    @XmlAttribute(name = "Transparent")
-    protected Integer transparent;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der color-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der color-Eigenschaft ab.
      *
      * @return possible object is {@link Color }
      */
-    public Color getColor() {
-        return color;
-    }
+    @XmlElement(name = "Color", required = true)
+    protected Color color;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der transparent-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
+    @XmlAttribute(name = "Transparent")
+    protected Integer transparent;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der color-Eigenschaft fest.
@@ -63,15 +78,6 @@ public class OSDColor {
     }
 
     /**
-     * Ruft den Wert der transparent-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
-    public Integer getTransparent() {
-        return transparent;
-    }
-
-    /**
      * Legt den Wert der transparent-Eigenschaft fest.
      *
      * @param value allowed object is {@link Integer }
@@ -80,18 +86,4 @@ public class OSDColor {
         this.transparent = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

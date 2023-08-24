@@ -9,6 +9,7 @@
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3._2005._08.addressing.EndpointReferenceType;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -34,6 +35,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -41,27 +43,42 @@ import javax.xml.datatype.XMLGregorianCalendar;
 @XmlRootElement(name = "SubscriptionManagerRP")
 public class SubscriptionManagerRP {
 
-    @XmlElement(name = "ConsumerReference", required = true)
-    protected EndpointReferenceType consumerReference;
-
-    @XmlElement(name = "Filter")
-    protected FilterType filter;
-
-    @XmlElement(name = "SubscriptionPolicy")
-    protected SubscriptionPolicyType subscriptionPolicy;
-
-    @XmlElement(name = "CreationTime")
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar creationTime;
-
     /**
-     * Ruft den Wert der consumerReference-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der consumerReference-Eigenschaft ab.
      *
      * @return possible object is {@link EndpointReferenceType }
      */
-    public EndpointReferenceType getConsumerReference() {
-        return consumerReference;
-    }
+    @XmlElement(name = "ConsumerReference", required = true)
+    protected EndpointReferenceType consumerReference;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der filter-Eigenschaft ab.
+     *
+     * @return possible object is {@link FilterType }
+     */
+    @XmlElement(name = "Filter")
+    protected FilterType filter;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der subscriptionPolicy-Eigenschaft ab.
+     *
+     * @return possible object is {@link SubscriptionPolicyType }
+     */
+    @XmlElement(name = "SubscriptionPolicy")
+    protected SubscriptionPolicyType subscriptionPolicy;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der creationTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @XmlElement(name = "CreationTime")
+    @XmlSchemaType(name = "dateTime")
+    protected XMLGregorianCalendar creationTime;
 
     /**
      * Legt den Wert der consumerReference-Eigenschaft fest.
@@ -70,15 +87,6 @@ public class SubscriptionManagerRP {
      */
     public void setConsumerReference(EndpointReferenceType value) {
         this.consumerReference = value;
-    }
-
-    /**
-     * Ruft den Wert der filter-Eigenschaft ab.
-     *
-     * @return possible object is {@link FilterType }
-     */
-    public FilterType getFilter() {
-        return filter;
     }
 
     /**
@@ -91,30 +99,12 @@ public class SubscriptionManagerRP {
     }
 
     /**
-     * Ruft den Wert der subscriptionPolicy-Eigenschaft ab.
-     *
-     * @return possible object is {@link SubscriptionPolicyType }
-     */
-    public SubscriptionPolicyType getSubscriptionPolicy() {
-        return subscriptionPolicy;
-    }
-
-    /**
      * Legt den Wert der subscriptionPolicy-Eigenschaft fest.
      *
      * @param value allowed object is {@link SubscriptionPolicyType }
      */
     public void setSubscriptionPolicy(SubscriptionPolicyType value) {
         this.subscriptionPolicy = value;
-    }
-
-    /**
-     * Ruft den Wert der creationTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getCreationTime() {
-        return creationTime;
     }
 
     /**

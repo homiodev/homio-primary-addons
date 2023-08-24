@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.BinaryData;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.BinaryData;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.BinaryData;
 @XmlRootElement(name = "GetPkcs10RequestResponse")
 public class GetPkcs10RequestResponse {
 
-    @XmlElement(name = "Pkcs10Request", required = true)
-    protected BinaryData pkcs10Request;
-
     /**
-     * Ruft den Wert der pkcs10Request-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der pkcs10Request-Eigenschaft ab.
      *
      * @return possible object is {@link BinaryData }
      */
-    public BinaryData getPkcs10Request() {
-        return pkcs10Request;
-    }
+    @XmlElement(name = "Pkcs10Request", required = true)
+    protected BinaryData pkcs10Request;
 
     /**
      * Legt den Wert der pkcs10Request-Eigenschaft fest.

@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -38,7 +39,13 @@ import java.util.Map;
         propOrder = {"offset", "projection", "xFactor", "any"})
 public class LensDescription {
 
-    @XmlElement(name = "Offset", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der offset-Eigenschaft ab.
+     *
+     * @return possible object is {@link LensOffset }
+     */
+    @Getter @XmlElement(name = "Offset", required = true)
     protected LensOffset offset;
 
     @XmlElement(name = "Projection", required = true)
@@ -50,20 +57,27 @@ public class LensDescription {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAttribute(name = "FocalLength")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der focalLength-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @Getter @XmlAttribute(name = "FocalLength")
     protected Float focalLength;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der offset-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link LensOffset }
+     * @return always non-null
      */
-    public LensOffset getOffset() {
-        return offset;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der offset-Eigenschaft fest.
@@ -134,15 +148,6 @@ public class LensDescription {
     }
 
     /**
-     * Ruft den Wert der focalLength-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getFocalLength() {
-        return focalLength;
-    }
-
-    /**
      * Legt den Wert der focalLength-Eigenschaft fest.
      *
      * @param value allowed object is {@link Float }
@@ -151,18 +156,4 @@ public class LensDescription {
         this.focalLength = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

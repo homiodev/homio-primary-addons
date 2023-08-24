@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -19,14 +20,28 @@ public class DisplayCapabilities {
     @XmlSchemaType(name = "anyURI")
     protected String xAddr;
 
-    @XmlElement(name = "FixedLayout")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der fixedLayout-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "FixedLayout")
     protected boolean fixedLayout;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der xAddr-Eigenschaft ab.
@@ -44,13 +59,6 @@ public class DisplayCapabilities {
      */
     public void setXAddr(String value) {
         this.xAddr = value;
-    }
-
-    /**
-     * Ruft den Wert der fixedLayout-Eigenschaft ab.
-     */
-    public boolean isFixedLayout() {
-        return fixedLayout;
     }
 
     /**
@@ -83,18 +91,4 @@ public class DisplayCapabilities {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

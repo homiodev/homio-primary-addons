@@ -1,6 +1,7 @@
 package org.onvif.ver20.ptz.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.PresetTour;
 
 /**
@@ -21,6 +22,7 @@ import org.onvif.ver10.schema.PresetTour;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -28,17 +30,14 @@ import org.onvif.ver10.schema.PresetTour;
 @XmlRootElement(name = "GetPresetTourResponse")
 public class GetPresetTourResponse {
 
-    @XmlElement(name = "PresetTour", required = true)
-    protected PresetTour presetTour;
-
     /**
-     * Ruft den Wert der presetTour-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der presetTour-Eigenschaft ab.
      *
      * @return possible object is {@link PresetTour }
      */
-    public PresetTour getPresetTour() {
-        return presetTour;
-    }
+    @XmlElement(name = "PresetTour", required = true)
+    protected PresetTour presetTour;
 
     /**
      * Legt den Wert der presetTour-Eigenschaft fest.

@@ -9,6 +9,7 @@
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -40,20 +41,17 @@ import java.util.List;
 @XmlRootElement(name = "GetCurrentMessage")
 public class GetCurrentMessage {
 
-    @XmlElement(name = "Topic", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der topic-Eigenschaft ab.
+     *
+     * @return possible object is {@link TopicExpressionType }
+     */
+    @Getter @XmlElement(name = "Topic", required = true)
     protected TopicExpressionType topic;
 
     @XmlAnyElement(lax = true)
     protected List<Object> any;
-
-    /**
-     * Ruft den Wert der topic-Eigenschaft ab.
-     *
-     * @return possible object is {@link TopicExpressionType }
-     */
-    public TopicExpressionType getTopic() {
-        return topic;
-    }
 
     /**
      * Legt den Wert der topic-Eigenschaft fest.

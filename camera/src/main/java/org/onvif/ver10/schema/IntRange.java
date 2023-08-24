@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Range of values greater equal Min value and less equal Max value.
@@ -26,37 +27,32 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IntRange",
         propOrder = {"min", "max"})
 public class IntRange {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der min-Eigenschaft ab.
+     */
     @XmlElement(name = "Min")
     protected int min;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der max-Eigenschaft ab.
+     */
     @XmlElement(name = "Max")
     protected int max;
-
-    /**
-     * Ruft den Wert der min-Eigenschaft ab.
-     */
-    public int getMin() {
-        return min;
-    }
 
     /**
      * Legt den Wert der min-Eigenschaft fest.
      */
     public void setMin(int value) {
         this.min = value;
-    }
-
-    /**
-     * Ruft den Wert der max-Eigenschaft ab.
-     */
-    public int getMax() {
-        return max;
     }
 
     /**

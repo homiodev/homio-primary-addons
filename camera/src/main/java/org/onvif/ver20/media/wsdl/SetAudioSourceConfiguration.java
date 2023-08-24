@@ -1,6 +1,7 @@
 package org.onvif.ver20.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.AudioSourceConfiguration;
 
 /**
@@ -21,6 +22,7 @@ import org.onvif.ver10.schema.AudioSourceConfiguration;
  * &lt;/complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -28,17 +30,14 @@ import org.onvif.ver10.schema.AudioSourceConfiguration;
 @XmlRootElement(name = "SetAudioSourceConfiguration")
 public class SetAudioSourceConfiguration {
 
-    @XmlElement(name = "Configuration", required = true)
-    protected AudioSourceConfiguration configuration;
-
     /**
-     * Ruft den Wert der configuration-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der configuration-Eigenschaft ab.
      *
      * @return possible object is {@link AudioSourceConfiguration }
      */
-    public AudioSourceConfiguration getConfiguration() {
-        return configuration;
-    }
+    @XmlElement(name = "Configuration", required = true)
+    protected AudioSourceConfiguration configuration;
 
     /**
      * Legt den Wert der configuration-Eigenschaft fest.

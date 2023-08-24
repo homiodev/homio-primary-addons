@@ -1,6 +1,7 @@
 package org.onvif.ver20.ptz.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -21,6 +22,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -28,20 +30,23 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "RemovePreset")
 public class RemovePreset {
 
-    @XmlElement(name = "ProfileToken", required = true)
-    protected String profileToken;
-
-    @XmlElement(name = "PresetToken", required = true)
-    protected String presetToken;
-
     /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der profileToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getProfileToken() {
-        return profileToken;
-    }
+    @XmlElement(name = "ProfileToken", required = true)
+    protected String profileToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der presetToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "PresetToken", required = true)
+    protected String presetToken;
 
     /**
      * Legt den Wert der profileToken-Eigenschaft fest.
@@ -50,15 +55,6 @@ public class RemovePreset {
      */
     public void setProfileToken(String value) {
         this.profileToken = value;
-    }
-
-    /**
-     * Ruft den Wert der presetToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getPresetToken() {
-        return presetToken;
     }
 
     /**

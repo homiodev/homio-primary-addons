@@ -24,7 +24,7 @@ public class AudioSource extends DeviceEntity {
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-    @XmlAnyAttribute
+    @Getter @XmlAnyAttribute
     private Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<Object> getAny() {
@@ -34,7 +34,4 @@ public class AudioSource extends DeviceEntity {
         return any;
     }
 
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

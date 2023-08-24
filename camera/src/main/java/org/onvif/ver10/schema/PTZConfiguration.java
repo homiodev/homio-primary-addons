@@ -6,6 +6,7 @@ import javax.xml.datatype.Duration;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r PTZConfiguration complex type.
@@ -37,6 +38,7 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZConfiguration",
@@ -56,59 +58,132 @@ import java.util.Map;
         })
 public class PTZConfiguration extends ConfigurationEntity {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der nodeToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "NodeToken", required = true)
     protected String nodeToken;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der defaultAbsolutePantTiltPositionSpace-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "DefaultAbsolutePantTiltPositionSpace")
     @XmlSchemaType(name = "anyURI")
     protected String defaultAbsolutePantTiltPositionSpace;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der defaultAbsoluteZoomPositionSpace-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "DefaultAbsoluteZoomPositionSpace")
     @XmlSchemaType(name = "anyURI")
     protected String defaultAbsoluteZoomPositionSpace;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der defaultRelativePanTiltTranslationSpace-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "DefaultRelativePanTiltTranslationSpace")
     @XmlSchemaType(name = "anyURI")
     protected String defaultRelativePanTiltTranslationSpace;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der defaultRelativeZoomTranslationSpace-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "DefaultRelativeZoomTranslationSpace")
     @XmlSchemaType(name = "anyURI")
     protected String defaultRelativeZoomTranslationSpace;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der defaultContinuousPanTiltVelocitySpace-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "DefaultContinuousPanTiltVelocitySpace")
     @XmlSchemaType(name = "anyURI")
     protected String defaultContinuousPanTiltVelocitySpace;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der defaultContinuousZoomVelocitySpace-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "DefaultContinuousZoomVelocitySpace")
     @XmlSchemaType(name = "anyURI")
     protected String defaultContinuousZoomVelocitySpace;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der defaultPTZSpeed-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZSpeed }
+     */
     @XmlElement(name = "DefaultPTZSpeed")
     protected PTZSpeed defaultPTZSpeed;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der defaultPTZTimeout-Eigenschaft ab.
+     *
+     * @return possible object is {@link Duration }
+     */
     @XmlElement(name = "DefaultPTZTimeout")
     protected Duration defaultPTZTimeout;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der panTiltLimits-Eigenschaft ab.
+     *
+     * @return possible object is {@link PanTiltLimits }
+     */
     @XmlElement(name = "PanTiltLimits")
     protected PanTiltLimits panTiltLimits;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der zoomLimits-Eigenschaft ab.
+     *
+     * @return possible object is {@link ZoomLimits }
+     */
     @XmlElement(name = "ZoomLimits")
     protected ZoomLimits zoomLimits;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZConfigurationExtension }
+     */
     @XmlElement(name = "Extension")
     protected PTZConfigurationExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der nodeToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getNodeToken() {
-        return nodeToken;
-    }
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der nodeToken-Eigenschaft fest.
@@ -117,15 +192,6 @@ public class PTZConfiguration extends ConfigurationEntity {
      */
     public void setNodeToken(String value) {
         this.nodeToken = value;
-    }
-
-    /**
-     * Ruft den Wert der defaultAbsolutePantTiltPositionSpace-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getDefaultAbsolutePantTiltPositionSpace() {
-        return defaultAbsolutePantTiltPositionSpace;
     }
 
     /**
@@ -138,30 +204,12 @@ public class PTZConfiguration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der defaultAbsoluteZoomPositionSpace-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getDefaultAbsoluteZoomPositionSpace() {
-        return defaultAbsoluteZoomPositionSpace;
-    }
-
-    /**
      * Legt den Wert der defaultAbsoluteZoomPositionSpace-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setDefaultAbsoluteZoomPositionSpace(String value) {
         this.defaultAbsoluteZoomPositionSpace = value;
-    }
-
-    /**
-     * Ruft den Wert der defaultRelativePanTiltTranslationSpace-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getDefaultRelativePanTiltTranslationSpace() {
-        return defaultRelativePanTiltTranslationSpace;
     }
 
     /**
@@ -174,30 +222,12 @@ public class PTZConfiguration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der defaultRelativeZoomTranslationSpace-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getDefaultRelativeZoomTranslationSpace() {
-        return defaultRelativeZoomTranslationSpace;
-    }
-
-    /**
      * Legt den Wert der defaultRelativeZoomTranslationSpace-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setDefaultRelativeZoomTranslationSpace(String value) {
         this.defaultRelativeZoomTranslationSpace = value;
-    }
-
-    /**
-     * Ruft den Wert der defaultContinuousPanTiltVelocitySpace-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getDefaultContinuousPanTiltVelocitySpace() {
-        return defaultContinuousPanTiltVelocitySpace;
     }
 
     /**
@@ -210,30 +240,12 @@ public class PTZConfiguration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der defaultContinuousZoomVelocitySpace-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getDefaultContinuousZoomVelocitySpace() {
-        return defaultContinuousZoomVelocitySpace;
-    }
-
-    /**
      * Legt den Wert der defaultContinuousZoomVelocitySpace-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setDefaultContinuousZoomVelocitySpace(String value) {
         this.defaultContinuousZoomVelocitySpace = value;
-    }
-
-    /**
-     * Ruft den Wert der defaultPTZSpeed-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZSpeed }
-     */
-    public PTZSpeed getDefaultPTZSpeed() {
-        return defaultPTZSpeed;
     }
 
     /**
@@ -246,30 +258,12 @@ public class PTZConfiguration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der defaultPTZTimeout-Eigenschaft ab.
-     *
-     * @return possible object is {@link Duration }
-     */
-    public Duration getDefaultPTZTimeout() {
-        return defaultPTZTimeout;
-    }
-
-    /**
      * Legt den Wert der defaultPTZTimeout-Eigenschaft fest.
      *
      * @param value allowed object is {@link Duration }
      */
     public void setDefaultPTZTimeout(Duration value) {
         this.defaultPTZTimeout = value;
-    }
-
-    /**
-     * Ruft den Wert der panTiltLimits-Eigenschaft ab.
-     *
-     * @return possible object is {@link PanTiltLimits }
-     */
-    public PanTiltLimits getPanTiltLimits() {
-        return panTiltLimits;
     }
 
     /**
@@ -282,30 +276,12 @@ public class PTZConfiguration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der zoomLimits-Eigenschaft ab.
-     *
-     * @return possible object is {@link ZoomLimits }
-     */
-    public ZoomLimits getZoomLimits() {
-        return zoomLimits;
-    }
-
-    /**
      * Legt den Wert der zoomLimits-Eigenschaft fest.
      *
      * @param value allowed object is {@link ZoomLimits }
      */
     public void setZoomLimits(ZoomLimits value) {
         this.zoomLimits = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZConfigurationExtension }
-     */
-    public PTZConfigurationExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -317,18 +293,4 @@ public class PTZConfiguration extends ConfigurationEntity {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

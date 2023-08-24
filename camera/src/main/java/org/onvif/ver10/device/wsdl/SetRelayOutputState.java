@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.RelayLogicalState;
 
 /**
@@ -30,6 +31,7 @@ import org.onvif.ver10.schema.RelayLogicalState;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -37,20 +39,23 @@ import org.onvif.ver10.schema.RelayLogicalState;
 @XmlRootElement(name = "SetRelayOutputState")
 public class SetRelayOutputState {
 
-    @XmlElement(name = "RelayOutputToken", required = true)
-    protected String relayOutputToken;
-
-    @XmlElement(name = "LogicalState", required = true)
-    protected RelayLogicalState logicalState;
-
     /**
-     * Ruft den Wert der relayOutputToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der relayOutputToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getRelayOutputToken() {
-        return relayOutputToken;
-    }
+    @XmlElement(name = "RelayOutputToken", required = true)
+    protected String relayOutputToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der logicalState-Eigenschaft ab.
+     *
+     * @return possible object is {@link RelayLogicalState }
+     */
+    @XmlElement(name = "LogicalState", required = true)
+    protected RelayLogicalState logicalState;
 
     /**
      * Legt den Wert der relayOutputToken-Eigenschaft fest.
@@ -59,15 +64,6 @@ public class SetRelayOutputState {
      */
     public void setRelayOutputToken(String value) {
         this.relayOutputToken = value;
-    }
-
-    /**
-     * Ruft den Wert der logicalState-Eigenschaft ab.
-     *
-     * @return possible object is {@link RelayLogicalState }
-     */
-    public RelayLogicalState getLogicalState() {
-        return logicalState;
     }
 
     /**

@@ -6,6 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -31,6 +32,7 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -38,36 +40,73 @@ import java.util.Map;
 @XmlRootElement(name = "Message")
 public class Message {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der source-Eigenschaft ab.
+     *
+     * @return possible object is {@link ItemList }
+     */
     @XmlElement(name = "Source")
     protected ItemList source;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der key-Eigenschaft ab.
+     *
+     * @return possible object is {@link ItemList }
+     */
     @XmlElement(name = "Key")
     protected ItemList key;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der data-Eigenschaft ab.
+     *
+     * @return possible object is {@link ItemList }
+     */
     @XmlElement(name = "Data")
     protected ItemList data;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link MessageExtension }
+     */
     @XmlElement(name = "Extension")
     protected MessageExtension extension;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der utcTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
     @XmlAttribute(name = "UtcTime", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar utcTime;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der propertyOperation-Eigenschaft ab.
+     *
+     * @return possible object is {@link PropertyOperation }
+     */
     @XmlAttribute(name = "PropertyOperation")
     protected PropertyOperation propertyOperation;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der source-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link ItemList }
+     * @return always non-null
      */
-    public ItemList getSource() {
-        return source;
-    }
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der source-Eigenschaft fest.
@@ -76,15 +115,6 @@ public class Message {
      */
     public void setSource(ItemList value) {
         this.source = value;
-    }
-
-    /**
-     * Ruft den Wert der key-Eigenschaft ab.
-     *
-     * @return possible object is {@link ItemList }
-     */
-    public ItemList getKey() {
-        return key;
     }
 
     /**
@@ -97,30 +127,12 @@ public class Message {
     }
 
     /**
-     * Ruft den Wert der data-Eigenschaft ab.
-     *
-     * @return possible object is {@link ItemList }
-     */
-    public ItemList getData() {
-        return data;
-    }
-
-    /**
      * Legt den Wert der data-Eigenschaft fest.
      *
      * @param value allowed object is {@link ItemList }
      */
     public void setData(ItemList value) {
         this.data = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link MessageExtension }
-     */
-    public MessageExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -133,30 +145,12 @@ public class Message {
     }
 
     /**
-     * Ruft den Wert der utcTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getUtcTime() {
-        return utcTime;
-    }
-
-    /**
      * Legt den Wert der utcTime-Eigenschaft fest.
      *
      * @param value allowed object is {@link XMLGregorianCalendar }
      */
     public void setUtcTime(XMLGregorianCalendar value) {
         this.utcTime = value;
-    }
-
-    /**
-     * Ruft den Wert der propertyOperation-Eigenschaft ab.
-     *
-     * @return possible object is {@link PropertyOperation }
-     */
-    public PropertyOperation getPropertyOperation() {
-        return propertyOperation;
     }
 
     /**
@@ -168,18 +162,4 @@ public class Message {
         this.propertyOperation = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r NetworkHost complex type.
@@ -37,7 +38,13 @@ import java.util.Map;
         propOrder = {"type", "iPv4Address", "iPv6Address", "dnSname", "extension"})
 public class NetworkHost {
 
-    @XmlElement(name = "Type", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der type-Eigenschaft ab.
+     *
+     * @return possible object is {@link NetworkHostType }
+     */
+    @Getter @XmlElement(name = "Type", required = true)
     protected NetworkHostType type;
 
     @XmlElement(name = "IPv4Address")
@@ -52,20 +59,27 @@ public class NetworkHost {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String dnSname;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link NetworkHostExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected NetworkHostExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der type-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link NetworkHostType }
+     * @return always non-null
      */
-    public NetworkHostType getType() {
-        return type;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der type-Eigenschaft fest.
@@ -131,15 +145,6 @@ public class NetworkHost {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link NetworkHostExtension }
-     */
-    public NetworkHostExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link NetworkHostExtension }
@@ -148,18 +153,4 @@ public class NetworkHost {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

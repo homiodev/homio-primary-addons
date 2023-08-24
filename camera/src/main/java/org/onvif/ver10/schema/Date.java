@@ -4,28 +4,35 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Date",
         propOrder = {"year", "month", "day"})
 public class Date {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der year-Eigenschaft ab.
+     */
     @XmlElement(name = "Year")
     protected int year;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der month-Eigenschaft ab.
+     */
     @XmlElement(name = "Month")
     protected int month;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der day-Eigenschaft ab.
+     */
     @XmlElement(name = "Day")
     protected int day;
-
-    /**
-     * Ruft den Wert der year-Eigenschaft ab.
-     */
-    public int getYear() {
-        return year;
-    }
 
     /**
      * Legt den Wert der year-Eigenschaft fest.
@@ -35,24 +42,10 @@ public class Date {
     }
 
     /**
-     * Ruft den Wert der month-Eigenschaft ab.
-     */
-    public int getMonth() {
-        return month;
-    }
-
-    /**
      * Legt den Wert der month-Eigenschaft fest.
      */
     public void setMonth(int value) {
         this.month = value;
-    }
-
-    /**
-     * Ruft den Wert der day-Eigenschaft ab.
-     */
-    public int getDay() {
-        return day;
     }
 
     /**

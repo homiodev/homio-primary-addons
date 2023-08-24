@@ -1,6 +1,7 @@
 package org.onvif.ver20.imaging.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.ImagingSettings20;
 
 /**
@@ -30,23 +31,26 @@ import org.onvif.ver10.schema.ImagingSettings20;
 @XmlRootElement(name = "SetImagingSettings")
 public class SetImagingSettings {
 
-    @XmlElement(name = "VideoSourceToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der videoSourceToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "VideoSourceToken", required = true)
     protected String videoSourceToken;
 
-    @XmlElement(name = "ImagingSettings", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der imagingSettings-Eigenschaft ab.
+     *
+     * @return possible object is {@link ImagingSettings20 }
+     */
+    @Getter @XmlElement(name = "ImagingSettings", required = true)
     protected ImagingSettings20 imagingSettings;
 
     @XmlElement(name = "ForcePersistence")
     protected Boolean forcePersistence;
-
-    /**
-     * Ruft den Wert der videoSourceToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getVideoSourceToken() {
-        return videoSourceToken;
-    }
 
     /**
      * Legt den Wert der videoSourceToken-Eigenschaft fest.
@@ -55,15 +59,6 @@ public class SetImagingSettings {
      */
     public void setVideoSourceToken(String value) {
         this.videoSourceToken = value;
-    }
-
-    /**
-     * Ruft den Wert der imagingSettings-Eigenschaft ab.
-     *
-     * @return possible object is {@link ImagingSettings20 }
-     */
-    public ImagingSettings20 getImagingSettings() {
-        return imagingSettings;
     }
 
     /**

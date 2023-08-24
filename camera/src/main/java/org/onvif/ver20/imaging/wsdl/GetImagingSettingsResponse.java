@@ -1,6 +1,7 @@
 package org.onvif.ver20.imaging.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.ImagingSettings20;
 
 /**
@@ -21,6 +22,7 @@ import org.onvif.ver10.schema.ImagingSettings20;
  * &lt;/complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -28,17 +30,14 @@ import org.onvif.ver10.schema.ImagingSettings20;
 @XmlRootElement(name = "GetImagingSettingsResponse")
 public class GetImagingSettingsResponse {
 
-    @XmlElement(name = "ImagingSettings", required = true)
-    protected ImagingSettings20 imagingSettings;
-
     /**
-     * Ruft den Wert der imagingSettings-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der imagingSettings-Eigenschaft ab.
      *
      * @return possible object is {@link ImagingSettings20 }
      */
-    public ImagingSettings20 getImagingSettings() {
-        return imagingSettings;
-    }
+    @XmlElement(name = "ImagingSettings", required = true)
+    protected ImagingSettings20 imagingSettings;
 
     /**
      * Legt den Wert der imagingSettings-Eigenschaft fest.

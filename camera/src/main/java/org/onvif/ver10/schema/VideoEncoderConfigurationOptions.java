@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r VideoEncoderConfigurationOptions complex type.
@@ -35,7 +36,13 @@ import java.util.Map;
         propOrder = {"qualityRange", "jpeg", "mpeg4", "h264", "extension"})
 public class VideoEncoderConfigurationOptions {
 
-    @XmlElement(name = "QualityRange", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der qualityRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link IntRange }
+     */
+    @Getter @XmlElement(name = "QualityRange", required = true)
     protected IntRange qualityRange;
 
     @XmlElement(name = "JPEG")
@@ -44,23 +51,36 @@ public class VideoEncoderConfigurationOptions {
     @XmlElement(name = "MPEG4")
     protected Mpeg4Options mpeg4;
 
-    @XmlElement(name = "H264")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der h264-Eigenschaft ab.
+     *
+     * @return possible object is {@link H264Options }
+     */
+    @Getter @XmlElement(name = "H264")
     protected H264Options h264;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoEncoderOptionsExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected VideoEncoderOptionsExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der qualityRange-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link IntRange }
+     * @return always non-null
      */
-    public IntRange getQualityRange() {
-        return qualityRange;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der qualityRange-Eigenschaft fest.
@@ -108,30 +128,12 @@ public class VideoEncoderConfigurationOptions {
     }
 
     /**
-     * Ruft den Wert der h264-Eigenschaft ab.
-     *
-     * @return possible object is {@link H264Options }
-     */
-    public H264Options getH264() {
-        return h264;
-    }
-
-    /**
      * Legt den Wert der h264-Eigenschaft fest.
      *
      * @param value allowed object is {@link H264Options }
      */
     public void setH264(H264Options value) {
         this.h264 = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoEncoderOptionsExtension }
-     */
-    public VideoEncoderOptionsExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -143,18 +145,4 @@ public class VideoEncoderConfigurationOptions {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

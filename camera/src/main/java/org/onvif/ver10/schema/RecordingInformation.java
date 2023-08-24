@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -51,43 +52,80 @@ import java.util.Map;
         })
 public class RecordingInformation {
 
-    @XmlElement(name = "RecordingToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der recordingToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
-    @XmlElement(name = "Source", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der source-Eigenschaft ab.
+     *
+     * @return possible object is {@link RecordingSourceInformation }
+     */
+    @Getter @XmlElement(name = "Source", required = true)
     protected RecordingSourceInformation source;
 
-    @XmlElement(name = "EarliestRecording")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der earliestRecording-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "EarliestRecording")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar earliestRecording;
 
-    @XmlElement(name = "LatestRecording")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der latestRecording-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "LatestRecording")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar latestRecording;
 
-    @XmlElement(name = "Content", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der content-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Content", required = true)
     protected String content;
 
     @XmlElement(name = "Track")
     protected List<TrackInformation> track;
 
-    @XmlElement(name = "RecordingStatus", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der recordingStatus-Eigenschaft ab.
+     *
+     * @return possible object is {@link RecordingStatus }
+     */
+    @Getter @XmlElement(name = "RecordingStatus", required = true)
     protected RecordingStatus recordingStatus;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der recordingToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getRecordingToken() {
-        return recordingToken;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der recordingToken-Eigenschaft fest.
@@ -96,15 +134,6 @@ public class RecordingInformation {
      */
     public void setRecordingToken(String value) {
         this.recordingToken = value;
-    }
-
-    /**
-     * Ruft den Wert der source-Eigenschaft ab.
-     *
-     * @return possible object is {@link RecordingSourceInformation }
-     */
-    public RecordingSourceInformation getSource() {
-        return source;
     }
 
     /**
@@ -117,15 +146,6 @@ public class RecordingInformation {
     }
 
     /**
-     * Ruft den Wert der earliestRecording-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getEarliestRecording() {
-        return earliestRecording;
-    }
-
-    /**
      * Legt den Wert der earliestRecording-Eigenschaft fest.
      *
      * @param value allowed object is {@link XMLGregorianCalendar }
@@ -135,30 +155,12 @@ public class RecordingInformation {
     }
 
     /**
-     * Ruft den Wert der latestRecording-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getLatestRecording() {
-        return latestRecording;
-    }
-
-    /**
      * Legt den Wert der latestRecording-Eigenschaft fest.
      *
      * @param value allowed object is {@link XMLGregorianCalendar }
      */
     public void setLatestRecording(XMLGregorianCalendar value) {
         this.latestRecording = value;
-    }
-
-    /**
-     * Ruft den Wert der content-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getContent() {
-        return content;
     }
 
     /**
@@ -193,15 +195,6 @@ public class RecordingInformation {
     }
 
     /**
-     * Ruft den Wert der recordingStatus-Eigenschaft ab.
-     *
-     * @return possible object is {@link RecordingStatus }
-     */
-    public RecordingStatus getRecordingStatus() {
-        return recordingStatus;
-    }
-
-    /**
      * Legt den Wert der recordingStatus-Eigenschaft fest.
      *
      * @param value allowed object is {@link RecordingStatus }
@@ -233,18 +226,4 @@ public class RecordingInformation {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

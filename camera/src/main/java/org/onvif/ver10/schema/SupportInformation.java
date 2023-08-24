@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r SupportInformation complex type.
@@ -24,26 +25,30 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "SupportInformation",
         propOrder = {"binary", "string"})
 public class SupportInformation {
 
-    @XmlElement(name = "Binary")
-    protected AttachmentData binary;
-
-    @XmlElement(name = "String")
-    protected String string;
-
     /**
-     * Ruft den Wert der binary-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der binary-Eigenschaft ab.
      *
      * @return possible object is {@link AttachmentData }
      */
-    public AttachmentData getBinary() {
-        return binary;
-    }
+    @XmlElement(name = "Binary")
+    protected AttachmentData binary;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der string-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "String")
+    protected String string;
 
     /**
      * Legt den Wert der binary-Eigenschaft fest.
@@ -52,15 +57,6 @@ public class SupportInformation {
      */
     public void setBinary(AttachmentData value) {
         this.binary = value;
-    }
-
-    /**
-     * Ruft den Wert der string-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getString() {
-        return string;
     }
 
     /**

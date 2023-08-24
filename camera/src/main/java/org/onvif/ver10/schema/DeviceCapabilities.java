@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -16,23 +17,57 @@ public class DeviceCapabilities {
     @XmlSchemaType(name = "anyURI")
     protected String xAddr;
 
-    @XmlElement(name = "Network")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der network-Eigenschaft ab.
+     *
+     * @return possible object is {@link NetworkCapabilities }
+     */
+    @Getter @XmlElement(name = "Network")
     protected NetworkCapabilities network;
 
-    @XmlElement(name = "System")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der system-Eigenschaft ab.
+     *
+     * @return possible object is {@link SystemCapabilities }
+     */
+    @Getter @XmlElement(name = "System")
     protected SystemCapabilities system;
 
     @XmlElement(name = "IO")
     protected IOCapabilities io;
 
-    @XmlElement(name = "Security")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der security-Eigenschaft ab.
+     *
+     * @return possible object is {@link SecurityCapabilities }
+     */
+    @Getter @XmlElement(name = "Security")
     protected SecurityCapabilities security;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link DeviceCapabilitiesExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected DeviceCapabilitiesExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der xAddr-Eigenschaft ab.
@@ -53,30 +88,12 @@ public class DeviceCapabilities {
     }
 
     /**
-     * Ruft den Wert der network-Eigenschaft ab.
-     *
-     * @return possible object is {@link NetworkCapabilities }
-     */
-    public NetworkCapabilities getNetwork() {
-        return network;
-    }
-
-    /**
      * Legt den Wert der network-Eigenschaft fest.
      *
      * @param value allowed object is {@link NetworkCapabilities }
      */
     public void setNetwork(NetworkCapabilities value) {
         this.network = value;
-    }
-
-    /**
-     * Ruft den Wert der system-Eigenschaft ab.
-     *
-     * @return possible object is {@link SystemCapabilities }
-     */
-    public SystemCapabilities getSystem() {
-        return system;
     }
 
     /**
@@ -107,30 +124,12 @@ public class DeviceCapabilities {
     }
 
     /**
-     * Ruft den Wert der security-Eigenschaft ab.
-     *
-     * @return possible object is {@link SecurityCapabilities }
-     */
-    public SecurityCapabilities getSecurity() {
-        return security;
-    }
-
-    /**
      * Legt den Wert der security-Eigenschaft fest.
      *
      * @param value allowed object is {@link SecurityCapabilities }
      */
     public void setSecurity(SecurityCapabilities value) {
         this.security = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link DeviceCapabilitiesExtension }
-     */
-    public DeviceCapabilitiesExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -142,18 +141,4 @@ public class DeviceCapabilities {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

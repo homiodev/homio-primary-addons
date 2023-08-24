@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * General date time inforamtion returned by the GetSystemDateTime method.
@@ -45,35 +46,64 @@ import java.util.Map;
         })
 public class SystemDateTime {
 
-    @XmlElement(name = "DateTimeType", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dateTimeType-Eigenschaft ab.
+     *
+     * @return possible object is {@link SetDateTimeType }
+     */
+    @Getter @XmlElement(name = "DateTimeType", required = true)
     protected SetDateTimeType dateTimeType;
 
-    @XmlElement(name = "DaylightSavings")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der daylightSavings-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "DaylightSavings")
     protected boolean daylightSavings;
 
-    @XmlElement(name = "TimeZone")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der timeZone-Eigenschaft ab.
+     *
+     * @return possible object is {@link TimeZone }
+     */
+    @Getter @XmlElement(name = "TimeZone")
     protected TimeZone timeZone;
 
     @XmlElement(name = "UTCDateTime")
     protected DateTime utcDateTime;
 
-    @XmlElement(name = "LocalDateTime")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der localDateTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link DateTime }
+     */
+    @Getter @XmlElement(name = "LocalDateTime")
     protected DateTime localDateTime;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link SystemDateTimeExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected SystemDateTimeExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der dateTimeType-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link SetDateTimeType }
+     * @return always non-null
      */
-    public SetDateTimeType getDateTimeType() {
-        return dateTimeType;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der dateTimeType-Eigenschaft fest.
@@ -85,26 +115,10 @@ public class SystemDateTime {
     }
 
     /**
-     * Ruft den Wert der daylightSavings-Eigenschaft ab.
-     */
-    public boolean isDaylightSavings() {
-        return daylightSavings;
-    }
-
-    /**
      * Legt den Wert der daylightSavings-Eigenschaft fest.
      */
     public void setDaylightSavings(boolean value) {
         this.daylightSavings = value;
-    }
-
-    /**
-     * Ruft den Wert der timeZone-Eigenschaft ab.
-     *
-     * @return possible object is {@link TimeZone }
-     */
-    public TimeZone getTimeZone() {
-        return timeZone;
     }
 
     /**
@@ -135,30 +149,12 @@ public class SystemDateTime {
     }
 
     /**
-     * Ruft den Wert der localDateTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link DateTime }
-     */
-    public DateTime getLocalDateTime() {
-        return localDateTime;
-    }
-
-    /**
      * Legt den Wert der localDateTime-Eigenschaft fest.
      *
      * @param value allowed object is {@link DateTime }
      */
     public void setLocalDateTime(DateTime value) {
         this.localDateTime = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link SystemDateTimeExtension }
-     */
-    public SystemDateTimeExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -170,18 +166,4 @@ public class SystemDateTime {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

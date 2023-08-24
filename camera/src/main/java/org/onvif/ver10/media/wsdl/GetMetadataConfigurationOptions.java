@@ -9,6 +9,7 @@
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -29,6 +30,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,20 +38,23 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetMetadataConfigurationOptions")
 public class GetMetadataConfigurationOptions {
 
-    @XmlElement(name = "ConfigurationToken")
-    protected String configurationToken;
-
-    @XmlElement(name = "ProfileToken")
-    protected String profileToken;
-
     /**
-     * Ruft den Wert der configurationToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der configurationToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getConfigurationToken() {
-        return configurationToken;
-    }
+    @XmlElement(name = "ConfigurationToken")
+    protected String configurationToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der profileToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "ProfileToken")
+    protected String profileToken;
 
     /**
      * Legt den Wert der configurationToken-Eigenschaft fest.
@@ -58,15 +63,6 @@ public class GetMetadataConfigurationOptions {
      */
     public void setConfigurationToken(String value) {
         this.configurationToken = value;
-    }
-
-    /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getProfileToken() {
-        return profileToken;
     }
 
     /**

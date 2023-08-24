@@ -11,6 +11,7 @@ package org.onvif.ver10.device.wsdl;
 import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.Getter;
 import org.onvif.ver10.schema.IPAddress;
 
 import java.util.ArrayList;
@@ -43,7 +44,11 @@ import java.util.List;
 @XmlRootElement(name = "SetDNS")
 public class SetDNS {
 
-    @XmlElement(name = "FromDHCP")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der fromDHCP-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "FromDHCP")
     protected boolean fromDHCP;
 
     @XmlElement(name = "SearchDomain")
@@ -53,13 +58,6 @@ public class SetDNS {
 
     @XmlElement(name = "DNSManual")
     protected List<IPAddress> dnsManual;
-
-    /**
-     * Ruft den Wert der fromDHCP-Eigenschaft ab.
-     */
-    public boolean isFromDHCP() {
-        return fromDHCP;
-    }
 
     /**
      * Legt den Wert der fromDHCP-Eigenschaft fest.

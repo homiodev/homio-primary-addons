@@ -1,8 +1,10 @@
 package org.onvif.ver20.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.AudioDecoderConfiguration;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -10,17 +12,14 @@ import org.onvif.ver10.schema.AudioDecoderConfiguration;
 @XmlRootElement(name = "SetAudioDecoderConfiguration")
 public class SetAudioDecoderConfiguration {
 
-    @XmlElement(name = "Configuration", required = true)
-    protected AudioDecoderConfiguration configuration;
-
     /**
-     * Ruft den Wert der configuration-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der configuration-Eigenschaft ab.
      *
      * @return possible object is {@link AudioDecoderConfiguration }
      */
-    public AudioDecoderConfiguration getConfiguration() {
-        return configuration;
-    }
+    @XmlElement(name = "Configuration", required = true)
+    protected AudioDecoderConfiguration configuration;
 
     /**
      * Legt den Wert der configuration-Eigenschaft fest.

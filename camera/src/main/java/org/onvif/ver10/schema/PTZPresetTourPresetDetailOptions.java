@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r PTZPresetTourPresetDetailOptions complex type.
@@ -43,17 +44,45 @@ public class PTZPresetTourPresetDetailOptions {
     @XmlElement(name = "Home")
     protected Boolean home;
 
-    @XmlElement(name = "PanTiltPositionSpace")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der panTiltPositionSpace-Eigenschaft ab.
+     *
+     * @return possible object is {@link Space2DDescription }
+     */
+    @Getter @XmlElement(name = "PanTiltPositionSpace")
     protected Space2DDescription panTiltPositionSpace;
 
-    @XmlElement(name = "ZoomPositionSpace")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der zoomPositionSpace-Eigenschaft ab.
+     *
+     * @return possible object is {@link Space1DDescription }
+     */
+    @Getter @XmlElement(name = "ZoomPositionSpace")
     protected Space1DDescription zoomPositionSpace;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZPresetTourPresetDetailOptionsExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected PTZPresetTourPresetDetailOptionsExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the presetToken property.
@@ -96,30 +125,12 @@ public class PTZPresetTourPresetDetailOptions {
     }
 
     /**
-     * Ruft den Wert der panTiltPositionSpace-Eigenschaft ab.
-     *
-     * @return possible object is {@link Space2DDescription }
-     */
-    public Space2DDescription getPanTiltPositionSpace() {
-        return panTiltPositionSpace;
-    }
-
-    /**
      * Legt den Wert der panTiltPositionSpace-Eigenschaft fest.
      *
      * @param value allowed object is {@link Space2DDescription }
      */
     public void setPanTiltPositionSpace(Space2DDescription value) {
         this.panTiltPositionSpace = value;
-    }
-
-    /**
-     * Ruft den Wert der zoomPositionSpace-Eigenschaft ab.
-     *
-     * @return possible object is {@link Space1DDescription }
-     */
-    public Space1DDescription getZoomPositionSpace() {
-        return zoomPositionSpace;
     }
 
     /**
@@ -132,15 +143,6 @@ public class PTZPresetTourPresetDetailOptions {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZPresetTourPresetDetailOptionsExtension }
-     */
-    public PTZPresetTourPresetDetailOptionsExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link PTZPresetTourPresetDetailOptionsExtension }
@@ -149,18 +151,4 @@ public class PTZPresetTourPresetDetailOptions {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

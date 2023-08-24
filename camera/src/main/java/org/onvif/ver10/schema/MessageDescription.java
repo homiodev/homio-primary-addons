@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r MessageDescription complex type.
@@ -36,32 +37,57 @@ import java.util.Map;
 @XmlSeeAlso({org.onvif.ver10.schema.ConfigDescription.Messages.class})
 public class MessageDescription {
 
-    @XmlElement(name = "Source")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der source-Eigenschaft ab.
+     *
+     * @return possible object is {@link ItemListDescription }
+     */
+    @Getter @XmlElement(name = "Source")
     protected ItemListDescription source;
 
-    @XmlElement(name = "Key")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der key-Eigenschaft ab.
+     *
+     * @return possible object is {@link ItemListDescription }
+     */
+    @Getter @XmlElement(name = "Key")
     protected ItemListDescription key;
 
-    @XmlElement(name = "Data")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der data-Eigenschaft ab.
+     *
+     * @return possible object is {@link ItemListDescription }
+     */
+    @Getter @XmlElement(name = "Data")
     protected ItemListDescription data;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link MessageDescriptionExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected MessageDescriptionExtension extension;
 
     @XmlAttribute(name = "IsProperty")
     protected Boolean isProperty;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der source-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link ItemListDescription }
+     * @return always non-null
      */
-    public ItemListDescription getSource() {
-        return source;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der source-Eigenschaft fest.
@@ -70,15 +96,6 @@ public class MessageDescription {
      */
     public void setSource(ItemListDescription value) {
         this.source = value;
-    }
-
-    /**
-     * Ruft den Wert der key-Eigenschaft ab.
-     *
-     * @return possible object is {@link ItemListDescription }
-     */
-    public ItemListDescription getKey() {
-        return key;
     }
 
     /**
@@ -91,30 +108,12 @@ public class MessageDescription {
     }
 
     /**
-     * Ruft den Wert der data-Eigenschaft ab.
-     *
-     * @return possible object is {@link ItemListDescription }
-     */
-    public ItemListDescription getData() {
-        return data;
-    }
-
-    /**
      * Legt den Wert der data-Eigenschaft fest.
      *
      * @param value allowed object is {@link ItemListDescription }
      */
     public void setData(ItemListDescription value) {
         this.data = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link MessageDescriptionExtension }
-     */
-    public MessageDescriptionExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -144,18 +143,4 @@ public class MessageDescription {
         this.isProperty = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

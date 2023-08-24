@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -28,6 +29,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -35,15 +37,12 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "SetHostnameFromDHCPResponse")
 public class SetHostnameFromDHCPResponse {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der rebootNeeded-Eigenschaft ab.
+     */
     @XmlElement(name = "RebootNeeded")
     protected boolean rebootNeeded;
-
-    /**
-     * Ruft den Wert der rebootNeeded-Eigenschaft ab.
-     */
-    public boolean isRebootNeeded() {
-        return rebootNeeded;
-    }
 
     /**
      * Legt den Wert der rebootNeeded-Eigenschaft fest.

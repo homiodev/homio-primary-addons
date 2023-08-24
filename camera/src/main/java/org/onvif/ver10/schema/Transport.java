@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Transport complex type.
@@ -24,26 +25,30 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Transport",
         propOrder = {"protocol", "tunnel"})
 public class Transport {
 
-    @XmlElement(name = "Protocol", required = true)
-    protected TransportProtocol protocol;
-
-    @XmlElement(name = "Tunnel")
-    protected Transport tunnel;
-
     /**
-     * Ruft den Wert der protocol-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der protocol-Eigenschaft ab.
      *
      * @return possible object is {@link TransportProtocol }
      */
-    public TransportProtocol getProtocol() {
-        return protocol;
-    }
+    @XmlElement(name = "Protocol", required = true)
+    protected TransportProtocol protocol;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der tunnel-Eigenschaft ab.
+     *
+     * @return possible object is {@link Transport }
+     */
+    @XmlElement(name = "Tunnel")
+    protected Transport tunnel;
 
     /**
      * Legt den Wert der protocol-Eigenschaft fest.
@@ -52,15 +57,6 @@ public class Transport {
      */
     public void setProtocol(TransportProtocol value) {
         this.protocol = value;
-    }
-
-    /**
-     * Ruft den Wert der tunnel-Eigenschaft ab.
-     *
-     * @return possible object is {@link Transport }
-     */
-    public Transport getTunnel() {
-        return tunnel;
     }
 
     /**

@@ -1,7 +1,9 @@
 package org.onvif.ver20.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -9,17 +11,14 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetOSDOptions")
 public class GetOSDOptions {
 
-    @XmlElement(name = "ConfigurationToken", required = true)
-    protected String configurationToken;
-
     /**
-     * Ruft den Wert der configurationToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der configurationToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getConfigurationToken() {
-        return configurationToken;
-    }
+    @XmlElement(name = "ConfigurationToken", required = true)
+    protected String configurationToken;
 
     /**
      * Legt den Wert der configurationToken-Eigenschaft fest.

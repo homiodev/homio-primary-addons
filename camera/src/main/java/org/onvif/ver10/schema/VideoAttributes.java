@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -39,35 +40,60 @@ import java.util.Map;
         propOrder = {"bitrate", "width", "height", "encoding", "framerate", "any"})
 public class VideoAttributes {
 
-    @XmlElement(name = "Bitrate")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der bitrate-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
+    @Getter @XmlElement(name = "Bitrate")
     protected Integer bitrate;
 
-    @XmlElement(name = "Width")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der width-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "Width")
     protected int width;
 
-    @XmlElement(name = "Height")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der height-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "Height")
     protected int height;
 
-    @XmlElement(name = "Encoding", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der encoding-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoEncoding }
+     */
+    @Getter @XmlElement(name = "Encoding", required = true)
     protected VideoEncoding encoding;
 
-    @XmlElement(name = "Framerate")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der framerate-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "Framerate")
     protected float framerate;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der bitrate-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link Integer }
+     * @return always non-null
      */
-    public Integer getBitrate() {
-        return bitrate;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der bitrate-Eigenschaft fest.
@@ -79,24 +105,10 @@ public class VideoAttributes {
     }
 
     /**
-     * Ruft den Wert der width-Eigenschaft ab.
-     */
-    public int getWidth() {
-        return width;
-    }
-
-    /**
      * Legt den Wert der width-Eigenschaft fest.
      */
     public void setWidth(int value) {
         this.width = value;
-    }
-
-    /**
-     * Ruft den Wert der height-Eigenschaft ab.
-     */
-    public int getHeight() {
-        return height;
     }
 
     /**
@@ -107,28 +119,12 @@ public class VideoAttributes {
     }
 
     /**
-     * Ruft den Wert der encoding-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoEncoding }
-     */
-    public VideoEncoding getEncoding() {
-        return encoding;
-    }
-
-    /**
      * Legt den Wert der encoding-Eigenschaft fest.
      *
      * @param value allowed object is {@link VideoEncoding }
      */
     public void setEncoding(VideoEncoding value) {
         this.encoding = value;
-    }
-
-    /**
-     * Ruft den Wert der framerate-Eigenschaft ab.
-     */
-    public float getFramerate() {
-        return framerate;
     }
 
     /**
@@ -161,18 +157,4 @@ public class VideoAttributes {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

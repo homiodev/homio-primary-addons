@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Split complex type.
@@ -33,20 +34,17 @@ import java.util.List;
         propOrder = {"from", "to"})
 public class Split {
 
-    @XmlElement(required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der from-Eigenschaft ab.
+     *
+     * @return possible object is {@link ObjectId }
+     */
+    @Getter @XmlElement(required = true)
     protected ObjectId from;
 
     @XmlElement(required = true)
     protected List<ObjectId> to;
-
-    /**
-     * Ruft den Wert der from-Eigenschaft ab.
-     *
-     * @return possible object is {@link ObjectId }
-     */
-    public ObjectId getFrom() {
-        return from;
-    }
 
     /**
      * Legt den Wert der from-Eigenschaft fest.

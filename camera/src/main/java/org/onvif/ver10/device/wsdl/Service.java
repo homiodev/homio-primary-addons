@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.OnvifVersion;
 import org.w3c.dom.Element;
 
@@ -57,7 +58,13 @@ import java.util.Map;
         propOrder = {"namespace", "xAddr", "capabilities", "version", "any"})
 public class Service {
 
-    @XmlElement(name = "Namespace", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der namespace-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Namespace", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String namespace;
 
@@ -65,26 +72,39 @@ public class Service {
     @XmlSchemaType(name = "anyURI")
     protected String xAddr;
 
-    @XmlElement(name = "Capabilities")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der capabilities-Eigenschaft ab.
+     *
+     * @return possible object is {@link Capabilities }
+     */
+    @Getter @XmlElement(name = "Capabilities")
     protected Service.Capabilities capabilities;
 
-    @XmlElement(name = "Version", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der version-Eigenschaft ab.
+     *
+     * @return possible object is {@link OnvifVersion }
+     */
+    @Getter @XmlElement(name = "Version", required = true)
     protected OnvifVersion version;
 
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der namespace-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getNamespace() {
-        return namespace;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der namespace-Eigenschaft fest.
@@ -114,30 +134,12 @@ public class Service {
     }
 
     /**
-     * Ruft den Wert der capabilities-Eigenschaft ab.
-     *
-     * @return possible object is {@link Service.Capabilities }
-     */
-    public Service.Capabilities getCapabilities() {
-        return capabilities;
-    }
-
-    /**
      * Legt den Wert der capabilities-Eigenschaft fest.
      *
      * @param value allowed object is {@link Service.Capabilities }
      */
     public void setCapabilities(Service.Capabilities value) {
         this.capabilities = value;
-    }
-
-    /**
-     * Ruft den Wert der version-Eigenschaft ab.
-     *
-     * @return possible object is {@link OnvifVersion }
-     */
-    public OnvifVersion getVersion() {
-        return version;
     }
 
     /**
@@ -172,21 +174,6 @@ public class Service {
     }
 
     /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
-
-    /**
      * Java-Klasse f�r anonymous complex type.
      *
      * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten
@@ -204,23 +191,21 @@ public class Service {
      * </complexType>
      * </pre>
      */
+    @Getter
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(
             name = "",
             propOrder = {"any"})
     public static class Capabilities {
 
-        @XmlAnyElement(lax = true)
-        protected Object any;
-
         /**
-         * Ruft den Wert der any-Eigenschaft ab.
+         * -- GETTER --
+         *  Ruft den Wert der any-Eigenschaft ab.
          *
          * @return possible object is {@link Element } {@link Object }
          */
-        public Object getAny() {
-            return any;
-        }
+        @XmlAnyElement(lax = true)
+        protected Object any;
 
         /**
          * Legt den Wert der any-Eigenschaft fest.

@@ -3,6 +3,7 @@ package org.onvif.ver10.schema;
 import jakarta.xml.bind.annotation.*;
 
 import java.math.BigInteger;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r ObjectId complex type.
@@ -20,22 +21,20 @@ import java.math.BigInteger;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ObjectId")
 @XmlSeeAlso({Object.class})
 public class ObjectId {
 
-    @XmlAttribute(name = "ObjectId")
-    protected BigInteger objectId;
-
     /**
-     * Ruft den Wert der objectId-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der objectId-Eigenschaft ab.
      *
      * @return possible object is {@link BigInteger }
      */
-    public BigInteger getObjectId() {
-        return objectId;
-    }
+    @XmlAttribute(name = "ObjectId")
+    protected BigInteger objectId;
 
     /**
      * Legt den Wert der objectId-Eigenschaft fest.

@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r PTZFilter complex type.
@@ -26,27 +27,39 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZFilter",
         propOrder = {"status", "position"})
 public class PTZFilter {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der status-Eigenschaft ab.
+     */
     @XmlElement(name = "Status")
     protected boolean status;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der position-Eigenschaft ab.
+     */
     @XmlElement(name = "Position")
     protected boolean position;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der status-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
      */
-    public boolean isStatus() {
-        return status;
-    }
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der status-Eigenschaft fest.
@@ -56,31 +69,10 @@ public class PTZFilter {
     }
 
     /**
-     * Ruft den Wert der position-Eigenschaft ab.
-     */
-    public boolean isPosition() {
-        return position;
-    }
-
-    /**
      * Legt den Wert der position-Eigenschaft fest.
      */
     public void setPosition(boolean value) {
         this.position = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

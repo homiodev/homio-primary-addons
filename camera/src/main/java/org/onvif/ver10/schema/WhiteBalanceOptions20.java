@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r WhiteBalanceOptions20 complex type.
@@ -38,13 +39,31 @@ public class WhiteBalanceOptions20 {
     @XmlElement(name = "Mode", required = true)
     protected List<WhiteBalanceMode> mode;
 
-    @XmlElement(name = "YrGain")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der yrGain-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "YrGain")
     protected FloatRange yrGain;
 
-    @XmlElement(name = "YbGain")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der ybGain-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "YbGain")
     protected FloatRange ybGain;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link WhiteBalanceOptions20Extension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected WhiteBalanceOptions20Extension extension;
 
     /**
@@ -70,15 +89,6 @@ public class WhiteBalanceOptions20 {
     }
 
     /**
-     * Ruft den Wert der yrGain-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getYrGain() {
-        return yrGain;
-    }
-
-    /**
      * Legt den Wert der yrGain-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
@@ -88,30 +98,12 @@ public class WhiteBalanceOptions20 {
     }
 
     /**
-     * Ruft den Wert der ybGain-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getYbGain() {
-        return ybGain;
-    }
-
-    /**
      * Legt den Wert der ybGain-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
      */
     public void setYbGain(FloatRange value) {
         this.ybGain = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link WhiteBalanceOptions20Extension }
-     */
-    public WhiteBalanceOptions20Extension getExtension() {
-        return extension;
     }
 
     /**

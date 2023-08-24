@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.NetworkGateway;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.NetworkGateway;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.NetworkGateway;
 @XmlRootElement(name = "GetNetworkDefaultGatewayResponse")
 public class GetNetworkDefaultGatewayResponse {
 
-    @XmlElement(name = "NetworkGateway", required = true)
-    protected NetworkGateway networkGateway;
-
     /**
-     * Ruft den Wert der networkGateway-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der networkGateway-Eigenschaft ab.
      *
      * @return possible object is {@link NetworkGateway }
      */
-    public NetworkGateway getNetworkGateway() {
-        return networkGateway;
-    }
+    @XmlElement(name = "NetworkGateway", required = true)
+    protected NetworkGateway networkGateway;
 
     /**
      * Legt den Wert der networkGateway-Eigenschaft fest.

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r OSDTextOptions complex type.
@@ -50,7 +51,13 @@ public class OSDTextOptions {
     @XmlElement(name = "Type", required = true)
     protected List<String> type;
 
-    @XmlElement(name = "FontSizeRange")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der fontSizeRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link IntRange }
+     */
+    @Getter @XmlElement(name = "FontSizeRange")
     protected IntRange fontSizeRange;
 
     @XmlElement(name = "DateFormat")
@@ -59,17 +66,45 @@ public class OSDTextOptions {
     @XmlElement(name = "TimeFormat")
     protected List<String> timeFormat;
 
-    @XmlElement(name = "FontColor")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der fontColor-Eigenschaft ab.
+     *
+     * @return possible object is {@link OSDColorOptions }
+     */
+    @Getter @XmlElement(name = "FontColor")
     protected OSDColorOptions fontColor;
 
-    @XmlElement(name = "BackgroundColor")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der backgroundColor-Eigenschaft ab.
+     *
+     * @return possible object is {@link OSDColorOptions }
+     */
+    @Getter @XmlElement(name = "BackgroundColor")
     protected OSDColorOptions backgroundColor;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link OSDTextOptionsExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected OSDTextOptionsExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the type property.
@@ -91,15 +126,6 @@ public class OSDTextOptions {
             type = new ArrayList<String>();
         }
         return this.type;
-    }
-
-    /**
-     * Ruft den Wert der fontSizeRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link IntRange }
-     */
-    public IntRange getFontSizeRange() {
-        return fontSizeRange;
     }
 
     /**
@@ -156,30 +182,12 @@ public class OSDTextOptions {
     }
 
     /**
-     * Ruft den Wert der fontColor-Eigenschaft ab.
-     *
-     * @return possible object is {@link OSDColorOptions }
-     */
-    public OSDColorOptions getFontColor() {
-        return fontColor;
-    }
-
-    /**
      * Legt den Wert der fontColor-Eigenschaft fest.
      *
      * @param value allowed object is {@link OSDColorOptions }
      */
     public void setFontColor(OSDColorOptions value) {
         this.fontColor = value;
-    }
-
-    /**
-     * Ruft den Wert der backgroundColor-Eigenschaft ab.
-     *
-     * @return possible object is {@link OSDColorOptions }
-     */
-    public OSDColorOptions getBackgroundColor() {
-        return backgroundColor;
     }
 
     /**
@@ -192,15 +200,6 @@ public class OSDTextOptions {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link OSDTextOptionsExtension }
-     */
-    public OSDTextOptionsExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link OSDTextOptionsExtension }
@@ -209,18 +208,4 @@ public class OSDTextOptions {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

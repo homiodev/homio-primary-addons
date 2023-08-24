@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Dot11PSKSet complex type.
@@ -29,33 +30,53 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Dot11PSKSet",
         propOrder = {"key", "passphrase", "extension"})
 public class Dot11PSKSet {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der key-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "Key", type = String.class)
     @XmlJavaTypeAdapter(HexBinaryAdapter.class)
     protected byte[] key;
 
-    @XmlElement(name = "Passphrase")
-    protected String passphrase;
-
-    @XmlElement(name = "Extension")
-    protected Dot11PSKSetExtension extension;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der key-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der passphrase-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public byte[] getKey() {
-        return key;
-    }
+    @XmlElement(name = "Passphrase")
+    protected String passphrase;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link Dot11PSKSetExtension }
+     */
+    @XmlElement(name = "Extension")
+    protected Dot11PSKSetExtension extension;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der key-Eigenschaft fest.
@@ -64,15 +85,6 @@ public class Dot11PSKSet {
      */
     public void setKey(byte[] value) {
         this.key = value;
-    }
-
-    /**
-     * Ruft den Wert der passphrase-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getPassphrase() {
-        return passphrase;
     }
 
     /**
@@ -85,15 +97,6 @@ public class Dot11PSKSet {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot11PSKSetExtension }
-     */
-    public Dot11PSKSetExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link Dot11PSKSetExtension }
@@ -102,18 +105,4 @@ public class Dot11PSKSet {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

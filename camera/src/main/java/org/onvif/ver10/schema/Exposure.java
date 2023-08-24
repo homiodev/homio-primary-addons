@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Exposure complex type.
@@ -34,6 +35,7 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Exposure",
@@ -53,50 +55,95 @@ import jakarta.xml.bind.annotation.XmlType;
         })
 public class Exposure {
 
-    @XmlElement(name = "Mode", required = true)
-    protected ExposureMode mode;
-
-    @XmlElement(name = "Priority", required = true)
-    protected ExposurePriority priority;
-
-    @XmlElement(name = "Window", required = true)
-    protected Rectangle window;
-
-    @XmlElement(name = "MinExposureTime")
-    protected float minExposureTime;
-
-    @XmlElement(name = "MaxExposureTime")
-    protected float maxExposureTime;
-
-    @XmlElement(name = "MinGain")
-    protected float minGain;
-
-    @XmlElement(name = "MaxGain")
-    protected float maxGain;
-
-    @XmlElement(name = "MinIris")
-    protected float minIris;
-
-    @XmlElement(name = "MaxIris")
-    protected float maxIris;
-
-    @XmlElement(name = "ExposureTime")
-    protected float exposureTime;
-
-    @XmlElement(name = "Gain")
-    protected float gain;
-
-    @XmlElement(name = "Iris")
-    protected float iris;
-
     /**
-     * Ruft den Wert der mode-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der mode-Eigenschaft ab.
      *
      * @return possible object is {@link ExposureMode }
      */
-    public ExposureMode getMode() {
-        return mode;
-    }
+    @XmlElement(name = "Mode", required = true)
+    protected ExposureMode mode;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der priority-Eigenschaft ab.
+     *
+     * @return possible object is {@link ExposurePriority }
+     */
+    @XmlElement(name = "Priority", required = true)
+    protected ExposurePriority priority;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der window-Eigenschaft ab.
+     *
+     * @return possible object is {@link Rectangle }
+     */
+    @XmlElement(name = "Window", required = true)
+    protected Rectangle window;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der minExposureTime-Eigenschaft ab.
+     */
+    @XmlElement(name = "MinExposureTime")
+    protected float minExposureTime;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maxExposureTime-Eigenschaft ab.
+     */
+    @XmlElement(name = "MaxExposureTime")
+    protected float maxExposureTime;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der minGain-Eigenschaft ab.
+     */
+    @XmlElement(name = "MinGain")
+    protected float minGain;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maxGain-Eigenschaft ab.
+     */
+    @XmlElement(name = "MaxGain")
+    protected float maxGain;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der minIris-Eigenschaft ab.
+     */
+    @XmlElement(name = "MinIris")
+    protected float minIris;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maxIris-Eigenschaft ab.
+     */
+    @XmlElement(name = "MaxIris")
+    protected float maxIris;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der exposureTime-Eigenschaft ab.
+     */
+    @XmlElement(name = "ExposureTime")
+    protected float exposureTime;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der gain-Eigenschaft ab.
+     */
+    @XmlElement(name = "Gain")
+    protected float gain;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der iris-Eigenschaft ab.
+     */
+    @XmlElement(name = "Iris")
+    protected float iris;
 
     /**
      * Legt den Wert der mode-Eigenschaft fest.
@@ -105,15 +152,6 @@ public class Exposure {
      */
     public void setMode(ExposureMode value) {
         this.mode = value;
-    }
-
-    /**
-     * Ruft den Wert der priority-Eigenschaft ab.
-     *
-     * @return possible object is {@link ExposurePriority }
-     */
-    public ExposurePriority getPriority() {
-        return priority;
     }
 
     /**
@@ -126,28 +164,12 @@ public class Exposure {
     }
 
     /**
-     * Ruft den Wert der window-Eigenschaft ab.
-     *
-     * @return possible object is {@link Rectangle }
-     */
-    public Rectangle getWindow() {
-        return window;
-    }
-
-    /**
      * Legt den Wert der window-Eigenschaft fest.
      *
      * @param value allowed object is {@link Rectangle }
      */
     public void setWindow(Rectangle value) {
         this.window = value;
-    }
-
-    /**
-     * Ruft den Wert der minExposureTime-Eigenschaft ab.
-     */
-    public float getMinExposureTime() {
-        return minExposureTime;
     }
 
     /**
@@ -158,24 +180,10 @@ public class Exposure {
     }
 
     /**
-     * Ruft den Wert der maxExposureTime-Eigenschaft ab.
-     */
-    public float getMaxExposureTime() {
-        return maxExposureTime;
-    }
-
-    /**
      * Legt den Wert der maxExposureTime-Eigenschaft fest.
      */
     public void setMaxExposureTime(float value) {
         this.maxExposureTime = value;
-    }
-
-    /**
-     * Ruft den Wert der minGain-Eigenschaft ab.
-     */
-    public float getMinGain() {
-        return minGain;
     }
 
     /**
@@ -186,24 +194,10 @@ public class Exposure {
     }
 
     /**
-     * Ruft den Wert der maxGain-Eigenschaft ab.
-     */
-    public float getMaxGain() {
-        return maxGain;
-    }
-
-    /**
      * Legt den Wert der maxGain-Eigenschaft fest.
      */
     public void setMaxGain(float value) {
         this.maxGain = value;
-    }
-
-    /**
-     * Ruft den Wert der minIris-Eigenschaft ab.
-     */
-    public float getMinIris() {
-        return minIris;
     }
 
     /**
@@ -214,24 +208,10 @@ public class Exposure {
     }
 
     /**
-     * Ruft den Wert der maxIris-Eigenschaft ab.
-     */
-    public float getMaxIris() {
-        return maxIris;
-    }
-
-    /**
      * Legt den Wert der maxIris-Eigenschaft fest.
      */
     public void setMaxIris(float value) {
         this.maxIris = value;
-    }
-
-    /**
-     * Ruft den Wert der exposureTime-Eigenschaft ab.
-     */
-    public float getExposureTime() {
-        return exposureTime;
     }
 
     /**
@@ -242,24 +222,10 @@ public class Exposure {
     }
 
     /**
-     * Ruft den Wert der gain-Eigenschaft ab.
-     */
-    public float getGain() {
-        return gain;
-    }
-
-    /**
      * Legt den Wert der gain-Eigenschaft fest.
      */
     public void setGain(float value) {
         this.gain = value;
-    }
-
-    /**
-     * Ruft den Wert der iris-Eigenschaft ab.
-     */
-    public float getIris() {
-        return iris;
     }
 
     /**

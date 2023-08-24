@@ -1,7 +1,9 @@
 package org.onvif.ver20.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -9,17 +11,14 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "CreateProfileResponse")
 public class CreateProfileResponse {
 
-    @XmlElement(name = "Token", required = true)
-    protected String token;
-
     /**
-     * Ruft den Wert der token-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der token-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getToken() {
-        return token;
-    }
+    @XmlElement(name = "Token", required = true)
+    protected String token;
 
     /**
      * Legt den Wert der token-Eigenschaft fest.

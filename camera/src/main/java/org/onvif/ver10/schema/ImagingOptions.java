@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -56,50 +57,105 @@ import java.util.Map;
         })
 public class ImagingOptions {
 
-    @XmlElement(name = "BacklightCompensation", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der backlightCompensation-Eigenschaft ab.
+     *
+     * @return possible object is {@link BacklightCompensationOptions }
+     */
+    @Getter @XmlElement(name = "BacklightCompensation", required = true)
     protected BacklightCompensationOptions backlightCompensation;
 
-    @XmlElement(name = "Brightness", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der brightness-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "Brightness", required = true)
     protected FloatRange brightness;
 
-    @XmlElement(name = "ColorSaturation", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der colorSaturation-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "ColorSaturation", required = true)
     protected FloatRange colorSaturation;
 
-    @XmlElement(name = "Contrast", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der contrast-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "Contrast", required = true)
     protected FloatRange contrast;
 
-    @XmlElement(name = "Exposure", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der exposure-Eigenschaft ab.
+     *
+     * @return possible object is {@link ExposureOptions }
+     */
+    @Getter @XmlElement(name = "Exposure", required = true)
     protected ExposureOptions exposure;
 
-    @XmlElement(name = "Focus", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der focus-Eigenschaft ab.
+     *
+     * @return possible object is {@link FocusOptions }
+     */
+    @Getter @XmlElement(name = "Focus", required = true)
     protected FocusOptions focus;
 
     @XmlElement(name = "IrCutFilterModes", required = true)
     protected List<IrCutFilterMode> irCutFilterModes;
 
-    @XmlElement(name = "Sharpness", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der sharpness-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "Sharpness", required = true)
     protected FloatRange sharpness;
 
-    @XmlElement(name = "WideDynamicRange", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der wideDynamicRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link WideDynamicRangeOptions }
+     */
+    @Getter @XmlElement(name = "WideDynamicRange", required = true)
     protected WideDynamicRangeOptions wideDynamicRange;
 
-    @XmlElement(name = "WhiteBalance", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der whiteBalance-Eigenschaft ab.
+     *
+     * @return possible object is {@link WhiteBalanceOptions }
+     */
+    @Getter @XmlElement(name = "WhiteBalance", required = true)
     protected WhiteBalanceOptions whiteBalance;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der backlightCompensation-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link BacklightCompensationOptions }
+     * @return always non-null
      */
-    public BacklightCompensationOptions getBacklightCompensation() {
-        return backlightCompensation;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der backlightCompensation-Eigenschaft fest.
@@ -108,15 +164,6 @@ public class ImagingOptions {
      */
     public void setBacklightCompensation(BacklightCompensationOptions value) {
         this.backlightCompensation = value;
-    }
-
-    /**
-     * Ruft den Wert der brightness-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getBrightness() {
-        return brightness;
     }
 
     /**
@@ -129,30 +176,12 @@ public class ImagingOptions {
     }
 
     /**
-     * Ruft den Wert der colorSaturation-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getColorSaturation() {
-        return colorSaturation;
-    }
-
-    /**
      * Legt den Wert der colorSaturation-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
      */
     public void setColorSaturation(FloatRange value) {
         this.colorSaturation = value;
-    }
-
-    /**
-     * Ruft den Wert der contrast-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getContrast() {
-        return contrast;
     }
 
     /**
@@ -165,30 +194,12 @@ public class ImagingOptions {
     }
 
     /**
-     * Ruft den Wert der exposure-Eigenschaft ab.
-     *
-     * @return possible object is {@link ExposureOptions }
-     */
-    public ExposureOptions getExposure() {
-        return exposure;
-    }
-
-    /**
      * Legt den Wert der exposure-Eigenschaft fest.
      *
      * @param value allowed object is {@link ExposureOptions }
      */
     public void setExposure(ExposureOptions value) {
         this.exposure = value;
-    }
-
-    /**
-     * Ruft den Wert der focus-Eigenschaft ab.
-     *
-     * @return possible object is {@link FocusOptions }
-     */
-    public FocusOptions getFocus() {
-        return focus;
     }
 
     /**
@@ -223,15 +234,6 @@ public class ImagingOptions {
     }
 
     /**
-     * Ruft den Wert der sharpness-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getSharpness() {
-        return sharpness;
-    }
-
-    /**
      * Legt den Wert der sharpness-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
@@ -241,30 +243,12 @@ public class ImagingOptions {
     }
 
     /**
-     * Ruft den Wert der wideDynamicRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link WideDynamicRangeOptions }
-     */
-    public WideDynamicRangeOptions getWideDynamicRange() {
-        return wideDynamicRange;
-    }
-
-    /**
      * Legt den Wert der wideDynamicRange-Eigenschaft fest.
      *
      * @param value allowed object is {@link WideDynamicRangeOptions }
      */
     public void setWideDynamicRange(WideDynamicRangeOptions value) {
         this.wideDynamicRange = value;
-    }
-
-    /**
-     * Ruft den Wert der whiteBalance-Eigenschaft ab.
-     *
-     * @return possible object is {@link WhiteBalanceOptions }
-     */
-    public WhiteBalanceOptions getWhiteBalance() {
-        return whiteBalance;
     }
 
     /**
@@ -299,18 +283,4 @@ public class ImagingOptions {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

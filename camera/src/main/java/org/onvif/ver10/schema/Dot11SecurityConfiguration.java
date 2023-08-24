@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Dot11SecurityConfiguration complex type.
@@ -35,32 +36,57 @@ import java.util.Map;
         propOrder = {"mode", "algorithm", "psk", "dot1X", "extension"})
 public class Dot11SecurityConfiguration {
 
-    @XmlElement(name = "Mode", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der mode-Eigenschaft ab.
+     *
+     * @return possible object is {@link Dot11SecurityMode }
+     */
+    @Getter @XmlElement(name = "Mode", required = true)
     protected Dot11SecurityMode mode;
 
-    @XmlElement(name = "Algorithm")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der algorithm-Eigenschaft ab.
+     *
+     * @return possible object is {@link Dot11Cipher }
+     */
+    @Getter @XmlElement(name = "Algorithm")
     protected Dot11Cipher algorithm;
 
     @XmlElement(name = "PSK")
     protected Dot11PSKSet psk;
 
-    @XmlElement(name = "Dot1X")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dot1X-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Dot1X")
     protected String dot1X;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link Dot11SecurityConfigurationExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected Dot11SecurityConfigurationExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der mode-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link Dot11SecurityMode }
+     * @return always non-null
      */
-    public Dot11SecurityMode getMode() {
-        return mode;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der mode-Eigenschaft fest.
@@ -69,15 +95,6 @@ public class Dot11SecurityConfiguration {
      */
     public void setMode(Dot11SecurityMode value) {
         this.mode = value;
-    }
-
-    /**
-     * Ruft den Wert der algorithm-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot11Cipher }
-     */
-    public Dot11Cipher getAlgorithm() {
-        return algorithm;
     }
 
     /**
@@ -108,30 +125,12 @@ public class Dot11SecurityConfiguration {
     }
 
     /**
-     * Ruft den Wert der dot1X-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getDot1X() {
-        return dot1X;
-    }
-
-    /**
      * Legt den Wert der dot1X-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setDot1X(String value) {
         this.dot1X = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot11SecurityConfigurationExtension }
-     */
-    public Dot11SecurityConfigurationExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -143,18 +142,4 @@ public class Dot11SecurityConfiguration {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

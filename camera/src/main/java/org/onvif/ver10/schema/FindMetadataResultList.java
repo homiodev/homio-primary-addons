@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r FindMetadataResultList complex type.
@@ -33,20 +34,17 @@ import java.util.List;
         propOrder = {"searchState", "result"})
 public class FindMetadataResultList {
 
-    @XmlElement(name = "SearchState", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der searchState-Eigenschaft ab.
+     *
+     * @return possible object is {@link SearchState }
+     */
+    @Getter @XmlElement(name = "SearchState", required = true)
     protected SearchState searchState;
 
     @XmlElement(name = "Result")
     protected List<FindMetadataResult> result;
-
-    /**
-     * Ruft den Wert der searchState-Eigenschaft ab.
-     *
-     * @return possible object is {@link SearchState }
-     */
-    public SearchState getSearchState() {
-        return searchState;
-    }
 
     /**
      * Legt den Wert der searchState-Eigenschaft fest.

@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -35,10 +36,22 @@ public class ImagingOptions20Extension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlElement(name = "ImageStabilization")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der imageStabilization-Eigenschaft ab.
+     *
+     * @return possible object is {@link ImageStabilizationOptions }
+     */
+    @Getter @XmlElement(name = "ImageStabilization")
     protected ImageStabilizationOptions imageStabilization;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ImagingOptions20Extension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected ImagingOptions20Extension2 extension;
 
     /**
@@ -65,30 +78,12 @@ public class ImagingOptions20Extension {
     }
 
     /**
-     * Ruft den Wert der imageStabilization-Eigenschaft ab.
-     *
-     * @return possible object is {@link ImageStabilizationOptions }
-     */
-    public ImageStabilizationOptions getImageStabilization() {
-        return imageStabilization;
-    }
-
-    /**
      * Legt den Wert der imageStabilization-Eigenschaft fest.
      *
      * @param value allowed object is {@link ImageStabilizationOptions }
      */
     public void setImageStabilization(ImageStabilizationOptions value) {
         this.imageStabilization = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ImagingOptions20Extension2 }
-     */
-    public ImagingOptions20Extension2 getExtension() {
-        return extension;
     }
 
     /**

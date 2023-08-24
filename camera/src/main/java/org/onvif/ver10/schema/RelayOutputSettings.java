@@ -6,6 +6,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 
 import javax.xml.datatype.Duration;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r RelayOutputSettings complex type.
@@ -27,29 +28,39 @@ import javax.xml.datatype.Duration;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RelayOutputSettings",
         propOrder = {"mode", "delayTime", "idleState"})
 public class RelayOutputSettings {
 
-    @XmlElement(name = "Mode", required = true)
-    protected RelayMode mode;
-
-    @XmlElement(name = "DelayTime", required = true)
-    protected Duration delayTime;
-
-    @XmlElement(name = "IdleState", required = true)
-    protected RelayIdleState idleState;
-
     /**
-     * Ruft den Wert der mode-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der mode-Eigenschaft ab.
      *
      * @return possible object is {@link RelayMode }
      */
-    public RelayMode getMode() {
-        return mode;
-    }
+    @XmlElement(name = "Mode", required = true)
+    protected RelayMode mode;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der delayTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link Duration }
+     */
+    @XmlElement(name = "DelayTime", required = true)
+    protected Duration delayTime;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der idleState-Eigenschaft ab.
+     *
+     * @return possible object is {@link RelayIdleState }
+     */
+    @XmlElement(name = "IdleState", required = true)
+    protected RelayIdleState idleState;
 
     /**
      * Legt den Wert der mode-Eigenschaft fest.
@@ -61,30 +72,12 @@ public class RelayOutputSettings {
     }
 
     /**
-     * Ruft den Wert der delayTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link Duration }
-     */
-    public Duration getDelayTime() {
-        return delayTime;
-    }
-
-    /**
      * Legt den Wert der delayTime-Eigenschaft fest.
      *
      * @param value allowed object is {@link Duration }
      */
     public void setDelayTime(Duration value) {
         this.delayTime = value;
-    }
-
-    /**
-     * Ruft den Wert der idleState-Eigenschaft ab.
-     *
-     * @return possible object is {@link RelayIdleState }
-     */
-    public RelayIdleState getIdleState() {
-        return idleState;
     }
 
     /**

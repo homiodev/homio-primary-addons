@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -38,7 +39,13 @@ public class PTZConfigurationExtension {
     @XmlElement(name = "PTControlDirection")
     protected PTControlDirection ptControlDirection;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZConfigurationExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected PTZConfigurationExtension2 extension;
 
     /**
@@ -80,15 +87,6 @@ public class PTZConfigurationExtension {
      */
     public void setPTControlDirection(PTControlDirection value) {
         this.ptControlDirection = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZConfigurationExtension2 }
-     */
-    public PTZConfigurationExtension2 getExtension() {
-        return extension;
     }
 
     /**

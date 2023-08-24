@@ -6,6 +6,7 @@ import javax.xml.datatype.Duration;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r PTZPresetTourStartingCondition complex type.
@@ -29,35 +30,61 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZPresetTourStartingCondition",
         propOrder = {"recurringTime", "recurringDuration", "direction", "extension"})
 public class PTZPresetTourStartingCondition {
 
-    @XmlElement(name = "RecurringTime")
-    protected Integer recurringTime;
-
-    @XmlElement(name = "RecurringDuration")
-    protected Duration recurringDuration;
-
-    @XmlElement(name = "Direction")
-    protected PTZPresetTourDirection direction;
-
-    @XmlElement(name = "Extension")
-    protected PTZPresetTourStartingConditionExtension extension;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der recurringTime-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der recurringTime-Eigenschaft ab.
      *
      * @return possible object is {@link Integer }
      */
-    public Integer getRecurringTime() {
-        return recurringTime;
-    }
+    @XmlElement(name = "RecurringTime")
+    protected Integer recurringTime;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der recurringDuration-Eigenschaft ab.
+     *
+     * @return possible object is {@link Duration }
+     */
+    @XmlElement(name = "RecurringDuration")
+    protected Duration recurringDuration;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der direction-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZPresetTourDirection }
+     */
+    @XmlElement(name = "Direction")
+    protected PTZPresetTourDirection direction;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZPresetTourStartingConditionExtension }
+     */
+    @XmlElement(name = "Extension")
+    protected PTZPresetTourStartingConditionExtension extension;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der recurringTime-Eigenschaft fest.
@@ -66,15 +93,6 @@ public class PTZPresetTourStartingCondition {
      */
     public void setRecurringTime(Integer value) {
         this.recurringTime = value;
-    }
-
-    /**
-     * Ruft den Wert der recurringDuration-Eigenschaft ab.
-     *
-     * @return possible object is {@link Duration }
-     */
-    public Duration getRecurringDuration() {
-        return recurringDuration;
     }
 
     /**
@@ -87,30 +105,12 @@ public class PTZPresetTourStartingCondition {
     }
 
     /**
-     * Ruft den Wert der direction-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZPresetTourDirection }
-     */
-    public PTZPresetTourDirection getDirection() {
-        return direction;
-    }
-
-    /**
      * Legt den Wert der direction-Eigenschaft fest.
      *
      * @param value allowed object is {@link PTZPresetTourDirection }
      */
     public void setDirection(PTZPresetTourDirection value) {
         this.direction = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZPresetTourStartingConditionExtension }
-     */
-    public PTZPresetTourStartingConditionExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -122,18 +122,4 @@ public class PTZPresetTourStartingCondition {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

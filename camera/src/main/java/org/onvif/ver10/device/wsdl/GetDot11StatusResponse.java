@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.Dot11Status;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.Dot11Status;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.Dot11Status;
 @XmlRootElement(name = "GetDot11StatusResponse")
 public class GetDot11StatusResponse {
 
-    @XmlElement(name = "Status", required = true)
-    protected Dot11Status status;
-
     /**
-     * Ruft den Wert der status-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der status-Eigenschaft ab.
      *
      * @return possible object is {@link Dot11Status }
      */
-    public Dot11Status getStatus() {
-        return status;
-    }
+    @XmlElement(name = "Status", required = true)
+    protected Dot11Status status;
 
     /**
      * Legt den Wert der status-Eigenschaft fest.

@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -37,29 +38,48 @@ import java.util.Map;
         propOrder = {"recordingToken", "configuration", "tracks", "any"})
 public class GetRecordingsResponseItem {
 
-    @XmlElement(name = "RecordingToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der recordingToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
-    @XmlElement(name = "Configuration", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der configuration-Eigenschaft ab.
+     *
+     * @return possible object is {@link RecordingConfiguration }
+     */
+    @Getter @XmlElement(name = "Configuration", required = true)
     protected RecordingConfiguration configuration;
 
-    @XmlElement(name = "Tracks", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der tracks-Eigenschaft ab.
+     *
+     * @return possible object is {@link GetTracksResponseList }
+     */
+    @Getter @XmlElement(name = "Tracks", required = true)
     protected GetTracksResponseList tracks;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der recordingToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getRecordingToken() {
-        return recordingToken;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der recordingToken-Eigenschaft fest.
@@ -71,30 +91,12 @@ public class GetRecordingsResponseItem {
     }
 
     /**
-     * Ruft den Wert der configuration-Eigenschaft ab.
-     *
-     * @return possible object is {@link RecordingConfiguration }
-     */
-    public RecordingConfiguration getConfiguration() {
-        return configuration;
-    }
-
-    /**
      * Legt den Wert der configuration-Eigenschaft fest.
      *
      * @param value allowed object is {@link RecordingConfiguration }
      */
     public void setConfiguration(RecordingConfiguration value) {
         this.configuration = value;
-    }
-
-    /**
-     * Ruft den Wert der tracks-Eigenschaft ab.
-     *
-     * @return possible object is {@link GetTracksResponseList }
-     */
-    public GetTracksResponseList getTracks() {
-        return tracks;
     }
 
     /**
@@ -129,18 +131,4 @@ public class GetRecordingsResponseItem {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

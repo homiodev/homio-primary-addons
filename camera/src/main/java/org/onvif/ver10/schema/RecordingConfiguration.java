@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.datatype.Duration;
@@ -38,29 +39,48 @@ import java.util.Map;
         propOrder = {"source", "content", "maximumRetentionTime", "any"})
 public class RecordingConfiguration {
 
-    @XmlElement(name = "Source", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der source-Eigenschaft ab.
+     *
+     * @return possible object is {@link RecordingSourceInformation }
+     */
+    @Getter @XmlElement(name = "Source", required = true)
     protected RecordingSourceInformation source;
 
-    @XmlElement(name = "Content", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der content-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Content", required = true)
     protected String content;
 
-    @XmlElement(name = "MaximumRetentionTime", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maximumRetentionTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link Duration }
+     */
+    @Getter @XmlElement(name = "MaximumRetentionTime", required = true)
     protected Duration maximumRetentionTime;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der source-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link RecordingSourceInformation }
+     * @return always non-null
      */
-    public RecordingSourceInformation getSource() {
-        return source;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der source-Eigenschaft fest.
@@ -72,30 +92,12 @@ public class RecordingConfiguration {
     }
 
     /**
-     * Ruft den Wert der content-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getContent() {
-        return content;
-    }
-
-    /**
      * Legt den Wert der content-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setContent(String value) {
         this.content = value;
-    }
-
-    /**
-     * Ruft den Wert der maximumRetentionTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link Duration }
-     */
-    public Duration getMaximumRetentionTime() {
-        return maximumRetentionTime;
     }
 
     /**
@@ -130,18 +132,4 @@ public class RecordingConfiguration {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

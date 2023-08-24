@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r VideoSourceConfigurationOptions complex type.
@@ -35,26 +36,39 @@ import java.util.Map;
         propOrder = {"boundsRange", "videoSourceTokensAvailable", "extension"})
 public class VideoSourceConfigurationOptions {
 
-    @XmlElement(name = "BoundsRange", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der boundsRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link IntRectangleRange }
+     */
+    @Getter @XmlElement(name = "BoundsRange", required = true)
     protected IntRectangleRange boundsRange;
 
     @XmlElement(name = "VideoSourceTokensAvailable", required = true)
     protected List<String> videoSourceTokensAvailable;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoSourceConfigurationOptionsExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected VideoSourceConfigurationOptionsExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der boundsRange-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link IntRectangleRange }
+     * @return always non-null
      */
-    public IntRectangleRange getBoundsRange() {
-        return boundsRange;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der boundsRange-Eigenschaft fest.
@@ -88,15 +102,6 @@ public class VideoSourceConfigurationOptions {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoSourceConfigurationOptionsExtension }
-     */
-    public VideoSourceConfigurationOptionsExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link VideoSourceConfigurationOptionsExtension }
@@ -105,18 +110,4 @@ public class VideoSourceConfigurationOptions {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

@@ -9,6 +9,7 @@
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.MetadataConfigurationOptions;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.MetadataConfigurationOptions;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.MetadataConfigurationOptions;
 @XmlRootElement(name = "GetMetadataConfigurationOptionsResponse")
 public class GetMetadataConfigurationOptionsResponse {
 
-    @XmlElement(name = "Options", required = true)
-    protected MetadataConfigurationOptions options;
-
     /**
-     * Ruft den Wert der options-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der options-Eigenschaft ab.
      *
      * @return possible object is {@link MetadataConfigurationOptions }
      */
-    public MetadataConfigurationOptions getOptions() {
-        return options;
-    }
+    @XmlElement(name = "Options", required = true)
+    protected MetadataConfigurationOptions options;
 
     /**
      * Legt den Wert der options-Eigenschaft fest.

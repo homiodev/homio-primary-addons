@@ -4,24 +4,23 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ContinuousFocusOptions",
         propOrder = {"speed"})
 public class ContinuousFocusOptions {
 
-    @XmlElement(name = "Speed", required = true)
-    protected FloatRange speed;
-
     /**
-     * Ruft den Wert der speed-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der speed-Eigenschaft ab.
      *
      * @return possible object is {@link FloatRange }
      */
-    public FloatRange getSpeed() {
-        return speed;
-    }
+    @XmlElement(name = "Speed", required = true)
+    protected FloatRange speed;
 
     /**
      * Legt den Wert der speed-Eigenschaft fest.

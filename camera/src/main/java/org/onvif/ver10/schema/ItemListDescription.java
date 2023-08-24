@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Describes a list of items. Each item in the list shall have a unique name. The list is designed as linear structure without optional or unbounded elements.
@@ -62,11 +63,27 @@ public class ItemListDescription {
     @XmlElement(name = "ElementItemDescription")
     protected List<ItemListDescription.ElementItemDescription> elementItemDescription;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ItemListDescriptionExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected ItemListDescriptionExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the simpleItemDescription property.
@@ -115,36 +132,12 @@ public class ItemListDescription {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ItemListDescriptionExtension }
-     */
-    public ItemListDescriptionExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link ItemListDescriptionExtension }
      */
     public void setExtension(ItemListDescriptionExtension value) {
         this.extension = value;
-    }
-
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
     }
 
     /**
@@ -164,24 +157,28 @@ public class ItemListDescription {
      * </complexType>
      * </pre>
      */
+    @Getter
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
     public static class ElementItemDescription {
 
-        @XmlAttribute(name = "Name", required = true)
-        protected String name;
-
-        @XmlAttribute(name = "Type", required = true)
-        protected QName type;
-
         /**
-         * Ruft den Wert der name-Eigenschaft ab.
+         * -- GETTER --
+         *  Ruft den Wert der name-Eigenschaft ab.
          *
          * @return possible object is {@link String }
          */
-        public String getName() {
-            return name;
-        }
+        @XmlAttribute(name = "Name", required = true)
+        protected String name;
+
+        /**
+         * -- GETTER --
+         *  Ruft den Wert der type-Eigenschaft ab.
+         *
+         * @return possible object is {@link QName }
+         */
+        @XmlAttribute(name = "Type", required = true)
+        protected QName type;
 
         /**
          * Legt den Wert der name-Eigenschaft fest.
@@ -190,15 +187,6 @@ public class ItemListDescription {
          */
         public void setName(String value) {
             this.name = value;
-        }
-
-        /**
-         * Ruft den Wert der type-Eigenschaft ab.
-         *
-         * @return possible object is {@link QName }
-         */
-        public QName getType() {
-            return type;
         }
 
         /**
@@ -228,24 +216,28 @@ public class ItemListDescription {
      * </complexType>
      * </pre>
      */
+    @Getter
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
     public static class SimpleItemDescription {
 
-        @XmlAttribute(name = "Name", required = true)
-        protected String name;
-
-        @XmlAttribute(name = "Type", required = true)
-        protected QName type;
-
         /**
-         * Ruft den Wert der name-Eigenschaft ab.
+         * -- GETTER --
+         *  Ruft den Wert der name-Eigenschaft ab.
          *
          * @return possible object is {@link String }
          */
-        public String getName() {
-            return name;
-        }
+        @XmlAttribute(name = "Name", required = true)
+        protected String name;
+
+        /**
+         * -- GETTER --
+         *  Ruft den Wert der type-Eigenschaft ab.
+         *
+         * @return possible object is {@link QName }
+         */
+        @XmlAttribute(name = "Type", required = true)
+        protected QName type;
 
         /**
          * Legt den Wert der name-Eigenschaft fest.
@@ -254,15 +246,6 @@ public class ItemListDescription {
          */
         public void setName(String value) {
             this.name = value;
-        }
-
-        /**
-         * Ruft den Wert der type-Eigenschaft ab.
-         *
-         * @return possible object is {@link QName }
-         */
-        public QName getType() {
-            return type;
         }
 
         /**

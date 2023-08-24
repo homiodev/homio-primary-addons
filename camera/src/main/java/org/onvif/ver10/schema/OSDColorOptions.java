@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Describe the option of the color and its transparency.
@@ -29,32 +30,52 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "OSDColorOptions",
         propOrder = {"color", "transparent", "extension"})
 public class OSDColorOptions {
 
-    @XmlElement(name = "Color")
-    protected ColorOptions color;
-
-    @XmlElement(name = "Transparent")
-    protected IntRange transparent;
-
-    @XmlElement(name = "Extension")
-    protected OSDColorOptionsExtension extension;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der color-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der color-Eigenschaft ab.
      *
      * @return possible object is {@link ColorOptions }
      */
-    public ColorOptions getColor() {
-        return color;
-    }
+    @XmlElement(name = "Color")
+    protected ColorOptions color;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der transparent-Eigenschaft ab.
+     *
+     * @return possible object is {@link IntRange }
+     */
+    @XmlElement(name = "Transparent")
+    protected IntRange transparent;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link OSDColorOptionsExtension }
+     */
+    @XmlElement(name = "Extension")
+    protected OSDColorOptionsExtension extension;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der color-Eigenschaft fest.
@@ -63,15 +84,6 @@ public class OSDColorOptions {
      */
     public void setColor(ColorOptions value) {
         this.color = value;
-    }
-
-    /**
-     * Ruft den Wert der transparent-Eigenschaft ab.
-     *
-     * @return possible object is {@link IntRange }
-     */
-    public IntRange getTransparent() {
-        return transparent;
     }
 
     /**
@@ -84,15 +96,6 @@ public class OSDColorOptions {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link OSDColorOptionsExtension }
-     */
-    public OSDColorOptionsExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link OSDColorOptionsExtension }
@@ -101,18 +104,4 @@ public class OSDColorOptions {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

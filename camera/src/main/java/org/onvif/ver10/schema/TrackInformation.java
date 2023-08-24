@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -40,37 +41,68 @@ import java.util.Map;
         propOrder = {"trackToken", "trackType", "description", "dataFrom", "dataTo", "any"})
 public class TrackInformation {
 
-    @XmlElement(name = "TrackToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der trackToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "TrackToken", required = true)
     protected String trackToken;
 
-    @XmlElement(name = "TrackType", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der trackType-Eigenschaft ab.
+     *
+     * @return possible object is {@link TrackType }
+     */
+    @Getter @XmlElement(name = "TrackType", required = true)
     protected TrackType trackType;
 
-    @XmlElement(name = "Description", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der description-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Description", required = true)
     protected String description;
 
-    @XmlElement(name = "DataFrom", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dataFrom-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "DataFrom", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar dataFrom;
 
-    @XmlElement(name = "DataTo", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dataTo-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "DataTo", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar dataTo;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der trackToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getTrackToken() {
-        return trackToken;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der trackToken-Eigenschaft fest.
@@ -79,15 +111,6 @@ public class TrackInformation {
      */
     public void setTrackToken(String value) {
         this.trackToken = value;
-    }
-
-    /**
-     * Ruft den Wert der trackType-Eigenschaft ab.
-     *
-     * @return possible object is {@link TrackType }
-     */
-    public TrackType getTrackType() {
-        return trackType;
     }
 
     /**
@@ -100,15 +123,6 @@ public class TrackInformation {
     }
 
     /**
-     * Ruft den Wert der description-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
      * Legt den Wert der description-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
@@ -118,30 +132,12 @@ public class TrackInformation {
     }
 
     /**
-     * Ruft den Wert der dataFrom-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getDataFrom() {
-        return dataFrom;
-    }
-
-    /**
      * Legt den Wert der dataFrom-Eigenschaft fest.
      *
      * @param value allowed object is {@link XMLGregorianCalendar }
      */
     public void setDataFrom(XMLGregorianCalendar value) {
         this.dataFrom = value;
-    }
-
-    /**
-     * Ruft den Wert der dataTo-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getDataTo() {
-        return dataTo;
     }
 
     /**
@@ -176,18 +172,4 @@ public class TrackInformation {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

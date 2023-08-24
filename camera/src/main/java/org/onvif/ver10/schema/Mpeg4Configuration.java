@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Mpeg4Configuration complex type.
@@ -24,39 +25,34 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Mpeg4Configuration",
         propOrder = {"govLength", "mpeg4Profile"})
 public class Mpeg4Configuration {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der govLength-Eigenschaft ab.
+     */
     @XmlElement(name = "GovLength")
     protected int govLength;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der mpeg4Profile-Eigenschaft ab.
+     *
+     * @return possible object is {@link Mpeg4Profile }
+     */
     @XmlElement(name = "Mpeg4Profile", required = true)
     protected Mpeg4Profile mpeg4Profile;
-
-    /**
-     * Ruft den Wert der govLength-Eigenschaft ab.
-     */
-    public int getGovLength() {
-        return govLength;
-    }
 
     /**
      * Legt den Wert der govLength-Eigenschaft fest.
      */
     public void setGovLength(int value) {
         this.govLength = value;
-    }
-
-    /**
-     * Ruft den Wert der mpeg4Profile-Eigenschaft ab.
-     *
-     * @return possible object is {@link Mpeg4Profile }
-     */
-    public Mpeg4Profile getMpeg4Profile() {
-        return mpeg4Profile;
     }
 
     /**

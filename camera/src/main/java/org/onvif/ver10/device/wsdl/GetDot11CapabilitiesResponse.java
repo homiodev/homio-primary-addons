@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.Dot11Capabilities;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.Dot11Capabilities;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.Dot11Capabilities;
 @XmlRootElement(name = "GetDot11CapabilitiesResponse")
 public class GetDot11CapabilitiesResponse {
 
-    @XmlElement(name = "Capabilities", required = true)
-    protected Dot11Capabilities capabilities;
-
     /**
-     * Ruft den Wert der capabilities-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der capabilities-Eigenschaft ab.
      *
      * @return possible object is {@link Dot11Capabilities }
      */
-    public Dot11Capabilities getCapabilities() {
-        return capabilities;
-    }
+    @XmlElement(name = "Capabilities", required = true)
+    protected Dot11Capabilities capabilities;
 
     /**
      * Legt den Wert der capabilities-Eigenschaft fest.

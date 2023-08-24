@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Object complex type.
@@ -27,32 +28,52 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Object",
         propOrder = {"appearance", "behaviour", "extension"})
 public class Object extends ObjectId {
 
-    @XmlElement(name = "Appearance")
-    protected Appearance appearance;
-
-    @XmlElement(name = "Behaviour")
-    protected Behaviour behaviour;
-
-    @XmlElement(name = "Extension")
-    protected ObjectExtension extension;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der appearance-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der appearance-Eigenschaft ab.
      *
      * @return possible object is {@link Appearance }
      */
-    public Appearance getAppearance() {
-        return appearance;
-    }
+    @XmlElement(name = "Appearance")
+    protected Appearance appearance;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der behaviour-Eigenschaft ab.
+     *
+     * @return possible object is {@link Behaviour }
+     */
+    @XmlElement(name = "Behaviour")
+    protected Behaviour behaviour;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ObjectExtension }
+     */
+    @XmlElement(name = "Extension")
+    protected ObjectExtension extension;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der appearance-Eigenschaft fest.
@@ -61,15 +82,6 @@ public class Object extends ObjectId {
      */
     public void setAppearance(Appearance value) {
         this.appearance = value;
-    }
-
-    /**
-     * Ruft den Wert der behaviour-Eigenschaft ab.
-     *
-     * @return possible object is {@link Behaviour }
-     */
-    public Behaviour getBehaviour() {
-        return behaviour;
     }
 
     /**
@@ -82,15 +94,6 @@ public class Object extends ObjectId {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ObjectExtension }
-     */
-    public ObjectExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link ObjectExtension }
@@ -99,18 +102,4 @@ public class Object extends ObjectId {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

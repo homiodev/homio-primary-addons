@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.RelayOutputSettings;
 
 /**
@@ -30,6 +31,7 @@ import org.onvif.ver10.schema.RelayOutputSettings;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -37,20 +39,23 @@ import org.onvif.ver10.schema.RelayOutputSettings;
 @XmlRootElement(name = "SetRelayOutputSettings")
 public class SetRelayOutputSettings {
 
-    @XmlElement(name = "RelayOutputToken", required = true)
-    protected String relayOutputToken;
-
-    @XmlElement(name = "Properties", required = true)
-    protected RelayOutputSettings properties;
-
     /**
-     * Ruft den Wert der relayOutputToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der relayOutputToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getRelayOutputToken() {
-        return relayOutputToken;
-    }
+    @XmlElement(name = "RelayOutputToken", required = true)
+    protected String relayOutputToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der properties-Eigenschaft ab.
+     *
+     * @return possible object is {@link RelayOutputSettings }
+     */
+    @XmlElement(name = "Properties", required = true)
+    protected RelayOutputSettings properties;
 
     /**
      * Legt den Wert der relayOutputToken-Eigenschaft fest.
@@ -59,15 +64,6 @@ public class SetRelayOutputSettings {
      */
     public void setRelayOutputToken(String value) {
         this.relayOutputToken = value;
-    }
-
-    /**
-     * Ruft den Wert der properties-Eigenschaft ab.
-     *
-     * @return possible object is {@link RelayOutputSettings }
-     */
-    public RelayOutputSettings getProperties() {
-        return properties;
     }
 
     /**

@@ -9,6 +9,7 @@
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -46,11 +47,27 @@ public class ProfileCapabilities {
     @XmlAnyElement(lax = true)
     protected List<Object> any;
 
-    @XmlAttribute(name = "MaximumNumberOfProfiles")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maximumNumberOfProfiles-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
+    @Getter @XmlAttribute(name = "MaximumNumberOfProfiles")
     protected Integer maximumNumberOfProfiles;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the any property.
@@ -75,15 +92,6 @@ public class ProfileCapabilities {
     }
 
     /**
-     * Ruft den Wert der maximumNumberOfProfiles-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
-    public Integer getMaximumNumberOfProfiles() {
-        return maximumNumberOfProfiles;
-    }
-
-    /**
      * Legt den Wert der maximumNumberOfProfiles-Eigenschaft fest.
      *
      * @param value allowed object is {@link Integer }
@@ -92,18 +100,4 @@ public class ProfileCapabilities {
         this.maximumNumberOfProfiles = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

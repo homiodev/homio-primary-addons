@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Mpeg4Options complex type.
@@ -43,13 +44,31 @@ public class Mpeg4Options {
     @XmlElement(name = "ResolutionsAvailable", required = true)
     protected List<VideoResolution> resolutionsAvailable;
 
-    @XmlElement(name = "GovLengthRange", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der govLengthRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link IntRange }
+     */
+    @Getter @XmlElement(name = "GovLengthRange", required = true)
     protected IntRange govLengthRange;
 
-    @XmlElement(name = "FrameRateRange", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der frameRateRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link IntRange }
+     */
+    @Getter @XmlElement(name = "FrameRateRange", required = true)
     protected IntRange frameRateRange;
 
-    @XmlElement(name = "EncodingIntervalRange", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der encodingIntervalRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link IntRange }
+     */
+    @Getter @XmlElement(name = "EncodingIntervalRange", required = true)
     protected IntRange encodingIntervalRange;
 
     @XmlElement(name = "Mpeg4ProfilesSupported", required = true)
@@ -78,15 +97,6 @@ public class Mpeg4Options {
     }
 
     /**
-     * Ruft den Wert der govLengthRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link IntRange }
-     */
-    public IntRange getGovLengthRange() {
-        return govLengthRange;
-    }
-
-    /**
      * Legt den Wert der govLengthRange-Eigenschaft fest.
      *
      * @param value allowed object is {@link IntRange }
@@ -96,30 +106,12 @@ public class Mpeg4Options {
     }
 
     /**
-     * Ruft den Wert der frameRateRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link IntRange }
-     */
-    public IntRange getFrameRateRange() {
-        return frameRateRange;
-    }
-
-    /**
      * Legt den Wert der frameRateRange-Eigenschaft fest.
      *
      * @param value allowed object is {@link IntRange }
      */
     public void setFrameRateRange(IntRange value) {
         this.frameRateRange = value;
-    }
-
-    /**
-     * Ruft den Wert der encodingIntervalRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link IntRange }
-     */
-    public IntRange getEncodingIntervalRange() {
-        return encodingIntervalRange;
     }
 
     /**

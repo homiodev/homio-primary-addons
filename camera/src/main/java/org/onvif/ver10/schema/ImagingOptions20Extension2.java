@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r ImagingOptions20Extension2 complex type.
@@ -24,26 +25,30 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ImagingOptions20Extension2",
         propOrder = {"irCutFilterAutoAdjustment", "extension"})
 public class ImagingOptions20Extension2 {
 
-    @XmlElement(name = "IrCutFilterAutoAdjustment")
-    protected IrCutFilterAutoAdjustmentOptions irCutFilterAutoAdjustment;
-
-    @XmlElement(name = "Extension")
-    protected ImagingOptions20Extension3 extension;
-
     /**
-     * Ruft den Wert der irCutFilterAutoAdjustment-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der irCutFilterAutoAdjustment-Eigenschaft ab.
      *
      * @return possible object is {@link IrCutFilterAutoAdjustmentOptions }
      */
-    public IrCutFilterAutoAdjustmentOptions getIrCutFilterAutoAdjustment() {
-        return irCutFilterAutoAdjustment;
-    }
+    @XmlElement(name = "IrCutFilterAutoAdjustment")
+    protected IrCutFilterAutoAdjustmentOptions irCutFilterAutoAdjustment;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ImagingOptions20Extension3 }
+     */
+    @XmlElement(name = "Extension")
+    protected ImagingOptions20Extension3 extension;
 
     /**
      * Legt den Wert der irCutFilterAutoAdjustment-Eigenschaft fest.
@@ -52,15 +57,6 @@ public class ImagingOptions20Extension2 {
      */
     public void setIrCutFilterAutoAdjustment(IrCutFilterAutoAdjustmentOptions value) {
         this.irCutFilterAutoAdjustment = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ImagingOptions20Extension3 }
-     */
-    public ImagingOptions20Extension3 getExtension() {
-        return extension;
     }
 
     /**

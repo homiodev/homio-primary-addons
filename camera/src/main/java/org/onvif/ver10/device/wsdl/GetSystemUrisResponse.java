@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.SystemLogUriList;
 import org.w3c.dom.Element;
 
@@ -46,6 +47,7 @@ import java.util.List;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -53,28 +55,43 @@ import java.util.List;
 @XmlRootElement(name = "GetSystemUrisResponse")
 public class GetSystemUrisResponse {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der systemLogUris-Eigenschaft ab.
+     *
+     * @return possible object is {@link SystemLogUriList }
+     */
     @XmlElement(name = "SystemLogUris")
     protected SystemLogUriList systemLogUris;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der supportInfoUri-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "SupportInfoUri")
     @XmlSchemaType(name = "anyURI")
     protected String supportInfoUri;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der systemBackupUri-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "SystemBackupUri")
     @XmlSchemaType(name = "anyURI")
     protected String systemBackupUri;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link Extension }
+     */
     @XmlElement(name = "Extension")
     protected GetSystemUrisResponse.Extension extension;
-
-    /**
-     * Ruft den Wert der systemLogUris-Eigenschaft ab.
-     *
-     * @return possible object is {@link SystemLogUriList }
-     */
-    public SystemLogUriList getSystemLogUris() {
-        return systemLogUris;
-    }
 
     /**
      * Legt den Wert der systemLogUris-Eigenschaft fest.
@@ -83,15 +100,6 @@ public class GetSystemUrisResponse {
      */
     public void setSystemLogUris(SystemLogUriList value) {
         this.systemLogUris = value;
-    }
-
-    /**
-     * Ruft den Wert der supportInfoUri-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getSupportInfoUri() {
-        return supportInfoUri;
     }
 
     /**
@@ -104,30 +112,12 @@ public class GetSystemUrisResponse {
     }
 
     /**
-     * Ruft den Wert der systemBackupUri-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getSystemBackupUri() {
-        return systemBackupUri;
-    }
-
-    /**
      * Legt den Wert der systemBackupUri-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setSystemBackupUri(String value) {
         this.systemBackupUri = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link GetSystemUrisResponse.Extension }
-     */
-    public GetSystemUrisResponse.Extension getExtension() {
-        return extension;
     }
 
     /**

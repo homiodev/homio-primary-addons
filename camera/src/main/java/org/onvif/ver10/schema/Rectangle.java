@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Rectangle complex type.
@@ -24,30 +25,46 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Rectangle")
 public class Rectangle {
 
-    @XmlAttribute(name = "bottom")
-    protected Float bottom;
-
-    @XmlAttribute(name = "top")
-    protected Float top;
-
-    @XmlAttribute(name = "right")
-    protected Float right;
-
-    @XmlAttribute(name = "left")
-    protected Float left;
-
     /**
-     * Ruft den Wert der bottom-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der bottom-Eigenschaft ab.
      *
      * @return possible object is {@link Float }
      */
-    public Float getBottom() {
-        return bottom;
-    }
+    @XmlAttribute(name = "bottom")
+    protected Float bottom;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der top-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlAttribute(name = "top")
+    protected Float top;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der right-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlAttribute(name = "right")
+    protected Float right;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der left-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlAttribute(name = "left")
+    protected Float left;
 
     /**
      * Legt den Wert der bottom-Eigenschaft fest.
@@ -56,15 +73,6 @@ public class Rectangle {
      */
     public void setBottom(Float value) {
         this.bottom = value;
-    }
-
-    /**
-     * Ruft den Wert der top-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getTop() {
-        return top;
     }
 
     /**
@@ -77,30 +85,12 @@ public class Rectangle {
     }
 
     /**
-     * Ruft den Wert der right-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getRight() {
-        return right;
-    }
-
-    /**
      * Legt den Wert der right-Eigenschaft fest.
      *
      * @param value allowed object is {@link Float }
      */
     public void setRight(Float value) {
         this.right = value;
-    }
-
-    /**
-     * Ruft den Wert der left-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getLeft() {
-        return left;
     }
 
     /**

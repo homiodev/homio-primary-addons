@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -40,14 +41,36 @@ public class Dot11AvailableNetworks {
     @XmlElement(name = "GroupCipher")
     protected List<Dot11Cipher> groupCipher;
 
-    @XmlElement(name = "SignalStrength")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der signalStrength-Eigenschaft ab.
+     *
+     * @return possible object is {@link Dot11SignalStrength }
+     */
+    @Getter @XmlElement(name = "SignalStrength")
     protected Dot11SignalStrength signalStrength;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link Dot11AvailableNetworksExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected Dot11AvailableNetworksExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der ssid-Eigenschaft ab.
@@ -152,30 +175,12 @@ public class Dot11AvailableNetworks {
     }
 
     /**
-     * Ruft den Wert der signalStrength-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot11SignalStrength }
-     */
-    public Dot11SignalStrength getSignalStrength() {
-        return signalStrength;
-    }
-
-    /**
      * Legt den Wert der signalStrength-Eigenschaft fest.
      *
      * @param value allowed object is {@link Dot11SignalStrength }
      */
     public void setSignalStrength(Dot11SignalStrength value) {
         this.signalStrength = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot11AvailableNetworksExtension }
-     */
-    public Dot11AvailableNetworksExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -187,18 +192,4 @@ public class Dot11AvailableNetworks {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

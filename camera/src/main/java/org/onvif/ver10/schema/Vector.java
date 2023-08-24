@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Vector complex type.
@@ -22,24 +23,28 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Vector")
 public class Vector {
 
-    @XmlAttribute(name = "x")
-    protected Float x;
-
-    @XmlAttribute(name = "y")
-    protected Float y;
-
     /**
-     * Ruft den Wert der x-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der x-Eigenschaft ab.
      *
      * @return possible object is {@link Float }
      */
-    public Float getX() {
-        return x;
-    }
+    @XmlAttribute(name = "x")
+    protected Float x;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der y-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlAttribute(name = "y")
+    protected Float y;
 
     /**
      * Legt den Wert der x-Eigenschaft fest.
@@ -48,15 +53,6 @@ public class Vector {
      */
     public void setX(Float value) {
         this.x = value;
-    }
-
-    /**
-     * Ruft den Wert der y-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getY() {
-        return y;
     }
 
     /**

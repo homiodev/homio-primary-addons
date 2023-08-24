@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r PTZPresetTourStartingConditionOptions complex type.
@@ -36,29 +37,48 @@ import java.util.Map;
         propOrder = {"recurringTime", "recurringDuration", "direction", "extension"})
 public class PTZPresetTourStartingConditionOptions {
 
-    @XmlElement(name = "RecurringTime")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der recurringTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link IntRange }
+     */
+    @Getter @XmlElement(name = "RecurringTime")
     protected IntRange recurringTime;
 
-    @XmlElement(name = "RecurringDuration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der recurringDuration-Eigenschaft ab.
+     *
+     * @return possible object is {@link DurationRange }
+     */
+    @Getter @XmlElement(name = "RecurringDuration")
     protected DurationRange recurringDuration;
 
     @XmlElement(name = "Direction")
     protected List<PTZPresetTourDirection> direction;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZPresetTourStartingConditionOptionsExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected PTZPresetTourStartingConditionOptionsExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der recurringTime-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link IntRange }
+     * @return always non-null
      */
-    public IntRange getRecurringTime() {
-        return recurringTime;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der recurringTime-Eigenschaft fest.
@@ -67,15 +87,6 @@ public class PTZPresetTourStartingConditionOptions {
      */
     public void setRecurringTime(IntRange value) {
         this.recurringTime = value;
-    }
-
-    /**
-     * Ruft den Wert der recurringDuration-Eigenschaft ab.
-     *
-     * @return possible object is {@link DurationRange }
-     */
-    public DurationRange getRecurringDuration() {
-        return recurringDuration;
     }
 
     /**
@@ -110,15 +121,6 @@ public class PTZPresetTourStartingConditionOptions {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZPresetTourStartingConditionOptionsExtension }
-     */
-    public PTZPresetTourStartingConditionOptionsExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link PTZPresetTourStartingConditionOptionsExtension }
@@ -127,18 +129,4 @@ public class PTZPresetTourStartingConditionOptions {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

@@ -1,7 +1,9 @@
 package org.onvif.ver20.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -9,17 +11,14 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetServiceCapabilitiesResponse2")
 public class GetServiceCapabilitiesResponse2 {
 
-    @XmlElement(name = "Capabilities", required = true)
-    protected Capabilities2 capabilities;
-
     /**
-     * Ruft den Wert der capabilities-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der capabilities-Eigenschaft ab.
      *
      * @return possible object is {@link Capabilities2 }
      */
-    public Capabilities2 getCapabilities() {
-        return capabilities;
-    }
+    @XmlElement(name = "Capabilities", required = true)
+    protected Capabilities2 capabilities;
 
     /**
      * Legt den Wert der capabilities-Eigenschaft fest.

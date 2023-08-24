@@ -1,6 +1,7 @@
 package org.onvif.ver20.ptz.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.PTZConfiguration;
 
 /**
@@ -32,7 +33,11 @@ public class SetConfiguration {
     @XmlElement(name = "PTZConfiguration", required = true)
     protected PTZConfiguration ptzConfiguration;
 
-    @XmlElement(name = "ForcePersistence")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der forcePersistence-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "ForcePersistence")
     protected boolean forcePersistence;
 
     /**
@@ -51,13 +56,6 @@ public class SetConfiguration {
      */
     public void setPTZConfiguration(PTZConfiguration value) {
         this.ptzConfiguration = value;
-    }
-
-    /**
-     * Ruft den Wert der forcePersistence-Eigenschaft ab.
-     */
-    public boolean isForcePersistence() {
-        return forcePersistence;
     }
 
     /**

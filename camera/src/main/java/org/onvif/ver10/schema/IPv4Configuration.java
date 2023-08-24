@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -41,10 +42,22 @@ public class IPv4Configuration {
     @XmlElement(name = "Manual")
     protected List<PrefixedIPv4Address> manual;
 
-    @XmlElement(name = "LinkLocal")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der linkLocal-Eigenschaft ab.
+     *
+     * @return possible object is {@link PrefixedIPv4Address }
+     */
+    @Getter @XmlElement(name = "LinkLocal")
     protected PrefixedIPv4Address linkLocal;
 
-    @XmlElement(name = "FromDHCP")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der fromDHCP-Eigenschaft ab.
+     *
+     * @return possible object is {@link PrefixedIPv4Address }
+     */
+    @Getter @XmlElement(name = "FromDHCP")
     protected PrefixedIPv4Address fromDHCP;
 
     @XmlElement(name = "DHCP")
@@ -53,8 +66,18 @@ public class IPv4Configuration {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the manual property.
@@ -79,30 +102,12 @@ public class IPv4Configuration {
     }
 
     /**
-     * Ruft den Wert der linkLocal-Eigenschaft ab.
-     *
-     * @return possible object is {@link PrefixedIPv4Address }
-     */
-    public PrefixedIPv4Address getLinkLocal() {
-        return linkLocal;
-    }
-
-    /**
      * Legt den Wert der linkLocal-Eigenschaft fest.
      *
      * @param value allowed object is {@link PrefixedIPv4Address }
      */
     public void setLinkLocal(PrefixedIPv4Address value) {
         this.linkLocal = value;
-    }
-
-    /**
-     * Ruft den Wert der fromDHCP-Eigenschaft ab.
-     *
-     * @return possible object is {@link PrefixedIPv4Address }
-     */
-    public PrefixedIPv4Address getFromDHCP() {
-        return fromDHCP;
     }
 
     /**
@@ -151,18 +156,4 @@ public class IPv4Configuration {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

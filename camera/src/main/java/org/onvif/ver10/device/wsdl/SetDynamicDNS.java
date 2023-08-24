@@ -11,6 +11,7 @@ package org.onvif.ver10.device.wsdl;
 import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.Getter;
 import org.onvif.ver10.schema.DynamicDNSType;
 
 import javax.xml.datatype.Duration;
@@ -42,24 +43,27 @@ import javax.xml.datatype.Duration;
 @XmlRootElement(name = "SetDynamicDNS")
 public class SetDynamicDNS {
 
-    @XmlElement(name = "Type", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der type-Eigenschaft ab.
+     *
+     * @return possible object is {@link DynamicDNSType }
+     */
+    @Getter @XmlElement(name = "Type", required = true)
     protected DynamicDNSType type;
 
-    @XmlElement(name = "Name")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der name-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Name")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String name;
 
     @XmlElement(name = "TTL")
     protected Duration ttl;
-
-    /**
-     * Ruft den Wert der type-Eigenschaft ab.
-     *
-     * @return possible object is {@link DynamicDNSType }
-     */
-    public DynamicDNSType getType() {
-        return type;
-    }
 
     /**
      * Legt den Wert der type-Eigenschaft fest.
@@ -68,15 +72,6 @@ public class SetDynamicDNS {
      */
     public void setType(DynamicDNSType value) {
         this.type = value;
-    }
-
-    /**
-     * Ruft den Wert der name-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getName() {
-        return name;
     }
 
     /**

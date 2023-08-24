@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -38,7 +39,13 @@ public class NetworkCapabilitiesExtension {
     @XmlElement(name = "Dot11Configuration")
     protected Boolean dot11Configuration;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link NetworkCapabilitiesExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected NetworkCapabilitiesExtension2 extension;
 
     /**
@@ -80,15 +87,6 @@ public class NetworkCapabilitiesExtension {
      */
     public void setDot11Configuration(Boolean value) {
         this.dot11Configuration = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link NetworkCapabilitiesExtension2 }
-     */
-    public NetworkCapabilitiesExtension2 getExtension() {
-        return extension;
     }
 
     /**

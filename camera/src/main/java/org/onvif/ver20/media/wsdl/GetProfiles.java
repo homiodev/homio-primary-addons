@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -12,20 +13,17 @@ import java.util.List;
 @XmlRootElement(name = "GetProfiles")
 public class GetProfiles {
 
-    @XmlElement(name = "Token")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der token-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Token")
     protected String token;
 
     @XmlElement(name = "Type")
     protected List<String> type;
-
-    /**
-     * Ruft den Wert der token-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getToken() {
-        return token;
-    }
 
     /**
      * Legt den Wert der token-Eigenschaft fest.

@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -29,6 +30,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,20 +38,21 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "SetZeroConfiguration")
 public class SetZeroConfiguration {
 
-    @XmlElement(name = "InterfaceToken", required = true)
-    protected String interfaceToken;
-
-    @XmlElement(name = "Enabled")
-    protected boolean enabled;
-
     /**
-     * Ruft den Wert der interfaceToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der interfaceToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getInterfaceToken() {
-        return interfaceToken;
-    }
+    @XmlElement(name = "InterfaceToken", required = true)
+    protected String interfaceToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der enabled-Eigenschaft ab.
+     */
+    @XmlElement(name = "Enabled")
+    protected boolean enabled;
 
     /**
      * Legt den Wert der interfaceToken-Eigenschaft fest.
@@ -58,13 +61,6 @@ public class SetZeroConfiguration {
      */
     public void setInterfaceToken(String value) {
         this.interfaceToken = value;
-    }
-
-    /**
-     * Ruft den Wert der enabled-Eigenschaft ab.
-     */
-    public boolean isEnabled() {
-        return enabled;
     }
 
     /**

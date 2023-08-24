@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.oasis_open.docs.wsn.b_2.NotificationMessageHolderType;
 import org.w3c.dom.Element;
 
@@ -41,36 +42,65 @@ import java.util.Map;
         propOrder = {"recordingToken", "trackToken", "time", "event", "startStateEvent", "any"})
 public class FindEventResult {
 
-    @XmlElement(name = "RecordingToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der recordingToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
-    @XmlElement(name = "TrackToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der trackToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "TrackToken", required = true)
     protected String trackToken;
 
-    @XmlElement(name = "Time", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der time-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "Time", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar time;
 
-    @XmlElement(name = "Event", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der event-Eigenschaft ab.
+     *
+     * @return possible object is {@link NotificationMessageHolderType }
+     */
+    @Getter @XmlElement(name = "Event", required = true)
     protected NotificationMessageHolderType event;
 
-    @XmlElement(name = "StartStateEvent")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der startStateEvent-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "StartStateEvent")
     protected boolean startStateEvent;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der recordingToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getRecordingToken() {
-        return recordingToken;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der recordingToken-Eigenschaft fest.
@@ -79,15 +109,6 @@ public class FindEventResult {
      */
     public void setRecordingToken(String value) {
         this.recordingToken = value;
-    }
-
-    /**
-     * Ruft den Wert der trackToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getTrackToken() {
-        return trackToken;
     }
 
     /**
@@ -100,15 +121,6 @@ public class FindEventResult {
     }
 
     /**
-     * Ruft den Wert der time-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getTime() {
-        return time;
-    }
-
-    /**
      * Legt den Wert der time-Eigenschaft fest.
      *
      * @param value allowed object is {@link XMLGregorianCalendar }
@@ -118,28 +130,12 @@ public class FindEventResult {
     }
 
     /**
-     * Ruft den Wert der event-Eigenschaft ab.
-     *
-     * @return possible object is {@link NotificationMessageHolderType }
-     */
-    public NotificationMessageHolderType getEvent() {
-        return event;
-    }
-
-    /**
      * Legt den Wert der event-Eigenschaft fest.
      *
      * @param value allowed object is {@link NotificationMessageHolderType }
      */
     public void setEvent(NotificationMessageHolderType value) {
         this.event = value;
-    }
-
-    /**
-     * Ruft den Wert der startStateEvent-Eigenschaft ab.
-     */
-    public boolean isStartStateEvent() {
-        return startStateEvent;
     }
 
     /**
@@ -172,18 +168,4 @@ public class FindEventResult {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

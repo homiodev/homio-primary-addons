@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.datatype.Duration;
@@ -54,29 +55,69 @@ public class MetadataConfiguration extends ConfigurationEntity {
     @XmlElement(name = "PTZStatus")
     protected PTZFilter ptzStatus;
 
-    @XmlElement(name = "Events")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der events-Eigenschaft ab.
+     *
+     * @return possible object is {@link EventSubscription }
+     */
+    @Getter @XmlElement(name = "Events")
     protected EventSubscription events;
 
     @XmlElement(name = "Analytics")
     protected Boolean analytics;
 
-    @XmlElement(name = "Multicast", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der multicast-Eigenschaft ab.
+     *
+     * @return possible object is {@link MulticastConfiguration }
+     */
+    @Getter @XmlElement(name = "Multicast", required = true)
     protected MulticastConfiguration multicast;
 
-    @XmlElement(name = "SessionTimeout", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der sessionTimeout-Eigenschaft ab.
+     *
+     * @return possible object is {@link Duration }
+     */
+    @Getter @XmlElement(name = "SessionTimeout", required = true)
     protected Duration sessionTimeout;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlElement(name = "AnalyticsEngineConfiguration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der analyticsEngineConfiguration-Eigenschaft ab.
+     *
+     * @return possible object is {@link AnalyticsEngineConfiguration }
+     */
+    @Getter @XmlElement(name = "AnalyticsEngineConfiguration")
     protected AnalyticsEngineConfiguration analyticsEngineConfiguration;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link MetadataConfigurationExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected MetadataConfigurationExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der ptzStatus-Eigenschaft ab.
@@ -94,15 +135,6 @@ public class MetadataConfiguration extends ConfigurationEntity {
      */
     public void setPTZStatus(PTZFilter value) {
         this.ptzStatus = value;
-    }
-
-    /**
-     * Ruft den Wert der events-Eigenschaft ab.
-     *
-     * @return possible object is {@link EventSubscription }
-     */
-    public EventSubscription getEvents() {
-        return events;
     }
 
     /**
@@ -133,30 +165,12 @@ public class MetadataConfiguration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der multicast-Eigenschaft ab.
-     *
-     * @return possible object is {@link MulticastConfiguration }
-     */
-    public MulticastConfiguration getMulticast() {
-        return multicast;
-    }
-
-    /**
      * Legt den Wert der multicast-Eigenschaft fest.
      *
      * @param value allowed object is {@link MulticastConfiguration }
      */
     public void setMulticast(MulticastConfiguration value) {
         this.multicast = value;
-    }
-
-    /**
-     * Ruft den Wert der sessionTimeout-Eigenschaft ab.
-     *
-     * @return possible object is {@link Duration }
-     */
-    public Duration getSessionTimeout() {
-        return sessionTimeout;
     }
 
     /**
@@ -192,30 +206,12 @@ public class MetadataConfiguration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der analyticsEngineConfiguration-Eigenschaft ab.
-     *
-     * @return possible object is {@link AnalyticsEngineConfiguration }
-     */
-    public AnalyticsEngineConfiguration getAnalyticsEngineConfiguration() {
-        return analyticsEngineConfiguration;
-    }
-
-    /**
      * Legt den Wert der analyticsEngineConfiguration-Eigenschaft fest.
      *
      * @param value allowed object is {@link AnalyticsEngineConfiguration }
      */
     public void setAnalyticsEngineConfiguration(AnalyticsEngineConfiguration value) {
         this.analyticsEngineConfiguration = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link MetadataConfigurationExtension }
-     */
-    public MetadataConfigurationExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -227,18 +223,4 @@ public class MetadataConfiguration extends ConfigurationEntity {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

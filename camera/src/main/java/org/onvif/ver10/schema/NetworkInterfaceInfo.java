@@ -6,6 +6,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r NetworkInterfaceInfo complex type.
@@ -33,24 +34,27 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
         propOrder = {"name", "hwAddress", "mtu"})
 public class NetworkInterfaceInfo {
 
-    @XmlElement(name = "Name")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der name-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Name")
     protected String name;
 
-    @XmlElement(name = "HwAddress", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der hwAddress-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "HwAddress", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String hwAddress;
 
     @XmlElement(name = "MTU")
     protected Integer mtu;
-
-    /**
-     * Ruft den Wert der name-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getName() {
-        return name;
-    }
 
     /**
      * Legt den Wert der name-Eigenschaft fest.
@@ -59,15 +63,6 @@ public class NetworkInterfaceInfo {
      */
     public void setName(String value) {
         this.name = value;
-    }
-
-    /**
-     * Ruft den Wert der hwAddress-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getHwAddress() {
-        return hwAddress;
     }
 
     /**

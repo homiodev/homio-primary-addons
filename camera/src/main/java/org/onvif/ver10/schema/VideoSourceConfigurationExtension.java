@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r VideoSourceConfigurationExtension complex type.
@@ -24,26 +25,30 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoSourceConfigurationExtension",
         propOrder = {"rotate", "extension"})
 public class VideoSourceConfigurationExtension {
 
-    @XmlElement(name = "Rotate")
-    protected Rotate rotate;
-
-    @XmlElement(name = "Extension")
-    protected VideoSourceConfigurationExtension2 extension;
-
     /**
-     * Ruft den Wert der rotate-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der rotate-Eigenschaft ab.
      *
      * @return possible object is {@link Rotate }
      */
-    public Rotate getRotate() {
-        return rotate;
-    }
+    @XmlElement(name = "Rotate")
+    protected Rotate rotate;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoSourceConfigurationExtension2 }
+     */
+    @XmlElement(name = "Extension")
+    protected VideoSourceConfigurationExtension2 extension;
 
     /**
      * Legt den Wert der rotate-Eigenschaft fest.
@@ -52,15 +57,6 @@ public class VideoSourceConfigurationExtension {
      */
     public void setRotate(Rotate value) {
         this.rotate = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoSourceConfigurationExtension2 }
-     */
-    public VideoSourceConfigurationExtension2 getExtension() {
-        return extension;
     }
 
     /**

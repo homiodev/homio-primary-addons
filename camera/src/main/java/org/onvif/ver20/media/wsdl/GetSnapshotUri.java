@@ -1,7 +1,9 @@
 package org.onvif.ver20.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -9,17 +11,14 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetSnapshotUri")
 public class GetSnapshotUri {
 
-    @XmlElement(name = "ProfileToken", required = true)
-    protected String profileToken;
-
     /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der profileToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getProfileToken() {
-        return profileToken;
-    }
+    @XmlElement(name = "ProfileToken", required = true)
+    protected String profileToken;
 
     /**
      * Legt den Wert der profileToken-Eigenschaft fest.

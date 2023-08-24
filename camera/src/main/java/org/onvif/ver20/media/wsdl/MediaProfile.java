@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * A media profile consists of a set of media configurations.
@@ -36,29 +37,48 @@ import java.util.Map;
         propOrder = {"name", "configurations"})
 public class MediaProfile {
 
-    @XmlElement(name = "Name", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der name-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Name", required = true)
     protected String name;
 
-    @XmlElement(name = "Configurations", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der configurations-Eigenschaft ab.
+     *
+     * @return possible object is {@link ConfigurationSet }
+     */
+    @Getter @XmlElement(name = "Configurations", required = true)
     protected ConfigurationSet configurations;
 
-    @XmlAttribute(name = "token", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der token-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlAttribute(name = "token", required = true)
     protected String token;
 
     @XmlAttribute(name = "fixed")
     protected Boolean fixed;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der name-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getName() {
-        return name;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der name-Eigenschaft fest.
@@ -70,30 +90,12 @@ public class MediaProfile {
     }
 
     /**
-     * Ruft den Wert der configurations-Eigenschaft ab.
-     *
-     * @return possible object is {@link ConfigurationSet }
-     */
-    public ConfigurationSet getConfigurations() {
-        return configurations;
-    }
-
-    /**
      * Legt den Wert der configurations-Eigenschaft fest.
      *
      * @param value allowed object is {@link ConfigurationSet }
      */
     public void setConfigurations(ConfigurationSet value) {
         this.configurations = value;
-    }
-
-    /**
-     * Ruft den Wert der token-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getToken() {
-        return token;
     }
 
     /**
@@ -123,18 +125,4 @@ public class MediaProfile {
         this.fixed = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

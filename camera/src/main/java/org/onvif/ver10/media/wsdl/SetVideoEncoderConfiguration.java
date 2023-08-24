@@ -9,6 +9,7 @@
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.VideoEncoderConfiguration;
 
 /**
@@ -30,6 +31,7 @@ import org.onvif.ver10.schema.VideoEncoderConfiguration;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -37,20 +39,21 @@ import org.onvif.ver10.schema.VideoEncoderConfiguration;
 @XmlRootElement(name = "SetVideoEncoderConfiguration")
 public class SetVideoEncoderConfiguration {
 
-    @XmlElement(name = "Configuration", required = true)
-    protected VideoEncoderConfiguration configuration;
-
-    @XmlElement(name = "ForcePersistence")
-    protected boolean forcePersistence;
-
     /**
-     * Ruft den Wert der configuration-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der configuration-Eigenschaft ab.
      *
      * @return possible object is {@link VideoEncoderConfiguration }
      */
-    public VideoEncoderConfiguration getConfiguration() {
-        return configuration;
-    }
+    @XmlElement(name = "Configuration", required = true)
+    protected VideoEncoderConfiguration configuration;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der forcePersistence-Eigenschaft ab.
+     */
+    @XmlElement(name = "ForcePersistence")
+    protected boolean forcePersistence;
 
     /**
      * Legt den Wert der configuration-Eigenschaft fest.
@@ -59,13 +62,6 @@ public class SetVideoEncoderConfiguration {
      */
     public void setConfiguration(VideoEncoderConfiguration value) {
         this.configuration = value;
-    }
-
-    /**
-     * Ruft den Wert der forcePersistence-Eigenschaft ab.
-     */
-    public boolean isForcePersistence() {
-        return forcePersistence;
     }
 
     /**

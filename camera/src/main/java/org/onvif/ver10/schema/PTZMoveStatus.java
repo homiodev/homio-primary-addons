@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r PTZMoveStatus complex type.
@@ -24,26 +25,30 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZMoveStatus",
         propOrder = {"panTilt", "zoom"})
 public class PTZMoveStatus {
 
-    @XmlElement(name = "PanTilt")
-    protected MoveStatus panTilt;
-
-    @XmlElement(name = "Zoom")
-    protected MoveStatus zoom;
-
     /**
-     * Ruft den Wert der panTilt-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der panTilt-Eigenschaft ab.
      *
      * @return possible object is {@link MoveStatus }
      */
-    public MoveStatus getPanTilt() {
-        return panTilt;
-    }
+    @XmlElement(name = "PanTilt")
+    protected MoveStatus panTilt;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der zoom-Eigenschaft ab.
+     *
+     * @return possible object is {@link MoveStatus }
+     */
+    @XmlElement(name = "Zoom")
+    protected MoveStatus zoom;
 
     /**
      * Legt den Wert der panTilt-Eigenschaft fest.
@@ -52,15 +57,6 @@ public class PTZMoveStatus {
      */
     public void setPanTilt(MoveStatus value) {
         this.panTilt = value;
-    }
-
-    /**
-     * Ruft den Wert der zoom-Eigenschaft ab.
-     *
-     * @return possible object is {@link MoveStatus }
-     */
-    public MoveStatus getZoom() {
-        return zoom;
     }
 
     /**

@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -36,26 +37,39 @@ import java.util.Map;
         propOrder = {"trackToken", "configuration", "any"})
 public class GetTracksResponseItem {
 
-    @XmlElement(name = "TrackToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der trackToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "TrackToken", required = true)
     protected String trackToken;
 
-    @XmlElement(name = "Configuration", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der configuration-Eigenschaft ab.
+     *
+     * @return possible object is {@link TrackConfiguration }
+     */
+    @Getter @XmlElement(name = "Configuration", required = true)
     protected TrackConfiguration configuration;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der trackToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getTrackToken() {
-        return trackToken;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der trackToken-Eigenschaft fest.
@@ -64,15 +78,6 @@ public class GetTracksResponseItem {
      */
     public void setTrackToken(String value) {
         this.trackToken = value;
-    }
-
-    /**
-     * Ruft den Wert der configuration-Eigenschaft ab.
-     *
-     * @return possible object is {@link TrackConfiguration }
-     */
-    public TrackConfiguration getConfiguration() {
-        return configuration;
     }
 
     /**
@@ -107,18 +112,4 @@ public class GetTracksResponseItem {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

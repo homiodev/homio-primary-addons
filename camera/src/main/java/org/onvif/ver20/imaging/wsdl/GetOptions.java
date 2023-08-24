@@ -1,7 +1,9 @@
 package org.onvif.ver20.imaging.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -9,17 +11,14 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetOptions")
 public class GetOptions {
 
-    @XmlElement(name = "VideoSourceToken", required = true)
-    protected String videoSourceToken;
-
     /**
-     * Ruft den Wert der videoSourceToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der videoSourceToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getVideoSourceToken() {
-        return videoSourceToken;
-    }
+    @XmlElement(name = "VideoSourceToken", required = true)
+    protected String videoSourceToken;
 
     /**
      * Legt den Wert der videoSourceToken-Eigenschaft fest.

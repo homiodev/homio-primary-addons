@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r OnvifVersion complex type.
@@ -24,37 +25,32 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "OnvifVersion",
         propOrder = {"major", "minor"})
 public class OnvifVersion {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der major-Eigenschaft ab.
+     */
     @XmlElement(name = "Major")
     protected int major;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der minor-Eigenschaft ab.
+     */
     @XmlElement(name = "Minor")
     protected int minor;
-
-    /**
-     * Ruft den Wert der major-Eigenschaft ab.
-     */
-    public int getMajor() {
-        return major;
-    }
 
     /**
      * Legt den Wert der major-Eigenschaft fest.
      */
     public void setMajor(int value) {
         this.major = value;
-    }
-
-    /**
-     * Ruft den Wert der minor-Eigenschaft ab.
-     */
-    public int getMinor() {
-        return minor;
     }
 
     /**

@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r IOCapabilities complex type.
@@ -27,32 +28,52 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IOCapabilities",
         propOrder = {"inputConnectors", "relayOutputs", "extension"})
 public class IOCapabilities {
 
-    @XmlElement(name = "InputConnectors")
-    protected Integer inputConnectors;
-
-    @XmlElement(name = "RelayOutputs")
-    protected Integer relayOutputs;
-
-    @XmlElement(name = "Extension")
-    protected IOCapabilitiesExtension extension;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der inputConnectors-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der inputConnectors-Eigenschaft ab.
      *
      * @return possible object is {@link Integer }
      */
-    public Integer getInputConnectors() {
-        return inputConnectors;
-    }
+    @XmlElement(name = "InputConnectors")
+    protected Integer inputConnectors;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der relayOutputs-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
+    @XmlElement(name = "RelayOutputs")
+    protected Integer relayOutputs;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link IOCapabilitiesExtension }
+     */
+    @XmlElement(name = "Extension")
+    protected IOCapabilitiesExtension extension;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der inputConnectors-Eigenschaft fest.
@@ -61,15 +82,6 @@ public class IOCapabilities {
      */
     public void setInputConnectors(Integer value) {
         this.inputConnectors = value;
-    }
-
-    /**
-     * Ruft den Wert der relayOutputs-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
-    public Integer getRelayOutputs() {
-        return relayOutputs;
     }
 
     /**
@@ -82,15 +94,6 @@ public class IOCapabilities {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link IOCapabilitiesExtension }
-     */
-    public IOCapabilitiesExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link IOCapabilitiesExtension }
@@ -99,18 +102,4 @@ public class IOCapabilities {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

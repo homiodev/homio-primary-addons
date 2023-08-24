@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r FocusMove complex type.
@@ -25,29 +26,39 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "FocusMove",
         propOrder = {"absolute", "relative", "continuous"})
 public class FocusMove {
 
-    @XmlElement(name = "Absolute")
-    protected AbsoluteFocus absolute;
-
-    @XmlElement(name = "Relative")
-    protected RelativeFocus relative;
-
-    @XmlElement(name = "Continuous")
-    protected ContinuousFocus continuous;
-
     /**
-     * Ruft den Wert der absolute-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der absolute-Eigenschaft ab.
      *
      * @return possible object is {@link AbsoluteFocus }
      */
-    public AbsoluteFocus getAbsolute() {
-        return absolute;
-    }
+    @XmlElement(name = "Absolute")
+    protected AbsoluteFocus absolute;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der relative-Eigenschaft ab.
+     *
+     * @return possible object is {@link RelativeFocus }
+     */
+    @XmlElement(name = "Relative")
+    protected RelativeFocus relative;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der continuous-Eigenschaft ab.
+     *
+     * @return possible object is {@link ContinuousFocus }
+     */
+    @XmlElement(name = "Continuous")
+    protected ContinuousFocus continuous;
 
     /**
      * Legt den Wert der absolute-Eigenschaft fest.
@@ -59,30 +70,12 @@ public class FocusMove {
     }
 
     /**
-     * Ruft den Wert der relative-Eigenschaft ab.
-     *
-     * @return possible object is {@link RelativeFocus }
-     */
-    public RelativeFocus getRelative() {
-        return relative;
-    }
-
-    /**
      * Legt den Wert der relative-Eigenschaft fest.
      *
      * @param value allowed object is {@link RelativeFocus }
      */
     public void setRelative(RelativeFocus value) {
         this.relative = value;
-    }
-
-    /**
-     * Ruft den Wert der continuous-Eigenschaft ab.
-     *
-     * @return possible object is {@link ContinuousFocus }
-     */
-    public ContinuousFocus getContinuous() {
-        return continuous;
     }
 
     /**

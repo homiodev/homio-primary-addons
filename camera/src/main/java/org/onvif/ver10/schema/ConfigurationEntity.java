@@ -1,7 +1,9 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ConfigurationEntity",
@@ -23,23 +25,30 @@ import jakarta.xml.bind.annotation.*;
 })
 public class ConfigurationEntity {
 
-    @XmlElement(name = "Name", required = true)
-    protected String name;
-
-    @XmlElement(name = "UseCount")
-    protected int useCount;
-
-    @XmlAttribute(name = "token", required = true)
-    protected String token;
-
     /**
-     * Ruft den Wert der name-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der name-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @XmlElement(name = "Name", required = true)
+    protected String name;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der useCount-Eigenschaft ab.
+     */
+    @XmlElement(name = "UseCount")
+    protected int useCount;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der token-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlAttribute(name = "token", required = true)
+    protected String token;
 
     /**
      * Legt den Wert der name-Eigenschaft fest.
@@ -51,26 +60,10 @@ public class ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der useCount-Eigenschaft ab.
-     */
-    public int getUseCount() {
-        return useCount;
-    }
-
-    /**
      * Legt den Wert der useCount-Eigenschaft fest.
      */
     public void setUseCount(int value) {
         this.useCount = value;
-    }
-
-    /**
-     * Ruft den Wert der token-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getToken() {
-        return token;
     }
 
     /**

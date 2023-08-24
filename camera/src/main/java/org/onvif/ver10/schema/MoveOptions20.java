@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r MoveOptions20 complex type.
@@ -25,29 +26,39 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MoveOptions20",
         propOrder = {"absolute", "relative", "continuous"})
 public class MoveOptions20 {
 
-    @XmlElement(name = "Absolute")
-    protected AbsoluteFocusOptions absolute;
-
-    @XmlElement(name = "Relative")
-    protected RelativeFocusOptions20 relative;
-
-    @XmlElement(name = "Continuous")
-    protected ContinuousFocusOptions continuous;
-
     /**
-     * Ruft den Wert der absolute-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der absolute-Eigenschaft ab.
      *
      * @return possible object is {@link AbsoluteFocusOptions }
      */
-    public AbsoluteFocusOptions getAbsolute() {
-        return absolute;
-    }
+    @XmlElement(name = "Absolute")
+    protected AbsoluteFocusOptions absolute;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der relative-Eigenschaft ab.
+     *
+     * @return possible object is {@link RelativeFocusOptions20 }
+     */
+    @XmlElement(name = "Relative")
+    protected RelativeFocusOptions20 relative;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der continuous-Eigenschaft ab.
+     *
+     * @return possible object is {@link ContinuousFocusOptions }
+     */
+    @XmlElement(name = "Continuous")
+    protected ContinuousFocusOptions continuous;
 
     /**
      * Legt den Wert der absolute-Eigenschaft fest.
@@ -59,30 +70,12 @@ public class MoveOptions20 {
     }
 
     /**
-     * Ruft den Wert der relative-Eigenschaft ab.
-     *
-     * @return possible object is {@link RelativeFocusOptions20 }
-     */
-    public RelativeFocusOptions20 getRelative() {
-        return relative;
-    }
-
-    /**
      * Legt den Wert der relative-Eigenschaft fest.
      *
      * @param value allowed object is {@link RelativeFocusOptions20 }
      */
     public void setRelative(RelativeFocusOptions20 value) {
         this.relative = value;
-    }
-
-    /**
-     * Ruft den Wert der continuous-Eigenschaft ab.
-     *
-     * @return possible object is {@link ContinuousFocusOptions }
-     */
-    public ContinuousFocusOptions getContinuous() {
-        return continuous;
     }
 
     /**

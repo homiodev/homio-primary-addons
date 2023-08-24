@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.BinaryData;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.BinaryData;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.BinaryData;
 @XmlRootElement(name = "SetAccessPolicy")
 public class SetAccessPolicy {
 
-    @XmlElement(name = "PolicyFile", required = true)
-    protected BinaryData policyFile;
-
     /**
-     * Ruft den Wert der policyFile-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der policyFile-Eigenschaft ab.
      *
      * @return possible object is {@link BinaryData }
      */
-    public BinaryData getPolicyFile() {
-        return policyFile;
-    }
+    @XmlElement(name = "PolicyFile", required = true)
+    protected BinaryData policyFile;
 
     /**
      * Legt den Wert der policyFile-Eigenschaft fest.

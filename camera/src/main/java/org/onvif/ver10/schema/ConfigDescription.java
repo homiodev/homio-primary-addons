@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -14,29 +15,48 @@ import java.util.Map;
         propOrder = {"parameters", "messages", "extension"})
 public class ConfigDescription {
 
-    @XmlElement(name = "Parameters", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der parameters-Eigenschaft ab.
+     *
+     * @return possible object is {@link ItemListDescription }
+     */
+    @Getter @XmlElement(name = "Parameters", required = true)
     protected ItemListDescription parameters;
 
     @XmlElement(name = "Messages")
     protected List<ConfigDescription.Messages> messages;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ConfigDescriptionExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected ConfigDescriptionExtension extension;
 
-    @XmlAttribute(name = "Name", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der name-Eigenschaft ab.
+     *
+     * @return possible object is {@link QName }
+     */
+    @Getter @XmlAttribute(name = "Name", required = true)
     protected QName name;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der parameters-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link ItemListDescription }
+     * @return always non-null
      */
-    public ItemListDescription getParameters() {
-        return parameters;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der parameters-Eigenschaft fest.
@@ -70,15 +90,6 @@ public class ConfigDescription {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ConfigDescriptionExtension }
-     */
-    public ConfigDescriptionExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link ConfigDescriptionExtension }
@@ -88,36 +99,12 @@ public class ConfigDescription {
     }
 
     /**
-     * Ruft den Wert der name-Eigenschaft ab.
-     *
-     * @return possible object is {@link QName }
-     */
-    public QName getName() {
-        return name;
-    }
-
-    /**
      * Legt den Wert der name-Eigenschaft fest.
      *
      * @param value allowed object is {@link QName }
      */
     public void setName(QName value) {
         this.name = value;
-    }
-
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
     }
 
     /**
@@ -139,23 +126,21 @@ public class ConfigDescription {
      * </complexType>
      * </pre>
      */
+    @Getter
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(
             name = "",
             propOrder = {"parentTopic"})
     public static class Messages extends MessageDescription {
 
-        @XmlElement(name = "ParentTopic", required = true)
-        protected String parentTopic;
-
         /**
-         * Ruft den Wert der parentTopic-Eigenschaft ab.
+         * -- GETTER --
+         *  Ruft den Wert der parentTopic-Eigenschaft ab.
          *
          * @return possible object is {@link String }
          */
-        public String getParentTopic() {
-            return parentTopic;
-        }
+        @XmlElement(name = "ParentTopic", required = true)
+        protected String parentTopic;
 
         /**
          * Legt den Wert der parentTopic-Eigenschaft fest.

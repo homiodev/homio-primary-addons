@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -35,10 +36,22 @@ public class MetadataStreamExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlElement(name = "AudioAnalyticsStream")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioAnalyticsStream-Eigenschaft ab.
+     *
+     * @return possible object is {@link AudioAnalyticsStream }
+     */
+    @Getter @XmlElement(name = "AudioAnalyticsStream")
     protected AudioAnalyticsStream audioAnalyticsStream;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link MetadataStreamExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected MetadataStreamExtension2 extension;
 
     /**
@@ -65,30 +78,12 @@ public class MetadataStreamExtension {
     }
 
     /**
-     * Ruft den Wert der audioAnalyticsStream-Eigenschaft ab.
-     *
-     * @return possible object is {@link AudioAnalyticsStream }
-     */
-    public AudioAnalyticsStream getAudioAnalyticsStream() {
-        return audioAnalyticsStream;
-    }
-
-    /**
      * Legt den Wert der audioAnalyticsStream-Eigenschaft fest.
      *
      * @param value allowed object is {@link AudioAnalyticsStream }
      */
     public void setAudioAnalyticsStream(AudioAnalyticsStream value) {
         this.audioAnalyticsStream = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link MetadataStreamExtension2 }
-     */
-    public MetadataStreamExtension2 getExtension() {
-        return extension;
     }
 
     /**

@@ -9,6 +9,7 @@
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.VideoSourceConfigurationOptions;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.VideoSourceConfigurationOptions;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.VideoSourceConfigurationOptions;
 @XmlRootElement(name = "GetVideoSourceConfigurationOptionsResponse")
 public class GetVideoSourceConfigurationOptionsResponse {
 
-    @XmlElement(name = "Options", required = true)
-    protected VideoSourceConfigurationOptions options;
-
     /**
-     * Ruft den Wert der options-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der options-Eigenschaft ab.
      *
      * @return possible object is {@link VideoSourceConfigurationOptions }
      */
-    public VideoSourceConfigurationOptions getOptions() {
-        return options;
-    }
+    @XmlElement(name = "Options", required = true)
+    protected VideoSourceConfigurationOptions options;
 
     /**
      * Legt den Wert der options-Eigenschaft fest.

@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -41,17 +42,45 @@ public class MotionInCells {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAttribute(name = "Columns", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der columns-Eigenschaft ab.
+     *
+     * @return possible object is {@link BigInteger }
+     */
+    @Getter @XmlAttribute(name = "Columns", required = true)
     protected BigInteger columns;
 
-    @XmlAttribute(name = "Rows", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der rows-Eigenschaft ab.
+     *
+     * @return possible object is {@link BigInteger }
+     */
+    @Getter @XmlAttribute(name = "Rows", required = true)
     protected BigInteger rows;
 
-    @XmlAttribute(name = "Cells", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der cells-Eigenschaft ab.
+     *
+     * @return possible object is byte[]
+     */
+    @Getter @XmlAttribute(name = "Cells", required = true)
     protected byte[] cells;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the any property.
@@ -77,30 +106,12 @@ public class MotionInCells {
     }
 
     /**
-     * Ruft den Wert der columns-Eigenschaft ab.
-     *
-     * @return possible object is {@link BigInteger }
-     */
-    public BigInteger getColumns() {
-        return columns;
-    }
-
-    /**
      * Legt den Wert der columns-Eigenschaft fest.
      *
      * @param value allowed object is {@link BigInteger }
      */
     public void setColumns(BigInteger value) {
         this.columns = value;
-    }
-
-    /**
-     * Ruft den Wert der rows-Eigenschaft ab.
-     *
-     * @return possible object is {@link BigInteger }
-     */
-    public BigInteger getRows() {
-        return rows;
     }
 
     /**
@@ -113,15 +124,6 @@ public class MotionInCells {
     }
 
     /**
-     * Ruft den Wert der cells-Eigenschaft ab.
-     *
-     * @return possible object is byte[]
-     */
-    public byte[] getCells() {
-        return cells;
-    }
-
-    /**
      * Legt den Wert der cells-Eigenschaft fest.
      *
      * @param value allowed object is byte[]
@@ -130,18 +132,4 @@ public class MotionInCells {
         this.cells = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r IrCutFilterAutoAdjustmentOptions complex type.
@@ -42,14 +43,36 @@ public class IrCutFilterAutoAdjustmentOptions {
     @XmlElement(name = "BoundaryOffset")
     protected Boolean boundaryOffset;
 
-    @XmlElement(name = "ResponseTimeRange")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der responseTimeRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link DurationRange }
+     */
+    @Getter @XmlElement(name = "ResponseTimeRange")
     protected DurationRange responseTimeRange;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link IrCutFilterAutoAdjustmentOptionsExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected IrCutFilterAutoAdjustmentOptionsExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the boundaryType property.
@@ -92,30 +115,12 @@ public class IrCutFilterAutoAdjustmentOptions {
     }
 
     /**
-     * Ruft den Wert der responseTimeRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link DurationRange }
-     */
-    public DurationRange getResponseTimeRange() {
-        return responseTimeRange;
-    }
-
-    /**
      * Legt den Wert der responseTimeRange-Eigenschaft fest.
      *
      * @param value allowed object is {@link DurationRange }
      */
     public void setResponseTimeRange(DurationRange value) {
         this.responseTimeRange = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link IrCutFilterAutoAdjustmentOptionsExtension }
-     */
-    public IrCutFilterAutoAdjustmentOptionsExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -127,18 +132,4 @@ public class IrCutFilterAutoAdjustmentOptions {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

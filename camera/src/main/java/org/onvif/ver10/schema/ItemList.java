@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * List of parameters according to the corresponding ItemListDescription. Each item in the list shall have a unique name.
@@ -63,11 +64,27 @@ public class ItemList {
     @XmlElement(name = "ElementItem")
     protected List<ItemList.ElementItem> elementItem;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ItemListExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected ItemListExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the simpleItem property.
@@ -114,36 +131,12 @@ public class ItemList {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ItemListExtension }
-     */
-    public ItemListExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link ItemListExtension }
      */
     public void setExtension(ItemListExtension value) {
         this.extension = value;
-    }
-
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
     }
 
     /**
@@ -165,26 +158,30 @@ public class ItemList {
      * </complexType>
      * </pre>
      */
+    @Getter
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(
             name = "",
             propOrder = {"any"})
     public static class ElementItem {
 
-        @XmlAnyElement(lax = true)
-        protected java.lang.Object any;
-
-        @XmlAttribute(name = "Name", required = true)
-        protected String name;
-
         /**
-         * Ruft den Wert der any-Eigenschaft ab.
+         * -- GETTER --
+         *  Ruft den Wert der any-Eigenschaft ab.
          *
          * @return possible object is {@link java.lang.Object }
          */
-        public java.lang.Object getAny() {
-            return any;
-        }
+        @XmlAnyElement(lax = true)
+        protected java.lang.Object any;
+
+        /**
+         * -- GETTER --
+         *  Ruft den Wert der name-Eigenschaft ab.
+         *
+         * @return possible object is {@link String }
+         */
+        @XmlAttribute(name = "Name", required = true)
+        protected String name;
 
         /**
          * Legt den Wert der any-Eigenschaft fest.
@@ -193,15 +190,6 @@ public class ItemList {
          */
         public void setAny(java.lang.Object value) {
             this.any = value;
-        }
-
-        /**
-         * Ruft den Wert der name-Eigenschaft ab.
-         *
-         * @return possible object is {@link String }
-         */
-        public String getName() {
-            return name;
         }
 
         /**
@@ -231,25 +219,29 @@ public class ItemList {
      * </complexType>
      * </pre>
      */
+    @Getter
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
     public static class SimpleItem {
 
-        @XmlAttribute(name = "Name", required = true)
-        protected String name;
-
-        @XmlAttribute(name = "Value", required = true)
-        @XmlSchemaType(name = "anySimpleType")
-        protected String value;
-
         /**
-         * Ruft den Wert der name-Eigenschaft ab.
+         * -- GETTER --
+         *  Ruft den Wert der name-Eigenschaft ab.
          *
          * @return possible object is {@link String }
          */
-        public String getName() {
-            return name;
-        }
+        @XmlAttribute(name = "Name", required = true)
+        protected String name;
+
+        /**
+         * -- GETTER --
+         *  Ruft den Wert der value-Eigenschaft ab.
+         *
+         * @return possible object is {@link String }
+         */
+        @XmlAttribute(name = "Value", required = true)
+        @XmlSchemaType(name = "anySimpleType")
+        protected String value;
 
         /**
          * Legt den Wert der name-Eigenschaft fest.
@@ -258,15 +250,6 @@ public class ItemList {
          */
         public void setName(String value) {
             this.name = value;
-        }
-
-        /**
-         * Ruft den Wert der value-Eigenschaft ab.
-         *
-         * @return possible object is {@link String }
-         */
-        public String getValue() {
-            return value;
         }
 
         /**

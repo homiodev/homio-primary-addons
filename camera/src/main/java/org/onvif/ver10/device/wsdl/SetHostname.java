@@ -11,6 +11,7 @@ package org.onvif.ver10.device.wsdl;
 import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -30,6 +31,7 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -37,19 +39,16 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement(name = "SetHostname")
 public class SetHostname {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der name-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "Name", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String name;
-
-    /**
-     * Ruft den Wert der name-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getName() {
-        return name;
-    }
 
     /**
      * Legt den Wert der name-Eigenschaft fest.

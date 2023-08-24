@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r PTControlDirectionOptions complex type.
@@ -36,14 +37,36 @@ public class PTControlDirectionOptions {
     @XmlElement(name = "EFlip")
     protected EFlipOptions eFlip;
 
-    @XmlElement(name = "Reverse")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der reverse-Eigenschaft ab.
+     *
+     * @return possible object is {@link ReverseOptions }
+     */
+    @Getter @XmlElement(name = "Reverse")
     protected ReverseOptions reverse;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTControlDirectionOptionsExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected PTControlDirectionOptionsExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der eFlip-Eigenschaft ab.
@@ -64,30 +87,12 @@ public class PTControlDirectionOptions {
     }
 
     /**
-     * Ruft den Wert der reverse-Eigenschaft ab.
-     *
-     * @return possible object is {@link ReverseOptions }
-     */
-    public ReverseOptions getReverse() {
-        return reverse;
-    }
-
-    /**
      * Legt den Wert der reverse-Eigenschaft fest.
      *
      * @param value allowed object is {@link ReverseOptions }
      */
     public void setReverse(ReverseOptions value) {
         this.reverse = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTControlDirectionOptionsExtension }
-     */
-    public PTControlDirectionOptionsExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -99,18 +104,4 @@ public class PTControlDirectionOptions {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r ImagingStatus20 complex type.
@@ -26,29 +27,43 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ImagingStatus20",
         propOrder = {"focusStatus20", "extension"})
 public class ImagingStatus20 {
 
-    @XmlElement(name = "FocusStatus20")
-    protected FocusStatus20 focusStatus20;
-
-    @XmlElement(name = "Extension")
-    protected ImagingStatus20Extension extension;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der focusStatus20-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der focusStatus20-Eigenschaft ab.
      *
      * @return possible object is {@link FocusStatus20 }
      */
-    public FocusStatus20 getFocusStatus20() {
-        return focusStatus20;
-    }
+    @XmlElement(name = "FocusStatus20")
+    protected FocusStatus20 focusStatus20;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ImagingStatus20Extension }
+     */
+    @XmlElement(name = "Extension")
+    protected ImagingStatus20Extension extension;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der focusStatus20-Eigenschaft fest.
@@ -60,15 +75,6 @@ public class ImagingStatus20 {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ImagingStatus20Extension }
-     */
-    public ImagingStatus20Extension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link ImagingStatus20Extension }
@@ -77,18 +83,4 @@ public class ImagingStatus20 {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

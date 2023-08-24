@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.datatype.Duration;
@@ -53,44 +54,85 @@ import java.util.Map;
         })
 public class VideoEncoderConfiguration extends ConfigurationEntity {
 
-    @XmlElement(name = "Encoding", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der encoding-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoEncoding }
+     */
+    @Getter @XmlElement(name = "Encoding", required = true)
     protected VideoEncoding encoding;
 
-    @XmlElement(name = "Resolution", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der resolution-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoResolution }
+     */
+    @Getter @XmlElement(name = "Resolution", required = true)
     protected VideoResolution resolution;
 
-    @XmlElement(name = "Quality")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der quality-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "Quality")
     protected float quality;
 
-    @XmlElement(name = "RateControl")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der rateControl-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoRateControl }
+     */
+    @Getter @XmlElement(name = "RateControl")
     protected VideoRateControl rateControl;
 
     @XmlElement(name = "MPEG4")
     protected Mpeg4Configuration mpeg4;
 
-    @XmlElement(name = "H264")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der h264-Eigenschaft ab.
+     *
+     * @return possible object is {@link H264Configuration }
+     */
+    @Getter @XmlElement(name = "H264")
     protected H264Configuration h264;
 
-    @XmlElement(name = "Multicast", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der multicast-Eigenschaft ab.
+     *
+     * @return possible object is {@link MulticastConfiguration }
+     */
+    @Getter @XmlElement(name = "Multicast", required = true)
     protected MulticastConfiguration multicast;
 
-    @XmlElement(name = "SessionTimeout", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der sessionTimeout-Eigenschaft ab.
+     *
+     * @return possible object is {@link Duration }
+     */
+    @Getter @XmlElement(name = "SessionTimeout", required = true)
     protected Duration sessionTimeout;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der encoding-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link VideoEncoding }
+     * @return always non-null
      */
-    public VideoEncoding getEncoding() {
-        return encoding;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der encoding-Eigenschaft fest.
@@ -99,15 +141,6 @@ public class VideoEncoderConfiguration extends ConfigurationEntity {
      */
     public void setEncoding(VideoEncoding value) {
         this.encoding = value;
-    }
-
-    /**
-     * Ruft den Wert der resolution-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoResolution }
-     */
-    public VideoResolution getResolution() {
-        return resolution;
     }
 
     /**
@@ -120,26 +153,10 @@ public class VideoEncoderConfiguration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der quality-Eigenschaft ab.
-     */
-    public float getQuality() {
-        return quality;
-    }
-
-    /**
      * Legt den Wert der quality-Eigenschaft fest.
      */
     public void setQuality(float value) {
         this.quality = value;
-    }
-
-    /**
-     * Ruft den Wert der rateControl-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoRateControl }
-     */
-    public VideoRateControl getRateControl() {
-        return rateControl;
     }
 
     /**
@@ -170,15 +187,6 @@ public class VideoEncoderConfiguration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der h264-Eigenschaft ab.
-     *
-     * @return possible object is {@link H264Configuration }
-     */
-    public H264Configuration getH264() {
-        return h264;
-    }
-
-    /**
      * Legt den Wert der h264-Eigenschaft fest.
      *
      * @param value allowed object is {@link H264Configuration }
@@ -188,30 +196,12 @@ public class VideoEncoderConfiguration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der multicast-Eigenschaft ab.
-     *
-     * @return possible object is {@link MulticastConfiguration }
-     */
-    public MulticastConfiguration getMulticast() {
-        return multicast;
-    }
-
-    /**
      * Legt den Wert der multicast-Eigenschaft fest.
      *
      * @param value allowed object is {@link MulticastConfiguration }
      */
     public void setMulticast(MulticastConfiguration value) {
         this.multicast = value;
-    }
-
-    /**
-     * Ruft den Wert der sessionTimeout-Eigenschaft ab.
-     *
-     * @return possible object is {@link Duration }
-     */
-    public Duration getSessionTimeout() {
-        return sessionTimeout;
     }
 
     /**
@@ -246,18 +236,4 @@ public class VideoEncoderConfiguration extends ConfigurationEntity {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

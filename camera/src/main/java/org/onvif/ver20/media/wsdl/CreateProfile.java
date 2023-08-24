@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -12,20 +13,17 @@ import java.util.List;
 @XmlRootElement(name = "CreateProfile")
 public class CreateProfile {
 
-    @XmlElement(name = "Name", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der name-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Name", required = true)
     protected String name;
 
     @XmlElement(name = "Configuration")
     protected List<ConfigurationRef> configuration;
-
-    /**
-     * Ruft den Wert der name-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getName() {
-        return name;
-    }
 
     /**
      * Legt den Wert der name-Eigenschaft fest.

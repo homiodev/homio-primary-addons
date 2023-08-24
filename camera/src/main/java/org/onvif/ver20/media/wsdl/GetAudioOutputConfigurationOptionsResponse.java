@@ -1,8 +1,10 @@
 package org.onvif.ver20.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.AudioOutputConfigurationOptions;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -10,17 +12,14 @@ import org.onvif.ver10.schema.AudioOutputConfigurationOptions;
 @XmlRootElement(name = "GetAudioOutputConfigurationOptionsResponse")
 public class GetAudioOutputConfigurationOptionsResponse {
 
-    @XmlElement(name = "Options", required = true)
-    protected AudioOutputConfigurationOptions options;
-
     /**
-     * Ruft den Wert der options-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der options-Eigenschaft ab.
      *
      * @return possible object is {@link AudioOutputConfigurationOptions }
      */
-    public AudioOutputConfigurationOptions getOptions() {
-        return options;
-    }
+    @XmlElement(name = "Options", required = true)
+    protected AudioOutputConfigurationOptions options;
 
     /**
      * Legt den Wert der options-Eigenschaft fest.

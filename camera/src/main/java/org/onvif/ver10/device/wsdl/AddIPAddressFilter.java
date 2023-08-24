@@ -21,20 +21,12 @@ public class AddIPAddressFilter {
     @XmlElement(name = "IPAddressFilter", required = true)
     protected IPAddressFilter ipAddressFilter;
 
-    /**
-     * Ruft den Wert der ipAddressFilter-Eigenschaft ab.
-     *
-     * @return possible object is {@link IPAddressFilter }
-     */
+    
     public IPAddressFilter getIPAddressFilter() {
         return ipAddressFilter;
     }
 
-    /**
-     * Legt den Wert der ipAddressFilter-Eigenschaft fest.
-     *
-     * @param value allowed object is {@link IPAddressFilter }
-     */
+    
     public void setIPAddressFilter(IPAddressFilter value) {
         this.ipAddressFilter = value;
     }

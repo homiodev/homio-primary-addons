@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Frame complex type.
@@ -42,24 +43,58 @@ public class Frame {
     @XmlElement(name = "PTZStatus")
     protected PTZStatus ptzStatus;
 
-    @XmlElement(name = "Transformation")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der transformation-Eigenschaft ab.
+     *
+     * @return possible object is {@link Transformation }
+     */
+    @Getter @XmlElement(name = "Transformation")
     protected Transformation transformation;
 
     @XmlElement(name = "Object")
     protected List<Object> object;
 
-    @XmlElement(name = "ObjectTree")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der objectTree-Eigenschaft ab.
+     *
+     * @return possible object is {@link ObjectTree }
+     */
+    @Getter @XmlElement(name = "ObjectTree")
     protected ObjectTree objectTree;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link FrameExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected FrameExtension extension;
 
-    @XmlAttribute(name = "UtcTime", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der utcTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlAttribute(name = "UtcTime", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar utcTime;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der ptzStatus-Eigenschaft ab.
@@ -77,15 +112,6 @@ public class Frame {
      */
     public void setPTZStatus(PTZStatus value) {
         this.ptzStatus = value;
-    }
-
-    /**
-     * Ruft den Wert der transformation-Eigenschaft ab.
-     *
-     * @return possible object is {@link Transformation }
-     */
-    public Transformation getTransformation() {
-        return transformation;
     }
 
     /**
@@ -120,30 +146,12 @@ public class Frame {
     }
 
     /**
-     * Ruft den Wert der objectTree-Eigenschaft ab.
-     *
-     * @return possible object is {@link ObjectTree }
-     */
-    public ObjectTree getObjectTree() {
-        return objectTree;
-    }
-
-    /**
      * Legt den Wert der objectTree-Eigenschaft fest.
      *
      * @param value allowed object is {@link ObjectTree }
      */
     public void setObjectTree(ObjectTree value) {
         this.objectTree = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link FrameExtension }
-     */
-    public FrameExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -156,15 +164,6 @@ public class Frame {
     }
 
     /**
-     * Ruft den Wert der utcTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getUtcTime() {
-        return utcTime;
-    }
-
-    /**
      * Legt den Wert der utcTime-Eigenschaft fest.
      *
      * @param value allowed object is {@link XMLGregorianCalendar }
@@ -173,18 +172,4 @@ public class Frame {
         this.utcTime = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

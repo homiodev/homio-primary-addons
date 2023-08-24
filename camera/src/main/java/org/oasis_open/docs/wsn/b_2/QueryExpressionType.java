@@ -9,6 +9,7 @@
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -43,7 +44,13 @@ public class QueryExpressionType {
     @XmlAnyElement(lax = true)
     protected List<Object> content;
 
-    @XmlAttribute(name = "Dialect", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dialect-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlAttribute(name = "Dialect", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String dialect;
 
@@ -68,15 +75,6 @@ public class QueryExpressionType {
             content = new ArrayList<Object>();
         }
         return this.content;
-    }
-
-    /**
-     * Ruft den Wert der dialect-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getDialect() {
-        return dialect;
     }
 
     /**

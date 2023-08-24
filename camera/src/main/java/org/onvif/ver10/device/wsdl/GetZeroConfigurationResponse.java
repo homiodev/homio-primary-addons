@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.NetworkZeroConfiguration;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.NetworkZeroConfiguration;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.NetworkZeroConfiguration;
 @XmlRootElement(name = "GetZeroConfigurationResponse")
 public class GetZeroConfigurationResponse {
 
-    @XmlElement(name = "ZeroConfiguration", required = true)
-    protected NetworkZeroConfiguration zeroConfiguration;
-
     /**
-     * Ruft den Wert der zeroConfiguration-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der zeroConfiguration-Eigenschaft ab.
      *
      * @return possible object is {@link NetworkZeroConfiguration }
      */
-    public NetworkZeroConfiguration getZeroConfiguration() {
-        return zeroConfiguration;
-    }
+    @XmlElement(name = "ZeroConfiguration", required = true)
+    protected NetworkZeroConfiguration zeroConfiguration;
 
     /**
      * Legt den Wert der zeroConfiguration-Eigenschaft fest.

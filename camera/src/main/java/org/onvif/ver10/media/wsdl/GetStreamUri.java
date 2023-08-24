@@ -9,6 +9,7 @@
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.StreamSetup;
 
 /**
@@ -30,6 +31,7 @@ import org.onvif.ver10.schema.StreamSetup;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -37,20 +39,23 @@ import org.onvif.ver10.schema.StreamSetup;
 @XmlRootElement(name = "GetStreamUri")
 public class GetStreamUri {
 
-    @XmlElement(name = "StreamSetup", required = true)
-    protected StreamSetup streamSetup;
-
-    @XmlElement(name = "ProfileToken", required = true)
-    protected String profileToken;
-
     /**
-     * Ruft den Wert der streamSetup-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der streamSetup-Eigenschaft ab.
      *
      * @return possible object is {@link StreamSetup }
      */
-    public StreamSetup getStreamSetup() {
-        return streamSetup;
-    }
+    @XmlElement(name = "StreamSetup", required = true)
+    protected StreamSetup streamSetup;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der profileToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "ProfileToken", required = true)
+    protected String profileToken;
 
     /**
      * Legt den Wert der streamSetup-Eigenschaft fest.
@@ -59,15 +64,6 @@ public class GetStreamUri {
      */
     public void setStreamSetup(StreamSetup value) {
         this.streamSetup = value;
-    }
-
-    /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getProfileToken() {
-        return profileToken;
     }
 
     /**

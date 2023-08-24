@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Time complex type.
@@ -25,27 +26,33 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Time",
         propOrder = {"hour", "minute", "second"})
 public class Time {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der hour-Eigenschaft ab.
+     */
     @XmlElement(name = "Hour")
     protected int hour;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der minute-Eigenschaft ab.
+     */
     @XmlElement(name = "Minute")
     protected int minute;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der second-Eigenschaft ab.
+     */
     @XmlElement(name = "Second")
     protected int second;
-
-    /**
-     * Ruft den Wert der hour-Eigenschaft ab.
-     */
-    public int getHour() {
-        return hour;
-    }
 
     /**
      * Legt den Wert der hour-Eigenschaft fest.
@@ -55,24 +62,10 @@ public class Time {
     }
 
     /**
-     * Ruft den Wert der minute-Eigenschaft ab.
-     */
-    public int getMinute() {
-        return minute;
-    }
-
-    /**
      * Legt den Wert der minute-Eigenschaft fest.
      */
     public void setMinute(int value) {
         this.minute = value;
-    }
-
-    /**
-     * Ruft den Wert der second-Eigenschaft ab.
-     */
-    public int getSecond() {
-        return second;
     }
 
     /**

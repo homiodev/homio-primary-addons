@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -40,17 +41,45 @@ public class ProfileExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlElement(name = "AudioOutputConfiguration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioOutputConfiguration-Eigenschaft ab.
+     *
+     * @return possible object is {@link AudioOutputConfiguration }
+     */
+    @Getter @XmlElement(name = "AudioOutputConfiguration")
     protected AudioOutputConfiguration audioOutputConfiguration;
 
-    @XmlElement(name = "AudioDecoderConfiguration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioDecoderConfiguration-Eigenschaft ab.
+     *
+     * @return possible object is {@link AudioDecoderConfiguration }
+     */
+    @Getter @XmlElement(name = "AudioDecoderConfiguration")
     protected AudioDecoderConfiguration audioDecoderConfiguration;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ProfileExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected ProfileExtension2 extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Gets the value of the any property.
@@ -76,30 +105,12 @@ public class ProfileExtension {
     }
 
     /**
-     * Ruft den Wert der audioOutputConfiguration-Eigenschaft ab.
-     *
-     * @return possible object is {@link AudioOutputConfiguration }
-     */
-    public AudioOutputConfiguration getAudioOutputConfiguration() {
-        return audioOutputConfiguration;
-    }
-
-    /**
      * Legt den Wert der audioOutputConfiguration-Eigenschaft fest.
      *
      * @param value allowed object is {@link AudioOutputConfiguration }
      */
     public void setAudioOutputConfiguration(AudioOutputConfiguration value) {
         this.audioOutputConfiguration = value;
-    }
-
-    /**
-     * Ruft den Wert der audioDecoderConfiguration-Eigenschaft ab.
-     *
-     * @return possible object is {@link AudioDecoderConfiguration }
-     */
-    public AudioDecoderConfiguration getAudioDecoderConfiguration() {
-        return audioDecoderConfiguration;
     }
 
     /**
@@ -112,15 +123,6 @@ public class ProfileExtension {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ProfileExtension2 }
-     */
-    public ProfileExtension2 getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link ProfileExtension2 }
@@ -129,18 +131,4 @@ public class ProfileExtension {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

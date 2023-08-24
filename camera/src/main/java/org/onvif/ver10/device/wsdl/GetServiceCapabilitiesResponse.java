@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -28,6 +29,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -35,17 +37,14 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetServiceCapabilitiesResponse")
 public class GetServiceCapabilitiesResponse {
 
-    @XmlElement(name = "Capabilities", required = true)
-    protected DeviceServiceCapabilities capabilities;
-
     /**
-     * Ruft den Wert der capabilities-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der capabilities-Eigenschaft ab.
      *
      * @return possible object is {@link DeviceServiceCapabilities }
      */
-    public DeviceServiceCapabilities getCapabilities() {
-        return capabilities;
-    }
+    @XmlElement(name = "Capabilities", required = true)
+    protected DeviceServiceCapabilities capabilities;
 
     /**
      * Legt den Wert der capabilities-Eigenschaft fest.

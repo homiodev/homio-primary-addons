@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -35,10 +36,22 @@ public class FrameExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlElement(name = "MotionInCells")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der motionInCells-Eigenschaft ab.
+     *
+     * @return possible object is {@link MotionInCells }
+     */
+    @Getter @XmlElement(name = "MotionInCells")
     protected MotionInCells motionInCells;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link FrameExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected FrameExtension2 extension;
 
     /**
@@ -65,30 +78,12 @@ public class FrameExtension {
     }
 
     /**
-     * Ruft den Wert der motionInCells-Eigenschaft ab.
-     *
-     * @return possible object is {@link MotionInCells }
-     */
-    public MotionInCells getMotionInCells() {
-        return motionInCells;
-    }
-
-    /**
      * Legt den Wert der motionInCells-Eigenschaft fest.
      *
      * @param value allowed object is {@link MotionInCells }
      */
     public void setMotionInCells(MotionInCells value) {
         this.motionInCells = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link FrameExtension2 }
-     */
-    public FrameExtension2 getExtension() {
-        return extension;
     }
 
     /**

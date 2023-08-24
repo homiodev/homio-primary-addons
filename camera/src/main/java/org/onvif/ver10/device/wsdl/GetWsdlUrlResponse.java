@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -28,6 +29,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -35,18 +37,15 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetWsdlUrlResponse")
 public class GetWsdlUrlResponse {
 
-    @XmlElement(name = "WsdlUrl", required = true)
-    @XmlSchemaType(name = "anyURI")
-    protected String wsdlUrl;
-
     /**
-     * Ruft den Wert der wsdlUrl-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der wsdlUrl-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getWsdlUrl() {
-        return wsdlUrl;
-    }
+    @XmlElement(name = "WsdlUrl", required = true)
+    @XmlSchemaType(name = "anyURI")
+    protected String wsdlUrl;
 
     /**
      * Legt den Wert der wsdlUrl-Eigenschaft fest.

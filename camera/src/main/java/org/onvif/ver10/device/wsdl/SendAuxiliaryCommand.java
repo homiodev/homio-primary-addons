@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -28,6 +29,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -35,17 +37,14 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "SendAuxiliaryCommand")
 public class SendAuxiliaryCommand {
 
-    @XmlElement(name = "AuxiliaryCommand", required = true)
-    protected String auxiliaryCommand;
-
     /**
-     * Ruft den Wert der auxiliaryCommand-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der auxiliaryCommand-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getAuxiliaryCommand() {
-        return auxiliaryCommand;
-    }
+    @XmlElement(name = "AuxiliaryCommand", required = true)
+    protected String auxiliaryCommand;
 
     /**
      * Legt den Wert der auxiliaryCommand-Eigenschaft fest.

@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r RelativeFocus complex type.
@@ -24,39 +25,34 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RelativeFocus",
         propOrder = {"distance", "speed"})
 public class RelativeFocus {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der distance-Eigenschaft ab.
+     */
     @XmlElement(name = "Distance")
     protected float distance;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der speed-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
     @XmlElement(name = "Speed")
     protected Float speed;
-
-    /**
-     * Ruft den Wert der distance-Eigenschaft ab.
-     */
-    public float getDistance() {
-        return distance;
-    }
 
     /**
      * Legt den Wert der distance-Eigenschaft fest.
      */
     public void setDistance(float value) {
         this.distance = value;
-    }
-
-    /**
-     * Ruft den Wert der speed-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getSpeed() {
-        return speed;
     }
 
     /**

@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r Scope complex type.
@@ -21,27 +22,31 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Scope",
         propOrder = {"scopeDef", "scopeItem"})
 public class Scope {
 
-    @XmlElement(name = "ScopeDef", required = true)
-    protected ScopeDefinition scopeDef;
-
-    @XmlElement(name = "ScopeItem", required = true)
-    @XmlSchemaType(name = "anyURI")
-    protected String scopeItem;
-
     /**
-     * Ruft den Wert der scopeDef-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der scopeDef-Eigenschaft ab.
      *
      * @return possible object is {@link ScopeDefinition }
      */
-    public ScopeDefinition getScopeDef() {
-        return scopeDef;
-    }
+    @XmlElement(name = "ScopeDef", required = true)
+    protected ScopeDefinition scopeDef;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der scopeItem-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "ScopeItem", required = true)
+    @XmlSchemaType(name = "anyURI")
+    protected String scopeItem;
 
     /**
      * Legt den Wert der scopeDef-Eigenschaft fest.
@@ -50,15 +55,6 @@ public class Scope {
      */
     public void setScopeDef(ScopeDefinition value) {
         this.scopeDef = value;
-    }
-
-    /**
-     * Ruft den Wert der scopeItem-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getScopeItem() {
-        return scopeItem;
     }
 
     /**

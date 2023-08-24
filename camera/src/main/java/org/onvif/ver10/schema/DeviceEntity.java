@@ -1,7 +1,9 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DeviceEntity")
 @XmlSeeAlso({
@@ -17,17 +19,14 @@ import jakarta.xml.bind.annotation.*;
 })
 public class DeviceEntity {
 
-    @XmlAttribute(name = "token", required = true)
-    protected String token;
-
     /**
-     * Ruft den Wert der token-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der token-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getToken() {
-        return token;
-    }
+    @XmlAttribute(name = "token", required = true)
+    protected String token;
 
     /**
      * Legt den Wert der token-Eigenschaft fest.

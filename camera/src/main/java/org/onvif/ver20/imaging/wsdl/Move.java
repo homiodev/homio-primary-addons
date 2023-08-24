@@ -1,6 +1,7 @@
 package org.onvif.ver20.imaging.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.FocusMove;
 
 /**
@@ -22,6 +23,7 @@ import org.onvif.ver10.schema.FocusMove;
  * &lt;/complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -29,20 +31,23 @@ import org.onvif.ver10.schema.FocusMove;
 @XmlRootElement(name = "Move")
 public class Move {
 
-    @XmlElement(name = "VideoSourceToken", required = true)
-    protected String videoSourceToken;
-
-    @XmlElement(name = "Focus", required = true)
-    protected FocusMove focus;
-
     /**
-     * Ruft den Wert der videoSourceToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der videoSourceToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getVideoSourceToken() {
-        return videoSourceToken;
-    }
+    @XmlElement(name = "VideoSourceToken", required = true)
+    protected String videoSourceToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der focus-Eigenschaft ab.
+     *
+     * @return possible object is {@link FocusMove }
+     */
+    @XmlElement(name = "Focus", required = true)
+    protected FocusMove focus;
 
     /**
      * Legt den Wert der videoSourceToken-Eigenschaft fest.
@@ -51,15 +56,6 @@ public class Move {
      */
     public void setVideoSourceToken(String value) {
         this.videoSourceToken = value;
-    }
-
-    /**
-     * Ruft den Wert der focus-Eigenschaft ab.
-     *
-     * @return possible object is {@link FocusMove }
-     */
-    public FocusMove getFocus() {
-        return focus;
     }
 
     /**

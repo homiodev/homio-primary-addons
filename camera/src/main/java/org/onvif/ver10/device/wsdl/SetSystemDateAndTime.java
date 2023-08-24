@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.DateTime;
 import org.onvif.ver10.schema.SetDateTimeType;
 import org.onvif.ver10.schema.TimeZone;
@@ -41,26 +42,33 @@ import org.onvif.ver10.schema.TimeZone;
 @XmlRootElement(name = "SetSystemDateAndTime")
 public class SetSystemDateAndTime {
 
-    @XmlElement(name = "DateTimeType", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dateTimeType-Eigenschaft ab.
+     *
+     * @return possible object is {@link SetDateTimeType }
+     */
+    @Getter @XmlElement(name = "DateTimeType", required = true)
     protected SetDateTimeType dateTimeType;
 
-    @XmlElement(name = "DaylightSavings")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der daylightSavings-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "DaylightSavings")
     protected boolean daylightSavings;
 
-    @XmlElement(name = "TimeZone")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der timeZone-Eigenschaft ab.
+     *
+     * @return possible object is {@link TimeZone }
+     */
+    @Getter @XmlElement(name = "TimeZone")
     protected TimeZone timeZone;
 
     @XmlElement(name = "UTCDateTime")
     protected DateTime utcDateTime;
-
-    /**
-     * Ruft den Wert der dateTimeType-Eigenschaft ab.
-     *
-     * @return possible object is {@link SetDateTimeType }
-     */
-    public SetDateTimeType getDateTimeType() {
-        return dateTimeType;
-    }
 
     /**
      * Legt den Wert der dateTimeType-Eigenschaft fest.
@@ -72,26 +80,10 @@ public class SetSystemDateAndTime {
     }
 
     /**
-     * Ruft den Wert der daylightSavings-Eigenschaft ab.
-     */
-    public boolean isDaylightSavings() {
-        return daylightSavings;
-    }
-
-    /**
      * Legt den Wert der daylightSavings-Eigenschaft fest.
      */
     public void setDaylightSavings(boolean value) {
         this.daylightSavings = value;
-    }
-
-    /**
-     * Ruft den Wert der timeZone-Eigenschaft ab.
-     *
-     * @return possible object is {@link TimeZone }
-     */
-    public TimeZone getTimeZone() {
-        return timeZone;
     }
 
     /**

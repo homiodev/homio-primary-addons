@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -36,27 +37,40 @@ import java.util.Map;
         propOrder = {"type", "uri", "any"})
 public class SystemLogUri {
 
-    @XmlElement(name = "Type", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der type-Eigenschaft ab.
+     *
+     * @return possible object is {@link SystemLogType }
+     */
+    @Getter @XmlElement(name = "Type", required = true)
     protected SystemLogType type;
 
-    @XmlElement(name = "Uri", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der uri-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Uri", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String uri;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der type-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link SystemLogType }
+     * @return always non-null
      */
-    public SystemLogType getType() {
-        return type;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der type-Eigenschaft fest.
@@ -65,15 +79,6 @@ public class SystemLogUri {
      */
     public void setType(SystemLogType value) {
         this.type = value;
-    }
-
-    /**
-     * Ruft den Wert der uri-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getUri() {
-        return uri;
     }
 
     /**
@@ -108,18 +113,4 @@ public class SystemLogUri {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

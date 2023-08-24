@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Range of a rectangle. The rectangle itself is defined by lower left corner position and size. Units are pixel.
@@ -40,10 +41,22 @@ public class IntRectangleRange {
     @XmlElement(name = "YRange", required = true)
     protected IntRange yRange;
 
-    @XmlElement(name = "WidthRange", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der widthRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link IntRange }
+     */
+    @Getter @XmlElement(name = "WidthRange", required = true)
     protected IntRange widthRange;
 
-    @XmlElement(name = "HeightRange", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der heightRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link IntRange }
+     */
+    @Getter @XmlElement(name = "HeightRange", required = true)
     protected IntRange heightRange;
 
     /**
@@ -83,30 +96,12 @@ public class IntRectangleRange {
     }
 
     /**
-     * Ruft den Wert der widthRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link IntRange }
-     */
-    public IntRange getWidthRange() {
-        return widthRange;
-    }
-
-    /**
      * Legt den Wert der widthRange-Eigenschaft fest.
      *
      * @param value allowed object is {@link IntRange }
      */
     public void setWidthRange(IntRange value) {
         this.widthRange = value;
-    }
-
-    /**
-     * Ruft den Wert der heightRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link IntRange }
-     */
-    public IntRange getHeightRange() {
-        return heightRange;
     }
 
     /**

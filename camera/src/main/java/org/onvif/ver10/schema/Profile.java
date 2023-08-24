@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * A media profile consists of a set of media configurations. Media profiles are used by a client to configure properties of a media stream from an NVT.
@@ -68,50 +69,105 @@ import java.util.Map;
         })
 public class Profile {
 
-    @XmlElement(name = "Name", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der name-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Name", required = true)
     protected String name;
 
-    @XmlElement(name = "VideoSourceConfiguration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der videoSourceConfiguration-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoSourceConfiguration }
+     */
+    @Getter @XmlElement(name = "VideoSourceConfiguration")
     protected VideoSourceConfiguration videoSourceConfiguration;
 
-    @XmlElement(name = "AudioSourceConfiguration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioSourceConfiguration-Eigenschaft ab.
+     *
+     * @return possible object is {@link AudioSourceConfiguration }
+     */
+    @Getter @XmlElement(name = "AudioSourceConfiguration")
     protected AudioSourceConfiguration audioSourceConfiguration;
 
-    @XmlElement(name = "VideoEncoderConfiguration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der videoEncoderConfiguration-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoEncoderConfiguration }
+     */
+    @Getter @XmlElement(name = "VideoEncoderConfiguration")
     protected VideoEncoderConfiguration videoEncoderConfiguration;
 
-    @XmlElement(name = "AudioEncoderConfiguration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der audioEncoderConfiguration-Eigenschaft ab.
+     *
+     * @return possible object is {@link AudioEncoderConfiguration }
+     */
+    @Getter @XmlElement(name = "AudioEncoderConfiguration")
     protected AudioEncoderConfiguration audioEncoderConfiguration;
 
-    @XmlElement(name = "VideoAnalyticsConfiguration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der videoAnalyticsConfiguration-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoAnalyticsConfiguration }
+     */
+    @Getter @XmlElement(name = "VideoAnalyticsConfiguration")
     protected VideoAnalyticsConfiguration videoAnalyticsConfiguration;
 
     @XmlElement(name = "PTZConfiguration")
     protected PTZConfiguration ptzConfiguration;
 
-    @XmlElement(name = "MetadataConfiguration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der metadataConfiguration-Eigenschaft ab.
+     *
+     * @return possible object is {@link MetadataConfiguration }
+     */
+    @Getter @XmlElement(name = "MetadataConfiguration")
     protected MetadataConfiguration metadataConfiguration;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ProfileExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected ProfileExtension extension;
 
-    @XmlAttribute(name = "token", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der token-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlAttribute(name = "token", required = true)
     protected String token;
 
     @XmlAttribute(name = "fixed")
     protected Boolean fixed;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der name-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getName() {
-        return name;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der name-Eigenschaft fest.
@@ -120,15 +176,6 @@ public class Profile {
      */
     public void setName(String value) {
         this.name = value;
-    }
-
-    /**
-     * Ruft den Wert der videoSourceConfiguration-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoSourceConfiguration }
-     */
-    public VideoSourceConfiguration getVideoSourceConfiguration() {
-        return videoSourceConfiguration;
     }
 
     /**
@@ -141,30 +188,12 @@ public class Profile {
     }
 
     /**
-     * Ruft den Wert der audioSourceConfiguration-Eigenschaft ab.
-     *
-     * @return possible object is {@link AudioSourceConfiguration }
-     */
-    public AudioSourceConfiguration getAudioSourceConfiguration() {
-        return audioSourceConfiguration;
-    }
-
-    /**
      * Legt den Wert der audioSourceConfiguration-Eigenschaft fest.
      *
      * @param value allowed object is {@link AudioSourceConfiguration }
      */
     public void setAudioSourceConfiguration(AudioSourceConfiguration value) {
         this.audioSourceConfiguration = value;
-    }
-
-    /**
-     * Ruft den Wert der videoEncoderConfiguration-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoEncoderConfiguration }
-     */
-    public VideoEncoderConfiguration getVideoEncoderConfiguration() {
-        return videoEncoderConfiguration;
     }
 
     /**
@@ -177,30 +206,12 @@ public class Profile {
     }
 
     /**
-     * Ruft den Wert der audioEncoderConfiguration-Eigenschaft ab.
-     *
-     * @return possible object is {@link AudioEncoderConfiguration }
-     */
-    public AudioEncoderConfiguration getAudioEncoderConfiguration() {
-        return audioEncoderConfiguration;
-    }
-
-    /**
      * Legt den Wert der audioEncoderConfiguration-Eigenschaft fest.
      *
      * @param value allowed object is {@link AudioEncoderConfiguration }
      */
     public void setAudioEncoderConfiguration(AudioEncoderConfiguration value) {
         this.audioEncoderConfiguration = value;
-    }
-
-    /**
-     * Ruft den Wert der videoAnalyticsConfiguration-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoAnalyticsConfiguration }
-     */
-    public VideoAnalyticsConfiguration getVideoAnalyticsConfiguration() {
-        return videoAnalyticsConfiguration;
     }
 
     /**
@@ -231,15 +242,6 @@ public class Profile {
     }
 
     /**
-     * Ruft den Wert der metadataConfiguration-Eigenschaft ab.
-     *
-     * @return possible object is {@link MetadataConfiguration }
-     */
-    public MetadataConfiguration getMetadataConfiguration() {
-        return metadataConfiguration;
-    }
-
-    /**
      * Legt den Wert der metadataConfiguration-Eigenschaft fest.
      *
      * @param value allowed object is {@link MetadataConfiguration }
@@ -249,30 +251,12 @@ public class Profile {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ProfileExtension }
-     */
-    public ProfileExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link ProfileExtension }
      */
     public void setExtension(ProfileExtension value) {
         this.extension = value;
-    }
-
-    /**
-     * Ruft den Wert der token-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getToken() {
-        return token;
     }
 
     /**
@@ -302,18 +286,4 @@ public class Profile {
         this.fixed = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

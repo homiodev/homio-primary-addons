@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -37,29 +38,46 @@ import java.util.Map;
         propOrder = {"minPosition", "maxPosition", "enterOrExit", "any"})
 public class PTZPositionFilter {
 
-    @XmlElement(name = "MinPosition", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der minPosition-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZVector }
+     */
+    @Getter @XmlElement(name = "MinPosition", required = true)
     protected PTZVector minPosition;
 
-    @XmlElement(name = "MaxPosition", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maxPosition-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZVector }
+     */
+    @Getter @XmlElement(name = "MaxPosition", required = true)
     protected PTZVector maxPosition;
 
-    @XmlElement(name = "EnterOrExit")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der enterOrExit-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "EnterOrExit")
     protected boolean enterOrExit;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der minPosition-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link PTZVector }
+     * @return always non-null
      */
-    public PTZVector getMinPosition() {
-        return minPosition;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der minPosition-Eigenschaft fest.
@@ -71,28 +89,12 @@ public class PTZPositionFilter {
     }
 
     /**
-     * Ruft den Wert der maxPosition-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZVector }
-     */
-    public PTZVector getMaxPosition() {
-        return maxPosition;
-    }
-
-    /**
      * Legt den Wert der maxPosition-Eigenschaft fest.
      *
      * @param value allowed object is {@link PTZVector }
      */
     public void setMaxPosition(PTZVector value) {
         this.maxPosition = value;
-    }
-
-    /**
-     * Ruft den Wert der enterOrExit-Eigenschaft ab.
-     */
-    public boolean isEnterOrExit() {
-        return enterOrExit;
     }
 
     /**
@@ -125,18 +127,4 @@ public class PTZPositionFilter {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

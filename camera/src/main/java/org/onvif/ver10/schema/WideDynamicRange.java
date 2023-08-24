@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r WideDynamicRange complex type.
@@ -24,26 +25,28 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "WideDynamicRange",
         propOrder = {"mode", "level"})
 public class WideDynamicRange {
 
-    @XmlElement(name = "Mode", required = true)
-    protected WideDynamicMode mode;
-
-    @XmlElement(name = "Level")
-    protected float level;
-
     /**
-     * Ruft den Wert der mode-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der mode-Eigenschaft ab.
      *
      * @return possible object is {@link WideDynamicMode }
      */
-    public WideDynamicMode getMode() {
-        return mode;
-    }
+    @XmlElement(name = "Mode", required = true)
+    protected WideDynamicMode mode;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der level-Eigenschaft ab.
+     */
+    @XmlElement(name = "Level")
+    protected float level;
 
     /**
      * Legt den Wert der mode-Eigenschaft fest.
@@ -52,13 +55,6 @@ public class WideDynamicRange {
      */
     public void setMode(WideDynamicMode value) {
         this.mode = value;
-    }
-
-    /**
-     * Ruft den Wert der level-Eigenschaft ab.
-     */
-    public float getLevel() {
-        return level;
     }
 
     /**

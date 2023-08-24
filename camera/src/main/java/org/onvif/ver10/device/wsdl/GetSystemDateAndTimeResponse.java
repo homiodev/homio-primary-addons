@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.SystemDateTime;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.SystemDateTime;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.SystemDateTime;
 @XmlRootElement(name = "GetSystemDateAndTimeResponse")
 public class GetSystemDateAndTimeResponse {
 
-    @XmlElement(name = "SystemDateAndTime", required = true)
-    protected SystemDateTime systemDateAndTime;
-
     /**
-     * Ruft den Wert der systemDateAndTime-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der systemDateAndTime-Eigenschaft ab.
      *
      * @return possible object is {@link SystemDateTime }
      */
-    public SystemDateTime getSystemDateAndTime() {
-        return systemDateAndTime;
-    }
+    @XmlElement(name = "SystemDateAndTime", required = true)
+    protected SystemDateTime systemDateAndTime;
 
     /**
      * Legt den Wert der systemDateAndTime-Eigenschaft fest.

@@ -1,6 +1,7 @@
 package org.onvif.ver20.ptz.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.PTZPresetTourOperation;
 
 /**
@@ -23,6 +24,7 @@ import org.onvif.ver10.schema.PTZPresetTourOperation;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -30,23 +32,32 @@ import org.onvif.ver10.schema.PTZPresetTourOperation;
 @XmlRootElement(name = "OperatePresetTour")
 public class OperatePresetTour {
 
-    @XmlElement(name = "ProfileToken", required = true)
-    protected String profileToken;
-
-    @XmlElement(name = "PresetTourToken", required = true)
-    protected String presetTourToken;
-
-    @XmlElement(name = "Operation", required = true)
-    protected PTZPresetTourOperation operation;
-
     /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der profileToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getProfileToken() {
-        return profileToken;
-    }
+    @XmlElement(name = "ProfileToken", required = true)
+    protected String profileToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der presetTourToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "PresetTourToken", required = true)
+    protected String presetTourToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der operation-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZPresetTourOperation }
+     */
+    @XmlElement(name = "Operation", required = true)
+    protected PTZPresetTourOperation operation;
 
     /**
      * Legt den Wert der profileToken-Eigenschaft fest.
@@ -58,30 +69,12 @@ public class OperatePresetTour {
     }
 
     /**
-     * Ruft den Wert der presetTourToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getPresetTourToken() {
-        return presetTourToken;
-    }
-
-    /**
      * Legt den Wert der presetTourToken-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setPresetTourToken(String value) {
         this.presetTourToken = value;
-    }
-
-    /**
-     * Ruft den Wert der operation-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZPresetTourOperation }
-     */
-    public PTZPresetTourOperation getOperation() {
-        return operation;
     }
 
     /**

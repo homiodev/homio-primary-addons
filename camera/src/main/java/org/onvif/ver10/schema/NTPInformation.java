@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r NTPInformation complex type.
@@ -36,7 +37,11 @@ import java.util.Map;
         propOrder = {"fromDHCP", "ntpFromDHCP", "ntpManual", "extension"})
 public class NTPInformation {
 
-    @XmlElement(name = "FromDHCP")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der fromDHCP-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "FromDHCP")
     protected boolean fromDHCP;
 
     @XmlElement(name = "NTPFromDHCP")
@@ -45,18 +50,27 @@ public class NTPInformation {
     @XmlElement(name = "NTPManual")
     protected List<NetworkHost> ntpManual;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link NTPInformationExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected NTPInformationExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der fromDHCP-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
      */
-    public boolean isFromDHCP() {
-        return fromDHCP;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der fromDHCP-Eigenschaft fest.
@@ -110,15 +124,6 @@ public class NTPInformation {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link NTPInformationExtension }
-     */
-    public NTPInformationExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link NTPInformationExtension }
@@ -127,18 +132,4 @@ public class NTPInformation {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

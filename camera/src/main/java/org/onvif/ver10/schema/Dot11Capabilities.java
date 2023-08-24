@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -49,13 +50,25 @@ public class Dot11Capabilities {
     @XmlElement(name = "TKIP")
     protected boolean tkip;
 
-    @XmlElement(name = "ScanAvailableNetworks")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der scanAvailableNetworks-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "ScanAvailableNetworks")
     protected boolean scanAvailableNetworks;
 
-    @XmlElement(name = "MultipleConfiguration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der multipleConfiguration-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "MultipleConfiguration")
     protected boolean multipleConfiguration;
 
-    @XmlElement(name = "AdHocStationMode")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der adHocStationMode-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "AdHocStationMode")
     protected boolean adHocStationMode;
 
     @XmlElement(name = "WEP")
@@ -64,8 +77,18 @@ public class Dot11Capabilities {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der tkip-Eigenschaft ab.
@@ -82,13 +105,6 @@ public class Dot11Capabilities {
     }
 
     /**
-     * Ruft den Wert der scanAvailableNetworks-Eigenschaft ab.
-     */
-    public boolean isScanAvailableNetworks() {
-        return scanAvailableNetworks;
-    }
-
-    /**
      * Legt den Wert der scanAvailableNetworks-Eigenschaft fest.
      */
     public void setScanAvailableNetworks(boolean value) {
@@ -96,24 +112,10 @@ public class Dot11Capabilities {
     }
 
     /**
-     * Ruft den Wert der multipleConfiguration-Eigenschaft ab.
-     */
-    public boolean isMultipleConfiguration() {
-        return multipleConfiguration;
-    }
-
-    /**
      * Legt den Wert der multipleConfiguration-Eigenschaft fest.
      */
     public void setMultipleConfiguration(boolean value) {
         this.multipleConfiguration = value;
-    }
-
-    /**
-     * Ruft den Wert der adHocStationMode-Eigenschaft ab.
-     */
-    public boolean isAdHocStationMode() {
-        return adHocStationMode;
     }
 
     /**
@@ -160,18 +162,4 @@ public class Dot11Capabilities {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

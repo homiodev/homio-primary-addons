@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r FocusOptions20 complex type.
@@ -39,16 +40,40 @@ public class FocusOptions20 {
     @XmlElement(name = "AutoFocusModes")
     protected List<AutoFocusMode> autoFocusModes;
 
-    @XmlElement(name = "DefaultSpeed")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der defaultSpeed-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "DefaultSpeed")
     protected FloatRange defaultSpeed;
 
-    @XmlElement(name = "NearLimit")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der nearLimit-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "NearLimit")
     protected FloatRange nearLimit;
 
-    @XmlElement(name = "FarLimit")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der farLimit-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "FarLimit")
     protected FloatRange farLimit;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link FocusOptions20Extension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected FocusOptions20Extension extension;
 
     /**
@@ -74,30 +99,12 @@ public class FocusOptions20 {
     }
 
     /**
-     * Ruft den Wert der defaultSpeed-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getDefaultSpeed() {
-        return defaultSpeed;
-    }
-
-    /**
      * Legt den Wert der defaultSpeed-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
      */
     public void setDefaultSpeed(FloatRange value) {
         this.defaultSpeed = value;
-    }
-
-    /**
-     * Ruft den Wert der nearLimit-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getNearLimit() {
-        return nearLimit;
     }
 
     /**
@@ -110,30 +117,12 @@ public class FocusOptions20 {
     }
 
     /**
-     * Ruft den Wert der farLimit-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getFarLimit() {
-        return farLimit;
-    }
-
-    /**
      * Legt den Wert der farLimit-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
      */
     public void setFarLimit(FloatRange value) {
         this.farLimit = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link FocusOptions20Extension }
-     */
-    public FocusOptions20Extension getExtension() {
-        return extension;
     }
 
     /**

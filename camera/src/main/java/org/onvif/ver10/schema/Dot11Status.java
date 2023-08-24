@@ -3,6 +3,7 @@ package org.onvif.ver10.schema;
 import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.HexBinaryAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -57,23 +58,57 @@ public class Dot11Status {
     @XmlElement(name = "BSSID")
     protected String bssid;
 
-    @XmlElement(name = "PairCipher")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der pairCipher-Eigenschaft ab.
+     *
+     * @return possible object is {@link Dot11Cipher }
+     */
+    @Getter @XmlElement(name = "PairCipher")
     protected Dot11Cipher pairCipher;
 
-    @XmlElement(name = "GroupCipher")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der groupCipher-Eigenschaft ab.
+     *
+     * @return possible object is {@link Dot11Cipher }
+     */
+    @Getter @XmlElement(name = "GroupCipher")
     protected Dot11Cipher groupCipher;
 
-    @XmlElement(name = "SignalStrength")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der signalStrength-Eigenschaft ab.
+     *
+     * @return possible object is {@link Dot11SignalStrength }
+     */
+    @Getter @XmlElement(name = "SignalStrength")
     protected Dot11SignalStrength signalStrength;
 
-    @XmlElement(name = "ActiveConfigAlias", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der activeConfigAlias-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "ActiveConfigAlias", required = true)
     protected String activeConfigAlias;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der ssid-Eigenschaft ab.
@@ -112,30 +147,12 @@ public class Dot11Status {
     }
 
     /**
-     * Ruft den Wert der pairCipher-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot11Cipher }
-     */
-    public Dot11Cipher getPairCipher() {
-        return pairCipher;
-    }
-
-    /**
      * Legt den Wert der pairCipher-Eigenschaft fest.
      *
      * @param value allowed object is {@link Dot11Cipher }
      */
     public void setPairCipher(Dot11Cipher value) {
         this.pairCipher = value;
-    }
-
-    /**
-     * Ruft den Wert der groupCipher-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot11Cipher }
-     */
-    public Dot11Cipher getGroupCipher() {
-        return groupCipher;
     }
 
     /**
@@ -148,30 +165,12 @@ public class Dot11Status {
     }
 
     /**
-     * Ruft den Wert der signalStrength-Eigenschaft ab.
-     *
-     * @return possible object is {@link Dot11SignalStrength }
-     */
-    public Dot11SignalStrength getSignalStrength() {
-        return signalStrength;
-    }
-
-    /**
      * Legt den Wert der signalStrength-Eigenschaft fest.
      *
      * @param value allowed object is {@link Dot11SignalStrength }
      */
     public void setSignalStrength(Dot11SignalStrength value) {
         this.signalStrength = value;
-    }
-
-    /**
-     * Ruft den Wert der activeConfigAlias-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getActiveConfigAlias() {
-        return activeConfigAlias;
     }
 
     /**
@@ -206,18 +205,4 @@ public class Dot11Status {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.DiscoveryMode;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.DiscoveryMode;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.DiscoveryMode;
 @XmlRootElement(name = "GetRemoteDiscoveryModeResponse")
 public class GetRemoteDiscoveryModeResponse {
 
-    @XmlElement(name = "RemoteDiscoveryMode", required = true)
-    protected DiscoveryMode remoteDiscoveryMode;
-
     /**
-     * Ruft den Wert der remoteDiscoveryMode-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der remoteDiscoveryMode-Eigenschaft ab.
      *
      * @return possible object is {@link DiscoveryMode }
      */
-    public DiscoveryMode getRemoteDiscoveryMode() {
-        return remoteDiscoveryMode;
-    }
+    @XmlElement(name = "RemoteDiscoveryMode", required = true)
+    protected DiscoveryMode remoteDiscoveryMode;
 
     /**
      * Legt den Wert der remoteDiscoveryMode-Eigenschaft fest.

@@ -1,6 +1,7 @@
 package org.onvif.ver20.ptz.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -20,6 +21,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -27,17 +29,14 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "SetPresetResponse")
 public class SetPresetResponse {
 
-    @XmlElement(name = "PresetToken", required = true)
-    protected String presetToken;
-
     /**
-     * Ruft den Wert der presetToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der presetToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getPresetToken() {
-        return presetToken;
-    }
+    @XmlElement(name = "PresetToken", required = true)
+    protected String presetToken;
 
     /**
      * Legt den Wert der presetToken-Eigenschaft fest.

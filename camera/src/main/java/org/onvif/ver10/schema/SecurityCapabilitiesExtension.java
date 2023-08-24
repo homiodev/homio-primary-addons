@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r SecurityCapabilitiesExtension complex type.
@@ -33,7 +34,13 @@ public class SecurityCapabilitiesExtension {
     @XmlElement(name = "TLS1.0")
     protected boolean tls10;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link SecurityCapabilitiesExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected SecurityCapabilitiesExtension2 extension;
 
     /**
@@ -48,15 +55,6 @@ public class SecurityCapabilitiesExtension {
      */
     public void setTLS10(boolean value) {
         this.tls10 = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link SecurityCapabilitiesExtension2 }
-     */
-    public SecurityCapabilitiesExtension2 getExtension() {
-        return extension;
     }
 
     /**

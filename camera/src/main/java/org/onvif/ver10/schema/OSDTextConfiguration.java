@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r OSDTextConfiguration complex type.
@@ -32,6 +33,7 @@ import java.util.Map;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "OSDTextConfiguration",
@@ -47,41 +49,90 @@ import java.util.Map;
         })
 public class OSDTextConfiguration {
 
-    @XmlElement(name = "Type", required = true)
-    protected String type;
-
-    @XmlElement(name = "DateFormat")
-    protected String dateFormat;
-
-    @XmlElement(name = "TimeFormat")
-    protected String timeFormat;
-
-    @XmlElement(name = "FontSize")
-    protected Integer fontSize;
-
-    @XmlElement(name = "FontColor")
-    protected OSDColor fontColor;
-
-    @XmlElement(name = "BackgroundColor")
-    protected OSDColor backgroundColor;
-
-    @XmlElement(name = "PlainText")
-    protected String plainText;
-
-    @XmlElement(name = "Extension")
-    protected OSDTextConfigurationExtension extension;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der type-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der type-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getType() {
-        return type;
-    }
+    @XmlElement(name = "Type", required = true)
+    protected String type;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dateFormat-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "DateFormat")
+    protected String dateFormat;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der timeFormat-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "TimeFormat")
+    protected String timeFormat;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der fontSize-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
+    @XmlElement(name = "FontSize")
+    protected Integer fontSize;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der fontColor-Eigenschaft ab.
+     *
+     * @return possible object is {@link OSDColor }
+     */
+    @XmlElement(name = "FontColor")
+    protected OSDColor fontColor;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der backgroundColor-Eigenschaft ab.
+     *
+     * @return possible object is {@link OSDColor }
+     */
+    @XmlElement(name = "BackgroundColor")
+    protected OSDColor backgroundColor;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der plainText-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "PlainText")
+    protected String plainText;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link OSDTextConfigurationExtension }
+     */
+    @XmlElement(name = "Extension")
+    protected OSDTextConfigurationExtension extension;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der type-Eigenschaft fest.
@@ -90,15 +141,6 @@ public class OSDTextConfiguration {
      */
     public void setType(String value) {
         this.type = value;
-    }
-
-    /**
-     * Ruft den Wert der dateFormat-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getDateFormat() {
-        return dateFormat;
     }
 
     /**
@@ -111,30 +153,12 @@ public class OSDTextConfiguration {
     }
 
     /**
-     * Ruft den Wert der timeFormat-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getTimeFormat() {
-        return timeFormat;
-    }
-
-    /**
      * Legt den Wert der timeFormat-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setTimeFormat(String value) {
         this.timeFormat = value;
-    }
-
-    /**
-     * Ruft den Wert der fontSize-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
-    public Integer getFontSize() {
-        return fontSize;
     }
 
     /**
@@ -147,30 +171,12 @@ public class OSDTextConfiguration {
     }
 
     /**
-     * Ruft den Wert der fontColor-Eigenschaft ab.
-     *
-     * @return possible object is {@link OSDColor }
-     */
-    public OSDColor getFontColor() {
-        return fontColor;
-    }
-
-    /**
      * Legt den Wert der fontColor-Eigenschaft fest.
      *
      * @param value allowed object is {@link OSDColor }
      */
     public void setFontColor(OSDColor value) {
         this.fontColor = value;
-    }
-
-    /**
-     * Ruft den Wert der backgroundColor-Eigenschaft ab.
-     *
-     * @return possible object is {@link OSDColor }
-     */
-    public OSDColor getBackgroundColor() {
-        return backgroundColor;
     }
 
     /**
@@ -183,30 +189,12 @@ public class OSDTextConfiguration {
     }
 
     /**
-     * Ruft den Wert der plainText-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getPlainText() {
-        return plainText;
-    }
-
-    /**
      * Legt den Wert der plainText-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setPlainText(String value) {
         this.plainText = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link OSDTextConfigurationExtension }
-     */
-    public OSDTextConfigurationExtension getExtension() {
-        return extension;
     }
 
     /**
@@ -218,18 +206,4 @@ public class OSDTextConfiguration {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r SystemCapabilities complex type.
@@ -49,52 +50,78 @@ import java.util.Map;
         })
 public class SystemCapabilities {
 
-    @XmlElement(name = "DiscoveryResolve")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der discoveryResolve-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "DiscoveryResolve")
     protected boolean discoveryResolve;
 
-    @XmlElement(name = "DiscoveryBye")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der discoveryBye-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "DiscoveryBye")
     protected boolean discoveryBye;
 
-    @XmlElement(name = "RemoteDiscovery")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der remoteDiscovery-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "RemoteDiscovery")
     protected boolean remoteDiscovery;
 
-    @XmlElement(name = "SystemBackup")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der systemBackup-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "SystemBackup")
     protected boolean systemBackup;
 
-    @XmlElement(name = "SystemLogging")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der systemLogging-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "SystemLogging")
     protected boolean systemLogging;
 
-    @XmlElement(name = "FirmwareUpgrade")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der firmwareUpgrade-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "FirmwareUpgrade")
     protected boolean firmwareUpgrade;
 
     @XmlElement(name = "SupportedVersions", required = true)
     protected List<OnvifVersion> supportedVersions;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link SystemCapabilitiesExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected SystemCapabilitiesExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der discoveryResolve-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
      */
-    public boolean isDiscoveryResolve() {
-        return discoveryResolve;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der discoveryResolve-Eigenschaft fest.
      */
     public void setDiscoveryResolve(boolean value) {
         this.discoveryResolve = value;
-    }
-
-    /**
-     * Ruft den Wert der discoveryBye-Eigenschaft ab.
-     */
-    public boolean isDiscoveryBye() {
-        return discoveryBye;
     }
 
     /**
@@ -105,24 +132,10 @@ public class SystemCapabilities {
     }
 
     /**
-     * Ruft den Wert der remoteDiscovery-Eigenschaft ab.
-     */
-    public boolean isRemoteDiscovery() {
-        return remoteDiscovery;
-    }
-
-    /**
      * Legt den Wert der remoteDiscovery-Eigenschaft fest.
      */
     public void setRemoteDiscovery(boolean value) {
         this.remoteDiscovery = value;
-    }
-
-    /**
-     * Ruft den Wert der systemBackup-Eigenschaft ab.
-     */
-    public boolean isSystemBackup() {
-        return systemBackup;
     }
 
     /**
@@ -133,24 +146,10 @@ public class SystemCapabilities {
     }
 
     /**
-     * Ruft den Wert der systemLogging-Eigenschaft ab.
-     */
-    public boolean isSystemLogging() {
-        return systemLogging;
-    }
-
-    /**
      * Legt den Wert der systemLogging-Eigenschaft fest.
      */
     public void setSystemLogging(boolean value) {
         this.systemLogging = value;
-    }
-
-    /**
-     * Ruft den Wert der firmwareUpgrade-Eigenschaft ab.
-     */
-    public boolean isFirmwareUpgrade() {
-        return firmwareUpgrade;
     }
 
     /**
@@ -183,15 +182,6 @@ public class SystemCapabilities {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link SystemCapabilitiesExtension }
-     */
-    public SystemCapabilitiesExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link SystemCapabilitiesExtension }
@@ -200,18 +190,4 @@ public class SystemCapabilities {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

@@ -1,6 +1,7 @@
 package org.onvif.ver20.ptz.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -20,6 +21,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -27,17 +29,14 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetServiceCapabilitiesResponse")
 public class GetServiceCapabilitiesResponse {
 
-    @XmlElement(name = "Capabilities", required = true)
-    protected Capabilities capabilities;
-
     /**
-     * Ruft den Wert der capabilities-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der capabilities-Eigenschaft ab.
      *
      * @return possible object is {@link Capabilities }
      */
-    public Capabilities getCapabilities() {
-        return capabilities;
-    }
+    @XmlElement(name = "Capabilities", required = true)
+    protected Capabilities capabilities;
 
     /**
      * Legt den Wert der capabilities-Eigenschaft fest.

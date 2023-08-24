@@ -1,6 +1,7 @@
 package org.onvif.ver20.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -20,6 +21,7 @@ import jakarta.xml.bind.annotation.*;
  * &lt;/complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -27,18 +29,15 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "GetStreamUriResponse")
 public class GetStreamUriResponse {
 
-    @XmlElement(name = "Uri", required = true)
-    @XmlSchemaType(name = "anyURI")
-    protected String uri;
-
     /**
-     * Ruft den Wert der uri-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der uri-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getUri() {
-        return uri;
-    }
+    @XmlElement(name = "Uri", required = true)
+    @XmlSchemaType(name = "anyURI")
+    protected String uri;
 
     /**
      * Legt den Wert der uri-Eigenschaft fest.

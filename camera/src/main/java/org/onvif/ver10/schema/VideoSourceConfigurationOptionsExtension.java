@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -35,10 +36,22 @@ public class VideoSourceConfigurationOptionsExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlElement(name = "Rotate")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der rotate-Eigenschaft ab.
+     *
+     * @return possible object is {@link RotateOptions }
+     */
+    @Getter @XmlElement(name = "Rotate")
     protected RotateOptions rotate;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoSourceConfigurationOptionsExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected VideoSourceConfigurationOptionsExtension2 extension;
 
     /**
@@ -65,30 +78,12 @@ public class VideoSourceConfigurationOptionsExtension {
     }
 
     /**
-     * Ruft den Wert der rotate-Eigenschaft ab.
-     *
-     * @return possible object is {@link RotateOptions }
-     */
-    public RotateOptions getRotate() {
-        return rotate;
-    }
-
-    /**
      * Legt den Wert der rotate-Eigenschaft fest.
      *
      * @param value allowed object is {@link RotateOptions }
      */
     public void setRotate(RotateOptions value) {
         this.rotate = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoSourceConfigurationOptionsExtension2 }
-     */
-    public VideoSourceConfigurationOptionsExtension2 getExtension() {
-        return extension;
     }
 
     /**

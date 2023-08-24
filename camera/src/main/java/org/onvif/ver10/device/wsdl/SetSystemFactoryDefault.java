@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.FactoryDefaultType;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.FactoryDefaultType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.FactoryDefaultType;
 @XmlRootElement(name = "SetSystemFactoryDefault")
 public class SetSystemFactoryDefault {
 
-    @XmlElement(name = "FactoryDefault", required = true)
-    protected FactoryDefaultType factoryDefault;
-
     /**
-     * Ruft den Wert der factoryDefault-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der factoryDefault-Eigenschaft ab.
      *
      * @return possible object is {@link FactoryDefaultType }
      */
-    public FactoryDefaultType getFactoryDefault() {
-        return factoryDefault;
-    }
+    @XmlElement(name = "FactoryDefault", required = true)
+    protected FactoryDefaultType factoryDefault;
 
     /**
      * Legt den Wert der factoryDefault-Eigenschaft fest.

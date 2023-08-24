@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -43,10 +44,22 @@ public class VideoEncoderOptionsExtension {
     @XmlElement(name = "MPEG4")
     protected Mpeg4Options2 mpeg4;
 
-    @XmlElement(name = "H264")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der h264-Eigenschaft ab.
+     *
+     * @return possible object is {@link H264Options2 }
+     */
+    @Getter @XmlElement(name = "H264")
     protected H264Options2 h264;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoEncoderOptionsExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected VideoEncoderOptionsExtension2 extension;
 
     /**
@@ -109,30 +122,12 @@ public class VideoEncoderOptionsExtension {
     }
 
     /**
-     * Ruft den Wert der h264-Eigenschaft ab.
-     *
-     * @return possible object is {@link H264Options2 }
-     */
-    public H264Options2 getH264() {
-        return h264;
-    }
-
-    /**
      * Legt den Wert der h264-Eigenschaft fest.
      *
      * @param value allowed object is {@link H264Options2 }
      */
     public void setH264(H264Options2 value) {
         this.h264 = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoEncoderOptionsExtension2 }
-     */
-    public VideoEncoderOptionsExtension2 getExtension() {
-        return extension;
     }
 
     /**

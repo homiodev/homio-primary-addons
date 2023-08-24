@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r VideoResolution complex type.
@@ -24,37 +25,32 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoResolution",
         propOrder = {"width", "height"})
 public class VideoResolution {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der width-Eigenschaft ab.
+     */
     @XmlElement(name = "Width")
     protected int width;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der height-Eigenschaft ab.
+     */
     @XmlElement(name = "Height")
     protected int height;
-
-    /**
-     * Ruft den Wert der width-Eigenschaft ab.
-     */
-    public int getWidth() {
-        return width;
-    }
 
     /**
      * Legt den Wert der width-Eigenschaft fest.
      */
     public void setWidth(int value) {
         this.width = value;
-    }
-
-    /**
-     * Ruft den Wert der height-Eigenschaft ab.
-     */
-    public int getHeight() {
-        return height;
     }
 
     /**

@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.SystemLogType;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.SystemLogType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.SystemLogType;
 @XmlRootElement(name = "GetSystemLog")
 public class GetSystemLog {
 
-    @XmlElement(name = "LogType", required = true)
-    protected SystemLogType logType;
-
     /**
-     * Ruft den Wert der logType-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der logType-Eigenschaft ab.
      *
      * @return possible object is {@link SystemLogType }
      */
-    public SystemLogType getLogType() {
-        return logType;
-    }
+    @XmlElement(name = "LogType", required = true)
+    protected SystemLogType logType;
 
     /**
      * Legt den Wert der logType-Eigenschaft fest.

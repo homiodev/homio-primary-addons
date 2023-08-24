@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r ImagingOptions20 complex type.
@@ -55,50 +56,111 @@ import java.util.Map;
         })
 public class ImagingOptions20 {
 
-    @XmlElement(name = "BacklightCompensation")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der backlightCompensation-Eigenschaft ab.
+     *
+     * @return possible object is {@link BacklightCompensationOptions20 }
+     */
+    @Getter @XmlElement(name = "BacklightCompensation")
     protected BacklightCompensationOptions20 backlightCompensation;
 
-    @XmlElement(name = "Brightness")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der brightness-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "Brightness")
     protected FloatRange brightness;
 
-    @XmlElement(name = "ColorSaturation")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der colorSaturation-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "ColorSaturation")
     protected FloatRange colorSaturation;
 
-    @XmlElement(name = "Contrast")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der contrast-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "Contrast")
     protected FloatRange contrast;
 
-    @XmlElement(name = "Exposure")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der exposure-Eigenschaft ab.
+     *
+     * @return possible object is {@link ExposureOptions20 }
+     */
+    @Getter @XmlElement(name = "Exposure")
     protected ExposureOptions20 exposure;
 
-    @XmlElement(name = "Focus")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der focus-Eigenschaft ab.
+     *
+     * @return possible object is {@link FocusOptions20 }
+     */
+    @Getter @XmlElement(name = "Focus")
     protected FocusOptions20 focus;
 
     @XmlElement(name = "IrCutFilterModes")
     protected List<IrCutFilterMode> irCutFilterModes;
 
-    @XmlElement(name = "Sharpness")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der sharpness-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "Sharpness")
     protected FloatRange sharpness;
 
-    @XmlElement(name = "WideDynamicRange")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der wideDynamicRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link WideDynamicRangeOptions20 }
+     */
+    @Getter @XmlElement(name = "WideDynamicRange")
     protected WideDynamicRangeOptions20 wideDynamicRange;
 
-    @XmlElement(name = "WhiteBalance")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der whiteBalance-Eigenschaft ab.
+     *
+     * @return possible object is {@link WhiteBalanceOptions20 }
+     */
+    @Getter @XmlElement(name = "WhiteBalance")
     protected WhiteBalanceOptions20 whiteBalance;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ImagingOptions20Extension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected ImagingOptions20Extension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der backlightCompensation-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link BacklightCompensationOptions20 }
+     * @return always non-null
      */
-    public BacklightCompensationOptions20 getBacklightCompensation() {
-        return backlightCompensation;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der backlightCompensation-Eigenschaft fest.
@@ -107,15 +169,6 @@ public class ImagingOptions20 {
      */
     public void setBacklightCompensation(BacklightCompensationOptions20 value) {
         this.backlightCompensation = value;
-    }
-
-    /**
-     * Ruft den Wert der brightness-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getBrightness() {
-        return brightness;
     }
 
     /**
@@ -128,30 +181,12 @@ public class ImagingOptions20 {
     }
 
     /**
-     * Ruft den Wert der colorSaturation-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getColorSaturation() {
-        return colorSaturation;
-    }
-
-    /**
      * Legt den Wert der colorSaturation-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
      */
     public void setColorSaturation(FloatRange value) {
         this.colorSaturation = value;
-    }
-
-    /**
-     * Ruft den Wert der contrast-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getContrast() {
-        return contrast;
     }
 
     /**
@@ -164,30 +199,12 @@ public class ImagingOptions20 {
     }
 
     /**
-     * Ruft den Wert der exposure-Eigenschaft ab.
-     *
-     * @return possible object is {@link ExposureOptions20 }
-     */
-    public ExposureOptions20 getExposure() {
-        return exposure;
-    }
-
-    /**
      * Legt den Wert der exposure-Eigenschaft fest.
      *
      * @param value allowed object is {@link ExposureOptions20 }
      */
     public void setExposure(ExposureOptions20 value) {
         this.exposure = value;
-    }
-
-    /**
-     * Ruft den Wert der focus-Eigenschaft ab.
-     *
-     * @return possible object is {@link FocusOptions20 }
-     */
-    public FocusOptions20 getFocus() {
-        return focus;
     }
 
     /**
@@ -222,30 +239,12 @@ public class ImagingOptions20 {
     }
 
     /**
-     * Ruft den Wert der sharpness-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getSharpness() {
-        return sharpness;
-    }
-
-    /**
      * Legt den Wert der sharpness-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
      */
     public void setSharpness(FloatRange value) {
         this.sharpness = value;
-    }
-
-    /**
-     * Ruft den Wert der wideDynamicRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link WideDynamicRangeOptions20 }
-     */
-    public WideDynamicRangeOptions20 getWideDynamicRange() {
-        return wideDynamicRange;
     }
 
     /**
@@ -258,30 +257,12 @@ public class ImagingOptions20 {
     }
 
     /**
-     * Ruft den Wert der whiteBalance-Eigenschaft ab.
-     *
-     * @return possible object is {@link WhiteBalanceOptions20 }
-     */
-    public WhiteBalanceOptions20 getWhiteBalance() {
-        return whiteBalance;
-    }
-
-    /**
      * Legt den Wert der whiteBalance-Eigenschaft fest.
      *
      * @param value allowed object is {@link WhiteBalanceOptions20 }
      */
     public void setWhiteBalance(WhiteBalanceOptions20 value) {
         this.whiteBalance = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ImagingOptions20Extension }
-     */
-    public ImagingOptions20Extension getExtension() {
-        return extension;
     }
 
     /**
@@ -293,18 +274,4 @@ public class ImagingOptions20 {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

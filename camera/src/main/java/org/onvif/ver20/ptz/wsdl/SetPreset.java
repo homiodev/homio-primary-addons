@@ -1,6 +1,7 @@
 package org.onvif.ver20.ptz.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -22,6 +23,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -29,23 +31,32 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "SetPreset")
 public class SetPreset {
 
-    @XmlElement(name = "ProfileToken", required = true)
-    protected String profileToken;
-
-    @XmlElement(name = "PresetName")
-    protected String presetName;
-
-    @XmlElement(name = "PresetToken")
-    protected String presetToken;
-
     /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der profileToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getProfileToken() {
-        return profileToken;
-    }
+    @XmlElement(name = "ProfileToken", required = true)
+    protected String profileToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der presetName-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "PresetName")
+    protected String presetName;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der presetToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "PresetToken")
+    protected String presetToken;
 
     /**
      * Legt den Wert der profileToken-Eigenschaft fest.
@@ -57,30 +68,12 @@ public class SetPreset {
     }
 
     /**
-     * Ruft den Wert der presetName-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getPresetName() {
-        return presetName;
-    }
-
-    /**
      * Legt den Wert der presetName-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setPresetName(String value) {
         this.presetName = value;
-    }
-
-    /**
-     * Ruft den Wert der presetToken-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getPresetToken() {
-        return presetToken;
     }
 
     /**

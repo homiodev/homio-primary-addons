@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r PanTiltLimits complex type.
@@ -23,23 +24,21 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PanTiltLimits",
         propOrder = {"range"})
 public class PanTiltLimits {
 
-    @XmlElement(name = "Range", required = true)
-    protected Space2DDescription range;
-
     /**
-     * Ruft den Wert der range-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der range-Eigenschaft ab.
      *
      * @return possible object is {@link Space2DDescription }
      */
-    public Space2DDescription getRange() {
-        return range;
-    }
+    @XmlElement(name = "Range", required = true)
+    protected Space2DDescription range;
 
     /**
      * Legt den Wert der range-Eigenschaft fest.

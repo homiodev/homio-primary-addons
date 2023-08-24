@@ -9,6 +9,7 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.CertificateInformation;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.CertificateInformation;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.CertificateInformation;
 @XmlRootElement(name = "GetCertificateInformationResponse")
 public class GetCertificateInformationResponse {
 
-    @XmlElement(name = "CertificateInformation", required = true)
-    protected CertificateInformation certificateInformation;
-
     /**
-     * Ruft den Wert der certificateInformation-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der certificateInformation-Eigenschaft ab.
      *
      * @return possible object is {@link CertificateInformation }
      */
-    public CertificateInformation getCertificateInformation() {
-        return certificateInformation;
-    }
+    @XmlElement(name = "CertificateInformation", required = true)
+    protected CertificateInformation certificateInformation;
 
     /**
      * Legt den Wert der certificateInformation-Eigenschaft fest.

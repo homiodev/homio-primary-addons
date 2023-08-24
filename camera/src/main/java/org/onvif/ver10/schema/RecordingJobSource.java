@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r RecordingJobSource complex type.
@@ -36,7 +37,13 @@ import java.util.Map;
         propOrder = {"sourceToken", "autoCreateReceiver", "tracks", "extension"})
 public class RecordingJobSource {
 
-    @XmlElement(name = "SourceToken")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der sourceToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link SourceReference }
+     */
+    @Getter @XmlElement(name = "SourceToken")
     protected SourceReference sourceToken;
 
     @XmlElement(name = "AutoCreateReceiver")
@@ -45,20 +52,27 @@ public class RecordingJobSource {
     @XmlElement(name = "Tracks")
     protected List<RecordingJobTrack> tracks;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link RecordingJobSourceExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected RecordingJobSourceExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der sourceToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link SourceReference }
+     * @return always non-null
      */
-    public SourceReference getSourceToken() {
-        return sourceToken;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der sourceToken-Eigenschaft fest.
@@ -110,15 +124,6 @@ public class RecordingJobSource {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link RecordingJobSourceExtension }
-     */
-    public RecordingJobSourceExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link RecordingJobSourceExtension }
@@ -127,18 +132,4 @@ public class RecordingJobSource {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

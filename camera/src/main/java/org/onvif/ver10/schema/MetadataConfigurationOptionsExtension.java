@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r MetadataConfigurationOptionsExtension complex type.
@@ -36,7 +37,13 @@ public class MetadataConfigurationOptionsExtension {
     @XmlElement(name = "CompressionType")
     protected List<String> compressionType;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link MetadataConfigurationOptionsExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected MetadataConfigurationOptionsExtension2 extension;
 
     /**
@@ -59,15 +66,6 @@ public class MetadataConfigurationOptionsExtension {
             compressionType = new ArrayList<String>();
         }
         return this.compressionType;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link MetadataConfigurationOptionsExtension2 }
-     */
-    public MetadataConfigurationOptionsExtension2 getExtension() {
-        return extension;
     }
 
     /**

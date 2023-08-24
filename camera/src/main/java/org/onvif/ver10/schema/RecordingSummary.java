@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -38,31 +39,48 @@ import java.util.Map;
         propOrder = {"dataFrom", "dataUntil", "numberRecordings", "any"})
 public class RecordingSummary {
 
-    @XmlElement(name = "DataFrom", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dataFrom-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "DataFrom", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar dataFrom;
 
-    @XmlElement(name = "DataUntil", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dataUntil-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "DataUntil", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar dataUntil;
 
-    @XmlElement(name = "NumberRecordings")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der numberRecordings-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "NumberRecordings")
     protected int numberRecordings;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der dataFrom-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link XMLGregorianCalendar }
+     * @return always non-null
      */
-    public XMLGregorianCalendar getDataFrom() {
-        return dataFrom;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der dataFrom-Eigenschaft fest.
@@ -74,28 +92,12 @@ public class RecordingSummary {
     }
 
     /**
-     * Ruft den Wert der dataUntil-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getDataUntil() {
-        return dataUntil;
-    }
-
-    /**
      * Legt den Wert der dataUntil-Eigenschaft fest.
      *
      * @param value allowed object is {@link XMLGregorianCalendar }
      */
     public void setDataUntil(XMLGregorianCalendar value) {
         this.dataUntil = value;
-    }
-
-    /**
-     * Ruft den Wert der numberRecordings-Eigenschaft ab.
-     */
-    public int getNumberRecordings() {
-        return numberRecordings;
     }
 
     /**
@@ -128,18 +130,4 @@ public class RecordingSummary {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

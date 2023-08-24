@@ -13,6 +13,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r NetworkCapabilities complex type.
@@ -58,7 +59,13 @@ public class NetworkCapabilities {
     @XmlAttribute(name = "Dot11Configuration")
     protected Boolean dot11Configuration;
 
-    @XmlAttribute(name = "Dot1XConfigurations")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der dot1XConfigurations-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
+    @Getter @XmlAttribute(name = "Dot1XConfigurations")
     protected Integer dot1XConfigurations;
 
     @XmlAttribute(name = "HostnameFromDHCP")
@@ -70,8 +77,18 @@ public class NetworkCapabilities {
     @XmlAttribute(name = "DHCPv6")
     protected Boolean dhcPv6;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der ipFilter-Eigenschaft ab.
@@ -164,15 +181,6 @@ public class NetworkCapabilities {
     }
 
     /**
-     * Ruft den Wert der dot1XConfigurations-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
-    public Integer getDot1XConfigurations() {
-        return dot1XConfigurations;
-    }
-
-    /**
      * Legt den Wert der dot1XConfigurations-Eigenschaft fest.
      *
      * @param value allowed object is {@link Integer }
@@ -235,18 +243,4 @@ public class NetworkCapabilities {
         this.dhcPv6 = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

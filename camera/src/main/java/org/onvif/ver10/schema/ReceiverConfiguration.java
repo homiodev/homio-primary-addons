@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -39,30 +40,49 @@ import java.util.Map;
         propOrder = {"mode", "mediaUri", "streamSetup", "any"})
 public class ReceiverConfiguration {
 
-    @XmlElement(name = "Mode", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der mode-Eigenschaft ab.
+     *
+     * @return possible object is {@link ReceiverMode }
+     */
+    @Getter @XmlElement(name = "Mode", required = true)
     protected ReceiverMode mode;
 
-    @XmlElement(name = "MediaUri", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der mediaUri-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "MediaUri", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String mediaUri;
 
-    @XmlElement(name = "StreamSetup", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der streamSetup-Eigenschaft ab.
+     *
+     * @return possible object is {@link StreamSetup }
+     */
+    @Getter @XmlElement(name = "StreamSetup", required = true)
     protected StreamSetup streamSetup;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der mode-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link ReceiverMode }
+     * @return always non-null
      */
-    public ReceiverMode getMode() {
-        return mode;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der mode-Eigenschaft fest.
@@ -74,30 +94,12 @@ public class ReceiverConfiguration {
     }
 
     /**
-     * Ruft den Wert der mediaUri-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getMediaUri() {
-        return mediaUri;
-    }
-
-    /**
      * Legt den Wert der mediaUri-Eigenschaft fest.
      *
      * @param value allowed object is {@link String }
      */
     public void setMediaUri(String value) {
         this.mediaUri = value;
-    }
-
-    /**
-     * Ruft den Wert der streamSetup-Eigenschaft ab.
-     *
-     * @return possible object is {@link StreamSetup }
-     */
-    public StreamSetup getStreamSetup() {
-        return streamSetup;
     }
 
     /**
@@ -132,18 +134,4 @@ public class ReceiverConfiguration {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

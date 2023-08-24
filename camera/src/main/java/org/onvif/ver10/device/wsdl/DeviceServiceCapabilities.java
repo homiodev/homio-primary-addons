@@ -12,6 +12,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r DeviceServiceCapabilities complex type.
@@ -34,32 +35,48 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "DeviceServiceCapabilities",
         propOrder = {"network", "security", "system", "misc"})
 public class DeviceServiceCapabilities {
 
-    @XmlElement(name = "Network", required = true)
-    protected NetworkCapabilities network;
-
-    @XmlElement(name = "Security", required = true)
-    protected SecurityCapabilities security;
-
-    @XmlElement(name = "System", required = true)
-    protected SystemCapabilities system;
-
-    @XmlElement(name = "Misc")
-    protected MiscCapabilities misc;
-
     /**
-     * Ruft den Wert der network-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der network-Eigenschaft ab.
      *
      * @return possible object is {@link NetworkCapabilities }
      */
-    public NetworkCapabilities getNetwork() {
-        return network;
-    }
+    @XmlElement(name = "Network", required = true)
+    protected NetworkCapabilities network;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der security-Eigenschaft ab.
+     *
+     * @return possible object is {@link SecurityCapabilities }
+     */
+    @XmlElement(name = "Security", required = true)
+    protected SecurityCapabilities security;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der system-Eigenschaft ab.
+     *
+     * @return possible object is {@link SystemCapabilities }
+     */
+    @XmlElement(name = "System", required = true)
+    protected SystemCapabilities system;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der misc-Eigenschaft ab.
+     *
+     * @return possible object is {@link MiscCapabilities }
+     */
+    @XmlElement(name = "Misc")
+    protected MiscCapabilities misc;
 
     /**
      * Legt den Wert der network-Eigenschaft fest.
@@ -68,15 +85,6 @@ public class DeviceServiceCapabilities {
      */
     public void setNetwork(NetworkCapabilities value) {
         this.network = value;
-    }
-
-    /**
-     * Ruft den Wert der security-Eigenschaft ab.
-     *
-     * @return possible object is {@link SecurityCapabilities }
-     */
-    public SecurityCapabilities getSecurity() {
-        return security;
     }
 
     /**
@@ -89,30 +97,12 @@ public class DeviceServiceCapabilities {
     }
 
     /**
-     * Ruft den Wert der system-Eigenschaft ab.
-     *
-     * @return possible object is {@link SystemCapabilities }
-     */
-    public SystemCapabilities getSystem() {
-        return system;
-    }
-
-    /**
      * Legt den Wert der system-Eigenschaft fest.
      *
      * @param value allowed object is {@link SystemCapabilities }
      */
     public void setSystem(SystemCapabilities value) {
         this.system = value;
-    }
-
-    /**
-     * Ruft den Wert der misc-Eigenschaft ab.
-     *
-     * @return possible object is {@link MiscCapabilities }
-     */
-    public MiscCapabilities getMisc() {
-        return misc;
     }
 
     /**

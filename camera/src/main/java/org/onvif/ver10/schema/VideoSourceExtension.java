@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
@@ -35,10 +36,22 @@ public class VideoSourceExtension {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlElement(name = "Imaging")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der imaging-Eigenschaft ab.
+     *
+     * @return possible object is {@link ImagingSettings20 }
+     */
+    @Getter @XmlElement(name = "Imaging")
     protected ImagingSettings20 imaging;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoSourceExtension2 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected VideoSourceExtension2 extension;
 
     /**
@@ -65,30 +78,12 @@ public class VideoSourceExtension {
     }
 
     /**
-     * Ruft den Wert der imaging-Eigenschaft ab.
-     *
-     * @return possible object is {@link ImagingSettings20 }
-     */
-    public ImagingSettings20 getImaging() {
-        return imaging;
-    }
-
-    /**
      * Legt den Wert der imaging-Eigenschaft fest.
      *
      * @param value allowed object is {@link ImagingSettings20 }
      */
     public void setImaging(ImagingSettings20 value) {
         this.imaging = value;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoSourceExtension2 }
-     */
-    public VideoSourceExtension2 getExtension() {
-        return extension;
     }
 
     /**

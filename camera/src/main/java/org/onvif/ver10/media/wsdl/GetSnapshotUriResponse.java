@@ -9,6 +9,7 @@
 package org.onvif.ver10.media.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.MediaUri;
 
 /**
@@ -29,6 +30,7 @@ import org.onvif.ver10.schema.MediaUri;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -36,17 +38,14 @@ import org.onvif.ver10.schema.MediaUri;
 @XmlRootElement(name = "GetSnapshotUriResponse")
 public class GetSnapshotUriResponse {
 
-    @XmlElement(name = "MediaUri", required = true)
-    protected MediaUri mediaUri;
-
     /**
-     * Ruft den Wert der mediaUri-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der mediaUri-Eigenschaft ab.
      *
      * @return possible object is {@link MediaUri }
      */
-    public MediaUri getMediaUri() {
-        return mediaUri;
-    }
+    @XmlElement(name = "MediaUri", required = true)
+    protected MediaUri mediaUri;
 
     /**
      * Legt den Wert der mediaUri-Eigenschaft fest.

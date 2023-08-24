@@ -9,6 +9,7 @@
 package org.oasis_open.docs.wsn.b_2;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.oasis_open.docs.wsn.t_1.TopicSetType;
 
 import java.util.ArrayList;
@@ -52,7 +53,13 @@ public class NotificationProducerRP {
     @XmlSchemaType(name = "anyURI")
     protected List<String> topicExpressionDialect;
 
-    @XmlElement(name = "TopicSet", namespace = "http://docs.oasis-open.org/wsn/t-1")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der topicSet-Eigenschaft ab.
+     *
+     * @return possible object is {@link TopicSetType }
+     */
+    @Getter @XmlElement(name = "TopicSet", namespace = "http://docs.oasis-open.org/wsn/t-1")
     protected TopicSetType topicSet;
 
     /**
@@ -115,15 +122,6 @@ public class NotificationProducerRP {
             topicExpressionDialect = new ArrayList<String>();
         }
         return this.topicExpressionDialect;
-    }
-
-    /**
-     * Ruft den Wert der topicSet-Eigenschaft ab.
-     *
-     * @return possible object is {@link TopicSetType }
-     */
-    public TopicSetType getTopicSet() {
-        return topicSet;
     }
 
     /**

@@ -1,6 +1,7 @@
 package org.onvif.ver20.ptz.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -20,6 +21,7 @@ import jakarta.xml.bind.annotation.*;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -27,17 +29,14 @@ import jakarta.xml.bind.annotation.*;
 @XmlRootElement(name = "SendAuxiliaryCommandResponse")
 public class SendAuxiliaryCommandResponse {
 
-    @XmlElement(name = "AuxiliaryResponse", required = true)
-    protected String auxiliaryResponse;
-
     /**
-     * Ruft den Wert der auxiliaryResponse-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der auxiliaryResponse-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getAuxiliaryResponse() {
-        return auxiliaryResponse;
-    }
+    @XmlElement(name = "AuxiliaryResponse", required = true)
+    protected String auxiliaryResponse;
 
     /**
      * Legt den Wert der auxiliaryResponse-Eigenschaft fest.

@@ -11,6 +11,7 @@ package org.onvif.ver10.device.wsdl;
 import jakarta.xml.bind.annotation.*;
 
 import javax.xml.datatype.Duration;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -31,6 +32,7 @@ import javax.xml.datatype.Duration;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -38,21 +40,24 @@ import javax.xml.datatype.Duration;
 @XmlRootElement(name = "StartSystemRestoreResponse")
 public class StartSystemRestoreResponse {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der uploadUri-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "UploadUri", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String uploadUri;
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der expectedDownTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link Duration }
+     */
     @XmlElement(name = "ExpectedDownTime", required = true)
     protected Duration expectedDownTime;
-
-    /**
-     * Ruft den Wert der uploadUri-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getUploadUri() {
-        return uploadUri;
-    }
 
     /**
      * Legt den Wert der uploadUri-Eigenschaft fest.
@@ -61,15 +66,6 @@ public class StartSystemRestoreResponse {
      */
     public void setUploadUri(String value) {
         this.uploadUri = value;
-    }
-
-    /**
-     * Ruft den Wert der expectedDownTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link Duration }
-     */
-    public Duration getExpectedDownTime() {
-        return expectedDownTime;
     }
 
     /**

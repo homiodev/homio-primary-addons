@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r ExposureOptions20 complex type.
@@ -60,31 +61,85 @@ public class ExposureOptions20 {
     @XmlElement(name = "Priority")
     protected List<ExposurePriority> priority;
 
-    @XmlElement(name = "MinExposureTime")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der minExposureTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "MinExposureTime")
     protected FloatRange minExposureTime;
 
-    @XmlElement(name = "MaxExposureTime")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maxExposureTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "MaxExposureTime")
     protected FloatRange maxExposureTime;
 
-    @XmlElement(name = "MinGain")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der minGain-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "MinGain")
     protected FloatRange minGain;
 
-    @XmlElement(name = "MaxGain")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maxGain-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "MaxGain")
     protected FloatRange maxGain;
 
-    @XmlElement(name = "MinIris")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der minIris-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "MinIris")
     protected FloatRange minIris;
 
-    @XmlElement(name = "MaxIris")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maxIris-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "MaxIris")
     protected FloatRange maxIris;
 
-    @XmlElement(name = "ExposureTime")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der exposureTime-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "ExposureTime")
     protected FloatRange exposureTime;
 
-    @XmlElement(name = "Gain")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der gain-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "Gain")
     protected FloatRange gain;
 
-    @XmlElement(name = "Iris")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der iris-Eigenschaft ab.
+     *
+     * @return possible object is {@link FloatRange }
+     */
+    @Getter @XmlElement(name = "Iris")
     protected FloatRange iris;
 
     /**
@@ -132,30 +187,12 @@ public class ExposureOptions20 {
     }
 
     /**
-     * Ruft den Wert der minExposureTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getMinExposureTime() {
-        return minExposureTime;
-    }
-
-    /**
      * Legt den Wert der minExposureTime-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
      */
     public void setMinExposureTime(FloatRange value) {
         this.minExposureTime = value;
-    }
-
-    /**
-     * Ruft den Wert der maxExposureTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getMaxExposureTime() {
-        return maxExposureTime;
     }
 
     /**
@@ -168,30 +205,12 @@ public class ExposureOptions20 {
     }
 
     /**
-     * Ruft den Wert der minGain-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getMinGain() {
-        return minGain;
-    }
-
-    /**
      * Legt den Wert der minGain-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
      */
     public void setMinGain(FloatRange value) {
         this.minGain = value;
-    }
-
-    /**
-     * Ruft den Wert der maxGain-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getMaxGain() {
-        return maxGain;
     }
 
     /**
@@ -204,30 +223,12 @@ public class ExposureOptions20 {
     }
 
     /**
-     * Ruft den Wert der minIris-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getMinIris() {
-        return minIris;
-    }
-
-    /**
      * Legt den Wert der minIris-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
      */
     public void setMinIris(FloatRange value) {
         this.minIris = value;
-    }
-
-    /**
-     * Ruft den Wert der maxIris-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getMaxIris() {
-        return maxIris;
     }
 
     /**
@@ -240,15 +241,6 @@ public class ExposureOptions20 {
     }
 
     /**
-     * Ruft den Wert der exposureTime-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getExposureTime() {
-        return exposureTime;
-    }
-
-    /**
      * Legt den Wert der exposureTime-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
@@ -258,30 +250,12 @@ public class ExposureOptions20 {
     }
 
     /**
-     * Ruft den Wert der gain-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getGain() {
-        return gain;
-    }
-
-    /**
      * Legt den Wert der gain-Eigenschaft fest.
      *
      * @param value allowed object is {@link FloatRange }
      */
     public void setGain(FloatRange value) {
         this.gain = value;
-    }
-
-    /**
-     * Ruft den Wert der iris-Eigenschaft ab.
-     *
-     * @return possible object is {@link FloatRange }
-     */
-    public FloatRange getIris() {
-        return iris;
     }
 
     /**

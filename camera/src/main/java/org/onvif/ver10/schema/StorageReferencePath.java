@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r StorageReferencePath complex type.
@@ -27,32 +28,52 @@ import java.util.Map;
  * &lt;/complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "StorageReferencePath",
         propOrder = {"storageToken", "relativePath", "extension"})
 public class StorageReferencePath {
 
-    @XmlElement(name = "StorageToken", required = true)
-    protected String storageToken;
-
-    @XmlElement(name = "RelativePath")
-    protected String relativePath;
-
-    @XmlElement(name = "Extension")
-    protected StorageReferencePathExtension extension;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der storageToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der storageToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getStorageToken() {
-        return storageToken;
-    }
+    @XmlElement(name = "StorageToken", required = true)
+    protected String storageToken;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der relativePath-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @XmlElement(name = "RelativePath")
+    protected String relativePath;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link StorageReferencePathExtension }
+     */
+    @XmlElement(name = "Extension")
+    protected StorageReferencePathExtension extension;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der storageToken-Eigenschaft fest.
@@ -61,15 +82,6 @@ public class StorageReferencePath {
      */
     public void setStorageToken(String value) {
         this.storageToken = value;
-    }
-
-    /**
-     * Ruft den Wert der relativePath-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getRelativePath() {
-        return relativePath;
     }
 
     /**
@@ -82,15 +94,6 @@ public class StorageReferencePath {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link StorageReferencePathExtension }
-     */
-    public StorageReferencePathExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link StorageReferencePathExtension }
@@ -99,18 +102,4 @@ public class StorageReferencePath {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

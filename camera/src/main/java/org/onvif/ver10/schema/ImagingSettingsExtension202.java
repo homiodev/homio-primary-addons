@@ -7,6 +7,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r ImagingSettingsExtension202 complex type.
@@ -36,7 +37,13 @@ public class ImagingSettingsExtension202 {
     @XmlElement(name = "IrCutFilterAutoAdjustment")
     protected List<IrCutFilterAutoAdjustment> irCutFilterAutoAdjustment;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link ImagingSettingsExtension203 }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected ImagingSettingsExtension203 extension;
 
     /**
@@ -59,15 +66,6 @@ public class ImagingSettingsExtension202 {
             irCutFilterAutoAdjustment = new ArrayList<IrCutFilterAutoAdjustment>();
         }
         return this.irCutFilterAutoAdjustment;
-    }
-
-    /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link ImagingSettingsExtension203 }
-     */
-    public ImagingSettingsExtension203 getExtension() {
-        return extension;
     }
 
     /**

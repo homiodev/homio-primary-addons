@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Type describing whether WDR mode is enabled or disabled (on/off).
@@ -26,26 +27,30 @@ import jakarta.xml.bind.annotation.XmlType;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "WideDynamicRange20",
         propOrder = {"mode", "level"})
 public class WideDynamicRange20 {
 
-    @XmlElement(name = "Mode", required = true)
-    protected WideDynamicMode mode;
-
-    @XmlElement(name = "Level")
-    protected Float level;
-
     /**
-     * Ruft den Wert der mode-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der mode-Eigenschaft ab.
      *
      * @return possible object is {@link WideDynamicMode }
      */
-    public WideDynamicMode getMode() {
-        return mode;
-    }
+    @XmlElement(name = "Mode", required = true)
+    protected WideDynamicMode mode;
+
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der level-Eigenschaft ab.
+     *
+     * @return possible object is {@link Float }
+     */
+    @XmlElement(name = "Level")
+    protected Float level;
 
     /**
      * Legt den Wert der mode-Eigenschaft fest.
@@ -54,15 +59,6 @@ public class WideDynamicRange20 {
      */
     public void setMode(WideDynamicMode value) {
         this.mode = value;
-    }
-
-    /**
-     * Ruft den Wert der level-Eigenschaft ab.
-     *
-     * @return possible object is {@link Float }
-     */
-    public Float getLevel() {
-        return level;
     }
 
     /**

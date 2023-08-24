@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r StartStopMulticastStreaming complex type.
@@ -23,23 +24,21 @@ import jakarta.xml.bind.annotation.XmlType;
  * &lt;/complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "StartStopMulticastStreaming",
         propOrder = {"profileToken"})
 public class StartStopMulticastStreaming {
 
-    @XmlElement(name = "ProfileToken", required = true)
-    protected String profileToken;
-
     /**
-     * Ruft den Wert der profileToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der profileToken-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getProfileToken() {
-        return profileToken;
-    }
+    @XmlElement(name = "ProfileToken", required = true)
+    protected String profileToken;
 
     /**
      * Legt den Wert der profileToken-Eigenschaft fest.

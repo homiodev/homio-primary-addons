@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -41,41 +42,82 @@ import java.util.Map;
         propOrder = {"encoding", "resolution", "rateControl", "multicast", "quality", "any"})
 public class VideoEncoder2Configuration extends ConfigurationEntity {
 
-    @XmlElement(name = "Encoding", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der encoding-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Encoding", required = true)
     protected String encoding;
 
-    @XmlElement(name = "Resolution", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der resolution-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoResolution2 }
+     */
+    @Getter @XmlElement(name = "Resolution", required = true)
     protected VideoResolution2 resolution;
 
-    @XmlElement(name = "RateControl")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der rateControl-Eigenschaft ab.
+     *
+     * @return possible object is {@link VideoRateControl2 }
+     */
+    @Getter @XmlElement(name = "RateControl")
     protected VideoRateControl2 rateControl;
 
-    @XmlElement(name = "Multicast")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der multicast-Eigenschaft ab.
+     *
+     * @return possible object is {@link MulticastConfiguration }
+     */
+    @Getter @XmlElement(name = "Multicast")
     protected MulticastConfiguration multicast;
 
-    @XmlElement(name = "Quality")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der quality-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "Quality")
     protected float quality;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAttribute(name = "GovLength")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der govLength-Eigenschaft ab.
+     *
+     * @return possible object is {@link Integer }
+     */
+    @Getter @XmlAttribute(name = "GovLength")
     protected Integer govLength;
 
-    @XmlAttribute(name = "Profile")
-    protected String profile;
-
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der encoding-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der profile-Eigenschaft ab.
      *
      * @return possible object is {@link String }
      */
-    public String getEncoding() {
-        return encoding;
-    }
+    @Getter @XmlAttribute(name = "Profile")
+    protected String profile;
+
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der encoding-Eigenschaft fest.
@@ -84,15 +126,6 @@ public class VideoEncoder2Configuration extends ConfigurationEntity {
      */
     public void setEncoding(String value) {
         this.encoding = value;
-    }
-
-    /**
-     * Ruft den Wert der resolution-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoResolution2 }
-     */
-    public VideoResolution2 getResolution() {
-        return resolution;
     }
 
     /**
@@ -105,15 +138,6 @@ public class VideoEncoder2Configuration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der rateControl-Eigenschaft ab.
-     *
-     * @return possible object is {@link VideoRateControl2 }
-     */
-    public VideoRateControl2 getRateControl() {
-        return rateControl;
-    }
-
-    /**
      * Legt den Wert der rateControl-Eigenschaft fest.
      *
      * @param value allowed object is {@link VideoRateControl2 }
@@ -123,28 +147,12 @@ public class VideoEncoder2Configuration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der multicast-Eigenschaft ab.
-     *
-     * @return possible object is {@link MulticastConfiguration }
-     */
-    public MulticastConfiguration getMulticast() {
-        return multicast;
-    }
-
-    /**
      * Legt den Wert der multicast-Eigenschaft fest.
      *
      * @param value allowed object is {@link MulticastConfiguration }
      */
     public void setMulticast(MulticastConfiguration value) {
         this.multicast = value;
-    }
-
-    /**
-     * Ruft den Wert der quality-Eigenschaft ab.
-     */
-    public float getQuality() {
-        return quality;
     }
 
     /**
@@ -178,30 +186,12 @@ public class VideoEncoder2Configuration extends ConfigurationEntity {
     }
 
     /**
-     * Ruft den Wert der govLength-Eigenschaft ab.
-     *
-     * @return possible object is {@link Integer }
-     */
-    public Integer getGovLength() {
-        return govLength;
-    }
-
-    /**
      * Legt den Wert der govLength-Eigenschaft fest.
      *
      * @param value allowed object is {@link Integer }
      */
     public void setGovLength(Integer value) {
         this.govLength = value;
-    }
-
-    /**
-     * Ruft den Wert der profile-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getProfile() {
-        return profile;
     }
 
     /**
@@ -213,18 +203,4 @@ public class VideoEncoder2Configuration extends ConfigurationEntity {
         this.profile = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

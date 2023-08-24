@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -41,34 +42,53 @@ import java.util.Map;
         propOrder = {"recordingToken", "trackAttributes", "from", "until", "any"})
 public class MediaAttributes {
 
-    @XmlElement(name = "RecordingToken", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der recordingToken-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
     @XmlElement(name = "TrackAttributes")
     protected List<TrackAttributes> trackAttributes;
 
-    @XmlElement(name = "From", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der from-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "From", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar from;
 
-    @XmlElement(name = "Until", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der until-Eigenschaft ab.
+     *
+     * @return possible object is {@link XMLGregorianCalendar }
+     */
+    @Getter @XmlElement(name = "Until", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar until;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der recordingToken-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getRecordingToken() {
-        return recordingToken;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der recordingToken-Eigenschaft fest.
@@ -102,30 +122,12 @@ public class MediaAttributes {
     }
 
     /**
-     * Ruft den Wert der from-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getFrom() {
-        return from;
-    }
-
-    /**
      * Legt den Wert der from-Eigenschaft fest.
      *
      * @param value allowed object is {@link XMLGregorianCalendar }
      */
     public void setFrom(XMLGregorianCalendar value) {
         this.from = value;
-    }
-
-    /**
-     * Ruft den Wert der until-Eigenschaft ab.
-     *
-     * @return possible object is {@link XMLGregorianCalendar }
-     */
-    public XMLGregorianCalendar getUntil() {
-        return until;
     }
 
     /**
@@ -160,18 +162,4 @@ public class MediaAttributes {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

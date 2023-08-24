@@ -11,6 +11,7 @@ package org.onvif.ver10.device.wsdl;
 import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r anonymous complex type.
@@ -30,6 +31,7 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -37,19 +39,16 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement(name = "GetCertificateInformation")
 public class GetCertificateInformation {
 
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der certificateID-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
     @XmlElement(name = "CertificateID", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String certificateID;
-
-    /**
-     * Ruft den Wert der certificateID-Eigenschaft ab.
-     *
-     * @return possible object is {@link String }
-     */
-    public String getCertificateID() {
-        return certificateID;
-    }
 
     /**
      * Legt den Wert der certificateID-Eigenschaft fest.

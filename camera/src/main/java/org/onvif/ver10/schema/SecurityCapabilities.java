@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -60,19 +61,35 @@ public class SecurityCapabilities {
     @XmlElement(name = "TLS1.2")
     protected boolean tls12;
 
-    @XmlElement(name = "OnboardKeyGeneration")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der onboardKeyGeneration-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "OnboardKeyGeneration")
     protected boolean onboardKeyGeneration;
 
-    @XmlElement(name = "AccessPolicyConfig")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der accessPolicyConfig-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "AccessPolicyConfig")
     protected boolean accessPolicyConfig;
 
-    @XmlElement(name = "X.509Token")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der x509Token-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "X.509Token")
     protected boolean x509Token;
 
     @XmlElement(name = "SAMLToken")
     protected boolean samlToken;
 
-    @XmlElement(name = "KerberosToken")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der kerberosToken-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "KerberosToken")
     protected boolean kerberosToken;
 
     @XmlElement(name = "RELToken")
@@ -81,11 +98,27 @@ public class SecurityCapabilities {
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link SecurityCapabilitiesExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected SecurityCapabilitiesExtension extension;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    /**
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
+     *
+     * @return always non-null
+     */
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Ruft den Wert der tls11-Eigenschaft ab.
@@ -116,13 +149,6 @@ public class SecurityCapabilities {
     }
 
     /**
-     * Ruft den Wert der onboardKeyGeneration-Eigenschaft ab.
-     */
-    public boolean isOnboardKeyGeneration() {
-        return onboardKeyGeneration;
-    }
-
-    /**
      * Legt den Wert der onboardKeyGeneration-Eigenschaft fest.
      */
     public void setOnboardKeyGeneration(boolean value) {
@@ -130,24 +156,10 @@ public class SecurityCapabilities {
     }
 
     /**
-     * Ruft den Wert der accessPolicyConfig-Eigenschaft ab.
-     */
-    public boolean isAccessPolicyConfig() {
-        return accessPolicyConfig;
-    }
-
-    /**
      * Legt den Wert der accessPolicyConfig-Eigenschaft fest.
      */
     public void setAccessPolicyConfig(boolean value) {
         this.accessPolicyConfig = value;
-    }
-
-    /**
-     * Ruft den Wert der x509Token-Eigenschaft ab.
-     */
-    public boolean isX509Token() {
-        return x509Token;
     }
 
     /**
@@ -169,13 +181,6 @@ public class SecurityCapabilities {
      */
     public void setSAMLToken(boolean value) {
         this.samlToken = value;
-    }
-
-    /**
-     * Ruft den Wert der kerberosToken-Eigenschaft ab.
-     */
-    public boolean isKerberosToken() {
-        return kerberosToken;
     }
 
     /**
@@ -223,15 +228,6 @@ public class SecurityCapabilities {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link SecurityCapabilitiesExtension }
-     */
-    public SecurityCapabilitiesExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link SecurityCapabilitiesExtension }
@@ -240,18 +236,4 @@ public class SecurityCapabilities {
         this.extension = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

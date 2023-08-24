@@ -1,6 +1,7 @@
 package org.onvif.ver10.schema;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -36,26 +37,39 @@ import java.util.Map;
         propOrder = {"bitrate", "sampleRateRange", "any"})
 public class G711DecOptions {
 
-    @XmlElement(name = "Bitrate", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der bitrate-Eigenschaft ab.
+     *
+     * @return possible object is {@link IntList }
+     */
+    @Getter @XmlElement(name = "Bitrate", required = true)
     protected IntList bitrate;
 
-    @XmlElement(name = "SampleRateRange", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der sampleRateRange-Eigenschaft ab.
+     *
+     * @return possible object is {@link IntList }
+     */
+    @Getter @XmlElement(name = "SampleRateRange", required = true)
     protected IntList sampleRateRange;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der bitrate-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link IntList }
+     * @return always non-null
      */
-    public IntList getBitrate() {
-        return bitrate;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der bitrate-Eigenschaft fest.
@@ -64,15 +78,6 @@ public class G711DecOptions {
      */
     public void setBitrate(IntList value) {
         this.bitrate = value;
-    }
-
-    /**
-     * Ruft den Wert der sampleRateRange-Eigenschaft ab.
-     *
-     * @return possible object is {@link IntList }
-     */
-    public IntList getSampleRateRange() {
-        return sampleRateRange;
     }
 
     /**
@@ -107,18 +112,4 @@ public class G711DecOptions {
         return this.any;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

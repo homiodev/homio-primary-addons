@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 
 /**
  * Java-Klasse f�r PTZNode complex type.
@@ -46,38 +47,65 @@ import java.util.Map;
         })
 public class PTZNode extends DeviceEntity {
 
-    @XmlElement(name = "Name")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der name-Eigenschaft ab.
+     *
+     * @return possible object is {@link String }
+     */
+    @Getter @XmlElement(name = "Name")
     protected String name;
 
-    @XmlElement(name = "SupportedPTZSpaces", required = true)
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der supportedPTZSpaces-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZSpaces }
+     */
+    @Getter @XmlElement(name = "SupportedPTZSpaces", required = true)
     protected PTZSpaces supportedPTZSpaces;
 
-    @XmlElement(name = "MaximumNumberOfPresets")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der maximumNumberOfPresets-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "MaximumNumberOfPresets")
     protected int maximumNumberOfPresets;
 
-    @XmlElement(name = "HomeSupported")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der homeSupported-Eigenschaft ab.
+     */
+    @Getter @XmlElement(name = "HomeSupported")
     protected boolean homeSupported;
 
     @XmlElement(name = "AuxiliaryCommands")
     protected List<String> auxiliaryCommands;
 
-    @XmlElement(name = "Extension")
+    /**
+     * -- GETTER --
+     *  Ruft den Wert der extension-Eigenschaft ab.
+     *
+     * @return possible object is {@link PTZNodeExtension }
+     */
+    @Getter @XmlElement(name = "Extension")
     protected PTZNodeExtension extension;
 
     @XmlAttribute(name = "FixedHomePosition")
     protected Boolean fixedHomePosition;
 
-    @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-
     /**
-     * Ruft den Wert der name-Eigenschaft ab.
+     * -- GETTER --
+     *  Gets a map that contains attributes that aren't bound to any typed property on this class.
+     *  <p>the map is keyed by the name of the attribute and the value is the string value of the
+     *  attribute.
+     *  <p>the map returned by this method is live, and you can add new attribute by updating the map
+     *  directly. Because of this design, there's no setter.
      *
-     * @return possible object is {@link String }
+     * @return always non-null
      */
-    public String getName() {
-        return name;
-    }
+    @Getter @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
     /**
      * Legt den Wert der name-Eigenschaft fest.
@@ -86,15 +114,6 @@ public class PTZNode extends DeviceEntity {
      */
     public void setName(String value) {
         this.name = value;
-    }
-
-    /**
-     * Ruft den Wert der supportedPTZSpaces-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZSpaces }
-     */
-    public PTZSpaces getSupportedPTZSpaces() {
-        return supportedPTZSpaces;
     }
 
     /**
@@ -107,24 +126,10 @@ public class PTZNode extends DeviceEntity {
     }
 
     /**
-     * Ruft den Wert der maximumNumberOfPresets-Eigenschaft ab.
-     */
-    public int getMaximumNumberOfPresets() {
-        return maximumNumberOfPresets;
-    }
-
-    /**
      * Legt den Wert der maximumNumberOfPresets-Eigenschaft fest.
      */
     public void setMaximumNumberOfPresets(int value) {
         this.maximumNumberOfPresets = value;
-    }
-
-    /**
-     * Ruft den Wert der homeSupported-Eigenschaft ab.
-     */
-    public boolean isHomeSupported() {
-        return homeSupported;
     }
 
     /**
@@ -157,15 +162,6 @@ public class PTZNode extends DeviceEntity {
     }
 
     /**
-     * Ruft den Wert der extension-Eigenschaft ab.
-     *
-     * @return possible object is {@link PTZNodeExtension }
-     */
-    public PTZNodeExtension getExtension() {
-        return extension;
-    }
-
-    /**
      * Legt den Wert der extension-Eigenschaft fest.
      *
      * @param value allowed object is {@link PTZNodeExtension }
@@ -192,18 +188,4 @@ public class PTZNode extends DeviceEntity {
         this.fixedHomePosition = value;
     }
 
-    /**
-     * Gets a map that contains attributes that aren't bound to any typed property on this class.
-     *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
-     *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
-     *
-     * @return always non-null
-     */
-    public Map<QName, String> getOtherAttributes() {
-        return otherAttributes;
-    }
 }

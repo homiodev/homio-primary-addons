@@ -9,8 +9,10 @@
 package org.onvif.ver10.device.wsdl;
 
 import jakarta.xml.bind.annotation.*;
+import lombok.Getter;
 import org.onvif.ver10.schema.Certificate;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -18,17 +20,14 @@ import org.onvif.ver10.schema.Certificate;
 @XmlRootElement(name = "CreateCertificateResponse")
 public class CreateCertificateResponse {
 
-    @XmlElement(name = "NvtCertificate", required = true)
-    protected Certificate nvtCertificate;
-
     /**
-     * Ruft den Wert der nvtCertificate-Eigenschaft ab.
+     * -- GETTER --
+     *  Ruft den Wert der nvtCertificate-Eigenschaft ab.
      *
      * @return possible object is {@link Certificate }
      */
-    public Certificate getNvtCertificate() {
-        return nvtCertificate;
-    }
+    @XmlElement(name = "NvtCertificate", required = true)
+    protected Certificate nvtCertificate;
 
     /**
      * Legt den Wert der nvtCertificate-Eigenschaft fest.
