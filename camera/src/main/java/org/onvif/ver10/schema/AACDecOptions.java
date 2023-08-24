@@ -32,11 +32,11 @@ public class AACDecOptions {
     protected List<java.lang.Object> any;
 
     @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     public List<java.lang.Object> getAny() {
         if (any == null) {
-            any = new ArrayList<java.lang.Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
