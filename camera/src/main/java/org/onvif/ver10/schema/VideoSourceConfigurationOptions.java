@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoSourceConfigurationOptions",
@@ -17,7 +18,7 @@ import lombok.Getter;
 public class VideoSourceConfigurationOptions {
 
 
-    @Getter @XmlElement(name = "BoundsRange", required = true)
+    @XmlElement(name = "BoundsRange", required = true)
     protected IntRectangleRange boundsRange;
 
     @XmlElement(name = "VideoSourceTokensAvailable", required = true)

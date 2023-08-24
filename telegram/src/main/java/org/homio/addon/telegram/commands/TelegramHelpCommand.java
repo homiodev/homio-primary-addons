@@ -19,7 +19,7 @@ public final class TelegramHelpCommand extends TelegramBaseCommand {
         sb.append("<b>Available commands:</b>\n");
         mCommandRegistry.getRegisteredCommands().forEach(cmd -> {
             if (!cmd.getCommandIdentifier().equals("start")) {
-                sb.append(cmd.toString());
+                sb.append(cmd);
             }
         });
         message.enableHtml(true);

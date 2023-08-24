@@ -12,6 +12,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NetworkZeroConfiguration",
@@ -19,7 +20,7 @@ import lombok.Getter;
 public class NetworkZeroConfiguration {
 
 
-    @Getter @XmlElement(name = "InterfaceToken", required = true)
+    @XmlElement(name = "InterfaceToken", required = true)
     protected String interfaceToken;
 
 

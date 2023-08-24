@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -14,7 +15,7 @@ import lombok.Getter;
 public class CreateProfile {
 
 
-    @Getter @XmlElement(name = "Name", required = true)
+    @XmlElement(name = "Name", required = true)
     protected String name;
 
     @XmlElement(name = "Configuration")

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "JpegOptions2",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class JpegOptions2 extends JpegOptions {
 
 
-    @Getter @XmlElement(name = "BitrateRange", required = true)
+    @XmlElement(name = "BitrateRange", required = true)
     protected IntRange bitrateRange;
 
     @XmlAnyElement(lax = true)

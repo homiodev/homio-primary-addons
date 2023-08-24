@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ConfigDescription",
@@ -16,7 +17,7 @@ import lombok.Getter;
 public class ConfigDescription {
 
 
-    @Getter @XmlElement(name = "Parameters", required = true)
+    @XmlElement(name = "Parameters", required = true)
     protected ItemListDescription parameters;
 
     @XmlElement(name = "Messages")

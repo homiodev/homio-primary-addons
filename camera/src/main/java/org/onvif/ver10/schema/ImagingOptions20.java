@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ImagingOptions20",
@@ -29,7 +30,7 @@ import lombok.Getter;
 public class ImagingOptions20 {
 
 
-    @Getter @XmlElement(name = "BacklightCompensation")
+    @XmlElement(name = "BacklightCompensation")
     protected BacklightCompensationOptions20 backlightCompensation;
 
 

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PaneConfiguration",
@@ -26,7 +27,7 @@ import java.util.Map;
 public class PaneConfiguration {
 
 
-    @Getter @XmlElement(name = "PaneName")
+    @XmlElement(name = "PaneName")
     protected String paneName;
 
 

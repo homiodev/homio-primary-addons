@@ -14,10 +14,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+@Getter
 @AllArgsConstructor
 public class MQTTFileSystem implements FileSystemProvider {
 
-    @Getter
     private MQTTBaseEntity entity;
 
     @Override

@@ -17,6 +17,7 @@ import org.onvif.ver10.schema.DynamicDNSType;
 import javax.xml.datatype.Duration;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -25,7 +26,7 @@ import javax.xml.datatype.Duration;
 public class SetDynamicDNS {
 
 
-    @Getter @XmlElement(name = "Type", required = true)
+    @XmlElement(name = "Type", required = true)
     protected DynamicDNSType type;
 
 

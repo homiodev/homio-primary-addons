@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -15,7 +16,7 @@ import lombok.Getter;
 public class RemoveConfiguration {
 
 
-    @Getter @XmlElement(name = "ProfileToken", required = true)
+    @XmlElement(name = "ProfileToken", required = true)
     protected String profileToken;
 
     @XmlElement(name = "Configuration", required = true)

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoSourceMode",
@@ -33,7 +34,7 @@ import java.util.Map;
 public class VideoSourceMode {
 
 
-    @Getter @XmlElement(name = "MaxFramerate")
+    @XmlElement(name = "MaxFramerate")
     protected float maxFramerate;
 
 

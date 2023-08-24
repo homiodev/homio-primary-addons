@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "SystemLogUri",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class SystemLogUri {
 
 
-    @Getter @XmlElement(name = "Type", required = true)
+    @XmlElement(name = "Type", required = true)
     protected SystemLogType type;
 
 

@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RecordingJobSource",
@@ -17,7 +18,7 @@ import lombok.Getter;
 public class RecordingJobSource {
 
 
-    @Getter @XmlElement(name = "SourceToken")
+    @XmlElement(name = "SourceToken")
     protected SourceReference sourceToken;
 
     @XmlElement(name = "AutoCreateReceiver")

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ConfigurationSet",
@@ -29,7 +30,7 @@ import java.util.Map;
 public class ConfigurationSet {
 
 
-    @Getter @XmlElement(name = "VideoSource")
+    @XmlElement(name = "VideoSource")
     protected VideoSourceConfiguration videoSource;
 
 

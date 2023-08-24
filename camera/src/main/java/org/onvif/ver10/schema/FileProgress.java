@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "FileProgress",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class FileProgress {
 
 
-    @Getter @XmlElement(name = "FileName", required = true)
+    @XmlElement(name = "FileName", required = true)
     protected String fileName;
 
 

@@ -11,10 +11,10 @@ import java.util.function.Supplier;
 
 import static org.ble.CharacteristicFlag.*;
 
+@Getter
 @Log4j2
 public class BluetoothApplication {
 
-    @Getter
     private final BleApplication bleApplication;
 
     public BluetoothApplication(String name, String serviceUUID, BleApplicationListener bleApplicationListener) {

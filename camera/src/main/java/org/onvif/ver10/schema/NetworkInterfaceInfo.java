@@ -9,6 +9,7 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NetworkInterfaceInfo",
@@ -16,7 +17,7 @@ import lombok.Getter;
 public class NetworkInterfaceInfo {
 
 
-    @Getter @XmlElement(name = "Name")
+    @XmlElement(name = "Name")
     protected String name;
 
 

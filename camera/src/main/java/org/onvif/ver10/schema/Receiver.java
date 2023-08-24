@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Receiver",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class Receiver {
 
 
-    @Getter @XmlElement(name = "Token", required = true)
+    @XmlElement(name = "Token", required = true)
     protected String token;
 
 

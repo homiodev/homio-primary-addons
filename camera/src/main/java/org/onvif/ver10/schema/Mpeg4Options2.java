@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Mpeg4Options2",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class Mpeg4Options2 extends Mpeg4Options {
 
 
-    @Getter @XmlElement(name = "BitrateRange", required = true)
+    @XmlElement(name = "BitrateRange", required = true)
     protected IntRange bitrateRange;
 
     @XmlAnyElement(lax = true)

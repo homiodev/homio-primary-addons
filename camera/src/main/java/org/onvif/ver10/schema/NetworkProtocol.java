@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NetworkProtocol",
@@ -17,7 +18,7 @@ import lombok.Getter;
 public class NetworkProtocol {
 
 
-    @Getter @XmlElement(name = "Name", required = true)
+    @XmlElement(name = "Name", required = true)
     protected NetworkProtocolType name;
 
 

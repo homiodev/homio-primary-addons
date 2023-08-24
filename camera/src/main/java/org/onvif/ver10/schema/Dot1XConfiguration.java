@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Dot1XConfiguration",
@@ -26,7 +27,7 @@ import lombok.Getter;
 public class Dot1XConfiguration {
 
 
-    @Getter @XmlElement(name = "Dot1XConfigurationToken", required = true)
+    @XmlElement(name = "Dot1XConfigurationToken", required = true)
     protected String dot1XConfigurationToken;
 
 

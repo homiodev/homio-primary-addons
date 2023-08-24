@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "TLSConfiguration",
@@ -20,7 +21,7 @@ import java.util.Map;
 public class TLSConfiguration {
 
 
-    @Getter @XmlElement(name = "CertificateID", required = true)
+    @XmlElement(name = "CertificateID", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String certificateID;

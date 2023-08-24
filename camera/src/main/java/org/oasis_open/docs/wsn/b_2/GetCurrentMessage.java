@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -24,7 +25,7 @@ import java.util.List;
 public class GetCurrentMessage {
 
 
-    @Getter @XmlElement(name = "Topic", required = true)
+    @XmlElement(name = "Topic", required = true)
     protected TopicExpressionType topic;
 
     @XmlAnyElement(lax = true)

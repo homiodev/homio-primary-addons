@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ReceiverConfiguration",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class ReceiverConfiguration {
 
 
-    @Getter @XmlElement(name = "Mode", required = true)
+    @XmlElement(name = "Mode", required = true)
     protected ReceiverMode mode;
 
 

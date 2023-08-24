@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RelayOutput",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class RelayOutput extends DeviceEntity {
 
 
-    @Getter @XmlElement(name = "Properties", required = true)
+    @XmlElement(name = "Properties", required = true)
     protected RelayOutputSettings properties;
 
     @XmlAnyElement(lax = true)

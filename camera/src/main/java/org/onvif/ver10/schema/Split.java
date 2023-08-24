@@ -10,6 +10,7 @@ import java.util.List;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Split",
@@ -17,7 +18,7 @@ import lombok.Getter;
 public class Split {
 
 
-    @Getter @XmlElement(required = true)
+    @XmlElement(required = true)
     protected ObjectId from;
 
     @XmlElement(required = true)

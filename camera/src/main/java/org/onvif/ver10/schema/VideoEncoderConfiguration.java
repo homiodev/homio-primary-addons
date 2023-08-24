@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoEncoderConfiguration",
@@ -29,7 +30,7 @@ import java.util.Map;
 public class VideoEncoderConfiguration extends ConfigurationEntity {
 
 
-    @Getter @XmlElement(name = "Encoding", required = true)
+    @XmlElement(name = "Encoding", required = true)
     protected VideoEncoding encoding;
 
 

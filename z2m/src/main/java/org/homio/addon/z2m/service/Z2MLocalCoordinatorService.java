@@ -70,11 +70,11 @@ import static org.homio.api.util.JsonUtils.*;
  * <p>
  * The interface coordinators are responsible for opening a ZigBeeTransport implementation and passing this to the {@link Z2MLocalCoordinatorService}.
  */
+@Getter
 @Log4j2
 public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordinatorEntity>
         implements HasEntityIdentifier {
 
-    @Getter
     public static final Map<String, Class<? extends Z2MDeviceEndpoint>> allEndpoints = new HashMap<>();
     private final Path zigbee2mqttConfigurationPath = zigbee2mqttGitHub
             .getLocalProjectPath().resolve("data/configuration.yaml");

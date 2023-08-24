@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "FocusConfiguration",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class FocusConfiguration {
 
 
-    @Getter @XmlElement(name = "AutoFocusMode", required = true)
+    @XmlElement(name = "AutoFocusMode", required = true)
     protected AutoFocusMode autoFocusMode;
 
 

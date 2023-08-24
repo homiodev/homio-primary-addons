@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "DateTimeRange",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class DateTimeRange {
 
 
-    @Getter @XmlElement(name = "From", required = true)
+    @XmlElement(name = "From", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar from;
 

@@ -8,6 +8,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MessageDescription",
@@ -16,7 +17,7 @@ import lombok.Getter;
 public class MessageDescription {
 
 
-    @Getter @XmlElement(name = "Source")
+    @XmlElement(name = "Source")
     protected ItemListDescription source;
 
 

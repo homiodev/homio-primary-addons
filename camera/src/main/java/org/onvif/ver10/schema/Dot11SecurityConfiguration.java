@@ -8,6 +8,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Dot11SecurityConfiguration",
@@ -15,7 +16,7 @@ import lombok.Getter;
 public class Dot11SecurityConfiguration {
 
 
-    @Getter @XmlElement(name = "Mode", required = true)
+    @XmlElement(name = "Mode", required = true)
     protected Dot11SecurityMode mode;
 
 

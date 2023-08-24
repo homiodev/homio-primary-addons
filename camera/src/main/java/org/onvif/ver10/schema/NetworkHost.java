@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NetworkHost",
@@ -17,7 +18,7 @@ import lombok.Getter;
 public class NetworkHost {
 
 
-    @Getter @XmlElement(name = "Type", required = true)
+    @XmlElement(name = "Type", required = true)
     protected NetworkHostType type;
 
     @XmlElement(name = "IPv4Address")

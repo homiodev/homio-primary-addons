@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZStatusFilterOptions",
@@ -25,7 +26,7 @@ import java.util.Map;
 public class PTZStatusFilterOptions {
 
 
-    @Getter @XmlElement(name = "PanTiltStatusSupported")
+    @XmlElement(name = "PanTiltStatusSupported")
     protected boolean panTiltStatusSupported;
 
 

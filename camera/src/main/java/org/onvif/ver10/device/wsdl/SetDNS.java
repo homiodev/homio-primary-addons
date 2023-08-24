@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -26,7 +27,7 @@ import java.util.List;
 public class SetDNS {
 
 
-    @Getter @XmlElement(name = "FromDHCP")
+    @XmlElement(name = "FromDHCP")
     protected boolean fromDHCP;
 
     @XmlElement(name = "SearchDomain")

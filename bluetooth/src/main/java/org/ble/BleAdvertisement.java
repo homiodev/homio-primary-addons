@@ -21,13 +21,13 @@ public class BleAdvertisement implements LEAdvertisement1, Properties {
     private static final String ADVERTISEMENT_MANUFACTURER_DATA_PROPERTY_KEY = "ManufacturerData";
     private static final String ADVERTISEMENT_SERVICE_DATA_PROPERTY_KEY = "ServiceData";
     private static final String ADVERTISEMENT_INCLUDE_TX_POWER_PROPERTY_KEY = "IncludeTxPower";
-    private AdvertisementType type;
-    private List<String> servicesUUIDs;
+    private final AdvertisementType type;
+    private final List<String> servicesUUIDs;
     private Map<Integer, Integer> manufacturerData;
-    private List<String> solicitUUIDs;
+    private final List<String> solicitUUIDs;
     private Map<String, Integer> serviceData;
     private boolean includeTxPower = true;
-    private String path;
+    private final String path;
 
     public BleAdvertisement(AdvertisementType type, String path) {
         this.type = type;

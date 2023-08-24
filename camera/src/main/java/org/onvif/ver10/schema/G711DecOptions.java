@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "G711DecOptions",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class G711DecOptions {
 
 
-    @Getter @XmlElement(name = "Bitrate", required = true)
+    @XmlElement(name = "Bitrate", required = true)
     protected IntList bitrate;
 
 

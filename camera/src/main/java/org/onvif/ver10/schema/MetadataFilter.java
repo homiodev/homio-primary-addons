@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MetadataFilter",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class MetadataFilter {
 
 
-    @Getter @XmlElement(name = "MetadataStreamFilter", required = true)
+    @XmlElement(name = "MetadataStreamFilter", required = true)
     protected String metadataStreamFilter;
 
     @XmlAnyElement(lax = true)

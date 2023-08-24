@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PolygonConfiguration",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class PolygonConfiguration {
 
 
-    @Getter @XmlElement(name = "Polygon", required = true)
+    @XmlElement(name = "Polygon", required = true)
     protected Polygon polygon;
 
     @XmlAnyElement(lax = true)

@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ShapeDescriptor",
@@ -17,7 +18,7 @@ import lombok.Getter;
 public class ShapeDescriptor {
 
 
-    @Getter @XmlElement(name = "BoundingBox", required = true)
+    @XmlElement(name = "BoundingBox", required = true)
     protected Rectangle boundingBox;
 
 

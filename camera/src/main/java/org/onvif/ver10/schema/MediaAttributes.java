@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MediaAttributes",
@@ -19,7 +20,7 @@ import java.util.Map;
 public class MediaAttributes {
 
 
-    @Getter @XmlElement(name = "RecordingToken", required = true)
+    @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
     @XmlElement(name = "TrackAttributes")

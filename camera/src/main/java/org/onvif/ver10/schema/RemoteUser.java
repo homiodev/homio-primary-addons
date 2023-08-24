@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RemoteUser",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class RemoteUser {
 
 
-    @Getter @XmlElement(name = "Username", required = true)
+    @XmlElement(name = "Username", required = true)
     protected String username;
 
 

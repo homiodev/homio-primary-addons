@@ -4,6 +4,7 @@ import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -12,7 +13,7 @@ import lombok.Getter;
 public class Stop {
 
 
-    @Getter @XmlElement(name = "ProfileToken", required = true)
+    @XmlElement(name = "ProfileToken", required = true)
     protected String profileToken;
 
     @XmlElement(name = "PanTilt")

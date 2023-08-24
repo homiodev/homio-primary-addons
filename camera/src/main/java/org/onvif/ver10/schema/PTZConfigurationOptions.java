@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZConfigurationOptions",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class PTZConfigurationOptions {
 
 
-    @Getter @XmlElement(name = "Spaces", required = true)
+    @XmlElement(name = "Spaces", required = true)
     protected PTZSpaces spaces;
 
     @XmlElement(name = "PTZTimeout", required = true)

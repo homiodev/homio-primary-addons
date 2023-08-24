@@ -8,6 +8,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "SystemDateTime",
@@ -22,7 +23,7 @@ import lombok.Getter;
 public class SystemDateTime {
 
 
-    @Getter @XmlElement(name = "DateTimeType", required = true)
+    @XmlElement(name = "DateTimeType", required = true)
     protected SetDateTimeType dateTimeType;
 
 

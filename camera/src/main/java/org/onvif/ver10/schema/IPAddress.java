@@ -9,6 +9,7 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IPAddress",
@@ -16,7 +17,7 @@ import lombok.Getter;
 public class IPAddress {
 
 
-    @Getter @XmlElement(name = "Type", required = true)
+    @XmlElement(name = "Type", required = true)
     protected IPType type;
 
     @XmlElement(name = "IPv4Address")

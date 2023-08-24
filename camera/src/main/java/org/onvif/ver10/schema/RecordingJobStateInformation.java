@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RecordingJobStateInformation",
@@ -17,7 +18,7 @@ import lombok.Getter;
 public class RecordingJobStateInformation {
 
 
-    @Getter @XmlElement(name = "RecordingToken", required = true)
+    @XmlElement(name = "RecordingToken", required = true)
     protected String recordingToken;
 
 

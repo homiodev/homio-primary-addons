@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "CodingCapabilities",
@@ -21,41 +22,41 @@ import java.util.Map;
         })
 public class CodingCapabilities {
 
-    
-    @Getter @XmlElement(name = "AudioEncodingCapabilities")
+
+    @XmlElement(name = "AudioEncodingCapabilities")
     protected AudioEncoderConfigurationOptions audioEncodingCapabilities;
 
-    
+
     @Getter @XmlElement(name = "AudioDecodingCapabilities")
     protected AudioDecoderConfigurationOptions audioDecodingCapabilities;
 
-    
+
     @Getter @XmlElement(name = "VideoDecodingCapabilities", required = true)
     protected VideoDecoderConfigurationOptions videoDecodingCapabilities;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    
+
     public void setAudioEncodingCapabilities(AudioEncoderConfigurationOptions value) {
         this.audioEncodingCapabilities = value;
     }
 
-    
+
     public void setAudioDecodingCapabilities(AudioDecoderConfigurationOptions value) {
         this.audioDecodingCapabilities = value;
     }
 
-    
+
     public void setVideoDecodingCapabilities(VideoDecoderConfigurationOptions value) {
         this.videoDecodingCapabilities = value;
     }
 
-    
+
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

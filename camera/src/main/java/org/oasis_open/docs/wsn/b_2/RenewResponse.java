@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -25,7 +26,7 @@ import java.util.List;
 public class RenewResponse {
 
 
-    @Getter @XmlElement(name = "TerminationTime", required = true, nillable = true)
+    @XmlElement(name = "TerminationTime", required = true, nillable = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar terminationTime;
 

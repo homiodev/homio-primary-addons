@@ -12,49 +12,50 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "CertificateWithPrivateKey",
         propOrder = {"certificateID", "certificate", "privateKey", "any"})
 public class CertificateWithPrivateKey {
 
-    
-    @Getter @XmlElement(name = "CertificateID")
+
+    @XmlElement(name = "CertificateID")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String certificateID;
 
-    
+
     @Getter @XmlElement(name = "Certificate", required = true)
     protected BinaryData certificate;
 
-    
+
     @Getter @XmlElement(name = "PrivateKey", required = true)
     protected BinaryData privateKey;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    
+
     public void setCertificateID(String value) {
         this.certificateID = value;
     }
 
-    
+
     public void setCertificate(BinaryData value) {
         this.certificate = value;
     }
 
-    
+
     public void setPrivateKey(BinaryData value) {
         this.privateKey = value;
     }
 
-    
+
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

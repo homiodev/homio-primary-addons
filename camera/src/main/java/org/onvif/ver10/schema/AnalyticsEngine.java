@@ -10,34 +10,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "AnalyticsEngine",
         propOrder = {"analyticsEngineConfiguration", "any"})
 public class AnalyticsEngine extends ConfigurationEntity {
 
-    
-    @Getter @XmlElement(name = "AnalyticsEngineConfiguration", required = true)
+    @XmlElement(name = "AnalyticsEngineConfiguration", required = true)
     protected AnalyticsDeviceEngineConfiguration analyticsEngineConfiguration;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    
-    @Getter @XmlAnyAttribute
+     @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    
+
     public void setAnalyticsEngineConfiguration(AnalyticsDeviceEngineConfiguration value) {
         this.analyticsEngineConfiguration = value;
     }
 
-    
     public List<java.lang.Object> getAny() {
         if (any == null) {
-            any = new ArrayList<java.lang.Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
-
 }

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "FocusStatus",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class FocusStatus {
 
 
-    @Getter @XmlElement(name = "Position")
+    @XmlElement(name = "Position")
     protected float position;
 
 

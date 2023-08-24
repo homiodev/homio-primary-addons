@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MotionExpression",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class MotionExpression {
 
 
-    @Getter @XmlElement(name = "Expression", required = true)
+    @XmlElement(name = "Expression", required = true)
     protected String expression;
 
     @XmlAnyElement(lax = true)

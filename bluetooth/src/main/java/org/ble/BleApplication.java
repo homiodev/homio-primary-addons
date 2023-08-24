@@ -34,14 +34,14 @@ public class BleApplication implements GattApplication1 {
     BleService bleService;
     String path;
     private String adapterPath;
-    private BleAdvertisement adv;
+    private final BleAdvertisement adv;
     private String adapterAlias;
 
     private boolean hasDeviceConnected = false;
 
     private DBusSigHandler<InterfacesAdded> interfacesAddedSignalHandler;
     private DBusSigHandler<InterfacesRemoved> interfacesRemovedSignalHandler;
-    private BleApplicationListener listener;
+    private final BleApplicationListener listener;
     private DBusConnection dbusConnection;
 
     public BleApplication(String path, String serviceUUID, BleApplicationListener listener) {

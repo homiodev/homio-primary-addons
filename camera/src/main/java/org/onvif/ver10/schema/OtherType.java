@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "OtherType",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class OtherType {
 
 
-    @Getter @XmlElement(name = "Type", required = true)
+    @XmlElement(name = "Type", required = true)
     protected String type;
 
 

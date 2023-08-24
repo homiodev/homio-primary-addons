@@ -8,6 +8,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoEncoderConfigurationOptions",
@@ -15,7 +16,7 @@ import lombok.Getter;
 public class VideoEncoderConfigurationOptions {
 
 
-    @Getter @XmlElement(name = "QualityRange", required = true)
+    @XmlElement(name = "QualityRange", required = true)
     protected IntRange qualityRange;
 
     @XmlElement(name = "JPEG")

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ImagingStatus",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class ImagingStatus {
 
 
-    @Getter @XmlElement(name = "FocusStatus", required = true)
+    @XmlElement(name = "FocusStatus", required = true)
     protected FocusStatus focusStatus;
 
     @XmlAnyElement(lax = true)

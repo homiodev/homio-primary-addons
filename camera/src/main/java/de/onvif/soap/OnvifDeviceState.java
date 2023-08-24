@@ -35,7 +35,7 @@ public class OnvifDeviceState {
     private String HOST_IP;
     private String originalIp;
     private boolean isProxy;
-    private String username, password, nonce, utcTime;
+    @Getter private String username, password, nonce, utcTime;
     private String serverDeviceUri;
     private String serverPtzUri;
     private String serverMediaUri;
@@ -150,10 +150,6 @@ public class OnvifDeviceState {
             return original.replace(originalIp, HOST_IP);
         }
         return original;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     public String getEncryptedPassword() {

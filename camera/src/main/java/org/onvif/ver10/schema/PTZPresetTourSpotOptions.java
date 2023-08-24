@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZPresetTourSpotOptions",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class PTZPresetTourSpotOptions {
 
 
-    @Getter @XmlElement(name = "PresetDetail", required = true)
+    @XmlElement(name = "PresetDetail", required = true)
     protected PTZPresetTourPresetDetailOptions presetDetail;
 
 

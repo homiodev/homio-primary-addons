@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -28,7 +29,7 @@ import java.util.Map;
 public class GetMessages {
 
 
-    @Getter @XmlElement(name = "MaximumNumber")
+    @XmlElement(name = "MaximumNumber")
     @XmlSchemaType(name = "nonNegativeInteger")
     protected BigInteger maximumNumber;
 

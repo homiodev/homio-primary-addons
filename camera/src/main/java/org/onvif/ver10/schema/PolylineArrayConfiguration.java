@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PolylineArrayConfiguration",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class PolylineArrayConfiguration {
 
 
-    @Getter @XmlElement(name = "PolylineArray", required = true)
+    @XmlElement(name = "PolylineArray", required = true)
     protected PolylineArray polylineArray;
 
     @XmlAnyElement(lax = true)

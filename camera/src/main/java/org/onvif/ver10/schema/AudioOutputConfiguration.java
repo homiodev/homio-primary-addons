@@ -1,62 +1,48 @@
 package org.onvif.ver10.schema;
 
-import jakarta.xml.bind.annotation.*;
-import lombok.Getter;
-import org.w3c.dom.Element;
-
-import javax.xml.namespace.QName;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAnyAttribute;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.namespace.QName;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "AudioOutputConfiguration",
         propOrder = {"outputToken", "sendPrimacy", "outputLevel", "any"})
 public class AudioOutputConfiguration extends ConfigurationEntity {
 
-    
-    @Getter @XmlElement(name = "OutputToken", required = true)
+    @XmlElement(name = "OutputToken", required = true)
     protected String outputToken;
 
-    
-    @Getter @XmlElement(name = "SendPrimacy")
+    @XmlElement(name = "SendPrimacy")
     @XmlSchemaType(name = "anyURI")
     protected String sendPrimacy;
 
-    
-    @Getter @XmlElement(name = "OutputLevel")
+    @XmlElement(name = "OutputLevel")
     protected int outputLevel;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    
-    @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
-    
-    public void setOutputToken(String value) {
-        this.outputToken = value;
-    }
-
-    
-    public void setSendPrimacy(String value) {
-        this.sendPrimacy = value;
-    }
-
-    
-    public void setOutputLevel(int value) {
-        this.outputLevel = value;
-    }
-
-    
     public List<java.lang.Object> getAny() {
         if (any == null) {
-            any = new ArrayList<java.lang.Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
-
 }

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MediaCapabilitiesExtension",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class MediaCapabilitiesExtension {
 
 
-    @Getter @XmlElement(name = "ProfileCapabilities", required = true)
+    @XmlElement(name = "ProfileCapabilities", required = true)
     protected ProfileCapabilities profileCapabilities;
 
     @XmlAnyElement(lax = true)

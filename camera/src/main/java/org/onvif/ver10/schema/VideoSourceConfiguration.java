@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoSourceConfiguration",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class VideoSourceConfiguration extends ConfigurationEntity {
 
 
-    @Getter @XmlElement(name = "SourceToken", required = true)
+    @XmlElement(name = "SourceToken", required = true)
     protected String sourceToken;
 
 

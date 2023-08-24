@@ -16,6 +16,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RelatesToType",
@@ -23,7 +24,7 @@ import lombok.Getter;
 public class RelatesToType {
 
 
-    @Getter @XmlValue
+    @XmlValue
     @XmlSchemaType(name = "anyURI")
     protected String value;
 

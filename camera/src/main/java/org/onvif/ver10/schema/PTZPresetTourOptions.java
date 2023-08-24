@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZPresetTourOptions",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class PTZPresetTourOptions {
 
 
-    @Getter @XmlElement(name = "AutoStart")
+    @XmlElement(name = "AutoStart")
     protected boolean autoStart;
 
 

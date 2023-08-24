@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZStatus",
@@ -19,7 +20,7 @@ import java.util.Map;
 public class PTZStatus {
 
 
-    @Getter @XmlElement(name = "Position")
+    @XmlElement(name = "Position")
     protected PTZVector position;
 
 

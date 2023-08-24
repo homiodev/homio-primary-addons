@@ -1,15 +1,21 @@
 package org.onvif.ver10.schema;
 
-import jakarta.xml.bind.annotation.*;
-import lombok.Getter;
-import org.w3c.dom.Element;
-
-import javax.xml.namespace.QName;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAnyAttribute;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.namespace.QName;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "AnalyticsEngineControl",
@@ -25,12 +31,10 @@ import java.util.Map;
         })
 public class AnalyticsEngineControl extends ConfigurationEntity {
 
-    
-    @Getter @XmlElement(name = "EngineToken", required = true)
+    @XmlElement(name = "EngineToken", required = true)
     protected String engineToken;
 
-    
-    @Getter @XmlElement(name = "EngineConfigToken", required = true)
+     @XmlElement(name = "EngineConfigToken", required = true)
     protected String engineConfigToken;
 
     @XmlElement(name = "InputToken", required = true)
@@ -39,72 +43,39 @@ public class AnalyticsEngineControl extends ConfigurationEntity {
     @XmlElement(name = "ReceiverToken", required = true)
     protected List<String> receiverToken;
 
-    
-    @Getter @XmlElement(name = "Multicast")
+     @XmlElement(name = "Multicast")
     protected MulticastConfiguration multicast;
 
-    
-    @Getter @XmlElement(name = "Subscription", required = true)
+     @XmlElement(name = "Subscription", required = true)
     protected Config subscription;
 
-    
-    @Getter @XmlElement(name = "Mode", required = true)
+     @XmlElement(name = "Mode", required = true)
     protected ModeOfOperation mode;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    
-    @Getter @XmlAnyAttribute
-    private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
+     @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
-    
-    public void setEngineToken(String value) {
-        this.engineToken = value;
-    }
-
-    
-    public void setEngineConfigToken(String value) {
-        this.engineConfigToken = value;
-    }
-
-    
     public List<String> getInputToken() {
         if (inputToken == null) {
-            inputToken = new ArrayList<String>();
+            inputToken = new ArrayList<>();
         }
         return this.inputToken;
     }
 
-    
     public List<String> getReceiverToken() {
         if (receiverToken == null) {
-            receiverToken = new ArrayList<String>();
+            receiverToken = new ArrayList<>();
         }
         return this.receiverToken;
     }
 
-    
-    public void setMulticast(MulticastConfiguration value) {
-        this.multicast = value;
-    }
-
-    
-    public void setSubscription(Config value) {
-        this.subscription = value;
-    }
-
-    
-    public void setMode(ModeOfOperation value) {
-        this.mode = value;
-    }
-
-    
     public List<java.lang.Object> getAny() {
         if (any == null) {
-            any = new ArrayList<java.lang.Object>();
+            any = new ArrayList<>();
         }
         return this.any;
     }
-
 }

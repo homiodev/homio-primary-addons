@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RecordingConfiguration",
@@ -19,7 +20,7 @@ import java.util.Map;
 public class RecordingConfiguration {
 
 
-    @Getter @XmlElement(name = "Source", required = true)
+    @XmlElement(name = "Source", required = true)
     protected RecordingSourceInformation source;
 
 

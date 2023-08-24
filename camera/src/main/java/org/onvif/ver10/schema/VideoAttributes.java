@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoAttributes",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class VideoAttributes {
 
 
-    @Getter @XmlElement(name = "Bitrate")
+    @XmlElement(name = "Bitrate")
     protected Integer bitrate;
 
 

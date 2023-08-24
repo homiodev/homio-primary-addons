@@ -10,6 +10,7 @@ import java.util.List;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "FindPTZPositionResultList",
@@ -17,7 +18,7 @@ import lombok.Getter;
 public class FindPTZPositionResultList {
 
 
-    @Getter @XmlElement(name = "SearchState", required = true)
+    @XmlElement(name = "SearchState", required = true)
     protected SearchState searchState;
 
     @XmlElement(name = "Result")

@@ -15,6 +15,7 @@ import javax.xml.namespace.QName;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
@@ -22,7 +23,7 @@ import lombok.Setter;
         propOrder = {"encoding", "resolution", "rateControl", "multicast", "quality", "any"})
 public class VideoEncoder2Configuration extends ConfigurationEntity {
 
-    @Getter @XmlElement(name = "Encoding", required = true)
+    @XmlElement(name = "Encoding", required = true)
     protected String encoding;
 
     @Getter @XmlElement(name = "Resolution", required = true)

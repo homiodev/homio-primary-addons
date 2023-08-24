@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZPositionFilter",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class PTZPositionFilter {
 
 
-    @Getter @XmlElement(name = "MinPosition", required = true)
+    @XmlElement(name = "MinPosition", required = true)
     protected PTZVector minPosition;
 
 

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RecordingSummary",
@@ -19,7 +20,7 @@ import java.util.Map;
 public class RecordingSummary {
 
 
-    @Getter @XmlElement(name = "DataFrom", required = true)
+    @XmlElement(name = "DataFrom", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar dataFrom;
 

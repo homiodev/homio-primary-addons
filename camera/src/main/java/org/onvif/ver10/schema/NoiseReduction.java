@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NoiseReduction",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class NoiseReduction {
 
 
-    @Getter @XmlElement(name = "Level")
+    @XmlElement(name = "Level")
     protected float level;
 
     @XmlAnyElement(lax = true)

@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "OSDConfigurationOptions",
@@ -24,7 +25,7 @@ import lombok.Getter;
 public class OSDConfigurationOptions {
 
 
-    @Getter @XmlElement(name = "MaximumNumberOfOSDs", required = true)
+    @XmlElement(name = "MaximumNumberOfOSDs", required = true)
     protected MaximumNumberOfOSDs maximumNumberOfOSDs;
 
     @XmlElement(name = "Type", required = true)

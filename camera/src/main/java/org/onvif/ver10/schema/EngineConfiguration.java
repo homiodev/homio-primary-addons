@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "EngineConfiguration",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class EngineConfiguration {
 
 
-    @Getter @XmlElement(name = "VideoAnalyticsConfiguration", required = true)
+    @XmlElement(name = "VideoAnalyticsConfiguration", required = true)
     protected VideoAnalyticsConfiguration videoAnalyticsConfiguration;
 
 

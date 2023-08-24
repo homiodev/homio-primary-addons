@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "LensDescription",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class LensDescription {
 
 
-    @Getter @XmlElement(name = "Offset", required = true)
+    @XmlElement(name = "Offset", required = true)
     protected LensOffset offset;
 
     @XmlElement(name = "Projection", required = true)

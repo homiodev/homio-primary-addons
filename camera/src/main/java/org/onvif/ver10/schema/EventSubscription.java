@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "EventSubscription",
@@ -19,7 +20,7 @@ import java.util.Map;
 public class EventSubscription {
 
 
-    @Getter @XmlElement(name = "Filter")
+    @XmlElement(name = "Filter")
     protected FilterType filter;
 
 

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ReceiverStateInformation",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class ReceiverStateInformation {
 
 
-    @Getter @XmlElement(name = "State", required = true)
+    @XmlElement(name = "State", required = true)
     protected ReceiverState state;
 
 

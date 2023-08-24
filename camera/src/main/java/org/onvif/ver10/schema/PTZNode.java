@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZNode",
@@ -24,7 +25,7 @@ import lombok.Getter;
 public class PTZNode extends DeviceEntity {
 
 
-    @Getter @XmlElement(name = "Name")
+    @XmlElement(name = "Name")
     protected String name;
 
 

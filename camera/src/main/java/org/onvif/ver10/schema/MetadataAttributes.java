@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MetadataAttributes",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class MetadataAttributes {
 
 
-    @Getter @XmlElement(name = "CanContainPTZ")
+    @XmlElement(name = "CanContainPTZ")
     protected boolean canContainPTZ;
 
 

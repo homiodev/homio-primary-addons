@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ImagingOptions",
@@ -30,7 +31,7 @@ import java.util.Map;
 public class ImagingOptions {
 
 
-    @Getter @XmlElement(name = "BacklightCompensation", required = true)
+    @XmlElement(name = "BacklightCompensation", required = true)
     protected BacklightCompensationOptions backlightCompensation;
 
 

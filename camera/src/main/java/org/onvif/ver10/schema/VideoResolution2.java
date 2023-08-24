@@ -11,38 +11,39 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoResolution2",
         propOrder = {"width", "height", "any"})
 public class VideoResolution2 {
 
-    
-    @Getter @XmlElement(name = "Width")
+
+    @XmlElement(name = "Width")
     protected int width;
 
-    
+
     @Getter @XmlElement(name = "Height")
     protected int height;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    
+
     public void setWidth(int value) {
         this.width = value;
     }
 
-    
+
     public void setHeight(int value) {
         this.height = value;
     }
 
-    
+
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

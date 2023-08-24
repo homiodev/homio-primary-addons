@@ -18,7 +18,7 @@ public class MediaDevices {
     private final OnvifDeviceState onvifDeviceState;
     private final SOAP soap;
 
-    private Map<String, ProfileMediaDeviceCache> profileCache = new HashMap<>();
+    private final Map<String, ProfileMediaDeviceCache> profileCache = new HashMap<>();
 
     public static VideoEncoderConfiguration getVideoEncoderConfiguration(Profile profile) {
         return profile.getVideoEncoderConfiguration();
@@ -147,7 +147,7 @@ public class MediaDevices {
 
     private static class ProfileMediaDeviceCache {
 
-        private Map<TransportProtocol, String> protocolURI = new HashMap<>();
+        private final Map<TransportProtocol, String> protocolURI = new HashMap<>();
         private String snapshotUri;
     }
 }

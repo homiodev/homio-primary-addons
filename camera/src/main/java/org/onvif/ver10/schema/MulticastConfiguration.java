@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MulticastConfiguration",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class MulticastConfiguration {
 
 
-    @Getter @XmlElement(name = "Address", required = true)
+    @XmlElement(name = "Address", required = true)
     protected IPAddress address;
 
 

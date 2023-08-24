@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "ReplayConfiguration",
@@ -19,7 +20,7 @@ import java.util.Map;
 public class ReplayConfiguration {
 
 
-    @Getter @XmlElement(name = "SessionTimeout", required = true)
+    @XmlElement(name = "SessionTimeout", required = true)
     protected Duration sessionTimeout;
 
     @XmlAnyElement(lax = true)

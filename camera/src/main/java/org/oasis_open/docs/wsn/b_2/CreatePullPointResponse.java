@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -28,7 +29,7 @@ import java.util.Map;
 public class CreatePullPointResponse {
 
 
-    @Getter @XmlElement(name = "PullPoint", required = true)
+    @XmlElement(name = "PullPoint", required = true)
     protected EndpointReferenceType pullPoint;
 
     @XmlAnyElement(lax = true)

@@ -12,6 +12,7 @@ import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -20,7 +21,7 @@ import lombok.Getter;
 public class GetGuaranteedNumberOfVideoEncoderInstancesResponse {
 
 
-    @Getter @XmlElement(name = "TotalNumber")
+    @XmlElement(name = "TotalNumber")
     protected int totalNumber;
 
     @XmlElement(name = "JPEG")

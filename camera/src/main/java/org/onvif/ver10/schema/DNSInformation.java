@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "DNSInformation",
@@ -18,7 +19,7 @@ import lombok.Getter;
 public class DNSInformation {
 
 
-    @Getter @XmlElement(name = "FromDHCP")
+    @XmlElement(name = "FromDHCP")
     protected boolean fromDHCP;
 
     @XmlElement(name = "SearchDomain")

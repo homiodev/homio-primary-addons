@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "SystemCapabilities",
@@ -26,7 +27,7 @@ import lombok.Getter;
 public class SystemCapabilities {
 
 
-    @Getter @XmlElement(name = "DiscoveryResolve")
+    @XmlElement(name = "DiscoveryResolve")
     protected boolean discoveryResolve;
 
 

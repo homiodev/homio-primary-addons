@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "VideoRateControl2",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class VideoRateControl2 {
 
 
-    @Getter @XmlElement(name = "FrameRateLimit")
+    @XmlElement(name = "FrameRateLimit")
     protected float frameRateLimit;
 
 

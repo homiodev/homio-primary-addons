@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "IPAddressFilter",
@@ -17,7 +18,7 @@ import lombok.Getter;
 public class IPAddressFilter {
 
 
-    @Getter @XmlElement(name = "Type", required = true)
+    @XmlElement(name = "Type", required = true)
     protected IPAddressFilterType type;
 
     @XmlElement(name = "IPv4Address")

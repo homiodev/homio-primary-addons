@@ -8,6 +8,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZPreset",
@@ -15,7 +16,7 @@ import lombok.Getter;
 public class PTZPreset {
 
 
-    @Getter @XmlElement(name = "Name")
+    @XmlElement(name = "Name")
     protected String name;
 
     @XmlElement(name = "PTZPosition")

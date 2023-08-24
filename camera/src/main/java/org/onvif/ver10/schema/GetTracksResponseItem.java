@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "GetTracksResponseItem",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class GetTracksResponseItem {
 
 
-    @Getter @XmlElement(name = "TrackToken", required = true)
+    @XmlElement(name = "TrackToken", required = true)
     protected String trackToken;
 
 

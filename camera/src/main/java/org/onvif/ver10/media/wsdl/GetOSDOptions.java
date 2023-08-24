@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -24,7 +25,7 @@ import java.util.List;
 public class GetOSDOptions {
 
 
-    @Getter @XmlElement(name = "ConfigurationToken", required = true)
+    @XmlElement(name = "ConfigurationToken", required = true)
     protected String configurationToken;
 
     @XmlAnyElement(lax = true)

@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "PTZPresetTourStartingConditionOptions",
@@ -17,7 +18,7 @@ import lombok.Getter;
 public class PTZPresetTourStartingConditionOptions {
 
 
-    @Getter @XmlElement(name = "RecurringTime")
+    @XmlElement(name = "RecurringTime")
     protected IntRange recurringTime;
 
 

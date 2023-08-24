@@ -15,6 +15,7 @@ import org.onvif.ver10.schema.SetDateTimeType;
 import org.onvif.ver10.schema.TimeZone;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "",
@@ -23,7 +24,7 @@ import org.onvif.ver10.schema.TimeZone;
 public class SetSystemDateAndTime {
 
 
-    @Getter @XmlElement(name = "DateTimeType", required = true)
+    @XmlElement(name = "DateTimeType", required = true)
     protected SetDateTimeType dateTimeType;
 
 

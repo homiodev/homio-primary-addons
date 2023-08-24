@@ -8,6 +8,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "MediaProfile",
@@ -15,7 +16,7 @@ import lombok.Getter;
 public class MediaProfile {
 
 
-    @Getter @XmlElement(name = "Name", required = true)
+    @XmlElement(name = "Name", required = true)
     protected String name;
 
 

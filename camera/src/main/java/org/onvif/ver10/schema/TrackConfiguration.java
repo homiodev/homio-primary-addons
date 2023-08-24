@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "TrackConfiguration",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class TrackConfiguration {
 
 
-    @Getter @XmlElement(name = "TrackType", required = true)
+    @XmlElement(name = "TrackType", required = true)
     protected TrackType trackType;
 
 

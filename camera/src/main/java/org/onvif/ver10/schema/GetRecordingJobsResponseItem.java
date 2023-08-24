@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "GetRecordingJobsResponseItem",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class GetRecordingJobsResponseItem {
 
 
-    @Getter @XmlElement(name = "JobToken", required = true)
+    @XmlElement(name = "JobToken", required = true)
     protected String jobToken;
 
 

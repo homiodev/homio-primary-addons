@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "StreamSetup",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class StreamSetup {
 
 
-    @Getter @XmlElement(name = "Stream", required = true)
+    @XmlElement(name = "Stream", required = true)
     protected StreamType stream;
 
 

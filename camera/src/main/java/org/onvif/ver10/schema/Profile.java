@@ -53,6 +53,7 @@ import lombok.Getter;
  * </complexType>
  * </pre>
  */
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Profile",
@@ -75,7 +76,7 @@ public class Profile {
      *
      * @return possible object is {@link String }
      */
-    @Getter @XmlElement(name = "Name", required = true)
+    @XmlElement(name = "Name", required = true)
     protected String name;
 
     /**

@@ -12,40 +12,41 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "CertificateStatus",
         propOrder = {"certificateID", "status", "any"})
 public class CertificateStatus {
 
-    
-    @Getter @XmlElement(name = "CertificateID", required = true)
+
+    @XmlElement(name = "CertificateID", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "token")
     protected String certificateID;
 
-    
+
     @Getter @XmlElement(name = "Status")
     protected boolean status;
 
     @XmlAnyElement(lax = true)
     protected List<java.lang.Object> any;
 
-    
+
     @Getter @XmlAnyAttribute
     private final Map<QName, String> otherAttributes = new HashMap<QName, String>();
 
-    
+
     public void setCertificateID(String value) {
         this.certificateID = value;
     }
 
-    
+
     public void setStatus(boolean value) {
         this.status = value;
     }
 
-    
+
     public List<java.lang.Object> getAny() {
         if (any == null) {
             any = new ArrayList<java.lang.Object>();

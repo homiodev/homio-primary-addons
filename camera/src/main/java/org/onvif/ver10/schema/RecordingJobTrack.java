@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "RecordingJobTrack",
@@ -18,7 +19,7 @@ import java.util.Map;
 public class RecordingJobTrack {
 
 
-    @Getter @XmlElement(name = "SourceTag", required = true)
+    @XmlElement(name = "SourceTag", required = true)
     protected String sourceTag;
 
 

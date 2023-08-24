@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "Service",
@@ -27,7 +28,7 @@ import java.util.Map;
 public class Service {
 
 
-    @Getter @XmlElement(name = "Namespace", required = true)
+    @XmlElement(name = "Namespace", required = true)
     @XmlSchemaType(name = "anyURI")
     protected String namespace;
 

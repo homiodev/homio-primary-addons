@@ -19,10 +19,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 @Log4j2
 public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
 
-    @Getter
     private final EntityContext entityContext;
     private final MQTTService mqttService;
 

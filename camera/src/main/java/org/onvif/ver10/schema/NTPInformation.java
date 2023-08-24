@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.Getter;
 
 
+@Getter
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
         name = "NTPInformation",
@@ -17,7 +18,7 @@ import lombok.Getter;
 public class NTPInformation {
 
 
-    @Getter @XmlElement(name = "FromDHCP")
+    @XmlElement(name = "FromDHCP")
     protected boolean fromDHCP;
 
     @XmlElement(name = "NTPFromDHCP")
