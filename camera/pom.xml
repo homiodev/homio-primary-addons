@@ -4,6 +4,11 @@
     <artifactId>addon-camera</artifactId>
     <dependencies>
         <dependency>
+            <groupId>org.homio</groupId>
+            <artifactId>onvif</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
             <artifactId>netty-all</artifactId>
             <groupId>io.netty</groupId>
         </dependency>

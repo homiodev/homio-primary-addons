@@ -165,13 +165,18 @@ public final class TelegramEntity extends CommunicationEntity implements HasStat
     }
 
     @Override
-    public void afterDelete(EntityContext entityContext) {
-        entityContext.getBean(TelegramService.class).dispose(this);
+    public void afterDelete() {
+        getEntityContext().getBean(TelegramService.class).dispose(this);
     }
 
     @Override
-    public void afterUpdate(EntityContext entityContext, boolean persist) {
-        entityContext.getBean(TelegramService.class).entityUpdated(this);
+    public void afterUpdate() {
+        getEntityContext().getBean(TelegramService.class).entityUpdated(this);
+    }
+
+    @Override
+    public void afterPersist() {
+        getEntityContext().getBean(TelegramService.class).entityUpdated(this);
     }
 
     public TelegramUser getUser(long id) {

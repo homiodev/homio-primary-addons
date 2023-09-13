@@ -41,7 +41,7 @@ public class Z2MEntrypoint implements AddonEntrypoint {
 
     @Override
     public void init() {
-        entityContext.registerResource(Z2M_RESOURCE);
+        entityContext.service().registerUserRoleResource(Z2M_RESOURCE);
         entityContext.ui().registerConsolePluginName("zigbee", Z2M_RESOURCE);
         entityContext.setting().listenValue(ZigBeeEntityCompactModeSetting.class, "zigbee-compact-mode",
                 (value) -> entityContext.ui().updateItems(Z2MDeviceEntity.class));

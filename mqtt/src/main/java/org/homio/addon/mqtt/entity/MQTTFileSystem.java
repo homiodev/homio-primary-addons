@@ -7,7 +7,7 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.homio.api.exception.ProhibitedExecution;
+import org.apache.commons.lang3.NotImplementedException;
 import org.homio.api.fs.FileSystemProvider;
 import org.homio.api.fs.TreeNode;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 @AllArgsConstructor
 public class MQTTFileSystem implements FileSystemProvider {
 
-    private MQTTBaseEntity entity;
+    private MQTTClientEntity entity;
 
     @Override
     @SneakyThrows
@@ -40,7 +40,7 @@ public class MQTTFileSystem implements FileSystemProvider {
     @Override
     @SneakyThrows
     public InputStream getEntryInputStream(@NotNull String id) {
-        throw new ProhibitedExecution();
+        throw new NotImplementedException();
     }
 
     @Override
@@ -60,31 +60,36 @@ public class MQTTFileSystem implements FileSystemProvider {
 
     @Override
     public void setEntity(Object entity) {
-        this.entity = (MQTTBaseEntity) entity;
+        this.entity = (MQTTClientEntity) entity;
+    }
+
+    @Override
+    public boolean exists(@NotNull String id) {
+        return true;
     }
 
     @Override
     @SneakyThrows
     public TreeNode delete(@NotNull Set<String> ids) {
-        throw new ProhibitedExecution();
+        throw new NotImplementedException();
     }
 
     @Override
     @SneakyThrows
     public TreeNode create(@NotNull String parentId, @NotNull String name, boolean isDir, UploadOption uploadOption) {
-        throw new ProhibitedExecution();
+        throw new NotImplementedException();
     }
 
     @Override
     @SneakyThrows
     public TreeNode rename(@NotNull String id, @NotNull String newName, UploadOption uploadOption) {
-        throw new ProhibitedExecution();
+        throw new NotImplementedException();
     }
 
     @Override
     @SneakyThrows
     public TreeNode copy(@NotNull Collection<TreeNode> entries, @NotNull String targetId, UploadOption uploadOption) {
-        throw new ProhibitedExecution();
+        throw new NotImplementedException();
     }
 
     @Override

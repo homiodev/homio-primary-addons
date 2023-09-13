@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -158,18 +159,19 @@ public final class ZigBeeUtil {
         return Objects.requireNonNull(version);
     }
 
-    public static void installZ2M(EntityContext entityContext, Runnable runnable) {
+    @SneakyThrows
+    public static void installZ2M(EntityContext entityContext) {
         String version = getZ2MVersionToInstall(entityContext);
-        if (version.equals(zigbee2mqttGitHub.getInstalledVersion())) {
+        if (version.equals(zigbee2mqttGitHub.getInstalledVersion(entityContext))) {
             return;
         }
-        entityContext.bgp().runWithProgress("install-z2m").execute(progressBar -> {
+
+        entityContext.bgp().runWithProgress("install-z2m").executeSync(progressBar -> {
             zigbee2mqttGitHub.updateProject("z2m", progressBar, true, projectUpdate -> {
                 ZigBeeUtil.installOrUpdateZ2M(entityContext, version, projectUpdate);
                 return null;
             }, null);
-            runnable.run();
-        });
+        }).get(10, TimeUnit.MINUTES);
     }
 
     /**

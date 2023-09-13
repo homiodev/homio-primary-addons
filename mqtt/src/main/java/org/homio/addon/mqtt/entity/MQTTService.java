@@ -2,7 +2,7 @@ package org.homio.addon.mqtt.entity;
 
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.homio.addon.mqtt.entity.MQTTBaseEntity.normalize;
+import static org.homio.addon.mqtt.entity.MQTTClientEntity.normalize;
 
 import java.nio.file.Paths;
 import java.text.NumberFormat;
@@ -31,11 +31,14 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.homio.addon.mqtt.MosquittoInstaller;
 import org.homio.addon.mqtt.console.MQTTExplorerConsolePlugin;
 import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
 import org.homio.addon.mqtt.setting.ConsoleMQTTClearHistorySetting;
 import org.homio.addon.mqtt.setting.ConsoleRemoveMqttTreeNodeHeaderButtonSetting;
 import org.homio.api.EntityContext;
+import org.homio.api.EntityContextBGP;
+import org.homio.api.EntityContextBGP.ProcessContext;
 import org.homio.api.fs.TreeConfiguration;
 import org.homio.api.fs.TreeNode;
 import org.homio.api.fs.TreeNodeChip;
@@ -52,18 +55,18 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 @Log4j2
-public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
+public class MQTTService extends ServiceInstance<MQTTClientEntity> {
 
     private final Map<String, List<MQTTMessage>> sysHistoryMap = new HashMap<>();
-    @Getter
-    private final TreeNode root = new TreeNode().setChildrenMap(new HashMap<>());
-    @Getter
-    private DataStorageService<MQTTMessage> storage;
-    @Getter
-    private MqttClient mqttClient;
+    private final @Getter TreeNode root = new TreeNode().setChildrenMap(new HashMap<>());
+    private @Getter DataStorageService<MQTTMessage> storage;
+    private @Getter MqttClient mqttClient;
+    private ProcessContext processContext;
+    private final @Getter MosquittoInstaller mosquittoInstaller;
 
-    public MQTTService(@NotNull EntityContext entityContext, @NotNull MQTTBaseEntity entity) {
+    public MQTTService(@NotNull EntityContext entityContext, @NotNull MQTTClientEntity entity) {
         super(entityContext, entity, true);
+        mosquittoInstaller = new MosquittoInstaller(entityContext);
     }
 
     public static TreeNode buildUpdateTree(TreeNode treeNode) {
@@ -93,6 +96,7 @@ public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
         this.sysHistoryMap.clear();
     }
 
+    @SneakyThrows
     @Override
     protected void firstInitialize() {
         this.storage = entityContext.storage().getOrCreateInMemoryService(MQTTMessage.class, entityID, (long) entity.getHistorySize());
@@ -119,23 +123,41 @@ public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
             }
         });
 
-        if (entity instanceof MQTTLocalClientEntity) {
-            entityContext.event().runOnceOnInternetUp("mosquitto", () ->
-                    entityContext.install().mosquitto().requireAsync(null, () ->
-                            log.info("Mosquitto service successfully installed")));
-        }
-
         initialize();
+    }
+
+    @Override
+    public String isRequireRestartService() {
+        if (!entity.isStart()) {return null;}
+        if (!entity.getStatus().isOnline()) {return "Status: " + entity.getStatus();}
+        if (mqttClient == null || !mqttClient.isConnected()) {return "Mqtt client disconnected";}
+        return null;
     }
 
     @Override
     @SneakyThrows
     protected void initialize() {
+        if (!entity.isStart()) {
+            entity.setStatus(Status.OFFLINE);
+            updateNotificationBlock();
+            return;
+        }
         this.storage.updateQuota((long) entity.getHistorySize());
         if (!entity.getIncludeSys()) {
             sysHistoryMap.clear();
         }
         testServiceWithSetStatus();
+        if (!entity.getStatus().isOnline()) {
+            log.info("Try install mosquitto");
+            EntityContextBGP.cancel(processContext);
+            mosquittoInstaller.installLatest();
+            processContext = entityContext.bgp()
+                                          .processBuilder(getEntityID())
+                                          .attachLogger(log)
+                                          .attachEntityStatus(entity)
+                                          .execute(mosquittoInstaller.getExecutable() + " -p " + entity.getPort());
+            testServiceWithSetStatus();
+        }
     }
 
     @Override
@@ -233,6 +255,7 @@ public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
     public void updateNotificationBlock() {
         entityContext.ui().addNotificationBlockOptional("MQTT", "MQTT", new Icon("fas fa-satellite-dish", "#B65BE8"));
         entityContext.ui().updateNotificationBlock("MQTT", entity);
+        entityContext.ui().updateItem(entity);
     }
 
     private TreeNode removeTopic(String topic) {
@@ -337,6 +360,7 @@ public class MQTTService extends ServiceInstance<MQTTBaseEntity> {
         mqttClient.setCallback(new MqttClientCallbackExtended());
         mqttClient.connect(options);
         mqttClient.subscribe(new String[]{"#", "$SYS/#"});
+        updateNotificationBlock();
     }
 
     private String getDirText(TreeNode cursor, Map<String, List<MQTTMessage>> sourceMap) {

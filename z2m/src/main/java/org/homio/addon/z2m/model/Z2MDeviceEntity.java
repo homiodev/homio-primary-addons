@@ -44,8 +44,8 @@ import org.homio.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
 import org.homio.api.ui.field.color.UIFieldColorStatusMatch;
 import org.homio.api.ui.field.condition.UIFieldShowOnCondition;
 import org.homio.api.ui.field.model.HrefModel;
-import org.homio.api.ui.field.selection.UIFieldSelectValueOnEmpty;
-import org.homio.api.ui.field.selection.UIFieldSelection;
+import org.homio.api.ui.field.selection.UIFieldSelectConfig;
+import org.homio.api.ui.field.selection.dynamic.UIFieldDynamicSelection;
 import org.homio.api.widget.template.WidgetDefinition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -252,8 +252,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     }
 
     @UIField(order = 1, type = SelectBox, color = "#7FE486", inlineEdit = true)
-    @UIFieldSelection(SelectPlaceOptionLoader.class)
-    @UIFieldSelectValueOnEmpty(label = "PLACEHOLDER.SELECT_PLACE")
+    @UIFieldDynamicSelection(SelectPlaceOptionLoader.class)
+    @UIFieldSelectConfig(selectOnEmptyLabel = "PLACEHOLDER.SELECT_PLACE")
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup(value = "SETTINGS", order = 30, borderColor = "#22AB84")
     public String getPlace() {

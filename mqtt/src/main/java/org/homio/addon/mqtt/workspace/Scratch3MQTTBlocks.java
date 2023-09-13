@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.homio.addon.mqtt.MQTTEntrypoint;
-import org.homio.addon.mqtt.entity.MQTTBaseEntity;
+import org.homio.addon.mqtt.entity.MQTTClientEntity;
 import org.homio.api.EntityContext;
 import org.homio.api.entity.EntityFieldMetadata;
 import org.homio.api.ui.field.UIField;
@@ -42,7 +42,7 @@ public class Scratch3MQTTBlocks extends Scratch3ExtensionBlocks {
         this.mqttEntrypoint = mqttEntrypoint;
 
         // menu
-        this.mqttMenu = menuServerItems("mqttMenu", MQTTBaseEntity.class, "Select MQTT");
+        this.mqttMenu = menuServerItems("mqttMenu", MQTTClientEntity.class, "Select MQTT");
 
         // blocks
         this.subscribeToValue = ofMqtt(blockHat(30, "subscribe_payload",
@@ -88,7 +88,7 @@ public class Scratch3MQTTBlocks extends Scratch3ExtensionBlocks {
 
     private void publish(WorkspaceBlock workspaceBlock) {
         PublishSettings setting = workspaceBlock.getSetting(PublishSettings.class);
-        MQTTBaseEntity mqttClientEntity = workspaceBlock.getMenuValueEntityRequired("MQTT", this.mqttMenu);
+        MQTTClientEntity mqttClientEntity = workspaceBlock.getMenuValueEntityRequired("MQTT", this.mqttMenu);
         String topic = workspaceBlock.getInputStringRequired(TOPIC);
         String payload = workspaceBlock.getInputString(PAYLOAD);
         mqttClientEntity.publish(topic, payload == null ? new byte[0] : payload.getBytes(UTF_8), setting.qos.ordinal(), setting.retain);

@@ -11,9 +11,10 @@ import lombok.extern.log4j.Log4j2;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.homio.addon.mqtt.entity.MQTTLocalClientEntity;
+import org.homio.addon.mqtt.entity.MQTTClientEntity;
 import org.homio.api.AddonEntrypoint;
 import org.homio.api.EntityContext;
+import org.homio.api.EntityContextService;
 import org.homio.api.util.HardwareUtils;
 import org.springframework.stereotype.Component;
 
@@ -27,11 +28,12 @@ public class MQTTEntrypoint implements AddonEntrypoint {
 
     @SneakyThrows
     public void init() {
-        entityContext.registerResource(MQTT_RESOURCE);
+        entityContext.service().registerEntityTypeForSelection(MQTTClientEntity.class, EntityContextService.MQTT_SERVICE);
+        entityContext.service().registerUserRoleResource(MQTT_RESOURCE);
         entityContext.ui().registerConsolePluginName("MQTT", MQTT_RESOURCE);
         entityContext.bgp().builder("check-mqtt").execute(() -> {
-            Set<String> existIps = entityContext.findAll(MQTTLocalClientEntity.class).stream()
-                    .map(MQTTLocalClientEntity::getHostname).collect(Collectors.toSet());
+            Set<String> existIps = entityContext.findAll(MQTTClientEntity.class).stream()
+                                                .map(MQTTClientEntity::getHostname).collect(Collectors.toSet());
             HardwareUtils.scanForDevice(entityContext, 1883, "MQTT", ip -> {
                 if (existIps.contains(ip)) {
                     return false;
@@ -44,7 +46,7 @@ public class MQTTEntrypoint implements AddonEntrypoint {
                 mqttClient.disconnectForcibly();
                 return true;
             }, ip -> {
-                MQTTLocalClientEntity entity = new MQTTLocalClientEntity();
+                MQTTClientEntity entity = new MQTTClientEntity();
                 entity.setHostname(ip);
                 entityContext.save(entity);
             });

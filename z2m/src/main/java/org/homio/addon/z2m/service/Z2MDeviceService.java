@@ -357,7 +357,7 @@ public class Z2MDeviceService {
     }
 
     private Z2MDeviceEndpoint buildExposeEndpoint(Options expose) {
-        Class<? extends Z2MDeviceEndpoint> z2mCluster = getValueFromMap(Z2MLocalCoordinatorService.getAllEndpoints(), expose);
+        Class<? extends Z2MDeviceEndpoint> z2mCluster = getValueFromMap(Z2MLocalCoordinatorService.allEndpoints, expose);
         Z2MDeviceEndpoint endpoint;
         if (z2mCluster == null) {
             ConfigDeviceEndpoint configDeviceEndpoint = getValueFromMap(CONFIG_DEVICE_SERVICE.getDeviceEndpoints(), expose);

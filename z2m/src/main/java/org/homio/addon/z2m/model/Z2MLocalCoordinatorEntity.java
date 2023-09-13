@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.Z2MEntrypoint;
 import org.homio.addon.z2m.service.Z2MDeviceService;
@@ -35,7 +36,6 @@ import org.homio.api.entity.types.StorageEntity;
 import org.homio.api.entity.validation.UIFieldValidationSize;
 import org.homio.api.entity.zigbee.ZigBeeBaseCoordinatorEntity;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
-import org.homio.api.exception.ProhibitedExecution;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.OptionModel;
 import org.homio.api.model.endpoint.DeviceEndpoint;
@@ -57,7 +57,7 @@ import org.homio.api.util.DataSourceUtil.DataSourceContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings({"unused", "rawtypes"})
+@SuppressWarnings({"unused"})
 @Log4j2
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#11A4C2")
@@ -109,7 +109,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     @UIFieldIgnore
     @JsonIgnore
     public String getPlace() {
-        throw new ProhibitedExecution();
+        throw new NotImplementedException();
     }
 
     @Override
@@ -152,21 +152,11 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
         setJsonData("bt", value);
     }
 
-    @UIField(order = 50, inlineEdit = true)
-    @UIFieldGroup("GENERAL")
-    public boolean isEnableWatchdog() {
-        return getJsonData("wd", false);
-    }
-
-    public void setEnableWatchdog(boolean value) {
-        setJsonData("wd", value);
-    }
-
     @UIField(order = 60, hideInEdit = true, hideOnEmpty = true)
     @UIFieldGroup("GENERAL")
     public Boolean isRunLocally() {
         if (getStatus().isOnline()) {
-            return getService().isZ2MRunningLocally();
+            return getService().isRunningLocally();
         }
         return null;
     }
@@ -278,15 +268,14 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     }
 
     @Override
-    protected void beforePersist() {
-        super.beforePersist();
+    public void beforePersist() {
         setHiddenEndpoints("update_available~~~device_status");
     }
 
     @Override
     @UIField(order = 1, hideInEdit = true)
     public String getFirmwareVersion() {
-        return zigbee2mqttGitHub.getInstalledVersion();
+        return zigbee2mqttGitHub.getInstalledVersion(getEntityContext());
     }
 
     @Getter
