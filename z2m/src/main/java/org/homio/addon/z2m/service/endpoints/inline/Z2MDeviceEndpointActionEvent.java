@@ -21,7 +21,7 @@ public class Z2MDeviceEndpointActionEvent extends Z2MDeviceEndpointInline {
         super(new Icon(
                 "fas fa-fw " + (configDeviceEndpoint == null ? "fa-square-check" : configDeviceEndpoint.getIcon()),
                 configDeviceEndpoint == null ? "#B72AD4" : configDeviceEndpoint.getIconColor()
-        ));
+        ), deviceService.getEntityContext());
         init(deviceService, Options.dynamicEndpoint(endpoint, ApplianceModel.NUMBER_TYPE));
         setValue(DecimalType.ZERO, false);
         setDataReader(jsonObject -> new DecimalType(getValue().intValue() + 1));

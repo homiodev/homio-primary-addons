@@ -53,7 +53,7 @@ import org.homio.api.ui.field.inline.UIFieldInlineEntities;
 import org.homio.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.homio.api.ui.field.selection.UIFieldEntityTypeSelection;
 import org.homio.api.util.DataSourceUtil;
-import org.homio.api.util.DataSourceUtil.DataSourceContext;
+import org.homio.api.util.DataSourceUtil.SelectionSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,10 +82,9 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     @UIFieldLinkToEntity(StorageEntity.class)
     public String getMqttEntity() {
         try {
-            DataSourceContext source = DataSourceUtil.getSource(getEntityContext(), getJsonData("mqtt"));
-            if (source.getSource() instanceof BaseEntity entity) {
-                return entity.getEntityID() + "~~~" + entity.getTitle();
-            }
+            SelectionSource selection = DataSourceUtil.getSelection(getJsonData("mqtt"));
+            BaseEntity source = selection.getValue(getEntityContext());
+            return source.getEntityID() + "~~~" + source.getTitle();
         } catch (Exception ignore) {
         }
         return getJsonData().has("mqtt") ? "[Not found] " + getJsonData("mqtt") : null;
@@ -97,7 +96,8 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
 
     @JsonIgnore
     public @Nullable MQTTEntityService getMqttEntityService() {
-        return DataSourceUtil.getSource(getEntityContext(), getJsonData("mqtt")).getSource(MQTTEntityService.class, null);
+        SelectionSource selection = DataSourceUtil.getSelection(getJsonData("mqtt"));
+        return selection.getValue(getEntityContext());
     }
 
     @JsonIgnore

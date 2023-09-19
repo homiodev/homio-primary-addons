@@ -4,15 +4,17 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
+import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
 import org.homio.api.state.DecimalType;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 public class Z2MDeviceEndpointLastSeen extends Z2MDeviceEndpoint {
 
-    public Z2MDeviceEndpointLastSeen() {
-        super(new Icon("fa fa-fw fa-eye", "#2D9C2C"));
+    public Z2MDeviceEndpointLastSeen(@NotNull EntityContext entityContext) {
+        super(new Icon("fa fa-fw fa-eye", "#2D9C2C"), entityContext);
         setValue(new DecimalType(System.currentTimeMillis()), false);
         setDataReader(jsonObject -> new DecimalType(parseLastSeen(jsonObject)));
     }

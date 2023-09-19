@@ -20,9 +20,7 @@ import org.homio.api.entity.HasFirmwareVersion;
 import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.storage.BaseFileSystemEntity;
 import org.homio.api.entity.types.StorageEntity;
-import org.homio.api.entity.widget.AggregationType;
 import org.homio.api.entity.widget.PeriodRequest;
-import org.homio.api.entity.widget.ability.HasAggregateValueFromSeries;
 import org.homio.api.entity.widget.ability.HasGetStatusValue;
 import org.homio.api.entity.widget.ability.HasSetStatusValue;
 import org.homio.api.entity.widget.ability.HasTimeValueSeries;
@@ -57,7 +55,6 @@ public class MQTTClientEntity extends StorageEntity implements
     BaseFileSystemEntity<MQTTClientEntity, MQTTFileSystem>,
     HasTimeValueSeries,
     SelectionWithDynamicParameterFields,
-    HasAggregateValueFromSeries,
     HasGetStatusValue,
     HasSetStatusValue,
     EntityContextService.MQTTEntityService,
@@ -275,12 +272,12 @@ public class MQTTClientEntity extends StorageEntity implements
         return null;
     }
 
-    @Override
+    /*@Override
     public Object getAggregateValueFromSeries(@NotNull PeriodRequest request, @NotNull AggregationType aggregationType, boolean filterOnlyNumbers) {
         String topic = getTopicRequire(request.getParameters(), "queryTopic");
         return getService().getStorage().aggregate(request.getFromTime(), request.getToTime(), "topic", topic,
             aggregationType, filterOnlyNumbers);
-    }
+    }*/
 
     @Override
     public Object getStatusValue(GetStatusValueRequest request) {
@@ -327,11 +324,6 @@ public class MQTTClientEntity extends StorageEntity implements
     @Override
     public String getTimeValueSeriesDescription() {
         return "MQTT.TIME_SERIES";
-    }
-
-    @Override
-    public String getAggregateValueDescription() {
-        return "MQTT.SERIES_AGGREGATE";
     }
 
     @Override

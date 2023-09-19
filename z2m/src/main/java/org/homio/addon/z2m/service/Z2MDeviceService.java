@@ -111,7 +111,7 @@ public class Z2MDeviceService {
             }
         }
         addEndpointOptional(ENDPOINT_LAST_SEEN, key -> {
-            Z2MDeviceEndpointLastSeen lastSeenEndpoint = new Z2MDeviceEndpointLastSeen();
+            Z2MDeviceEndpointLastSeen lastSeenEndpoint = new Z2MDeviceEndpointLastSeen(entityContext);
             lastSeenEndpoint.init(this, dynamicEndpoint(ENDPOINT_LAST_SEEN, NUMBER_TYPE));
             return lastSeenEndpoint;
         });
@@ -362,12 +362,12 @@ public class Z2MDeviceService {
         if (z2mCluster == null) {
             ConfigDeviceEndpoint configDeviceEndpoint = getValueFromMap(CONFIG_DEVICE_SERVICE.getDeviceEndpoints(), expose);
             if (configDeviceEndpoint != null) {
-                endpoint = new Z2MDeviceEndpointGeneral(configDeviceEndpoint.getIcon(), configDeviceEndpoint.getIconColor());
+                endpoint = new Z2MDeviceEndpointGeneral(configDeviceEndpoint.getIcon(), configDeviceEndpoint.getIconColor(), entityContext);
             } else {
-                endpoint = new Z2MDeviceEndpointUnknown();
+                endpoint = new Z2MDeviceEndpointUnknown(entityContext);
             }
         } else {
-            endpoint = CommonUtils.newInstance(z2mCluster);
+            endpoint = CommonUtils.newInstance(z2mCluster, entityContext);
         }
         endpoint.init(this, expose);
         return endpoint;

@@ -23,6 +23,7 @@ import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options.Presets;
 import org.homio.addon.z2m.util.ZigBeeUtil;
+import org.homio.api.EntityContext;
 import org.homio.api.EntityContextVar.VariableMetaBuilder;
 import org.homio.api.EntityContextVar.VariableType;
 import org.homio.api.model.Icon;
@@ -46,8 +47,8 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
     private Options expose;
     private Z2MDeviceService deviceService;
 
-    public Z2MDeviceEndpoint(@NotNull Icon icon) {
-        super(icon, "z2m");
+    public Z2MDeviceEndpoint(@NotNull Icon icon, @NotNull EntityContext entityContext) {
+        super(icon, "z2m", entityContext);
     }
 
     public void init(@NotNull Z2MDeviceService deviceService, @NotNull Options expose) {
@@ -59,7 +60,6 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
                 CONFIG_DEVICE_SERVICE,
                 expose.getProperty(),
                 deviceService.getDeviceEntity(),
-                deviceService.getEntityContext(),
                 expose.getUnit(),
                 expose.isReadable(),
                 expose.isWritable(),

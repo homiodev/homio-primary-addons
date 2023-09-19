@@ -1,7 +1,9 @@
 package org.homio.addon.z2m.service.endpoints.inline;
 
 import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
+import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -9,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class Z2MDeviceEndpointInline extends Z2MDeviceEndpoint {
 
-    public Z2MDeviceEndpointInline(Icon icon) {
-        super(icon);
+    public Z2MDeviceEndpointInline(Icon icon, @NotNull EntityContext entityContext) {
+        super(icon, entityContext);
     }
 
     @Override

@@ -11,8 +11,8 @@ import org.json.JSONObject;
 
 public class Z2MDeviceEndpointAction extends Z2MDeviceEndpoint {
 
-    public Z2MDeviceEndpointAction() {
-        super(new Icon("fa fa-fw fa-circle-play", "#9636d6"));
+    public Z2MDeviceEndpointAction(@NotNull EntityContext entityContext) {
+        super(new Icon("fa fa-fw fa-circle-play", "#9636d6"), entityContext);
     }
 
     public static Z2MDeviceEndpointActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {
@@ -32,10 +32,10 @@ public class Z2MDeviceEndpointAction extends Z2MDeviceEndpoint {
         Z2MDeviceEndpoint endpoint = deviceService.getEndpoints().get(actionKey);
         if (endpoint == null) {
             endpoint = deviceService.addDynamicEndpoint(actionKey, () ->
-                    Z2MDeviceEndpointAction.createActionEvent(actionKey, deviceService, entityContext));
+                Z2MDeviceEndpointAction.createActionEvent(actionKey, deviceService, getEntityContext()));
 
             deviceService.addDynamicEndpoint("action_any", () ->
-                    Z2MDeviceEndpointAction.createActionEvent("action_any", deviceService, entityContext));
+                Z2MDeviceEndpointAction.createActionEvent("action_any", deviceService, getEntityContext()));
         }
         endpoint.mqttUpdate(payload);
         // 'action' counter

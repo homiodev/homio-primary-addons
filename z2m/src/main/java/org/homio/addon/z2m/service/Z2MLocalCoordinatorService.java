@@ -182,8 +182,13 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
 
     @Override
     protected void firstInitialize() {
-        assembleAllEndpoints(entityContext);
-        initialize();
+        try {
+            assembleAllEndpoints(entityContext);
+            initialize();
+        } catch (Exception ex) {
+            updateNotificationBlock();
+            throw ex;
+        }
     }
 
     @Override
@@ -649,7 +654,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
             List<Class<? extends Z2MDeviceEndpoint>> z2mClusters = entityContext.getClassesWithParent(Z2MDeviceEndpoint.class);
             for (Class<? extends Z2MDeviceEndpoint> z2mCluster : z2mClusters) {
                 if (!Z2MDeviceEndpointInline.class.isAssignableFrom(z2mCluster)) {
-                    Z2MDeviceEndpoint endpoint = CommonUtils.newInstance(z2mCluster);
+                    Z2MDeviceEndpoint endpoint = CommonUtils.newInstance(z2mCluster, entityContext);
                     allEndpoints.put(endpoint.getEndpointDefinition(), z2mCluster);
                 }
             }

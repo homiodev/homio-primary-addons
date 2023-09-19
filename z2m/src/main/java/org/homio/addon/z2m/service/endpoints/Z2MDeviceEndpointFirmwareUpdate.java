@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.util.ApplianceModel;
+import org.homio.api.EntityContext;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
 import org.homio.api.state.JsonType;
@@ -20,8 +21,8 @@ public class Z2MDeviceEndpointFirmwareUpdate extends Z2MDeviceEndpoint {
 
     private boolean wasProgress;
 
-    public Z2MDeviceEndpointFirmwareUpdate() {
-        super(new Icon("fa fa-fw fa-tablets", "#FF0000"));
+    public Z2MDeviceEndpointFirmwareUpdate(@NotNull EntityContext entityContext) {
+        super(new Icon("fa fa-fw fa-tablets", "#FF0000"), entityContext);
         setValue(new JsonType("{}"), false);
     }
 
@@ -38,10 +39,10 @@ public class Z2MDeviceEndpointFirmwareUpdate extends Z2MDeviceEndpoint {
                 wasProgress = true;
                 String message = Lang.getServerMessage("ZIGBEE.UPDATING",
                         FlowMap.of("NAME", getDeviceService().getDeviceEntity().getTitle(), "VALUE", node.get("remaining").asInt()));
-                entityContext.ui().progress("upd-" + getDeviceService().getIeeeAddress(),
+                getEntityContext().ui().progress("upd-" + getDeviceService().getIeeeAddress(),
                         node.get("progress").asDouble(), message, false);
             } else if (wasProgress) {
-                entityContext.ui().progressDone("upd-" + getDeviceService().getIeeeAddress());
+                getEntityContext().ui().progressDone("upd-" + getDeviceService().getIeeeAddress());
             }
         });
     }
