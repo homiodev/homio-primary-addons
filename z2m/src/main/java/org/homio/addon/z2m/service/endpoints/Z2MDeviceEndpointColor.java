@@ -23,7 +23,7 @@ public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
             {0.0557f, -0.2040f, 1.0570f}};
 
     public Z2MDeviceEndpointColor(@NotNull EntityContext entityContext) {
-        super(new Icon("fas fa-fw fa-palette", "#FF009B"), entityContext);
+        super(new Icon("fas fa-palette", "#FF009B"), entityContext);
     }
 
     public static int[] cieToRgb(double x, double y) {

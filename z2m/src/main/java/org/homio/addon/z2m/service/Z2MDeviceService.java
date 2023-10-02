@@ -39,6 +39,7 @@ import org.homio.api.model.device.ConfigDeviceDefinition;
 import org.homio.api.model.device.ConfigDeviceDefinitionService;
 import org.homio.api.model.device.ConfigDeviceEndpoint;
 import org.homio.api.state.DecimalType;
+import org.homio.api.state.StringType;
 import org.homio.api.ui.UI;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Lang;
@@ -123,7 +124,8 @@ public class Z2MDeviceService {
         if (!initialized) {
             log.info("[{}]: Initialize zigbee device: {}", coordinatorService.getEntityID(), deviceEntity.getTitle());
             addMqttListeners();
-            entityContext.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()), deviceEntity.getStatus());
+            entityContext.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()),
+                new StringType(deviceEntity.getStatus().toString()));
             initialized = true;
         } else {
             log.debug("[{}]: Zigbee device: {} was initialized before", coordinatorService.getEntityID(), deviceEntity.getTitle());
@@ -173,7 +175,8 @@ public class Z2MDeviceService {
 
         coordinatorService.getMqttEntityService().addListener(topic + "/availability", applianceModel.getIeeeAddress(), payload -> {
             availability = payload == null ? null : payload.toString();
-            entityContext.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()), deviceEntity.getStatus());
+            entityContext.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()),
+                new StringType(deviceEntity.getStatus().toString()));
             entityContext.ui().updateItem(deviceEntity);
             if ("offline".equals(availability)) {
                 downLinkQualityToZero();
@@ -321,7 +324,8 @@ public class Z2MDeviceService {
     private Z2MDeviceEndpoint addEndpointOptional(String key, Function<String, Z2MDeviceEndpoint> endpointProducer) {
         if (!endpoints.containsKey(key)) {
             endpoints.put(key, endpointProducer.apply(key));
-            entityContext.event().fireEvent("endpoint-%s-%s".formatted(applianceModel.getIeeeAddress(), key), ONLINE);
+            entityContext.event().fireEvent("endpoint-%s-%s".formatted(applianceModel.getIeeeAddress(), key),
+                new StringType(ONLINE.toString()));
         }
         return endpoints.get(key);
     }
@@ -374,14 +378,15 @@ public class Z2MDeviceService {
     }
 
     private void createOrUpdateDeviceGroup() {
-        entityContext.var().createGroup("z2m", "ZigBee2MQTT", true, new Icon("fab fa-laravel", "#ED3A3A"));
+        entityContext.var().createGroup("z2m", "ZigBee2MQTT", builder ->
+            builder.setLocked(true).setIcon(new Icon("fab fa-laravel", "#ED3A3A")));
 
         Icon icon = new Icon(
                 CONFIG_DEVICE_SERVICE.getDeviceIcon(findDevices(), "fas fa-server"),
                 CONFIG_DEVICE_SERVICE.getDeviceIconColor(findDevices(), UI.Color.random())
         );
-        entityContext.var().createGroup("z2m", requireNonNull(deviceEntity.getIeeeAddress()), getDeviceFullName(), true,
-                icon, applianceModel.getGroupDescription());
+        entityContext.var().createSubGroup("z2m", requireNonNull(deviceEntity.getIeeeAddress()), getDeviceFullName(), builder ->
+            builder.setDescription(applianceModel.getGroupDescription()).setLocked(true).setIcon(icon));
     }
 
     public @NotNull List<ConfigDeviceDefinition> findDevices() {

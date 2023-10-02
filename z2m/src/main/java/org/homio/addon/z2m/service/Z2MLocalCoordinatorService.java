@@ -61,6 +61,7 @@ import org.homio.api.model.HasEntityIdentifier;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.service.EntityService.ServiceInstance;
+import org.homio.api.state.StringType;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.HardwareUtils;
@@ -389,7 +390,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         } else if (HardwareUtils.getSerialPort(entity.getPort()) == null) {
             return Lang.getServerMessage("ZIGBEE.ERROR.PORT_NOT_FOUND", entity.getPort());
         }
-        if (isEmpty(entity.getRawMqttEntity())) {
+        if (isEmpty(entity.getMqttEntity())) {
             return "ZIGBEE.ERROR.NO_MQTT";
         }
         if (entity.getMqttEntityService() == null) {
@@ -482,7 +483,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         }
 
         entityContext.ui().headerButtonBuilder("discover-" + entityID)
-                .title("CONTEXT.ACTION.ZIGBEE_START_SCAN")
+                .title("ZIGBEE_START_SCAN")
                 .icon(new Icon("fas fa-search-location", "#3E7BBD"))
                 .availableForPage(ZigBeeDeviceBaseEntity.class)
                 .clickAction(this::startScan).build();
@@ -733,7 +734,8 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
             String status = payload.get("raw").asText();
             service.entity.setStatus("online".equals(status) ? Status.ONLINE : "offline".equals(status) ? Status.OFFLINE : Status.ERROR);
             service.entityContext.ui().sendInfoMessage("ZigBee2MQTT coordinator status: " + payload);
-            service.entityContext.event().fireEvent("zigbee_coordinator-" + service.getEntityID(), service.entity.getStatus());
+            service.entityContext.event().fireEvent("zigbee_coordinator-" + service.getEntityID(),
+                new StringType(service.entity.getStatus().toString()));
         });
 
         private final Level logLevel;

@@ -19,7 +19,7 @@ public class Z2MDeviceEndpointActionEvent extends Z2MDeviceEndpointInline {
             @NotNull String endpoint,
             @Nullable ConfigDeviceEndpoint configDeviceEndpoint) {
         super(new Icon(
-                "fas fa-fw " + (configDeviceEndpoint == null ? "fa-square-check" : configDeviceEndpoint.getIcon()),
+                "fas " + (configDeviceEndpoint == null ? "fa-square-check" : configDeviceEndpoint.getIcon()),
                 configDeviceEndpoint == null ? "#B72AD4" : configDeviceEndpoint.getIconColor()
         ), deviceService.getEntityContext());
         init(deviceService, Options.dynamicEndpoint(endpoint, ApplianceModel.NUMBER_TYPE));

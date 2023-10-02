@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class Z2MDeviceEndpointOperationMode extends Z2MDeviceEndpoint {
 
     public Z2MDeviceEndpointOperationMode(@NotNull EntityContext entityContext) {
-        super(new Icon("fab fa-fw fa-monero", "#2387B6"), entityContext);
+        super(new Icon("fab fa-monero", "#2387B6"), entityContext);
     }
 
     @Override

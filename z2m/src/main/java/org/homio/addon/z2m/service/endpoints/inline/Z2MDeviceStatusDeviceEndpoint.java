@@ -20,7 +20,7 @@ import org.homio.api.ui.field.action.v1.item.UIInfoItemBuilder.InfoType;
 public class Z2MDeviceStatusDeviceEndpoint extends Z2MDeviceEndpointInline {
 
     public Z2MDeviceStatusDeviceEndpoint(Z2MDeviceService deviceService) {
-        super(new Icon("fa fa-fw fa-globe", "#42B52D"), deviceService.getEntityContext());
+        super(new Icon("fa fa-globe", "#42B52D"), deviceService.getEntityContext());
         setValue(new StringType(UNKNOWN.name()), false);
         Options options = Options.dynamicEndpoint(ENDPOINT_DEVICE_STATUS, ApplianceModel.ENUM_TYPE);
         options.setValues(Status.set(UNKNOWN, ONLINE, OFFLINE, UNKNOWN, ERROR));

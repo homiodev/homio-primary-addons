@@ -3,6 +3,7 @@ package org.homio.addon.mqtt.entity;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.homio.addon.mqtt.entity.MQTTClientEntity.normalize;
+import static org.homio.api.entity.HasJsonData.LIST_DELIMITER;
 
 import java.nio.file.Paths;
 import java.text.NumberFormat;
@@ -45,6 +46,7 @@ import org.homio.api.fs.TreeNodeChip;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.service.EntityService.ServiceInstance;
+import org.homio.api.state.StringType;
 import org.homio.api.storage.DataStorageService;
 import org.homio.api.storage.SourceHistory;
 import org.homio.api.storage.SourceHistoryItem;
@@ -70,7 +72,7 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
     }
 
     public static TreeNode buildUpdateTree(TreeNode treeNode) {
-        if (treeNode.getParent().getId() != null) {
+        if (treeNode.getParent() != null && treeNode.getParent().getId() != null) {
             TreeNode parent = buildUpdateTree(treeNode.getParent());
             if (parent != null) {
                 return parent.addChild(treeNode.clone(false));
@@ -174,12 +176,12 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
     public List<TreeConfiguration> getValue() {
         rebuildMetadata(null);
         Set<TreeNode> values = root.getChildren();
-        if (!entity.getIncludeSys()) {
+        if (!entity.getIncludeSys() && values != null) {
             values = values.stream().filter(v -> !v.getId().equals("$SYS")).collect(Collectors.toSet());
         }
         TreeConfiguration treeConfiguration =
                 new TreeConfiguration(entityID, entity.getTitle() + " (" + entity.getHostname() + ")",
-                        values).setDynamicUpdateId(entityID);
+                    values).setDynamicUpdateId("tree-" + entityID);
         treeConfiguration.setIcon(new Icon("fas fa-m", entity.getStatus() == Status.ONLINE ? UI.Color.GREEN : UI.Color.RED));
         return Collections.singletonList(treeConfiguration);
     }
@@ -309,7 +311,7 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
         }
         TreeNode root = new TreeNode();
         root.addChild(treeNode);
-        entityContext.event().fireEvent(entityID, root);
+        entityContext.ui().sendDynamicUpdate("tree-" + entityID, root);
     }
 
     private TreeNode findTopic(String value, TreeNode cursor, int payloadLength) {
@@ -385,9 +387,9 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
         return null;
     }
 
-    public void fireEvent(String prefix, Object payload) {
-        entityContext.event().fireEvent(entityID + "~~~" + prefix, payload);
-        entityContext.event().fireEvent(entityID, payload);
+    public void fireEvent(String prefix, String payload) {
+        entityContext.event().fireEvent(entityID + LIST_DELIMITER + prefix, new StringType(payload));
+        // entityContext.event().fireEvent(entityID, new StringType(payload));
     }
 
     @RequiredArgsConstructor
@@ -396,7 +398,7 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
         @Override
         public void connectComplete(boolean reconnect, String serverURI) {
             try {
-                fireEvent("STATUS", Status.ONLINE);
+                fireEvent("STATUS", Status.ONLINE.toString());
                 entity.setStatusOnline();
                 entityContext.ui().sendInfoMessage("MQTT server connected");
             } catch (Exception ex) {
@@ -412,7 +414,7 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
                 entityContext.ui().sendErrorMessage("MQTT connection lost", (Exception) cause);
                 String msg = CommonUtils.getErrorMessage(cause);
                 entity.setStatus(Status.ERROR, "Connection lost: " + msg);
-                fireEvent("STATUS", Status.OFFLINE);
+                fireEvent("STATUS", Status.OFFLINE.toString());
                 entity.destroyService();
 
                 // retry create service

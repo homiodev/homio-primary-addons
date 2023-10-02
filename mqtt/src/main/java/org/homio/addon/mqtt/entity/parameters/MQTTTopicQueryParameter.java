@@ -13,7 +13,7 @@ import org.homio.api.ui.field.selection.dynamic.DynamicParameterFields;
 public class MQTTTopicQueryParameter implements DynamicParameterFields {
 
     @UIField(order = 100, required = true)
-    @UIFieldTreeNodeSelection(fileSystemIds = "MQTT")
+    @UIFieldTreeNodeSelection(fileSystemIds = "MQTT", isAttachMetadata = false)
     public String queryTopic;
 
     @Override

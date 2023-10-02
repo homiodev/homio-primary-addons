@@ -14,7 +14,7 @@ import org.json.JSONObject;
 public class Z2MDeviceEndpointLastSeen extends Z2MDeviceEndpoint {
 
     public Z2MDeviceEndpointLastSeen(@NotNull EntityContext entityContext) {
-        super(new Icon("fa fa-fw fa-eye", "#2D9C2C"), entityContext);
+        super(new Icon("fa fa-eye", "#2D9C2C"), entityContext);
         setValue(new DecimalType(System.currentTimeMillis()), false);
         setDataReader(jsonObject -> new DecimalType(parseLastSeen(jsonObject)));
     }

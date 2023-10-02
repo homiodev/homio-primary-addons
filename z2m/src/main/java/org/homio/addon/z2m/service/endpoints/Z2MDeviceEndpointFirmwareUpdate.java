@@ -22,7 +22,7 @@ public class Z2MDeviceEndpointFirmwareUpdate extends Z2MDeviceEndpoint {
     private boolean wasProgress;
 
     public Z2MDeviceEndpointFirmwareUpdate(@NotNull EntityContext entityContext) {
-        super(new Icon("fa fa-fw fa-tablets", "#FF0000"), entityContext);
+        super(new Icon("fa fa-tablets", "#FF0000"), entityContext);
         setValue(new JsonType("{}"), false);
     }
 

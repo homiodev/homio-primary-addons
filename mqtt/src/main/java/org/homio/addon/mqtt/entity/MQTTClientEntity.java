@@ -16,6 +16,7 @@ import org.homio.addon.mqtt.entity.parameters.MQTTTopicQueryParameter;
 import org.homio.addon.mqtt.workspace.Scratch3MQTTBlocks;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextService;
+import org.homio.api.EntityContextService.MQTTEntityService;
 import org.homio.api.entity.HasFirmwareVersion;
 import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.storage.BaseFileSystemEntity;
@@ -29,6 +30,7 @@ import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.service.EntityService;
+import org.homio.api.state.State;
 import org.homio.api.storage.DataStorageService;
 import org.homio.api.storage.SourceHistory;
 import org.homio.api.storage.SourceHistoryItem;
@@ -43,6 +45,7 @@ import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.ui.field.selection.dynamic.DynamicParameterFields;
 import org.homio.api.ui.field.selection.dynamic.SelectionWithDynamicParameterFields;
 import org.homio.api.ui.field.selection.dynamic.UIFieldDynamicSelection;
+import org.homio.api.util.DataSourceUtil;
 import org.homio.api.util.SecureString;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -104,8 +107,8 @@ public class MQTTClientEntity extends StorageEntity implements
         return 0;
     }
 
-    @UIField(order = 1)
-    @UIFieldGroup(order = 1, value = "SERVER", borderColor = "#0EBC97")
+    @UIField(order = 20)
+    @UIFieldGroup(order = 1, value = "CONNECTION", borderColor = "#0EBC97")
     public String getHostname() {
         return getJsonData("host", "127.0.0.1");
     }
@@ -114,9 +117,9 @@ public class MQTTClientEntity extends StorageEntity implements
         setJsonData("host", value);
     }
 
-    @UIField(order = 2, label = "mqttPort")
+    @UIField(order = 50, label = "mqttPort")
     @UIFieldPort
-    @UIFieldGroup("SERVER")
+    @UIFieldGroup("CONNECTION")
     public int getPort() {
         return getJsonData("port", 1883);
     }
@@ -176,7 +179,7 @@ public class MQTTClientEntity extends StorageEntity implements
     }
 
     @UIField(order = 80, hideInView = true)
-    @UIFieldGroup(order = 5, value = "CONNECTION", borderColor = "#479923")
+    @UIFieldGroup("CONNECTION")
     public boolean getMqttCleanSessionOnConnect() {
         return getJsonData("cs", true);
     }
@@ -197,6 +200,7 @@ public class MQTTClientEntity extends StorageEntity implements
 
     @UIField(order = 100)
     @UIFieldSlider(min = 10, max = 600)
+    @UIFieldGroup("CONNECTION")
     public int getConnectionTimeout() {
         return getJsonData("ct", 30);
     }
@@ -315,10 +319,11 @@ public class MQTTClientEntity extends StorageEntity implements
     }
 
     @Override
-    public void addUpdateValueListener(EntityContext entityContext, String key, JSONObject dynamicParameters,
-        Consumer<Object> listener) {
+    public void addUpdateValueListener(EntityContext entityContext, String discriminator, JSONObject dynamicParameters,
+        Consumer<State> listener) {
         String topic = getTopicRequire(dynamicParameters, "queryTopic");
-        entityContext.event().addEventListener(getEntityID() + "~~~" + topic, key, listener);
+        String fullTopicPath = MQTTEntityService.buildMqttListenEvent(getEntityID(), topic);
+        entityContext.event().addEventListener(fullTopicPath, discriminator, listener);
     }
 
     @Override
@@ -348,6 +353,7 @@ public class MQTTClientEntity extends StorageEntity implements
 
     private String getTopicRequire(JSONObject dynamicParameters, String fieldName) {
         String topic = dynamicParameters.optString(fieldName);
+        topic = DataSourceUtil.getSelection(topic).getValue();
         if (StringUtils.isEmpty(topic)) {
             throw new IllegalStateException("Unable to find topic from request");
         }
@@ -371,15 +377,15 @@ public class MQTTClientEntity extends StorageEntity implements
     }
 
     @Override
-    public void addListener(String topic, String discriminator, Consumer<Object> listener) {
+    public void addListener(String topic, String discriminator, Consumer<State> listener) {
         log.info("[{}]: Add mqtt listener for '{}' topic", getEntityID(), topic);
-        getEntityContext().event().addEventBehaviourListener(getEntityID() + "~~~" + topic, discriminator, listener);
+        getEntityContext().event().addEventBehaviourListener(getEntityID() + LIST_DELIMITER + topic, discriminator, listener);
     }
 
     @Override
     public void removeListener(String topic, String discriminator) {
         log.info("[{}]: Remove mqtt listener from '{}' topic", getEntityID(), topic);
-        getEntityContext().event().removeEventListener(discriminator, getEntityID() + "~~~" + topic);
+        getEntityContext().event().removeEventListener(discriminator, getEntityID() + LIST_DELIMITER + topic);
     }
 
     @Override

@@ -28,7 +28,6 @@ import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextService;
 import org.homio.api.EntityContextService.MQTTEntityService;
-import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.HasFirmwareVersion;
 import org.homio.api.entity.log.HasEntitySourceLog;
 import org.homio.api.entity.types.MicroControllerBaseEntity;
@@ -81,13 +80,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     @UIFieldEntityTypeSelection(type = EntityContextService.MQTT_SERVICE)
     @UIFieldLinkToEntity(StorageEntity.class)
     public String getMqttEntity() {
-        try {
-            SelectionSource selection = DataSourceUtil.getSelection(getJsonData("mqtt"));
-            BaseEntity source = selection.getValue(getEntityContext());
-            return source.getEntityID() + "~~~" + source.getTitle();
-        } catch (Exception ignore) {
-        }
-        return getJsonData().has("mqtt") ? "[Not found] " + getJsonData("mqtt") : null;
+        return getJsonData("mqtt");
     }
 
     public void setMqttEntity(String value) {
@@ -96,13 +89,8 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
 
     @JsonIgnore
     public @Nullable MQTTEntityService getMqttEntityService() {
-        SelectionSource selection = DataSourceUtil.getSelection(getJsonData("mqtt"));
+        SelectionSource selection = DataSourceUtil.getSelection(getMqttEntity());
         return selection.getValue(getEntityContext());
-    }
-
-    @JsonIgnore
-    public String getRawMqttEntity() {
-        return getJsonData("mqtt");
     }
 
     @Override
@@ -269,7 +257,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
 
     @Override
     public void beforePersist() {
-        setHiddenEndpoints("update_available~~~device_status");
+        setHiddenEndpoints("update_available%sdevice_status".formatted(LIST_DELIMITER));
     }
 
     @Override
@@ -280,7 +268,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
 
     @Getter
     @NoArgsConstructor
-    private static class ZigBeeCoordinatorDeviceEntity {
+    public static class ZigBeeCoordinatorDeviceEntity {
 
         @UIField(order = 1)
         @UIFieldInlineEntityWidth(35)
@@ -299,14 +287,13 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
 
         public ZigBeeCoordinatorDeviceEntity(Z2MDeviceService deviceHandler) {
             ApplianceModel applianceModel = deviceHandler.getApplianceModel();
-            String ieeeAddress = applianceModel.getIeeeAddress();
+            String address = applianceModel.getIeeeAddress();
             color = deviceHandler.getDeviceEntity().getStatus().getColor();
             name = deviceHandler.getDeviceEntity().getName();
-            if (StringUtils.isEmpty(name) || name.equalsIgnoreCase(ieeeAddress)) {
+            if (StringUtils.isEmpty(name) || name.equalsIgnoreCase(address)) {
                 name = deviceHandler.getDeviceEntity().getDescription();
             }
-            this.ieeeAddress = deviceHandler.getDeviceEntity().getEntityID() + "~~~" +
-                    ieeeAddress.toUpperCase().substring(2); // cut 0X
+            ieeeAddress = deviceHandler.getDeviceEntity().getEntityID();
             endpointsCount = applianceModel.getDefinition().getExposes().size();
         }
     }

@@ -375,7 +375,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
         getEntityContext().widget().createTemplateWidgetActions(uiInputBuilder, this, widgetDefinitions);
 
         uiInputBuilder.addOpenDialogSelectableButton("CUSTOM_DESCRIPTION", new Icon("fas fa-comment"), null, (entityContext, params) -> {
-            String description = params.getString("field.description");
+            String description = params.getString("description");
 
             if (!Objects.equals(description, getCustomDescription())) {
                 deviceService.updateConfiguration("customDescription", description);
@@ -383,7 +383,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
             }
             return null;
         }).editDialog(dialogBuilder -> {
-            dialogBuilder.setTitle("CONTEXT.ACTION.CUSTOM_DESCRIPTION", new Icon("fas fa-comment"));
+            dialogBuilder.setTitle("CUSTOM_DESCRIPTION", new Icon("fas fa-comment"));
             dialogBuilder.addFlex("main", flex ->
                     flex.addTextInput("description", getCustomDescription(), false));
         });

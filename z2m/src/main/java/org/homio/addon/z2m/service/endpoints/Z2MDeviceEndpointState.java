@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class Z2MDeviceEndpointState extends Z2MDeviceEndpoint {
 
     public Z2MDeviceEndpointState(@NotNull EntityContext entityContext) {
-        super(new Icon("fas fa-fw fa-star-half-alt", "#B3EF57"), entityContext);
+        super(new Icon("fas fa-star-half-alt", "#B3EF57"), entityContext);
     }
 
     @Override

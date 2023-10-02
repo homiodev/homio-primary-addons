@@ -49,7 +49,7 @@ public final class ZigBeeUtil {
             @NotNull Runnable onDurationTimedOutHandler,
             @NotNull Runnable stopScanHandler) {
         entityContext.ui().headerButtonBuilder("zigbee-scan-" + entityID)
-                .title("CONTEXT.ACTION.ZIGBEE_STOP_SCAN").border(1, "#899343").clickAction(() -> {
+                .title("ZIGBEE_STOP_SCAN").border(1, "#899343").clickAction(() -> {
                     stopScanHandler.run();
                     return ActionResponseModel.showWarn("ZIGBEE.STOP_SCAN");
                 })

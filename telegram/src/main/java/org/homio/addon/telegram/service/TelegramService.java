@@ -19,6 +19,8 @@ import org.homio.addon.telegram.commands.TelegramUnregisterUserCommand;
 import org.homio.api.EntityContext;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
+import org.homio.api.state.ObjectType;
+import org.homio.api.state.State;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.workspace.BroadcastLock;
 import org.springframework.stereotype.Component;
@@ -259,10 +261,11 @@ public class TelegramService {
                 TelegramAnswer telegramAnswer = new TelegramAnswer(messageId,
                         update.getCallbackQuery().getData(),
                         update.getCallbackQuery().getFrom().getId());
+                State value = new ObjectType(telegramAnswer);
 
                 TelegramService.this.entityContext.event()
-                        .fireEvent(TELEGRAM_EVENT_PREFIX + messageId, telegramAnswer)
-                        .fireEvent(TELEGRAM_EVENT_PREFIX + messageId + "_" + telegramAnswer.getData(), telegramAnswer);
+                        .fireEvent(TELEGRAM_EVENT_PREFIX + messageId, value)
+                        .fireEvent(TELEGRAM_EVENT_PREFIX + messageId + "_" + telegramAnswer.getData(), value);
 
                 AnswerCallbackQuery query = new AnswerCallbackQuery(update.getCallbackQuery().getId());
                 query.setText("Done");

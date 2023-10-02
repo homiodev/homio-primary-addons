@@ -56,6 +56,12 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
         this.expose = expose;
         this.dataReader = this.dataReader == null ? buildDataReader() : this.dataReader;
         setAlternateEndpoints(expose.getName(), expose.getEndpoint());
+        if (expose.getValueMin() != null) {
+            setMin(Float.valueOf(expose.getValueMin()));
+        }
+        if (expose.getValueMax() != null) {
+            setMax(Float.valueOf(expose.getValueMax()));
+        }
         init(
                 CONFIG_DEVICE_SERVICE,
                 expose.getProperty(),
@@ -209,14 +215,8 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
 
     protected Consumer<VariableMetaBuilder> getVariableMetaBuilder() {
         return builder -> {
-            builder.setDescription(getVariableDescription()).setReadOnly(!isWritable()).setColor(getIcon().getColor());
+            builder.setWritable(isWritable()).setDescription(getVariableDescription()).setColor(getIcon().getColor());
             List<String> attributes = new ArrayList<>();
-            if (expose.getValueMin() != null) {
-                attributes.add("min:" + expose.getValueMin());
-            }
-            if (expose.getValueMax() != null) {
-                attributes.add("max:" + expose.getValueMax());
-            }
             if (expose.getValueStep() != null) {
                 attributes.add("step:" + expose.getValueStep());
             }

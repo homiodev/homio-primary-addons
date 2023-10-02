@@ -12,7 +12,7 @@ import org.json.JSONObject;
 public class Z2MDeviceEndpointAction extends Z2MDeviceEndpoint {
 
     public Z2MDeviceEndpointAction(@NotNull EntityContext entityContext) {
-        super(new Icon("fa fa-fw fa-circle-play", "#9636d6"), entityContext);
+        super(new Icon("fa fa-circle-play", "#9636d6"), entityContext);
     }
 
     public static Z2MDeviceEndpointActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {

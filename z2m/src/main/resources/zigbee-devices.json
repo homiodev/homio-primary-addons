@@ -518,7 +518,7 @@
                       {
                         "op": "eq",
                         "value": "true|1",
-                        "target": "fab fa-fw fa-squarespace fa-flip"
+                        "target": "fab fa-squarespace fa-flip"
                       }
                     ]
                   },
