@@ -66,6 +66,7 @@ import org.homio.api.ui.UI.Color;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.HardwareUtils;
 import org.homio.api.util.Lang;
+import org.homio.hquery.ProgressBar;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -114,6 +115,22 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         restartCoordinator();
         updateNotificationBlock();
         return ActionResponseModel.fired();
+    }
+
+    public ActionResponseModel updateFirmware(ProgressBar progressBar, String version) {
+        if (!version.equals(entity.getFirmwareVersion())) {
+            dispose(null);
+            return zigbee2mqttGitHub.updateProject("zigbee2mqtt", progressBar, true, projectUpdate -> {
+                if (!version.equals(zigbee2mqttGitHub.getInstalledVersion(entityContext))) {
+                    ZigBeeUtil.installOrUpdateZ2M(entityContext, version, projectUpdate);
+                    if (entity.isStart()) {
+                        restartCoordinator();
+                    }
+                }
+                return ActionResponseModel.fired();
+            }, null);
+        }
+        return ActionResponseModel.showError("Z2M same version");
     }
 
     private void installZ2MOrRestartCoordinator() {
@@ -426,25 +443,8 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         entityContext.ui().addNotificationBlock(entityID, "ZigBee2MQTT", new Icon("fas fa-bezier-curve", "#899343"), builder -> {
             builder.setStatus(entity.getStatus());
             builder.linkToEntity(entity);
-            builder.setUpdating(zigbee2mqttGitHub.isUpdating());
-            builder.setVersion(zigbee2mqttGitHub.getInstalledVersion(entityContext));
+            builder.setUpdatable(entity);
 
-            builder.setUpdatable((progressBar, version) -> {
-                    if (!version.equals(zigbee2mqttGitHub.getInstalledVersion(entityContext))) {
-                            dispose(null);
-                            return zigbee2mqttGitHub.updateProject("zigbee2mqtt", progressBar, true, projectUpdate -> {
-                                if (!version.equals(zigbee2mqttGitHub.getInstalledVersion(entityContext))) {
-                                    ZigBeeUtil.installOrUpdateZ2M(entityContext, version, projectUpdate);
-                                    if (entity.isStart()) {
-                                        restartCoordinator();
-                                    }
-                                }
-                                return ActionResponseModel.fired();
-                            }, null);
-                        }
-                        return ActionResponseModel.showError("Z2M same version");
-                    },
-                zigbee2mqttGitHub.getReleasesSince(zigbee2mqttGitHub.getInstalledVersion(entityContext), false));
             if (entity.getStatus().isOnline()) {
                 builder.addInfo("ACTION.SUCCESS", new Icon("fas fa-seedling", Color.GREEN));
             } else {

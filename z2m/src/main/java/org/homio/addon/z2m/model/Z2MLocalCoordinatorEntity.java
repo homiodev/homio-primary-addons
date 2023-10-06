@@ -28,16 +28,17 @@ import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextService;
 import org.homio.api.EntityContextService.MQTTEntityService;
-import org.homio.api.entity.HasFirmwareVersion;
 import org.homio.api.entity.log.HasEntitySourceLog;
 import org.homio.api.entity.types.MicroControllerBaseEntity;
 import org.homio.api.entity.types.StorageEntity;
 import org.homio.api.entity.validation.UIFieldValidationSize;
+import org.homio.api.entity.version.HasGitHubFirmwareVersion;
 import org.homio.api.entity.zigbee.ZigBeeBaseCoordinatorEntity;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.OptionModel;
 import org.homio.api.model.endpoint.DeviceEndpoint;
+import org.homio.api.repository.GitHubProject;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
@@ -53,6 +54,7 @@ import org.homio.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.homio.api.ui.field.selection.UIFieldEntityTypeSelection;
 import org.homio.api.util.DataSourceUtil;
 import org.homio.api.util.DataSourceUtil.SelectionSource;
+import org.homio.hquery.ProgressBar;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,7 +63,7 @@ import org.jetbrains.annotations.Nullable;
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#11A4C2")
 public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
-        implements HasFirmwareVersion, HasEntitySourceLog, ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
+        implements HasGitHubFirmwareVersion, HasEntitySourceLog, ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
 
     @UIField(order = 9999, disableEdit = true, hideInEdit = true)
     @UIFieldInlineEntities(bg = "#27FF000D")
@@ -261,9 +263,13 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     }
 
     @Override
-    @UIField(order = 1, hideInEdit = true)
-    public String getFirmwareVersion() {
-        return zigbee2mqttGitHub.getInstalledVersion(getEntityContext());
+    public @NotNull GitHubProject getGitHubProject() {
+        return zigbee2mqttGitHub;
+    }
+
+    @Override
+    public ActionResponseModel update(@NotNull ProgressBar progressBar, @NotNull String version) {
+        return getService().updateFirmware(progressBar, version);
     }
 
     @Getter

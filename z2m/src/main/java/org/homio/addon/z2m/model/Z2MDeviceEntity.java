@@ -179,7 +179,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
 
     @UIField(order = 3, disableEdit = true, label = "ieeeAddress")
     @UIFieldShowOnCondition("return !context.get('compactMode')")
-    @UIFieldGroup(value = "GENERAL", order = 5)
+    @UIFieldGroup("GENERAL")
     public String getIeeeAddressLabel() {
         return trimToEmpty(getIeeeAddress()).toUpperCase();
     }
@@ -225,9 +225,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
         return deviceService.getApplianceModel().isInterviewCompleted();
     }
 
-    @UIField(order = 1, hideOnEmpty = true)
-    @UIFieldGroup(value = "HARDWARE", order = 10, borderColor = Color.RED)
-    @UIFieldShowOnCondition("return !context.get('compactMode')")
+    @Override
     public String getFirmwareVersion() {
         return deviceService.getApplianceModel().getFirmwareVersion();
     }

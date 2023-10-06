@@ -17,10 +17,10 @@ import org.homio.addon.mqtt.workspace.Scratch3MQTTBlocks;
 import org.homio.api.EntityContext;
 import org.homio.api.EntityContextService;
 import org.homio.api.EntityContextService.MQTTEntityService;
-import org.homio.api.entity.HasFirmwareVersion;
 import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.storage.BaseFileSystemEntity;
 import org.homio.api.entity.types.StorageEntity;
+import org.homio.api.entity.version.HasFirmwareVersion;
 import org.homio.api.entity.widget.PeriodRequest;
 import org.homio.api.entity.widget.ability.HasGetStatusValue;
 import org.homio.api.entity.widget.ability.HasSetStatusValue;
@@ -42,12 +42,14 @@ import org.homio.api.ui.field.UIFieldProgress;
 import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
+import org.homio.api.ui.field.selection.SelectionConfiguration;
 import org.homio.api.ui.field.selection.dynamic.DynamicParameterFields;
 import org.homio.api.ui.field.selection.dynamic.SelectionWithDynamicParameterFields;
 import org.homio.api.ui.field.selection.dynamic.UIFieldDynamicSelection;
 import org.homio.api.util.DataSourceUtil;
 import org.homio.api.util.SecureString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 @Log4j2
@@ -61,7 +63,7 @@ public class MQTTClientEntity extends StorageEntity implements
     HasGetStatusValue,
     HasSetStatusValue,
     EntityContextService.MQTTEntityService,
-    UIFieldDynamicSelection.SelectionConfiguration,
+    SelectionConfiguration,
     HasEntityLog,
     HasFirmwareVersion {
 
@@ -89,7 +91,7 @@ public class MQTTClientEntity extends StorageEntity implements
 
     @Override
     public @NotNull Icon getFileSystemIcon() {
-        return selectionIcon();
+        return getSelectionIcon();
     }
 
     @Override
@@ -327,18 +329,8 @@ public class MQTTClientEntity extends StorageEntity implements
     }
 
     @Override
-    public String getTimeValueSeriesDescription() {
+    public @Nullable String getSelectionDescription() {
         return "MQTT.TIME_SERIES";
-    }
-
-    @Override
-    public String getGetStatusDescription() {
-        return "MQTT.GET_VALUE";
-    }
-
-    @Override
-    public String getSetStatusDescription() {
-        return "MQTT.SET_TOPIC";
     }
 
     @Override
@@ -399,7 +391,7 @@ public class MQTTClientEntity extends StorageEntity implements
     }
 
     @UIField(order = 1, inlineEdit = true)
-    @UIFieldGroup(value = "GENERAL", order = 10)
+    @UIFieldGroup("GENERAL")
     public boolean isStart() {
         return getJsonData("start", true);
     }
@@ -409,14 +401,13 @@ public class MQTTClientEntity extends StorageEntity implements
     }
 
     @Override
-    public @NotNull Icon selectionIcon() {
+    public @NotNull Icon getSelectionIcon() {
         return new Icon("fas fa-mattress-pillow", "#1CA6E2");
     }
 
     @Override
-    @UIField(order = 1, hideInEdit = true)
-    public String getFirmwareVersion() {
-        return optService().map(s -> s.getMosquittoInstaller().getVersion()).orElse("-");
+    public @Nullable String getFirmwareVersion() {
+        return optService().map(s -> s.getMosquittoInstaller().getVersion()).orElse(null);
     }
 
     @Override
