@@ -20,13 +20,14 @@ import org.homio.api.ui.field.action.v1.item.UIInfoItemBuilder.InfoType;
 public class Z2MDeviceStatusDeviceEndpoint extends Z2MDeviceEndpointInline {
 
     public Z2MDeviceStatusDeviceEndpoint(Z2MDeviceService deviceService) {
-        super(new Icon("fa fa-globe", "#42B52D"), deviceService.getEntityContext());
-        setValue(new StringType(UNKNOWN.name()), false);
+        super(new Icon("fa fa-globe", "#42B52D"), deviceService.context());
+        setInitialValue(new StringType(UNKNOWN.name()));
+        setIgnoreDuplicates(true);
         Options options = Options.dynamicEndpoint(ENDPOINT_DEVICE_STATUS, ApplianceModel.ENUM_TYPE);
         options.setValues(Status.set(UNKNOWN, ONLINE, OFFLINE, UNKNOWN, ERROR));
         init(deviceService, options);
 
-        getEntityContext().event().addEventListener("zigbee-%s".formatted(deviceService.getIeeeAddress()),
+        context().event().addEventListener("zigbee-%s".formatted(deviceService.getIeeeAddress()),
                 "z2m-endpoint", value -> setValue(new StringType(value.toString()), true));
     }
 

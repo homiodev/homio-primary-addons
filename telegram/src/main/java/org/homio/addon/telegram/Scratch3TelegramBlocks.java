@@ -15,13 +15,13 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.telegram.service.TelegramAnswer;
 import org.homio.addon.telegram.service.TelegramService;
-import org.homio.api.EntityContext;
+import org.homio.api.Context;
 import org.homio.api.entity.EntityFieldMetadata;
 import org.homio.api.state.RawType;
 import org.homio.api.state.State;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.field.UIField;
-import org.homio.api.workspace.BroadcastLock;
+import org.homio.api.workspace.Lock;
 import org.homio.api.workspace.WorkspaceBlock;
 import org.homio.api.workspace.scratch.MenuBlock;
 import org.homio.api.workspace.scratch.Scratch3Block;
@@ -47,9 +47,9 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     private final MenuBlock.StaticMenuBlock<Level> levelMenu;
     private final MenuBlock.ServerMenuBlock telegramEntityUsersMenu;
 
-    public Scratch3TelegramBlocks(TelegramService telegramService, EntityContext entityContext,
+    public Scratch3TelegramBlocks(TelegramService telegramService, Context context,
                                   TelegramEntrypoint telegramEntrypoint) {
-        super("#73868c", entityContext, telegramEntrypoint);
+        super("#73868c", context, telegramEntrypoint);
         setParent("communication");
         this.telegramService = telegramService;
 
@@ -139,7 +139,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         String[] buttons = new String[]{setting.okButton, setting.noButton};
         Message message = sendTelegramMessage(workspaceBlock, buttons, Function.identity(), context);
         if (message != null) {
-            BroadcastLock lock = workspaceBlock.getBroadcastLockManager().getOrCreateLock(workspaceBlock,
+            Lock lock = workspaceBlock.getLockManager().getLock(workspaceBlock,
                     TELEGRAM_EVENT_PREFIX + message.getMessageId());
             workspaceBlock.waitForLock(lock, context.telegramEntity.getWaitQuestionMaxSeconds(),
                     TimeUnit.SECONDS, () -> {
@@ -183,7 +183,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         workspaceBlock.handleNext(next -> {
             String command = workspaceBlock.getInputString(COMMAND);
             String description = workspaceBlock.getInputString(DESCR);
-            BroadcastLock lock = workspaceBlock.getBroadcastLockManager().getOrCreateLock(workspaceBlock);
+            Lock lock = workspaceBlock.getLockManager().getLock(workspaceBlock);
             this.telegramService.registerEvent(command, description, workspaceBlock.getId(), lock);
             workspaceBlock.subscribeToLock(lock, next::handle);
         });
@@ -192,7 +192,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     private @NotNull TelegramUser getEntityAndUsers(WorkspaceBlock workspaceBlock) {
         String entityUser = workspaceBlock.getMenuValue(USER, this.telegramEntityUsersMenu);
         String[] entityAndUser = entityUser.split("/");
-        TelegramEntity telegramEntity = entityContext.getEntity(entityAndUser[0]);
+        TelegramEntity telegramEntity = context.db().getEntity(entityAndUser[0]);
         if (telegramEntity == null) {
             workspaceBlock.logErrorAndThrow("Unable to find telegram: <{}>", entityAndUser[0]);
         }

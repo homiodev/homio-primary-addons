@@ -25,9 +25,9 @@ import org.homio.addon.z2m.Z2MEntrypoint;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.Z2MLocalCoordinatorService;
 import org.homio.addon.z2m.util.ApplianceModel;
-import org.homio.api.EntityContext;
-import org.homio.api.EntityContextService;
-import org.homio.api.EntityContextService.MQTTEntityService;
+import org.homio.api.Context;
+import org.homio.api.ContextService;
+import org.homio.api.ContextService.MQTTEntityService;
 import org.homio.api.entity.log.HasEntitySourceLog;
 import org.homio.api.entity.types.MicroControllerBaseEntity;
 import org.homio.api.entity.types.StorageEntity;
@@ -79,7 +79,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     }
 
     @UIField(order = 20, required = true, inlineEditWhenEmpty = true)
-    @UIFieldEntityTypeSelection(type = EntityContextService.MQTT_SERVICE)
+    @UIFieldEntityTypeSelection(type = ContextService.MQTT_SERVICE)
     @UIFieldLinkToEntity(StorageEntity.class)
     public String getMqttEntity() {
         return getJsonData("mqtt");
@@ -92,7 +92,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     @JsonIgnore
     public @Nullable MQTTEntityService getMqttEntityService() {
         SelectionSource selection = DataSourceUtil.getSelection(getMqttEntity());
-        return selection.getValue(getEntityContext());
+        return selection.getValue(context());
     }
 
     @Override
@@ -215,8 +215,8 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
 
     @Override
     @SneakyThrows
-    public @NotNull Z2MLocalCoordinatorService createService(@NotNull EntityContext entityContext) {
-        return new Z2MLocalCoordinatorService(entityContext, this);
+    public @NotNull Z2MLocalCoordinatorService createService(@NotNull Context context) {
+        return new Z2MLocalCoordinatorService(context, this);
     }
 
     @Override
@@ -299,7 +299,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
             if (StringUtils.isEmpty(name) || name.equalsIgnoreCase(address)) {
                 name = deviceHandler.getDeviceEntity().getDescription();
             }
-            ieeeAddress = deviceHandler.getDeviceEntity().getEntityID();
+            ieeeAddress = deviceHandler.getDeviceEntity().getIeeeAddress();
             endpointsCount = applianceModel.getDefinition().getExposes().size();
         }
     }

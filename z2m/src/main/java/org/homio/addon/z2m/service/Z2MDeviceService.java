@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.tuple.Pair;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
@@ -32,8 +33,8 @@ import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceEndpointUnknown;
 import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceStatusDeviceEndpoint;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
-import org.homio.api.EntityContext;
-import org.homio.api.EntityContextService.MQTTEntityService;
+import org.homio.api.Context;
+import org.homio.api.ContextService.MQTTEntityService;
 import org.homio.api.model.Icon;
 import org.homio.api.model.device.ConfigDeviceDefinition;
 import org.homio.api.model.device.ConfigDeviceDefinitionService;
@@ -58,7 +59,8 @@ public class Z2MDeviceService {
     @Getter
     private final Z2MDeviceEntity deviceEntity;
     @Getter
-    private final EntityContext entityContext;
+    @Accessors(fluent = true)
+    private final Context context;
     @Getter
     private String availability;
     @Getter
@@ -69,15 +71,15 @@ public class Z2MDeviceService {
 
     public Z2MDeviceService(Z2MLocalCoordinatorService coordinatorService, ApplianceModel applianceModel) {
         this.coordinatorService = coordinatorService;
-        this.entityContext = coordinatorService.getEntityContext();
+        this.context = coordinatorService.context();
 
         this.deviceEntity = new Z2MDeviceEntity(this, applianceModel.getIeeeAddress());
 
         deviceUpdated(applianceModel);
         addMissingEndpoints();
 
-        entityContext.ui().updateItem(deviceEntity);
-        entityContext.ui().sendSuccessMessage(Lang.getServerMessage("ENTITY_CREATED", "${%s}".formatted(this.applianceModel.getName())));
+        context.ui().updateItem(deviceEntity);
+        context.ui().toastr().success(Lang.getServerMessage("ENTITY_CREATED", "${%s}".formatted(this.applianceModel.getName())));
         setEntityOnline();
     }
 
@@ -88,7 +90,7 @@ public class Z2MDeviceService {
     public void dispose() {
         log.warn("[{}]: Dispose zigbee device: {}", coordinatorService.getEntityID(), deviceEntity.getTitle());
         removeMqttListeners();
-        entityContext.ui().updateItem(deviceEntity);
+        context.ui().updateItem(deviceEntity);
         downLinkQualityToZero();
         initialized = false;
     }
@@ -112,7 +114,7 @@ public class Z2MDeviceService {
             }
         }
         addEndpointOptional(ENDPOINT_LAST_SEEN, key -> {
-            Z2MDeviceEndpointLastSeen lastSeenEndpoint = new Z2MDeviceEndpointLastSeen(entityContext);
+            Z2MDeviceEndpointLastSeen lastSeenEndpoint = new Z2MDeviceEndpointLastSeen(context);
             lastSeenEndpoint.init(this, dynamicEndpoint(ENDPOINT_LAST_SEEN, NUMBER_TYPE));
             return lastSeenEndpoint;
         });
@@ -124,7 +126,7 @@ public class Z2MDeviceService {
         if (!initialized) {
             log.info("[{}]: Initialize zigbee device: {}", coordinatorService.getEntityID(), deviceEntity.getTitle());
             addMqttListeners();
-            entityContext.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()),
+            context.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()),
                 new StringType(deviceEntity.getStatus().toString()));
             initialized = true;
         } else {
@@ -175,9 +177,9 @@ public class Z2MDeviceService {
 
         coordinatorService.getMqttEntityService().addListener(topic + "/availability", applianceModel.getIeeeAddress(), payload -> {
             availability = payload == null ? null : payload.toString();
-            entityContext.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()),
+            context.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()),
                 new StringType(deviceEntity.getStatus().toString()));
-            entityContext.ui().updateItem(deviceEntity);
+            context.ui().updateItem(deviceEntity);
             if ("offline".equals(availability)) {
                 downLinkQualityToZero();
             }
@@ -264,7 +266,7 @@ public class Z2MDeviceService {
                         missedEndpoint.mqttUpdate(payload);
 
                         addEndpointOptional(key, s -> missedEndpoint);
-                        entityContext.ui().updateItem(deviceEntity);
+                        context.ui().updateItem(deviceEntity);
                     }
                 }
             } catch (Exception ex) {
@@ -277,7 +279,7 @@ public class Z2MDeviceService {
             endpoints.get(ENDPOINT_LAST_SEEN).mqttUpdate(null);
         }
         if (deviceEntity.isLogEvents() && !sb.isEmpty()) {
-            entityContext.ui().sendInfoMessage(applianceModel.getGroupDescription(), String.join("\n", sb));
+            context.ui().toastr().info(applianceModel.getGroupDescription(), String.join("\n", sb));
         }
     }
 
@@ -316,7 +318,7 @@ public class Z2MDeviceService {
     private void addMissingEndpoints() {
         for (Pair<String, String> missingEndpoints : coordinatorService.getMissingEndpoints(applianceModel.getIeeeAddress())) {
             if ("action_event".equals(missingEndpoints.getValue())) {
-                addEndpointOptional(missingEndpoints.getKey(), key -> Z2MDeviceEndpointAction.createActionEvent(key, this, entityContext));
+                addEndpointOptional(missingEndpoints.getKey(), key -> Z2MDeviceEndpointAction.createActionEvent(key, this, context));
             }
         }
     }
@@ -324,7 +326,7 @@ public class Z2MDeviceService {
     private Z2MDeviceEndpoint addEndpointOptional(String key, Function<String, Z2MDeviceEndpoint> endpointProducer) {
         if (!endpoints.containsKey(key)) {
             endpoints.put(key, endpointProducer.apply(key));
-            entityContext.event().fireEvent("endpoint-%s-%s".formatted(applianceModel.getIeeeAddress(), key),
+            context.event().fireEvent("endpoint-%s-%s".formatted(applianceModel.getIeeeAddress(), key),
                 new StringType(ONLINE.toString()));
         }
         return endpoints.get(key);
@@ -366,26 +368,26 @@ public class Z2MDeviceService {
         if (z2mCluster == null) {
             ConfigDeviceEndpoint configDeviceEndpoint = getValueFromMap(CONFIG_DEVICE_SERVICE.getDeviceEndpoints(), expose);
             if (configDeviceEndpoint != null) {
-                endpoint = new Z2MDeviceEndpointGeneral(configDeviceEndpoint.getIcon(), configDeviceEndpoint.getIconColor(), entityContext);
+                endpoint = new Z2MDeviceEndpointGeneral(configDeviceEndpoint.getIcon(), configDeviceEndpoint.getIconColor(), context);
             } else {
-                endpoint = new Z2MDeviceEndpointUnknown(entityContext);
+                endpoint = new Z2MDeviceEndpointUnknown(context);
             }
         } else {
-            endpoint = CommonUtils.newInstance(z2mCluster, entityContext);
+            endpoint = CommonUtils.newInstance(z2mCluster, context);
         }
         endpoint.init(this, expose);
         return endpoint;
     }
 
     private void createOrUpdateDeviceGroup() {
-        entityContext.var().createGroup("z2m", "ZigBee2MQTT", builder ->
+        context.var().createGroup("z2m", "ZigBee2MQTT", builder ->
             builder.setLocked(true).setIcon(new Icon("fab fa-laravel", "#ED3A3A")));
 
         Icon icon = new Icon(
                 CONFIG_DEVICE_SERVICE.getDeviceIcon(findDevices(), "fas fa-server"),
                 CONFIG_DEVICE_SERVICE.getDeviceIconColor(findDevices(), UI.Color.random())
         );
-        entityContext.var().createSubGroup("z2m", requireNonNull(deviceEntity.getIeeeAddress()), getDeviceFullName(), builder ->
+        context.var().createSubGroup("z2m", requireNonNull(deviceEntity.getIeeeAddress()), getDeviceFullName(), builder ->
             builder.setDescription(applianceModel.getGroupDescription()).setLocked(true).setIcon(icon));
     }
 

@@ -5,6 +5,7 @@
     "MODEL": "Model: {{VALUE}}",
     "NAME": "Name: {{VALUE}}",
     "BRAND": "Brand: {{VALUE}}",
+    "HARDWARE": "Hardware ID: {{VALUE}}",
     "REQUIRE_AUTH": "<span style=\"color:red;\">Require authentication to work with camera<span>",
     "NEW_DEVICE_QUESTION": "Do you want create new video stream?"
   }

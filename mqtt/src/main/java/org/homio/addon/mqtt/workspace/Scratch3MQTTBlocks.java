@@ -9,10 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.homio.addon.mqtt.MQTTEntrypoint;
 import org.homio.addon.mqtt.entity.MQTTClientEntity;
-import org.homio.api.EntityContext;
+import org.homio.api.Context;
 import org.homio.api.entity.EntityFieldMetadata;
 import org.homio.api.ui.field.UIField;
-import org.homio.api.workspace.BroadcastLock;
+import org.homio.api.workspace.Lock;
 import org.homio.api.workspace.WorkspaceBlock;
 import org.homio.api.workspace.scratch.MenuBlock;
 import org.homio.api.workspace.scratch.Scratch3Block;
@@ -36,8 +36,8 @@ public class Scratch3MQTTBlocks extends Scratch3ExtensionBlocks {
     private final Scratch3Block subscribeToValue;
     private final MenuBlock.ServerMenuBlock mqttMenu;
 
-    public Scratch3MQTTBlocks(EntityContext entityContext, MQTTEntrypoint mqttEntrypoint) {
-        super(COLOR, entityContext, mqttEntrypoint);
+    public Scratch3MQTTBlocks(Context context, MQTTEntrypoint mqttEntrypoint) {
+        super(COLOR, context, mqttEntrypoint);
         setParent("storage");
         this.mqttEntrypoint = mqttEntrypoint;
 
@@ -81,7 +81,7 @@ public class Scratch3MQTTBlocks extends Scratch3ExtensionBlocks {
         String entityID = workspaceBlock.getMenuValue("MQTT", this.mqttMenu);
         workspaceBlock.handleNextOptional(next -> {
             String key = isEmpty(topic) ? entityID : entityID + "_" + topic;
-            BroadcastLock lock = workspaceBlock.getBroadcastLockManager().getOrCreateLock(workspaceBlock, key, payload);
+            Lock lock = workspaceBlock.getLockManager().getLock(workspaceBlock, key, payload);
             workspaceBlock.subscribeToLock(lock, next::handle);
         });
     }

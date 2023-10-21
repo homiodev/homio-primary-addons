@@ -7,7 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.telegram.TelegramEntity.TelegramUser;
 import org.homio.addon.telegram.service.TelegramService;
-import org.homio.api.workspace.BroadcastLock;
+import org.homio.api.workspace.Lock;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -16,7 +16,7 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 @Log4j2
 public final class TelegramEventCommand extends TelegramBaseCommand {
 
-    private final Map<String, BroadcastLock> handlers = new HashMap<>();
+    private final Map<String, Lock> handlers = new HashMap<>();
 
     public TelegramEventCommand(String commandIdentifier, String description, TelegramService.TelegramBot telegramBot) {
         super(commandIdentifier, "Event: '" + StringUtils.defaultIfBlank(description, commandIdentifier) + "'",
@@ -29,13 +29,13 @@ public final class TelegramEventCommand extends TelegramBaseCommand {
         if (telegramUser == null) {
             sb.append("User: <").append(user.getFirstName()).append("> not registered, please register user first");
         } else {
-            for (BroadcastLock broadcastLock : handlers.values()) {
-                broadcastLock.signalAll(strings.length == 0 ? "" : strings.length == 1 ? strings[0] : Arrays.asList(strings));
+            for (Lock lock : handlers.values()) {
+                lock.signalAll(strings.length == 0 ? "" : strings.length == 1 ? strings[0] : Arrays.asList(strings));
             }
         }
     }
 
-    public void addHandler(String workspaceId, BroadcastLock lock) {
+    public void addHandler(String workspaceId, Lock lock) {
         handlers.put(workspaceId, lock);
     }
 

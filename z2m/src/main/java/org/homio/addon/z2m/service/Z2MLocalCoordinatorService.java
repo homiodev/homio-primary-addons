@@ -48,12 +48,12 @@ import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition;
 import org.homio.addon.z2m.util.Z2MConfiguration;
 import org.homio.addon.z2m.util.ZigBeeUtil;
-import org.homio.api.EntityContext;
-import org.homio.api.EntityContextBGP;
-import org.homio.api.EntityContextBGP.ProcessContext;
-import org.homio.api.EntityContextBGP.ThreadContext;
-import org.homio.api.EntityContextService.MQTTEntityService;
-import org.homio.api.EntityContextUI;
+import org.homio.api.Context;
+import org.homio.api.ContextBGP;
+import org.homio.api.ContextBGP.ProcessContext;
+import org.homio.api.ContextBGP.ThreadContext;
+import org.homio.api.ContextService.MQTTEntityService;
+import org.homio.api.ContextUI;
 import org.homio.api.console.ConsolePluginFrame.FrameConfiguration;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.model.ActionResponseModel;
@@ -102,16 +102,16 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     private Z2MConfiguration configuration;
     private boolean isRunningLocally;
 
-    public Z2MLocalCoordinatorService(@NotNull EntityContext entityContext, @NotNull Z2MLocalCoordinatorEntity entity) {
-        super(entityContext, entity, true);
+    public Z2MLocalCoordinatorService(@NotNull Context context, @NotNull Z2MLocalCoordinatorEntity entity) {
+        super(context, entity, true);
     }
 
     @SneakyThrows
     public ActionResponseModel reinstallZ2M() {
         this.dispose(null);
-        entityContext.event().ensureInternetUp("Unable to reinstall z2m without internet");
+        context.event().ensureInternetUp("Unable to reinstall z2m without internet");
         zigbee2mqttGitHub.deleteProject();
-        ZigBeeUtil.installZ2M(entityContext);
+        ZigBeeUtil.installZ2M(context);
         restartCoordinator();
         updateNotificationBlock();
         return ActionResponseModel.fired();
@@ -121,8 +121,8 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         if (!version.equals(entity.getFirmwareVersion())) {
             dispose(null);
             return zigbee2mqttGitHub.updateProject("zigbee2mqtt", progressBar, true, projectUpdate -> {
-                if (!version.equals(zigbee2mqttGitHub.getInstalledVersion(entityContext))) {
-                    ZigBeeUtil.installOrUpdateZ2M(entityContext, version, projectUpdate);
+                if (!version.equals(zigbee2mqttGitHub.getInstalledVersion(context))) {
+                    ZigBeeUtil.installOrUpdateZ2M(context, version, projectUpdate);
                     if (entity.isStart()) {
                         restartCoordinator();
                     }
@@ -133,11 +133,25 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         return ActionResponseModel.showError("Z2M same version");
     }
 
-    private void installZ2MOrRestartCoordinator() {
-        if (!ZigBeeUtil.isZ2MInstalled()) {
-            ZigBeeUtil.installZ2M(entityContext);
+    public void dispose(@Nullable Exception ex) {
+        initialized = false;
+        if (ex != null) {
+            this.entity.setStatusError(ex);
+        } else {
+            this.entity.setStatus(Status.OFFLINE, null);
         }
-        restartCoordinator();
+        ContextBGP.cancel(checkFrontendTC);
+        ContextBGP.cancel(processContext);
+
+        log.warn("[{}]: Dispose coordinator", entityID, ex);
+
+        context.ui().console().unRegisterPlugin("zigbee2mqtt-console-" + entityID);
+        context.ui().toastr().warn("Dispose zigBee coordinator");
+        context.ui().removeHeaderButton("discover-" + entityID);
+        for (Z2MDeviceService deviceHandler : deviceHandlers.values()) {
+            deviceHandler.dispose();
+        }
+
         updateNotificationBlock();
     }
 
@@ -164,26 +178,33 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         runZigBee2MQTT();
     }
 
-    public void dispose(@Nullable Exception ex) {
-        initialized = false;
-        if (ex != null) {
-            this.entity.setStatusError(ex);
-        } else {
-            this.entity.setStatus(Status.OFFLINE, null);
+    public ActionResponseModel startScan() {
+        synchronized (scanStarted) {
+            if (scanStarted.get()) {
+                throw new IllegalStateException("ZIGBEE.ERROR.SCAN_ALREADY_STARTED");
+            }
+            if (!entity.getStatus().isOnline()) {
+                throw new IllegalStateException("ZIGBEE.ERROR.COORDINATOR_OFFLINE");
+            }
+            log.info("[{}]: Start scanning...", entityID);
+            scanStarted.set(true);
+            int duration = entity.getDiscoveryDuration();
+
+            try {
+                sendRequest("permit_join", new JSONObject().put("value", true).put("time", duration).toString());
+                ZigBeeUtil.zigbeeScanStarted(context, entityID, duration,
+                        () -> scanStarted.set(false),
+                        () -> {
+                            sendRequest("permit_join", new JSONObject().put("value", false).toString());
+                            scanStarted.set(false);
+                            context.ui().removeHeaderButton("zigbee-scan-" + entityID);
+                        });
+            } catch (Exception ex) {
+                log.error("[{}]: Unable to send request to discover devices. {}", entityID, getErrorMessage(ex));
+                return ActionResponseModel.showError(ex);
+            }
+            return ActionResponseModel.showSuccess("ZIGBEE.START_SUCCESS");
         }
-        EntityContextBGP.cancel(checkFrontendTC);
-        EntityContextBGP.cancel(processContext);
-
-        log.warn("[{}]: Dispose coordinator", entityID, ex);
-
-        entityContext.ui().unRegisterConsolePlugin("zigbee2mqtt-console-" + entityID);
-        entityContext.ui().sendWarningMessage("Dispose zigBee coordinator");
-        entityContext.ui().removeHeaderButton("discover-" + entityID);
-        for (Z2MDeviceService deviceHandler : deviceHandlers.values()) {
-            deviceHandler.dispose();
-        }
-
-        updateNotificationBlock();
     }
 
     public void restartCoordinator() {
@@ -198,15 +219,40 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         updateNotificationBlock();
     }
 
-    @Override
-    protected void firstInitialize() {
-        try {
-            assembleAllEndpoints(entityContext);
-            initialize();
-        } catch (Exception ex) {
-            updateNotificationBlock();
-            throw ex;
-        }
+    public void updateNotificationBlock() {
+        context.ui().notification().addBlock(entityID, "ZigBee2MQTT", new Icon("fas fa-bezier-curve", "#899343"), builder -> {
+            builder.setStatus(entity.getStatus());
+            builder.linkToEntity(entity);
+            builder.setUpdatable(entity);
+
+            if (entity.getStatus().isOnline()) {
+                builder.addInfo("ACTION.SUCCESS", new Icon("fas fa-seedling", Color.GREEN));
+            } else {
+                builder.addErrorStatusInfo(entity.getStatusMessage());
+            }
+            addUpdateButton(builder);
+
+            builder.contextMenuActionBuilder(contextAction -> {
+                if (!entity.isStart()) {
+                    contextAction.addSelectableButton("START", new Icon("fas fa-play", Color.PRIMARY_COLOR), (ec, params) -> {
+                        if (!entity.isStart()) {
+                            context.db().save(entity.setStart(true));
+                            return ActionResponseModel.success();
+                        }
+                        return ActionResponseModel.showWarn("W.ERROR.COORDINATOR_ALREADY_STARTED");
+                    });
+                }
+                contextAction.addSelectableButton("ZIGBEE_START_SCAN", new Icon("fas fa-search-location", "#899343"),
+                        (ec, params) -> entity.scan());
+                contextAction.addSelectableButton("RESTART", new Icon("fas fa-power-off", Color.RED),
+                        (ec, params) -> restartZ2M());
+            });
+
+            List<Z2MDeviceEntity> devices = deviceHandlers.values().stream()
+                    .map(Z2MDeviceService::getDeviceEntity)
+                    .collect(Collectors.toList());
+            builder.setDevices(devices);
+        });
     }
 
     @Override
@@ -236,32 +282,14 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         return ActionResponseModel.fired();
     }
 
-    public ActionResponseModel startScan() {
-        synchronized (scanStarted) {
-            if (scanStarted.get()) {
-                throw new IllegalStateException("ZIGBEE.ERROR.SCAN_ALREADY_STARTED");
-            }
-            if (!entity.getStatus().isOnline()) {
-                throw new IllegalStateException("ZIGBEE.ERROR.COORDINATOR_OFFLINE");
-            }
-            log.info("[{}]: Start scanning...", entityID);
-            scanStarted.set(true);
-            int duration = entity.getDiscoveryDuration();
-
-            try {
-                sendRequest("permit_join", new JSONObject().put("value", true).put("time", duration).toString());
-                ZigBeeUtil.zigbeeScanStarted(entityContext, entityID, duration,
-                        () -> scanStarted.set(false),
-                        () -> {
-                            sendRequest("permit_join", new JSONObject().put("value", false).toString());
-                            scanStarted.set(false);
-                            entityContext.ui().removeHeaderButton("zigbee-scan-" + entityID);
-                        });
-            } catch (Exception ex) {
-                log.error("[{}]: Unable to send request to discover devices. {}", entityID, getErrorMessage(ex));
-                return ActionResponseModel.showError(ex);
-            }
-            return ActionResponseModel.showSuccess("ZIGBEE.START_SUCCESS");
+    @Override
+    protected void firstInitialize() {
+        try {
+            assembleAllEndpoints(context);
+            initialize();
+        } catch (Exception ex) {
+            updateNotificationBlock();
+            throw ex;
         }
     }
 
@@ -328,42 +356,27 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         return entity.isStart() ? restartIfRequire(entity) : (initialized ? Status.CLOSING : null);
     }
 
+    private void installZ2MOrRestartCoordinator() {
+        if (!ZigBeeUtil.isZ2MInstalled()) {
+            ZigBeeUtil.installZ2M(context);
+        }
+        restartCoordinator();
+        updateNotificationBlock();
+    }
+
     private void scheduleUpdateStatusIfRequire() {
         if (isRequireStartOrStop()) {
             synchronized (updateCoordinatorSync) {
                 if (isRequireStartOrStop()) {
                     updatingStatus = desiredStatus;
                     desiredStatus = null;
-                    entityContext.bgp().builder("z2m-updating-" + entityID).execute(this::executeUpdateStateIfRequire);
+                    context.bgp().builder("z2m-updating-" + entityID).execute(this::executeUpdateStateIfRequire);
                 } else {
                     this.desiredStatus = null;
                 }
             }
         } else {
             this.desiredStatus = null;
-        }
-    }
-
-    private void executeUpdateStateIfRequire() {
-        try {
-            switch (Objects.requireNonNull(updatingStatus)) {
-                case CLOSING -> {
-                    if (initialized) {
-                        this.dispose(null);
-                    }
-                }
-                case INITIALIZE, RESTARTING -> {
-                    if (initialized) {
-                        this.dispose(null);
-                    }
-                    this.initializeZ2M();
-                }
-            }
-            entityContext.ui().updateItem(entity);
-            // fire recursively if state updated since last time
-            scheduleUpdateStatusIfRequire();
-        } finally {
-            this.updatingStatus = null;
         }
     }
 
@@ -439,40 +452,27 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         updateNotificationBlock();
     }
 
-    public void updateNotificationBlock() {
-        entityContext.ui().addNotificationBlock(entityID, "ZigBee2MQTT", new Icon("fas fa-bezier-curve", "#899343"), builder -> {
-            builder.setStatus(entity.getStatus());
-            builder.linkToEntity(entity);
-            builder.setUpdatable(entity);
-
-            if (entity.getStatus().isOnline()) {
-                builder.addInfo("ACTION.SUCCESS", new Icon("fas fa-seedling", Color.GREEN));
-            } else {
-                builder.addErrorStatusInfo(entity.getStatusMessage());
-            }
-            addUpdateButton(builder);
-
-            builder.contextMenuActionBuilder(contextAction -> {
-                if (!entity.isStart()) {
-                    contextAction.addSelectableButton("START", new Icon("fas fa-play", Color.PRIMARY_COLOR), (ec, params) -> {
-                        if (!entity.isStart()) {
-                            entityContext.save(entity.setStart(true));
-                            return ActionResponseModel.success();
-                        }
-                        return ActionResponseModel.showWarn("W.ERROR.COORDINATOR_ALREADY_STARTED");
-                    });
+    private void executeUpdateStateIfRequire() {
+        try {
+            switch (Objects.requireNonNull(updatingStatus)) {
+                case CLOSING -> {
+                    if (initialized) {
+                        this.dispose(null);
+                    }
                 }
-                contextAction.addSelectableButton("ZIGBEE_START_SCAN", new Icon("fas fa-search-location", "#899343"),
-                        (ec, params) -> entity.scan());
-                contextAction.addSelectableButton("RESTART", new Icon("fas fa-power-off", Color.RED),
-                        (ec, params) -> restartZ2M());
-            });
-
-            List<Z2MDeviceEntity> devices = deviceHandlers.values().stream()
-                    .map(Z2MDeviceService::getDeviceEntity)
-                    .collect(Collectors.toList());
-            builder.setDevices(devices);
-        });
+                case INITIALIZE, RESTARTING -> {
+                    if (initialized) {
+                        this.dispose(null);
+                    }
+                    this.initializeZ2M();
+                }
+            }
+            context.ui().updateItem(entity);
+            // fire recursively if state updated since last time
+            scheduleUpdateStatusIfRequire();
+        } finally {
+            this.updatingStatus = null;
+        }
     }
 
     private void setEntityOnline() {
@@ -482,17 +482,17 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
             deviceService.setEntityOnline();
         }
 
-        entityContext.ui().headerButtonBuilder("discover-" + entityID)
+        context.ui().headerButtonBuilder("discover-" + entityID)
                 .title("ZIGBEE_START_SCAN")
                 .icon(new Icon("fas fa-search-location", "#3E7BBD"))
                 .availableForPage(ZigBeeDeviceBaseEntity.class)
                 .clickAction(this::startScan).build();
 
         // register frame console
-        checkFrontendTC = entityContext.bgp().builder("z2m-check-frontend-" + getEntityID())
+        checkFrontendTC = context.bgp().builder("z2m-check-frontend-" + getEntityID())
                 .delay(Duration.ofSeconds(10)).execute(() ->
-                        entityContext.ui().registerConsolePlugin("zigbee2mqtt-frontend-" + entityID,
-                            new ZigBee2MQTTFrontendConsolePlugin(entityContext, new FrameConfiguration(frontendURL.toString()))));
+                context.ui().console().registerPlugin("zigbee2mqtt-frontend-" + entityID,
+                    new ZigBee2MQTTFrontendConsolePlugin(context, new FrameConfiguration(frontendURL.toString()))));
 
         // register mqtt bridge event listeners
         for (Z2MBridgeTopicHandlers handler : Z2MBridgeTopicHandlers.values()) {
@@ -616,7 +616,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
 
     private void deviceRemoved(Z2MDeviceService deviceService) {
         log.info("[{}]: Device removed: {}", entityID, deviceService);
-        entityContext.ui().updateItem(entity);
+        context.ui().updateItem(entity);
         deviceService.dispose();
         deviceHandlers.remove(deviceService.getIeeeAddress());
     }
@@ -627,7 +627,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
 
     private void startZ2MLocalProcess() {
         AtomicReference<Level> infoLevel = new AtomicReference<>(Level.INFO);
-        processContext = entityContext
+        processContext = context
                 .bgp().processBuilder(getEntityID())
                 .onStarted(t -> setEntityOnline())
                 .attachLogger(log)
@@ -650,19 +650,19 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
                 .execute(getNpm() + " start --prefix " + zigbee2mqttGitHub.getLocalProjectPath());
     }
 
-    private void assembleAllEndpoints(EntityContext entityContext) {
+    private void assembleAllEndpoints(Context context) {
         if (allEndpoints.isEmpty()) {
-            List<Class<? extends Z2MDeviceEndpoint>> z2mClusters = entityContext.getClassesWithParent(Z2MDeviceEndpoint.class);
+            List<Class<? extends Z2MDeviceEndpoint>> z2mClusters = context.getClassesWithParent(Z2MDeviceEndpoint.class);
             for (Class<? extends Z2MDeviceEndpoint> z2mCluster : z2mClusters) {
                 if (!Z2MDeviceEndpointInline.class.isAssignableFrom(z2mCluster)) {
-                    Z2MDeviceEndpoint endpoint = CommonUtils.newInstance(z2mCluster, entityContext);
+                    Z2MDeviceEndpoint endpoint = CommonUtils.newInstance(z2mCluster, context);
                     allEndpoints.put(endpoint.getEndpointDefinition(), z2mCluster);
                 }
             }
         }
     }
 
-    private void addUpdateButton(EntityContextUI.NotificationBlockBuilder builder) {
+    private void addUpdateButton(ContextUI.NotificationBlockBuilder builder) {
         if (!CONFIG_DEVICE_SERVICE.isEqualServerConfig()) {
             builder.addInfo("ZIGBEE.CONFIG_OUTDATED", null).setRightButton(new Icon("fas fa-download"), "UPDATE",
                     "W.CONFIRM.Z2M_DOWNLOAD_CONFIG", (ec, params) -> {
@@ -686,7 +686,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
                 if (!applianceModelMap.containsKey(entry.getKey())) {
                     service.deviceRemoved(entry.getValue());
                     iterator.remove();
-                    service.entityContext.ui().removeItem(entry.getValue().getDeviceEntity());
+                    service.context.ui().removeItem(entry.getValue().getDeviceEntity());
                 }
             }
 
@@ -700,11 +700,11 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
                 if (!service.deviceHandlers.containsKey(newApplianceModel.getIeeeAddress())) {
                     Z2MLocalCoordinatorService.log.info("[{}]: New device added: {}", service.entityID, newApplianceModel);
                     service.deviceHandlers.put(newApplianceModel.getIeeeAddress(), new Z2MDeviceService(service, newApplianceModel));
-                    service.entityContext.ui().updateItem(service.entity);
+                    service.context.ui().updateItem(service.entity);
                 }
                 Z2MDeviceService deviceService = service.deviceHandlers.get(newApplianceModel.getIeeeAddress());
                 deviceService.deviceUpdated(newApplianceModel);
-                service.entityContext.ui().updateItem(deviceService.getDeviceEntity());
+                service.context.ui().updateItem(deviceService.getDeviceEntity());
             }
         }),
         extensions(Level.INFO, (payload, service) -> {
@@ -733,8 +733,8 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         state(Level.WARN, (payload, service) -> {
             String status = payload.get("raw").asText();
             service.entity.setStatus("online".equals(status) ? Status.ONLINE : "offline".equals(status) ? Status.OFFLINE : Status.ERROR);
-            service.entityContext.ui().sendInfoMessage("ZigBee2MQTT coordinator status: " + payload);
-            service.entityContext.event().fireEvent("zigbee_coordinator-" + service.getEntityID(),
+            service.context.ui().toastr().info("ZigBee2MQTT coordinator status: " + payload);
+            service.context.event().fireEvent("zigbee_coordinator-" + service.getEntityID(),
                 new StringType(service.entity.getStatus().toString()));
         });
 
@@ -751,7 +751,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     @RequiredArgsConstructor
     private enum Z2MBridgeResponseTopicHandlers {
         otaCheck("device/ota_update/check", Level.INFO, (payload, service) ->
-                service.entityContext.ui().sendSuccessMessage(
+            service.context.ui().toastr().success(
                         Lang.getServerMessage("ZIGBEE.OTA_CHECK_" + payload.get("updateAvailable").asText().toUpperCase(),
                                 payload.get("id").asText())));
 

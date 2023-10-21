@@ -8,7 +8,7 @@ import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
-import org.homio.api.EntityContext;
+import org.homio.api.Context;
 import org.homio.api.model.Icon;
 import org.homio.api.state.StringType;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +22,8 @@ public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
             {-0.9689f, 1.8758f, 0.0415f},
             {0.0557f, -0.2040f, 1.0570f}};
 
-    public Z2MDeviceEndpointColor(@NotNull EntityContext entityContext) {
-        super(new Icon("fas fa-palette", "#FF009B"), entityContext);
+    public Z2MDeviceEndpointColor(@NotNull Context context) {
+        super(new Icon("fas fa-palette", "#FF009B"), context);
     }
 
     public static int[] cieToRgb(double x, double y) {

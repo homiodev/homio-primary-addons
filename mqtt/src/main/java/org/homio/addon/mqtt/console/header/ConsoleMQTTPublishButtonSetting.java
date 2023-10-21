@@ -2,7 +2,7 @@ package org.homio.addon.mqtt.console.header;
 
 import java.util.Arrays;
 import java.util.List;
-import org.homio.api.EntityContext;
+import org.homio.api.Context;
 import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;
 import org.homio.api.setting.SettingPluginButton;
@@ -34,7 +34,7 @@ public class ConsoleMQTTPublishButtonSetting implements ConsoleHeaderSettingPlug
     }
 
     @Override
-    public List<ActionInputParameter> getInputParameters(EntityContext entityContext, String value) {
+    public List<ActionInputParameter> getInputParameters(Context context, String value) {
         return Arrays.asList(
                 ActionInputParameter.text("Topic", "example/test"),
                 ActionInputParameter.text("Content", "{value:2}"),

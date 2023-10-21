@@ -4,21 +4,21 @@ import lombok.val;
 import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
 import org.homio.addon.z2m.service.Z2MDeviceService;
 import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceEndpointActionEvent;
-import org.homio.api.EntityContext;
+import org.homio.api.Context;
 import org.homio.api.model.Icon;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 public class Z2MDeviceEndpointAction extends Z2MDeviceEndpoint {
 
-    public Z2MDeviceEndpointAction(@NotNull EntityContext entityContext) {
-        super(new Icon("fa fa-circle-play", "#9636d6"), entityContext);
+    public Z2MDeviceEndpointAction(@NotNull Context context) {
+        super(new Icon("fa fa-circle-play", "#9636d6"), context);
     }
 
-    public static Z2MDeviceEndpointActionEvent createActionEvent(String action, Z2MDeviceService deviceService, EntityContext entityContext) {
+    public static Z2MDeviceEndpointActionEvent createActionEvent(String action, Z2MDeviceService deviceService, Context context) {
         val configDeviceEndpoint = deviceService.getConfigDeviceEndpoint(action);
         val ActionEventEndpoint = new Z2MDeviceEndpointActionEvent(deviceService, action, configDeviceEndpoint);
-        entityContext.ui().updateItem(deviceService.getDeviceEntity());
+        context.ui().updateItem(deviceService.getDeviceEntity());
         return ActionEventEndpoint;
     }
 
@@ -32,10 +32,10 @@ public class Z2MDeviceEndpointAction extends Z2MDeviceEndpoint {
         Z2MDeviceEndpoint endpoint = deviceService.getEndpoints().get(actionKey);
         if (endpoint == null) {
             endpoint = deviceService.addDynamicEndpoint(actionKey, () ->
-                Z2MDeviceEndpointAction.createActionEvent(actionKey, deviceService, getEntityContext()));
+                Z2MDeviceEndpointAction.createActionEvent(actionKey, deviceService, context()));
 
             deviceService.addDynamicEndpoint("action_any", () ->
-                Z2MDeviceEndpointAction.createActionEvent("action_any", deviceService, getEntityContext()));
+                Z2MDeviceEndpointAction.createActionEvent("action_any", deviceService, context()));
         }
         endpoint.mqttUpdate(payload);
         // 'action' counter

@@ -58,6 +58,8 @@ import org.json.JSONObject;
 @SuppressWarnings("unused")
 public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
 
+    public static final String PREFIX = "z2m";
+
     @JsonIgnore
     private transient Z2MDeviceService deviceService;
 
@@ -246,7 +248,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     }
 
     public boolean isCompactMode() {
-        return getEntityContext().setting().getValue(ZigBeeEntityCompactModeSetting.class);
+        return context().setting().getValue(ZigBeeEntityCompactModeSetting.class);
     }
 
     @UIField(order = 1, type = SelectBox, color = "#7FE486", inlineEdit = true)
@@ -338,8 +340,38 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     }
 
     @Override
-    protected @NotNull String getDevicePrefix() {
-        return "z2m";
+    public void assembleActions(UIInputBuilder uiInputBuilder) {
+        List<ConfigDeviceDefinition> deviceDefinitionModels = deviceService.findDevices();
+        List<WidgetDefinition> widgetDefinitions = CONFIG_DEVICE_SERVICE.getDeviceWidgets(deviceDefinitionModels);
+        context().widget().createTemplateWidgetActions(uiInputBuilder, this, widgetDefinitions);
+
+        uiInputBuilder.addOpenDialogSelectableButton("CUSTOM_DESCRIPTION", new Icon("fas fa-comment"), null, (context, params) -> {
+            String description = params.getString("description");
+
+            if (!Objects.equals(description, getCustomDescription())) {
+                deviceService.updateConfiguration("customDescription", description);
+                context.ui().updateItem(this);
+            }
+            return null;
+        }).editDialog(dialogBuilder -> {
+            dialogBuilder.setTitle("CUSTOM_DESCRIPTION", new Icon("fas fa-comment"));
+            dialogBuilder.addFlex("main", flex ->
+                    flex.addTextInput("description", getCustomDescription(), false));
+        });
+
+        Z2MDeviceDefinition definition = deviceService.getApplianceModel().getDefinition();
+        if (definition != null) {
+            for (Options option : definition.getOptions()) {
+                JsonNode deviceConfigurationOptions = deviceService.getConfiguration();
+                String flexName = "${z2m.setting.%s~%s}".formatted(option.getName(), splitNameToReadableFormat(option.getName()));
+                switch (option.getType()) {
+                    case ApplianceModel.BINARY_TYPE ->
+                            buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
+                    case ApplianceModel.NUMBER_TYPE ->
+                            buildNumberTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
+                }
+            }
+        }
     }
 
     @Override
@@ -367,38 +399,8 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     }
 
     @Override
-    public void assembleActions(UIInputBuilder uiInputBuilder) {
-        List<ConfigDeviceDefinition> deviceDefinitionModels = deviceService.findDevices();
-        List<WidgetDefinition> widgetDefinitions = CONFIG_DEVICE_SERVICE.getDeviceWidgets(deviceDefinitionModels);
-        getEntityContext().widget().createTemplateWidgetActions(uiInputBuilder, this, widgetDefinitions);
-
-        uiInputBuilder.addOpenDialogSelectableButton("CUSTOM_DESCRIPTION", new Icon("fas fa-comment"), null, (entityContext, params) -> {
-            String description = params.getString("description");
-
-            if (!Objects.equals(description, getCustomDescription())) {
-                deviceService.updateConfiguration("customDescription", description);
-                entityContext.ui().updateItem(this);
-            }
-            return null;
-        }).editDialog(dialogBuilder -> {
-            dialogBuilder.setTitle("CUSTOM_DESCRIPTION", new Icon("fas fa-comment"));
-            dialogBuilder.addFlex("main", flex ->
-                    flex.addTextInput("description", getCustomDescription(), false));
-        });
-
-        Z2MDeviceDefinition definition = deviceService.getApplianceModel().getDefinition();
-        if (definition != null) {
-            for (Options option : definition.getOptions()) {
-                JsonNode deviceConfigurationOptions = deviceService.getConfiguration();
-                String flexName = "${z2m.setting.%s~%s}".formatted(option.getName(), splitNameToReadableFormat(option.getName()));
-                switch (option.getType()) {
-                    case ApplianceModel.BINARY_TYPE ->
-                            buildBinaryTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
-                    case ApplianceModel.NUMBER_TYPE ->
-                            buildNumberTypeAction(uiInputBuilder, option, deviceConfigurationOptions, flexName);
-                }
-            }
-        }
+    protected @NotNull String getDevicePrefix() {
+        return PREFIX;
     }
 
     private void buildNumberTypeAction(UIInputBuilder uiInputBuilder, Options option, JsonNode deviceConfigurationOptions, String flexName) {
@@ -409,7 +411,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
         Integer nValue = deviceConfigurationOptions == null ? null : deviceConfigurationOptions.path(option.getName()).asInt(0);
         uiInputBuilder.addFlex(option.getName() + "_flex", flex -> {
                     flex.addNumberInput(option.getName(), toFloat(nValue), toFloat(minValue), toFloat(maxValue),
-                            (entityContext, params) -> {
+                        (context, params) -> {
                                 deviceService.updateDeviceConfiguration(deviceService, option.getName(),
                                         params.has("value") ? params.getInt("value") : null);
                                 return null;
@@ -432,7 +434,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     }
 
     private void buildCheckbox(Options option, boolean bValue, UIFlexLayoutBuilder flex) {
-        flex.addCheckbox(option.getName(), bValue, (entityContext, params) -> {
+        flex.addCheckbox(option.getName(), bValue, (context, params) -> {
             deviceService.updateDeviceConfiguration(deviceService, option.getName(), params.getBoolean("value"));
             return null;
         });

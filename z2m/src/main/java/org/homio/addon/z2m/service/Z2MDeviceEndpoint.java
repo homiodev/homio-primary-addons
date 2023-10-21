@@ -23,10 +23,11 @@ import org.homio.addon.z2m.util.ApplianceModel;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options;
 import org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options.Presets;
 import org.homio.addon.z2m.util.ZigBeeUtil;
-import org.homio.api.EntityContext;
-import org.homio.api.EntityContextVar.VariableMetaBuilder;
-import org.homio.api.EntityContextVar.VariableType;
+import org.homio.api.Context;
+import org.homio.api.ContextVar.VariableMetaBuilder;
+import org.homio.api.ContextVar.VariableType;
 import org.homio.api.model.Icon;
+import org.homio.api.model.OptionModel;
 import org.homio.api.model.endpoint.BaseDeviceEndpoint;
 import org.homio.api.state.DecimalType;
 import org.homio.api.state.JsonType;
@@ -47,8 +48,8 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
     private Options expose;
     private Z2MDeviceService deviceService;
 
-    public Z2MDeviceEndpoint(@NotNull Icon icon, @NotNull EntityContext entityContext) {
-        super(icon, "z2m", entityContext);
+    public Z2MDeviceEndpoint(@NotNull Icon icon, @NotNull Context context) {
+        super(icon, "z2m", context);
     }
 
     public void init(@NotNull Z2MDeviceService deviceService, @NotNull Options expose) {
@@ -62,16 +63,17 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
         if (expose.getValueMax() != null) {
             setMax(Float.valueOf(expose.getValueMax()));
         }
+        setUnit(expose.getUnit());
         init(
                 CONFIG_DEVICE_SERVICE,
                 expose.getProperty(),
                 deviceService.getDeviceEntity(),
-                expose.getUnit(),
                 expose.isReadable(),
                 expose.isWritable(),
                 expose.getName(),
                 calcEndpointType()
         );
+        getOrCreateVariable();
     }
 
     @Override
@@ -186,8 +188,8 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
     }
 
     @Override
-    public @NotNull Set<String> getSelectValues() {
-        return expose.getValues();
+    public @NotNull List<OptionModel> getSelectValues() {
+        return OptionModel.list(expose.getValues());
     }
 
     @Override
@@ -234,7 +236,7 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
     }
 
     @Override
-    protected @NotNull VariableType getVariableType() {
+    public @NotNull VariableType getVariableType() {
         switch (expose.getType()) {
             case ApplianceModel.ENUM_TYPE -> {
                 return VariableType.Enum;
@@ -276,8 +278,8 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
     }
 
     @Override
-    protected @NotNull Set<String> getVariableEnumValues() {
-        return expose.getValues();
+    public String getVariableGroupID() {
+        return "z2m-" + getDeviceID();
     }
 
     private @NotNull EndpointType calcEndpointType() {
@@ -287,5 +289,10 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
             case ENUM_TYPE -> EndpointType.select;
             default -> EndpointType.string;
         };
+    }
+
+    @Override
+    protected @NotNull List<OptionModel> getVariableEnumValues() {
+        return OptionModel.list(expose.getValues());
     }
 }

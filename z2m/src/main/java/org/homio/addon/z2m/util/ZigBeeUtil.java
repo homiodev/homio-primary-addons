@@ -18,8 +18,8 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
 import org.homio.addon.z2m.service.endpoints.Z2MDeviceEndpointColor;
-import org.homio.api.EntityContext;
-import org.homio.api.EntityContextHardware;
+import org.homio.api.Context;
+import org.homio.api.ContextHardware;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
 import org.homio.api.model.OptionModel;
@@ -43,12 +43,12 @@ public final class ZigBeeUtil {
                     CommonUtils.getInstallPath().resolve("zigbee2mqtt"));
 
     public static void zigbeeScanStarted(
-            @NotNull EntityContext entityContext,
+        @NotNull Context context,
             @NotNull String entityID,
             int duration,
             @NotNull Runnable onDurationTimedOutHandler,
             @NotNull Runnable stopScanHandler) {
-        entityContext.ui().headerButtonBuilder("zigbee-scan-" + entityID)
+        context.ui().headerButtonBuilder("zigbee-scan-" + entityID)
                 .title("ZIGBEE_STOP_SCAN").border(1, "#899343").clickAction(() -> {
                     stopScanHandler.run();
                     return ActionResponseModel.showWarn("ZIGBEE.STOP_SCAN");
@@ -57,17 +57,17 @@ public final class ZigBeeUtil {
                 .icon(new Icon("fas fa-search-location", "#899343"))
                 .build();
 
-        entityContext.bgp().builder("zigbee-scan-killer-" + entityID)
+        context.bgp().builder("zigbee-scan-killer-" + entityID)
                 .delay(Duration.ofSeconds(duration)).execute(() -> {
                     log.info("[{}]: Scanning stopped", entityID);
                     onDurationTimedOutHandler.run();
-                    entityContext.ui().removeHeaderButton("zigbee-scan-" + entityID);
+                   context.ui().removeHeaderButton("zigbee-scan-" + entityID);
                 });
     }
 
     public static @NotNull UIInputBuilder createActionBuilder(@NotNull Z2MDeviceEndpoint endpoint) {
         String entityID = endpoint.getEntityID();
-        UIInputBuilder uiInputBuilder = endpoint.getDeviceService().getEntityContext().ui().inputBuilder();
+        UIInputBuilder uiInputBuilder = endpoint.getDeviceService().context().ui().inputBuilder();
 
         if (endpoint.isWritable()) {
             switch (endpoint.getExpose().getType()) {
@@ -81,7 +81,7 @@ public final class ZigBeeUtil {
                     break;
                 case SWITCH_TYPE:
                 case BINARY_TYPE:
-                    uiInputBuilder.addCheckbox(entityID, endpoint.getValue().boolValue(), (entityContext, params) -> {
+                    uiInputBuilder.addCheckbox(entityID, endpoint.getValue().boolValue(), (context, params) -> {
                         endpoint.fireAction(params.getBoolean("value"));
                         return null;
                     }).setDisabled(!endpoint.getDevice().getStatus().isOnline());
@@ -90,7 +90,7 @@ public final class ZigBeeUtil {
                     if (endpoint instanceof Z2MDeviceEndpointColor) {
                         uiInputBuilder
                                 .addColorPicker(entityID, ((Z2MDeviceEndpointColor) endpoint).getStateColor(),
-                                        (entityContext, params) -> {
+                                    (context, params) -> {
                                             endpoint.fireAction(params.getString("value"));
                                             return null;
                                         })
@@ -101,12 +101,12 @@ public final class ZigBeeUtil {
                 default:
                     log.error("[{}]: Z2M write handler not implemented for device: {}, endpoint: {}",
                             endpoint.getDeviceService().getCoordinatorEntity().getEntityID(),
-                            endpoint.getDeviceID(),
+                        endpoint.getDeviceEntityID(),
                             endpoint.getEndpointEntityID());
             }
         }
         if (endpoint.getUnit() != null) {
-            uiInputBuilder.addInfo("%s <small class=\"text-muted\">%s</small>".formatted(endpoint.getValue().stringValue(), endpoint.getUnit()), InfoType.HTML);
+            uiInputBuilder.addInfo("%s <small>%s</small>".formatted(endpoint.getValue().stringValue(), endpoint.getUnit()), InfoType.HTML);
         }
         endpoint.assembleUIAction(uiInputBuilder);
         return uiInputBuilder;
@@ -119,7 +119,7 @@ public final class ZigBeeUtil {
 
     @SneakyThrows
     public static void installOrUpdateZ2M(
-            @NotNull EntityContext entityContext,
+        @NotNull Context context,
             @NotNull String version,
             @NotNull ProjectUpdate projectUpdate) {
         ProgressBar progressBar = projectUpdate.getProgressBar();
@@ -127,7 +127,7 @@ public final class ZigBeeUtil {
         try {
             projectUpdate.getGitHubProject().deleteProject();
         } catch (Exception ex) {
-            entityContext.ui().sendErrorMessage(
+            context.ui().toastr().error(
                 Lang.getServerMessage("ZIGBEE.ERROR.DELETE",
                     projectUpdate.getGitHubProject().getLocalProjectPath().toString()));
             throw ex;
@@ -136,9 +136,9 @@ public final class ZigBeeUtil {
         progressBar.progress(35, "Download sources");
         projectUpdate.downloadSource(version);
 
-        String npm = entityContext.install().nodejs().requireSync(progressBar, null).getPath("npm");
+        String npm = context.install().nodejs().requireSync(progressBar, null).getPath("npm");
         progressBar.progress(45, "install-zigbee2mqtt");
-        EntityContextHardware hardware = entityContext.hardware();
+        ContextHardware hardware = context.hardware();
         String npmOptions = "--no-audit --no-optional --no-update-notifier --unsafe-perm";
         hardware.execute("%s ci --prefix %s %s".formatted(npm, zigbee2mqttGitHub.getLocalProjectPath(), npmOptions), 600, progressBar);
         hardware.execute("%s run build --prefix %s".formatted(npm, zigbee2mqttGitHub.getLocalProjectPath()), 600, progressBar);
@@ -151,8 +151,8 @@ public final class ZigBeeUtil {
         progressBar.progress(100, "Zigbee2mqtt 'V%s' has been installed successfully".formatted(version));
     }
 
-    public static @NotNull String getZ2MVersionToInstall(EntityContext entityContext) {
-        String version = entityContext.setting().getEnv("zigbee2mqtt-version");
+    public static @NotNull String getZ2MVersionToInstall(Context context) {
+        String version = context.setting().getEnv("zigbee2mqtt-version");
         if (StringUtils.isEmpty(version)) {
             version = zigbee2mqttGitHub.getLastReleaseVersion();
         }
@@ -160,18 +160,17 @@ public final class ZigBeeUtil {
     }
 
     @SneakyThrows
-    public static void installZ2M(EntityContext entityContext) {
-        String version = getZ2MVersionToInstall(entityContext);
-        if (version.equals(zigbee2mqttGitHub.getInstalledVersion(entityContext))) {
+    public static void installZ2M(Context context) {
+        String version = getZ2MVersionToInstall(context);
+        if (version.equals(zigbee2mqttGitHub.getInstalledVersion(context))) {
             return;
         }
 
-        entityContext.bgp().runWithProgress("install-z2m").executeSync(progressBar -> {
+        context.bgp().runWithProgress("install-z2m").executeSync(progressBar ->
             zigbee2mqttGitHub.updateProject("z2m", progressBar, true, projectUpdate -> {
-                ZigBeeUtil.installOrUpdateZ2M(entityContext, version, projectUpdate);
+                ZigBeeUtil.installOrUpdateZ2M(context, version, projectUpdate);
                 return null;
-            }, null);
-        }).get(10, TimeUnit.MINUTES);
+            }, null)).get(10, TimeUnit.MINUTES);
     }
 
     /**
@@ -191,7 +190,7 @@ public final class ZigBeeUtil {
 
             // build flex(selectBox,slider)
             uiInputBuilder.addFlex(entityID + "_compose", flex -> {
-                UISelectBoxItemBuilder presets = flex.addSelectBox(entityID + "_presets", (entityContext, params) -> {
+                UISelectBoxItemBuilder presets = flex.addSelectBox(entityID + "_presets", (context, params) -> {
                     endpoint.fireAction(params.getInt("value"));
                     return null;
                 }).setDisabled(!endpoint.getDevice().getStatus().isOnline());
@@ -216,13 +215,13 @@ public final class ZigBeeUtil {
             @NotNull UIInputBuilder uiInputBuilder) {
         if (!endpoint.getExpose().isReadable() && endpoint.getExpose().getValues().size() == 1) {
             uiInputBuilder.addButton(endpoint.getEntityID(), new Icon("fas fa-play", "#eb0000"),
-                    (entityContext, params) -> {
+                (context, params) -> {
                         endpoint.fireAction(endpoint.getExpose().getValues().iterator().next());
                         return null;
                     }).setText("").setDisabled(!endpoint.getDevice().getStatus().isOnline());
         } else {
             uiInputBuilder
-                    .addSelectBox(endpoint.getEntityID(), (entityContext, params) -> {
+                .addSelectBox(endpoint.getEntityID(), (context, params) -> {
                         endpoint.fireAction(params.getString("value"));
                         return null;
                     })
@@ -245,7 +244,7 @@ public final class ZigBeeUtil {
                         endpoint.getValue().floatValue(0),
                         endpoint.getExpose().getValueMin().floatValue(),
                         endpoint.getExpose().getValueMax().floatValue(),
-                        (entityContext, params) -> {
+                   (context, params) -> {
                             endpoint.fireAction(params.getInt("value"));
                             return null;
                         })

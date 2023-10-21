@@ -8,7 +8,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.mqtt.setting.ConsoleRemoveMqttTreeNodeHeaderButtonSetting.NodeRemoveRequest;
-import org.homio.api.EntityContext;
+import org.homio.api.Context;
 import org.homio.api.model.Icon;
 import org.homio.api.setting.SettingPlugin;
 import org.homio.api.setting.SettingType;
@@ -49,7 +49,7 @@ public class ConsoleRemoveMqttTreeNodeHeaderButtonSetting implements
     }
 
     @Override
-    public JSONObject getParameters(EntityContext entityContext, String value) {
+    public JSONObject getParameters(Context context, String value) {
         JSONObject parameters = new JSONObject();
         putOpt(parameters, "confirm", getConfirmMsg());
         putOpt(parameters, "dialogColor", Color.ERROR_DIALOG);
@@ -60,7 +60,7 @@ public class ConsoleRemoveMqttTreeNodeHeaderButtonSetting implements
 
     @Override
     @SneakyThrows
-    public NodeRemoveRequest parseValue(EntityContext entityContext, String value) {
+    public NodeRemoveRequest parseValue(Context context, String value) {
         return StringUtils.isEmpty(value) ? null : OBJECT_MAPPER.readValue(value, NodeRemoveRequest.class);
     }
 

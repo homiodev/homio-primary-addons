@@ -14,9 +14,9 @@ import org.homio.addon.mqtt.MQTTEntrypoint;
 import org.homio.addon.mqtt.entity.parameters.MQTTPublishQueryParameter;
 import org.homio.addon.mqtt.entity.parameters.MQTTTopicQueryParameter;
 import org.homio.addon.mqtt.workspace.Scratch3MQTTBlocks;
-import org.homio.api.EntityContext;
-import org.homio.api.EntityContextService;
-import org.homio.api.EntityContextService.MQTTEntityService;
+import org.homio.api.Context;
+import org.homio.api.ContextService;
+import org.homio.api.ContextService.MQTTEntityService;
 import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.storage.BaseFileSystemEntity;
 import org.homio.api.entity.types.StorageEntity;
@@ -45,7 +45,6 @@ import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.ui.field.selection.SelectionConfiguration;
 import org.homio.api.ui.field.selection.dynamic.DynamicParameterFields;
 import org.homio.api.ui.field.selection.dynamic.SelectionWithDynamicParameterFields;
-import org.homio.api.ui.field.selection.dynamic.UIFieldDynamicSelection;
 import org.homio.api.util.DataSourceUtil;
 import org.homio.api.util.SecureString;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +61,7 @@ public class MQTTClientEntity extends StorageEntity implements
     SelectionWithDynamicParameterFields,
     HasGetStatusValue,
     HasSetStatusValue,
-    EntityContextService.MQTTEntityService,
+    ContextService.MQTTEntityService,
     SelectionConfiguration,
     HasEntityLog,
     HasFirmwareVersion {
@@ -85,7 +84,7 @@ public class MQTTClientEntity extends StorageEntity implements
     }
 
     @Override
-    public @NotNull TreeConfiguration buildFileSystemConfiguration(@NotNull EntityContext entityContext) {
+    public @NotNull TreeConfiguration buildFileSystemConfiguration(@NotNull Context context) {
         return getService().getValue().iterator().next();
     }
 
@@ -100,7 +99,7 @@ public class MQTTClientEntity extends StorageEntity implements
     }
 
     @Override
-    public @NotNull MQTTFileSystem buildFileSystem(@NotNull EntityContext entityContext) {
+    public @NotNull MQTTFileSystem buildFileSystem(@NotNull Context context) {
         return new MQTTFileSystem(this);
     }
 
@@ -248,8 +247,8 @@ public class MQTTClientEntity extends StorageEntity implements
 
     @Override
     @SneakyThrows
-    public MQTTService createService(@NotNull EntityContext entityContext) {
-        return new MQTTService(entityContext, this);
+    public MQTTService createService(@NotNull Context context) {
+        return new MQTTService(context, this);
     }
 
     public void publish(@NotNull String topic, byte[] content, int qoS, boolean retain) {
@@ -321,11 +320,11 @@ public class MQTTClientEntity extends StorageEntity implements
     }
 
     @Override
-    public void addUpdateValueListener(EntityContext entityContext, String discriminator, JSONObject dynamicParameters,
+    public void addUpdateValueListener(Context context, String discriminator, JSONObject dynamicParameters,
         Consumer<State> listener) {
         String topic = getTopicRequire(dynamicParameters, "queryTopic");
         String fullTopicPath = MQTTEntityService.buildMqttListenEvent(getEntityID(), topic);
-        entityContext.event().addEventListener(fullTopicPath, discriminator, listener);
+        context.event().addEventListener(fullTopicPath, discriminator, listener);
     }
 
     @Override
@@ -371,13 +370,13 @@ public class MQTTClientEntity extends StorageEntity implements
     @Override
     public void addListener(String topic, String discriminator, Consumer<State> listener) {
         log.info("[{}]: Add mqtt listener for '{}' topic", getEntityID(), topic);
-        getEntityContext().event().addEventBehaviourListener(getEntityID() + LIST_DELIMITER + topic, discriminator, listener);
+        context().event().addEventBehaviourListener(getEntityID() + LIST_DELIMITER + topic, discriminator, listener);
     }
 
     @Override
     public void removeListener(String topic, String discriminator) {
         log.info("[{}]: Remove mqtt listener from '{}' topic", getEntityID(), topic);
-        getEntityContext().event().removeEventListener(discriminator, getEntityID() + LIST_DELIMITER + topic);
+        context().event().removeEventListener(discriminator, getEntityID() + LIST_DELIMITER + topic);
     }
 
     @Override

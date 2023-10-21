@@ -17,7 +17,7 @@ import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.setting.ZigBeeEntityCompactModeSetting;
 import org.homio.api.AddonEntrypoint;
-import org.homio.api.EntityContext;
+import org.homio.api.Context;
 import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeBaseCoordinatorEntity;
 import org.springframework.stereotype.Component;
@@ -37,23 +37,23 @@ import org.springframework.stereotype.Component;
 public class Z2MEntrypoint implements AddonEntrypoint {
 
     public static final String Z2M_RESOURCE = "ROLE_Z2M";
-    private final EntityContext entityContext;
+    private final Context context;
 
     @Override
     public void init() {
-        entityContext.service().registerUserRoleResource(Z2M_RESOURCE);
-        entityContext.ui().registerConsolePluginName("zigbee", Z2M_RESOURCE);
-        entityContext.setting().listenValue(ZigBeeEntityCompactModeSetting.class, "zigbee-compact-mode",
-                (value) -> entityContext.ui().updateItems(Z2MDeviceEntity.class));
+        context.service().registerUserRoleResource(Z2M_RESOURCE);
+        context.ui().console().registerPluginName("zigbee", Z2M_RESOURCE);
+        context.setting().listenValue(ZigBeeEntityCompactModeSetting.class, "zigbee-compact-mode",
+            (value) -> context.ui().updateItems(Z2MDeviceEntity.class));
 
-        entityContext.event().addPortChangeStatusListener("zigbee-ports",
+        context.event().addPortChangeStatusListener("zigbee-ports",
                 port -> {
                     Map<String, SerialPort> ports = getPorts();
-                    testCoordinators(entityContext.findAll(Z2MLocalCoordinatorEntity.class), ports, coordinator ->
+                    testCoordinators(context.db().findAll(Z2MLocalCoordinatorEntity.class), ports, coordinator ->
                             coordinator.getService().restartCoordinator());
                 });
 
-        entityContext.bgp().builder("z2m-config-reader")
+        context.bgp().builder("z2m-config-reader")
                 .delay(Duration.ofHours(1))
                 .interval(Duration.ofHours(24))
                 .execute(CONFIG_DEVICE_SERVICE::checkServerConfiguration);
@@ -79,7 +79,7 @@ public class Z2MEntrypoint implements AddonEntrypoint {
                 if (Objects.equals(serialPort.getDescriptivePortName(), coordinator.getPortD())) {
                     log.info("[{}]: Coordinator port changed from {} -> {}", coordinator.getEntityID(), coordinator.getPort(),
                             serialPort.getSystemPortName());
-                    entityContext.save((T) coordinator.setSerialPort(serialPort));
+                    context.db().save((T) coordinator.setSerialPort(serialPort));
                 }
             }
         }

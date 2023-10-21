@@ -5,12 +5,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.homio.addon.mqtt.MQTTEntrypoint;
 import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
 import org.homio.addon.mqtt.entity.MQTTService;
 import org.homio.addon.mqtt.setting.ConsoleRemoveMqttTreeNodeHeaderButtonSetting;
-import org.homio.api.EntityContext;
+import org.homio.api.Context;
 import org.homio.api.console.ConsolePluginTree;
 import org.homio.api.fs.TreeConfiguration;
 import org.homio.api.model.ActionResponseModel;
@@ -22,11 +23,11 @@ import org.json.JSONObject;
 @Log4j2
 public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
 
-    private final EntityContext entityContext;
+    private final @Accessors(fluent = true) Context context;
     private final MQTTService mqttService;
 
-    public MQTTExplorerConsolePlugin(EntityContext entityContext, MQTTService mqttService) {
-        this.entityContext = entityContext;
+    public MQTTExplorerConsolePlugin(Context context, MQTTService mqttService) {
+        this.context = context;
         this.mqttService = mqttService;
     }
 
@@ -37,7 +38,7 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
 
     @Override
     public ActionResponseModel executeAction(@NotNull String entityID, @NotNull JSONObject metadata) {
-        entityContext.assertAccess(MQTTEntrypoint.MQTT_RESOURCE);
+        context.assertAccess(MQTTEntrypoint.MQTT_RESOURCE);
         if ("history".equals(metadata.optString("type"))) {
             return ActionResponseModel.showJson("History", new ArrayList<>(mqttService.getStorage().findAllBy("topic", entityID)));
         }
@@ -46,13 +47,13 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
 
     @Override
     public List<TreeConfiguration> getValue() {
-        entityContext.assertAccess(MQTTEntrypoint.MQTT_RESOURCE);
+        context.assertAccess(MQTTEntrypoint.MQTT_RESOURCE);
         return mqttService.getValue();
     }
 
     @Override
     public boolean isEnabled() {
-        return entityContext.accessEnabled(MQTTEntrypoint.MQTT_RESOURCE);
+        return context.accessEnabled(MQTTEntrypoint.MQTT_RESOURCE);
     }
 
     @Override

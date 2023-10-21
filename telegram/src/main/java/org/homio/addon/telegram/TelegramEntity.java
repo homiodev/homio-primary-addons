@@ -16,7 +16,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.telegram.service.TelegramService;
-import org.homio.api.EntityContext;
+import org.homio.api.Context;
 import org.homio.api.entity.HasStatusAndMsg;
 import org.homio.api.entity.types.CommunicationEntity;
 import org.homio.api.model.ActionResponseModel;
@@ -159,24 +159,24 @@ public final class TelegramEntity extends CommunicationEntity implements HasStat
     }
 
     @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off", iconColor = Color.RED)
-    public ActionResponseModel reboot(EntityContext entityContext) {
-        entityContext.getBean(TelegramService.class).restart(this);
+    public ActionResponseModel reboot(Context context) {
+        context.getBean(TelegramService.class).restart(this);
         return ActionResponseModel.showSuccess("SUCCESS");
     }
 
     @Override
     public void afterDelete() {
-        getEntityContext().getBean(TelegramService.class).dispose(this);
+        context().getBean(TelegramService.class).dispose(this);
     }
 
     @Override
     public void afterUpdate() {
-        getEntityContext().getBean(TelegramService.class).entityUpdated(this);
+        context().getBean(TelegramService.class).entityUpdated(this);
     }
 
     @Override
     public void afterPersist() {
-        getEntityContext().getBean(TelegramService.class).entityUpdated(this);
+        context().getBean(TelegramService.class).entityUpdated(this);
     }
 
     public TelegramUser getUser(long id) {
