@@ -8,6 +8,7 @@ import static org.homio.addon.z2m.util.ApplianceModel.SWITCH_TYPE;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Set;
@@ -136,7 +137,7 @@ public final class ZigBeeUtil {
         progressBar.progress(35, "Download sources");
         projectUpdate.downloadSource(version);
 
-        String npm = context.install().nodejs().requireSync(progressBar, null).getPath("npm");
+        String npm = context.install().nodejs().requireSync(progressBar, null).getExecutablePath(Paths.get("npm"));
         progressBar.progress(45, "install-zigbee2mqtt");
         ContextHardware hardware = context.hardware();
         String npmOptions = "--no-audit --no-optional --no-update-notifier --unsafe-perm";

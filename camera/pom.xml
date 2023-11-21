@@ -6,7 +6,7 @@
         <dependency>
             <groupId>org.homio</groupId>
             <artifactId>onvif</artifactId>
-            <version>1.0.2</version>
+          <version>1.0.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <artifactId>netty-all</artifactId>

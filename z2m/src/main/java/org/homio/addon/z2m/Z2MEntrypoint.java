@@ -50,7 +50,7 @@ public class Z2MEntrypoint implements AddonEntrypoint {
                 port -> {
                     Map<String, SerialPort> ports = getPorts();
                     testCoordinators(context.db().findAll(Z2MLocalCoordinatorEntity.class), ports, coordinator ->
-                            coordinator.getService().restartCoordinator());
+                        coordinator.getService().forceRestartCoordinator());
                 });
 
         context.bgp().builder("z2m-config-reader")

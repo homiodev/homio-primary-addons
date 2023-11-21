@@ -1,5 +1,6 @@
 package org.homio.addon.z2m.service.endpoints;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.awt.Color;
 import java.util.List;
 import java.util.Map;
@@ -168,16 +169,16 @@ public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
         switch (expose.getName()) {
             case "color_xy" -> setDataReader(
                     payload -> {
-                        JSONObject color = payload.getJSONObject("color");
-                        float x = color.getFloat("x");
-                        float y = color.getFloat("y");
+                        JsonNode color = payload.get("color");
+                        float x = (float) color.get("x").asDouble();
+                        float y = (float) color.get("y").asDouble();
                         return new StringType(xyToHex(x, y));
                     });
             case "color_hs" -> setDataReader(
                     payload -> {
-                        JSONObject color = payload.getJSONObject("color");
-                        float hue = color.getFloat("hue");
-                        float saturation = color.getFloat("saturation");
+                        JsonNode color = payload.get("color");
+                        float hue = (float) color.get("hue").asDouble();
+                        float saturation = (float) color.get("saturation").asDouble();
                         return new StringType(hsToHex(hue, saturation, getBrightness(payload)));
                     });
         }
@@ -235,9 +236,9 @@ public class Z2MDeviceEndpointColor extends Z2MDeviceEndpoint {
         getDeviceService().publish("set", new JSONObject().put(getExpose().getProperty(), color));
     }
 
-    private int getBrightness(JSONObject payload) {
+    private int getBrightness(JsonNode payload) {
         return payload.has("brightness")
-                ? payload.getInt("brightness")
+            ? payload.get("brightness").asInt()
                 : getDeviceService().getEndpoints().get("brightness").getValue().intValue(255);
     }
 

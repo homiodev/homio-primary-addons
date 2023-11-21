@@ -579,8 +579,6 @@
     },
     {
       "name": "last_seen",
-      "icon": "fa-eye",
-      "iconColor": "#2D9C2C",
       "order": 3000
     },
     {
@@ -679,8 +677,6 @@
     {
       "name": "battery",
       "persistent": true,
-      "icon": "fa-battery-full",
-      "iconColor": "#32D1B9",
       "order": 2930
     },
     {
@@ -695,11 +691,6 @@
       "icon": "fa-sliders-h",
       "iconColor": "#7D37C2",
       "order": 2920
-    },
-    {
-      "name": "linkquality",
-      "icon": "fa-signal",
-      "iconColor": "#D134AF"
     },
     {
       "name": "tamper",

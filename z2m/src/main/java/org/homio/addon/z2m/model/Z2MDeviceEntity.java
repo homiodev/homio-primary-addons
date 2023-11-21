@@ -29,8 +29,8 @@ import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.model.Status.EntityStatus;
+import org.homio.api.model.WebAddress;
 import org.homio.api.model.device.ConfigDeviceDefinition;
-import org.homio.api.model.device.ConfigDeviceDefinitionService;
 import org.homio.api.model.endpoint.DeviceEndpoint;
 import org.homio.api.optionProvider.SelectPlaceOptionLoader;
 import org.homio.api.ui.UI.Color;
@@ -43,7 +43,6 @@ import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
 import org.homio.api.ui.field.color.UIFieldColorStatusMatch;
 import org.homio.api.ui.field.condition.UIFieldShowOnCondition;
-import org.homio.api.ui.field.model.HrefModel;
 import org.homio.api.ui.field.selection.UIFieldSelectConfig;
 import org.homio.api.ui.field.selection.dynamic.UIFieldDynamicSelection;
 import org.homio.api.widget.template.WidgetDefinition;
@@ -122,11 +121,6 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     }
 
     @Override
-    public @NotNull ConfigDeviceDefinitionService getConfigDeviceDefinitionService() {
-        return CONFIG_DEVICE_SERVICE;
-    }
-
-    @Override
     public @NotNull List<ConfigDeviceDefinition> findMatchDeviceConfigurations() {
         return deviceService.findDevices();
     }
@@ -160,9 +154,9 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     @UIField(order = 3, label = "model")
     @UIFieldShowOnCondition("return !context.get('compactMode')")
     @UIFieldGroup("GENERAL")
-    public HrefModel getHrefModel() {
+    public WebAddress getHrefModel() {
         String model = getModel();
-        return new HrefModel("https://www.zigbee2mqtt.io/devices/%s.html".formatted(model), model);
+        return new WebAddress("https://www.zigbee2mqtt.io/devices/%s.html".formatted(model), model);
     }
 
     @Override
@@ -242,9 +236,9 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     @UIField(order = 3)
     @UIFieldGroup("HARDWARE")
     @UIFieldShowOnCondition("return !context.get('compactMode')")
-    public HrefModel getManufacturer() {
+    public WebAddress getManufacturer() {
         String vendor = deviceService.getApplianceModel().getDefinition().getVendor();
-        return new HrefModel("https://www.zigbee2mqtt.io/supported-devices/#v=%s".formatted(vendor), vendor);
+        return new WebAddress("https://www.zigbee2mqtt.io/supported-devices/#v=%s".formatted(vendor), vendor);
     }
 
     public boolean isCompactMode() {

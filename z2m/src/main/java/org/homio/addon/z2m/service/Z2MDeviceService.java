@@ -2,6 +2,7 @@ package org.homio.addon.z2m.service;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.homio.addon.z2m.util.ApplianceModel.BINARY_TYPE;
 import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
 import static org.homio.addon.z2m.util.ApplianceModel.Z2MDeviceDefinition.Options.dynamicEndpoint;
 import static org.homio.api.model.Status.ONLINE;
@@ -24,6 +25,7 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.Level;
 import org.homio.addon.z2m.model.Z2MDeviceEntity;
 import org.homio.addon.z2m.model.Z2MLocalCoordinatorEntity;
 import org.homio.addon.z2m.service.endpoints.Z2MDeviceEndpointAction;
@@ -41,7 +43,6 @@ import org.homio.api.model.device.ConfigDeviceDefinitionService;
 import org.homio.api.model.device.ConfigDeviceEndpoint;
 import org.homio.api.state.DecimalType;
 import org.homio.api.state.StringType;
-import org.homio.api.ui.UI;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.Lang;
 import org.jetbrains.annotations.NotNull;
@@ -162,21 +163,11 @@ public class Z2MDeviceService {
         currentMQTTTopic = applianceModel.getMQTTTopic();
         String topic = getMqttFQDNTopic();
 
-        coordinatorService.getMqttEntityService().addListener(topic, applianceModel.getIeeeAddress(), value -> {
-            String payload = value == null ? "" : value.toString();
-            if (!payload.isEmpty()) {
-                try {
-                    JSONObject jsonObject = new JSONObject(payload);
-                    mqttUpdate(jsonObject);
-                } catch (Exception ex) {
-                    log.error("[{}]: Unable to parse json for entity: '{}' from: '{}'", coordinatorService.getEntityID(),
-                            deviceEntity.getTitle(), payload);
-                }
-            }
-        });
+        coordinatorService.getMqttEntityService().addPayloadListener(Set.of(topic), "asd",
+            "", log, Level.DEBUG, (tpc, payload) -> mqttUpdate(payload));
 
         coordinatorService.getMqttEntityService().addListener(topic + "/availability", applianceModel.getIeeeAddress(), payload -> {
-            availability = payload == null ? null : payload.toString();
+            availability = payload;
             context.event().fireEvent("zigbee-%s".formatted(applianceModel.getIeeeAddress()),
                 new StringType(deviceEntity.getStatus().toString()));
             context.ui().updateItem(deviceEntity);
@@ -244,10 +235,13 @@ public class Z2MDeviceService {
         });
     }
 
-    private void mqttUpdate(JSONObject payload) {
+    private void mqttUpdate(JsonNode payload) {
         boolean updated = false;
         List<String> sb = new ArrayList<>();
-        for (String key : payload.keySet()) {
+        List<String> keys = new ArrayList<>();
+        payload.fieldNames().forEachRemaining(keys::add);
+
+        for (String key : keys) {
             try {
                 boolean feed = false;
                 for (Z2MDeviceEndpoint endpoint : endpoints.values()) {
@@ -261,7 +255,7 @@ public class Z2MDeviceService {
                     Set<String> ignoreExposes = getListOfRedundantEndpoints();
                     if (!ignoreExposes.contains(key)) {
                         log.info("[{}]: Create dynamic created endpoint '{}'. Device: {}", coordinatorService.getEntityID(), key,
-                                applianceModel.getIeeeAddress());
+                            applianceModel.getIeeeAddress());
                         Z2MDeviceEndpoint missedEndpoint = buildExposeEndpoint(dynamicEndpoint(key, getFormatFromPayloadValue(payload, key)));
                         missedEndpoint.mqttUpdate(payload);
 
@@ -271,10 +265,10 @@ public class Z2MDeviceService {
                 }
             } catch (Exception ex) {
                 log.error("Unable to handle Z2MDeviceEndpoint: {}. Payload: {}. Msg: {}",
-                        key, payload, CommonUtils.getErrorMessage(ex));
+                    key, payload, CommonUtils.getErrorMessage(ex));
             }
         }
-        if (updated && !payload.keySet().contains(ENDPOINT_LAST_SEEN)) {
+        if (updated && !keys.contains(ENDPOINT_LAST_SEEN)) {
             // fire set value as current milliseconds if device has no last_seen endpoint for some reason
             endpoints.get(ENDPOINT_LAST_SEEN).mqttUpdate(null);
         }
@@ -332,16 +326,12 @@ public class Z2MDeviceService {
         return endpoints.get(key);
     }
 
-    private String getFormatFromPayloadValue(JSONObject payload, String key) {
-        try {
-            payload.getInt(key);
+    private String getFormatFromPayloadValue(JsonNode payload, String key) {
+        JsonNode jsonNode = payload.get(key);
+        if (jsonNode.isBoolean()) {
+            return BINARY_TYPE;
+        } else if (jsonNode.isNumber()) {
             return NUMBER_TYPE;
-        } catch (Exception ignore) {
-        }
-        try {
-            payload.getBoolean(key);
-            return ApplianceModel.BINARY_TYPE;
-        } catch (Exception ignore) {
         }
         return ApplianceModel.UNKNOWN_TYPE;
     }
@@ -382,13 +372,8 @@ public class Z2MDeviceService {
     private void createOrUpdateDeviceGroup() {
         context.var().createGroup("z2m", "ZigBee2MQTT", builder ->
             builder.setLocked(true).setIcon(new Icon("fab fa-laravel", "#ED3A3A")));
-
-        Icon icon = new Icon(
-                CONFIG_DEVICE_SERVICE.getDeviceIcon(findDevices(), "fas fa-server"),
-                CONFIG_DEVICE_SERVICE.getDeviceIconColor(findDevices(), UI.Color.random())
-        );
         context.var().createSubGroup("z2m", requireNonNull(deviceEntity.getIeeeAddress()), getDeviceFullName(), builder ->
-            builder.setDescription(applianceModel.getGroupDescription()).setLocked(true).setIcon(icon));
+            builder.setDescription(applianceModel.getGroupDescription()).setLocked(true).setIcon(deviceEntity.getEntityIcon()));
     }
 
     public @NotNull List<ConfigDeviceDefinition> findDevices() {

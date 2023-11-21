@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.api.Context;
 import org.homio.api.ContextHardware;
+import org.homio.api.fs.archive.ArchiveUtil;
 import org.homio.api.repository.GitHubProject.VersionedFile;
 import org.homio.api.service.DependencyExecutableInstaller;
 import org.homio.api.util.CommonUtils;
@@ -55,7 +56,7 @@ public class MosquittoInstaller extends DependencyExecutableInstaller {
     @Override
     protected void installDependencyInternal(@NotNull ProgressBar progressBar, String version) {
         if (IS_OS_LINUX) {
-            context.hardware().installSoftware(getName(), 600);
+            context.hardware().installSoftware(getName(), 600, progressBar);
         } else {
             String url = context.setting().getEnv("source-mosquitto");
             if (url == null) {
@@ -64,7 +65,7 @@ public class MosquittoInstaller extends DependencyExecutableInstaller {
             if (url == null) {
                 throw new IllegalStateException("Unable to find mosquitto download url");
             }
-            CommonUtils.downloadAndExtract(url,
+            ArchiveUtil.downloadAndExtract(url,
                 "mosquitto.7z", (progress, message, error) -> {
                     progressBar.progress(progress, message);
                     log.info("Mosquitto: {}", message);

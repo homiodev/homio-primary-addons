@@ -9,6 +9,7 @@ import static org.homio.addon.z2m.util.ApplianceModel.NUMBER_TYPE;
 import static org.homio.addon.z2m.util.ApplianceModel.SWITCH_TYPE;
 import static org.homio.api.util.CommonUtils.splitNameToReadableFormat;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +45,7 @@ import org.json.JSONObject;
 public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEntity> {
 
     @Setter
-    private Function<JSONObject, State> dataReader;
+    private Function<JsonNode, State> dataReader;
     private Options expose;
     private Z2MDeviceService deviceService;
 
@@ -81,7 +82,7 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
         return deviceService.getCoordinatorEntity().getHiddenEndpoints();
     }
 
-    public void mqttUpdate(JSONObject payload) {
+    public void mqttUpdate(JsonNode payload) {
         this.setValue(dataReader.apply(payload), true);
     }
 
@@ -124,7 +125,7 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
         deviceService.publish("set", new JSONObject().put(getEndpointEntityID(), value));
     }
 
-    public boolean feedPayload(String key, JSONObject payload) {
+    public boolean feedPayload(String key, JsonNode payload) {
         if (key.equals(expose.getProperty()) || key.equals(expose.getName())) {
             mqttUpdate(payload);
             return true;
@@ -157,14 +158,14 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
         return expose.getName();
     }
 
-    protected Function<JSONObject, State> buildDataReader() {
+    protected Function<JsonNode, State> buildDataReader() {
         switch (expose.getType()) {
             case SWITCH_TYPE, BINARY_TYPE -> {
                 if (expose.getValueOn() != null) {
                     if (expose.getValueOn() instanceof String) {
-                        return payload -> OnOffType.of(expose.getValueOn().equals(payload.getString(getJsonKey())));
+                        return payload -> OnOffType.of(expose.getValueOn().equals(payload.get(getJsonKey()).asText()));
                     } else if (expose.getValueOn() instanceof Boolean) {
-                        return payload -> OnOffType.of(expose.getValueOn().equals(payload.getBoolean(getJsonKey())));
+                        return payload -> OnOffType.of(expose.getValueOn().equals(payload.get(getJsonKey()).asBoolean()));
                     } else {
                         log.error(
                                 "[{}]: Unknown type: {} for endpoint: {}",
@@ -173,10 +174,10 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
                                 deviceService.getIeeeAddress());
                     }
                 }
-                return payload -> OnOffType.of(payload.getBoolean(getJsonKey()));
+                return payload -> OnOffType.of(payload.get(getJsonKey()).asBoolean());
             }
             case NUMBER_TYPE -> {
-                return payload -> new DecimalType(payload.getNumber(getJsonKey())).setUnit(getUnit());
+                return payload -> new DecimalType(payload.get(getJsonKey()).asDouble()).setUnit(getUnit());
             }
             case ApplianceModel.COMPOSITE_TYPE -> {
                 return payload -> new JsonType(payload.get(getJsonKey()).toString());

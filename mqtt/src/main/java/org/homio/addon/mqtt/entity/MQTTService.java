@@ -2,10 +2,13 @@ package org.homio.addon.mqtt.entity;
 
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 import static org.homio.addon.mqtt.entity.MQTTClientEntity.normalize;
-import static org.homio.api.entity.HasJsonData.LIST_DELIMITER;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -13,18 +16,27 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -46,7 +58,6 @@ import org.homio.api.fs.TreeNodeChip;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
 import org.homio.api.service.EntityService.ServiceInstance;
-import org.homio.api.state.StringType;
 import org.homio.api.storage.DataStorageService;
 import org.homio.api.storage.SourceHistory;
 import org.homio.api.storage.SourceHistoryItem;
@@ -54,9 +65,9 @@ import org.homio.api.ui.UI;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.JsonUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
-@Log4j2
 public class MQTTService extends ServiceInstance<MQTTClientEntity> {
 
     private final Map<String, List<MQTTMessage>> sysHistoryMap = new HashMap<>();
@@ -65,10 +76,36 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
     private @Getter MqttClient mqttClient;
     private ProcessContext processContext;
     private final @Getter MosquittoInstaller mosquittoInstaller;
+    private final @Getter Map<String, Map<String, BiConsumer<String, String>>> eventListeners = new ConcurrentHashMap<>();
+    private final @Getter Map<String, Map<String, Pair<Pattern, BiConsumer<String, String>>>> eventPatternListeners = new ConcurrentHashMap<>();
+    private final @Getter Map<String, String> lastValues = new ConcurrentHashMap<>();
+    private final BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>();
+    private Boolean isService;
 
     public MQTTService(@NotNull Context context, @NotNull MQTTClientEntity entity) {
         super(context, entity, true);
         mosquittoInstaller = new MosquittoInstaller(context);
+        updateNotificationBlock();
+
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Event event = eventQueue.take();
+                    handleEventListeners(event.key, event.value);
+                } catch (Exception ex) {
+                    log.error("Error while execute event handler", ex);
+                }
+            }
+        }, "MqttEventHandler").start();
+    }
+
+    @SneakyThrows
+    public Path getConfigFile() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return Paths.get(requireNonNull(mosquittoInstaller.getExecutablePath(Paths.get("mosquitto.conf"))));
+        } else {
+            return Files.createDirectories(Paths.get("/etc/mosquitto/conf.d")).resolve("default.conf");
+        }
     }
 
     public static TreeNode buildUpdateTree(TreeNode treeNode) {
@@ -81,10 +118,68 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
         return treeNode.clone(false);
     }
 
+    public void updateConfiguration(String configuration) {
+        CommonUtils.writeToFile(getConfigFile(), configuration, false);
+        restart();
+    }
+
+    public void removeEventListener(@NotNull String discriminator, @Nullable String topic) {
+        removeListener(discriminator, topic, eventListeners);
+        removeListener(discriminator, topic, eventPatternListeners);
+    }
+
+    public void addEventBehaviourListener(@NotNull String topic, @NotNull String discriminator, @NotNull BiConsumer<String, String> listener) {
+        if (topic.contains("+") || topic.contains("#")) {
+            String patternTopic = topic
+                .replace("+", "[^/]+") // Replace "+" with "[^/]+" to match a single level
+                .replace("#", ".*"); // Replace "#" with ".*" to match zero or more levels
+            Pair<Pattern, BiConsumer<String, String>> handler = Pair.of(Pattern.compile(patternTopic), listener);
+            eventPatternListeners.computeIfAbsent(discriminator, d -> new ConcurrentHashMap<>()).put(topic, handler);
+            fireBehaviourEvent(listener, incomeTopic -> handler.getKey().matcher(incomeTopic).matches());
+        } else {
+            eventListeners.computeIfAbsent(discriminator, d -> new ConcurrentHashMap<>()).put(topic, listener);
+            fireBehaviourEvent(listener, topic::equals);
+        }
+    }
+
+    @Override
+    public void updateNotificationBlock() {
+        context.ui().notification().addBlockOptional("MQTT", "MQTT", new Icon("fas fa-satellite-dish", "#B65BE8"));
+        context.ui().notification().updateBlock("MQTT", entity);
+    }
+
+    public void fireEvent(String topic, String payload) {
+        lastValues.put(topic, payload);
+        eventQueue.add(new Event(topic, payload));
+    }
+
+    @Override
+    public void destroy(boolean forRestart, Exception ex) {
+    }
+
+    public List<TreeConfiguration> getValue() {
+        rebuildMetadata(null);
+        Set<TreeNode> values = root.getChildren();
+        if (!entity.getIncludeSys() && values != null) {
+            values = values.stream().filter(v -> !"$SYS".equals(v.getId())).collect(Collectors.toSet());
+        }
+        TreeConfiguration treeConfiguration =
+                new TreeConfiguration(entityID, entity.getTitle() + " (" + entity.getHostname() + ")",
+                    values).setDynamicUpdateId("tree-" + entityID);
+        treeConfiguration.setIcon(new Icon("fas fa-m", entity.getStatus() == Status.ONLINE ? UI.Color.GREEN : UI.Color.RED));
+        return Collections.singletonList(treeConfiguration);
+    }
+
     @Override
     @SneakyThrows
     protected void testService() {
-        destroy();
+        if (mqttClient != null) {
+            if (mqttClient.isConnected()) {
+                return;
+            }
+            mqttClient.disconnectForcibly(5000, 5000);
+            mqttClient.close(true);
+        }
         createMQTTClient();
     }
 
@@ -98,47 +193,89 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
         this.sysHistoryMap.clear();
     }
 
-    public void updateNotificationBlock() {
-        context.ui().notification().addBlockOptional("MQTT", "MQTT", new Icon("fas fa-satellite-dish", "#B65BE8"));
-        context.ui().notification().updateBlock("MQTT", entity);
-        context.ui().updateItem(entity);
+    @Override
+    @SneakyThrows
+    protected void initialize() {
+        if (!entity.isStart()) {
+            entity.setStatus(Status.OFFLINE);
+            updateNotificationBlock();
+            return;
+        }
+        this.storage.updateQuota((long) entity.getHistorySize());
+        if (!entity.getIncludeSys()) {
+            sysHistoryMap.clear();
+        }
+        if (isService == null) {
+            isService = SystemUtils.IS_OS_LINUX && context.hardware().isSystemCtlExists("mosquitto");
+        }
+        testServiceWithSetStatus();
+        if (!entity.getStatus().isOnline()) {
+            restart();
+        }
     }
 
     @Override
     public String isRequireRestartService() {
-        if (!entity.isStart()) {return null;}
         if (!entity.getStatus().isOnline()) {return "Status: " + entity.getStatus();}
         if (mqttClient == null || !mqttClient.isConnected()) {return "Mqtt client disconnected";}
         return null;
     }
 
-    public void fireEvent(String prefix, String payload) {
-        context.event().fireEvent(entityID + LIST_DELIMITER + prefix, new StringType(payload));
-        // context.event().fireEvent(entityID, new StringType(payload));
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        if (mqttClient != null) {
-            if (mqttClient.isConnected()) {
-                mqttClient.disconnectForcibly();
-                mqttClient.close(true);
+    private void handleEventListeners(String key, String value) {
+        for (Map<String, BiConsumer<String, String>> entry : eventListeners.values()) {
+            BiConsumer<String, String> listener = entry.get(key);
+            if (listener != null) {
+                listener.accept(key, value);
             }
-            updateNotificationBlock();
+        }
+        for (Map<String, Pair<Pattern, BiConsumer<String, String>>> entry : eventPatternListeners.values()) {
+            for (Pair<Pattern, BiConsumer<String, String>> listener : entry.values()) {
+                if (listener.getKey().matcher(key).matches()) {
+                    listener.getValue().accept(key, value);
+                }
+            }
         }
     }
 
-    public List<TreeConfiguration> getValue() {
-        rebuildMetadata(null);
-        Set<TreeNode> values = root.getChildren();
-        if (!entity.getIncludeSys() && values != null) {
-            values = values.stream().filter(v -> !v.getId().equals("$SYS")).collect(Collectors.toSet());
+    @SneakyThrows
+    private void restart() {
+        mosquittoInstaller.installLatest();
+        if (isService) {
+            context.hardware().stopSystemCtl("mosquitto");
+        } else {
+            ContextBGP.cancel(processContext);
         }
-        TreeConfiguration treeConfiguration =
-                new TreeConfiguration(entityID, entity.getTitle() + " (" + entity.getHostname() + ")",
-                    values).setDynamicUpdateId("tree-" + entityID);
-        treeConfiguration.setIcon(new Icon("fas fa-m", entity.getStatus() == Status.ONLINE ? UI.Color.GREEN : UI.Color.RED));
-        return Collections.singletonList(treeConfiguration);
+        Path pwdFile = createMosquittoPasswordFile();
+        Path configPath = rewriteConfiguration(pwdFile);
+
+        if (isService) {
+            context.hardware().startSystemCtl("mosquitto");
+        } else {
+            String cmd = MessageFormat.format("{0} -c {1}", mosquittoInstaller.getExecutable(), configPath);
+            processContext = context.bgp().processBuilder(entity, log).execute(cmd);
+        }
+        testServiceWithSetStatus();
+    }
+
+    private Path rewriteConfiguration(Path pwdFile) {
+        Path configFile = getConfigFile();
+        String configContent = Stream.of(
+            "listener " + entity.getPort() + " 0.0.0.0",
+            "persistence " + entity.isPersistenceData(),
+            "allow_anonymous false",
+            "password_file " + pwdFile,
+            "log_dest stdout",
+            "log_dest file " + entity.getLogFilePath(),
+            ""
+        ).collect(Collectors.joining(System.lineSeparator()));
+        try {
+            if (!configContent.equals(Files.readString(configFile))) {
+                throw new IllegalArgumentException("Data not match");
+            }
+        } catch (Exception ignore) {
+            CommonUtils.writeToFile(configFile, configContent, false);
+        }
+        return configFile;
     }
 
     // TODO: Very not efficient way
@@ -169,7 +306,6 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
                     String payload = histList.get(histList.size() - 1).getValue().toString();
                     textBuilder.addText("= ", null);
                     String color = getTextColor(payload);
-                    treeNode.getAttributes().setColor(color);
                     treeNode.getAttributes().setColor(color);
 
                     textBuilder.addText(payload, color);
@@ -262,9 +398,6 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
 
             // fire events with raw payload
             fireEvent(topic, rawPayload);
-            if (rawPayload.contains("/")) {
-                fireEvent(topic.substring(0, topic.indexOf("/")), rawPayload);
-            }
 
             TreeNode cursor;
             if (payload == null) {
@@ -282,30 +415,20 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
         }
     }
 
-    @Override
-    @SneakyThrows
-    protected void initialize() {
-        if (!entity.isStart()) {
-            entity.setStatus(Status.OFFLINE);
-            updateNotificationBlock();
-            return;
+    private Path createMosquittoPasswordFile() {
+        int newCode = (entity.getUser() + entity.getPassword().asString()).hashCode();
+        Path passwordFile = CommonUtils.getConfigPath().resolve("mosquitto_passwd");
+        if (entity.getUserPasswordHash() != newCode || !Files.exists(passwordFile)) {
+            String pwdCmd = mosquittoInstaller.getExecutablePath(Paths.get("mosquitto_passwd"));
+            String cmd = "%s -b -c %s %s %s".formatted(pwdCmd, passwordFile, entity.getUser(), entity.getPassword().asString());
+            context.hardware().execute(cmd, 600);
+            context.db().updateDelayed(entity, e -> e.setUserPasswordHash(newCode));
+
+            if (!Files.exists(passwordFile)) {
+                throw new IllegalStateException("Unable to create mosquitto password file");
+            }
         }
-        this.storage.updateQuota((long) entity.getHistorySize());
-        if (!entity.getIncludeSys()) {
-            sysHistoryMap.clear();
-        }
-        testServiceWithSetStatus();
-        if (!entity.getStatus().isOnline()) {
-            log.info("Try install mosquitto");
-            ContextBGP.cancel(processContext);
-            mosquittoInstaller.installLatest();
-            processContext = context.bgp()
-                                    .processBuilder(entityID)
-                                          .attachLogger(log)
-                                          .attachEntityStatus(entity)
-                                          .execute(mosquittoInstaller.getExecutable() + " -p " + entity.getPort());
-            testServiceWithSetStatus();
-        }
+        return passwordFile;
     }
 
     private TreeNode findTopic(String value, TreeNode cursor, int payloadLength) {
@@ -343,20 +466,23 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
     }
 
     private void createMQTTClient() throws MqttException {
-        String serverURL = format("tcp://%s:%d", entity.getHostname(), entity.getPort());
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setAutomaticReconnect(false);
-        options.setCleanSession(entity.getMqttCleanSessionOnConnect());
-        options.setConnectionTimeout((int) TimeUnit.SECONDS.toMillis(entity.getConnectionTimeout()));
-        options.setKeepAliveInterval(entity.getMqttKeepAlive());
-        options.setUserName(entity.getUser());
-        options.setPassword(entity.getPassword().asString().toCharArray());
+        try {
+            String serverURL = format("tcp://%s:%d", entity.getHostname(), entity.getPort());
+            MqttConnectOptions options = new MqttConnectOptions();
+            options.setAutomaticReconnect(false);
+            options.setCleanSession(entity.getMqttCleanSessionOnConnect());
+            options.setConnectionTimeout((int) TimeUnit.SECONDS.toMillis(entity.getConnectionTimeout()));
+            options.setKeepAliveInterval(entity.getMqttKeepAlive());
+            options.setUserName(entity.getUser());
+            options.setPassword(entity.getPassword().asString().toCharArray());
 
-        mqttClient = new MqttClient(serverURL, entity.getMqttClientID(), new MemoryPersistence());
-        mqttClient.setCallback(new MqttClientCallbackExtended());
-        mqttClient.connect(options);
-        mqttClient.subscribe(new String[]{"#", "$SYS/#"});
-        updateNotificationBlock();
+            mqttClient = new MqttClient(serverURL, entity.getMqttClientID(), new MemoryPersistence());
+            mqttClient.setCallback(new MqttClientCallbackExtended());
+            mqttClient.connect(options);
+            mqttClient.subscribe(new String[]{"#", "$SYS/#"});
+        } finally {
+            updateNotificationBlock();
+        }
     }
 
     private String getDirText(TreeNode cursor, Map<String, List<MQTTMessage>> sourceMap) {
@@ -392,13 +518,43 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
         context.ui().sendDynamicUpdate("tree-" + entityID, root);
     }
 
+    private void removeListener(@NotNull String discriminator, @Nullable String topic, @NotNull Map<String, ?> holder) {
+        if (topic == null) {
+            holder.remove(discriminator);
+        } else {
+            Map<String, ?> map = (Map<String, ?>) holder.get(discriminator);
+            if (map != null) {
+                map.remove(topic);
+                if (map.isEmpty()) {
+                    holder.remove(discriminator);
+                }
+            }
+        }
+    }
+
+    private void fireBehaviourEvent(BiConsumer<String, String> listener, Function<String, Boolean> predicate) {
+        if (!lastValues.isEmpty()) {
+            Map<String, String> copy = new HashMap<>(lastValues);
+            context.bgp().builder("mqtt-behaviour-handle-" + System.currentTimeMillis())
+                   .execute(() -> {
+                       for (Entry<String, String> entry : copy.entrySet()) {
+                           if (predicate.apply(entry.getKey())) {
+                               listener.accept(entry.getKey(), entry.getValue());
+                           }
+                       }
+                   });
+        }
+    }
+
+    private record Event(String key, String value) {}
+
     @RequiredArgsConstructor
     private class MqttClientCallbackExtended implements MqttCallbackExtended {
 
         @Override
         public void connectComplete(boolean reconnect, String serverURI) {
             try {
-                fireEvent("STATUS", Status.ONLINE.toString());
+                // fireEvent("STATUS", Status.ONLINE.toString());
                 entity.setStatusOnline();
                 context.ui().toastr().info("MQTT server connected");
             } catch (Exception ex) {
@@ -414,8 +570,8 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
                 context.ui().toastr().error("MQTT connection lost", (Exception) cause);
                 String msg = CommonUtils.getErrorMessage(cause);
                 entity.setStatus(Status.ERROR, "Connection lost: " + msg);
-                fireEvent("STATUS", Status.OFFLINE.toString());
-                entity.destroyService();
+                // fireEvent("STATUS", Status.OFFLINE.toString());
+                entity.destroyService(null);
 
                 // retry create service
                 context.bgp().builder("MQTT-reconnect").delay(Duration.ofSeconds(30)).execute(

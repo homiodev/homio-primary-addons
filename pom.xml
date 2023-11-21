@@ -23,7 +23,7 @@
     </parent>
 
     <properties>
-        <homio-api.version>1.3.2-SNAPSHOT</homio-api.version>
+        <homio-api.version>1.3.2</homio-api.version>
     </properties>
 
     <build>
@@ -64,6 +64,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+
         <dependency>
             <artifactId>junit-jupiter-api</artifactId>
             <groupId>org.junit.jupiter</groupId>

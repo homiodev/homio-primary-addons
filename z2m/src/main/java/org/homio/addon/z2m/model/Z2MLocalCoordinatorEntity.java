@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,8 +30,8 @@ import org.homio.api.Context;
 import org.homio.api.ContextService;
 import org.homio.api.ContextService.MQTTEntityService;
 import org.homio.api.entity.log.HasEntitySourceLog;
+import org.homio.api.entity.types.CommunicationEntity;
 import org.homio.api.entity.types.MicroControllerBaseEntity;
-import org.homio.api.entity.types.StorageEntity;
 import org.homio.api.entity.validation.UIFieldValidationSize;
 import org.homio.api.entity.version.HasGitHubFirmwareVersion;
 import org.homio.api.entity.zigbee.ZigBeeBaseCoordinatorEntity;
@@ -45,6 +46,7 @@ import org.homio.api.ui.field.UIField;
 import org.homio.api.ui.field.UIFieldGroup;
 import org.homio.api.ui.field.UIFieldIgnore;
 import org.homio.api.ui.field.UIFieldLinkToEntity;
+import org.homio.api.ui.field.UIFieldReadDefaultValue;
 import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.UIFieldType;
 import org.homio.api.ui.field.action.UIContextMenuAction;
@@ -54,6 +56,8 @@ import org.homio.api.ui.field.inline.UIFieldInlineEntityWidth;
 import org.homio.api.ui.field.selection.UIFieldEntityTypeSelection;
 import org.homio.api.util.DataSourceUtil;
 import org.homio.api.util.DataSourceUtil.SelectionSource;
+import org.homio.api.util.HardwareUtils;
+import org.homio.api.util.Lang;
 import org.homio.hquery.ProgressBar;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -63,7 +67,10 @@ import org.jetbrains.annotations.Nullable;
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#11A4C2")
 public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
-        implements HasGitHubFirmwareVersion, HasEntitySourceLog, ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
+    implements
+    HasGitHubFirmwareVersion,
+    HasEntitySourceLog,
+    ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
 
     @UIField(order = 9999, disableEdit = true, hideInEdit = true)
     @UIFieldInlineEntities(bg = "#27FF000D")
@@ -80,7 +87,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
 
     @UIField(order = 20, required = true, inlineEditWhenEmpty = true)
     @UIFieldEntityTypeSelection(type = ContextService.MQTT_SERVICE)
-    @UIFieldLinkToEntity(StorageEntity.class)
+    @UIFieldLinkToEntity(value = CommunicationEntity.class, applyTitle = true)
     public String getMqttEntity() {
         return getJsonData("mqtt");
     }
@@ -108,8 +115,31 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     }
 
     @Override
+    public @Nullable Set<String> getConfigurationErrors() {
+        Set<String> errors = new HashSet<>();
+        try {
+            if (getMqttEntityService() == null) {
+                errors.add("ERROR.NO_MQTT_SELECTED");
+            }
+
+        } catch (Exception ex) {
+            errors.add("ERROR.WRONG_MQTT_BROKER");
+        }
+        if (getPort().isEmpty()) {
+            errors.add("ERROR.NO_PORT_SELECTED");
+        } else if (HardwareUtils.getSerialPort(getPort()) == null) {
+            errors.add(Lang.getServerMessage("ZIGBEE.ERROR.PORT_NOT_FOUND", getPort()));
+        }
+        return errors;
+    }
+
+    @Override
     public long getEntityServiceHashCode() {
-        return getJsonDataHashCode("mqtt", "bt", "port", "start");
+        return getJsonDataHashCode("mqtt", "bt", "port", "start", "rt");
+    }
+
+    public void setRestartToken(long id) {
+        setJsonData("rt", id);
     }
 
     @Override
@@ -127,7 +157,8 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
         setJsonData("pj", value);
     }
 
-    @UIField(order = 35, isRevert = true)
+    @UIField(order = 35)
+    @UIFieldReadDefaultValue
     @UIFieldGroup("GENERAL")
     @UIFieldValidationSize(min = 3, max = 100)
     public String getBasicTopic() {
@@ -221,8 +252,7 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
 
     @Override
     public void logBuilder(EntityLogBuilder entityLogBuilder) {
-        entityLogBuilder.addTopicFilterByEntityID(Z2MEntrypoint.class);
-        entityLogBuilder.addTopic(Z2MLocalCoordinatorService.class);
+        entityLogBuilder.addTopicFilterByEntityID(Z2MEntrypoint.class.getPackage());
     }
 
     @Override

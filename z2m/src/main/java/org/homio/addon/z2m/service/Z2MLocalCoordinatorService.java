@@ -1,6 +1,5 @@
 package org.homio.addon.z2m.service;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
 import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
 import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
@@ -13,7 +12,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.pivovarit.function.ThrowingBiConsumer;
-import com.pivovarit.function.ThrowingConsumer;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -28,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -36,7 +35,6 @@ import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
@@ -64,7 +62,6 @@ import org.homio.api.service.EntityService.ServiceInstance;
 import org.homio.api.state.StringType;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.util.CommonUtils;
-import org.homio.api.util.HardwareUtils;
 import org.homio.api.util.Lang;
 import org.homio.hquery.ProgressBar;
 import org.jetbrains.annotations.NotNull;
@@ -79,20 +76,16 @@ import org.json.JSONObject;
  * The interface coordinators are responsible for opening a ZigBeeTransport implementation and passing this to the {@link Z2MLocalCoordinatorService}.
  */
 @Getter
-@Log4j2
 public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordinatorEntity>
         implements HasEntityIdentifier {
 
     public static final Map<String, Class<? extends Z2MDeviceEndpoint>> allEndpoints = new HashMap<>();
     private final Path zigbee2mqttConfigurationPath = zigbee2mqttGitHub
             .getLocalProjectPath().resolve("data/configuration.yaml");
-    private final Object updateCoordinatorSync = new Object();
     private final AtomicBoolean scanStarted = new AtomicBoolean(false);
     // Map ieeeAddress - Z2MDeviceService
     private final Map<String, Z2MDeviceService> deviceHandlers = new ConcurrentHashMap<>();
     private boolean initialized;
-    private Status desiredStatus;
-    private @Nullable Status updatingStatus;
     private MQTTEntityService mqttEntityService;
     private URL frontendURL;
 
@@ -112,9 +105,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         context.event().ensureInternetUp("Unable to reinstall z2m without internet");
         zigbee2mqttGitHub.deleteProject();
         ZigBeeUtil.installZ2M(context);
-        restartCoordinator();
-        updateNotificationBlock();
-        return ActionResponseModel.fired();
+        return forceRestartCoordinator();
     }
 
     public ActionResponseModel updateFirmware(ProgressBar progressBar, String version) {
@@ -123,9 +114,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
             return zigbee2mqttGitHub.updateProject("zigbee2mqtt", progressBar, true, projectUpdate -> {
                 if (!version.equals(zigbee2mqttGitHub.getInstalledVersion(context))) {
                     ZigBeeUtil.installOrUpdateZ2M(context, version, projectUpdate);
-                    if (entity.isStart()) {
-                        restartCoordinator();
-                    }
+                    forceRestartCoordinator();
                 }
                 return ActionResponseModel.fired();
             }, null);
@@ -134,6 +123,9 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     }
 
     public void dispose(@Nullable Exception ex) {
+        if (!initialized) {
+            return;
+        }
         initialized = false;
         if (ex != null) {
             this.entity.setStatusError(ex);
@@ -157,7 +149,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
 
     @Override
     public String isRequireRestartService() {
-        if (!entity.isStart() || zigbee2mqttGitHub.isUpdating() || desiredStatus != null || updatingStatus != null) {return null;}
+        if (zigbee2mqttGitHub.isUpdating()) {return null;}
         if (!entity.getStatus().isOnline()) {return "Status: " + entity.getStatus();}
         int status = getApiStatus();
         if (status != 200) {return "API status[%s]".formatted(status);}
@@ -207,16 +199,10 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         }
     }
 
-    public void restartCoordinator() {
-        this.desiredStatus = calcEntityDesiredStatus(entity);
-        if (this.desiredStatus == null) {
-            if (!this.entity.isStart() && this.entity.getStatus() == Status.ERROR) {
-                this.entity.setStatus(Status.OFFLINE, null);
-            }
-        } else {
-            scheduleUpdateStatusIfRequire();
-        }
-        updateNotificationBlock();
+    public ActionResponseModel forceRestartCoordinator() {
+        entity.setRestartToken(System.currentTimeMillis());
+        context.db().save(entity);
+        return ActionResponseModel.fired();
     }
 
     public void updateNotificationBlock() {
@@ -255,11 +241,6 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         });
     }
 
-    @Override
-    protected void initialize() {
-        installZ2MOrRestartCoordinator();
-    }
-
     @SneakyThrows
     public ActionResponseModel restartZ2M() {
         if (!entity.isStart()) {
@@ -272,14 +253,12 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
             // wait, maybe z2m back online?
             Thread.sleep(5000);
         }
-        boolean requireRestart = desiredStatus == null && updatingStatus == null && entity.getStatus() != Status.ONLINE && entity.isStart();
-        if (requireRestart || getApiStatus() != 200) {
-            log.info("Force restart z2m");
-            this.dispose(null);
-            this.restartCoordinator();
+        return forceRestartCoordinator();
+    }
 
-        }
-        return ActionResponseModel.fired();
+    @Override
+    public void destroy(boolean forRestart, Exception ex) {
+        this.dispose(ex);
     }
 
     @Override
@@ -294,8 +273,10 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
     }
 
     @Override
-    public void destroy() {
-        this.dispose(null);
+    protected void initialize() {
+        ZigBeeUtil.installZ2M(context);
+        initializeZ2M();
+        updateNotificationBlock();
     }
 
     @SneakyThrows
@@ -352,83 +333,6 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         return Collections.emptyList();
     }
 
-    private @Nullable Status calcEntityDesiredStatus(@NotNull Z2MLocalCoordinatorEntity entity) {
-        return entity.isStart() ? restartIfRequire(entity) : (initialized ? Status.CLOSING : null);
-    }
-
-    private void installZ2MOrRestartCoordinator() {
-        if (!ZigBeeUtil.isZ2MInstalled()) {
-            ZigBeeUtil.installZ2M(context);
-        }
-        restartCoordinator();
-        updateNotificationBlock();
-    }
-
-    private void scheduleUpdateStatusIfRequire() {
-        if (isRequireStartOrStop()) {
-            synchronized (updateCoordinatorSync) {
-                if (isRequireStartOrStop()) {
-                    updatingStatus = desiredStatus;
-                    desiredStatus = null;
-                    context.bgp().builder("z2m-updating-" + entityID).execute(this::executeUpdateStateIfRequire);
-                } else {
-                    this.desiredStatus = null;
-                }
-            }
-        } else {
-            this.desiredStatus = null;
-        }
-    }
-
-    private boolean isRequireStartOrStop() {
-        if (updatingStatus != null) {
-            return false;
-        }
-        if (desiredStatus == Status.INITIALIZE && !initialized) {
-            return true;
-        }
-        return desiredStatus == Status.CLOSING && initialized || desiredStatus == Status.RESTARTING;
-    }
-
-    private Status restartIfRequire(Z2MLocalCoordinatorEntity entity) {
-        String error = validateEntity(entity);
-        if (error != null) {
-            entity.setStatusError(error);
-            return Status.CLOSING;
-        }
-
-        // do check reinitialize only if coordinator already started
-        if (initialized) {
-            boolean reinitialize;
-            if (this.mqttEntityService == null) {
-                reinitialize = true;
-            } else {
-                reinitialize = !entity.deepEqual(this.entity);
-            }
-
-            if (reinitialize) {
-                return Status.RESTARTING;
-            }
-        }
-
-        return Status.INITIALIZE;
-    }
-
-    private String validateEntity(Z2MLocalCoordinatorEntity newEntity) {
-        if (isEmpty(newEntity.getPort())) {
-            return "ZIGBEE.ERROR.NO_PORT";
-        } else if (HardwareUtils.getSerialPort(entity.getPort()) == null) {
-            return Lang.getServerMessage("ZIGBEE.ERROR.PORT_NOT_FOUND", entity.getPort());
-        }
-        if (isEmpty(entity.getMqttEntity())) {
-            return "ZIGBEE.ERROR.NO_MQTT";
-        }
-        if (entity.getMqttEntityService() == null) {
-            return "ZIGBEE.ERROR.MQTT_NOT_FOUND";
-        }
-        return null;
-    }
-
     @SneakyThrows
     private void runZigBee2MQTT() {
         try {
@@ -452,29 +356,6 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         updateNotificationBlock();
     }
 
-    private void executeUpdateStateIfRequire() {
-        try {
-            switch (Objects.requireNonNull(updatingStatus)) {
-                case CLOSING -> {
-                    if (initialized) {
-                        this.dispose(null);
-                    }
-                }
-                case INITIALIZE, RESTARTING -> {
-                    if (initialized) {
-                        this.dispose(null);
-                    }
-                    this.initializeZ2M();
-                }
-            }
-            context.ui().updateItem(entity);
-            // fire recursively if state updated since last time
-            scheduleUpdateStatusIfRequire();
-        } finally {
-            this.updatingStatus = null;
-        }
-    }
-
     private void setEntityOnline() {
         initialized = true;
         entity.setStatusOnline();
@@ -496,12 +377,12 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
 
         // register mqtt bridge event listeners
         for (Z2MBridgeTopicHandlers handler : Z2MBridgeTopicHandlers.values()) {
-            addMqttTopicListener(getBridgeTopic(handler), payload -> handler.handler.accept(payload, this), handler.logLevel);
+            addMqttTopicListener(getBridgeTopic(handler), (topic, payload) -> handler.handler.accept(payload, this), handler.logLevel);
         }
         for (Z2MBridgeResponseTopicHandlers response : Z2MBridgeResponseTopicHandlers.values()) {
             addMqttTopicListener(
                     "%s/bridge/response/%s".formatted(entity.getBasicTopic(), response.topic),
-                    payload -> {
+                (topic, payload) -> {
                         if ("ok".equalsIgnoreCase(payload.get("status").asText())) {
                             response.handler.accept(payload.get("data"), this);
                         } else {
@@ -511,24 +392,8 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
         }
     }
 
-    private void addMqttTopicListener(String topic, ThrowingConsumer<ObjectNode, Exception> handler, Level logLevel) {
-        mqttEntityService.addListener(topic, "z2m", value -> {
-            log.log(logLevel, "[{}]: ZigBee2MQTT {}: {}", entityID, topic, value);
-            String payload = value == null ? "" : value.toString();
-            if (!payload.isEmpty()) {
-                ObjectNode node;
-                try {
-                    node = OBJECT_MAPPER.readValue(payload, ObjectNode.class);
-                } catch (Exception ex) {
-                    node = OBJECT_MAPPER.createObjectNode().put("raw", payload);
-                }
-                try {
-                    handler.accept(node);
-                } catch (Exception ex) {
-                    log.error("[{}]: Unable to handle mqtt payload: {}. Msg: {}", entityID, payload, getErrorMessage(ex));
-                }
-            }
-        });
+    private void addMqttTopicListener(String topic, ThrowingBiConsumer<String, ObjectNode, Exception> handler, Level logLevel) {
+        mqttEntityService.addPayloadListener(Set.of(topic), "z2m", entityID, log, logLevel, handler);
     }
 
     private int getApiStatus() {
@@ -627,27 +492,16 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
 
     private void startZ2MLocalProcess() {
         AtomicReference<Level> infoLevel = new AtomicReference<>(Level.INFO);
-        processContext = context
-                .bgp().processBuilder(getEntityID())
-                .onStarted(t -> setEntityOnline())
-                .attachLogger(log)
-                .attachEntityStatus(entity)
-                .onFinished((ex, responseCode) -> {
-                    if (ex != null) {
-                        log.error("[{}]: Error while start zigbee2mqtt {}", entityID, getErrorMessage(ex));
-                    } else {
-                        log.warn("[{}]: zigbee2mqtt nodeJs finished with status: {}", entityID, responseCode);
-                    }
-                    dispose(ex);
-                })
-                .setErrorLoggerOutput(log::error)
-                .setInputLoggerOutput(msg -> {
-                    if (msg.contains("!!!!")) {
-                        infoLevel.set(Level.ERROR);
-                    }
-                    log.log(infoLevel.get(), "[{}]: ZigBee2MQTT: {}", entityID, msg);
-                })
-                .execute(getNpm() + " start --prefix " + zigbee2mqttGitHub.getLocalProjectPath());
+
+        processContext =
+            context.bgp().processBuilder(entity, log)
+                   .setInputLoggerOutput(msg -> {
+                       if (msg.contains("!!!!")) {
+                           infoLevel.set(Level.ERROR);
+                       }
+                       log.log(infoLevel.get(), "[{}]: ZigBee2MQTT: {}", entityID, msg);
+                   })
+                   .execute(getNpm() + " start --prefix " + zigbee2mqttGitHub.getLocalProjectPath());
     }
 
     private void assembleAllEndpoints(Context context) {
@@ -698,7 +552,7 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
                     newApplianceModel.getDefinition().setExposes(Collections.emptyList());
                 }
                 if (!service.deviceHandlers.containsKey(newApplianceModel.getIeeeAddress())) {
-                    Z2MLocalCoordinatorService.log.info("[{}]: New device added: {}", service.entityID, newApplianceModel);
+                    service.log.info("[{}]: New device added: {}", service.entityID, newApplianceModel);
                     service.deviceHandlers.put(newApplianceModel.getIeeeAddress(), new Z2MDeviceService(service, newApplianceModel));
                     service.context.ui().updateItem(service.entity);
                 }
@@ -718,10 +572,9 @@ public class Z2MLocalCoordinatorService extends ServiceInstance<Z2MLocalCoordina
                 case "device_interview" -> {
                     String status = data.get("status").asText();
                     Level level = status.equals("failed") ? Level.ERROR : Level.INFO;
-                    Z2MLocalCoordinatorService.log.log(level, "[{}]: ZigBee2MQTT Device interview {} for device {}", service.entityID, status, ieeeAddress);
+                    service.log.log(level, "[{}]: ZigBee2MQTT Device interview {} for device {}", service.entityID, status, ieeeAddress);
                 }
-                case "device_announce" ->
-                        Z2MLocalCoordinatorService.log.info("[{}]: ZigBee2MQTT Device announce {}", service.entityID, ieeeAddress);
+                case "device_announce" -> service.log.info("[{}]: ZigBee2MQTT Device announce {}", service.entityID, ieeeAddress);
             }
         }),
         info(Level.DEBUG, (payload, service) -> {

@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.homio.addon.mqtt.MQTTEntrypoint;
 import org.homio.addon.mqtt.console.header.ConsoleMQTTPublishButtonSetting;
+import org.homio.addon.mqtt.entity.MQTTMessage;
 import org.homio.addon.mqtt.entity.MQTTService;
 import org.homio.addon.mqtt.setting.ConsoleRemoveMqttTreeNodeHeaderButtonSetting;
 import org.homio.api.Context;
@@ -16,6 +17,7 @@ import org.homio.api.console.ConsolePluginTree;
 import org.homio.api.fs.TreeConfiguration;
 import org.homio.api.model.ActionResponseModel;
 import org.homio.api.setting.console.header.ConsoleHeaderSettingPlugin;
+import org.homio.api.storage.SortBy;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -40,7 +42,9 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
     public ActionResponseModel executeAction(@NotNull String entityID, @NotNull JSONObject metadata) {
         context.assertAccess(MQTTEntrypoint.MQTT_RESOURCE);
         if ("history".equals(metadata.optString("type"))) {
-            return ActionResponseModel.showJson("History", new ArrayList<>(mqttService.getStorage().findAllBy("topic", entityID)));
+            List<MQTTMessage> topic = mqttService.getStorage().findAllBy("topic", entityID, SortBy.sortDesc("created"),
+                null);
+            return ActionResponseModel.showJson("History", new ArrayList<>(topic));
         }
         return ActionResponseModel.showWarn("Unable to handle command: " + entityID);
     }

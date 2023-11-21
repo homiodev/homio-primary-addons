@@ -1,5 +1,6 @@
 package org.homio.addon.z2m.service.endpoints;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.val;
 import org.homio.addon.z2m.service.Z2MDeviceEndpoint;
 import org.homio.addon.z2m.service.Z2MDeviceService;
@@ -7,7 +8,6 @@ import org.homio.addon.z2m.service.endpoints.inline.Z2MDeviceEndpointActionEvent
 import org.homio.api.Context;
 import org.homio.api.model.Icon;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONObject;
 
 public class Z2MDeviceEndpointAction extends Z2MDeviceEndpoint {
 
@@ -23,8 +23,8 @@ public class Z2MDeviceEndpointAction extends Z2MDeviceEndpoint {
     }
 
     @Override
-    public void mqttUpdate(JSONObject payload) {
-        String action = payload.getString("action");
+    public void mqttUpdate(JsonNode payload) {
+        String action = payload.get("action").asText();
         super.mqttUpdate(payload);
 
         Z2MDeviceService deviceService = getDeviceService();
