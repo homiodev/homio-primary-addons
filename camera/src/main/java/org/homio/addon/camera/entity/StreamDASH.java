@@ -1,12 +1,12 @@
 package org.homio.addon.camera.entity;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.homio.addon.camera.service.util.CameraUtils.deleteFiles;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import lombok.SneakyThrows;
-import org.aspectj.util.FileUtil;
 import org.homio.addon.camera.service.BaseCameraService;
 import org.homio.api.ContextMedia.FFMPEG;
 import org.homio.api.ContextMedia.FFMPEGFormat;
@@ -108,10 +108,7 @@ public interface StreamDASH extends HasJsonData {
                           service.getEntity().getUser(),
                           service.getEntity().getPassword().asString())
                       .setWorkingDirectory(BaseCameraService.SHARE_DIR)
-                      .addDestroyListener("DOS", () -> {
-                          FileUtil.deleteContents(BaseCameraService.SHARE_DIR.toFile(),
-                              file -> file.getName().startsWith(streamPrefix), false);
-                      });
+                      .addDestroyListener("DOS", () -> deleteFiles(streamPrefix));
     }
 
     default String buildDashOptions(@NotNull BaseCameraService<? extends BaseCameraEntity<?, ?>, ?> service, String streamPrefix) {

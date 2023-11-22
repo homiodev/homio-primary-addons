@@ -2,6 +2,7 @@ package org.homio.addon.camera.service.util;
 
 import static org.springframework.http.HttpHeaders.WWW_AUTHENTICATE;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
@@ -35,6 +36,7 @@ import org.apache.http.impl.auth.DigestScheme;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpRequest;
 import org.homio.addon.camera.onvif.util.Helper;
+import org.homio.addon.camera.service.BaseCameraService;
 import org.homio.api.exception.ServerException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +45,18 @@ import org.springframework.http.HttpHeaders;
 @Log4j2
 public class CameraUtils {
 
-    private static Map<String, AuthHandler> authHandlerMap = new ConcurrentHashMap<>();
+    private static final Map<String, AuthHandler> authHandlerMap = new ConcurrentHashMap<>();
+
+    public static void deleteFiles(String prefix) {
+        File[] files = BaseCameraService.SHARE_DIR.toFile().listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.getName().startsWith(prefix)) {
+                    file.delete();
+                }
+            }
+        }
+    }
 
     @SneakyThrows
     public static CompletableFuture<InputStream> sendRequest(

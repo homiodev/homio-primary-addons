@@ -1,6 +1,7 @@
 package org.homio.addon.camera.entity;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.homio.addon.camera.service.util.CameraUtils.deleteFiles;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -164,16 +165,7 @@ public interface StreamHLS extends HasJsonData {
                           service.getEntity().getUser(),
                           service.getEntity().getPassword().asString())
                       .setWorkingDirectory(BaseCameraService.SHARE_DIR)
-                      .addDestroyListener("DOS", () -> {
-                          File[] files = BaseCameraService.SHARE_DIR.toFile().listFiles();
-                          if (files != null) {
-                              for (File file : files) {
-                                  if (file.getName().startsWith(streamPrefix)) {
-                                      file.delete();
-                                  }
-                              }
-                          }
-                      });
+                      .addDestroyListener("DOS", () -> deleteFiles(streamPrefix));
     }
 
     default String buildHlsOptions(@NotNull BaseCameraService<? extends BaseCameraEntity<?, ?>, ?> service,
