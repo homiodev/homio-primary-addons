@@ -1,74 +1,19 @@
 package org.homio.addon.camera.scanner;
 
-import static io.netty.handler.codec.rtsp.RtspDecoder.DEFAULT_MAX_CONTENT_LENGTH;
-import static io.netty.handler.codec.rtsp.RtspHeaderNames.CONTENT_BASE;
-
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.http.DefaultFullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.rtsp.RtspDecoder;
-import io.netty.handler.codec.rtsp.RtspEncoder;
-import io.netty.handler.codec.rtsp.RtspHeaderNames;
-import io.netty.handler.codec.rtsp.RtspMethods;
-import io.netty.handler.codec.rtsp.RtspVersions;
-import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.AttributeKey;
-import io.netty.util.CharsetUtil;
-import java.net.URI;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.homio.addon.camera.entity.CommonVideoStreamEntity;
-import org.homio.addon.camera.rtsp.message.sdp.SdpMessage;
-import org.homio.addon.camera.rtsp.message.sdp.SdpParser;
-import org.homio.addon.camera.setting.CameraScanPortRangeSetting;
-import org.homio.addon.camera.setting.rtsp.ScanRtspIpAddressMaxPingTimeoutSetting;
-import org.homio.addon.camera.setting.rtsp.ScanRtspPortsSetting;
-import org.homio.addon.camera.setting.rtsp.ScanRtspUrlsSetting;
-import org.homio.api.EntityContext;
-import org.homio.api.model.Status;
-import org.homio.api.service.scan.BaseItemsDiscovery;
-import org.homio.api.service.scan.VideoStreamScanner;
-import org.homio.api.util.Lang;
-import org.homio.hquery.ProgressBar;
-import org.homio.hquery.hardware.network.NetworkHardwareRepository;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class RtspStreamScanner implements VideoStreamScanner {
+public class RtspStreamScanner /*implements VideoStreamScanner*/ {
 
-    public static final AttributeKey<URI> URL = AttributeKey.valueOf("url");
+    /*public static final AttributeKey<URI> URL = AttributeKey.valueOf("url");
     private static final int THREAD_COUNT = 8;
     private static final int BOOTSTRAP_AWAIT_TERMINATION_SEC = 60;
     public static Map<String, SdpMessage> rtspUrlToSdpMessage = new ConcurrentHashMap<>();
-    private final EntityContext entityContext;
+    private final Context context;
     private final ChannelFutureListener ON_CLOSED = future -> log.debug("Channel closed: {}", future.channel());
     private final ChannelFutureListener ON_CONNECTED = future -> {
         if (future.isSuccess()) {
@@ -86,26 +31,29 @@ public class RtspStreamScanner implements VideoStreamScanner {
         public void accept(String uriStr, SdpMessage sdpMessage) {
             CommonVideoStreamEntity commonVideoStreamEntity = existsRtspStreamEntity.get(uriStr);
             if (commonVideoStreamEntity != null) {
-                entityContext.updateDelayed(commonVideoStreamEntity, e -> e.setStatus(Status.WAITING, null));
+                context.db().updateDelayed(commonVideoStreamEntity, e -> e.setStatus(Status.WAITING, null));
             }
         }
     };
-    private BaseItemsDiscovery.DeviceScannerResult result;
+    private DeviceScannerResult result;
     private String headerConfirmButtonKey;
     private final BiConsumer<String, SdpMessage> DISCOVERY_HANDLER = new BiConsumer<>() {
         @Override
         public void accept(String uriStr, SdpMessage sdpMessage) {
             if (!existsRtspStreamEntity.containsKey(uriStr)) {
                 result.getNewCount().incrementAndGet();
-                handleDevice(headerConfirmButtonKey, "rtsp-" + uriStr.hashCode(), sdpMessage.getSessionName(), entityContext,
-                    messages -> {
-                        messages.add(Lang.getServerMessage("NEW_DEVICE.NAME", sdpMessage.getSessionName()));
-                        messages.add(Lang.getServerMessage("NEW_DEVICE.URL", uriStr));
-                    },
-                    () -> {
-                        log.info("Confirm save rtsp stream entity: <{}>", sdpMessage.getSessionName());
-                        entityContext.save(new CommonVideoStreamEntity().setIeeeAddress(uriStr));
-                    });
+                String name = Lang.getServerMessage("NEW_DEVICE.RTSP_STREAM") + sdpMessage.getSessionName();
+                handleDevice(headerConfirmButtonKey, "rtsp-" + uriStr.hashCode(), name, context,
+                        messages -> {
+                            messages.add(Lang.getServerMessage("NEW_DEVICE.NAME", sdpMessage.getSessionName()));
+                            messages.add(Lang.getServerMessage("NEW_DEVICE.URL", uriStr));
+                        },
+                        () -> {
+                            log.info("Confirm save rtsp stream entity: <{}>", sdpMessage.getSessionName());
+                            CommonVideoStreamEntity entity = new CommonVideoStreamEntity();
+                            entity.setIeeeAddress(uriStr);
+                            context.db().save(entity);
+                        });
             } else {
                 result.getExistedCount().incrementAndGet();
             }
@@ -121,7 +69,7 @@ public class RtspStreamScanner implements VideoStreamScanner {
 
     public synchronized void scan(List<CommonVideoStreamEntity> rtspStreamEntities) throws InterruptedException {
         this.existsRtspStreamEntity = rtspStreamEntities.stream()
-                                                        .collect(Collectors.toMap(CommonVideoStreamEntity::getIeeeAddress, Function.identity()));
+                .collect(Collectors.toMap(CommonVideoStreamEntity::getIeeeAddress, Function.identity()));
         this.rtspAliveHandler = PING_HANDLER;
 
         NioEventLoopGroup mainEventLoopGroup = reCreateBootstrap();
@@ -142,32 +90,32 @@ public class RtspStreamScanner implements VideoStreamScanner {
 
     @SneakyThrows
     @Override
-    public synchronized BaseItemsDiscovery.DeviceScannerResult scan(EntityContext entityContext, ProgressBar progressBar,
-        String headerConfirmButtonKey) {
+    public synchronized DeviceScannerResult scan(Context context, ProgressBar progressBar,
+                                                                    String headerConfirmButtonKey) {
         this.headerConfirmButtonKey = headerConfirmButtonKey;
-        this.result = new BaseItemsDiscovery.DeviceScannerResult();
-        this.existsRtspStreamEntity = entityContext.findAll(CommonVideoStreamEntity.class)
-                                                   .stream().collect(Collectors.toMap(CommonVideoStreamEntity::getIeeeAddress, Function.identity()));
+        this.result = new DeviceScannerResult();
+        this.existsRtspStreamEntity = context.db().findAll(CommonVideoStreamEntity.class)
+                .stream().collect(Collectors.toMap(CommonVideoStreamEntity::getIeeeAddress, Function.identity()));
         this.rtspAliveHandler = DISCOVERY_HANDLER;
 
         NioEventLoopGroup mainEventLoopGroup = reCreateBootstrap();
-        NetworkHardwareRepository networkHardwareRepository = entityContext.getBean(NetworkHardwareRepository.class);
+        NetworkHardwareRepository networkHardwareRepository = context.getBean(NetworkHardwareRepository.class);
 
-        Set<Integer> ports = entityContext.setting().getValue(ScanRtspPortsSetting.class);
-        int pingTimeout = entityContext.setting().getValue(ScanRtspIpAddressMaxPingTimeoutSetting.class);
-        Set<String> urls = entityContext.setting().getValue(ScanRtspUrlsSetting.class);
-        Set<String> ipRangeList = entityContext.setting().getValue(CameraScanPortRangeSetting.class);
+        Set<Integer> ports = context.setting().getValue(ScanRtspPortsSetting.class);
+        int pingTimeout = context.setting().getValue(ScanRtspIpAddressMaxPingTimeoutSetting.class);
+        Set<String> urls = context.setting().getValue(ScanRtspUrlsSetting.class);
+        Set<String> ipRangeList = context.setting().getValue(CameraScanPortRangeSetting.class);
 
         Map<String, Callable<Integer>> tasks = new HashMap<>();
         for (String ipRange : ipRangeList) {
             tasks.putAll(
-                networkHardwareRepository.buildPingIpAddressTasks(ipRange, log::info, ports, pingTimeout, ipAliveHandler(urls)));
+                    networkHardwareRepository.buildPingIpAddressTasks(ipRange, log::info, ports, pingTimeout, ipAliveHandler(urls)));
         }
 
-        List<Integer> availableRtspAddresses = entityContext.bgp().runInBatchAndGet("scan-rtsp-batch-result",
-            Duration.ofMillis((long) pingTimeout * tasks.size()), THREAD_COUNT, tasks,
-            completedTaskCount -> progressBar.progress(100 / (float) tasks.size() * completedTaskCount,
-                "Rtsp stream done " + completedTaskCount + "/" + tasks.size() + " tasks"));
+        List<Integer> availableRtspAddresses = context.bgp().runInBatchAndGet("scan-rtsp-batch-result",
+                Duration.ofMillis((long) pingTimeout * tasks.size()), THREAD_COUNT, tasks,
+                completedTaskCount -> progressBar.progress(100 / (float) tasks.size() * completedTaskCount,
+                        "Rtsp stream done " + completedTaskCount + "/" + tasks.size() + " tasks"));
 
         if (bootstrap != null) {
             // TODO: mainEventLoopGroup.awaitTermination(10, TimeUnit.SECONDS);
@@ -199,8 +147,8 @@ public class RtspStreamScanner implements VideoStreamScanner {
         NioEventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
 
         this.bootstrap = new Bootstrap()
-            .group(mainEventLoopGroup)
-            .channel(NioSocketChannel.class);
+                .group(mainEventLoopGroup)
+                .channel(NioSocketChannel.class);
         this.bootstrap.option(ChannelOption.SO_RCVBUF, 131072);
         this.bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
         this.bootstrap.handler(new ClientChannelInitializer());
@@ -217,7 +165,7 @@ public class RtspStreamScanner implements VideoStreamScanner {
         public void channelActive(ChannelHandlerContext ctx) {
             int requestCseq = cseq++;
             DefaultFullHttpRequest request =
-                new DefaultFullHttpRequest(RtspVersions.RTSP_1_0, RtspMethods.DESCRIBE, uri.toString());
+                    new DefaultFullHttpRequest(RtspVersions.RTSP_1_0, RtspMethods.DESCRIBE, uri.toString());
             request.headers().add(RtspHeaderNames.CSEQ, requestCseq);
             ctx.writeAndFlush(request);
         }
@@ -261,5 +209,5 @@ public class RtspStreamScanner implements VideoStreamScanner {
             pipeline.addLast(new HttpObjectAggregator(DEFAULT_MAX_CONTENT_LENGTH));
             pipeline.addLast(new NettyRtspChannelHandler(uri));
         }
-    }
+    }*/
 }

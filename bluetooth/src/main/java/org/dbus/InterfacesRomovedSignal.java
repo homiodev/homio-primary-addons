@@ -17,7 +17,7 @@ public interface InterfacesRomovedSignal extends DBusInterface {
     class InterfacesRemoved extends DBusSignal {
 
         private final Path objectPath;
-        private List<String> interfacesRemoved;
+        private final List<String> interfacesRemoved;
 
         public InterfacesRemoved(String path, Path objectPath, List<String> interfacesRemoved) throws DBusException {
             super(path, objectPath, interfacesRemoved);

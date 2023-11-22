@@ -51,16 +51,20 @@ public class Z2MConfiguration extends UnknownOptions {
         @Nullable
         private String baseTopic;
 
-        @Nullable private String server;
-        @Nullable private String user;
-        @Nullable private String password;
+        @Nullable
+        private String server;
+        @Nullable
+        private String user;
+        @Nullable
+        private String password;
     }
 
     @Getter
     @Setter
     public static class Serial extends UnknownOptions {
 
-        @Nullable private String port;
+        @Nullable
+        private String port;
 
         @JsonProperty("disable_led")
         private boolean disableLed = false;

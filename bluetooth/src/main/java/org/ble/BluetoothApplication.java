@@ -12,10 +12,10 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+@Getter
 @Log4j2
 public class BluetoothApplication {
 
-    @Getter
     private final BleApplication bleApplication;
 
     public BluetoothApplication(String name, String serviceUUID, BleApplicationListener bleApplicationListener) {

@@ -34,7 +34,7 @@
     },
     {
       "name": "Energy meter",
-      "exposes": [
+      "endpoints": [
         "switch~energy~power~voltage~current"
       ],
       "models": [
@@ -104,7 +104,7 @@
     },
     {
       "name": "RGB controller/Bulb/Led strips",
-      "exposes": [
+      "endpoints": [
         "light"
       ],
       "icon": "fas fa-palette",
@@ -118,7 +118,7 @@
     },
     {
       "name": "Relay/Switch",
-      "exposes": [
+      "endpoints": [
         "switch",
         "state",
         "state_right",
@@ -142,7 +142,7 @@
     },
     {
       "name": "Temperature and Humidity Sensor",
-      "exposes": [
+      "endpoints": [
         "temperature~humidity~battery"
       ],
       "icon": "fas fa-cloud",
@@ -249,7 +249,7 @@
     },
     {
       "name": "Smoke Detector",
-      "exposes": [
+      "endpoints": [
         "smoke"
       ],
       "icon": "fas fa-volcano",
@@ -299,7 +299,7 @@
     },
     {
       "name": "Door Sensor",
-      "exposes": [
+      "endpoints": [
         "contact"
       ],
       "icon": "fas fa-door-open",
@@ -361,7 +361,7 @@
     },
     {
       "name": "Motion and illuminance sensor",
-      "exposes": [
+      "endpoints": [
         "occupancy"
       ],
       "icon": "fas fa-person-circle-exclamation",
@@ -438,7 +438,7 @@
     },
     {
       "name": "Water leak sensor",
-      "exposes": [
+      "endpoints": [
         "water_leak"
       ],
       "icon": "fas fa-droplet",
@@ -497,7 +497,7 @@
     },
     {
       "name": "Vibration sensor",
-      "exposes": [
+      "endpoints": [
         "vibration"
       ],
       "icon": "fab fa-squarespace",
@@ -518,7 +518,7 @@
                       {
                         "op": "eq",
                         "value": "true|1",
-                        "target": "fab fa-fw fa-squarespace fa-flip"
+                        "target": "fab fa-squarespace fa-flip"
                       }
                     ]
                   },
@@ -556,11 +556,12 @@
       ]
     }
   ],
-  "properties": [
+  "endpoints": [
     {
       "name": "vibration",
       "icon": "fab fa-squarespace",
       "iconColor": "#4C61D4",
+      "persistent": true,
       "order": 3015
     },
     {
@@ -573,24 +574,25 @@
       "name": "contact",
       "icon": "fa-door-open",
       "iconColor": "#4C61D4",
+      "persistent": true,
       "order": 3005
     },
     {
       "name": "last_seen",
-      "icon": "fa-eye",
-      "iconColor": "#2D9C2C",
       "order": 3000
     },
     {
       "name": "smoke",
       "icon": "fa-mask-ventilator",
       "iconColor": "#C7AC24",
+      "persistent": true,
       "order": 2995
     },
     {
       "name": "water_leak",
       "icon": "fa-water",
       "iconColor": "#0C9AB7",
+      "persistent": true,
       "order": 2990
     },
     {
@@ -603,6 +605,7 @@
       "name": "illuminance",
       "icon": "fa-sun",
       "iconColor": "#89D636",
+      "persistent": true,
       "order": 2980,
       "alias": [
         "illuminance_lux"
@@ -612,16 +615,19 @@
       "name": "humidity",
       "icon": "fa-tint",
       "iconColor": "#4179E0",
+      "persistent": true,
       "order": 2975
     },
     {
       "name": "pressure",
       "icon": "fa-cloud-download-alt",
+      "persistent": true,
       "iconColor": "#B0B0B0",
       "order": 2970
     },
     {
       "name": "occupancy",
+      "persistent": true,
       "icon": "fa-walking",
       "iconColor": "#89D636",
       "order": 2965
@@ -629,47 +635,53 @@
     {
       "name": "temperature",
       "icon": "fa-thermometer-three-quarters",
+      "persistent": true,
       "iconColor": "#36B9D6",
       "order": 2960
     },
     {
       "name": "voltage",
       "icon": "fa-bolt",
+      "persistent": true,
       "iconColor": "#4BBF73",
       "order": 2955
     },
     {
       "name": "consumption",
+      "persistent": true,
       "icon": "fa-car-battery",
       "iconColor": "#43BDBF",
       "order": 2950
     },
     {
       "name": "power",
+      "persistent": true,
       "icon": "fa-plug-circle-bolt",
       "iconColor": "#9357EF",
       "order": 2945
     },
     {
       "name": "current",
+      "persistent": true,
       "icon": "fa-copyright",
       "iconColor": "#E5A54B",
       "order": 2940
     },
     {
       "name": "energy",
+      "persistent": true,
       "icon": "fa-plug",
       "iconColor": "#1F9BCF",
       "order": 2935
     },
     {
       "name": "battery",
-      "icon": "fa-battery-full",
-      "iconColor": "#32D1B9",
+      "persistent": true,
       "order": 2930
     },
     {
       "name": "brightness",
+      "persistent": true,
       "icon": "fa-sun",
       "iconColor": "#C4B74E",
       "order": 2925
@@ -679,11 +691,6 @@
       "icon": "fa-sliders-h",
       "iconColor": "#7D37C2",
       "order": 2920
-    },
-    {
-      "name": "linkquality",
-      "icon": "fa-signal",
-      "iconColor": "#D134AF"
     },
     {
       "name": "tamper",
@@ -732,6 +739,7 @@
     },
     {
       "name": "fault",
+      "persistent": true,
       "icon": "fa-plug-circle-exclamation",
       "iconColor": "#DD5F24"
     },
@@ -742,6 +750,7 @@
     },
     {
       "name": "click",
+      "persistent": true,
       "icon": "fa-egg",
       "iconColor": "#B0B0B0"
     },
@@ -757,6 +766,7 @@
     },
     {
       "name": "selftest",
+      "stateless": true,
       "icon": "fa-flask-vial",
       "iconColor": "#32D1B9"
     },
@@ -802,46 +812,55 @@
     },
     {
       "name": "wakeup",
+      "persistent": true,
       "icon": "fa-wave-square",
       "iconColor": "#0C83B7"
     },
     {
       "name": "shake",
+      "persistent": true,
       "icon": "fa-cubes-stacked",
       "iconColor": "#0C83B7"
     },
     {
       "name": "tap",
+      "persistent": true,
       "icon": "fa-computer-mouse",
       "iconColor": "#0C83B7"
     },
     {
       "name": "slide",
+      "persistent": true,
       "icon": "fa-shekel-sign",
       "iconColor": "#0C83B7"
     },
     {
       "name": "rotate_right",
+      "persistent": true,
       "icon": "fa-rotate-right",
       "iconColor": "#0C83B7"
     },
     {
       "name": "rotate_left",
+      "persistent": true,
       "icon": "fa-rotate-left",
       "iconColor": "#0C83B7"
     },
     {
       "name": "fall",
+      "persistent": true,
       "icon": "fa-arrow-down",
       "iconColor": "#0C83B7"
     },
     {
       "name": "flip180",
+      "persistent": true,
       "icon": "fa-repeat",
       "iconColor": "#0C83B7"
     },
     {
       "name": "flip90",
+      "persistent": true,
       "icon": "fa-repeat",
       "iconColor": "#0C83B7"
     },
@@ -863,6 +882,7 @@
     },
     {
       "name": "action_side",
+      "persistent": true,
       "icon": "fa-arrow-up-right-from-square",
       "iconColor": "#0C83B7",
       "alias": [
@@ -871,6 +891,7 @@
     },
     {
       "name": "action_angle",
+      "persistent": true,
       "icon": "fa-arrow-up-right-dots",
       "iconColor": "#D63673",
       "alias": [
@@ -889,11 +910,13 @@
     },
     {
       "name": "action_tilt",
+      "persistent": true,
       "icon": "fa-slash",
       "iconColor": "#C24487"
     },
     {
       "name": "action_vibration",
+      "persistent": true,
       "icon": "fa-clover",
       "iconColor": "#B63CBD"
     },
@@ -924,6 +947,7 @@
     },
     {
       "name": "update_available",
+      "stateless": true,
       "icon": "fa-hat-cowboy-side",
       "iconColor": "#AD23BA"
     },
@@ -966,10 +990,12 @@
       "name": "indicator_mode",
       "icon": "fa-traffic-light",
       "iconColor": "#42C1BB"
+    },
+    {
+      "name": "update",
+      "stateless": true,
+      "icon": "",
+      "iconColor": ""
     }
-  ],
-  "propertiesWithoutVariables": [
-    "update_available",
-    "update"
   ]
 }

@@ -16,10 +16,13 @@ import org.homio.addon.telegram.commands.TelegramHelpCommand;
 import org.homio.addon.telegram.commands.TelegramRegisterUserCommand;
 import org.homio.addon.telegram.commands.TelegramStartCommand;
 import org.homio.addon.telegram.commands.TelegramUnregisterUserCommand;
-import org.homio.api.EntityContext;
+import org.homio.api.Context;
+import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
+import org.homio.api.state.ObjectType;
+import org.homio.api.state.State;
 import org.homio.api.util.CommonUtils;
-import org.homio.api.workspace.BroadcastLock;
+import org.homio.api.workspace.Lock;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
@@ -47,12 +50,12 @@ public class TelegramService {
     private final TelegramBotsApi botsApi;
     private final Map<String, TelegramEventCommand> eventCommandMap = new HashMap<>();
 
-    private final EntityContext entityContext;
+    private final Context context;
     private final Map<String, TelegramBot> telegramBots = new HashMap<>();
 
     @SneakyThrows
-    public TelegramService(EntityContext entityContext) {
-        this.entityContext = entityContext;
+    public TelegramService(Context context) {
+        this.context = context;
         this.botsApi = new TelegramBotsApi(DefaultBotSession.class);
     }
 
@@ -78,17 +81,17 @@ public class TelegramService {
     }
 
     public void sendPhoto(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile,
-        String caption) {
+                          String caption) {
         getTelegramBot(telegramEntity).sendPhoto(checkUsers(users), inputFile, caption);
     }
 
     public void sendVideo(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile,
-        String caption) {
+                          String caption) {
         getTelegramBot(telegramEntity).sendVideo(checkUsers(users), inputFile, caption);
     }
 
     public Message sendMessage(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, String message,
-        String[] buttons) {
+                               String[] buttons) {
         return getTelegramBot(telegramEntity).sendMessage(checkUsers(users), message, buttons);
     }
 
@@ -100,14 +103,15 @@ public class TelegramService {
         return telegramBot;
     }
 
-    public void registerEvent(String command, String description, String id, BroadcastLock lock) {
+    public void registerEvent(String command, String description, String id, Lock lock) {
         for (TelegramBot telegramBot : telegramBots.values()) {
             telegramBot.registerEvent(command, description, id, lock);
         }
     }
 
     public void updateNotificationBlock(TelegramEntity entity) {
-        entityContext.ui().updateNotificationBlock("telegram", entity);
+        context.ui().notification().addBlockOptional("telegram", "Telegram", new Icon("fab fa-telegram", "#0088CC"));
+        context.ui().notification().updateBlock("telegram", entity);
     }
 
     private void start(TelegramEntity telegramEntity) {
@@ -122,13 +126,13 @@ public class TelegramService {
                 TelegramBot telegramBot = new TelegramBot(botOptions, telegramEntity);
                 this.telegramBots.put(telegramEntity.getEntityID(), telegramBot);
                 log.info("Telegram bot running");
-                entityContext.ui().sendInfoMessage("Telegram bot running");
+                context.ui().toastr().info("Telegram bot running");
                 telegramEntity.setStatusOnline();
             } else {
                 log.warn("Telegram bot not running. Requires settings.");
-                entityContext.ui().sendWarningMessage("Telegram bot not running. Requires settings.");
+                context.ui().toastr().warn("Telegram bot not running. Requires settings.");
                 telegramEntity.setStatus(Status.ERROR, isEmpty(telegramEntity.getBotName()) ?
-                    "Require bot name field" : "Require bot token field");
+                        "Require bot name field" : "Require bot token field");
             }
         } catch (Exception ex) {
             String msg = "Unable to start telegram bot: " + CommonUtils.getErrorMessage(ex);
@@ -138,7 +142,7 @@ public class TelegramService {
                     msg = "Telegram bot with provided name and token not exists";
                 }
             }
-            entityContext.ui().sendErrorMessage(msg);
+            context.ui().toastr().error(msg);
             log.error(msg, ex);
             telegramEntity.setStatusError(msg);
         } finally {
@@ -167,14 +171,14 @@ public class TelegramService {
 
             register(new TelegramStartCommand(this));
             register(new TelegramHelpCommand(this));
-            register(new TelegramRegisterUserCommand(entityContext, this));
-            register(new TelegramUnregisterUserCommand(entityContext, this));
+            register(new TelegramRegisterUserCommand(context, this));
+            register(new TelegramUnregisterUserCommand(context, this));
 
             log.info("Registering default action'...");
             registerDefaultAction(((absSender, message) -> {
 
                 log.warn("Telegram User {} is trying to execute unknown command '{}'.", message.getFrom().getId(),
-                    message.getText());
+                        message.getText());
 
                 SendMessage text = new SendMessage();
                 text.setChatId(Long.toString(message.getChatId()));
@@ -255,12 +259,13 @@ public class TelegramService {
             if (update.getCallbackQuery() != null) {
                 Integer messageId = update.getCallbackQuery().getMessage().getMessageId();
                 TelegramAnswer telegramAnswer = new TelegramAnswer(messageId,
-                    update.getCallbackQuery().getData(),
-                    update.getCallbackQuery().getFrom().getId());
+                        update.getCallbackQuery().getData(),
+                        update.getCallbackQuery().getFrom().getId());
+                State value = new ObjectType(telegramAnswer);
 
-                TelegramService.this.entityContext.event()
-                                                  .fireEvent(TELEGRAM_EVENT_PREFIX + messageId, telegramAnswer)
-                                                  .fireEvent(TELEGRAM_EVENT_PREFIX + messageId + "_" + telegramAnswer.getData(), telegramAnswer);
+                TelegramService.this.context.event()
+                        .fireEvent(TELEGRAM_EVENT_PREFIX + messageId, value)
+                        .fireEvent(TELEGRAM_EVENT_PREFIX + messageId + "_" + telegramAnswer.getData(), value);
 
                 AnswerCallbackQuery query = new AnswerCallbackQuery(update.getCallbackQuery().getId());
                 query.setText("Done");
@@ -268,19 +273,19 @@ public class TelegramService {
 
                 // remove buttons
                 EditMessageReplyMarkup editReplyMarkup =
-                    new EditMessageReplyMarkup(Long.toString(update.getCallbackQuery().getFrom().getId()),
-                        update.getCallbackQuery().getMessage().getMessageId(), null,
-                        new InlineKeyboardMarkup(new ArrayList<>()));
+                        new EditMessageReplyMarkup(Long.toString(update.getCallbackQuery().getFrom().getId()),
+                                update.getCallbackQuery().getMessage().getMessageId(), null,
+                                new InlineKeyboardMarkup(new ArrayList<>()));
                 this.execute(editReplyMarkup);
             }
             log.debug("Income message {}", update.getMessage() != null ?
-                update.getMessage().getText() : update.getCallbackQuery().getData());
+                    update.getMessage().getText() : update.getCallbackQuery().getData());
         }
 
-        public void registerEvent(String command, String description, String workspaceId, BroadcastLock lock) {
+        public void registerEvent(String command, String description, String workspaceId, Lock lock) {
             TelegramEventCommand telegramEventCommand = eventCommandMap.computeIfAbsent(command, commandIdentifier -> {
                 TelegramEventCommand eventCommand = new TelegramEventCommand(commandIdentifier, description,
-                    this);
+                        this);
                 this.register(eventCommand);
                 return eventCommand;
             });

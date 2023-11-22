@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -11,118 +12,133 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.util.ReferenceCountUtil;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import lombok.Getter;
-import org.homio.addon.camera.entity.OnvifCameraEntity;
-import org.homio.addon.camera.entity.VideoActionsContext;
+import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.homio.addon.camera.entity.IpCameraEntity;
 import org.homio.addon.camera.handler.BaseBrandCameraHandler;
-import org.homio.addon.camera.service.OnvifCameraService;
-import org.homio.addon.camera.ui.CameraActionBuilder;
-import org.homio.api.EntityContext;
-import org.homio.api.state.State;
+import org.homio.addon.camera.service.CameraDeviceEndpoint;
+import org.homio.addon.camera.service.IpCameraService;
+import org.homio.api.Context;
+import org.homio.api.ui.field.action.HasDynamicUIFields;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.http.MediaType;
 
-public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler implements VideoActionsContext, BaseBrandCameraHandler {
+@NoArgsConstructor
+public abstract class BaseOnvifCameraBrandHandler extends ChannelDuplexHandler
+    implements
+    BaseBrandCameraHandler,
+    HasDynamicUIFields {
 
-  protected final int nvrChannel;
-  protected final String username;
-  protected final String password;
-  protected final String ip;
-  protected final String entityID;
-  @Getter
-  private final OnvifCameraService service;
+    protected final Logger log = LogManager.getLogger();
 
-  public BaseOnvifCameraBrandHandler(OnvifCameraService service) {
-    this.service = service;
+    protected String entityID;
+    protected @Getter IpCameraService service;
 
-    OnvifCameraEntity entity = service.getEntity();
-    this.entityID = entity.getEntityID();
-    this.nvrChannel = entity.getNvrChannel();
-    this.username = entity.getUser();
-    this.password = entity.getPassword().asString();
-    this.ip = entity.getIp();
-  }
+    public BaseOnvifCameraBrandHandler(IpCameraService service) {
+        this.service = service;
+        this.entityID = service.getEntityID();
+    }
 
-  public EntityContext getEntityContext() {
-    return service.getEntityContext();
-  }
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        if (msg != null && !msg.toString().isEmpty()) {
+            log.debug("[{}]: Camera response: {}", entityID, msg);
+        }
+        ReferenceCountUtil.release(msg);
+    }
 
-  @Override
-  public OnvifCameraEntity getEntity() {
-    return service.getEntity();
-  }
+    public Context context() {
+        return service.context();
+    }
 
-  @Override
-  public boolean isSharable() {
-    return true;
-  }
+    public IpCameraEntity getEntity() {
+        return service.getEntity();
+    }
 
-  public State getAttribute(String name) {
-    return service.getAttributes().getOrDefault(name, null);
-  }
+    @Override
+    public boolean isSharable() {
+        return true;
+    }
 
-  public int boolToInt(boolean on) {
-    return on ? 1 : 0;
-  }
+    public void assembleActions(UIInputBuilder uiInputBuilder) {
+    }
 
-  public void assembleActions(UIInputBuilder uiInputBuilder) {
-    CameraActionBuilder.assembleActions(this, uiInputBuilder);
-  }
+    public @Nullable String getSnapshotUri() {
+        return null;
+    }
 
-  protected void setAttribute(String key, State state) {
-    service.setAttribute(key, state);
-  }
+    public @Nullable String getMjpegUri() {
+        return null;
+    }
 
-  protected void setAttributeRequest(String key, State state) {
-    service.setAttributeRequest(key, state);
-  }
+    public abstract void onCameraConnected();
 
-  protected State getAttributeRequest(String key) {
-    return service.getRequestAttributes().get(key);
-  }
+    @Override
+    public void assembleUIFields(@NotNull UIFieldBuilder uiFieldBuilder) {
 
-  public void pollCameraRunnable() {
+    }
 
-  }
+    public void pollCameraRunnable() {
+    }
 
-  public void initialize(EntityContext entityContext) {
+    public void postInitializeCamera(Context context) {
 
-  }
+    }
 
-  public void runOncePerMinute(EntityContext entityContext) {
+    public String getUrlToKeepOpenForIdleStateEvent() {
+        return "";
+    }
 
-  }
+    public void handleSetURL(ChannelPipeline pipeline, String httpRequestURL) {
 
-  public String getUrlToKeepOpenForIdleStateEvent() {
-    return "";
-  }
+    }
 
-  public void handleSetURL(ChannelPipeline pipeline, String httpRequestURL) {
+    protected FullHttpRequest buildFullHttpRequest(String httpPutURL, String xml, HttpMethod httpMethod, MediaType mediaType) {
+        FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod(httpMethod.name()), httpPutURL);
+        request.headers().set(HttpHeaderNames.HOST, getEntity().getIp());
+        request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+        request.headers().add(HttpHeaderNames.CONTENT_TYPE, mediaType.toString());
+        ByteBuf bbuf = Unpooled.copiedBuffer(xml, StandardCharsets.UTF_8);
+        request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
+        request.content().clear().writeBytes(bbuf);
+        return request;
+    }
 
-  }
+    public String updateURL(String url) {
+        return url;
+    }
 
-  protected FullHttpRequest buildFullHttpRequest(String httpPutURL, String xml, HttpMethod httpMethod, MediaType mediaType) {
-    FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod(httpMethod.name()), httpPutURL);
-    request.headers().set(HttpHeaderNames.HOST, getEntity().getIp());
-    request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-    request.headers().add(HttpHeaderNames.CONTENT_TYPE, mediaType.toString());
-    ByteBuf bbuf = Unpooled.copiedBuffer(xml, StandardCharsets.UTF_8);
-    request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
-    request.content().clear().writeBytes(bbuf);
-    return request;
-  }
+    public boolean isSupportOnvifEvents() {
+        return false;
+    }
 
-  public String updateURL(String url) {
-    return url;
-  }
+    @Override
+    public ChannelHandler asBootstrapHandler() {
+        return this;
+    }
 
-  public boolean isSupportOnvifEvents() {
-    return false;
-  }
+    public Optional<CameraDeviceEndpoint> getEndpoint(String endpointID) {
+        return Optional.ofNullable(service.getEndpoints().get(endpointID));
+    }
 
-  @Override
-  public ChannelHandler asBootstrapHandler() {
-    return this;
-  }
+    public CameraDeviceEndpoint getEndpointRequire(String endpointID) {
+        return Optional.ofNullable(service.getEndpoints().get(endpointID))
+                       .orElseThrow(() -> new IllegalStateException("Unable to find camera endpoint: " + endpointID));
+    }
+
+    public boolean setEndpointVisible(String endpointID, boolean visible) {
+        CameraDeviceEndpoint endpoint = getEndpointRequire(endpointID);
+        if (endpoint.isVisibleEndpoint() != visible) {
+            endpoint.setVisibleEndpoint(visible);
+            return true;
+        }
+        return false;
+    }
 }

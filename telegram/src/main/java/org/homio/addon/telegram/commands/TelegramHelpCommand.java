@@ -11,22 +11,22 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 @Log4j2
 public final class TelegramHelpCommand extends TelegramBaseCommand {
 
-  public TelegramHelpCommand(TelegramService.TelegramBot telegramBot) {
-    super("help", "List all known commands", telegramBot);
-  }
+    public TelegramHelpCommand(TelegramService.TelegramBot telegramBot) {
+        super("help", "List all known commands", telegramBot);
+    }
 
-  static void assembleCommands(ICommandRegistry mCommandRegistry, StringBuilder sb, SendMessage message) {
-    sb.append("<b>Available commands:</b>\n");
-    mCommandRegistry.getRegisteredCommands().forEach(cmd -> {
-      if (!cmd.getCommandIdentifier().equals("start")) {
-        sb.append(cmd.toString());
-      }
-    });
-    message.enableHtml(true);
-  }
+    static void assembleCommands(ICommandRegistry mCommandRegistry, StringBuilder sb, SendMessage message) {
+        sb.append("<b>Available commands:</b>\n");
+        mCommandRegistry.getRegisteredCommands().forEach(cmd -> {
+            if (!cmd.getCommandIdentifier().equals("start")) {
+                sb.append(cmd);
+            }
+        });
+        message.enableHtml(true);
+    }
 
-  @Override
-  public void execute(AbsSender absSender, User user, Chat chat, String[] strings, StringBuilder sb, SendMessage message) {
-    assembleCommands(telegramBot, sb, message);
-  }
+    @Override
+    public void execute(AbsSender absSender, User user, Chat chat, String[] strings, StringBuilder sb, SendMessage message) {
+        assembleCommands(telegramBot, sb, message);
+    }
 }

@@ -11,10 +11,11 @@ import lombok.extern.log4j.Log4j2;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.homio.addon.mqtt.entity.MQTTLocalClientEntity;
+import org.homio.addon.mqtt.entity.MQTTClientEntity;
 import org.homio.api.AddonEntrypoint;
-import org.homio.api.EntityContext;
-import org.homio.api.util.CommonUtils;
+import org.homio.api.Context;
+import org.homio.api.ContextService;
+import org.homio.api.util.HardwareUtils;
 import org.springframework.stereotype.Component;
 
 @Log4j2
@@ -22,17 +23,18 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MQTTEntrypoint implements AddonEntrypoint {
 
-    private final EntityContext entityContext;
     public static final String MQTT_RESOURCE = "ROLE_MQTT";
+    private final Context context;
 
     @SneakyThrows
     public void init() {
-        entityContext.registerResource(MQTT_RESOURCE);
-        entityContext.ui().registerConsolePluginName("MQTT", MQTT_RESOURCE);
-        entityContext.bgp().builder("check-mqtt").execute(() -> {
-            Set<String> existIps = entityContext.findAll(MQTTLocalClientEntity.class).stream()
-                                                .map(MQTTLocalClientEntity::getHostname).collect(Collectors.toSet());
-            CommonUtils.scanForDevice(entityContext, 1883, "MQTT", ip -> {
+        context.service().registerEntityTypeForSelection(MQTTClientEntity.class, ContextService.MQTT_SERVICE);
+        context.service().registerUserRoleResource(MQTT_RESOURCE);
+        context.ui().console().registerPluginName("MQTT", MQTT_RESOURCE);
+        context.bgp().builder("check-mqtt").execute(() -> {
+            Set<String> existIps = context.db().findAll(MQTTClientEntity.class).stream()
+                                                .map(MQTTClientEntity::getHostname).collect(Collectors.toSet());
+            HardwareUtils.scanForDevice(context, 1883, "MQTT", ip -> {
                 if (existIps.contains(ip)) {
                     return false;
                 }
@@ -44,9 +46,9 @@ public class MQTTEntrypoint implements AddonEntrypoint {
                 mqttClient.disconnectForcibly();
                 return true;
             }, ip -> {
-                MQTTLocalClientEntity entity = new MQTTLocalClientEntity();
+                MQTTClientEntity entity = new MQTTClientEntity();
                 entity.setHostname(ip);
-                entityContext.save(entity);
+                context.db().save(entity);
             });
         });
     }

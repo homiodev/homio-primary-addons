@@ -1,98 +1,104 @@
 package org.homio.addon.camera.onvif.impl;
 
+import static org.homio.addon.camera.CameraConstants.AlarmEvent.MotionAlarm;
+import static org.homio.addon.camera.CameraConstants.ENDPOINT_ACTIVATE_ALARM_OUTPUT;
+import static org.homio.addon.camera.CameraConstants.ENDPOINT_ACTIVATE_ALARM_OUTPUT2;
+import static org.homio.addon.camera.CameraConstants.ENDPOINT_DOORBELL;
+import static org.homio.addon.camera.CameraConstants.ENDPOINT_EXTERNAL_LIGHT;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
-import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
+import lombok.NoArgsConstructor;
 import org.homio.addon.camera.onvif.brand.BaseOnvifCameraBrandHandler;
-import org.homio.addon.camera.onvif.util.IpCameraBindingConstants;
-import org.homio.addon.camera.service.OnvifCameraService;
-import org.homio.addon.camera.ui.UIVideoAction;
-import org.homio.api.EntityContext;
+import org.homio.addon.camera.service.IpCameraService;
 import org.homio.api.state.OnOffType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * responsible for handling commands, which are sent to one of the channels.
  */
-@Log4j2
-@CameraBrandHandler(name = "DoorBird")
+@NoArgsConstructor
+@CameraBrandHandler("DoorBird")
 public class DoorBirdBrandHandler extends BaseOnvifCameraBrandHandler {
 
-  public DoorBirdBrandHandler(OnvifCameraService service) {
-    super(service);
-  }
+    public DoorBirdBrandHandler(IpCameraService service) {
+        super(service);
+    }
 
-  // This handles the incoming http replies back from the camera.
-  @Override
-  public void channelRead(ChannelHandlerContext ctx, Object msg) {
-    if (msg == null || ctx == null) {
-      return;
+    // This handles the incoming http replies back from the camera.
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        if (msg == null || ctx == null) {
+            return;
+        }
+        try {
+            String content = msg.toString();
+            log.debug("[{}]: HTTP Result back from camera is \t:{}:", entityID, content);
+            if (content.contains("doorbell:H")) {
+                getEndpointRequire(ENDPOINT_DOORBELL).setValue(OnOffType.ON);
+            }
+            if (content.contains("doorbell:L")) {
+                getEndpointRequire(ENDPOINT_DOORBELL).setValue(OnOffType.OFF);
+            }
+            if (content.contains("motionsensor:L")) {
+                service.alarmDetected(false, MotionAlarm);
+            }
+            if (content.contains("motionsensor:H")) {
+                service.alarmDetected(true, MotionAlarm);
+            }
+        } finally {
+            ReferenceCountUtil.release(msg);
+        }
     }
-    OnvifCameraService service = getService();
-    try {
-      String content = msg.toString();
-      log.debug("[{}]: HTTP Result back from camera is \t:{}:", entityID, content);
-      if (content.contains("doorbell:H")) {
-          setAttribute(IpCameraBindingConstants.CHANNEL_DOORBELL, OnOffType.ON);
-      }
-      if (content.contains("doorbell:L")) {
-          setAttribute(IpCameraBindingConstants.CHANNEL_DOORBELL, OnOffType.OFF);
-      }
-      if (content.contains("motionsensor:L")) {
-          service.motionDetected(false, IpCameraBindingConstants.CHANNEL_MOTION_ALARM);
-      }
-      if (content.contains("motionsensor:H")) {
-          service.motionDetected(true, IpCameraBindingConstants.CHANNEL_MOTION_ALARM);
-      }
-    } finally {
-      ReferenceCountUtil.release(msg);
-    }
-  }
 
-  @Override
-  public void pollCameraRunnable() {
-    OnvifCameraService service = getService();
-    if (service.streamIsStopped("/bha-api/monitor.cgi?ring=doorbell,motionsensor")) {
-      log.info("[{}]: The alarm stream was not running for camera {}, re-starting it now",
-          entityID, getEntity().getIp());
-      service.sendHttpGET("/bha-api/monitor.cgi?ring=doorbell,motionsensor");
+    @Override
+    public void pollCameraRunnable() {
+        if (service.streamIsStopped("/bha-api/monitor.cgi?ring=doorbell,motionsensor")) {
+            log.info("[{}]: The alarm stream was not running for camera {}, re-starting it now",
+                    entityID, getEntity().getIp());
+            service.sendHttpGET("/bha-api/monitor.cgi?ring=doorbell,motionsensor");
+        }
     }
-  }
 
-  @Override
-  public void initialize(EntityContext entityContext) {
-    OnvifCameraService onvifCameraHandler = getService();
-    if (StringUtils.isEmpty(onvifCameraHandler.getMjpegUri())) {
-      onvifCameraHandler.setMjpegUri("/bha-api/video.cgi");
+    @Override
+    public @Nullable String getMjpegUri() {
+        return "/bha-api/video.cgi";
     }
-    if (StringUtils.isEmpty(onvifCameraHandler.getSnapshotUri())) {
-      onvifCameraHandler.setSnapshotUri("/bha-api/image.cgi");
-    }
-  }
 
-  @Override
-  public String getUrlToKeepOpenForIdleStateEvent() {
-    return "/bha-api/monitor.cgi?ring=doorbell,motionsensor";
-  }
-
-    @UIVideoAction(name = IpCameraBindingConstants.CHANNEL_EXTERNAL_LIGHT, order = 200, icon = "fas fa-sun")
-  public void externalLight(boolean on) {
-    if (on) {
-      getService().sendHttpGET("/bha-api/light-on.cgi");
+    @Override
+    public void onCameraConnected() {
+        addEndpoints();
+        // do nothing
     }
-  }
 
-    @UIVideoAction(name = IpCameraBindingConstants.CHANNEL_ACTIVATE_ALARM_OUTPUT2, order = 47, icon = "fas fa-bell")
-  public void activateAlarmOutput2(boolean on) {
-    if (on) {
-      getService().sendHttpGET("/bha-api/open-door.cgi?r=2");
-    }
-  }
+    private void addEndpoints() {
+        service.addEndpointSwitch(ENDPOINT_EXTERNAL_LIGHT, state -> {
+            if (state.boolValue()) {
+                service.sendHttpGET("/bha-api/light-on.cgi");
+            }
+        });
 
-    @UIVideoAction(name = IpCameraBindingConstants.CHANNEL_ACTIVATE_ALARM_OUTPUT, order = 45, icon = "fas fa-bell")
-  public void activateAlarmOutput(boolean on) {
-    if (on) {
-      getService().sendHttpGET("/bha-api/open-door.cgi");
+        service.addEndpointSwitch(ENDPOINT_ACTIVATE_ALARM_OUTPUT2, state -> {
+            if (state.boolValue()) {
+                service.sendHttpGET("/bha-api/open-door.cgi?r=2");
+            }
+        });
+
+        service.addEndpointSwitch(ENDPOINT_ACTIVATE_ALARM_OUTPUT, state -> {
+            if (state.boolValue()) {
+                service.sendHttpGET("/bha-api/open-door.cgi");
+            }
+        });
+
     }
-  }
+
+    @Override
+    public @Nullable String getSnapshotUri() {
+        return "/bha-api/image.cgi";
+    }
+
+    @Override
+    public String getUrlToKeepOpenForIdleStateEvent() {
+        return "/bha-api/monitor.cgi?ring=doorbell,motionsensor";
+    }
 }

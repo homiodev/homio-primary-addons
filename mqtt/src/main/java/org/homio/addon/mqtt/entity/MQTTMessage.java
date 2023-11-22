@@ -33,6 +33,6 @@ public class MQTTMessage extends DataStorageEntity {
     @Override
     public String toString() {
         return "{payload=" + getValue() + ", time=" + CommonUtils.DATE_TIME_FORMAT.format(new Date(getId())) + ", QoS=" +
-            qos + ", ret=" + retained + ", dup=" + duplicated + "}";
+                qos + ", ret=" + retained + ", dup=" + duplicated + "}";
     }
 }

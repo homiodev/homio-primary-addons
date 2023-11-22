@@ -1,151 +1,185 @@
 package org.homio.addon.camera.service;
 
-import static org.homio.api.EntityContextMedia.FFMPEGFormat.GENERAL;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.SystemUtils.IS_OS_LINUX;
+import static org.homio.api.ContextMedia.FFMPEGFormat.RE;
+import static org.homio.api.entity.HasJsonData.LIST_DELIMITER;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.HttpRequest;
+import java.awt.Dimension;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
-import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
+import lombok.Getter;
 import org.apache.commons.lang3.SystemUtils;
 import org.homio.addon.camera.CameraEntrypoint;
+import org.homio.addon.camera.ConfigurationException;
 import org.homio.addon.camera.entity.UsbCameraEntity;
-import org.homio.api.EntityContext;
-import org.homio.api.EntityContextMedia.FFMPEG;
+import org.homio.api.Context;
+import org.homio.api.ContextMedia.FFMPEG;
+import org.homio.api.ContextMedia.VideoInputDevice;
 import org.homio.api.model.Icon;
+import org.homio.api.model.OptionModel;
 import org.homio.api.util.CommonUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-@Log4j2
-public class UsbCameraService extends BaseVideoService<UsbCameraEntity> {
+@Getter
+public class UsbCameraService extends BaseCameraService<UsbCameraEntity, UsbCameraService> {
 
-    private final List<String> outputs = new ArrayList<>();
-    private FFMPEG ffmpegUsbStream;
+    public static final int RTSP_PORT = 8554;
 
-    public UsbCameraService(UsbCameraEntity entity, EntityContext entityContext) {
-        super(entity, entityContext);
+    private FFMPEG ffmpegReStream;
+    private @Nullable VideoInputDevice input;
+
+    public UsbCameraService(UsbCameraEntity entity, Context context) {
+        super(entity, context);
     }
 
     @Override
-    public void destroy() {
+    protected void pollCameraConnection() throws Exception {
+        Set<String> aliveVideoDevices = context.media().getVideoDevices();
+        if (!aliveVideoDevices.contains(entity.getIeeeAddress())) {
+            throw new ConfigurationException("W.ERROR.USB_CAMERA_NOT_AVAILABLE");
+        }
 
+        // restart if not alive
+        ffmpegReStream.startConverting();
+        keepMjpegRunning();
+        // skip taking snapshot
+        bringCameraOnline();
     }
 
     @Override
-    public boolean testService() {
-        return false;
+    protected boolean pingCamera() {
+        return ffmpegReStream.getIsAlive();
     }
 
     @Override
-    public String getRtspUri(String profile) {
-        return "udp://@" + outputs.get(0);
+    public List<OptionModel> getLogSources() {
+        ArrayList<OptionModel> list = new ArrayList<>(super.getLogSources());
+        list.add(OptionModel.of("tee", "FFMPEG muxer"));
+        return list;
     }
 
     @Override
-    public String getFFMPEGInputOptions(String profile) {
-        return "";
+    public @Nullable InputStream getSourceLogInputStream(@NotNull String sourceID) {
+        if ("tee".equals(sourceID)) {
+            return getFFMPEGLogInputStream(ffmpegReStream);
+        }
+        return super.getSourceLogInputStream(sourceID);
     }
 
     @Override
-    public void afterInitialize() {
-        updateNotificationBlock();
+    public String getHlsUri() {
+        return getUdpUrl();
     }
 
     @Override
-    public void afterDispose() {
-        updateNotificationBlock();
+    public String getDashUri() {
+        return getUdpUrl();
     }
 
+    public FFMPEG[] getFfmpegCommands() {
+        return new FFMPEG[]{getFfmpegMjpeg(), getFfmpegSnapshot(), getFfmpegMainReStream(), getFfmpegReStream()};
+    }
+
+    private @NotNull String getUdpUrl() {
+        return "udp://238.0.0.1:%s".formatted(entity.getReStreamUdpPort());
+    }
+
+    @Override
     public void updateNotificationBlock() {
-        CameraEntrypoint.updateCamera(entityContext, getEntity(),
-            null,
-            new Icon("fas fa-users-viewfinder", "#669618"),
-            null);
+        CameraEntrypoint.updateCamera(context, getEntity(),
+                null,
+                new Icon("fas fa-users-viewfinder", "#669618"),
+                null);
     }
 
     @Override
-    protected void initialize0() {
-        UsbCameraEntity entity = getEntity();
-        String url = "video=\"" + entity.getIeeeAddress() + "\"";
-        if (StringUtils.isNotEmpty(entity.getAudioSource())) {
-            url += ":audio=\"" + entity.getAudioSource() + "\"";
+    protected void postInitializeCamera() {
+        urls.setRtspUri("rtsp://127.0.0.1:%s/%s".formatted(RTSP_PORT, getEntityID()));
+        String ieeeAddress = Objects.requireNonNull(entity.getIeeeAddress());
+        input = context.media().createVideoInputDevice(ieeeAddress);
+        if (input.getResolutions().length > 0) {
+            try {
+                context.db().updateDelayed(entity, e -> {
+                    if (entity.getStreamResolutions().isEmpty()) {
+                        e.setStreamResolutions(String.join(LIST_DELIMITER, input.getResolutionSet()));
+                    }
+                    if (entity.getHlsLowResolution().isEmpty()) {
+                        Dimension dim = Arrays.stream(input.getResolutions())
+                                              .min(Comparator.comparingInt(dim2 -> dim2.width * dim2.height)).get();
+                        e.setHlsLowResolution(String.format("%dx%d", dim.width, dim.height));
+                    }
+                    if (entity.getHlsHighResolution().isEmpty()) {
+                        Dimension dim = Arrays.stream(input.getResolutions())
+                                              .max(Comparator.comparingInt(dim2 -> dim2.width * dim2.height)).get();
+                        e.setHlsHighResolution(String.format("%dx%d", dim.width, dim.height));
+                    }
+                });
+            } catch (Exception ex) {
+                log.error("[{}]: Error while update usb camera: {}", getEntityID(), CommonUtils.getErrorMessage(ex));
+            }
         }
-        Set<String> outputParams = new LinkedHashSet<>(entity.getStreamOptions());
-        outputParams.add("-f tee");
-        outputParams.add("-map 0:v");
-        if (StringUtils.isNotEmpty(entity.getAudioSource())) {
-            url += ":audio=\"" + entity.getAudioSource() + "\"";
-            outputParams.add("-map 0:a");
+
+        String url = "";
+        if (SystemUtils.IS_OS_WINDOWS) {
+            url = "video=\"" + ieeeAddress + "\"";
+            if (isNotEmpty(entity.getAudioSource())) {
+                url += ":audio=\"" + entity.getAudioSource() + "\"";
+            }
+        } else {
+            url = ieeeAddress;
+            if (isNotEmpty(entity.getAudioSource())) {
+                url += "-f alsa -i " + entity.getAudioSource();
+            }
         }
 
-        outputs.add(CommonUtils.MACHINE_IP_ADDRESS + ":" + entity.getStreamStartPort());
-        outputs.add(CommonUtils.MACHINE_IP_ADDRESS + ":" + (entity.getStreamStartPort() + 1));
+        Set<String> outputParams = new LinkedHashSet<>();
+        outputParams.add("-preset ultrafast");
+        outputParams.add("-tune zerolatency");
+        outputParams.add("-hide_banner");
+        outputParams.add("-vcodec libx264");
 
-        ffmpegUsbStream = entityContext.media().buildFFMPEG(getEntityID(), "FFmpeg usb udp re streamer", this, log,
-            GENERAL, "-loglevel warning " + (SystemUtils.IS_OS_LINUX ? "-f v4l2" : "-f dshow"), url,
-            String.join(" ", outputParams),
-            outputs.stream().map(o -> "[f=mpegts]udp://" + o + "?pkt_size=1316").collect(Collectors.joining("|")),
-            "", "", null);
-        ffmpegUsbStream.startConverting();
+        outputParams.add("-f mpegts");
 
-        super.initialize0();
+        /*if (isNotEmpty(entity.getAudioSource())) {
+            url += " -f dshow -i audio=\"" + entity.getAudioSource() + "\"";
+            outputParams.add("-c:a mp2");
+            outputParams.add("-b:a 128k");
+            outputParams.add("-ar 44100");
+            outputParams.add("-ac 2");
+        }*/
+
+        if (ffmpegReStream == null || !ffmpegReStream.getIsAlive()) {
+            ffmpegReStream = context.media().buildFFMPEG(getEntityID(), "TEE", this,
+                RE, IS_OS_LINUX ? "-f v4l2" : "-f dshow", url,
+                String.join(" ", outputParams),
+                getUdpUrl() + "?pkt_size=1316",
+                "", "");
+            ffmpegReStream.startConverting();
+        }
+        context.media().registerVideoSource(getEntityID(), getUdpUrl());
     }
 
     @Override
     protected void dispose0() {
-        super.dispose0();
-        ffmpegUsbStream.stopConverting();
-
+        FFMPEG.run(ffmpegReStream, FFMPEG::stopConverting);
     }
 
     @Override
-    protected void testVideoOnline() {
-        Set<String> aliveVideoDevices = entityContext.media().getVideoDevices();
-        if (!aliveVideoDevices.contains(getEntity().getIeeeAddress())) {
-            throw new RuntimeException("Camera not available");
-        }
+    public boolean hasAudioStream() {
+        return super.hasAudioStream() || isNotEmpty(entity.getAudioSource());
     }
 
     @Override
-    protected String createHlsRtspUri() {
-        return "udp://@" + outputs.get(1);
-    }
-
-    @Override
-    protected BaseVideoStreamServerHandler createVideoStreamServerHandler() {
-        return new UsbCameraStreamHandler(this);
-    }
-
-    @Override
-    protected void streamServerStarted() {
-
-    }
-
-    @Override
-    protected boolean hasAudioStream() {
-        return super.hasAudioStream() || StringUtils.isNotEmpty(getEntity().getAudioSource());
-    }
-
-    private static class UsbCameraStreamHandler extends BaseVideoStreamServerHandler<UsbCameraService> {
-
-        public UsbCameraStreamHandler(UsbCameraService usbCameraService) {
-            super(usbCameraService);
-        }
-
-        @Override
-        protected void handleLastHttpContent(byte[] incomingJpeg) {
-        }
-
-        @Override
-        protected boolean streamServerReceivedPostHandler(HttpRequest httpRequest) {
-            return false;
-        }
-
-        @Override
-        protected void handlerChildRemoved(ChannelHandlerContext ctx) {
-        }
+    protected void pollCameraRunnable() {
+        FFMPEG.run(ffmpegReStream, FFMPEG::restartIfRequire);
+        super.pollCameraRunnable();
     }
 }

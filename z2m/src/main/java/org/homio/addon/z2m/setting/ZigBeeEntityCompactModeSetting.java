@@ -1,6 +1,6 @@
 package org.homio.addon.z2m.setting;
 
-import org.homio.api.EntityContext;
+import org.homio.api.Context;
 import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeDeviceBaseEntity;
 import org.homio.api.model.Icon;
@@ -29,7 +29,7 @@ public class ZigBeeEntityCompactModeSetting implements SettingPluginToggle {
     }
 
     @Override
-    public boolean isVisible(EntityContext entityContext) {
+    public boolean isVisible(Context context) {
         return false;
     }
 }

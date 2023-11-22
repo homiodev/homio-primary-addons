@@ -25,7 +25,7 @@ public class BleService implements GattService1, Properties {
     private final String uuid;
 
     @Getter
-    private List<BleCharacteristic> characteristics = new ArrayList<>();
+    private final List<BleCharacteristic> characteristics = new ArrayList<>();
 
     BleService(String path, String uuid) {
         this.path = path;
