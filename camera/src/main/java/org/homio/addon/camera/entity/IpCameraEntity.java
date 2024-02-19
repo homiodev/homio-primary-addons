@@ -299,7 +299,7 @@ public class IpCameraEntity extends BaseCameraEntity<IpCameraEntity, IpCameraSer
                     List<OptionModel> levels = Stream.of(UserLevel.values())
                                                      .map(l -> OptionModel.of(l.name(), l.value()))
                                                      .collect(Collectors.toList());
-                    flex.addSelectBox("role", (context, params) -> null)
+                    flex.addSelectBox("role")
                         .setValue(UserLevel.USER.name())
                         .setOptions(levels);
                 });

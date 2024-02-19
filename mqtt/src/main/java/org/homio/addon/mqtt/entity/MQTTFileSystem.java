@@ -39,7 +39,7 @@ public class MQTTFileSystem implements FileSystemProvider {
 
     @Override
     @SneakyThrows
-    public InputStream getEntryInputStream(@NotNull String id) {
+    public @NotNull InputStream getEntryInputStream(@NotNull String id) {
         throw new NotImplementedException();
     }
 
@@ -51,6 +51,16 @@ public class MQTTFileSystem implements FileSystemProvider {
     @Override
     public long getUsedSpace() {
         return 0;
+    }
+
+    @Override
+    public int getFileSystemAlias() {
+        return 0;
+    }
+
+    @Override
+    public String getFileSystemId() {
+        return entity.getEntityID();
     }
 
     @Override

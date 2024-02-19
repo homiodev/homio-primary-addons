@@ -10,12 +10,12 @@ public class ScanOnvifHttpMaxPingTimeoutSetting implements SettingPluginSlider {
     }
 
     @Override
-    public Integer getMin() {
+    public int getMin() {
         return 1;
     }
 
     @Override
-    public Integer getMax() {
+    public int getMax() {
         return 5000;
     }
 

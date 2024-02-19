@@ -38,6 +38,6 @@
     <parent>
         <artifactId>homio-primary-addons</artifactId>
         <groupId>org.homio.addon</groupId>
-        <version>1.3.3-SNAPSHOT</version>
+        <version>1.3.2</version>
     </parent>
 </project>

@@ -83,7 +83,7 @@ import org.json.JSONObject;
 @UISidebarChildren(icon = "fas fa-building", color = Scratch3MQTTBlocks.COLOR)
 public class MQTTClientEntity extends CommunicationEntity implements
     EntityService<MQTTService>,
-    BaseFileSystemEntity<MQTTClientEntity, MQTTFileSystem>,
+    BaseFileSystemEntity<MQTTFileSystem>,
     HasTimeValueSeries,
     SelectionWithDynamicParameterFields,
     HasGetStatusValue,
@@ -145,8 +145,8 @@ public class MQTTClientEntity extends CommunicationEntity implements
     }
 
     @Override
-    public @NotNull TreeConfiguration buildFileSystemConfiguration(@NotNull Context context) {
-        return getService().getValue().iterator().next();
+    public @NotNull List<TreeConfiguration> buildFileSystemConfiguration(@NotNull Context context) {
+        return getService().getValue();
     }
 
     @Override
@@ -160,7 +160,7 @@ public class MQTTClientEntity extends CommunicationEntity implements
     }
 
     @Override
-    public @NotNull MQTTFileSystem buildFileSystem(@NotNull Context context) {
+    public @NotNull MQTTFileSystem buildFileSystem(@NotNull Context context, int alias) {
         return new MQTTFileSystem(this);
     }
 
