@@ -471,6 +471,10 @@ public class MQTTClientEntity extends CommunicationEntity implements
     }
 
     @Override
+    protected void assembleMissingMandatoryFields(@NotNull Set<String> fields) {
+    }
+
+    @Override
     public void removeListener(@Nullable String topic, @NotNull String discriminator) {
         log.info("[{}]: Remove mqtt listener from '{}' topic and discriminator: {}", getEntityID(), topic, discriminator);
         getService().removeEventListener(discriminator, topic);

@@ -6,7 +6,10 @@ import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.Entity;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -63,8 +66,18 @@ public final class TelegramEntity extends CommunicationEntity implements HasStat
     }
 
     @Override
+    protected void assembleMissingMandatoryFields(@NotNull Set<String> fields) {
+        if(getBotName().isEmpty()) {
+            fields.add("botName");
+        }
+        if(getBotToken().isEmpty()) {
+            fields.add("botToken");
+        }
+    }
+
+    @Override
     public String getDescriptionImpl() {
-        if (StringUtils.isEmpty(getBotName()) || StringUtils.isEmpty(getBotToken())) {
+        if (!getMissingMandatoryFields().isEmpty()) {
             return Lang.getServerMessage("telegram.description");
         }
         return null;

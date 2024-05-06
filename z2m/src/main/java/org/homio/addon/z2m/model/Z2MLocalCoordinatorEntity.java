@@ -115,6 +115,13 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     }
 
     @Override
+    protected void assembleMissingMandatoryFields(@NotNull Set<String> fields) {
+        if(getMqttEntity().isEmpty()) {
+            fields.add("mqttEntity");
+        }
+    }
+
+    @Override
     public @Nullable Set<String> getConfigurationErrors() {
         Set<String> errors = new HashSet<>();
         try {

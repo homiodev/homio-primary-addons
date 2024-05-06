@@ -25,6 +25,8 @@ import org.ble.BluetoothApplication;
 import org.dbus.InterfacesAddedSignal.InterfacesAdded;
 import org.dbus.InterfacesRomovedSignal.InterfacesRemoved;
 import org.freedesktop.dbus.Variant;
+import org.homio.api.util.CommonUtils;
+import org.homio.api.util.HardwareUtils;
 import org.homio.hquery.hardware.network.Network;
 import org.homio.hquery.hardware.network.NetworkHardwareRepository;
 import org.homio.hquery.hardware.other.MachineHardwareRepository;
@@ -175,8 +177,12 @@ public class BluetoothCharacteristicService {
         private final String memory;
         private final String disc;
         private final boolean net;
+        private final String id;
+        private final String version;
 
         public MachineSummary() {
+            id = HardwareUtils.APP_ID;
+            version = System.getProperty("server.version");
             mac = get("mac", networkHardwareRepository::getMacAddress);
             wifi = get("wifi", networkHardwareRepository::getWifiName);
             ip = get("ip", networkHardwareRepository::getIPAddress);

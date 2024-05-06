@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -381,6 +383,10 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     @Override
     public boolean isDisableDelete() {
         return true;
+    }
+
+    @Override
+    protected void assembleMissingMandatoryFields(@NotNull Set<String> fields) {
     }
 
     @Override

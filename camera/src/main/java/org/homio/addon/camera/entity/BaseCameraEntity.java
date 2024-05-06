@@ -15,11 +15,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
@@ -510,5 +506,10 @@ public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends Bas
     @Override
     public @NotNull List<OptionModel> getLogSources() {
         return optService().map(s -> s.getLogSources()).orElse(List.of());
+    }
+
+    @Override
+    protected void assembleMissingMandatoryFields(@NotNull Set<String> fields) {
+
     }
 }

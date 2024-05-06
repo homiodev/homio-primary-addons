@@ -9,6 +9,8 @@ import org.homio.api.entity.types.CommunicationEntity;
 import org.homio.api.ui.UISidebarChildren;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
@@ -19,6 +21,11 @@ public class BluetoothEntity extends CommunicationEntity implements HasStatusAnd
     @Override
     public String getDefaultName() {
         return "Bluetooth";
+    }
+
+    @Override
+    protected void assembleMissingMandatoryFields(@NotNull Set<String> fields) {
+
     }
 
     @Override

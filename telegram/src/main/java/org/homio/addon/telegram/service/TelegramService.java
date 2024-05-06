@@ -116,7 +116,7 @@ public class TelegramService {
 
     private void start(TelegramEntity telegramEntity) {
         try {
-            if (isNotEmpty(telegramEntity.getBotName()) && isNotEmpty(telegramEntity.getBotToken())) {
+            if (telegramEntity.getMissingMandatoryFields().isEmpty()) {
                 DefaultBotOptions botOptions = new DefaultBotOptions();
                 botOptions.setProxyType(telegramEntity.getProxyType());
                 botOptions.setProxyHost(telegramEntity.getProxyHost());
