@@ -1,4 +1,4 @@
-## MQTT Client addon
+## MQTT Client documentation
 
 ##### Description:
 

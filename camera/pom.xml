@@ -3,13 +3,21 @@
     <artifactId>addon-camera</artifactId>
     <dependencies>
         <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.homio</groupId>
             <artifactId>onvif</artifactId>
           <version>1.0.5</version>
-        </dependency>
-        <dependency>
-            <artifactId>netty-all</artifactId>
-            <groupId>io.netty</groupId>
         </dependency>
         <dependency>
             <artifactId>failsafe</artifactId>
