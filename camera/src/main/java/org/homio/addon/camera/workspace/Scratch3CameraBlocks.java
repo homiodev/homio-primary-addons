@@ -1,15 +1,7 @@
 package org.homio.addon.camera.workspace;
 
-import static org.homio.addon.camera.CameraConstants.AlarmEvent.ExternalMotionAlarm;
-import static org.homio.addon.camera.CameraConstants.ENDPOINT_AUTO_LED;
-
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.util.function.BiFunction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +32,15 @@ import org.homio.api.workspace.scratch.Scratch3ExtensionBlocks;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MimeTypeUtils;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.util.function.BiFunction;
+
+import static org.homio.addon.camera.CameraConstants.AlarmEvent.ExternalMotionAlarm;
+import static org.homio.addon.camera.CameraConstants.ENDPOINT_AUTO_LED;
 
 @SuppressWarnings("unchecked")
 @Log4j2
@@ -172,7 +173,7 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         CameraWithProfile camera = getCameraProfile(workspaceBlock);
 
         workspaceBlock.handleAndRelease(
-            () -> storage.startRecord(output, output, camera.profile, camera.entity, context),
+                () -> storage.startRecord(output, output, camera.profile, camera.entity, context),
                 () -> storage.stopRecord(output, output, camera.entity));
     }
 
@@ -234,7 +235,7 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
     }
 
     private <T extends BaseCameraEntity<?, ?>> T getEntity(WorkspaceBlock workspaceBlock,
-                                                    MenuBlock.ServerMenuBlock serverMenuBlock) {
+                                                           MenuBlock.ServerMenuBlock serverMenuBlock) {
         BaseCameraEntity<?, ?> entity = workspaceBlock.getMenuValueEntityRequired(VIDEO_STREAM, serverMenuBlock);
         if (!entity.isStart()) {
             throw new RuntimeException("Video camera " + entity.getTitle() + " not started");
@@ -248,7 +249,7 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
 
     private CameraWithProfile getCameraProfile(WorkspaceBlock workspaceBlock) {
         String[] cameraWithProfile = workspaceBlock.getMenuValue(VIDEO_STREAM, menuFfmpegCameraWithProfiles).split("/");
-        BaseCameraEntity<?, ?> cameraEntity = workspaceBlock.context().db().getEntity(cameraWithProfile[0]);
+        BaseCameraEntity<?, ?> cameraEntity = workspaceBlock.context().db().get(cameraWithProfile[0]);
         String profile = cameraWithProfile.length > 1 ? cameraWithProfile[1] : null;
         return new CameraWithProfile(cameraEntity, profile);
     }
@@ -258,17 +259,17 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
         IRLedValue("IR led value", (entity, onOffType, workspaceBlock) -> {
             CameraDeviceEndpoint endpoint = entity.getService().getEndpoints().get(ENDPOINT_AUTO_LED);
             if (endpoint == null) {
-                    workspaceBlock.logErrorAndThrow("Unable to find ir led handler for camera: <{}>", entity.getTitle());
-                } else {
+                workspaceBlock.logErrorAndThrow("Unable to find ir led handler for camera: <{}>", entity.getTitle());
+            } else {
                 endpoint.setValue(OnOffType.of(onOffType.boolValue()), true);
-                }
+            }
         }),
 
         AudioAlarm("Audio alarm", (entity, onOffType, workspaceBlock) ->
-            entity.getService().alarmDetected(onOffType.boolValue(), AlarmEvent.AudioAlarm)),
+                entity.getService().alarmDetected(onOffType.boolValue(), AlarmEvent.AudioAlarm)),
 
         MotionAlarm("Motion alarm", (entity, onOffType, workspaceBlock) ->
-            entity.getService().alarmDetected(onOffType.boolValue(), ExternalMotionAlarm));
+                entity.getService().alarmDetected(onOffType.boolValue(), ExternalMotionAlarm));
 
         @Getter
         private final String value;
@@ -310,10 +311,10 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
     @RequiredArgsConstructor
     private enum SetCameraIntParamEnum implements KeyValueEnum {
         AudioAlarm("Audio alarm", (entity, value, scratch, workspaceBlock) ->
-            entity.setAudioThreshold(value)),
+                entity.setAudioThreshold(value)),
 
         MotionAlarm("Motion alarm", (entity, value, scratch, workspaceBlock) ->
-            entity.setMotionThreshold(value));
+                entity.setMotionThreshold(value));
 
         @Getter
         private final String value;
@@ -383,20 +384,20 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
             CameraDeviceEndpoint endpoint = entity.getService().getEndpoints().get(ENDPOINT_AUTO_LED);
             if (endpoint == null) {
                 workspaceBlock.logErrorAndThrow("Unable to find ir led get value handler for camera: <{}>",
-                    entity.getTitle());
+                        entity.getTitle());
             } else {
                 return endpoint.getValue();
             }
             return null;
         }),
         AudioAlarmThreshold("Audio alarm threshold", (workspaceBlock, scratch) ->
-            new DecimalType(scratch.getEntity(workspaceBlock, scratch.menuFfmpegCamera).getAudioThreshold())),
+                new DecimalType(scratch.getEntity(workspaceBlock, scratch.menuFfmpegCamera).getAudioThreshold())),
         MotionAlarmThreshold("Motion alarm threshold", (workspaceBlock, scratch) ->
-            new DecimalType(scratch.getEntity(workspaceBlock, scratch.menuFfmpegCamera).getMotionThreshold())),
+                new DecimalType(scratch.getEntity(workspaceBlock, scratch.menuFfmpegCamera).getMotionThreshold())),
         LastImage("Last image", (workspaceBlock, scratch) ->
-            new RawType(
-                scratch.getEntity(workspaceBlock, scratch.menuFfmpegCamera).getSnapshot(),
-                MimeTypeUtils.IMAGE_JPEG_VALUE));
+                new RawType(
+                        scratch.getEntity(workspaceBlock, scratch.menuFfmpegCamera).getSnapshot(),
+                        MimeTypeUtils.IMAGE_JPEG_VALUE));
 
         @Getter
         private final String value;

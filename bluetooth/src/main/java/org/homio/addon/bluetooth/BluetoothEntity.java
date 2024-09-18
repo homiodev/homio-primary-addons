@@ -24,11 +24,6 @@ public class BluetoothEntity extends CommunicationEntity implements HasStatusAnd
     }
 
     @Override
-    protected void assembleMissingMandatoryFields(@NotNull Set<String> fields) {
-
-    }
-
-    @Override
     protected @NotNull String getDevicePrefix() {
         return "ble";
     }

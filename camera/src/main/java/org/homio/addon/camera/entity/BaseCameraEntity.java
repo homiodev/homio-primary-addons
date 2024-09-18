@@ -1,23 +1,7 @@
 package org.homio.addon.camera.entity;
 
-import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.homio.addon.camera.CameraConstants.ENDPOINT_AUDIO_THRESHOLD;
-import static org.homio.addon.camera.CameraConstants.ENDPOINT_MOTION_THRESHOLD;
-import static org.homio.api.ContextSetting.SERVER_PORT;
-import static org.homio.api.model.OptionModel.of;
-import static org.homio.api.util.HardwareUtils.MACHINE_IP_ADDRESS;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
@@ -28,6 +12,7 @@ import org.homio.addon.camera.service.BaseCameraService;
 import org.homio.api.Context;
 import org.homio.api.ContextMedia.FFMPEG;
 import org.homio.api.ContextMedia.FFMPEGFormat;
+import org.homio.api.entity.HasPlace;
 import org.homio.api.entity.device.DeviceEndpointsBehaviourContract;
 import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.log.HasEntitySourceLog;
@@ -35,11 +20,7 @@ import org.homio.api.entity.types.MediaEntity;
 import org.homio.api.entity.version.HasFirmwareVersion;
 import org.homio.api.entity.video.HasVideoSources;
 import org.homio.api.exception.NotFoundException;
-import org.homio.api.model.ActionResponseModel;
-import org.homio.api.model.FileContentType;
-import org.homio.api.model.FileModel;
-import org.homio.api.model.Icon;
-import org.homio.api.model.OptionModel;
+import org.homio.api.model.*;
 import org.homio.api.model.device.ConfigDeviceDefinition;
 import org.homio.api.model.endpoint.DeviceEndpoint;
 import org.homio.api.service.EntityService;
@@ -64,23 +45,52 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.homio.addon.camera.CameraConstants.ENDPOINT_AUDIO_THRESHOLD;
+import static org.homio.addon.camera.CameraConstants.ENDPOINT_MOTION_THRESHOLD;
+import static org.homio.api.ContextSetting.SERVER_PORT;
+import static org.homio.api.model.OptionModel.of;
+import static org.homio.api.util.HardwareUtils.MACHINE_IP_ADDRESS;
+
 @SuppressWarnings("unused")
 @Log4j2
 public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends BaseCameraService<?, S>>
-    extends MediaEntity implements
-    HasEntityLog,
-    HasEntitySourceLog,
-    StreamMJPEG,
-    StreamHLS,
-    StreamDASH,
-    StreamSnapshot,
-    HasFirmwareVersion,
-    HasVideoSources,
-    DeviceEndpointsBehaviourContract,
-    EntityService<S> {
+        extends MediaEntity implements
+        HasPlace,
+        HasEntityLog,
+        HasEntitySourceLog,
+        StreamMJPEG,
+        StreamHLS,
+        StreamDASH,
+        StreamSnapshot,
+        HasFirmwareVersion,
+        HasVideoSources,
+        DeviceEndpointsBehaviourContract,
+        EntityService<S> {
 
     public static final String RUN_CMD = "<span class=\"chip\" style=\"color:%s;border-color: %s;\">%s</span>";
     public static final String FOLDER = "camera";
+
+    @SneakyThrows
+    public static Path buildFilePathForRecord(Path basePath, String fileName, String ext) {
+        if (!ext.equals(FilenameUtils.getExtension(fileName))) {
+            fileName += "." + ext;
+        }
+        fileName = basePath.resolve(fileName).toString();
+        Path path = Paths.get(WorkspaceBlock.evalStringWithContext(fileName, text -> text));
+        Files.createDirectories(path.getParent());
+        return path;
+    }
 
     @UIField(order = 6, hideOnEmpty = true, hideInEdit = true, color = Color.RED)
     @UIFieldGroup("GENERAL")
@@ -160,25 +170,14 @@ public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends Bas
         uiInputBuilder.fireFetchValues();
     }
 
-    @SneakyThrows
-    public static Path buildFilePathForRecord(Path basePath, String fileName, String ext) {
-        if (!ext.equals(FilenameUtils.getExtension(fileName))) {
-            fileName += "." + ext;
-        }
-        fileName = basePath.resolve(fileName).toString();
-        Path path = Paths.get(WorkspaceBlock.evalStringWithContext(fileName, text -> text));
-        Files.createDirectories(path.getParent());
-        return path;
-    }
-
     @Override
     public @NotNull S getService() throws NotFoundException {
         return EntityService.super.getService();
     }
 
     @UIContextMenuAction(value = "RECORD_MP4", icon = "fas fa-file-video", inputs = {
-        @UIActionInput(name = "fileName", value = "record_${timestamp}", min = 4, max = 30),
-        @UIActionInput(name = "secondsToRecord", type = UIActionInput.Type.number, value = "10", min = 5, max = 100)
+            @UIActionInput(name = "fileName", value = "record_${timestamp}", min = 4, max = 30),
+            @UIActionInput(name = "secondsToRecord", type = UIActionInput.Type.number, value = "10", min = 5, max = 100)
     })
     public ActionResponseModel recordMP4(JSONObject params) {
         S service = getService();
@@ -203,8 +202,8 @@ public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends Bas
     }
 
     @UIContextMenuAction(value = "RECORD_GIF", icon = "fas fa-magic", inputs = {
-        @UIActionInput(name = "fileName", value = "record_${timestamp}", min = 4, max = 30),
-        @UIActionInput(name = "secondsToRecord", type = UIActionInput.Type.number, value = "3", min = 1, max = 10)
+            @UIActionInput(name = "fileName", value = "record_${timestamp}", min = 4, max = 30),
+            @UIActionInput(name = "secondsToRecord", type = UIActionInput.Type.number, value = "3", min = 1, max = 10)
     })
     public ActionResponseModel recordGif(JSONObject params) {
         S service = getService();
@@ -224,9 +223,9 @@ public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends Bas
     @UIField(order = 500, hideInEdit = true)
     @UIFieldImage
     @UIActionButton(name = "refresh", icon = "fas fa-sync",
-                    actionHandler = BaseCameraEntity.UpdateSnapshotActionHandler.class)
+            actionHandler = BaseCameraEntity.UpdateSnapshotActionHandler.class)
     @UIActionButton(name = "get", icon = "fas fa-camera",
-                    actionHandler = BaseCameraEntity.GetSnapshotActionHandler.class)
+            actionHandler = BaseCameraEntity.GetSnapshotActionHandler.class)
     public byte[] getSnapshot() {
         return optService().map(BaseCameraService::getLastSnapshot).orElse(null);
     }
@@ -315,28 +314,28 @@ public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends Bas
         assembleStream("hls", "Hls streams(.m3u8)", m3u8 -> {
             m3u8.setIcon(FFMPEGFormat.HLS.getIconModel());
             m3u8.addChild(of("video.m3u8", "HLS [default]")
-                .setIcon(FFMPEGFormat.HLS.getIconModel()));
+                    .setIcon(FFMPEGFormat.HLS.getIconModel()));
             if (!getHlsLowResolution().isEmpty()) {
                 m3u8.addChild(of("video_low.m3u8", "HLS [%s]".formatted(getHlsLowResolution()))
-                    .setIcon(FFMPEGFormat.HLS.getIconModel()));
+                        .setIcon(FFMPEGFormat.HLS.getIconModel()));
             }
             if (!getHlsHighResolution().isEmpty()) {
                 m3u8.addChild(of("video_high.m3u8", "HLS [%s]".formatted(getHlsHighResolution()))
-                    .setIcon(FFMPEGFormat.HLS.getIconModel()));
+                        .setIcon(FFMPEGFormat.HLS.getIconModel()));
             }
             appendAdditionHLSStreams(m3u8);
         }, videoSources);
         assembleStream("mjpeg", "Mjpeg streams(.jpg)", mjpeg -> {
             mjpeg.setIcon(FFMPEGFormat.MJPEG.getIconModel());
             mjpeg.addChild(of("video.mjpeg", "Mjpeg(.mjpeg)")
-                .setIcon(FFMPEGFormat.MJPEG.getIconModel()));
+                    .setIcon(FFMPEGFormat.MJPEG.getIconModel()));
             //videoSources.add(of("autofps.mjpeg", "MJPEG(autofps) stream"));
             appendAdditionMjpegStreams(mjpeg);
         }, videoSources);
         assembleStream("dash", "Mjpeg dash(.mpd)", dash -> {
             dash.setIcon(FFMPEGFormat.DASH.getIconModel());
             dash.addChild(of("video.mpd", "Mpeg-dash(.mpd)")
-                .setIcon(FFMPEGFormat.DASH.getIconModel()));
+                    .setIcon(FFMPEGFormat.DASH.getIconModel()));
             appendAdditionMjpegDashStreams(dash);
         }, videoSources);
         assembleStream("webrtc", "WebRTC", webrtc -> {
@@ -375,7 +374,7 @@ public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends Bas
         if (StringUtils.isNotEmpty(getVideoMotionAlarmProvider())) {
             try {
                 return context().getBean(DataSourceUtil.getSelection(getVideoMotionAlarmProvider()).getValue(),
-                    VideoMotionAlarmProvider.class);
+                        VideoMotionAlarmProvider.class);
             } catch (Exception ne) {
                 log.warn("Unable to find video motion alarm provider: {}", getVideoMotionAlarmProvider());
             }
@@ -386,7 +385,7 @@ public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends Bas
     private void assembleStream(String key, String title, Consumer<OptionModel> consumer, List<OptionModel> videoSources) {
         OptionModel optionModel = of(key, title);
         consumer.accept(optionModel);
-            videoSources.add(optionModel);
+        videoSources.add(optionModel);
     }
 
     public String getUrl(String path) {
@@ -438,31 +437,6 @@ public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends Bas
         return Objects.requireNonNull(StringUtils.defaultIfEmpty(getIeeeAddress(), getEntityID()));
     }
 
-    public static class UpdateSnapshotActionHandler implements UIActionHandler {
-
-        @Override
-        public ActionResponseModel handleAction(Context context, JSONObject params) {
-            BaseCameraEntity<?, ?> entity = context.db().getEntityRequire(params.getString("entityID"));
-            BaseCameraService<?, ?> service = entity.getService();
-            service.assertOnline();
-            service.takeSnapshotAsync();
-            return ActionResponseModel.fired();
-        }
-    }
-
-    public static class GetSnapshotActionHandler implements UIActionHandler {
-
-        @Override
-        public ActionResponseModel handleAction(Context context, JSONObject params) {
-            BaseCameraEntity<?, ?> entity = context.db().getEntityRequire(params.getString("entityID"));
-            entity.getService().assertOnline();
-            byte[] image = entity.getService().getLastSnapshot();
-            String encodedValue = "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(image);
-            FileModel snapshot = new FileModel("Snapshot", encodedValue, FileContentType.image);
-            return ActionResponseModel.showFile(snapshot);
-        }
-    }
-
     @Override
     public long getEntityServiceHashCode() {
         return getJsonDataHashCode("user", "pwd");
@@ -471,9 +445,9 @@ public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends Bas
     @Override
     public @NotNull String getDeviceFullName() {
         return "%s(%s) [${%s}]".formatted(
-            getTitle(),
-            getIeeeAddress(),
-            defaultIfEmpty(getPlace(), "W.ERROR.PLACE_NOT_SET"));
+                getTitle(),
+                getIeeeAddress(),
+                defaultIfEmpty(getPlace(), "W.ERROR.PLACE_NOT_SET"));
     }
 
     @Override
@@ -488,7 +462,7 @@ public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends Bas
 
     @Override
     public @NotNull List<ConfigDeviceDefinition> findMatchDeviceConfigurations() {
-        return optService().map(s->s.findDevices()).orElse(List.of());
+        return optService().map(s -> s.findDevices()).orElse(List.of());
     }
 
     @Override
@@ -508,8 +482,28 @@ public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends Bas
         return optService().map(s -> s.getLogSources()).orElse(List.of());
     }
 
-    @Override
-    protected void assembleMissingMandatoryFields(@NotNull Set<String> fields) {
+    public static class UpdateSnapshotActionHandler implements UIActionHandler {
 
+        @Override
+        public ActionResponseModel handleAction(Context context, JSONObject params) {
+            BaseCameraEntity<?, ?> entity = context.db().getRequire(params.getString("entityID"));
+            BaseCameraService<?, ?> service = entity.getService();
+            service.assertOnline();
+            service.takeSnapshotAsync();
+            return ActionResponseModel.fired();
+        }
+    }
+
+    public static class GetSnapshotActionHandler implements UIActionHandler {
+
+        @Override
+        public ActionResponseModel handleAction(Context context, JSONObject params) {
+            BaseCameraEntity<?, ?> entity = context.db().getRequire(params.getString("entityID"));
+            entity.getService().assertOnline();
+            byte[] image = entity.getService().getLastSnapshot();
+            String encodedValue = "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(image);
+            FileModel snapshot = new FileModel("Snapshot", encodedValue, FileContentType.image);
+            return ActionResponseModel.showFile(snapshot);
+        }
     }
 }

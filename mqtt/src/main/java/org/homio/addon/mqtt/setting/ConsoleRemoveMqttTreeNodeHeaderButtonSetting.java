@@ -1,8 +1,5 @@
 package org.homio.addon.mqtt.setting;
 
-import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
-import static org.homio.api.util.JsonUtils.putOpt;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -16,6 +13,9 @@ import org.homio.api.setting.console.header.ConsoleHeaderSettingPlugin;
 import org.homio.api.ui.UI.Color;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
+
+import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
+import static org.homio.api.util.JsonUtils.putOpt;
 
 /**
  * 'Remove button' console header button for tree/table console blocks.
@@ -49,7 +49,7 @@ public class ConsoleRemoveMqttTreeNodeHeaderButtonSetting implements
     }
 
     @Override
-    public JSONObject getParameters(Context context, String value) {
+    public @NotNull JSONObject getParameters(Context context, String value) {
         JSONObject parameters = new JSONObject();
         putOpt(parameters, "confirm", getConfirmMsg());
         putOpt(parameters, "dialogColor", Color.ERROR_DIALOG);
@@ -60,13 +60,13 @@ public class ConsoleRemoveMqttTreeNodeHeaderButtonSetting implements
 
     @Override
     @SneakyThrows
-    public NodeRemoveRequest parseValue(Context context, String value) {
+    public NodeRemoveRequest deserializeValue(Context context, String value) {
         return StringUtils.isEmpty(value) ? null : OBJECT_MAPPER.readValue(value, NodeRemoveRequest.class);
     }
 
     @Override
     @SneakyThrows
-    public @NotNull String writeValue(NodeRemoveRequest value) {
+    public @NotNull String serializeValue(NodeRemoveRequest value) {
         return value == null ? "" : OBJECT_MAPPER.writeValueAsString(value);
     }
 

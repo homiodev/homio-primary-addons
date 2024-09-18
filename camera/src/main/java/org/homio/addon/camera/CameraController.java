@@ -1,28 +1,10 @@
 package org.homio.addon.camera;
 
-import static org.homio.addon.camera.service.BaseCameraService.SHARE_DIR;
-import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
-import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
-
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -50,13 +32,22 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRange;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+import static org.homio.addon.camera.service.BaseCameraService.SHARE_DIR;
+import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
+import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 
 @Log4j2
 @RestController
@@ -64,8 +55,39 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CameraController {
 
-    private final Context context;
     public static final Map<String, OpenStreamsContainer> camerasOpenStreams = new ConcurrentHashMap<>();
+    private final Context context;
+
+    public static void startMjpegStream(BaseCameraService<?, ?> service) {
+        service.startMjpegStream(() -> {
+            OpenStreamsContainer container = camerasOpenStreams.get(service.getEntityID());
+            if (container != null) {
+                container.dispose();
+            }
+        });
+    }
+
+    private static boolean isUseCachedImage(BaseCameraService<?, ?> handler) {
+        return Objects.requireNonNull(handler.getFfmpegSnapshot()).isRunning()
+               || Duration.between(handler.getSnapshot().getCurrentSnapshotTime(), Instant.now()).toMillis() < 1200;
+    }
+
+    private static void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (Exception ignore) {
+        }
+    }
+
+    @SneakyThrows
+    private static @NotNull ResponseEntity<Resource> getFile(String filename, String extension) {
+        UrlResource resource = new UrlResource(SHARE_DIR.resolve("%s.%s".formatted(filename, extension)).toUri());
+        if (resource.exists()) {
+            return new ResponseEntity<>(resource, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 
     @GetMapping("/devices/pan")
     public List<OptionModel> getPanDevices() {
@@ -84,8 +106,8 @@ public class CameraController {
 
     @GetMapping("/presets")
     public @NotNull Collection<OptionModel> getCameraPresets(
-        @RequestParam(value = "onvifCameraMenu") @NotNull String cameraEntityID) {
-        IpCameraEntity entity = context.db().getEntityRequire(cameraEntityID);
+            @RequestParam(value = "onvifCameraMenu") @NotNull String cameraEntityID) {
+        IpCameraEntity entity = context.db().getRequire(cameraEntityID);
         return entity.getService().getPtzPresets();
     }
 
@@ -107,7 +129,7 @@ public class CameraController {
     @SneakyThrows
     @PostMapping("/{entityID}/OnvifEvent")
     public void postOnvifEvent(@PathVariable("entityID") String entityID, HttpServletRequest req) {
-        IpCameraEntity entity = context.db().getEntityRequire(entityID);
+        IpCameraEntity entity = context.db().getRequire(entityID);
         entity.getService().getOnvifDeviceState().getEventDevices().fireEvent(req.getReader().toString());
     }
 
@@ -140,7 +162,7 @@ public class CameraController {
      */
     @GetMapping(value = "/{entityID}/{filename}.ts", produces = "video/MP2T")
     public ResponseEntity<Resource> requestHlsTS(@PathVariable("entityID") String ignore,
-        @PathVariable("filename") String filename) {
+                                                 @PathVariable("filename") String filename) {
         return getFile(filename, "ts");
     }
 
@@ -157,7 +179,7 @@ public class CameraController {
      */
     @GetMapping(value = "/{entityID}/{filename}.m4s", produces = "video/mp4")
     public ResponseEntity<Resource> requestDashM4S(
-        @PathVariable("entityID") String ignore, @PathVariable("filename") String filename) {
+            @PathVariable("entityID") String ignore, @PathVariable("filename") String filename) {
         return getFile(filename, "m4s");
     }
 
@@ -168,9 +190,9 @@ public class CameraController {
 
     @GetMapping("/{entityID}/snapshot.jpg")
     public void requestCameraIpCameraJpg(
-        @PathVariable("entityID") String entityID,
-        HttpServletRequest req,
-        HttpServletResponse resp) {
+            @PathVariable("entityID") String entityID,
+            HttpServletRequest req,
+            HttpServletResponse resp) {
         BaseCameraEntity<?, ?> entity = getEntity(entityID);
         BaseCameraService<?, ?> handler = entity.getService();
         // Use cached image if recent. Cameras can take > 1sec to send back a reply.
@@ -186,7 +208,7 @@ public class CameraController {
                     sleep(100);
                 } // 5 sec timeout OR a new snapshot comes back from camera
                 while (Duration.between(startTime, Instant.now()).toMillis() < 5000
-                    && Duration.between(handler.getSnapshot().getCurrentSnapshotTime(), Instant.now()).toMillis() > 1200);
+                       && Duration.between(handler.getSnapshot().getCurrentSnapshotTime(), Instant.now()).toMillis() > 1200);
                 sendSnapshotImage(resp, handler.getLastSnapshot());
                 asyncContext.complete();
             });
@@ -219,7 +241,7 @@ public class CameraController {
                     // Never stop streaming until IOException. Occurs when browser stops the stream.
                     openAutoFpsStreams.removeStream(output);
                     log.debug("Now there are {} autofps.mjpeg streams open.",
-                        openAutoFpsStreams.getNumberOfStreams());
+                            openAutoFpsStreams.getNumberOfStreams());
                     return;
                 }
             } while (true);
@@ -286,15 +308,6 @@ public class CameraController {
         }
     }
 
-    public static void startMjpegStream(BaseCameraService<?, ?> service) {
-        service.startMjpegStream(() -> {
-            OpenStreamsContainer container = camerasOpenStreams.get(service.getEntityID());
-            if (container != null) {
-                container.dispose();
-            }
-        });
-    }
-
     @GetMapping("/ffmpegWithProfiles")
     public List<OptionModel> getAllFFmpegWithProfiles() {
         List<OptionModel> list = new ArrayList<>();
@@ -304,7 +317,7 @@ public class CameraController {
                     IpCameraService service = (IpCameraService) videoStreamEntity.getService();
                     for (Profile profile : service.getOnvifDeviceState().getProfiles()) {
                         list.add(OptionModel.of(videoStreamEntity.getEntityID() + "/" + profile.getToken(),
-                            videoStreamEntity.getTitle() + " (" + profile.getVideoEncoderConfiguration().getResolution().toString() + ")"));
+                                videoStreamEntity.getTitle() + " (" + profile.getVideoEncoderConfiguration().getResolution().toString() + ")"));
                     }
                 } else {
                     list.add(OptionModel.of(videoStreamEntity.getEntityID(), videoStreamEntity.getTitle()));
@@ -323,29 +336,24 @@ public class CameraController {
 
     @GetMapping(value = "/{entityID}/{filename}.gif", produces = "image/gif")
     public ResponseEntity<?> requestCameraGif(
-        @PathVariable("entityID") String entityID,
-        @PathVariable("filename") String filename) {
+            @PathVariable("entityID") String entityID,
+            @PathVariable("filename") String filename) {
         return getFile(entityID, s -> s.getFfmpegGifOutputPath().resolve(filename + ".gif"), null);
     }
 
     @GetMapping(value = "/{entityID}/{filename}.jpg", produces = "image/jpg")
     public ResponseEntity<?> requestCameraJpg(
-        @PathVariable("entityID") String entityID,
-        @PathVariable("filename") String filename) {
+            @PathVariable("entityID") String entityID,
+            @PathVariable("filename") String filename) {
         return getFile(entityID, s -> s.getFfmpegGifOutputPath().resolve(filename + ".jpg"), null);
     }
 
     @GetMapping(value = "/{entityID}/{filename}.mp4", produces = "video/mp4")
     public @NotNull ResponseEntity<?> requestCameraMP4(
-        @PathVariable("entityID") String entityID,
-        @PathVariable("filename") String filename,
-        @RequestHeader HttpHeaders headers) {
+            @PathVariable("entityID") String entityID,
+            @PathVariable("filename") String filename,
+            @RequestHeader HttpHeaders headers) {
         return getFile(entityID, s -> s.getFfmpegGifOutputPath().resolve(filename + ".mp4"), headers);
-    }
-
-    private static boolean isUseCachedImage(BaseCameraService<?, ?> handler) {
-        return Objects.requireNonNull(handler.getFfmpegSnapshot()).isRunning()
-            || Duration.between(handler.getSnapshot().getCurrentSnapshotTime(), Instant.now()).toMillis() < 1200;
     }
 
     @SneakyThrows
@@ -364,34 +372,14 @@ public class CameraController {
 
     private OpenStreamsContainer getOpenStreamsContainer(String entityID) {
         return camerasOpenStreams.computeIfAbsent(entityID, s ->
-            new OpenStreamsContainer(context.db().getEntity(entityID)));
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    public static final class OpenStreamsContainer {
-
-        private final OpenStreams openStreams = new OpenStreams();
-        private final OpenStreams openAutoFpsStreams = new OpenStreams();
-        private final BaseCameraEntity<?, ?> entity;
-
-        public void dispose() {
-            openStreams.closeAllStreams();
-            openAutoFpsStreams.closeAllStreams();
-        }
-    }
-
-    private static void sleep(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (Exception ignore) {}
+                new OpenStreamsContainer(context.db().get(entityID)));
     }
 
     @SneakyThrows
     private ResponseEntity<?> getFile(
-        @NotNull String entityID,
-        @NotNull Function<BaseCameraService<?, ?>, Path> pathSupplier,
-        @Nullable HttpHeaders headers) {
+            @NotNull String entityID,
+            @NotNull Function<BaseCameraService<?, ?>, Path> pathSupplier,
+            @Nullable HttpHeaders headers) {
         BaseCameraEntity<?, ?> entity = getEntity(entityID);
         Path filePath = pathSupplier.apply(entity.getService());
         UrlResource resource = new UrlResource(filePath.toUri());
@@ -418,7 +406,7 @@ public class CameraController {
 
     @SneakyThrows
     private ResponseEntity<String> createFfmpegAndGetFile(String entityID,
-        Function<BaseCameraService<?, ?>, FFMPEG> ffmpegCreator, int retrySec) {
+                                                          Function<BaseCameraService<?, ?>, FFMPEG> ffmpegCreator, int retrySec) {
         BaseCameraEntity<?, ?> entity = getEntity(entityID);
         BaseCameraService<?, ?> service = entity.getService();
         FFMPEG ffmpeg = ffmpegCreator.apply(service);
@@ -439,31 +427,34 @@ public class CameraController {
         }
     }
 
-
-    @SneakyThrows
-    private static @NotNull ResponseEntity<Resource> getFile(String filename, String extension) {
-        UrlResource resource = new UrlResource(SHARE_DIR.resolve("%s.%s".formatted(filename, extension)).toUri());
-        if (resource.exists()) {
-            return new ResponseEntity<>(resource, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-    }
-
     @SneakyThrows
     private @NotNull BaseCameraEntity<?, ?> getEntity(String entityID) {
-        BaseCameraEntity<?, ?> entity = context.db().getEntityRequire(entityID);
+        BaseCameraEntity<?, ?> entity = context.db().getRequire(entityID);
         if (!entity.getStatus().isOnline()) {
             throw new ServerException("Unable to run execute request. Video entity: %s has wrong status: %s".formatted(entity.getTitle(), entity.getStatus()))
-                .setStatus(HttpStatus.PRECONDITION_FAILED);
+                    .setHttpStatus(HttpStatus.PRECONDITION_FAILED);
         }
         return entity;
     }
 
     private @NotNull List<OptionModel> filterCameraDevices(Predicate<IpCameraService> filter) {
         return context.toOptionModels(context.db()
-            .findAll(IpCameraEntity.class)
-            .stream()
-            .filter(ipCameraEntity -> filter.test(ipCameraEntity.getService())).toList());
+                .findAll(IpCameraEntity.class)
+                .stream()
+                .filter(ipCameraEntity -> filter.test(ipCameraEntity.getService())).toList());
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    public static final class OpenStreamsContainer {
+
+        private final OpenStreams openStreams = new OpenStreams();
+        private final OpenStreams openAutoFpsStreams = new OpenStreams();
+        private final BaseCameraEntity<?, ?> entity;
+
+        public void dispose() {
+            openStreams.closeAllStreams();
+            openAutoFpsStreams.closeAllStreams();
+        }
     }
 }

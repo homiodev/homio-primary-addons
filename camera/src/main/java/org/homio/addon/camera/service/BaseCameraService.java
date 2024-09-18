@@ -1,38 +1,6 @@
 package org.homio.addon.camera.service;
 
-import static java.lang.String.join;
-import static org.homio.addon.camera.CameraConstants.AlarmEvent.MotionAlarm;
-import static org.homio.addon.camera.CameraConstants.ENDPOINT_AUDIO_THRESHOLD;
-import static org.homio.addon.camera.CameraConstants.ENDPOINT_MOTION_SCORE;
-import static org.homio.addon.camera.CameraConstants.ENDPOINT_MOTION_THRESHOLD;
-import static org.homio.addon.camera.CameraController.camerasOpenStreams;
-import static org.homio.addon.camera.entity.StreamMJPEG.mp4OutOptions;
-import static org.homio.api.model.Status.ERROR;
-import static org.homio.api.model.Status.INITIALIZE;
-import static org.homio.api.model.Status.OFFLINE;
-import static org.homio.api.model.Status.ONLINE;
-import static org.homio.api.model.Status.REQUIRE_AUTH;
-import static org.homio.api.model.Status.UNKNOWN;
-import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_DEVICE_STATUS;
-import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_LAST_SEEN;
-
 import com.pivovarit.function.ThrowingRunnable;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -75,18 +43,72 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.security.authentication.BadCredentialsException;
 
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import static java.lang.String.join;
+import static org.homio.addon.camera.CameraConstants.AlarmEvent.MotionAlarm;
+import static org.homio.addon.camera.CameraConstants.*;
+import static org.homio.addon.camera.CameraController.camerasOpenStreams;
+import static org.homio.addon.camera.entity.StreamMJPEG.mp4OutOptions;
+import static org.homio.api.model.Status.*;
+import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_DEVICE_STATUS;
+import static org.homio.api.model.endpoint.DeviceEndpoint.ENDPOINT_LAST_SEEN;
+
 @SuppressWarnings({"unused"})
 public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S extends BaseCameraService<T, S>>
-    extends EntityService.ServiceInstance<T> implements FFMPEGHandler {
+        extends EntityService.ServiceInstance<T> implements FFMPEGHandler {
 
     public static final Path SHARE_DIR = CommonUtils.getTmpPath();
     public static final ConfigDeviceDefinitionService CONFIG_DEVICE_SERVICE =
-        new ConfigDeviceDefinitionService("camera-devices.json");
+            new ConfigDeviceDefinitionService("camera-devices.json");
     private static final int MAX_PING_ERRORS = 10;
-
-    private final @NotNull @Getter Map<String, CameraDeviceEndpoint> endpoints = new ConcurrentHashMap<>();
+    public final @Getter VideoUrls urls = new VideoUrls();
+    protected final String gifOutOptions = "-r 2 -filter_complex scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];"
+                                           + "[o3][p]paletteuse";
+    private final @NotNull
+    @Getter Map<String, CameraDeviceEndpoint> endpoints = new ConcurrentHashMap<>();
+    private final @Getter Snapshot snapshot = new Snapshot(30);
+    protected @NotNull Map<String, ChannelTracking> channelTrackingMap = new ConcurrentHashMap<>();
+    // run every 8 seconds to send requests to camera, etc...
+    protected @Nullable ThreadContext<Void> pollCameraJob;
+    // used to try to connect to camera
+    protected @Nullable ThreadContext<Void> cameraConnectionJob;
+    // actions holder
+    protected @NotNull UpdatableValue<UIInputBuilder> uiInputBuilder = UpdatableValue.deferred("cam-actions", UIInputBuilder.class);
+    protected long videoStreamParametersHashCode;
+    protected @Setter boolean streamingAutoFps = false;
     private @Getter int communicationError;
     private @Getter boolean alarmDetected;
+    private @Getter Path ffmpegOutputPath;
+    private @Getter Path ffmpegGifOutputPath;
+    private @Getter Path ffmpegMP4OutputPath;
+    private @Getter Path ffmpegImageOutputPath;
+    private @Getter
+    @Nullable FFMPEG ffmpegMainReStream;
+    private @Getter
+    @Nullable FFMPEG ffmpegSnapshot;
+    private @Getter
+    @Nullable FFMPEG ffmpegMjpeg;
+    private @Getter
+    @Setter
+    @NotNull String mjpegContentType = "";
+    public BaseCameraService(T entity, Context context, String name) {
+        super(context, entity, true, name);
+        setExposeService(true);
+        setParent("CAMERA");
+        camerasOpenStreams.computeIfAbsent(entityID, s -> new OpenStreamsContainer(entity));
+    }
 
     public @NotNull List<ConfigDeviceDefinition> findDevices() {
         return CONFIG_DEVICE_SERVICE.findDeviceDefinitionModels(entity.getModel(), Set.of());
@@ -94,9 +116,9 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
 
     public List<OptionModel> getLogSources() {
         return List.of(
-            OptionModel.of("mjpeg", "FFMPEG mjpeg"),
-            OptionModel.of("main", "FFMPEG hls/dash"),
-            OptionModel.of("snapshot", "FFMPEG snapshot"));
+                OptionModel.of("mjpeg", "FFMPEG mjpeg"),
+                OptionModel.of("main", "FFMPEG hls/dash"),
+                OptionModel.of("snapshot", "FFMPEG snapshot"));
     }
 
     public @Nullable InputStream getSourceLogInputStream(@NotNull String sourceID) {
@@ -132,43 +154,6 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
 
     protected abstract void postInitializeCamera();
 
-    protected @NotNull Map<String, ChannelTracking> channelTrackingMap = new ConcurrentHashMap<>();
-
-    private @Getter Path ffmpegOutputPath;
-    private @Getter Path ffmpegGifOutputPath;
-    private @Getter Path ffmpegMP4OutputPath;
-    private @Getter Path ffmpegImageOutputPath;
-
-    private @Getter @Nullable FFMPEG ffmpegMainReStream;
-    private @Getter @Nullable FFMPEG ffmpegSnapshot;
-    private @Getter @Nullable FFMPEG ffmpegMjpeg;
-
-    // run every 8 seconds to send requests to camera, etc...
-    protected @Nullable ThreadContext<Void> pollCameraJob;
-    // used to try to connect to camera
-    protected @Nullable ThreadContext<Void> cameraConnectionJob;
-
-    // actions holder
-    protected @NotNull UpdatableValue<UIInputBuilder> uiInputBuilder = UpdatableValue.deferred("cam-actions", UIInputBuilder.class);
-
-    protected final String gifOutOptions = "-r 2 -filter_complex scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];"
-        + "[o3][p]paletteuse";
-
-    protected long videoStreamParametersHashCode;
-
-    protected @Setter boolean streamingAutoFps = false;
-
-    private @Getter
-    @Setter
-    @NotNull String mjpegContentType = "";
-    public final @Getter VideoUrls urls = new VideoUrls();
-    private final @Getter Snapshot snapshot = new Snapshot(30);
-
-    public BaseCameraService(T entity, Context context) {
-        super(context, entity, true);
-        camerasOpenStreams.computeIfAbsent(entityID, s -> new OpenStreamsContainer(entity));
-    }
-
     public void cameraCommunicationError(String reason) {
         if (communicationError++ > MAX_PING_ERRORS) {
             updateEntityStatus(ERROR, reason);
@@ -190,7 +175,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
 
             if (status == Status.ERROR || status == REQUIRE_AUTH) {
                 context.ui().toastr().error("DISPOSE_VIDEO",
-                    FlowMap.of("TITLE", entity.getTitle(), "REASON", reason));
+                        FlowMap.of("TITLE", entity.getTitle(), "REASON", reason));
             }
         }
     }
@@ -208,9 +193,9 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
             onCameraConnected();
 
             pollCameraJob = context.bgp().builder("video-poll-" + entityID)
-                                         .delay(Duration.ofSeconds(8))
-                                         .interval(Duration.ofSeconds(8))
-                                         .execute(this::pollCameraRunnable);
+                    .delay(Duration.ofSeconds(8))
+                    .interval(Duration.ofSeconds(8))
+                    .execute(this::pollCameraRunnable);
 
             // auto restart mjpeg stream now camera is back online.
             OpenStreamsContainer container = camerasOpenStreams.get(entityID);
@@ -230,7 +215,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     @Override
     public void destroy(boolean forRestart, Exception ex) {
         dispose();
-        if(!forRestart) {
+        if (!forRestart) {
             deleteDirectories();
         }
     }
@@ -248,7 +233,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
         alarmDetected(score != null, MotionAlarm);
         DecimalType value = score == null ? DecimalType.ZERO : new DecimalType(BigDecimal.valueOf(score.floatValue() * 100).setScale(2, RoundingMode.HALF_UP));
         addEndpoint(ENDPOINT_MOTION_SCORE, key -> new CameraDeviceEndpoint(entity, context(), key, EndpointType.number, false), null)
-            .setValue(value);
+                .setValue(value);
     }
 
     public void processSnapshot(byte[] incomingSnapshot) {
@@ -312,10 +297,11 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
 
     public void recordGifAsync(Path filePath, @Nullable String profile, int secondsToRecord) {
         String gifInputOptions = "-y -t " + secondsToRecord + " -hide_banner";
-        FFMPEG ffmpegGIF = context.media().buildFFMPEG(entityID, "FFMPEG GIF", new FFMPEGHandler() {}, FFMPEGFormat.GIF,
-            gifInputOptions, urls.getRtspUri(profile),
-            gifOutOptions, filePath.toString(), entity.getUser(),
-            entity.getPassword().asString());
+        FFMPEG ffmpegGIF = context.media().buildFFMPEG(entityID, "FFMPEG GIF", new FFMPEGHandler() {
+                }, FFMPEGFormat.GIF,
+                gifInputOptions, urls.getRtspUri(profile),
+                gifOutOptions, filePath.toString(), entity.getUser(),
+                entity.getPassword().asString());
         FFMPEG.run(ffmpegGIF, FFMPEG::startConverting);
     }
 
@@ -353,7 +339,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     public byte[] recordGifSync(String profile, int secondsToRecord) {
         Path output = getFfmpegGifOutputPath().resolve("tmp_" + System.currentTimeMillis() + ".gif");
         fireFfmpegSync(profile, output, "-t " + secondsToRecord,
-            gifOutOptions, secondsToRecord + 20);
+                gifOutOptions, secondsToRecord + 20);
         return Files.readAllBytes(output);
     }
 
@@ -361,7 +347,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     public byte[] recordMp4Sync(String profile, int secondsToRecord) {
         Path output = getFfmpegMP4OutputPath().resolve("tmp_" + System.currentTimeMillis() + ".mp4");
         fireFfmpegSync(profile, output, "-t " + secondsToRecord,
-            mp4OutOptions, secondsToRecord + 20);
+                mp4OutOptions, secondsToRecord + 20);
         return Files.readAllBytes(output);
     }
 
@@ -408,9 +394,9 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     }
 
     public CameraDeviceEndpoint addEndpoint(
-        @NotNull String endpointId,
-        @NotNull Function<String, CameraDeviceEndpoint> handler,
-        @Nullable Consumer<State> updateHandler) {
+            @NotNull String endpointId,
+            @NotNull Function<String, CameraDeviceEndpoint> handler,
+            @Nullable Consumer<State> updateHandler) {
         return endpoints.computeIfAbsent(endpointId, key -> {
             CameraDeviceEndpoint endpoint = handler.apply(key);
             endpoint.setUpdateHandler(updateHandler);
@@ -424,8 +410,8 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     }
 
     public CameraDeviceEndpoint addEndpointSwitch(
-        @NotNull String endpointId,
-        @NotNull Consumer<State> updateHandler) {
+            @NotNull String endpointId,
+            @NotNull Consumer<State> updateHandler) {
         return addEndpointSwitch(endpointId, updateHandler, true);
     }
 
@@ -463,9 +449,9 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     }
 
     public CameraDeviceEndpoint addEndpointSwitch(
-        @NotNull String endpointId,
-        @NotNull Consumer<State> updateHandler,
-        boolean writable) {
+            @NotNull String endpointId,
+            @NotNull Consumer<State> updateHandler,
+            boolean writable) {
         return addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(), key, EndpointType.bool, writable), updateHandler);
     }
 
@@ -480,29 +466,29 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
         takeSnapshotAsync();
         if (!pingCamera()) {
             cameraCommunicationError(
-                "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
+                    "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
         }
     }
 
     public CameraDeviceEndpoint addEndpointTrigger(
-        @NotNull String endpointId,
-        @NotNull Icon buttonIcon,
-        @Nullable String text,
-        @Nullable String confirmMessage,
-        @Nullable String confirmDialogColor,
-        @NotNull Consumer<State> updateHandler) {
+            @NotNull String endpointId,
+            @NotNull Icon buttonIcon,
+            @Nullable String text,
+            @Nullable String confirmMessage,
+            @Nullable String confirmDialogColor,
+            @NotNull Consumer<State> updateHandler) {
         return addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(),
-            key, EndpointType.trigger, true) {
+                key, EndpointType.trigger, true) {
             @Override
             public UIInputBuilder createTriggerActionBuilder(@NotNull UIInputBuilder uiInputBuilder) {
                 uiInputBuilder.addButton(getEntityID(), buttonIcon, (context, params) -> {
-                                  updateHandler.accept(null);
-                                  return null;
-                              })
-                              .setText(StringUtils.trimToEmpty(text))
-                              .setConfirmMessage(confirmMessage)
-                              .setConfirmMessageDialogColor(confirmDialogColor)
-                              .setDisabled(!getDevice().getStatus().isOnline());
+                            updateHandler.accept(null);
+                            return null;
+                        })
+                        .setText(StringUtils.trimToEmpty(text))
+                        .setConfirmMessage(confirmMessage)
+                        .setConfirmMessageDialogColor(confirmDialogColor)
+                        .setDisabled(!getDevice().getStatus().isOnline());
                 return uiInputBuilder;
             }
         }, updateHandler);
@@ -548,7 +534,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     public void updateLastSeen() {
         CameraDeviceEndpoint endpoint = endpoints.get(ENDPOINT_LAST_SEEN);
         // update not often than 1s
-        if(System.currentTimeMillis() - endpoint.getValue().longValue() > 1000) {
+        if (System.currentTimeMillis() - endpoint.getValue().longValue() > 1000) {
             endpoint.setValue(new DecimalType(System.currentTimeMillis()), true);
         }
     }
@@ -600,27 +586,27 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
 
     private void createConnectionJob() {
         cameraConnectionJob = context
-            .bgp().builder("video-connect-" + entityID)
-            .intervalWithDelay(Duration.ofSeconds(30))
-            .execute(() -> {
-                try {
-                    if (!entity.getStatus().isOnline()) {
-                        pollCameraConnection();
+                .bgp().builder("video-connect-" + entityID)
+                .intervalWithDelay(Duration.ofSeconds(30))
+                .execute(() -> {
+                    try {
+                        if (!entity.getStatus().isOnline()) {
+                            pollCameraConnection();
+                        }
+                        if (entity.getStatus().isOnline() && ContextBGP.cancel(cameraConnectionJob)) {
+                            cameraConnectionJob = null;
+                        }
+                    } catch (Exception ex) {
+                        String message = CommonUtils.getErrorMessage(ex);
+                        if (ex instanceof ConfigurationException
+                            || ex instanceof BadCredentialsException) {
+                            val status = ex instanceof BadCredentialsException ? REQUIRE_AUTH : ERROR;
+                            disposeAndSetStatus(status, message);
+                        } else {
+                            updateEntityStatus(OFFLINE, message);
+                        }
                     }
-                    if (entity.getStatus().isOnline() && ContextBGP.cancel(cameraConnectionJob)) {
-                        cameraConnectionJob = null;
-                    }
-                } catch (Exception ex) {
-                    String message = CommonUtils.getErrorMessage(ex);
-                    if (ex instanceof ConfigurationException
-                        || ex instanceof BadCredentialsException) {
-                        val status = ex instanceof BadCredentialsException ? REQUIRE_AUTH : ERROR;
-                        disposeAndSetStatus(status, message);
-                    } else {
-                        updateEntityStatus(OFFLINE, message);
-                    }
-                }
-            });
+                });
     }
 
     protected void setMotionAlarmThreshold(int threshold) {
@@ -628,14 +614,13 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
 
     private boolean updateEntityStatus(Status status, String reason) {
         if (entity.getStatus() != status || !Objects.equals(reason, entity.getStatusMessage())) {
-            entity.setStatus(status, reason);
             CameraDeviceEndpoint endpoint = getEndpoints().get(ENDPOINT_DEVICE_STATUS);
             if (endpoint != null) {
                 endpoint.setValue(new StringType(status.toString()), false);
             }
             // fully update entity due status/message/etc.. may be changed
             context.ui().updateItem(entity);
-            updateNotificationBlock();
+            entity.setStatus(status, reason);
             return true;
         }
         return false;
@@ -660,9 +645,9 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     private void createOrUpdateDeviceGroup() {
         List<ConfigDeviceDefinition> devices = findDevices();
         context.var().createGroup("video", "Video", builder ->
-            builder.setLocked(true).setIcon(new Icon("fas fa-video", "#0E578F")));
+                builder.setLocked(true).setIcon(new Icon("fas fa-video", "#0E578F")));
         context.var().createSubGroup("video", entity.getGroupID(), entity.getDeviceFullName(), builder ->
-            builder.setLocked(true).setDescription(getGroupDescription()).setIcon(entity.getEntityIcon()));
+                builder.setLocked(true).setDescription(getGroupDescription()).setIcon(entity.getEntityIcon()));
     }
 
     protected void setAudioAlarmThreshold(int threshold) {

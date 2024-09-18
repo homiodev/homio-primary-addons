@@ -1,26 +1,7 @@
 package org.homio.addon.mqtt.entity;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.homio.api.util.Constants.PRIMARY_DEVICE;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.UUID;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -33,6 +14,7 @@ import org.homio.addon.mqtt.workspace.Scratch3MQTTBlocks;
 import org.homio.api.Context;
 import org.homio.api.ContextService;
 import org.homio.api.ContextService.MQTTEntityService;
+import org.homio.api.entity.CreateSingleEntity;
 import org.homio.api.entity.device.DeviceEndpointsBehaviourContractStub;
 import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.log.HasEntitySourceLog;
@@ -46,12 +28,7 @@ import org.homio.api.entity.widget.ability.HasSetStatusValue;
 import org.homio.api.entity.widget.ability.HasTimeValueSeries;
 import org.homio.api.exception.ServerException;
 import org.homio.api.fs.TreeConfiguration;
-import org.homio.api.model.ActionResponseModel;
-import org.homio.api.model.FileContentType;
-import org.homio.api.model.FileModel;
-import org.homio.api.model.Icon;
-import org.homio.api.model.OptionModel;
-import org.homio.api.model.Status;
+import org.homio.api.model.*;
 import org.homio.api.model.endpoint.BaseDeviceEndpoint;
 import org.homio.api.model.endpoint.DeviceEndpoint;
 import org.homio.api.service.EntityService;
@@ -61,11 +38,7 @@ import org.homio.api.storage.DataStorageService;
 import org.homio.api.storage.SourceHistory;
 import org.homio.api.storage.SourceHistoryItem;
 import org.homio.api.ui.UISidebarChildren;
-import org.homio.api.ui.field.UIField;
-import org.homio.api.ui.field.UIFieldGroup;
-import org.homio.api.ui.field.UIFieldPort;
-import org.homio.api.ui.field.UIFieldProgress;
-import org.homio.api.ui.field.UIFieldSlider;
+import org.homio.api.ui.field.*;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.ui.field.selection.SelectionConfiguration;
@@ -78,32 +51,42 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 @Log4j2
 @Entity
+@CreateSingleEntity
 @UISidebarChildren(icon = "fas fa-building", color = Scratch3MQTTBlocks.COLOR)
 public class MQTTClientEntity extends CommunicationEntity implements
-    EntityService<MQTTService>,
-    BaseFileSystemEntity<MQTTFileSystem>,
-    HasTimeValueSeries,
-    SelectionWithDynamicParameterFields,
-    HasGetStatusValue,
-    HasSetStatusValue,
-    ContextService.MQTTEntityService,
-    SelectionConfiguration,
-    HasEntityLog,
-    HasEntitySourceLog,
-    DeviceEndpointsBehaviourContractStub,
-    HasFirmwareVersion {
+        EntityService<MQTTService>,
+        BaseFileSystemEntity<MQTTFileSystem>,
+        HasTimeValueSeries,
+        SelectionWithDynamicParameterFields,
+        HasGetStatusValue,
+        HasSetStatusValue,
+        ContextService.MQTTEntityService,
+        SelectionConfiguration,
+        HasEntityLog,
+        HasEntitySourceLog,
+        DeviceEndpointsBehaviourContractStub,
+        HasFirmwareVersion {
 
-    public static MQTTClientEntity ensureEntityExists(Context context) {
-        MQTTClientEntity entity = context.db().getEntity(MQTTClientEntity.class, PRIMARY_DEVICE);
-        if (entity == null) {
-            log.info("Save default mqtt device");
-            entity = new MQTTClientEntity();
-            entity.setEntityID(PRIMARY_DEVICE);
-            entity = context.db().save(entity);
+    static String normalize(String topic) {
+        if (topic.startsWith("/")) {
+            topic = topic.substring(1);
         }
-        return entity;
+        return topic;
     }
 
     @Override
@@ -125,13 +108,6 @@ public class MQTTClientEntity extends CommunicationEntity implements
             streams.put(entry.getKey(), new MQTTEndpoint(entry.getKey(), entry.getValue(), this));
         }
         return streams;
-    }
-
-    static String normalize(String topic) {
-        if (topic.startsWith("/")) {
-            topic = topic.substring(1);
-        }
-        return topic;
     }
 
     @Override
@@ -334,7 +310,7 @@ public class MQTTClientEntity extends CommunicationEntity implements
     public void publish(@NotNull String topic, byte[] content, int qoS, boolean retain) {
         try {
             log.debug("[{}]: MQTT Name[{}]. Publish message: Topic[{}], Qos[{}], Retain[{}], Value[{}]", getEntityID(), getTitle(), topic, qoS,
-                retain, content);
+                    retain, content);
             getService().getMqttClient().publish(topic, content, qoS, retain);
         } catch (MqttException e) {
             throw new RuntimeException(e);
@@ -344,7 +320,7 @@ public class MQTTClientEntity extends CommunicationEntity implements
     @Override
     public @NotNull List<Object[]> getTimeValueSeries(PeriodRequest request) {
         return getService().getStorage().getTimeSeries(request.getFromTime(), request.getToTime(), "topic",
-            getTopicRequire(request.getParameters(), "queryTopic"));
+                getTopicRequire(request.getParameters(), "queryTopic"));
     }
 
     @Override
@@ -401,7 +377,7 @@ public class MQTTClientEntity extends CommunicationEntity implements
 
     @Override
     public void addUpdateValueListener(Context context, String discriminator, JSONObject dynamicParameters,
-        Consumer<State> listener) {
+                                       Consumer<State> listener) {
         String topic = getTopicRequire(dynamicParameters, "queryTopic");
         String fullTopicPath = MQTTEntityService.buildMqttListenEvent(getEntityID(), topic);
         context.event().addEventListener(fullTopicPath, discriminator, listener);
@@ -446,7 +422,7 @@ public class MQTTClientEntity extends CommunicationEntity implements
     private void publishFromDynamicTopic(String value, JSONObject dynamicParameters) {
         String topic = getTopicRequire(dynamicParameters, "publishTopic");
         publish(topic, value == null ? new byte[0] : value.getBytes(UTF_8), dynamicParameters.optInt("qos", 0),
-            dynamicParameters.optBoolean("retain", false));
+                dynamicParameters.optBoolean("retain", false));
     }
 
     @Override
@@ -468,10 +444,6 @@ public class MQTTClientEntity extends CommunicationEntity implements
     @Override
     public boolean isDisableDelete() {
         return true;
-    }
-
-    @Override
-    protected void assembleMissingMandatoryFields(@NotNull Set<String> fields) {
     }
 
     @Override
@@ -522,13 +494,13 @@ public class MQTTClientEntity extends CommunicationEntity implements
 
     @SneakyThrows
     @UIContextMenuAction(value = "MOSQUITTO_EDIT_CONFIG",
-                         icon = "fas fa-keyboard",
-                         iconColor = "#899343")
+            icon = "fas fa-keyboard",
+            iconColor = "#899343")
     public ActionResponseModel editConfig() {
         Path configFile = getService().getConfigFile();
         String content = Files.readString(configFile);
         return ActionResponseModel.showFile(new FileModel("mosquitto.conf", content, FileContentType.ini)
-            .setSaveHandler(mc -> getService().updateConfiguration(mc)));
+                .setSaveHandler(mc -> getService().updateConfiguration(mc)));
     }
 
     @Override

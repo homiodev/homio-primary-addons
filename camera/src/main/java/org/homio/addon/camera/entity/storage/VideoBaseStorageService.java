@@ -12,9 +12,4 @@ public abstract class VideoBaseStorageService<T extends VideoBaseStorageService>
     public abstract void startRecord(String id, String output, String profile, DeviceBaseEntity videoEntity, Context context);
 
     public abstract void stopRecord(String id, String output, DeviceBaseEntity videoEntity);
-
-    @Override
-    protected void assembleMissingMandatoryFields(@NotNull Set<String> fields) {
-
-    }
 }

@@ -1,26 +1,15 @@
 package org.homio.addon.telegram;
 
-import static org.homio.api.util.Constants.PRIMARY_DEVICE;
-import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.Entity;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.SneakyThrows;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.telegram.service.TelegramService;
 import org.homio.api.Context;
+import org.homio.api.entity.CreateSingleEntity;
 import org.homio.api.entity.HasStatusAndMsg;
 import org.homio.api.entity.device.DeviceBaseEntity;
 import org.homio.api.entity.types.CommunicationEntity;
@@ -28,11 +17,7 @@ import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
-import org.homio.api.ui.field.UIField;
-import org.homio.api.ui.field.UIFieldGroup;
-import org.homio.api.ui.field.UIFieldReadDefaultValue;
-import org.homio.api.ui.field.UIFieldSlider;
-import org.homio.api.ui.field.UIFieldType;
+import org.homio.api.ui.field.*;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.util.Lang;
 import org.homio.api.util.SecureString;
@@ -40,25 +25,23 @@ import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.bots.DefaultBotOptions.ProxyType;
 import org.telegram.telegrambots.meta.ApiConstants;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.homio.api.util.Constants.PRIMARY_DEVICE;
+import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
+
 @Getter
 @Setter
 @Entity
 @Log4j2
 @Accessors(chain = true)
+@CreateSingleEntity
 @UISidebarChildren(icon = "fab fa-telegram", color = "#0088CC")
 public final class TelegramEntity extends CommunicationEntity implements HasStatusAndMsg {
 
     static final String PRIMARY_ENTITY_ID = DeviceBaseEntity.PREFIX + "telegram_" + PRIMARY_DEVICE;
-
-    public static void ensureEntityExists(Context context) {
-        TelegramEntity entity = context.db().getEntity(TelegramEntity.class, PRIMARY_DEVICE);
-        if (entity == null) {
-            log.info("Save default telegram device");
-            entity = new TelegramEntity();
-            entity.setEntityID(PRIMARY_DEVICE);
-            context.db().save(entity);
-        }
-    }
 
     @Override
     public boolean isDisableDelete() {
@@ -67,10 +50,10 @@ public final class TelegramEntity extends CommunicationEntity implements HasStat
 
     @Override
     protected void assembleMissingMandatoryFields(@NotNull Set<String> fields) {
-        if(getBotName().isEmpty()) {
+        if (getBotName().isEmpty()) {
             fields.add("botName");
         }
-        if(getBotToken().isEmpty()) {
+        if (getBotToken().isEmpty()) {
             fields.add("botToken");
         }
     }

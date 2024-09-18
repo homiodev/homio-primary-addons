@@ -2,19 +2,6 @@ package org.homio.addon.bluetooth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -25,12 +12,28 @@ import org.ble.BluetoothApplication;
 import org.dbus.InterfacesAddedSignal.InterfacesAdded;
 import org.dbus.InterfacesRomovedSignal.InterfacesRemoved;
 import org.freedesktop.dbus.Variant;
-import org.homio.api.util.CommonUtils;
 import org.homio.api.util.HardwareUtils;
 import org.homio.hquery.hardware.network.Network;
 import org.homio.hquery.hardware.network.NetworkHardwareRepository;
 import org.homio.hquery.hardware.other.MachineHardwareRepository;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.stereotype.Service;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -45,6 +48,24 @@ public class BluetoothCharacteristicService {
 
     private final MachineHardwareRepository machineHardwareRepository;
     private final NetworkHardwareRepository networkHardwareRepository;
+    private final Environment env;
+
+    private static void updateHostapdConfigCountryCode(String[] split) {
+        try {
+            Path hostapdConf = Paths.get("/etc/hostapd/hostapd.conf");
+            Properties properties = new Properties();
+            try (InputStream inputStream = Files.newInputStream(hostapdConf)) {
+                properties.load(inputStream);
+            }
+            properties.setProperty("country_code", split[2]);
+            try (OutputStream outputStream = Files.newOutputStream(hostapdConf)) {
+                properties.store(outputStream, null);
+            }
+            log.info("Hostapd country_code updated successfully.");
+        } catch (Exception ex) {
+            log.error("Error while update hostapd country_code: {}", ex.getMessage());
+        }
+    }
 
     @PostConstruct
     public void postConstruct() {
@@ -113,15 +134,19 @@ public class BluetoothCharacteristicService {
     }
 
     private void rebootDevice(byte[] ignore) {
-        if (SystemUtils.IS_OS_LINUX) {
+        if (isLinux()) {
             log.info("Reboot device");
             machineHardwareRepository.reboot();
         }
     }
 
+    private boolean isLinux() {
+        return SystemUtils.IS_OS_LINUX && !env.acceptsProfiles(Profiles.of("demo"));
+    }
+
     @SneakyThrows
     private void writeWifiSSID(byte[] bytes) {
-        if (SystemUtils.IS_OS_LINUX) {
+        if (isLinux()) {
             String[] split = new String(bytes).split("%&%");
             if (split.length == 3 && !split[0].isEmpty() && !split[2].isEmpty() && split[1].length() >= 6) {
                 log.info("Writing wifi credentials: SSID: {}. PWD: {}. COUNTRY: {}", split[0], split[1], split[2]);
@@ -133,36 +158,26 @@ public class BluetoothCharacteristicService {
         }
     }
 
-    private static void updateHostapdConfigCountryCode(String[] split) {
-        try {
-            Path hostapdConf = Paths.get("/etc/hostapd/hostapd.conf");
-            Properties properties = new Properties();
-            try (InputStream inputStream = Files.newInputStream(hostapdConf)) {
-                properties.load(inputStream);
-            }
-            properties.setProperty("country_code", split[2]);
-            try (OutputStream outputStream = Files.newOutputStream(hostapdConf)) {
-                properties.store(outputStream, null);
-            }
-            log.info("Hostapd country_code updated successfully.");
-        } catch (Exception ex) {
-            log.error("Error while update hostapd country_code: {}", ex.getMessage());
-        }
-    }
-
     private String readWifiList() {
         if (SystemUtils.IS_OS_LINUX) {
-            return networkHardwareRepository
-                .scan(selectedWifiInterface).stream()
-                .filter(distinctByKey(Network::getSsid))
-                .map(n -> n.getSsid() + "%&%" + n.getStrength()).collect(Collectors.joining("%#%"));
+            if (this.isLinux()) {
+                List<Network> networks = networkHardwareRepository
+                        .scan(selectedWifiInterface);
+                if (networks == null) {
+                    return "";
+                }
+                return networks.stream()
+                        .filter(distinctByKey(Network::getSsid))
+                        .map(n -> n.getSsid() + "%&%" + n.getStrength()).collect(Collectors.joining("%#%"));
+            }
+            return "";
         }
         ArrayList<String> result = machineHardwareRepository
-            .executeNoErrorThrowList("netsh wlan show profiles", 60, null);
+                .executeNoErrorThrowList("netsh wlan show profiles", 60, null);
         return result.stream()
-                     .filter(s -> s.contains("All User Profile"))
-                     .map(s -> s.substring(s.indexOf(":") + 1).trim())
-                     .map(s -> s + "%&%-").collect(Collectors.joining("%#%"));
+                .filter(s -> s.contains("All User Profile"))
+                .map(s -> s.substring(s.indexOf(":") + 1).trim())
+                .map(s -> s + "%&%-").collect(Collectors.joining("%#%"));
     }
 
     @Getter
@@ -190,7 +205,7 @@ public class BluetoothCharacteristicService {
             memory = get("memory", machineHardwareRepository::getRamMemory);
             disc = get("disk", machineHardwareRepository::getDiscCapacity);
             net = Boolean.TRUE.equals(get("net", () ->
-                networkHardwareRepository.pingAddress("www.google.com", 80, 5000)));
+                    networkHardwareRepository.pingAddress("www.google.com", 80, 5000)));
         }
 
         private <T> T get(String name, Supplier<T> handler) {

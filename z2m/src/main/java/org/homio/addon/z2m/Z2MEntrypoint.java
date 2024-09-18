@@ -1,15 +1,6 @@
 package org.homio.addon.z2m;
 
-import static org.homio.addon.z2m.service.Z2MDeviceService.CONFIG_DEVICE_SERVICE;
-
 import com.fazecast.jSerialComm.SerialPort;
-import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +12,13 @@ import org.homio.api.Context;
 import org.homio.api.entity.BaseEntity;
 import org.homio.api.entity.zigbee.ZigBeeBaseCoordinatorEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Available fired events:
@@ -36,27 +34,20 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class Z2MEntrypoint implements AddonEntrypoint {
 
-    public static final String Z2M_RESOURCE = "ROLE_Z2M";
     private final Context context;
 
     @Override
     public void init() {
-        context.service().registerUserRoleResource(Z2M_RESOURCE);
-        context.ui().console().registerPluginName("zigbee", Z2M_RESOURCE);
+        context.ui().console().registerPluginName("zigbee");
         context.setting().listenValue(ZigBeeEntityCompactModeSetting.class, "zigbee-compact-mode",
-            (value) -> context.ui().updateItems(Z2MDeviceEntity.class));
+                (value) -> context.ui().updateItems(Z2MDeviceEntity.class));
 
         context.event().addPortChangeStatusListener("zigbee-ports",
                 port -> {
                     Map<String, SerialPort> ports = getPorts();
                     testCoordinators(context.db().findAll(Z2MLocalCoordinatorEntity.class), ports, coordinator ->
-                        coordinator.getService().forceRestartCoordinator());
+                            coordinator.getService().forceRestartCoordinator());
                 });
-
-        context.bgp().builder("z2m-config-reader")
-                .delay(Duration.ofHours(1))
-                .interval(Duration.ofHours(24))
-                .execute(CONFIG_DEVICE_SERVICE::checkServerConfiguration);
     }
 
     private <T extends BaseEntity & ZigBeeBaseCoordinatorEntity> void testCoordinators(List<T> entities, Map<String, SerialPort> ports,

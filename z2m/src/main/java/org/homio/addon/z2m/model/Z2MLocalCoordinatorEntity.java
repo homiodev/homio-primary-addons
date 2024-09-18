@@ -1,26 +1,11 @@
 package org.homio.addon.z2m.model;
 
-import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
-import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.z2m.Z2MEntrypoint;
 import org.homio.addon.z2m.service.Z2MDeviceService;
@@ -42,13 +27,7 @@ import org.homio.api.model.endpoint.DeviceEndpoint;
 import org.homio.api.repository.GitHubProject;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.UISidebarChildren;
-import org.homio.api.ui.field.UIField;
-import org.homio.api.ui.field.UIFieldGroup;
-import org.homio.api.ui.field.UIFieldIgnore;
-import org.homio.api.ui.field.UIFieldLinkToEntity;
-import org.homio.api.ui.field.UIFieldReadDefaultValue;
-import org.homio.api.ui.field.UIFieldSlider;
-import org.homio.api.ui.field.UIFieldType;
+import org.homio.api.ui.field.*;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.ui.field.color.UIFieldColorRef;
 import org.homio.api.ui.field.inline.UIFieldInlineEntities;
@@ -62,15 +41,24 @@ import org.homio.hquery.ProgressBar;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import static org.homio.addon.z2m.util.ZigBeeUtil.zigbee2mqttGitHub;
+import static org.homio.api.ui.UI.Color.ERROR_DIALOG;
+
 @SuppressWarnings({"unused"})
 @Log4j2
 @Entity
 @UISidebarChildren(icon = "fas fa-circle-nodes", color = "#11A4C2")
 public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
-    implements
-    HasGitHubFirmwareVersion,
-    HasEntitySourceLog,
-    ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
+        implements
+        HasGitHubFirmwareVersion,
+        HasEntitySourceLog,
+        ZigBeeBaseCoordinatorEntity<Z2MLocalCoordinatorEntity, Z2MLocalCoordinatorService> {
 
     @UIField(order = 9999, disableEdit = true, hideInEdit = true)
     @UIFieldInlineEntities(bg = "#27FF000D")
@@ -103,20 +91,13 @@ public class Z2MLocalCoordinatorEntity extends MicroControllerBaseEntity
     }
 
     @Override
-    @UIFieldIgnore
-    @JsonIgnore
-    public String getPlace() {
-        throw new NotImplementedException();
-    }
-
-    @Override
     public String getDefaultName() {
         return "ZigBee2MQTT";
     }
 
     @Override
     protected void assembleMissingMandatoryFields(@NotNull Set<String> fields) {
-        if(getMqttEntity().isEmpty()) {
+        if (getMqttEntity().isEmpty()) {
             fields.add("mqttEntity");
         }
     }

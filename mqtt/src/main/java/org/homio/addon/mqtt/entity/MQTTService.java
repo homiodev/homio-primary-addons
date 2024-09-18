@@ -1,35 +1,5 @@
 package org.homio.addon.mqtt.entity;
 
-import static java.lang.String.format;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Objects.requireNonNull;
-import static org.homio.addon.mqtt.entity.MQTTClientEntity.normalize;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.MessageFormat;
-import java.text.NumberFormat;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -37,12 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.homio.addon.mqtt.MosquittoInstaller;
 import org.homio.addon.mqtt.console.MQTTExplorerConsolePlugin;
@@ -68,24 +33,49 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.NumberFormat;
+import java.time.Duration;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+import static org.homio.addon.mqtt.entity.MQTTClientEntity.normalize;
+
 public class MQTTService extends ServiceInstance<MQTTClientEntity> {
 
     private final Map<String, List<MQTTMessage>> sysHistoryMap = new HashMap<>();
     private final @Getter TreeNode root = new TreeNode().setChildrenMap(new HashMap<>());
-    private @Getter DataStorageService<MQTTMessage> storage;
-    private @Getter MqttClient mqttClient;
-    private ProcessContext processContext;
     private final @Getter MosquittoInstaller mosquittoInstaller;
     private final @Getter Map<String, Map<String, BiConsumer<String, String>>> eventListeners = new ConcurrentHashMap<>();
     private final @Getter Map<String, Map<String, Pair<Pattern, BiConsumer<String, String>>>> eventPatternListeners = new ConcurrentHashMap<>();
     private final @Getter Map<String, String> lastValues = new ConcurrentHashMap<>();
     private final BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>();
+    private @Getter DataStorageService<MQTTMessage> storage;
+    private @Getter MqttClient mqttClient;
+    private ProcessContext processContext;
     private Boolean isService;
 
     public MQTTService(@NotNull Context context, @NotNull MQTTClientEntity entity) {
-        super(context, entity, true);
+        super(context, entity, true, "MQTT", true);
+        setExposeService(true);
+        setParent("MQTT");
         mosquittoInstaller = new MosquittoInstaller(context);
-        updateNotificationBlock();
 
         new Thread(() -> {
             while (true) {
@@ -99,15 +89,6 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
         }, "MqttEventHandler").start();
     }
 
-    @SneakyThrows
-    public Path getConfigFile() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return Paths.get(requireNonNull(mosquittoInstaller.getExecutablePath(Paths.get("mosquitto.conf"))));
-        } else {
-            return Files.createDirectories(Paths.get("/etc/mosquitto/conf.d")).resolve("default.conf");
-        }
-    }
-
     public static TreeNode buildUpdateTree(TreeNode treeNode) {
         if (treeNode.getParent() != null && treeNode.getParent().getId() != null) {
             TreeNode parent = buildUpdateTree(treeNode.getParent());
@@ -116,6 +97,15 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
             }
         }
         return treeNode.clone(false);
+    }
+
+    @SneakyThrows
+    public Path getConfigFile() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return Paths.get(requireNonNull(mosquittoInstaller.getExecutablePath(Paths.get("mosquitto.conf"))));
+        } else {
+            return Files.createDirectories(Paths.get("/etc/mosquitto/conf.d")).resolve("default.conf");
+        }
     }
 
     public void updateConfiguration(String configuration) {
@@ -131,8 +121,8 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
     public void addEventBehaviourListener(@NotNull String topic, @NotNull String discriminator, @NotNull BiConsumer<String, String> listener) {
         if (topic.contains("+") || topic.contains("#")) {
             String patternTopic = topic
-                .replace("+", "[^/]+") // Replace "+" with "[^/]+" to match a single level
-                .replace("#", ".*"); // Replace "#" with ".*" to match zero or more levels
+                    .replace("+", "[^/]+") // Replace "+" with "[^/]+" to match a single level
+                    .replace("#", ".*"); // Replace "#" with ".*" to match zero or more levels
             Pair<Pattern, BiConsumer<String, String>> handler = Pair.of(Pattern.compile(patternTopic), listener);
             eventPatternListeners.computeIfAbsent(discriminator, d -> new ConcurrentHashMap<>()).put(topic, handler);
             fireBehaviourEvent(listener, incomeTopic -> handler.getKey().matcher(incomeTopic).matches());
@@ -140,12 +130,6 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
             eventListeners.computeIfAbsent(discriminator, d -> new ConcurrentHashMap<>()).put(topic, listener);
             fireBehaviourEvent(listener, topic::equals);
         }
-    }
-
-    @Override
-    public void updateNotificationBlock() {
-        context.ui().notification().addBlockOptional("MQTT", "MQTT", new Icon("fas fa-satellite-dish", "#B65BE8"));
-        context.ui().notification().updateBlock("MQTT", entity);
     }
 
     public void fireEvent(String topic, String payload) {
@@ -165,7 +149,7 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
         }
         TreeConfiguration treeConfiguration =
                 new TreeConfiguration(entityID, entity.getTitle() + " (" + entity.getHostname() + ")",
-                    values).setDynamicUpdateId("tree-" + entityID);
+                        values).setDynamicUpdateId("tree-" + entityID);
         treeConfiguration.setIcon(new Icon("fas fa-m", entity.getStatus() == Status.ONLINE ? UI.Color.GREEN : UI.Color.RED));
         return Collections.singletonList(treeConfiguration);
     }
@@ -198,7 +182,6 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
     protected void initialize() {
         if (!entity.isStart()) {
             entity.setStatus(Status.OFFLINE);
-            updateNotificationBlock();
             return;
         }
         this.storage.updateQuota((long) entity.getHistorySize());
@@ -216,8 +199,12 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
 
     @Override
     public String isRequireRestartService() {
-        if (!entity.getStatus().isOnline()) {return "Status: " + entity.getStatus();}
-        if (mqttClient == null || !mqttClient.isConnected()) {return "Mqtt client disconnected";}
+        if (!entity.getStatus().isOnline()) {
+            return "Status: " + entity.getStatus();
+        }
+        if (mqttClient == null || !mqttClient.isConnected()) {
+            return "Mqtt client disconnected";
+        }
         return null;
     }
 
@@ -251,8 +238,8 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
         if (isService) {
             context.hardware().startSystemCtl("mosquitto");
         } else {
-            String cmd = MessageFormat.format("{0} -c {1}", mosquittoInstaller.getExecutable(), configPath);
-            processContext = context.bgp().processBuilder(entity, log).execute(cmd);
+            processContext = context.bgp().processBuilder(entity, log)
+                    .execute(mosquittoInstaller.getExecutable(), "-c", configPath.toString());
         }
         testServiceWithSetStatus();
     }
@@ -260,13 +247,13 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
     private Path rewriteConfiguration(Path pwdFile) {
         Path configFile = getConfigFile();
         String configContent = Stream.of(
-            "listener " + entity.getPort() + " 0.0.0.0",
-            "persistence " + entity.isPersistenceData(),
-            "allow_anonymous false",
-            "password_file " + pwdFile,
-            "log_dest stdout",
-            "log_dest file " + entity.getLogFilePath(),
-            ""
+                "listener " + entity.getPort() + " 0.0.0.0",
+                "persistence " + entity.isPersistenceData(),
+                "allow_anonymous false",
+                "password_file " + pwdFile,
+                "log_dest stdout",
+                "log_dest file " + entity.getLogFilePath(),
+                ""
         ).collect(Collectors.joining(System.lineSeparator()));
         try {
             if (!configContent.equals(Files.readString(configFile))) {
@@ -283,7 +270,7 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
         Predicate<? super TreeNode> filter = treeNode -> true;
         if (sysPath != null) {
             filter = treeNode -> Boolean.TRUE.equals(sysPath) && treeNode.getId().startsWith("$SYS") ||
-                    Boolean.FALSE.equals(sysPath) && !treeNode.getId().startsWith("$SYS");
+                                 Boolean.FALSE.equals(sysPath) && !treeNode.getId().startsWith("$SYS");
         }
         for (TreeNode child : root.getChildren().stream().filter(filter).toList()) {
             Map<String, List<MQTTMessage>> sourceMap = child.getId().equals("$SYS") ? sysHistoryMap :
@@ -466,23 +453,19 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
     }
 
     private void createMQTTClient() throws MqttException {
-        try {
-            String serverURL = format("tcp://%s:%d", entity.getHostname(), entity.getPort());
-            MqttConnectOptions options = new MqttConnectOptions();
-            options.setAutomaticReconnect(false);
-            options.setCleanSession(entity.getMqttCleanSessionOnConnect());
-            options.setConnectionTimeout((int) TimeUnit.SECONDS.toMillis(entity.getConnectionTimeout()));
-            options.setKeepAliveInterval(entity.getMqttKeepAlive());
-            options.setUserName(entity.getUser());
-            options.setPassword(entity.getPassword().asString().toCharArray());
+        String serverURL = format("tcp://%s:%d", entity.getHostname(), entity.getPort());
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setAutomaticReconnect(false);
+        options.setCleanSession(entity.getMqttCleanSessionOnConnect());
+        options.setConnectionTimeout((int) TimeUnit.SECONDS.toMillis(entity.getConnectionTimeout()));
+        options.setKeepAliveInterval(entity.getMqttKeepAlive());
+        options.setUserName(entity.getUser());
+        options.setPassword(entity.getPassword().asString().toCharArray());
 
-            mqttClient = new MqttClient(serverURL, entity.getMqttClientID(), new MemoryPersistence());
-            mqttClient.setCallback(new MqttClientCallbackExtended());
-            mqttClient.connect(options);
-            mqttClient.subscribe(new String[]{"#", "$SYS/#"});
-        } finally {
-            updateNotificationBlock();
-        }
+        mqttClient = new MqttClient(serverURL, entity.getMqttClientID(), new MemoryPersistence());
+        mqttClient.setCallback(new MqttClientCallbackExtended());
+        mqttClient.connect(options);
+        mqttClient.subscribe(new String[]{"#", "$SYS/#"});
     }
 
     private String getDirText(TreeNode cursor, Map<String, List<MQTTMessage>> sourceMap) {
@@ -536,17 +519,18 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
         if (!lastValues.isEmpty()) {
             Map<String, String> copy = new HashMap<>(lastValues);
             context.bgp().builder("mqtt-behaviour-handle-" + System.currentTimeMillis())
-                   .execute(() -> {
-                       for (Entry<String, String> entry : copy.entrySet()) {
-                           if (predicate.apply(entry.getKey())) {
-                               listener.accept(entry.getKey(), entry.getValue());
-                           }
-                       }
-                   });
+                    .execute(() -> {
+                        for (Entry<String, String> entry : copy.entrySet()) {
+                            if (predicate.apply(entry.getKey())) {
+                                listener.accept(entry.getKey(), entry.getValue());
+                            }
+                        }
+                    });
         }
     }
 
-    private record Event(String key, String value) {}
+    private record Event(String key, String value) {
+    }
 
     @RequiredArgsConstructor
     private class MqttClientCallbackExtended implements MqttCallbackExtended {
@@ -559,8 +543,6 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
                 context.ui().toastr().info("MQTT server connected");
             } catch (Exception ex) {
                 log.error("[{}]: Unexpected error", entityID, ex);
-            } finally {
-                updateNotificationBlock();
             }
         }
 
@@ -575,11 +557,9 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
 
                 // retry create service
                 context.bgp().builder("MQTT-reconnect").delay(Duration.ofSeconds(30)).execute(
-                    () -> entity.getOrCreateService(context));
+                        () -> entity.getOrCreateService(context));
             } catch (Exception ex) {
                 log.error("[{}]: Unexpected error", entityID, ex);
-            } finally {
-                updateNotificationBlock();
             }
         }
 

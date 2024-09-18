@@ -1,7 +1,5 @@
 package org.homio.addon.camera;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -17,6 +15,9 @@ import org.homio.api.ui.field.action.v1.layout.UILayoutBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Log4j2
 @Component
@@ -34,7 +35,7 @@ public class CameraEntrypoint implements AddonEntrypoint {
     }
 
     public static void updateCamera(
-        @NotNull Context context,
+            @NotNull Context context,
             @NotNull BaseCameraEntity<?, ?> entity,
             @Nullable Supplier<String> titleSupplier,
             @NotNull Icon icon,
@@ -48,10 +49,10 @@ public class CameraEntrypoint implements AddonEntrypoint {
                     } else if (entity.getStatus().isOnline()) {
                         info.setTextColor(Color.GREEN);
                     }
-                    info.setStatus(entity).setAsLink(entity);
+                    info.setTooltip(entity.getStatusMessage()).setAsLink(entity);
                     if (!entity.isStart() || settingsBuilder == null) {
                         if (!entity.isStart()) {
-                            info.setRightButton(new Icon("fas fa-play"), "START", null, (ec, params) -> {
+                            info.setRightToggleButton(false, (ec, params) -> {
                                 ec.db().save(entity.setStart(true));
                                 return ActionResponseModel.fired();
                             });

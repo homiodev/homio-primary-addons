@@ -1,15 +1,5 @@
 package org.homio.addon.telegram;
 
-import static org.homio.addon.telegram.service.TelegramService.TELEGRAM_EVENT_PREFIX;
-
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -33,6 +23,17 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
+
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.homio.addon.telegram.service.TelegramService.TELEGRAM_EVENT_PREFIX;
 
 @Component
 public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
@@ -60,7 +61,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         });
 
         blockCommand(30, "send_img", "Send media [MESSAGE] | Caption: [SETTING]", this::sendIVAMessageCommand,
-            block -> block.addSetting(SendImageSetting.class));
+                block -> block.addSetting(SendImageSetting.class));
 
         ask(blockCommand(40, "send_question", "Ask&Wait [MESSAGE] | [SETTING]", this::sendQuestionNoSplitCommand));
 
@@ -127,8 +128,8 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
                     TELEGRAM_EVENT_PREFIX + message.getMessageId());
             workspaceBlock.waitForLock(lock, context.telegramEntity.getWaitQuestionMaxSeconds(),
                     TimeUnit.SECONDS, () -> {
-                    State value = (State) lock.getValue();
-                    if (((TelegramAnswer) value.rawValue()).getData().equals(buttons[0])) {
+                        State value = (State) lock.getValue();
+                        if (((TelegramAnswer) value.rawValue()).getData().equals(buttons[0])) {
                             if (nextBlock != null) {
                                 nextBlock.handle();
                             }
@@ -175,7 +176,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
 
     private TelegramUser getEntityAndUsers(WorkspaceBlock workspaceBlock, String telegramEntityID) {
         String[] entityAndUser = telegramEntityID.split("/");
-        TelegramEntity telegramEntity = context.db().getEntity(entityAndUser[0]);
+        TelegramEntity telegramEntity = context.db().get(entityAndUser[0]);
         if (telegramEntity == null) {
             workspaceBlock.logErrorAndThrow("Unable to find telegram: <{}>", entityAndUser[0]);
         }
@@ -185,7 +186,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
             List<TelegramEntity.TelegramUser> users = telegramEntity.getUsers();
             if (users.isEmpty()) {
                 workspaceBlock.logErrorAndThrow(
-                    "Unable to find any registered users. Please open telegram bot and run command '/register'");
+                        "Unable to find any registered users. Please open telegram bot and run command '/register'");
             }
             return new TelegramUser(telegramEntity, users);
         }
@@ -267,8 +268,8 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
             for (TelegramEntity telegramEntity : parameters.context().db().findAll(TelegramEntity.class)) {
                 models.add(OptionModel.of(telegramEntity.getEntityID(), telegramEntity.getTitle() + "/All"));
                 telegramEntity.getUsers().forEach(user ->
-                    models.add(OptionModel.of(telegramEntity.getEntityID() + "/" + user.getId(),
-                        telegramEntity.getTitle() + "/" + user.getName())));
+                        models.add(OptionModel.of(telegramEntity.getEntityID() + "/" + user.getId(),
+                                telegramEntity.getTitle() + "/" + user.getName())));
             }
             return models;
         }

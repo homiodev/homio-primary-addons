@@ -1,19 +1,5 @@
 package org.homio.addon.camera.service;
 
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.apache.commons.lang3.SystemUtils.IS_OS_LINUX;
-import static org.homio.api.ContextMedia.FFMPEGFormat.RE;
-import static org.homio.api.entity.HasJsonData.LIST_DELIMITER;
-
-import java.awt.Dimension;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import lombok.Getter;
 import org.apache.commons.lang3.SystemUtils;
 import org.homio.addon.camera.CameraEntrypoint;
@@ -28,6 +14,16 @@ import org.homio.api.util.CommonUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
+import java.io.InputStream;
+import java.util.List;
+import java.util.*;
+
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.SystemUtils.IS_OS_LINUX;
+import static org.homio.api.ContextMedia.FFMPEGFormat.RE;
+import static org.homio.api.entity.HasJsonData.LIST_DELIMITER;
+
 @Getter
 public class UsbCameraService extends BaseCameraService<UsbCameraEntity, UsbCameraService> {
 
@@ -37,7 +33,7 @@ public class UsbCameraService extends BaseCameraService<UsbCameraEntity, UsbCame
     private @Nullable VideoInputDevice input;
 
     public UsbCameraService(UsbCameraEntity entity, Context context) {
-        super(entity, context);
+        super(entity, context, "USB camera");
     }
 
     @Override
@@ -113,12 +109,12 @@ public class UsbCameraService extends BaseCameraService<UsbCameraEntity, UsbCame
                     }
                     if (entity.getHlsLowResolution().isEmpty()) {
                         Dimension dim = Arrays.stream(input.getResolutions())
-                                              .min(Comparator.comparingInt(dim2 -> dim2.width * dim2.height)).get();
+                                .min(Comparator.comparingInt(dim2 -> dim2.width * dim2.height)).get();
                         e.setHlsLowResolution(String.format("%dx%d", dim.width, dim.height));
                     }
                     if (entity.getHlsHighResolution().isEmpty()) {
                         Dimension dim = Arrays.stream(input.getResolutions())
-                                              .max(Comparator.comparingInt(dim2 -> dim2.width * dim2.height)).get();
+                                .max(Comparator.comparingInt(dim2 -> dim2.width * dim2.height)).get();
                         e.setHlsHighResolution(String.format("%dx%d", dim.width, dim.height));
                     }
                 });
@@ -158,10 +154,10 @@ public class UsbCameraService extends BaseCameraService<UsbCameraEntity, UsbCame
 
         if (ffmpegReStream == null || !ffmpegReStream.getIsAlive()) {
             ffmpegReStream = context.media().buildFFMPEG(getEntityID(), "TEE", this,
-                RE, IS_OS_LINUX ? "-f v4l2" : "-f dshow", url,
-                String.join(" ", outputParams),
-                getUdpUrl() + "?pkt_size=1316",
-                "", "");
+                    RE, IS_OS_LINUX ? "-f v4l2" : "-f dshow", url,
+                    String.join(" ", outputParams),
+                    getUdpUrl() + "?pkt_size=1316",
+                    "", "");
             ffmpegReStream.startConverting();
         }
         context.media().registerVideoSource(getEntityID(), getUdpUrl());

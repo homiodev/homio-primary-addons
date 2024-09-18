@@ -1,7 +1,5 @@
 package org.homio.addon.z2m;
 
-import static org.homio.addon.z2m.Z2MEntrypoint.Z2M_RESOURCE;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -23,10 +21,5 @@ public class ZigBee2MQTTFrontendConsolePlugin implements ConsolePluginFrame {
     @Override
     public String getParentTab() {
         return "zigbee";
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return context.accessEnabled(Z2M_RESOURCE);
     }
 }
