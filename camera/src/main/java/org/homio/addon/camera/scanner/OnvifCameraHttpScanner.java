@@ -2,16 +2,6 @@ package org.homio.addon.camera.scanner;
 
 import de.onvif.soap.BadCredentialException;
 import de.onvif.soap.OnvifDeviceState;
-import java.net.ConnectException;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -25,44 +15,52 @@ import org.homio.addon.camera.setting.onvif.ScanOnvifHttpMaxPingTimeoutSetting;
 import org.homio.addon.camera.setting.onvif.ScanOnvifPortsSetting;
 import org.homio.api.Context;
 import org.homio.api.ContextNetwork;
-import org.homio.api.service.discovery.VideoStreamScanner;
+import org.homio.api.service.discovery.ItemDiscoverySupport;
 import org.homio.api.util.CommonUtils;
-import org.homio.api.util.HardwareUtils;
 import org.homio.api.util.Lang;
 import org.homio.hquery.ProgressBar;
 import org.homio.hquery.hardware.network.NetworkHardwareRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
+
+import java.net.ConnectException;
+import java.time.Duration;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class OnvifCameraHttpScanner implements VideoStreamScanner {
+public class OnvifCameraHttpScanner implements ItemDiscoverySupport {
 
     private static final int THREAD_COUNT = 8;
     private final Context context;
     private DeviceScannerResult result;
-    private String headerConfirmButtonKey;
+
+    private static void testCamera(String ipAddress, Integer port, OnvifDeviceState onvifDeviceState) throws ConnectException {
+        ContextNetwork.ping(ipAddress, port);
+        // check for Authentication validation
+        onvifDeviceState.getInitialDevices().getDeviceInformation();
+    }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "scan-onvif-http-stream";
     }
 
     @SneakyThrows
     @Override
-    public synchronized DeviceScannerResult scan(Context context,
-                                                                    ProgressBar progressBar,
-                                                                    String headerConfirmButtonKey) {
-        return executeScan(context, progressBar, headerConfirmButtonKey);
+    public synchronized DeviceScannerResult scan(@NotNull Context context, @NotNull ProgressBar progressBar) {
+        return executeScan(context, progressBar);
     }
 
-    public DeviceScannerResult executeScan(Context context, ProgressBar progressBar,
-        String headerConfirmButtonKey) {
-        this.headerConfirmButtonKey = headerConfirmButtonKey;
+    public DeviceScannerResult executeScan(Context context, ProgressBar progressBar) {
         this.result = new DeviceScannerResult();
         List<IpCameraEntity> allSavedCameraEntities = context.db().findAll(IpCameraEntity.class);
         Map<String, IpCameraEntity> existsCameraByIpPort = allSavedCameraEntities.stream().collect(
-            Collectors.toMap(e -> e.getIp() + ":" + e.getOnvifPort(), Function.identity()));
+                Collectors.toMap(e -> e.getIp() + ":" + e.getOnvifPort(), Function.identity()));
 
         String user = context.setting().getValue(ScanOnvifHttpDefaultUserAuthSetting.class);
         String password = context.setting().getValue(ScanOnvifHttpDefaultPasswordAuthSetting.class);
@@ -75,7 +73,7 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
         Map<String, Callable<Integer>> tasks = new HashMap<>();
         for (String ipRange : ipRangeList) {
             tasks.putAll(networkHardwareRepository.buildPingIpAddressTasks(ipRange, log::debug, ports, pingTimeout, (ipAddress, port) ->
-                buildCameraTask(existsCameraByIpPort, user, password, ipAddress, port)));
+                    buildCameraTask(existsCameraByIpPort, user, password, ipAddress, port)));
         }
 
         context.event().runOnceOnInternetUp("scan-onvif-camera", () -> {
@@ -119,15 +117,9 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
         }
     }
 
-    private static void testCamera(String ipAddress, Integer port, OnvifDeviceState onvifDeviceState) throws ConnectException {
-        ContextNetwork.ping(ipAddress, port);
-        // check for Authentication validation
-        onvifDeviceState.getInitialDevices().getDeviceInformation();
-    }
-
     private boolean tryFindCameraFromDb(String ipAddress, Integer port, Map<String, IpCameraEntity> existsCameraByIpPort) {
         log.info("Onvif camera got fault auth response. Checking user/pwd from other all saved cameras. Maybe ip address has " +
-                "been changed");
+                 "been changed");
         for (IpCameraEntity entity : existsCameraByIpPort.values()) {
             OnvifDeviceState onvifDeviceState = new OnvifDeviceState("-");
             onvifDeviceState.updateParameters(ipAddress, port,
@@ -151,18 +143,18 @@ public class OnvifCameraHttpScanner implements VideoStreamScanner {
         CameraBrandHandlerDescription brand = OnvifDiscovery.getBrandFromLoginPage(onvifDeviceState.getIp(), context);
         String name = Lang.getServerMessage("NEW_DEVICE.ONVIF_CAMERA") + onvifDeviceState.getHOST_IP();
         // get IEEEAddress call init() internally
-        handleDevice(headerConfirmButtonKey,
-                "onvif-http-" + onvifDeviceState.getHOST_IP(),
-            name, context,
+        handleDevice("onvif-http-" + onvifDeviceState.getHOST_IP(),
+                name, context,
                 messages -> {
-                    messages.add(Lang.getServerMessage("VIDEO_STREAM.ADDRESS", onvifDeviceState.getHOST_IP()));
+                    messages.add(Lang.getServerMessage("VIDEO_STREAM.NEW_DEVICE_QUESTION"));
+                    messages.add(Lang.getServerMessage("TITLE.ADDRESS", onvifDeviceState.getHOST_IP()));
                     if (requireAuth) {
                         messages.add(Lang.getServerMessage("VIDEO_STREAM.REQUIRE_AUTH"));
                     } else {
-                        messages.add(Lang.getServerMessage("VIDEO_STREAM.NAME", fetchCameraName(onvifDeviceState)));
-                        messages.add(Lang.getServerMessage("VIDEO_STREAM.MODEL", fetchCameraModel(onvifDeviceState)));
+                        messages.add(Lang.getServerMessage("TITLE.NAME", fetchCameraName(onvifDeviceState)));
+                        messages.add(Lang.getServerMessage("TITLE.MODEL", fetchCameraModel(onvifDeviceState)));
                     }
-                    messages.add(Lang.getServerMessage("VIDEO_STREAM.BRAND", brand.getName()));
+                    messages.add(Lang.getServerMessage("TITLE.BRAND", brand.getName()));
                 },
                 () -> {
                     log.info("Saving onvif camera with host: <{}>", onvifDeviceState.getHOST_IP());

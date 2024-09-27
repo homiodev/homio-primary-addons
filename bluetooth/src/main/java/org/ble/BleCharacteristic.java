@@ -1,12 +1,5 @@
 package org.ble;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
@@ -18,6 +11,10 @@ import org.freedesktop.dbus.Path;
 import org.freedesktop.dbus.UInt16;
 import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
+
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -47,6 +44,8 @@ class BleCharacteristic implements GattCharacteristic1, Properties {
 
     @Setter
     private byte[] value = new byte[0];
+    private List<byte[]> blocksToRead;
+    private int currentBlock;
 
     private boolean isNotifying = false;
     private boolean writeStarted;
@@ -126,7 +125,8 @@ class BleCharacteristic implements GattCharacteristic1, Properties {
             offset = (vOffset.getValue() != null) ? vOffset.getValue().intValue() : offset;
         }
 
-        if (readListener != null && System.currentTimeMillis() - lastReadTime >= minReadTimeout) {
+        if (readListener != null && (System.currentTimeMillis() - lastReadTime >= minReadTimeout
+                                     || currentBlock >= blocksToRead.size())) {
             lastReadTime = System.currentTimeMillis();
             try {
                 value = readListener.get();
@@ -134,9 +134,34 @@ class BleCharacteristic implements GattCharacteristic1, Properties {
                 log.error("Error while read from ble: <{}>", ex.getMessage());
                 value = new byte[0];
             }
+            blocksToRead = BleCharacteristic.splitBy512Bytes(value);
+            currentBlock = 0;
         }
-        log.debug("Request value from characteristic: <{}>, value: <{}>", path, new String(value));
-        return Arrays.copyOfRange(value, offset, value.length);
+        byte[] array = blocksToRead.get(currentBlock++);
+        log.debug("Request value from characteristic: <{}>, value: <{}>", path, new String(array));
+        return Arrays.copyOfRange(array, offset, array.length);
+    }
+
+    public static List<byte[]> splitBy512Bytes(byte[] byteArray) {
+        List<byte[]> blocks = new ArrayList<>();
+        int length = byteArray.length;
+        int chunkSize = 512;
+        int start = 0;
+
+        while (start < length) {
+            int end = Math.min(start + chunkSize, length);
+            byte[] chunk = new byte[end - start];
+            System.arraycopy(byteArray, start, chunk, 0, chunk.length);
+            blocks.add(chunk);
+            start += chunkSize;
+        }
+
+        // add extra block to be able to return EOF to client
+        if (blocks.get(blocks.size() - 1).length == 512) {
+            blocks.add(new byte[0]);
+        }
+
+        return blocks;
     }
 
     /**

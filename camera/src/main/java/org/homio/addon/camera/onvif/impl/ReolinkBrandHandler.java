@@ -448,7 +448,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements 
 
     private void handleGetHddInfoCommand(Root objectNode) {
         service.addEndpoint(ENDPOINT_HDD, key -> {
-            CameraDeviceEndpoint endpoint = new CameraDeviceEndpoint(getEntity(), context(), key, DeviceEndpoint.EndpointType.string, false);
+            CameraDeviceEndpoint endpoint = new CameraDeviceEndpoint(getEntity(), context(), key, DeviceEndpoint.EndpointType.string);
             endpoint.setValueConverter(state -> {
                 JsonNode hddInfo = ((JsonType) state).getJsonNode();
                 return new StringType(hddInfo.get("size").asText() + "/" + hddInfo.get("capacity").asText());
@@ -631,7 +631,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements 
             JsonNode numConfigPath = JsonUtils.getJsonPath(rangeNode, c.key);
             Float min = numConfigPath.has("min") ? (float) numConfigPath.path("min").asInt() : null;
             Float max = numConfigPath.has("max") ? (float) numConfigPath.path("max").asInt() : null;
-            CameraDeviceEndpoint endpoint = handler.service.addEndpointSlider(c.endpointId, min, max, setter, c.writable);
+            CameraDeviceEndpoint endpoint = handler.service.addEndpointSlider(c.endpointId, min, max, c.writable ? setter : null);
             endpoint.setInitialValue(getter.get());
             JsonNode initPath = JsonUtils.getJsonPath(initialNode, c.key);
             if (!initPath.isMissingNode()) {
@@ -646,7 +646,7 @@ public class ReolinkBrandHandler extends BaseOnvifCameraBrandHandler implements 
                 JsonType group = (JsonType) handler.attributes.get(c.group);
                 return group == null ? null : OnOffType.of(JsonUtils.getJsonPath(group.getJsonNode(), c.key).asInt() == 1);
             };
-            CameraDeviceEndpoint endpoint = handler.service.addEndpointSwitch(c.endpointId, setter, c.writable);
+            CameraDeviceEndpoint endpoint = handler.service.addEndpointSwitch(c.endpointId, c.writable ? setter : null);
             endpoint.setInitialValue(getter.get());
             return endpoint;
         }),

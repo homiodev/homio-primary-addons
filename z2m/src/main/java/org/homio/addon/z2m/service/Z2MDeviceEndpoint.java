@@ -65,12 +65,12 @@ public abstract class Z2MDeviceEndpoint extends BaseDeviceEndpoint<Z2MDeviceEnti
             setMax(Float.valueOf(expose.getValueMax()));
         }
         setUnit(expose.getUnit());
+        setReadable(expose.isReadable());
+        setWritable(expose.isWritable());
         init(
                 CONFIG_DEVICE_SERVICE,
                 expose.getProperty(),
                 deviceService.getDeviceEntity(),
-                expose.isReadable(),
-                expose.isWritable(),
                 expose.getName(),
                 calcEndpointType()
         );

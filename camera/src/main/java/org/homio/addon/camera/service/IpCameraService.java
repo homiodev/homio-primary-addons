@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.homio.addon.camera.CameraConstants.*;
+import org.homio.addon.camera.CameraAudioPlayer;
 import org.homio.addon.camera.CameraEntrypoint;
 import org.homio.addon.camera.entity.CameraPlaybackStorage;
 import org.homio.addon.camera.entity.IpCameraEntity;
@@ -59,9 +59,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.collections4.ListUtils.emptyIfNull;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.homio.addon.camera.CameraConstants.AlarmEvent.*;
 import static org.homio.addon.camera.CameraConstants.*;
+import static org.homio.addon.camera.CameraConstants.AlarmEvent.*;
 import static org.homio.api.ContextSetting.SERVER_PORT;
 import static org.homio.api.entity.HasJsonData.LIST_DELIMITER;
 import static org.homio.api.util.CommonUtils.getErrorMessage;
@@ -79,6 +80,7 @@ public class IpCameraService extends BaseCameraService<IpCameraEntity, IpCameraS
     @Getter
     private final @NotNull OnvifDeviceState onvifDeviceState;
     private final FileLogger onvifEventsLogger;
+    private final List<CameraAudioPlayer> speakers = new ArrayList<>();
     public List<LowRequest> lowPriorityRequests = new ArrayList<>(0);
     private Bootstrap mainBootstrap;
     private NettyAuthHandler nettyAuthHandler;
@@ -442,6 +444,8 @@ public class IpCameraService extends BaseCameraService<IpCameraEntity, IpCameraS
     protected void onCameraConnected() {
         addEndpoints();
         brandHandler.onCameraConnected();
+
+        speakers.forEach(s -> s.getAvailable().update(true));
     }
 
     public @NotNull List<OptionModel> getPtzPresets() {
@@ -576,18 +580,18 @@ public class IpCameraService extends BaseCameraService<IpCameraEntity, IpCameraS
     private void addAbsolutePanTilt() {
         PtzDevices ptz = onvifDeviceState.getPtzDevices();
         addEndpointSlider(ENDPOINT_TILT, 0F, 100F, state ->
-                ptz.setAbsoluteTilt(state.floatValue(), getProfile()), true).setValue(
+                ptz.setAbsoluteTilt(state.floatValue(), getProfile())).setValue(
                 new DecimalType(Math.round(ptz.getCurrentTiltPercentage())), false);
 
         addEndpointSlider(ENDPOINT_PAN, 0F, 100F, state ->
-                ptz.setAbsolutePan(state.floatValue(), getProfile()), true)
+                ptz.setAbsolutePan(state.floatValue(), getProfile()))
                 .setValue(new DecimalType(Math.round(ptz.getCurrentPanPercentage())), false);
     }
 
     private void addZoomEndpoint(PTZSpaces ptzSpaces) {
         if (!ptzSpaces.getAbsoluteZoomPositionSpace().isEmpty()) {
             addEndpointSlider(ENDPOINT_ZOOM, 0F, 100F, state ->
-                    onvifDeviceState.getPtzDevices().setAbsoluteZoom(state.floatValue(), getProfile()), true).setValue(
+                    onvifDeviceState.getPtzDevices().setAbsoluteZoom(state.floatValue(), getProfile())).setValue(
                     new DecimalType(Math.round(onvifDeviceState.getPtzDevices().getCurrentZoomPercentage())), false);
         }
 
@@ -632,11 +636,20 @@ public class IpCameraService extends BaseCameraService<IpCameraEntity, IpCameraS
         urls.setSnapshotUri(brandHandler.getSnapshotUri());
         urls.setMjpegUri(brandHandler.getMjpegUri());
         brandHandler.postInitializeCamera(context);
+
+        speakers.forEach(s -> context.media().removeAudioPlayer(s));
+        speakers.clear();
+        for (AudioOutputConfiguration configuration : emptyIfNull(onvifDeviceState.getMediaDevices().getAudioOutputConfigurations())) {
+            var speaker = new CameraAudioPlayer(this, configuration);
+            speakers.add(speaker);
+            context.media().addAudioPlayer(speaker);
+        }
     }
 
     @Override
     public void destroy(boolean forRestart, Exception ex) {
         super.destroy(forRestart, ex);
+        speakers.forEach(s -> context.media().removeAudioPlayer(s));
         mainEventLoopGroup.shutdownGracefully();
     }
 

@@ -344,7 +344,7 @@ public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends Bas
         }, videoSources);
 
         Map<String, OptionModel> sources = videoSources.stream().collect(Collectors.toMap(OptionModel::getKey, v -> v));
-        context().media().addSourceInfo(getEntityID(), sources);
+        context().media().addVideoSourceInfo(getEntityID(), sources);
 
         videoSources.removeIf(source -> source.getChildren() == null || source.getChildren().isEmpty());
 

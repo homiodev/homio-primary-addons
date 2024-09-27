@@ -84,7 +84,7 @@ public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
     }
 
     private void assertMQTTAccess(BiConsumer<UserEntity, MQTTClientEntity> predicate) {
-        UserEntity user = context.getUser();
+        UserEntity user = context.user().getLoggedInUser();
         if (user != null) {
             predicate.accept(user, mqttService.getEntity());
         }

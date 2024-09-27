@@ -1,7 +1,9 @@
 package org.homio.addon.bluetooth;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -12,6 +14,7 @@ import org.ble.BluetoothApplication;
 import org.dbus.InterfacesAddedSignal.InterfacesAdded;
 import org.dbus.InterfacesRomovedSignal.InterfacesRemoved;
 import org.freedesktop.dbus.Variant;
+import org.homio.api.Context;
 import org.homio.api.util.HardwareUtils;
 import org.homio.hquery.hardware.network.Network;
 import org.homio.hquery.hardware.network.NetworkHardwareRepository;
@@ -33,7 +36,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
+
+import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
 
 @Log4j2
 @Service
@@ -42,22 +46,22 @@ public class BluetoothCharacteristicService {
 
     private static final String PREFIX = "13333333-3333-3333-3333-3333333330";
     private static final String SERVICE_UUID = PREFIX + "00";
-    private static final String WIFI_UUID = PREFIX + "10";
-    private static final String DATA_UUID = PREFIX + "20";
+    private static final String DATA_UUID = PREFIX + "10";
     private static final String selectedWifiInterface = "wlan0";
 
     private final MachineHardwareRepository machineHardwareRepository;
     private final NetworkHardwareRepository networkHardwareRepository;
     private final Environment env;
+    private final Context context;
 
-    private static void updateHostapdConfigCountryCode(String[] split) {
+    private static void updateHostapdConfigCountryCode(String country) {
         try {
             Path hostapdConf = Paths.get("/etc/hostapd/hostapd.conf");
             Properties properties = new Properties();
             try (InputStream inputStream = Files.newInputStream(hostapdConf)) {
                 properties.load(inputStream);
             }
-            properties.setProperty("country_code", split[2]);
+            properties.setProperty("country_code", country);
             try (OutputStream outputStream = Files.newOutputStream(hostapdConf)) {
                 properties.store(outputStream, null);
             }
@@ -86,8 +90,7 @@ public class BluetoothCharacteristicService {
                 }
             });
 
-            bluetoothApplication.newReadWriteCharacteristic("wifi_list", WIFI_UUID, this::writeWifiSSID, () -> readWifiList().getBytes());
-            bluetoothApplication.newReadWriteCharacteristic("data", DATA_UUID, this::rebootDevice, () -> getData().getBytes());
+            bluetoothApplication.newReadWriteCharacteristic("data", DATA_UUID, this::handleCommand, () -> getDeviceInfo().getBytes());
 
             // start ble
             try {
@@ -99,29 +102,45 @@ public class BluetoothCharacteristicService {
         }
     }
 
-    public String getDeviceCharacteristic(String uuid) {
-        switch (uuid) {
-            case DATA_UUID -> {
-                return getData();
-            }
-            case WIFI_UUID -> {
-                return readWifiList();
-            }
+    @SneakyThrows
+    public void handleCommand(byte[] bytes) {
+        JsonNode command = OBJECT_MAPPER.readValue(bytes, JsonNode.class);
+        log.info("Received command: {}", command);
+        if (!isLinux()) {
+            return;
         }
-        return null;
-    }
-
-    public void setDeviceCharacteristic(String uuid, byte[] value) {
-        switch (uuid) {
-            case DATA_UUID -> rebootDevice(value);
-            case WIFI_UUID -> writeWifiSSID(value);
+        if (context.user().isRequireAuth()) {
+            context.user().assertUserCredentials(command.get("user").asText(""), command.get("pwd").asText(""));
         }
+        switch (command.get("type").asText("")) {
+            case "reboot":
+                log.info("Reboot device");
+                machineHardwareRepository.reboot();
+                return;
+            case "wifi":
+                log.info("Update wifi configuration");
+                String ssid = command.get("ssid").asText();
+                String country = command.get("country").asText();
+                String ssidPwd = command.get("ssidPwd").asText();
+                if (ssid.isEmpty() || country.isEmpty() || ssidPwd.isEmpty()) {
+                    log.error("Unable to set wifi without data");
+                    return;
+                }
+                log.info("Writing wifi credentials: SSID: {}. PWD: {}. COUNTRY: {}", ssid, ssidPwd, country);
+                networkHardwareRepository.setWifiCredentials(ssid, ssidPwd, country);
+                updateHostapdConfigCountryCode(country);
+                // this script should connect to router or run hotspot
+                machineHardwareRepository.execute("/usr/bin/autohotspot", 60);
+        }
+        log.error("Unknown command: {}", command);
     }
 
     @SneakyThrows
-    public String getData() {
+    public String getDeviceInfo() {
         try {
-            return new ObjectMapper().writeValueAsString(new MachineSummary());
+            String value = new ObjectMapper().writeValueAsString(new MachineSummary());
+            log.info("Getting device info: {}", value);
+            return value;
         } catch (Exception ex) {
             log.error("Error during reading: {}", ex.getMessage());
             throw ex;
@@ -133,51 +152,30 @@ public class BluetoothCharacteristicService {
         return t -> seen.add(keyExtractor.apply(t));
     }
 
-    private void rebootDevice(byte[] ignore) {
-        if (isLinux()) {
-            log.info("Reboot device");
-            machineHardwareRepository.reboot();
-        }
-    }
-
     private boolean isLinux() {
         return SystemUtils.IS_OS_LINUX && !env.acceptsProfiles(Profiles.of("demo"));
     }
 
-    @SneakyThrows
-    private void writeWifiSSID(byte[] bytes) {
-        if (isLinux()) {
-            String[] split = new String(bytes).split("%&%");
-            if (split.length == 3 && !split[0].isEmpty() && !split[2].isEmpty() && split[1].length() >= 6) {
-                log.info("Writing wifi credentials: SSID: {}. PWD: {}. COUNTRY: {}", split[0], split[1], split[2]);
-                networkHardwareRepository.setWifiCredentials(split[0], split[1], split[2]);
-                updateHostapdConfigCountryCode(split);
-                // this script should connect to router or run hotspot
-                machineHardwareRepository.execute("/usr/bin/autohotspot", 60);
-            }
-        }
-    }
-
-    private String readWifiList() {
+    private List<WifiInfo> readWifiList() {
         if (SystemUtils.IS_OS_LINUX) {
             if (this.isLinux()) {
-                List<Network> networks = networkHardwareRepository
-                        .scan(selectedWifiInterface);
+                List<Network> networks = networkHardwareRepository.scan(selectedWifiInterface);
                 if (networks == null) {
-                    return "";
+                    return List.of();
                 }
                 return networks.stream()
                         .filter(distinctByKey(Network::getSsid))
-                        .map(n -> n.getSsid() + "%&%" + n.getStrength()).collect(Collectors.joining("%#%"));
+                        .map(n -> new WifiInfo(n.getSsid(), n.getStrength()))
+                        .toList();
             }
-            return "";
+            return List.of();
         }
         ArrayList<String> result = machineHardwareRepository
                 .executeNoErrorThrowList("netsh wlan show profiles", 60, null);
         return result.stream()
                 .filter(s -> s.contains("All User Profile"))
                 .map(s -> s.substring(s.indexOf(":") + 1).trim())
-                .map(s -> s + "%&%-").collect(Collectors.joining("%#%"));
+                .map(s -> new WifiInfo(s, -1)).toList();
     }
 
     @Getter
@@ -194,6 +192,8 @@ public class BluetoothCharacteristicService {
         private final boolean net;
         private final String id;
         private final String version;
+        private final boolean cred;
+        private final List<WifiInfo> wl;
 
         public MachineSummary() {
             id = HardwareUtils.APP_ID;
@@ -206,6 +206,8 @@ public class BluetoothCharacteristicService {
             disc = get("disk", machineHardwareRepository::getDiscCapacity);
             net = Boolean.TRUE.equals(get("net", () ->
                     networkHardwareRepository.pingAddress("www.google.com", 80, 5000)));
+            cred = context.user().isRequireAuth();
+            wl = readWifiList();
         }
 
         private <T> T get(String name, Supplier<T> handler) {
@@ -216,5 +218,12 @@ public class BluetoothCharacteristicService {
                 return null;
             }
         }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class WifiInfo {
+        private String n;
+        private int s;
     }
 }

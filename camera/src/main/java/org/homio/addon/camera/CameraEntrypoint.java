@@ -26,14 +26,6 @@ public class CameraEntrypoint implements AddonEntrypoint {
 
     private final Context context;
 
-    @SneakyThrows
-    public void init() {
-        context.event().runOnceOnInternetUp("scan-cameras", () -> {
-            // fire rescan whole possible items to see if ip address has been changed
-            context.getBean(OnvifCameraHttpScanner.class).executeScan(context, null, null);
-        });
-    }
-
     public static void updateCamera(
             @NotNull Context context,
             @NotNull BaseCameraEntity<?, ?> entity,
@@ -61,5 +53,13 @@ public class CameraEntrypoint implements AddonEntrypoint {
                         info.setRightSettingsButton(settingsBuilder);
                     }
                 });
+    }
+
+    @SneakyThrows
+    public void init() {
+        context.event().runOnceOnInternetUp("scan-cameras", () -> {
+            // fire rescan whole possible items to see if ip address has been changed
+            context.getBean(OnvifCameraHttpScanner.class).executeScan(context, null);
+        });
     }
 }

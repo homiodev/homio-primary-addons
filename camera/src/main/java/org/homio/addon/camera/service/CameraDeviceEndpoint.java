@@ -23,8 +23,9 @@ public class CameraDeviceEndpoint extends BaseDeviceEndpoint<BaseCameraEntity<?,
         @NotNull BaseCameraEntity<?, ?> device,
         @NotNull Context context,
         @NotNull String endpointEntityID,
-        Float min, Float max, boolean writable) {
-        this(writable, device, context, endpointEntityID, EndpointType.number, min, max, null, false);
+        @Nullable Float min,
+        @Nullable Float max) {
+        this(device, context, endpointEntityID, EndpointType.number, min, max, null, false);
         setValue(DecimalType.ZERO, false);
     }
 
@@ -32,23 +33,20 @@ public class CameraDeviceEndpoint extends BaseDeviceEndpoint<BaseCameraEntity<?,
         @NotNull BaseCameraEntity<?, ?> device,
         @NotNull Context context,
         @NotNull String endpointEntityID,
-        @NotNull List<OptionModel> range,
-        boolean writable) {
-        this(writable, device, context, endpointEntityID, EndpointType.select, null, null, range, false);
+        @NotNull List<OptionModel> range) {
+        this(device, context, endpointEntityID, EndpointType.select, null, null, range, false);
     }
 
     public CameraDeviceEndpoint(
         @NotNull BaseCameraEntity<?, ?> device,
         @NotNull Context context,
         @NotNull String endpointEntityID,
-        EndpointType endpointType,
-        boolean writable) {
-        this(writable, device, context, endpointEntityID, endpointType, null, null, null, false);
+        EndpointType endpointType) {
+        this( device, context, endpointEntityID, endpointType, null, null, null, false);
         this.setValue(OnOffType.OFF, false);
     }
 
     private CameraDeviceEndpoint(
-        boolean writable,
         @NotNull BaseCameraEntity<?, ?> device,
         @NotNull Context context,
         @NotNull String endpointEntityID,
@@ -73,8 +71,6 @@ public class CameraDeviceEndpoint extends BaseDeviceEndpoint<BaseCameraEntity<?,
             BaseCameraService.CONFIG_DEVICE_SERVICE,
             endpointEntityID,
             device,
-            true,
-            writable,
             endpointEntityID,
             endpointType);
 

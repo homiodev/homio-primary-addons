@@ -103,6 +103,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     private @Getter
     @Setter
     @NotNull String mjpegContentType = "";
+
     public BaseCameraService(T entity, Context context, String name) {
         super(context, entity, true, name);
         setExposeService(true);
@@ -232,7 +233,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     public void motionDetected(@Nullable DecimalType score) {
         alarmDetected(score != null, MotionAlarm);
         DecimalType value = score == null ? DecimalType.ZERO : new DecimalType(BigDecimal.valueOf(score.floatValue() * 100).setScale(2, RoundingMode.HALF_UP));
-        addEndpoint(ENDPOINT_MOTION_SCORE, key -> new CameraDeviceEndpoint(entity, context(), key, EndpointType.number, false), null)
+        addEndpoint(ENDPOINT_MOTION_SCORE, key -> new CameraDeviceEndpoint(entity, context(), key, EndpointType.number), null)
                 .setValue(value);
     }
 
@@ -380,8 +381,8 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
 
     }
 
-    public CameraDeviceEndpoint addEndpointButtons(String endpointId, List<OptionModel> buttons, Consumer<State> updateHandler) {
-        return addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(), key, buttons, true) {
+    public void addEndpointButtons(String endpointId, List<OptionModel> buttons, Consumer<State> updateHandler) {
+        addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(), key, buttons) {
             @Override
             public UIInputBuilder createSelectActionBuilder(@NotNull UIInputBuilder uiInputBuilder) {
                 uiInputBuilder.addMultiButton(getEntityID(), (context, params) -> {
@@ -399,7 +400,9 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
             @Nullable Consumer<State> updateHandler) {
         return endpoints.computeIfAbsent(endpointId, key -> {
             CameraDeviceEndpoint endpoint = handler.apply(key);
-            endpoint.setUpdateHandler(updateHandler);
+            if (updateHandler != null) {
+                endpoint.setUpdateHandler(updateHandler::accept);
+            }
 
             /*State attribute = getAttribute(endpointId);
             if (attribute != null) {
@@ -411,8 +414,8 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
 
     public CameraDeviceEndpoint addEndpointSwitch(
             @NotNull String endpointId,
-            @NotNull Consumer<State> updateHandler) {
-        return addEndpointSwitch(endpointId, updateHandler, true);
+            @Nullable Consumer<State> updateHandler) {
+        return addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(), key, EndpointType.bool), updateHandler);
     }
 
     protected boolean isAudioAlarmHandlesByVideo() {
@@ -427,8 +430,8 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
         return entity.isHasAudioStream();
     }
 
-    public CameraDeviceEndpoint addEndpointInput(String endpointId, Consumer<State> updateHandler) {
-        return addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(), key, EndpointType.string, true), updateHandler);
+    public void addEndpointInput(String endpointId, Consumer<State> updateHandler) {
+        addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(), key, EndpointType.string), updateHandler);
     }
 
     private synchronized void dispose() {
@@ -448,13 +451,6 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
         }
     }
 
-    public CameraDeviceEndpoint addEndpointSwitch(
-            @NotNull String endpointId,
-            @NotNull Consumer<State> updateHandler,
-            boolean writable) {
-        return addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(), key, EndpointType.bool, writable), updateHandler);
-    }
-
     protected void pollCameraRunnable() {
         FFMPEG.run(ffmpegMainReStream, FFMPEG::stopProcessIfNoKeepAlive);
         // keep mjpeg alive forever. Should be handled by CameraController.
@@ -470,15 +466,15 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
         }
     }
 
-    public CameraDeviceEndpoint addEndpointTrigger(
+    public void addEndpointTrigger(
             @NotNull String endpointId,
             @NotNull Icon buttonIcon,
             @Nullable String text,
             @Nullable String confirmMessage,
             @Nullable String confirmDialogColor,
             @NotNull Consumer<State> updateHandler) {
-        return addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(),
-                key, EndpointType.trigger, true) {
+        addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(),
+                key, EndpointType.trigger) {
             @Override
             public UIInputBuilder createTriggerActionBuilder(@NotNull UIInputBuilder uiInputBuilder) {
                 uiInputBuilder.addButton(getEntityID(), buttonIcon, (context, params) -> {
@@ -528,7 +524,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     }
 
     public CameraDeviceEndpoint addEndpointEnum(String endpointId, List<OptionModel> range, Consumer<State> updateHandler) {
-        return addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(), key, range, true), updateHandler);
+        return addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(), key, range), updateHandler);
     }
 
     public void updateLastSeen() {
@@ -547,8 +543,11 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
         ffmpegSnapshot = entity.buildSnapshotFFMPEG(this);
     }
 
-    public CameraDeviceEndpoint addEndpointSlider(String endpointId, Float min, Float max, Consumer<State> updateHandler, boolean writable) {
-        return addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(), key, min, max, writable), updateHandler);
+    public CameraDeviceEndpoint addEndpointSlider(@NotNull String endpointId,
+                                                  @Nullable Float min,
+                                                  @Nullable Float max,
+                                                  @Nullable Consumer<State> updateHandler) {
+        return addEndpoint(endpointId, key -> new CameraDeviceEndpoint(entity, context(), key, min, max), updateHandler);
     }
 
     private String getGroupDescription() {
@@ -656,11 +655,11 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     private void addPrimaryEndpoint() {
         addEndpoint(ENDPOINT_DEVICE_STATUS, key -> {
             List<OptionModel> range = OptionModel.list(Status.set(ONLINE, ERROR, OFFLINE, REQUIRE_AUTH, UNKNOWN, INITIALIZE));
-            return new CameraDeviceEndpoint(entity, context(), key, range, false);
+            return new CameraDeviceEndpoint(entity, context(), key, range);
         }, null);
 
         addEndpoint(ENDPOINT_LAST_SEEN, key -> {
-            CameraDeviceEndpoint videoEndpoint = new CameraDeviceEndpoint(entity, context(), key, EndpointType.number, false) {
+            CameraDeviceEndpoint videoEndpoint = new CameraDeviceEndpoint(entity, context(), key, EndpointType.number) {
 
                 @Override
                 public void assembleUIAction(@NotNull UIInputBuilder uiInputBuilder) {
@@ -677,7 +676,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
                 setMotionAlarmThreshold(state.intValue());
                 refreshVideoMotionAlarmProviders();
             }
-        }, true).setValue(new DecimalType(entity.getMotionThreshold()), false);
+        }).setValue(new DecimalType(entity.getMotionThreshold()), false);
 
         addEndpointSlider(ENDPOINT_AUDIO_THRESHOLD, 0F, 50F, state -> {
             if (entity.setAudioThreshold(state.intValue())) {
@@ -685,7 +684,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
                 setAudioAlarmThreshold(state.intValue());
                 refreshVideoMotionAlarmProviders();
             }
-        }, true).setValue(new DecimalType(entity.getAudioThreshold()), false);
+        }).setValue(new DecimalType(entity.getAudioThreshold()), false);
     }
 
     public synchronized @NotNull FFMPEG getOrCreateFfmpegHls(@NotNull StreamHLS.Resolution resolution) {
@@ -717,7 +716,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
     private CameraDeviceEndpoint addEndpointOptional(@NotNull CameraConstants.AlarmEvent event) {
         if (!endpoints.containsKey(event.getEndpoint())) {
             addEndpointSwitch(event.getEndpoint(), state -> {
-            }, false);
+            });
         }
         return endpoints.get(event.getEndpoint());
     }

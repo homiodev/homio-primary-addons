@@ -176,10 +176,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
 
     private TelegramUser getEntityAndUsers(WorkspaceBlock workspaceBlock, String telegramEntityID) {
         String[] entityAndUser = telegramEntityID.split("/");
-        TelegramEntity telegramEntity = context.db().get(entityAndUser[0]);
-        if (telegramEntity == null) {
-            workspaceBlock.logErrorAndThrow("Unable to find telegram: <{}>", entityAndUser[0]);
-        }
+        TelegramEntity telegramEntity = context.db().getRequire(entityAndUser[0]);
         if (entityAndUser.length > 1) {
             return new TelegramUser(telegramEntity, Collections.singletonList(telegramEntity.getUser(Long.parseLong(entityAndUser[1]))));
         } else {
