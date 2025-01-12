@@ -10,16 +10,16 @@ import org.homio.api.console.ConsolePluginFrame;
 @RequiredArgsConstructor
 public class ZigBee2MQTTFrontendConsolePlugin implements ConsolePluginFrame {
 
-    private final @Accessors(fluent = true) Context context;
-    private final FrameConfiguration value;
+  private final @Accessors(fluent = true) Context context;
+  private final FrameConfiguration value;
 
-    @Override
-    public int order() {
-        return 500;
-    }
+  @Override
+  public int order() {
+    return 500;
+  }
 
-    @Override
-    public String getParentTab() {
-        return "zigbee";
-    }
+  @Override
+  public String getParentTab() {
+    return "zigbee";
+  }
 }

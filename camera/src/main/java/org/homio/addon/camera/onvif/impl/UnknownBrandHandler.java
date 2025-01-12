@@ -8,12 +8,12 @@ import org.homio.addon.camera.service.IpCameraService;
 @CameraBrandHandler("Unknown")
 public class UnknownBrandHandler extends BaseOnvifCameraBrandHandler {
 
-    public UnknownBrandHandler(IpCameraService service) {
-        super(service);
-    }
+  public UnknownBrandHandler(IpCameraService service) {
+    super(service);
+  }
 
-    @Override
-    public void onCameraConnected() {
+  @Override
+  public void onCameraConnected() {
 
-    }
+  }
 }

@@ -24,42 +24,42 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class CameraEntrypoint implements AddonEntrypoint {
 
-    private final Context context;
+  private final Context context;
 
-    public static void updateCamera(
-            @NotNull Context context,
-            @NotNull BaseCameraEntity<?, ?> entity,
-            @Nullable Supplier<String> titleSupplier,
-            @NotNull Icon icon,
-            @Nullable Consumer<UILayoutBuilder> settingsBuilder) {
-        context.ui().notification().addOrUpdateBlock("CAMERA", "CAMERA", new Icon("fas fa-video", "#367387"),
-                builder -> {
-                    String text = titleSupplier == null ? entity.getTitle() : titleSupplier.get();
-                    NotificationInfoLineBuilder info = builder.addInfo(text, icon);
-                    if (!entity.isStart()) {
-                        info.setTextColor(Color.WARNING);
-                    } else if (entity.getStatus().isOnline()) {
-                        info.setTextColor(Color.GREEN);
-                    }
-                    info.setTooltip(entity.getStatusMessage()).setAsLink(entity);
-                    if (!entity.isStart() || settingsBuilder == null) {
-                        if (!entity.isStart()) {
-                            info.setRightToggleButton(false, (ec, params) -> {
-                                ec.db().save(entity.setStart(true));
-                                return ActionResponseModel.fired();
-                            });
-                        }
-                    } else {
-                        info.setRightSettingsButton(settingsBuilder);
-                    }
-                });
-    }
+  public static void updateCamera(
+    @NotNull Context context,
+    @NotNull BaseCameraEntity<?, ?> entity,
+    @Nullable Supplier<String> titleSupplier,
+    @NotNull Icon icon,
+    @Nullable Consumer<UILayoutBuilder> settingsBuilder) {
+    context.ui().notification().addOrUpdateBlock("CAMERA", "CAMERA", new Icon("fas fa-video", "#367387"),
+      builder -> {
+        String text = titleSupplier == null ? entity.getTitle() : titleSupplier.get();
+        NotificationInfoLineBuilder info = builder.addInfo(text, icon);
+        if (!entity.isStart()) {
+          info.setTextColor(Color.WARNING);
+        } else if (entity.getStatus().isOnline()) {
+          info.setTextColor(Color.GREEN);
+        }
+        info.setTooltip(entity.getStatusMessage()).setAsLink(entity);
+        if (!entity.isStart() || settingsBuilder == null) {
+          if (!entity.isStart()) {
+            info.setRightToggleButton(false, (ec, params) -> {
+              ec.db().save(entity.setStart(true));
+              return ActionResponseModel.fired();
+            });
+          }
+        } else {
+          info.setRightSettingsButton(settingsBuilder);
+        }
+      });
+  }
 
-    @SneakyThrows
-    public void init() {
-        context.event().runOnceOnInternetUp("scan-cameras", () -> {
-            // fire rescan whole possible items to see if ip address has been changed
-            context.getBean(OnvifCameraHttpScanner.class).executeScan(context, null);
-        });
-    }
+  @SneakyThrows
+  public void init() {
+    context.event().runOnceOnInternetUp("scan-cameras", () -> {
+      // fire rescan whole possible items to see if ip address has been changed
+      context.getBean(OnvifCameraHttpScanner.class).executeScan(context, null);
+    });
+  }
 }

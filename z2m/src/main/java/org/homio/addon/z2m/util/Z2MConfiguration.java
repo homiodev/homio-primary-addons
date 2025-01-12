@@ -3,70 +3,71 @@ package org.homio.addon.z2m.util;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Z2MConfiguration extends UnknownOptions {
 
-    @JsonProperty("permit_join")
-    private boolean permitJoin;
+  @JsonProperty("permit_join")
+  private boolean permitJoin;
 
-    private Mqtt mqtt = new Mqtt();
-    private Serial serial = new Serial();
-    private Frontend frontend = new Frontend();
-    private Map<String, ObjectNode> devices = new HashMap<>();
-    private Advanced advanced = new Advanced();
+  private Mqtt mqtt = new Mqtt();
+  private Serial serial = new Serial();
+  private Frontend frontend = new Frontend();
+  private Map<String, ObjectNode> devices = new HashMap<>();
+  private Advanced advanced = new Advanced();
 
-    @Getter
-    @Setter
-    public static class Advanced extends UnknownOptions {
+  @Getter
+  @Setter
+  public static class Advanced extends UnknownOptions {
 
-        private String last_seen = "epoch";
-        private String log_directory = "data/log";
-        private String log_file = "log.txt";
-        private String timestamp_format = "YYYY-MM-DD HH:mm:ss";
-        private Set<String> log_output = Set.of("file");
-    }
+    private String last_seen = "epoch";
+    private String log_directory = "data/log";
+    private String log_file = "log.txt";
+    private String timestamp_format = "YYYY-MM-DD HH:mm:ss";
+    private Set<String> log_output = Set.of("file");
+  }
 
-    @Getter
-    @Setter
-    public static class Frontend extends UnknownOptions {
+  @Getter
+  @Setter
+  public static class Frontend extends UnknownOptions {
 
-        private String host = "0.0.0.0";
-        private int port = 8187;
-    }
+    private String host = "0.0.0.0";
+    private int port = 8187;
+  }
 
-    @Getter
-    @Setter
-    public static class Mqtt extends UnknownOptions {
+  @Getter
+  @Setter
+  public static class Mqtt extends UnknownOptions {
 
-        @JsonProperty("base_topic")
-        @Nullable
-        private String baseTopic;
+    @JsonProperty("base_topic")
+    @Nullable
+    private String baseTopic;
 
-        @Nullable
-        private String server;
-        @Nullable
-        private String user;
-        @Nullable
-        private String password;
-    }
+    @Nullable
+    private String server;
+    @Nullable
+    private String user;
+    @Nullable
+    private String password;
+  }
 
-    @Getter
-    @Setter
-    public static class Serial extends UnknownOptions {
+  @Getter
+  @Setter
+  public static class Serial extends UnknownOptions {
 
-        @Nullable
-        private String port;
+    @Nullable
+    private String port;
 
-        @JsonProperty("disable_led")
-        private boolean disableLed = false;
-    }
+    @JsonProperty("disable_led")
+    private boolean disableLed = false;
+  }
 }

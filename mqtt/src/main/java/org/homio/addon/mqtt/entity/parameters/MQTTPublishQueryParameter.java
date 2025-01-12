@@ -12,23 +12,23 @@ import org.homio.api.ui.field.selection.dynamic.DynamicParameterFields;
 @Accessors(chain = true)
 public class MQTTPublishQueryParameter implements DynamicParameterFields {
 
-    @UIField(order = 100, required = true)
-    public String publishTopic;
+  @UIField(order = 100, required = true)
+  public String publishTopic;
 
-    @UIField(order = 120)
-    @UIFieldStaticSelection(value = {"0", "1", "2"})
-    public int qos = 0;
+  @UIField(order = 120)
+  @UIFieldStaticSelection(value = {"0", "1", "2"})
+  public int qos = 0;
 
-    @UIField(order = 150)
-    public boolean retain;
+  @UIField(order = 150)
+  public boolean retain;
 
-    @Override
-    public String getGroupName() {
-        return "MQTT topic";
-    }
+  @Override
+  public String getGroupName() {
+    return "MQTT topic";
+  }
 
-    @Override
-    public String getBorderColor() {
-        return "#0E7EBC";
-    }
+  @Override
+  public String getBorderColor() {
+    return "#0E7EBC";
+  }
 }

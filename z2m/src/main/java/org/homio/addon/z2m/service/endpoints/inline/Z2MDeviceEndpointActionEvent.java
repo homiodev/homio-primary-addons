@@ -14,22 +14,22 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Z2MDeviceEndpointActionEvent extends Z2MDeviceEndpointInline {
 
-    public Z2MDeviceEndpointActionEvent(
-            @NotNull Z2MDeviceService deviceService,
-            @NotNull String endpoint,
-            @Nullable ConfigDeviceEndpoint configDeviceEndpoint) {
-        super(new Icon(
-                "fas " + (configDeviceEndpoint == null ? "fa-square-check" : configDeviceEndpoint.getIcon()),
-                configDeviceEndpoint == null ? "#B72AD4" : configDeviceEndpoint.getIconColor()
-        ), deviceService.context());
-        init(deviceService, Options.dynamicEndpoint(endpoint, ApplianceModel.NUMBER_TYPE));
-        setInitialValue(DecimalType.ZERO);
-        setIgnoreDuplicates(false);
-        setDataReader(jsonObject -> new DecimalType(getValue().intValue() + 1));
-    }
+  public Z2MDeviceEndpointActionEvent(
+    @NotNull Z2MDeviceService deviceService,
+    @NotNull String endpoint,
+    @Nullable ConfigDeviceEndpoint configDeviceEndpoint) {
+    super(new Icon(
+      "fas " + (configDeviceEndpoint == null ? "fa-square-check" : configDeviceEndpoint.getIcon()),
+      configDeviceEndpoint == null ? "#B72AD4" : configDeviceEndpoint.getIconColor()
+    ), deviceService.context());
+    init(deviceService, Options.dynamicEndpoint(endpoint, ApplianceModel.NUMBER_TYPE));
+    setInitialValue(DecimalType.ZERO);
+    setIgnoreDuplicates(false);
+    setDataReader(jsonObject -> new DecimalType(getValue().intValue() + 1));
+  }
 
-    @Override
-    public String getEndpointDefinition() {
-        return "action_event";
-    }
+  @Override
+  public String getEndpointDefinition() {
+    return "action_event";
+  }
 }

@@ -11,8 +11,8 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class BluetoothEntrypoint implements AddonEntrypoint {
 
-    @Override
-    public void init() {
+  @Override
+  public void init() {
 
-    }
+  }
 }

@@ -28,65 +28,65 @@ import java.util.function.BiConsumer;
 @Log4j2
 public class MQTTExplorerConsolePlugin implements ConsolePluginTree {
 
-    private final @Accessors(fluent = true) Context context;
-    private final MQTTService mqttService;
+  private final @Accessors(fluent = true) Context context;
+  private final MQTTService mqttService;
 
-    public MQTTExplorerConsolePlugin(Context context, MQTTService mqttService) {
-        this.context = context;
-        this.mqttService = mqttService;
+  public MQTTExplorerConsolePlugin(Context context, MQTTService mqttService) {
+    this.context = context;
+    this.mqttService = mqttService;
+  }
+
+  @Override
+  public String getParentTab() {
+    return "MQTT";
+  }
+
+  @Override
+  public ActionResponseModel executeAction(@NotNull String entityID, @NotNull JSONObject metadata) {
+    assertMQTTAccess(UserEntity::assertEditAccess);
+
+    if ("history".equals(metadata.optString("type"))) {
+      List<MQTTMessage> topic = mqttService.getStorage().findAllBy("topic", entityID, SortBy.sortDesc("created"),
+        null);
+      return ActionResponseModel.showJson("History", new ArrayList<>(topic));
     }
+    return ActionResponseModel.showWarn("Unable to handle command: " + entityID);
+  }
 
-    @Override
-    public String getParentTab() {
-        return "MQTT";
+  @Override
+  public List<TreeConfiguration> getValue() {
+    assertMQTTAccess(UserEntity::assertViewAccess);
+    return mqttService.getValue();
+  }
+
+  @Override
+  public boolean isEnabled() {
+    assertMQTTAccess(UserEntity::assertViewAccess);
+    return true;
+  }
+
+  @Override
+  public @NotNull String getName() {
+    return "MQTT";
+  }
+
+  @Override
+  public Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> getHeaderActions() {
+    Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> headerActions = new LinkedHashMap<>();
+    headerActions.put("publish", ConsoleMQTTPublishButtonSetting.class);
+    headerActions.put("remove", ConsoleRemoveMqttTreeNodeHeaderButtonSetting.class);
+    return headerActions;
+  }
+
+  @Override
+  public boolean hasRefreshIntervalSetting() {
+    return false;
+  }
+
+  private void assertMQTTAccess(BiConsumer<UserEntity, MQTTClientEntity> predicate) {
+    UserEntity user = context.user().getLoggedInUser();
+    if (user != null) {
+      predicate.accept(user, mqttService.getEntity());
     }
-
-    @Override
-    public ActionResponseModel executeAction(@NotNull String entityID, @NotNull JSONObject metadata) {
-        assertMQTTAccess(UserEntity::assertEditAccess);
-
-        if ("history".equals(metadata.optString("type"))) {
-            List<MQTTMessage> topic = mqttService.getStorage().findAllBy("topic", entityID, SortBy.sortDesc("created"),
-                    null);
-            return ActionResponseModel.showJson("History", new ArrayList<>(topic));
-        }
-        return ActionResponseModel.showWarn("Unable to handle command: " + entityID);
-    }
-
-    @Override
-    public List<TreeConfiguration> getValue() {
-        assertMQTTAccess(UserEntity::assertViewAccess);
-        return mqttService.getValue();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        assertMQTTAccess(UserEntity::assertViewAccess);
-        return true;
-    }
-
-    @Override
-    public @NotNull String getName() {
-        return "MQTT";
-    }
-
-    @Override
-    public Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> getHeaderActions() {
-        Map<String, Class<? extends ConsoleHeaderSettingPlugin<?>>> headerActions = new LinkedHashMap<>();
-        headerActions.put("publish", ConsoleMQTTPublishButtonSetting.class);
-        headerActions.put("remove", ConsoleRemoveMqttTreeNodeHeaderButtonSetting.class);
-        return headerActions;
-    }
-
-    @Override
-    public boolean hasRefreshIntervalSetting() {
-        return false;
-    }
-
-    private void assertMQTTAccess(BiConsumer<UserEntity, MQTTClientEntity> predicate) {
-        UserEntity user = context.user().getLoggedInUser();
-        if (user != null) {
-            predicate.accept(user, mqttService.getEntity());
-        }
-    }
+  }
 }

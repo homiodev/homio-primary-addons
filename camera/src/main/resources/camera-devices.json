@@ -3,7 +3,9 @@
   "devices": [
     {
       "name": "Common usb camera",
-      "models": ["usb-camera"],
+      "models": [
+        "usb-camera"
+      ],
       "icon": "fab fa-usb",
       "iconColor": "#4E783D"
     }
@@ -474,7 +476,8 @@
       "order": 470,
       "icon": "fa-clone",
       "iconColor": "#8035A6"
-    },{
+    },
+    {
       "name": "too_bright_alarm",
       "stateless": true,
       "order": 480,
@@ -571,7 +574,8 @@
       "order": 520,
       "icon": "far fa-bell",
       "iconColor": "#8035A6"
-    }, {
+    },
+    {
       "name": "external_alarm_input2",
       "stateless": true,
       "order": 520,

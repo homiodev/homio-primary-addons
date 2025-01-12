@@ -13,67 +13,67 @@ import java.util.Map;
  */
 public class FmtpParameters {
 
-    private final Map<String, String> parameters;
+  private final Map<String, String> parameters;
 
-    public FmtpParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
+  public FmtpParameters(Map<String, String> parameters) {
+    this.parameters = parameters;
+  }
+
+  private boolean hasPrameter(String key) {
+    String param = parameters.get(key);
+    return param != null && !param.isEmpty();
+  }
+
+  public Integer packetizationMode() {
+    if (hasPrameter("packetization-mode")) {
+      return Integer.parseInt(parameters.get("packetization-mode"));
     }
 
-    private boolean hasPrameter(String key) {
-        String param = parameters.get(key);
-        return param != null && !param.isEmpty();
+    return -1;
+  }
+
+  public Integer profileLevelId() {
+    if (hasPrameter("profile-level-id")) {
+      return Integer.decode("0x" + parameters.get("profile-level-id"));
     }
 
-    public Integer packetizationMode() {
-        if (hasPrameter("packetization-mode")) {
-            return Integer.parseInt(parameters.get("packetization-mode"));
-        }
+    return -1;
+  }
 
-        return -1;
+  public SpropParameterSets sprops() {
+    if (hasPrameter("sprop-parameter-sets")) {
+      return new SpropParameterSets(parameters.get("sprop-parameter-sets"));
     }
 
-    public Integer profileLevelId() {
-        if (hasPrameter("profile-level-id")) {
-            return Integer.decode("0x" + parameters.get("profile-level-id"));
-        }
+    return null;
+  }
 
-        return -1;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
 
-    public SpropParameterSets sprops() {
-        if (hasPrameter("sprop-parameter-sets")) {
-            return new SpropParameterSets(parameters.get("sprop-parameter-sets"));
-        }
+    FmtpParameters that = (FmtpParameters) o;
 
-        return null;
+    return parameters.equals(that.parameters);
+  }
+
+  @Override
+  public int hashCode() {
+    return parameters.hashCode();
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (Map.Entry<String, String> e : parameters.entrySet()) {
+      sb.append(e.getKey()).append('=').append(e.getValue()).append(';');
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        FmtpParameters that = (FmtpParameters) o;
-
-        return parameters.equals(that.parameters);
-    }
-
-    @Override
-    public int hashCode() {
-        return parameters.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, String> e : parameters.entrySet()) {
-            sb.append(e.getKey()).append('=').append(e.getValue()).append(';');
-        }
-
-        return sb.substring(0, sb.length() - 1);
-    }
+    return sb.substring(0, sb.length() - 1);
+  }
 }

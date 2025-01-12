@@ -11,12 +11,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class Z2MDeviceEndpointInline extends Z2MDeviceEndpoint {
 
-    public Z2MDeviceEndpointInline(Icon icon, @NotNull Context context) {
-        super(icon, context);
-    }
+  public Z2MDeviceEndpointInline(Icon icon, @NotNull Context context) {
+    super(icon, context);
+  }
 
-    @Override
-    public @Nullable String getEndpointDefinition() {
-        return null;
-    }
+  @Override
+  public @Nullable String getEndpointDefinition() {
+    return null;
+  }
 }

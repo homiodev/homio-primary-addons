@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Z2MDeviceEndpointUnknown extends Z2MDeviceEndpointInline {
 
-    public Z2MDeviceEndpointUnknown(@NotNull Context context) {
-        super(new Icon("fa-question", "#B72AD4"), context);
-    }
+  public Z2MDeviceEndpointUnknown(@NotNull Context context) {
+    super(new Icon("fa-question", "#B72AD4"), context);
+  }
 }

@@ -24,31 +24,31 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class MQTTEntrypoint implements AddonEntrypoint {
 
-    private final Context context;
+  private final Context context;
 
-    @SneakyThrows
-    public void init() {
-        context.service().registerEntityTypeForSelection(MQTTClientEntity.class, ContextService.MQTT_SERVICE);
-        context.ui().console().registerPluginName("MQTT");
-        context.bgp().builder("check-mqtt").execute(() -> {
-            Set<String> existIps = context.db().findAll(MQTTClientEntity.class).stream()
-                    .map(MQTTClientEntity::getHostname).collect(Collectors.toSet());
-            HardwareUtils.scanForDevice(context, 1883, "MQTT", ip -> {
-                if (existIps.contains(ip)) {
-                    return false;
-                }
-                String serverURL = format("tcp://%s:%d", ip, 1883);
-                MqttConnectOptions options = new MqttConnectOptions();
-                options.setConnectionTimeout(10_000);
-                MqttClient mqttClient = new MqttClient(serverURL, UUID.randomUUID().toString(), new MemoryPersistence());
-                mqttClient.connect(options);
-                mqttClient.disconnectForcibly();
-                return true;
-            }, ip -> {
-                MQTTClientEntity entity = new MQTTClientEntity();
-                entity.setHostname(ip);
-                context.db().save(entity);
-            });
-        });
-    }
+  @SneakyThrows
+  public void init() {
+    context.service().registerEntityTypeForSelection(MQTTClientEntity.class, ContextService.MQTT_SERVICE);
+    context.ui().console().registerPluginName("MQTT");
+    context.bgp().builder("check-mqtt").execute(() -> {
+      Set<String> existIps = context.db().findAll(MQTTClientEntity.class).stream()
+        .map(MQTTClientEntity::getHostname).collect(Collectors.toSet());
+      HardwareUtils.scanForDevice(context, 1883, "MQTT", ip -> {
+        if (existIps.contains(ip)) {
+          return false;
+        }
+        String serverURL = format("tcp://%s:%d", ip, 1883);
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setConnectionTimeout(10_000);
+        MqttClient mqttClient = new MqttClient(serverURL, UUID.randomUUID().toString(), new MemoryPersistence());
+        mqttClient.connect(options);
+        mqttClient.disconnectForcibly();
+        return true;
+      }, ip -> {
+        MQTTClientEntity entity = new MQTTClientEntity();
+        entity.setHostname(ip);
+        context.db().save(entity);
+      });
+    });
+  }
 }

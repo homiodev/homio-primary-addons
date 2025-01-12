@@ -10,12 +10,12 @@ import lombok.Setter;
 @Getter
 public class ChannelTracking {
 
-    private final String requestUrl;
-    private final Channel channel;
-    private @Setter String reply = "";
+  private final String requestUrl;
+  private final Channel channel;
+  private @Setter String reply = "";
 
-    public ChannelTracking(Channel channel, String requestUrl) {
-        this.channel = channel;
-        this.requestUrl = requestUrl;
-    }
+  public ChannelTracking(Channel channel, String requestUrl) {
+    this.channel = channel;
+    this.requestUrl = requestUrl;
+  }
 }

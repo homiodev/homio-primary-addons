@@ -7,17 +7,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class Z2MDeviceEndpointOperationMode extends Z2MDeviceEndpoint {
 
-    public Z2MDeviceEndpointOperationMode(@NotNull Context context) {
-        super(new Icon("fab fa-monero", "#2387B6"), context);
-    }
+  public Z2MDeviceEndpointOperationMode(@NotNull Context context) {
+    super(new Icon("fab fa-monero", "#2387B6"), context);
+  }
 
-    @Override
-    public @NotNull String getEndpointDefinition() {
-        return "operation_mode";
-    }
+  @Override
+  public @NotNull String getEndpointDefinition() {
+    return "operation_mode";
+  }
 
-    @Override
-    protected String getJsonKey() {
-        return getExpose().getProperty();
-    }
+  @Override
+  protected String getJsonKey() {
+    return getExpose().getProperty();
+  }
 }

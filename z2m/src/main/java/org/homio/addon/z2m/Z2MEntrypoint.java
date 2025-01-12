@@ -34,49 +34,49 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class Z2MEntrypoint implements AddonEntrypoint {
 
-    private final Context context;
+  private final Context context;
 
-    @Override
-    public void init() {
-        context.ui().console().registerPluginName("zigbee");
-        context.setting().listenValue(ZigBeeEntityCompactModeSetting.class, "zigbee-compact-mode",
-                (value) -> context.ui().updateItems(Z2MDeviceEntity.class));
+  @Override
+  public void init() {
+    context.ui().console().registerPluginName("zigbee");
+    context.setting().listenValue(ZigBeeEntityCompactModeSetting.class, "zigbee-compact-mode",
+      (value) -> context.ui().updateItems(Z2MDeviceEntity.class));
 
-        context.event().addPortChangeStatusListener("zigbee-ports",
-                port -> {
-                    Map<String, SerialPort> ports = getPorts();
-                    testCoordinators(context.db().findAll(Z2MLocalCoordinatorEntity.class), ports, coordinator ->
-                            coordinator.getService().forceRestartCoordinator());
-                });
+    context.event().addPortChangeStatusListener("zigbee-ports",
+      port -> {
+        Map<String, SerialPort> ports = getPorts();
+        testCoordinators(context.db().findAll(Z2MLocalCoordinatorEntity.class), ports, coordinator ->
+          coordinator.getService().forceRestartCoordinator());
+      });
+  }
+
+  private <T extends BaseEntity & ZigBeeBaseCoordinatorEntity> void testCoordinators(List<T> entities, Map<String, SerialPort> ports,
+                                                                                     Consumer<T> reInitializeCoordinatorHandler) {
+    for (T coordinator : entities) {
+      if (StringUtils.isNotEmpty(coordinator.getPort()) && coordinator.isStart() && coordinator.getStatus().isOffline()) {
+        testCoordinator(ports, reInitializeCoordinatorHandler, coordinator);
+      }
     }
+  }
 
-    private <T extends BaseEntity & ZigBeeBaseCoordinatorEntity> void testCoordinators(List<T> entities, Map<String, SerialPort> ports,
-                                                                                       Consumer<T> reInitializeCoordinatorHandler) {
-        for (T coordinator : entities) {
-            if (StringUtils.isNotEmpty(coordinator.getPort()) && coordinator.isStart() && coordinator.getStatus().isOffline()) {
-                testCoordinator(ports, reInitializeCoordinatorHandler, coordinator);
-            }
+  private <T extends BaseEntity & ZigBeeBaseCoordinatorEntity> void testCoordinator(Map<String, SerialPort> ports, Consumer<T> reInitializeCoordinatorHandler,
+                                                                                    T coordinator) {
+    if (ports.containsKey(coordinator.getPort())) {
+      // try re-initialize coordinator
+      reInitializeCoordinatorHandler.accept(coordinator);
+    } else {
+      // test maybe port had been changed
+      for (SerialPort serialPort : ports.values()) {
+        if (Objects.equals(serialPort.getDescriptivePortName(), coordinator.getPortD())) {
+          log.info("[{}]: Coordinator port changed from {} -> {}", coordinator.getEntityID(), coordinator.getPort(),
+            serialPort.getSystemPortName());
+          context.db().save((T) coordinator.setSerialPort(serialPort));
         }
+      }
     }
+  }
 
-    private <T extends BaseEntity & ZigBeeBaseCoordinatorEntity> void testCoordinator(Map<String, SerialPort> ports, Consumer<T> reInitializeCoordinatorHandler,
-                                                                                      T coordinator) {
-        if (ports.containsKey(coordinator.getPort())) {
-            // try re-initialize coordinator
-            reInitializeCoordinatorHandler.accept(coordinator);
-        } else {
-            // test maybe port had been changed
-            for (SerialPort serialPort : ports.values()) {
-                if (Objects.equals(serialPort.getDescriptivePortName(), coordinator.getPortD())) {
-                    log.info("[{}]: Coordinator port changed from {} -> {}", coordinator.getEntityID(), coordinator.getPort(),
-                            serialPort.getSystemPortName());
-                    context.db().save((T) coordinator.setSerialPort(serialPort));
-                }
-            }
-        }
-    }
-
-    private Map<String, SerialPort> getPorts() {
-        return Stream.of(SerialPort.getCommPorts()).collect(Collectors.toMap(SerialPort::getSystemPortName, p -> p));
-    }
+  private Map<String, SerialPort> getPorts() {
+    return Stream.of(SerialPort.getCommPorts()).collect(Collectors.toMap(SerialPort::getSystemPortName, p -> p));
+  }
 }

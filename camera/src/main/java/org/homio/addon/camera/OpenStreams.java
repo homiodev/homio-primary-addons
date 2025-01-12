@@ -10,42 +10,42 @@ import java.util.List;
  */
 public class OpenStreams {
 
-    private final List<StreamOutput> openStreams = Collections.synchronizedList(new ArrayList<>());
-    public String boundary = "thisMjpegStream";
+  private final List<StreamOutput> openStreams = Collections.synchronizedList(new ArrayList<>());
+  public String boundary = "thisMjpegStream";
 
-    public synchronized void addStream(StreamOutput stream) {
-        openStreams.add(stream);
-    }
+  public synchronized void addStream(StreamOutput stream) {
+    openStreams.add(stream);
+  }
 
-    public synchronized void removeStream(StreamOutput stream) {
-        openStreams.remove(stream);
-    }
+  public synchronized void removeStream(StreamOutput stream) {
+    openStreams.remove(stream);
+  }
 
-    public synchronized int getNumberOfStreams() {
-        return openStreams.size();
-    }
+  public synchronized int getNumberOfStreams() {
+    return openStreams.size();
+  }
 
-    public synchronized boolean isEmpty() {
-        return openStreams.isEmpty();
-    }
+  public synchronized boolean isEmpty() {
+    return openStreams.isEmpty();
+  }
 
-    public synchronized void updateContentType(String contentType, String boundary) {
-        this.boundary = boundary;
-        for (StreamOutput stream : openStreams) {
-            stream.updateContentType(contentType);
-        }
+  public synchronized void updateContentType(String contentType, String boundary) {
+    this.boundary = boundary;
+    for (StreamOutput stream : openStreams) {
+      stream.updateContentType(contentType);
     }
+  }
 
-    public synchronized void queueFrame(byte[] frame) {
-        for (StreamOutput stream : openStreams) {
-            stream.queueFrame(frame);
-        }
+  public synchronized void queueFrame(byte[] frame) {
+    for (StreamOutput stream : openStreams) {
+      stream.queueFrame(frame);
     }
+  }
 
-    public synchronized void closeAllStreams() {
-        for (StreamOutput stream : openStreams) {
-            stream.close();
-        }
-        openStreams.clear();
+  public synchronized void closeAllStreams() {
+    for (StreamOutput stream : openStreams) {
+      stream.close();
     }
+    openStreams.clear();
+  }
 }

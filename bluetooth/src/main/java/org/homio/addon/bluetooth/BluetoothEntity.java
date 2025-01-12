@@ -9,8 +9,6 @@ import org.homio.api.entity.types.CommunicationEntity;
 import org.homio.api.ui.UISidebarChildren;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
-
 @Getter
 @Setter
 @Entity
@@ -18,13 +16,13 @@ import java.util.Set;
 @UISidebarChildren(icon = "fab fa-bluetooth", color = "#0088CC", allowCreateItem = false)
 public class BluetoothEntity extends CommunicationEntity implements HasStatusAndMsg {
 
-    @Override
-    public String getDefaultName() {
-        return "Bluetooth";
-    }
+  @Override
+  public String getDefaultName() {
+    return "Bluetooth";
+  }
 
-    @Override
-    protected @NotNull String getDevicePrefix() {
-        return "ble";
-    }
+  @Override
+  protected @NotNull String getDevicePrefix() {
+    return "ble";
+  }
 }

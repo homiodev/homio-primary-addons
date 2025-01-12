@@ -10,23 +10,23 @@ import org.json.JSONObject;
 
 public class ConsoleMQTTClearHistorySetting implements SettingPluginButton, ConsoleSettingPlugin<JSONObject> {
 
-    @Override
-    public String getConfirmMsg() {
-        return "W.CONFIRM.CLEAR_HISTORY";
-    }
+  @Override
+  public String getConfirmMsg() {
+    return "W.CONFIRM.CLEAR_HISTORY";
+  }
 
-    @Override
-    public Icon getIcon() {
-        return new Icon("fas fa-brush", UI.Color.RED);
-    }
+  @Override
+  public Icon getIcon() {
+    return new Icon("fas fa-brush", UI.Color.RED);
+  }
 
-    @Override
-    public int order() {
-        return 200;
-    }
+  @Override
+  public int order() {
+    return 200;
+  }
 
-    @Override
-    public boolean acceptConsolePluginPage(ConsolePlugin consolePlugin) {
-        return consolePlugin instanceof MQTTExplorerConsolePlugin;
-    }
+  @Override
+  public boolean acceptConsolePluginPage(ConsolePlugin consolePlugin) {
+    return consolePlugin instanceof MQTTExplorerConsolePlugin;
+  }
 }

@@ -11,17 +11,17 @@ import org.homio.addon.camera.service.IpCameraService;
 @CameraBrandHandler("Onvif")
 public class OnvifBrandHandler extends BaseOnvifCameraBrandHandler {
 
-    public OnvifBrandHandler(IpCameraService service) {
-        super(service);
-    }
+  public OnvifBrandHandler(IpCameraService service) {
+    super(service);
+  }
 
-    @Override
-    public void onCameraConnected() {
+  @Override
+  public void onCameraConnected() {
 
-    }
+  }
 
-    @Override
-    public boolean isSupportOnvifEvents() {
-        return true;
-    }
+  @Override
+  public boolean isSupportOnvifEvents() {
+    return true;
+  }
 }

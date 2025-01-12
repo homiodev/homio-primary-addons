@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class Z2MDeviceEndpointGeneral extends Z2MDeviceEndpointInline {
 
-    public Z2MDeviceEndpointGeneral(@NotNull String icon, @Nullable String color, @NotNull Context context) {
-        super(new Icon("fa " + icon, color), context);
-    }
+  public Z2MDeviceEndpointGeneral(@NotNull String icon, @Nullable String color, @NotNull Context context) {
+    super(new Icon("fa " + icon, color), context);
+  }
 }

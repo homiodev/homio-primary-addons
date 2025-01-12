@@ -12,17 +12,17 @@ import org.homio.api.ui.field.selection.dynamic.DynamicParameterFields;
 @Accessors(chain = true)
 public class MQTTTopicQueryParameter implements DynamicParameterFields {
 
-    @UIField(order = 100, required = true)
-    @UIFieldTreeNodeSelection(fileSystemIds = "MQTT", isAttachMetadata = false)
-    public String queryTopic;
+  @UIField(order = 100, required = true)
+  @UIFieldTreeNodeSelection(fileSystemIds = "MQTT", isAttachMetadata = false)
+  public String queryTopic;
 
-    @Override
-    public String getGroupName() {
-        return "MQTT topic";
-    }
+  @Override
+  public String getGroupName() {
+    return "MQTT topic";
+  }
 
-    @Override
-    public String getBorderColor() {
-        return "#0E7EBC";
-    }
+  @Override
+  public String getBorderColor() {
+    return "#0E7EBC";
+  }
 }

@@ -8,28 +8,28 @@ import org.homio.api.setting.SettingPluginToggle;
 
 public class ZigBeeEntityCompactModeSetting implements SettingPluginToggle {
 
-    @Override
-    public Class<? extends BaseEntity> availableForEntity() {
-        return ZigBeeDeviceBaseEntity.class;
-    }
+  @Override
+  public Class<? extends BaseEntity> availableForEntity() {
+    return ZigBeeDeviceBaseEntity.class;
+  }
 
-    @Override
-    public int order() {
-        return 20;
-    }
+  @Override
+  public int order() {
+    return 20;
+  }
 
-    @Override
-    public Icon getIcon() {
-        return new Icon("fas fa-minimize");
-    }
+  @Override
+  public Icon getIcon() {
+    return new Icon("fas fa-minimize");
+  }
 
-    @Override
-    public Icon getToggleIcon() {
-        return new Icon("fas fa-maximize");
-    }
+  @Override
+  public Icon getToggleIcon() {
+    return new Icon("fas fa-maximize");
+  }
 
-    @Override
-    public boolean isVisible(Context context) {
-        return false;
-    }
+  @Override
+  public boolean isVisible(Context context) {
+    return false;
+  }
 }
