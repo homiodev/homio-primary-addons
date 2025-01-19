@@ -434,7 +434,8 @@ public class MQTTService extends ServiceInstance<MQTTClientEntity> {
       if (!path.isBlank()) {
         cursor = cursor.addChildIfNotFound(path, () -> {
           TreeNode treeNode =
-            new TreeNode(false, true, path, path, (long) payloadLength, System.currentTimeMillis(), null, null);
+            new TreeNode(false, true, path, path, (long) payloadLength, System.currentTimeMillis(), null, null,
+              path.hashCode());
           treeNode.getAttributes().setMeta(new JSONObject().put("hs", 0));
           return treeNode;
         }, true);

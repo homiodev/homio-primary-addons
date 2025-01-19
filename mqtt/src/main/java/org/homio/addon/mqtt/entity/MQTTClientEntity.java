@@ -137,7 +137,7 @@ public class MQTTClientEntity extends CommunicationEntity implements
   }
 
   @Override
-  public @NotNull List<TreeConfiguration> buildFileSystemConfiguration(@NotNull Context context) {
+  public @NotNull List<TreeConfiguration> buildFileSystemConfiguration() {
     return getService().getValue();
   }
 
@@ -453,6 +453,11 @@ public class MQTTClientEntity extends CommunicationEntity implements
   @Override
   public boolean isShowHiddenFiles() {
     return true;
+  }
+
+  @Override
+  public @Nullable FileSystemSize requestDbSize() {
+    return null;
   }
 
   @Override
