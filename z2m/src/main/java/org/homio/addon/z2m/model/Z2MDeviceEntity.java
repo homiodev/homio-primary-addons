@@ -26,6 +26,7 @@ import org.homio.api.ui.field.UIField;
 import org.homio.api.ui.field.UIFieldGroup;
 import org.homio.api.ui.field.UIFieldIgnore;
 import org.homio.api.ui.field.UIFieldInlineEditConfirm;
+import org.homio.api.ui.field.UIFieldNoReadDefaultValue;
 import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.ui.field.action.v1.layout.UIFlexLayoutBuilder;
@@ -143,6 +144,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIField(order = 2, hideOnEmpty = true, inlineEdit = true)
   @UIFieldShowOnCondition("return !context.get('compactMode')")
   @UIFieldGroup("GENERAL")
+  @UIFieldNoReadDefaultValue
   public @NotNull String getName() {
     return defaultIfEmpty(deviceService.getApplianceModel().getName(), "UNKNOWN");
   }
@@ -155,6 +157,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIField(order = 3, label = "model")
   @UIFieldShowOnCondition("return !context.get('compactMode')")
   @UIFieldGroup("GENERAL")
+  @UIFieldNoReadDefaultValue
   public WebAddress getHrefModel() {
     String model = getModel();
     return new WebAddress("https://www.zigbee2mqtt.io/devices/%s.html".formatted(model), model);
@@ -191,6 +194,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIField(order = 5)
   @UIFieldShowOnCondition("return !context.get('compactMode')")
   @UIFieldGroup("GENERAL")
+  @UIFieldNoReadDefaultValue
   public String getNetworkAddress() {
     return "0x" + Integer.toHexString(deviceService.getApplianceModel().getNetworkAddress()).toUpperCase();
   }
@@ -198,12 +202,14 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIField(order = 15)
   @UIFieldShowOnCondition("return !context.get('compactMode')")
   @UIFieldGroup("GENERAL")
+  @UIFieldNoReadDefaultValue
   public String getModelIdentifier() {
     return deviceService.getApplianceModel().getModelId();
   }
 
   @UIField(order = 20, hideOnEmpty = true)
   @UIFieldGroup("GENERAL")
+  @UIFieldNoReadDefaultValue
   public String getCurrentPowerSource() {
     return isCompactMode() ? null : deviceService.getApplianceModel().getPowerSource();
   }
@@ -211,6 +217,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIField(order = 25)
   @UIFieldShowOnCondition("return !context.get('compactMode')")
   @UIFieldGroup("GENERAL")
+  @UIFieldNoReadDefaultValue
   public String getLogicalType() {
     return deviceService.getApplianceModel().getType();
   }
@@ -218,6 +225,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIField(order = 35)
   @UIFieldShowOnCondition("return !context.get('compactMode')")
   @UIFieldGroup("GENERAL")
+  @UIFieldNoReadDefaultValue
   public boolean getInterviewCompleted() {
     return deviceService.getApplianceModel().isInterviewCompleted();
   }
@@ -230,6 +238,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIField(order = 2, hideOnEmpty = true)
   @UIFieldGroup("HARDWARE")
   @UIFieldShowOnCondition("return !context.get('compactMode')")
+  @UIFieldNoReadDefaultValue
   public String getFirmwareBuildDate() {
     return deviceService.getApplianceModel().getFirmwareBuildDate();
   }
@@ -237,6 +246,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIField(order = 3)
   @UIFieldGroup("HARDWARE")
   @UIFieldShowOnCondition("return !context.get('compactMode')")
+  @UIFieldNoReadDefaultValue
   public WebAddress getManufacturer() {
     String vendor = deviceService.getApplianceModel().getDefinition().getVendor();
     return new WebAddress("https://www.zigbee2mqtt.io/supported-devices/#v=%s".formatted(vendor), vendor);
@@ -251,6 +261,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIFieldSelectConfig(selectOnEmptyLabel = "PLACEHOLDER.SELECT_PLACE")
   @UIFieldShowOnCondition("return !context.get('compactMode')")
   @UIFieldGroup(value = "SETTINGS", order = 30, borderColor = "#22AB84")
+  @UIFieldNoReadDefaultValue
   public String getPlace() {
     return deviceService.getConfiguration().path("place").asText();
   }
@@ -266,6 +277,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIFieldShowOnCondition("return !context.get('compactMode')")
   @UIFieldGroup("SETTINGS")
   @UIFieldInlineEditConfirm(value = "Z2M_RETAIN", dialogColor = ERROR_DIALOG)
+  @UIFieldNoReadDefaultValue
   public boolean isRetainDeviceMessages() {
     return deviceService.getConfiguration().path("retain").asBoolean(false);
   }
@@ -279,6 +291,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIFieldShowOnCondition("return !context.get('compactMode')")
   @UIFieldGroup("SETTINGS")
   @UIFieldInlineEditConfirm(value = "ZIGBEE_DISABLE", dialogColor = ERROR_DIALOG, showCondition = "return context.get('disabled') == true")
+  @UIFieldNoReadDefaultValue
   public boolean isDisabled() {
     return deviceService.getConfiguration().path("disabled").asBoolean(deviceService.getApplianceModel().isDisabled());
   }
@@ -291,6 +304,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIField(order = 6, inlineEdit = true)
   @UIFieldShowOnCondition("return !context.get('compactMode')")
   @UIFieldGroup("SETTINGS")
+  @UIFieldNoReadDefaultValue
   public boolean isLogEvents() {
     return deviceService.getConfiguration().path("log_event").asBoolean(false);
   }
@@ -304,12 +318,15 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   @UIFieldShowOnCondition("return !context.get('compactMode')")
   @UIFieldGroup("ADVANCED")
   @UIFieldInlineEditConfirm(value = "Z2M_DEBOUNCE", dialogColor = ERROR_DIALOG)
-  public Float getDebounce() {
-    JsonNode deviceOptions = deviceService.getConfiguration();
-    if (deviceOptions.has("debounce")) {
-      return (float) deviceOptions.get("debounce").asDouble();
+  @UIFieldNoReadDefaultValue
+  public float getDebounce() {
+    if (deviceService != null) {
+      JsonNode deviceOptions = deviceService.getConfiguration();
+      if (deviceOptions.has("debounce")) {
+        return (float) deviceOptions.get("debounce").asDouble();
+      }
     }
-    return null;
+    return 0;
   }
 
   public void setDebounce(Float value) {
@@ -321,12 +338,15 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
 
   @Override
   public String getImageIdentifierImpl() {
+    if (deviceService == null) {
+      return super.getImageIdentifierImpl();
+    }
     JsonNode deviceOptions = deviceService.getConfiguration();
     return deviceOptions.path("image").asText(getModel()).replaceAll("[/ ]", "_");
   }
 
   @Override
-  public @Nullable String getFallbackImageIdentifier() {
+  public String getFallbackImageIdentifier() {
     return "https://www.zigbee2mqtt.io/images/devices/%s.jpg".formatted(getModel());
   }
 
@@ -340,7 +360,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
     List<WidgetDefinition> widgetDefinitions = CONFIG_DEVICE_SERVICE.getDeviceWidgets(deviceDefinitionModels);
     context().widget().createTemplateWidgetActions(uiInputBuilder, this, widgetDefinitions);
 
-    uiInputBuilder.addOpenDialogSelectableButton("CUSTOM_DESCRIPTION", new Icon("fas fa-comment"), null, (context, params) -> {
+    uiInputBuilder.addOpenDialogSelectableButton("CUSTOM_DESCRIPTION", new Icon("fas fa-comment"), (context, params) -> {
       String description = params.getString("description");
 
       if (!Objects.equals(description, getCustomDescription())) {
@@ -414,7 +434,7 @@ public final class Z2MDeviceEntity extends ZigBeeDeviceBaseEntity {
   }
 
   private void buildBinaryTypeAction(UIInputBuilder uiInputBuilder, Options option, JsonNode deviceConfigurationOptions, String flexName) {
-    boolean defaultValue = StringUtils.defaultString(option.getDescription(), "").contains("(default true)");
+    boolean defaultValue = Objects.toString(option.getDescription(), "").contains("(default true)");
     boolean bValue = deviceConfigurationOptions == null ? defaultValue : deviceConfigurationOptions.path(option.getName()).asBoolean(defaultValue);
 
     uiInputBuilder.addFlex(option.getName() + "_flex", flex -> buildCheckbox(option, bValue, flex))

@@ -285,7 +285,7 @@ public class IpCameraEntity extends BaseCameraEntity<IpCameraEntity, IpCameraSer
         return ActionResponseModel.showJson("INFO", object);
       });
 
-      uiInputBuilder.addOpenDialogSelectableButton("CREATE_USER", new Icon("fas fa-users", "#009CC4"), null, (context, params) -> {
+      uiInputBuilder.addOpenDialogSelectableButton("CREATE_USER", new Icon("fas fa-users", "#009CC4"), (context, params) -> {
         String user = params.getString("user");
         String pwd = params.getString("password");
         UserLevel role = UserLevel.valueOf(params.getString("role"));
