@@ -34,7 +34,7 @@ public class MQTTFileSystem implements FileSystemProvider {
 
   @Override
   @SneakyThrows
-  public Set<TreeNode> toTreeNodes(@NotNull Set<String> ids) {
+  public @NotNull Set<TreeNode> toTreeNodes(@NotNull Set<String> ids) {
     throw new IllegalStateException();
   }
 
@@ -45,22 +45,17 @@ public class MQTTFileSystem implements FileSystemProvider {
   }
 
   @Override
-  public long getTotalSpace() {
-    return 0;
+  public Long getTotalSpace() {
+    return null;
   }
 
   @Override
-  public long getUsedSpace() {
-    return 0;
+  public Long getUsedSpace() {
+    return null;
   }
 
   @Override
-  public int getFileSystemAlias() {
-    return 0;
-  }
-
-  @Override
-  public String getFileSystemId() {
+  public @NotNull String getFileSystemId() {
     return entity.getEntityID();
   }
 
@@ -70,7 +65,7 @@ public class MQTTFileSystem implements FileSystemProvider {
   }
 
   @Override
-  public void setEntity(Object entity) {
+  public void setEntity(@NotNull Object entity) {
     this.entity = (MQTTClientEntity) entity;
   }
 
@@ -81,7 +76,7 @@ public class MQTTFileSystem implements FileSystemProvider {
 
   @Override
   @SneakyThrows
-  public TreeNode delete(@NotNull Set<String> ids) {
+  public @NotNull TreeNode delete(@NotNull Set<String> ids) {
     throw new NotImplementedException();
   }
 
@@ -99,7 +94,7 @@ public class MQTTFileSystem implements FileSystemProvider {
 
   @Override
   @SneakyThrows
-  public TreeNode copy(@NotNull Collection<TreeNode> entries, @NotNull String targetId, UploadOption uploadOption) {
+  public @NotNull TreeNode copy(@NotNull Collection<TreeNode> entries, @NotNull String targetId, @NotNull UploadOption uploadOption) {
     throw new NotImplementedException();
   }
 

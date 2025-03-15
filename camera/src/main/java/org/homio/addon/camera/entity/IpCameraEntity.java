@@ -293,7 +293,7 @@ public class IpCameraEntity extends BaseCameraEntity<IpCameraEntity, IpCameraSer
           return ActionResponseModel.success();
         }
         return ActionResponseModel.showError("W.ERROR.UE");
-      }).editDialog(builder -> {
+      }).editDialog(builder ->
         builder.addFlex("main").edit(flex -> {
           flex.addInput("user", "User name", InputType.Text, true);
           flex.addInput("password", "Password", InputType.Text, true);
@@ -303,8 +303,7 @@ public class IpCameraEntity extends BaseCameraEntity<IpCameraEntity, IpCameraSer
           flex.addSelectBox("role")
             .setValue(UserLevel.USER.name())
             .setOptions(levels);
-        });
-      });
+        }));
 
       uiInputBuilder.addSelectableButton("DELETE_USER", new Icon("fas fa-users", "#A02216"), (context, params) -> {
         context.ui().dialog().sendDialogRequest("du", "DELETE_USER", (responseType, pressedButton, parameters) -> {

@@ -142,11 +142,6 @@ public class MQTTClientEntity extends CommunicationEntity implements
   }
 
   @Override
-  public @NotNull Icon getFileSystemIcon() {
-    return getSelectionIcon();
-  }
-
-  @Override
   public boolean requireConfigure() {
     return isEmpty(getUser()) || getPassword().isEmpty();
   }
@@ -453,11 +448,6 @@ public class MQTTClientEntity extends CommunicationEntity implements
   @Override
   public boolean isShowHiddenFiles() {
     return true;
-  }
-
-  @Override
-  public @Nullable FileSystemSize requestDbSize() {
-    return null;
   }
 
   @Override

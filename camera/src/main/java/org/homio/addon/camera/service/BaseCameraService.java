@@ -38,7 +38,6 @@ import org.homio.api.state.StringType;
 import org.homio.api.ui.UI.Image.Snapshot;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.util.CommonUtils;
-import org.homio.api.util.FlowMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -61,6 +60,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.lang.String.join;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.homio.addon.camera.CameraConstants.AlarmEvent.MotionAlarm;
 import static org.homio.addon.camera.CameraConstants.ENDPOINT_AUDIO_THRESHOLD;
 import static org.homio.addon.camera.CameraConstants.ENDPOINT_MOTION_SCORE;
@@ -187,7 +187,7 @@ public abstract class BaseCameraService<T extends BaseCameraEntity<T, S>, S exte
 
       if (status == Status.ERROR || status == REQUIRE_AUTH) {
         context.ui().toastr().error("DISPOSE_VIDEO",
-          FlowMap.of("TITLE", entity.getTitle(), "REASON", reason));
+          Map.of("TITLE", entity.getTitle(), "REASON", defaultString(reason)));
       }
     }
   }

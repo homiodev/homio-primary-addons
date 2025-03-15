@@ -394,12 +394,12 @@ public class Z2MDeviceService implements BaseService {
   }
 
   @Override
-  public String getEntityID() {
+  public @NotNull String getEntityID() {
     return deviceEntity.getIeeeAddressLabel();
   }
 
   @Override
-  public String getName() {
+  public @NotNull String getName() {
     return deviceEntity.getName();
   }
 

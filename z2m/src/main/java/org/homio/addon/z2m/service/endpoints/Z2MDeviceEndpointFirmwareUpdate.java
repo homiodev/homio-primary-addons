@@ -10,10 +10,11 @@ import org.homio.api.model.Icon;
 import org.homio.api.state.JsonType;
 import org.homio.api.ui.UI.Color;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
-import org.homio.api.util.FlowMap;
 import org.homio.api.util.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
+
+import java.util.Map;
 
 public class Z2MDeviceEndpointFirmwareUpdate extends Z2MDeviceEndpoint {
 
@@ -38,7 +39,7 @@ public class Z2MDeviceEndpointFirmwareUpdate extends Z2MDeviceEndpoint {
       if ("updating".equals(status)) {
         wasProgress = true;
         String message = Lang.getServerMessage("ZIGBEE.UPDATING",
-          FlowMap.of("NAME", getDeviceService().getDeviceEntity().getTitle(), "VALUE", node.get("remaining").asInt()));
+          Map.of("NAME", getDeviceService().getDeviceEntity().getTitle(), "VALUE", node.get("remaining").asInt()));
         context().ui().progress().update("upd-" + getDeviceService().getIeeeAddress(),
           node.get("progress").asDouble(), message, false);
       } else if (wasProgress) {
