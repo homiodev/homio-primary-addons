@@ -114,6 +114,13 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/homiodev/homio-primary-addons</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>github-homio-dependency</id>
