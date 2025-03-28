@@ -1,4 +1,4 @@
-name: Build homio-api
+name: Build homio-primary-addons
 
 on:
   push:
