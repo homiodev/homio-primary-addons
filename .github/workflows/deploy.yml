@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+  repository_dispatch:
+    types: [trigger-build]
 
 jobs:
   build:
@@ -71,6 +73,6 @@ jobs:
           for REPO in "${REPOS[@]}"; do
             echo "Triggering build for $REPO"
             curl -X POST https://api.github.com/repos/$REPO/dispatches \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Authorization: token ${{ secrets.GH_PAT }}" \
               -d '{"event_type": "trigger-build"}'
           done
