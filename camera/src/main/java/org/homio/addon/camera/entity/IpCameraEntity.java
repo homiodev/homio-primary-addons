@@ -28,7 +28,6 @@ import org.homio.api.ui.field.action.HasDynamicUIFields;
 import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.ui.field.action.v1.UIEntityItemBuilder;
 import org.homio.api.ui.field.action.v1.UIInputBuilder;
-import org.homio.api.ui.field.action.v1.item.UITextInputItemBuilder.InputType;
 import org.homio.api.ui.field.color.UIFieldColorStatusMatch;
 import org.homio.api.ui.field.selection.dynamic.DynamicOptionLoader;
 import org.homio.api.ui.field.selection.dynamic.UIFieldDynamicSelection;
@@ -295,8 +294,8 @@ public class IpCameraEntity extends BaseCameraEntity<IpCameraEntity, IpCameraSer
         return ActionResponseModel.showError("W.ERROR.UE");
       }).editDialog(builder ->
         builder.addFlex("main").edit(flex -> {
-          flex.addInput("user", "User name", InputType.Text, true);
-          flex.addInput("password", "Password", InputType.Text, true);
+          flex.addTextInput("user", "User name", true);
+          flex.addTextInput("password", "Password", true);
           List<OptionModel> levels = Stream.of(UserLevel.values())
             .map(l -> OptionModel.of(l.name(), l.value()))
             .collect(Collectors.toList());

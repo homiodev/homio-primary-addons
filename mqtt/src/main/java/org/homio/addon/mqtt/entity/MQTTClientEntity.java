@@ -127,6 +127,11 @@ public class MQTTClientEntity extends CommunicationEntity implements
   }
 
   @Override
+  public @Nullable String getIeeeAddress() {
+    return getEntityID();
+  }
+
+  @Override
   public @NotNull String getFileSystemAlias() {
     return "MQTT";
   }

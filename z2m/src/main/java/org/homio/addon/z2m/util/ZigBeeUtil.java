@@ -91,7 +91,7 @@ public final class ZigBeeUtil {
         case COMPOSITE_TYPE:
           if (endpoint instanceof Z2MDeviceEndpointColor) {
             uiInputBuilder
-              .addColorPicker(entityID, ((Z2MDeviceEndpointColor) endpoint).getStateColor(),
+              .addColorPicker(entityID, ((Z2MDeviceEndpointColor) endpoint).getStateColor()).setActionHandler(
                 (context, params) -> {
                   endpoint.fireAction(params.getString("value"));
                   return null;
