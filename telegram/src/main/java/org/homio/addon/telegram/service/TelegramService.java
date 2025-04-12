@@ -165,7 +165,7 @@ public class TelegramService {
 
     @SneakyThrows
     private TelegramBot(DefaultBotOptions botOptions, TelegramEntity telegramEntity) {
-      super(botOptions);
+      super(botOptions, telegramEntity.getBotToken().asString());
       this.telegramEntity = telegramEntity;
       this.botSession = botsApi.registerBot(this);
 
@@ -245,11 +245,6 @@ public class TelegramService {
     @Override
     public String getBotUsername() {
       return telegramEntity.getBotName();
-    }
-
-    @Override
-    public String getBotToken() {
-      return telegramEntity.getBotToken().asString();
     }
 
     // handle message not started with '/'
