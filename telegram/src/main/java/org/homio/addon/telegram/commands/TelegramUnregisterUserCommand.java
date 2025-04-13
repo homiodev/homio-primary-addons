@@ -12,24 +12,25 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 @Log4j2
 public final class TelegramUnregisterUserCommand extends TelegramBaseCommand {
 
-  private final Context context;
+    public static final String UNREGISTER_COMMAND = "unregister";
+    private final Context context;
 
-  public TelegramUnregisterUserCommand(Context context, TelegramBot telegramBot) {
-    super("unregister", "Unregister user", telegramBot);
-    this.context = context;
-  }
-
-  @Override
-  public void execute(AbsSender absSender, User user, Chat chat, String[] strings, StringBuilder sb, SendMessage message) {
-    TelegramUser entity = telegramBot.getTelegramEntity().getUser(user.getId());
-    if (entity != null) {
-      telegramBot.getTelegramEntity().removeUser(user.getId());
-      context.db().save(telegramBot.getTelegramEntity());
-      sb.append("User: <").append(entity.getName()).append("> successfully removed");
-      log.info("Telegram user <{}> successfully removed", entity.getName());
-    } else {
-      sb.append("User <").append(user.getFirstName()).append("> not registered.");
-      log.info("Telegram user <{}> not registered for removing.", user.getFirstName());
+    public TelegramUnregisterUserCommand(Context context, TelegramBot telegramBot) {
+        super(UNREGISTER_COMMAND, "Unregister user", telegramBot);
+        this.context = context;
     }
-  }
+
+    @Override
+    public void execute(AbsSender absSender, User user, Chat chat, String[] strings, StringBuilder sb, SendMessage message) {
+        TelegramUser entity = telegramBot.getTelegramEntity().getUser(user.getId());
+        if (entity != null) {
+            telegramBot.getTelegramEntity().removeUser(user.getId());
+            context.db().save(telegramBot.getTelegramEntity());
+            sb.append("User: <").append(entity.getName()).append("> successfully removed");
+            log.info("Telegram user <{}> successfully removed", entity.getName());
+        } else {
+            sb.append("User <").append(user.getFirstName()).append("> not registered.");
+            log.info("Telegram user <{}> not registered for removing.", user.getFirstName());
+        }
+    }
 }
