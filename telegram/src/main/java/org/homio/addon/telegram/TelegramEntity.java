@@ -13,15 +13,13 @@ import org.homio.api.entity.CreateSingleEntity;
 import org.homio.api.entity.HasStatusAndMsg;
 import org.homio.api.entity.device.DeviceBaseEntity;
 import org.homio.api.entity.types.CommunicationEntity;
-import org.homio.api.model.ActionResponseModel;
 import org.homio.api.model.Icon;
-import org.homio.api.ui.UI.Color;
+import org.homio.api.service.EntityService;
 import org.homio.api.ui.UISidebarChildren;
 import org.homio.api.ui.field.UIField;
 import org.homio.api.ui.field.UIFieldGroup;
 import org.homio.api.ui.field.UIFieldSlider;
 import org.homio.api.ui.field.UIFieldType;
-import org.homio.api.ui.field.action.UIContextMenuAction;
 import org.homio.api.util.Lang;
 import org.homio.api.util.SecureString;
 import org.jetbrains.annotations.NotNull;
@@ -43,9 +41,34 @@ import static org.homio.api.util.JsonUtils.OBJECT_MAPPER;
 @Accessors(chain = true)
 @CreateSingleEntity
 @UISidebarChildren(icon = "fab fa-telegram", color = "#0088CC")
-public final class TelegramEntity extends CommunicationEntity implements HasStatusAndMsg {
+public final class TelegramEntity extends CommunicationEntity implements EntityService<TelegramService>, HasStatusAndMsg {
 
     static final String PRIMARY_ENTITY_ID = DeviceBaseEntity.PREFIX + "telegram_" + PRIMARY_DEVICE;
+
+    @Override
+    public long getEntityServiceHashCode() {
+        return getJsonDataHashCode("botName", "botToken");
+    }
+
+    @UIField(order = 1, inlineEdit = true)
+    @UIFieldGroup("GENERAL")
+    public boolean isStart() {
+        return getJsonData("start", true);
+    }
+
+    public void setStart(boolean start) {
+        setJsonData("start", start);
+    }
+
+    @Override
+    public @NotNull Class<TelegramService> getEntityServiceItemClass() {
+        return TelegramService.class;
+    }
+
+    @Override
+    public @NotNull TelegramService createService(@NotNull Context context) {
+        return new TelegramService(context, this);
+    }
 
     @Override
     public boolean isDisableDelete() {
@@ -182,27 +205,6 @@ public final class TelegramEntity extends CommunicationEntity implements HasStat
     @Override
     protected @NotNull String getDevicePrefix() {
         return "telegram";
-    }
-
-    @UIContextMenuAction(value = "RESTART", icon = "fas fa-power-off", iconColor = Color.RED)
-    public ActionResponseModel reboot(Context context) {
-        context.getBean(TelegramService.class).restart(this);
-        return ActionResponseModel.showSuccess("SUCCESS");
-    }
-
-    @Override
-    public void afterDelete() {
-        context().getBean(TelegramService.class).dispose(this);
-    }
-
-    @Override
-    public void afterUpdate() {
-        context().getBean(TelegramService.class).entityUpdated(this);
-    }
-
-    @Override
-    public void afterPersist() {
-        context().getBean(TelegramService.class).entityUpdated(this);
     }
 
     public TelegramUser getUser(long id) {

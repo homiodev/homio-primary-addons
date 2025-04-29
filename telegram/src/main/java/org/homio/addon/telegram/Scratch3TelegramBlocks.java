@@ -3,7 +3,6 @@ package org.homio.addon.telegram;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.telegram.service.TelegramAnswer;
 import org.homio.addon.telegram.service.TelegramService;
 import org.homio.api.Context;
@@ -19,6 +18,7 @@ import org.homio.api.workspace.WorkspaceBlock;
 import org.homio.api.workspace.scratch.Scratch3Block;
 import org.homio.api.workspace.scratch.Scratch3Block.ScratchSettingBaseEntity;
 import org.homio.api.workspace.scratch.Scratch3ExtensionBlocks;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
@@ -28,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -42,13 +43,10 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
     private static final String COMMAND = "COMMAND";
     private static final String MESSAGE = "MESSAGE";
 
-    private final TelegramService telegramService;
-
-    public Scratch3TelegramBlocks(TelegramService telegramService, Context context,
-                                  TelegramEntrypoint telegramEntrypoint) {
+    public Scratch3TelegramBlocks(@NotNull Context context,
+                                  @NotNull TelegramEntrypoint telegramEntrypoint) {
         super("#73868c", context, telegramEntrypoint);
         setParent(ScratchParent.communication);
-        this.telegramService = telegramService;
 
         blockHat(10, "get_msg", "On command [COMMAND] | [SETTING]", this::whenGetMessage, block -> {
             block.addArgument(COMMAND, "bulb_on");
@@ -92,12 +90,13 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         String caption = workspaceBlock.getInputString("CAPTION");
         RawType rawType = workspaceBlock.getInputRawType(MESSAGE, 50 * 1024 * 1024);
         InputFile inputFile = new InputFile(new ByteArrayInputStream(rawType.byteArrayValue()),
-                StringUtils.defaultString(rawType.getName(), "Undefined name"));
+                Objects.toString(rawType.getName(), "Undefined name"));
         try {
+            var service = context.telegramEntity.getService();
             if (rawType.isImage()) {
-                telegramService.sendPhoto(context.telegramEntity, context.users, inputFile, caption);
+                service.sendPhoto(context.users, inputFile, caption);
             } else if (rawType.isVideo()) {
-                telegramService.sendVideo(context.telegramEntity, context.users, inputFile, caption);
+                service.sendVideo(context.users, inputFile, caption);
             } else {
                 workspaceBlock.logErrorAndThrow("Unable to recognize media MimeType: <{}>", rawType.getMimeType());
             }
@@ -146,11 +145,13 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         try {
             try {
                 new JSONObject(message);
-                // wrap json into code block
+                // wrap JSON into a code block
                 message = "```" + message + "```";
             } catch (Exception ignore) {
             }
-            return telegramService.sendMessage(context.telegramEntity, context.users, messagePreUpdate.apply(escape(message)),
+            return context.telegramEntity.getService().sendMessage(
+                    context.users,
+                    messagePreUpdate.apply(escape(message)),
                     buttons);
         } catch (Exception ex) {
             workspaceBlock.logError("Error send telegram message " + ex);
@@ -169,9 +170,9 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
             OnGetMessageSetting setting = workspaceBlock.getSetting(OnGetMessageSetting.class);
             String command = workspaceBlock.getInputString(COMMAND);
             Lock lock = workspaceBlock.getLockManager().getLock(workspaceBlock);
-            telegramService.registerEvent(command, setting.description, workspaceBlock.getId(), lock);
+            TelegramService.registerEvent(command, setting.description, workspaceBlock.getId(), lock, context);
             lock.addReleaseListener(workspaceBlock.getBlockId() + "pending",
-                    () -> telegramService.unregisterEvent(command, workspaceBlock.getId()));
+                    () -> TelegramService.unregisterEvent(command, workspaceBlock.getId()));
             workspaceBlock.subscribeToLock(lock, next::handle);
         });
     }

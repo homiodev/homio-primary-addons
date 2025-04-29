@@ -1,19 +1,22 @@
 package org.homio.addon.telegram.service;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.homio.addon.telegram.TelegramEntity;
 import org.homio.addon.telegram.commands.*;
 import org.homio.api.Context;
 import org.homio.api.model.Icon;
 import org.homio.api.model.Status;
+import org.homio.api.service.EntityService;
 import org.homio.api.state.ObjectType;
 import org.homio.api.state.State;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.workspace.Lock;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -36,107 +39,76 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Log4j2
-@Component
-public class TelegramService {
+public class TelegramService extends EntityService.ServiceInstance<TelegramEntity> {
 
     public static final String TELEGRAM_EVENT_PREFIX = "telegram_";
-    private final TelegramBotsApi botsApi;
-    private final Map<String, TelegramEventCommand> eventCommandMap = new HashMap<>();
+    private static final Set<DynamicCommand> dynamicCommandEvents = ConcurrentHashMap.newKeySet();
+    private static final Map<String, TelegramEventCommand> eventCommandMap = new HashMap<>();
+    private static final @NotNull TelegramBotsApi botsApi;
 
-    private final Context context;
-    private final Map<String, TelegramBot> telegramBots = new HashMap<>();
-    private final Set<DynamicCommand> dynamicCommandEvents = ConcurrentHashMap.newKeySet();
-
-    @SneakyThrows
-    public TelegramService(Context context) {
-        this.context = context;
-        this.botsApi = new TelegramBotsApi(DefaultBotSession.class);
-    }
-
-    public void restart(TelegramEntity telegramEntity) {
-        TelegramBot telegramBot = telegramBots.get(telegramEntity.getEntityID());
-        if (telegramBot != null) {
-            telegramBot.dispose();
-        }
-        start(telegramEntity);
-    }
-
-    public void dispose(TelegramEntity telegramEntity) {
-        TelegramBot telegramBot = telegramBots.remove(telegramEntity.getEntityID());
-        if (telegramBot != null) {
-            telegramBot.dispose();
+    static {
+        try {
+            botsApi = new TelegramBotsApi(DefaultBotSession.class);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void entityUpdated(TelegramEntity telegramEntity) {
-        if (telegramBots.containsKey(telegramEntity.getEntityID())) {
-            getTelegramBot(telegramEntity).telegramEntity = telegramEntity;
-        }
+    private @Nullable TelegramBot telegramBot;
+
+    public TelegramService(@NotNull Context context, @NotNull TelegramEntity entity) {
+        super(context, entity, false, "Telegram " + entity.getBotName());
     }
 
-    public void sendPhoto(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile,
-                          String caption) {
-        getTelegramBot(telegramEntity).sendPhoto(checkUsers(users), inputFile, caption);
-    }
-
-    public void sendVideo(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, InputFile inputFile,
-                          String caption) {
-        getTelegramBot(telegramEntity).sendVideo(checkUsers(users), inputFile, caption);
-    }
-
-    public Message sendMessage(TelegramEntity telegramEntity, List<TelegramEntity.TelegramUser> users, String message,
-                               String[] buttons) {
-        return getTelegramBot(telegramEntity).sendMessage(checkUsers(users), message, buttons);
-    }
-
-    public TelegramBot getTelegramBot(TelegramEntity telegramEntity) {
-        TelegramBot telegramBot = telegramBots.get(telegramEntity.getEntityID());
-        if (telegramBot == null) {
-            throw new IllegalStateException("TelegramBot <" + telegramEntity.getTitle() + " not started");
-        }
-        return telegramBot;
-    }
-
-    public void registerEvent(String command, String description, String id, Lock lock) {
+    public static void registerEvent(String command, String description, String id, Lock lock, @NotNull Context context) {
         dynamicCommandEvents.add(new DynamicCommand(command, description, id, lock));
-        for (TelegramBot telegramBot : telegramBots.values()) {
-            telegramBot.registerEvent(command, description, id, lock);
-        }
+        context.db().findAll(TelegramEntity.class).forEach(te -> {
+            var bot = te.getService().telegramBot;
+            if (bot != null) {
+                bot.registerEvent(command, description, id, lock);
+            }
+        });
     }
 
-    public void unregisterEvent(String command, String id) {
+    public static void unregisterEvent(String command, String id) {
         dynamicCommandEvents.remove(new DynamicCommand(command, "", id, null));
     }
 
-    public void updateNotificationBlock(TelegramEntity entity) {
-        context.ui().notification().addBlockOptional("telegram", "Telegram", new Icon("fab fa-telegram", "#0088CC"));
-        context.ui().notification().updateBlock("telegram", entity);
+    @Override
+    public void destroy(boolean forRestart, @Nullable Exception ex) {
+        ofNullable(telegramBot).ifPresent(TelegramBot::dispose);
     }
 
-    private void start(TelegramEntity telegramEntity) {
-        try {
-            if (telegramEntity.getMissingMandatoryFields().isEmpty()) {
-                DefaultBotOptions botOptions = new DefaultBotOptions();
-                botOptions.setProxyType(telegramEntity.getProxyType());
-                botOptions.setProxyHost(telegramEntity.getProxyHost());
-                botOptions.setProxyPort(telegramEntity.getProxyPort());
-                botOptions.setGetUpdatesTimeout(telegramEntity.getUpdateTimeout());
+    @Override
+    protected void initialize() {
+        ofNullable(telegramBot).ifPresent(TelegramBot::dispose);
+        start();
+    }
 
-                TelegramBot telegramBot = new TelegramBot(botOptions, telegramEntity);
-                telegramBots.put(telegramEntity.getEntityID(), telegramBot);
+    private void start() {
+        try {
+            if (entity.getMissingMandatoryFields().isEmpty()) {
+                DefaultBotOptions botOptions = new DefaultBotOptions();
+                botOptions.setProxyType(entity.getProxyType());
+                botOptions.setProxyHost(entity.getProxyHost());
+                botOptions.setProxyPort(entity.getProxyPort());
+                botOptions.setGetUpdatesTimeout(entity.getUpdateTimeout());
+
+                telegramBot = new TelegramBot(botOptions, entity, context);
                 for (DynamicCommand dc : dynamicCommandEvents) {
                     telegramBot.registerEvent(dc.command, dc.description, dc.id, dc.lock);
                 }
                 log.info("Telegram bot running");
                 context.ui().toastr().info("Telegram bot running");
-                telegramEntity.setStatusOnline();
+                entity.setStatusOnline();
             } else {
                 log.warn("Telegram bot not running. Requires settings.");
                 context.ui().toastr().warn("Telegram bot not running. Requires settings.");
-                telegramEntity.setStatus(Status.ERROR, isEmpty(telegramEntity.getBotName()) ?
+                entity.setStatus(Status.ERROR, isEmpty(entity.getBotName()) ?
                         "Require bot name field" : "Require bot token field");
             }
         } catch (Exception ex) {
@@ -149,10 +121,41 @@ public class TelegramService {
             }
             context.ui().toastr().error(msg);
             log.error(msg, ex);
-            telegramEntity.setStatusError(msg);
+            entity.setStatusError(msg);
         } finally {
-            updateNotificationBlock(telegramEntity);
+            updateNotificationBlock();
         }
+    }
+
+    @Override
+    public void entityUpdated(@NotNull TelegramEntity newEntity) {
+        super.entityUpdated(newEntity);
+        ofNullable(telegramBot).ifPresent(telegramBot -> telegramBot.setTelegramEntity(newEntity));
+    }
+
+    @Override
+    public void updateNotificationBlock() {
+        context.ui().notification().addBlockOptional("telegram", "Telegram", new Icon("fab fa-telegram", "#0088CC"));
+        context.ui().notification().updateBlock("telegram", entity);
+    }
+
+    public void sendPhoto(List<TelegramEntity.TelegramUser> users, InputFile inputFile,
+                          String caption) {
+        if (telegramBot != null) {
+            telegramBot.sendPhoto(checkUsers(users), inputFile, caption);
+        }
+    }
+
+    public void sendVideo(List<TelegramEntity.TelegramUser> users, InputFile inputFile,
+                          String caption) {
+        if (telegramBot != null) {
+            telegramBot.sendVideo(checkUsers(users), inputFile, caption);
+        }
+    }
+
+    public Message sendMessage(List<TelegramEntity.TelegramUser> users, String message,
+                               String[] buttons) {
+        return telegramBot != null ? telegramBot.sendMessage(checkUsers(users), message, buttons) : null;
     }
 
     private List<TelegramEntity.TelegramUser> checkUsers(List<TelegramEntity.TelegramUser> users) {
@@ -160,6 +163,22 @@ public class TelegramService {
             throw new IllegalStateException("Telegram bot has no registered users");
         }
         return users;
+    }
+
+    @Override
+    public String isRequireRestartService() {
+        if (!entity.getStatus().isOnline()) {
+            return "Status: " + entity.getStatus();
+        }
+        if (telegramBot != null && telegramBot.botSession != null && !telegramBot.botSession.isRunning()) {
+            return "Telegram service down";
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isInternetRequiredForService() {
+        return true;
     }
 
     private record DynamicCommand(String command, String description, String id, Lock lock) {
@@ -177,17 +196,20 @@ public class TelegramService {
         }
     }
 
-    public final class TelegramBot extends TelegramLongPollingCommandBot {
+    public static final class TelegramBot extends TelegramLongPollingCommandBot {
 
         private final BotSession botSession;
+        private final @NotNull Context context;
         @Getter
-        private TelegramEntity telegramEntity;
+        @Setter
+        private @NotNull TelegramEntity telegramEntity;
 
         @SneakyThrows
-        private TelegramBot(DefaultBotOptions botOptions, TelegramEntity telegramEntity) {
+        public TelegramBot(@NotNull DefaultBotOptions botOptions, @NotNull TelegramEntity telegramEntity, @NotNull Context context) {
             super(botOptions, telegramEntity.getBotToken().asString());
             this.telegramEntity = telegramEntity;
             this.botSession = botsApi.registerBot(this);
+            this.context = context;
 
             register(new TelegramStartCommand(this));
             register(new TelegramHelpCommand(this));
@@ -245,9 +267,11 @@ public class TelegramService {
                         List<InlineKeyboardButton> keyboard = new ArrayList<>(buttons.length);
                         keyboard2D.add(keyboard);
                         for (String button : buttons) {
-                            InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(button);
-                            inlineKeyboardButton.setCallbackData(button);
-                            keyboard.add(inlineKeyboardButton);
+                            if (StringUtils.isNotEmpty(button)) {
+                                InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(button);
+                                inlineKeyboardButton.setCallbackData(button);
+                                keyboard.add(inlineKeyboardButton);
+                            }
                         }
                     }
 
@@ -285,7 +309,7 @@ public class TelegramService {
                     message.setText("User not registered. Call /help first");
                     execute(message);
                 } else {
-                    // handle non-command message from user
+                    // handle non-command message from user?
                 }
                 return;
             }
@@ -296,7 +320,7 @@ public class TelegramService {
                         update.getCallbackQuery().getFrom().getId());
                 State value = new ObjectType(telegramAnswer);
 
-                TelegramService.this.context.event()
+                context.event()
                         .fireEvent(TELEGRAM_EVENT_PREFIX + messageId, value)
                         .fireEvent(TELEGRAM_EVENT_PREFIX + messageId + "_" + telegramAnswer.getData(), value);
 

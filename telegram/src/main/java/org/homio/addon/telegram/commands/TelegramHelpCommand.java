@@ -2,7 +2,6 @@ package org.homio.addon.telegram.commands;
 
 import lombok.extern.log4j.Log4j2;
 import org.homio.addon.telegram.TelegramEntity;
-import org.homio.addon.telegram.service.TelegramService;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.ICommandRegistry;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -11,11 +10,12 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import static org.homio.addon.telegram.commands.TelegramRegisterUserCommand.REGISTER_COMMAND;
 import static org.homio.addon.telegram.commands.TelegramUnregisterUserCommand.UNREGISTER_COMMAND;
+import static org.homio.addon.telegram.service.TelegramService.TelegramBot;
 
 @Log4j2
 public final class TelegramHelpCommand extends TelegramBaseCommand {
 
-    public TelegramHelpCommand(TelegramService.TelegramBot telegramBot) {
+    public TelegramHelpCommand(TelegramBot telegramBot) {
         super("help", "List all known commands", telegramBot);
     }
 

@@ -2,12 +2,13 @@ package org.homio.addon.telegram.commands;
 
 import lombok.extern.log4j.Log4j2;
 import org.homio.addon.telegram.TelegramEntity.TelegramUser;
-import org.homio.addon.telegram.service.TelegramService;
 import org.homio.api.Context;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+
+import static org.homio.addon.telegram.service.TelegramService.TelegramBot;
 
 @Log4j2
 public final class TelegramRegisterUserCommand extends TelegramBaseCommand {
@@ -16,7 +17,7 @@ public final class TelegramRegisterUserCommand extends TelegramBaseCommand {
 
     private final Context context;
 
-    public TelegramRegisterUserCommand(Context context, TelegramService.TelegramBot telegramBot) {
+    public TelegramRegisterUserCommand(Context context, TelegramBot telegramBot) {
         super(REGISTER_COMMAND, "Register user", telegramBot);
         this.context = context;
     }
