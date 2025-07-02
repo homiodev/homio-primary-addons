@@ -5,13 +5,14 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.homio.api.Context;
 import org.homio.api.entity.device.DeviceBaseEntity;
 import org.homio.api.model.Icon;
-import org.homio.api.ui.UISidebarChildren;
+import org.homio.api.ui.route.UIRouteStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused")
-@UISidebarChildren(icon = "app/client/assets/items/camera/memory-card.png", color = "#AACC00")
-public class IpCameraSDCardStorageEntity extends VideoBaseStorageService<IpCameraSDCardStorageEntity> {
+@UIRouteStorage(icon = "app/client/assets/items/camera/memory-card.png", color = "#AACC00")
+public class IpCameraSDCardStorageEntity
+    extends VideoBaseStorageService<IpCameraSDCardStorageEntity> {
 
   @Override
   protected @NotNull String getDevicePrefix() {
@@ -20,7 +21,8 @@ public class IpCameraSDCardStorageEntity extends VideoBaseStorageService<IpCamer
 
   @SneakyThrows
   @Override
-  public void startRecord(String id, String output, String profile, DeviceBaseEntity deviceEntity, Context context) {
+  public void startRecord(
+      String id, String output, String profile, DeviceBaseEntity deviceEntity, Context context) {
     throw new NotImplementedException();
   }
 

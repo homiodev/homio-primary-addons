@@ -1,5 +1,7 @@
 package org.homio.addon.camera.service;
 
+import java.util.List;
+import java.util.function.Function;
 import lombok.Setter;
 import org.homio.addon.camera.entity.BaseCameraEntity;
 import org.homio.api.Context;
@@ -13,87 +15,84 @@ import org.homio.api.state.State;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.function.Function;
-
 public class CameraDeviceEndpoint extends BaseDeviceEndpoint<BaseCameraEntity<?, ?>> {
 
-  private @Setter
-  @NotNull Function<State, State> valueConverter = state -> state;
+    private @Setter
+    @NotNull Function<State, State> valueConverter = state -> state;
 
-  public CameraDeviceEndpoint(
-    @NotNull BaseCameraEntity<?, ?> device,
-    @NotNull Context context,
-    @NotNull String endpointEntityID,
-    @Nullable Float min,
-    @Nullable Float max) {
-    this(device, context, endpointEntityID, EndpointType.number, min, max, null, false);
-    setValue(DecimalType.ZERO, false);
-  }
-
-  public CameraDeviceEndpoint(
-    @NotNull BaseCameraEntity<?, ?> device,
-    @NotNull Context context,
-    @NotNull String endpointEntityID,
-    @NotNull List<OptionModel> range) {
-    this(device, context, endpointEntityID, EndpointType.select, null, null, range, false);
-  }
-
-  public CameraDeviceEndpoint(
-    @NotNull BaseCameraEntity<?, ?> device,
-    @NotNull Context context,
-    @NotNull String endpointEntityID,
-    EndpointType endpointType) {
-    this(device, context, endpointEntityID, endpointType, null, null, null, false);
-    this.setValue(OnOffType.OFF, false);
-  }
-
-  private CameraDeviceEndpoint(
-    @NotNull BaseCameraEntity<?, ?> device,
-    @NotNull Context context,
-    @NotNull String endpointEntityID,
-    @NotNull EndpointType endpointType,
-    @Nullable Float min,
-    @Nullable Float max,
-    @Nullable List<OptionModel> range,
-    boolean dbValueStorable) {
-    super("VIDEO", context);
-    ConfigDeviceEndpoint configEndpoint = BaseCameraService.CONFIG_DEVICE_SERVICE.getDeviceEndpoints().get(endpointEntityID);
-
-    setDbValueStorable(dbValueStorable);
-    setMin(min);
-    setMax(max);
-    setRange(range);
-    setUnit(configEndpoint == null ? null : configEndpoint.getUnit());
-    setIcon(new Icon(
-      "fa " + (configEndpoint == null ? "fa-camera" : configEndpoint.getIcon()),
-      configEndpoint == null ? "#3894B5" : configEndpoint.getIconColor()));
-
-    init(
-      BaseCameraService.CONFIG_DEVICE_SERVICE,
-      endpointEntityID,
-      device,
-      endpointEntityID,
-      endpointType);
-
-    getOrCreateVariable();
-
-    if (dbValueStorable && device.getJsonData().has(endpointEntityID)) {
-      State value = endpointType.getReader().apply(device.getJsonData(), endpointEntityID);
-      setValue(value, false);
+    public CameraDeviceEndpoint(
+            @NotNull BaseCameraEntity<?, ?> device,
+            @NotNull Context context,
+            @NotNull String endpointEntityID,
+            @Nullable Float min,
+            @Nullable Float max) {
+        this(device, context, endpointEntityID, EndpointType.number, min, max, null, false);
+        setValue(DecimalType.ZERO, false);
     }
-  }
 
-  public void setValue(@Nullable State value) {
-    setValue(value, true);
-  }
+    public CameraDeviceEndpoint(
+            @NotNull BaseCameraEntity<?, ?> device,
+            @NotNull Context context,
+            @NotNull String endpointEntityID,
+            @NotNull List<OptionModel> range) {
+        this(device, context, endpointEntityID, EndpointType.select, null, null, range, false);
+    }
 
-  public void setValue(@Nullable State value, boolean externalUpdate) {
-    super.setValue(valueConverter.apply(value), externalUpdate);
-  }
+    public CameraDeviceEndpoint(
+            @NotNull BaseCameraEntity<?, ?> device,
+            @NotNull Context context,
+            @NotNull String endpointEntityID,
+            EndpointType endpointType) {
+        this(device, context, endpointEntityID, endpointType, null, null, null, false);
+        this.setValue(OnOffType.OFF, false);
+    }
 
-  @Override
-  public String getVariableGroupID() {
-    return "video-" + getDeviceID();
-  }
+    private CameraDeviceEndpoint(
+            @NotNull BaseCameraEntity<?, ?> device,
+            @NotNull Context context,
+            @NotNull String endpointEntityID,
+            @NotNull EndpointType endpointType,
+            @Nullable Float min,
+            @Nullable Float max,
+            @Nullable List<OptionModel> range,
+            boolean dbValueStorable) {
+        super("VIDEO", context);
+        ConfigDeviceEndpoint configEndpoint = BaseCameraService.CONFIG_DEVICE_SERVICE.getDeviceEndpoints().get(endpointEntityID);
+
+        setDbValueStorable(dbValueStorable);
+        setMin(min);
+        setMax(max);
+        setRange(range);
+        setUnit(configEndpoint == null ? null : configEndpoint.getUnit());
+        setIcon(new Icon(
+                "fa " + (configEndpoint == null ? "fa-camera" : configEndpoint.getIcon()),
+                configEndpoint == null ? "#3894B5" : configEndpoint.getIconColor()));
+
+        init(
+                BaseCameraService.CONFIG_DEVICE_SERVICE,
+                endpointEntityID,
+                device,
+                endpointEntityID,
+                endpointType);
+
+        getOrCreateVariable();
+
+        if (dbValueStorable && device.getJsonData().has(endpointEntityID)) {
+            State value = endpointType.getReader().apply(device.getJsonData(), endpointEntityID);
+            setValue(value, false);
+        }
+    }
+
+    public void setValue(@Nullable State value) {
+        setValue(value, true);
+    }
+
+    public void setValue(@Nullable State value, boolean externalUpdate) {
+        super.setValue(valueConverter.apply(value), externalUpdate);
+    }
+
+    @Override
+    public String getVariableGroupID() {
+        return "video-" + getDeviceID();
+    }
 }

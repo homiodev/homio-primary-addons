@@ -1,7 +1,27 @@
 package org.homio.addon.camera.entity;
 
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.homio.addon.camera.CameraConstants.ENDPOINT_AUDIO_THRESHOLD;
+import static org.homio.addon.camera.CameraConstants.ENDPOINT_MOTION_THRESHOLD;
+import static org.homio.api.ContextSetting.SERVER_PORT;
+import static org.homio.api.model.OptionModel.of;
+import static org.homio.api.util.HardwareUtils.MACHINE_IP_ADDRESS;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
@@ -13,10 +33,10 @@ import org.homio.api.Context;
 import org.homio.api.ContextMedia.FFMPEG;
 import org.homio.api.ContextMedia.FFMPEGFormat;
 import org.homio.api.entity.HasPlace;
+import org.homio.api.entity.device.DeviceBaseEntity;
 import org.homio.api.entity.device.DeviceEndpointsBehaviourContract;
 import org.homio.api.entity.log.HasEntityLog;
 import org.homio.api.entity.log.HasEntitySourceLog;
-import org.homio.api.entity.types.MediaEntity;
 import org.homio.api.entity.version.HasFirmwareVersion;
 import org.homio.api.entity.video.HasVideoSources;
 import org.homio.api.exception.NotFoundException;
@@ -41,6 +61,7 @@ import org.homio.api.ui.field.action.v1.UIInputBuilder;
 import org.homio.api.ui.field.condition.UIFieldDisableEditOnCondition;
 import org.homio.api.ui.field.condition.UIFieldShowOnCondition;
 import org.homio.api.ui.field.image.UIFieldImage;
+import org.homio.api.ui.route.UIRouteMedia;
 import org.homio.api.util.CommonUtils;
 import org.homio.api.util.DataSourceUtil;
 import org.homio.api.util.SecureString;
@@ -49,31 +70,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.homio.addon.camera.CameraConstants.ENDPOINT_AUDIO_THRESHOLD;
-import static org.homio.addon.camera.CameraConstants.ENDPOINT_MOTION_THRESHOLD;
-import static org.homio.api.ContextSetting.SERVER_PORT;
-import static org.homio.api.model.OptionModel.of;
-import static org.homio.api.util.HardwareUtils.MACHINE_IP_ADDRESS;
-
 @SuppressWarnings("unused")
 @Log4j2
+@UIRouteMedia
 public abstract class BaseCameraEntity<T extends BaseCameraEntity, S extends BaseCameraService<?, S>>
-  extends MediaEntity implements
+  extends DeviceBaseEntity implements
   HasPlace,
   HasEntityLog,
   HasEntitySourceLog,
