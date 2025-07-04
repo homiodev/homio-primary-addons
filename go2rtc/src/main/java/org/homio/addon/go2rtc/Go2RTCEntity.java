@@ -121,11 +121,24 @@ public class Go2RTCEntity extends DeviceBaseEntity implements HasEntityLog,
         return getJsonDataHashCode("api", "rtsp", "webrtc");
     }
 
-    @UIField(order = 1, hideInEdit = true, color = "#C4CC23")
-    @UIFieldGroup("STATUS")
-    public int getConnectedStreamsCount() {
-        return optService().stream().map(s -> s.getApiListStreams().size()).findAny().orElse(-1);
+  @UIField(order = 1, hideInEdit = true, color = "#C4CC23")
+  @UIFieldGroup("STATUS")
+  public int getConnectedStreamsCount() {
+    if (!getStatus().isOnline()) {
+      return -1;
     }
+    return optService().stream()
+        .map(
+            s -> {
+              try {
+                return s.getApiListStreams().size();
+              } catch (Exception ignored) {
+                return -1;
+              }
+            })
+        .findAny()
+        .orElse(-1);
+  }
 
     @UIField(order = 30, hideInEdit = true)
     @UIFieldGroup("STATUS")
