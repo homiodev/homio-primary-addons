@@ -81,7 +81,7 @@ public class Scratch3MQTTBlocks extends Scratch3ExtensionBlocks {
     Pattern pattern = payload == null ? null : Pattern.compile(payload);
     workspaceBlock.handleNextOptional(next -> {
       String key = isEmpty(topic) ? "#" : topic;
-      Lock lock = workspaceBlock.getLockManager().getLock(workspaceBlock, key, payload);
+      Lock lock = workspaceBlock.getLockManager().createLock(workspaceBlock, key, payload);
       mqttEntityService.addListener(topic, workspaceBlock.getBlockId(), value -> {
         if (StringUtils.isEmpty(payload) || pattern.matcher(value).matches()) {
           lock.signalAll(value);

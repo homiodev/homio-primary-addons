@@ -123,7 +123,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         String[] buttons = new String[]{setting.okButton, setting.noButton};
         Message message = sendTelegramMessage(workspaceBlock, buttons, Function.identity(), context);
         if (message != null) {
-            Lock lock = workspaceBlock.getLockManager().getLock(workspaceBlock,
+            Lock lock = workspaceBlock.getLockManager().createLock(workspaceBlock,
                     TELEGRAM_EVENT_PREFIX + message.getMessageId());
             workspaceBlock.waitForLock(lock, context.telegramEntity.getWaitQuestionMaxSeconds(),
                     TimeUnit.SECONDS, () -> {
@@ -169,7 +169,7 @@ public class Scratch3TelegramBlocks extends Scratch3ExtensionBlocks {
         workspaceBlock.handleNext(next -> {
             OnGetMessageSetting setting = workspaceBlock.getSetting(OnGetMessageSetting.class);
             String command = workspaceBlock.getInputString(COMMAND);
-            Lock lock = workspaceBlock.getLockManager().getLock(workspaceBlock);
+            Lock lock = workspaceBlock.getLockManager().createLock(workspaceBlock);
             TelegramService.registerEvent(command, setting.description, workspaceBlock.getId(), lock, context);
             lock.addReleaseListener(workspaceBlock.getBlockId() + "pending",
                     () -> TelegramService.unregisterEvent(command, workspaceBlock.getId()));

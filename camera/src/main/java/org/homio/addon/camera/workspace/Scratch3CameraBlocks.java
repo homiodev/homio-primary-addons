@@ -286,14 +286,14 @@ public class Scratch3CameraBlocks extends Scratch3ExtensionBlocks {
   private enum BoolHatMenuEnum implements KeyValueEnum {
     AudioAlarm("Audio alarm", (entity, onOffType, workspaceBlock, next) -> {
       String event = entity.getIeeeAddress() + "_" + AlarmEvent.AudioAlarm.getEndpoint();
-      Lock audioAlarm = workspaceBlock.getLockManager().getLock(workspaceBlock, event);
+      Lock audioAlarm = workspaceBlock.getLockManager().createLock(workspaceBlock, event);
       workspaceBlock.subscribeToLock(audioAlarm, state -> ((OnOffType) state).boolValue() == onOffType.boolValue(),
         next::handle);
     }),
 
     MotionAlarm("Motion alarm", (entity, onOffType, workspaceBlock, next) -> {
       String event = entity.getIeeeAddress() + "_" + AlarmEvent.MotionAlarm.getEndpoint();
-      Lock motionAlarm = workspaceBlock.getLockManager().getLock(workspaceBlock, event);
+      Lock motionAlarm = workspaceBlock.getLockManager().createLock(workspaceBlock, event);
       workspaceBlock.subscribeToLock(motionAlarm, state -> ((OnOffType) state).boolValue() == onOffType.boolValue(), next::handle);
     });
 
